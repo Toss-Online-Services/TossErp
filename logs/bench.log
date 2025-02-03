@@ -1,0 +1,7 @@
+2025-02-03 15:15:19,079 INFO /home/moses/.local/bin/bench start
+2025-02-03 15:43:19,567 INFO /home/moses/.local/bin/bench start
+2025-02-03 15:49:50,125 INFO /home/moses/.local/bin/bench start
+2025-02-03 15:49:50,404 INFO /home/moses/.local/bin/bench serve --port 8001
+2025-02-03 15:49:50,408 INFO /home/moses/.local/bin/bench watch
+2025-02-03 15:49:50,409 INFO /home/moses/.local/bin/bench worker
+2025-02-03 15:49:50,417 INFO /home/moses/.local/bin/bench schedule

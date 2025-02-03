@@ -1,0 +1,363 @@
+2025-02-03 15:49:51,224 Worker rq:worker:94112db0f1d443509822d160fd16989f started with PID 2141, version 1.16.2
+2025-02-03 15:49:51,224 Subscribing to channel rq:pubsub:94112db0f1d443509822d160fd16989f
+2025-02-03 15:49:51,229 *** Listening on home-moses-frappe-bench:short, home-moses-frappe-bench:default, home-moses-frappe-bench:long...
+2025-02-03 15:49:51,229 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-03 15:49:51,231 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-03 15:49:51,232 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-03 15:52:12,526 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Customer-naming_series-reqd'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::9485300c-bd21-4547-a856-2a52bc7d9f19)
+2025-02-03 15:52:12,621 home-moses-frappe-bench:default: Job OK (toss.erp::9485300c-bd21-4547-a856-2a52bc7d9f19)
+2025-02-03 15:52:12,622 Result is kept for 600 seconds
+2025-02-03 15:52:12,625 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Customer-naming_series-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::7903e33b-e465-45fc-96c8-ae34b388e1ab)
+2025-02-03 15:52:12,670 home-moses-frappe-bench:default: Job OK (toss.erp::7903e33b-e465-45fc-96c8-ae34b388e1ab)
+2025-02-03 15:52:12,670 Result is kept for 600 seconds
+2025-02-03 15:52:12,674 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Order-tax_id-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::21a7abf7-8d07-446a-965e-50dbbd84f04f)
+2025-02-03 15:52:12,712 home-moses-frappe-bench:default: Job OK (toss.erp::21a7abf7-8d07-446a-965e-50dbbd84f04f)
+2025-02-03 15:52:12,712 Result is kept for 600 seconds
+2025-02-03 15:52:12,715 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Order-tax_id-print_hide'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::b6905448-faf7-4802-b2e4-ae1d53bef7f4)
+2025-02-03 15:52:12,760 home-moses-frappe-bench:default: Job OK (toss.erp::b6905448-faf7-4802-b2e4-ae1d53bef7f4)
+2025-02-03 15:52:12,761 Result is kept for 600 seconds
+2025-02-03 15:52:12,763 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-tax_id-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::1a435bf3-dc96-4563-822b-9c8365475145)
+2025-02-03 15:52:12,803 home-moses-frappe-bench:default: Job OK (toss.erp::1a435bf3-dc96-4563-822b-9c8365475145)
+2025-02-03 15:52:12,803 Result is kept for 600 seconds
+2025-02-03 15:52:12,808 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-tax_id-print_hide'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::598c4937-84f0-4477-bb80-23c760771670)
+2025-02-03 15:52:12,849 home-moses-frappe-bench:default: Job OK (toss.erp::598c4937-84f0-4477-bb80-23c760771670)
+2025-02-03 15:52:12,849 Result is kept for 600 seconds
+2025-02-03 15:52:12,852 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note-tax_id-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::87faf9ad-7e7b-4777-b847-b9bb1706177d)
+2025-02-03 15:52:12,891 home-moses-frappe-bench:default: Job OK (toss.erp::87faf9ad-7e7b-4777-b847-b9bb1706177d)
+2025-02-03 15:52:12,891 Result is kept for 600 seconds
+2025-02-03 15:52:12,894 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note-tax_id-print_hide'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::bcc6669c-4fcd-400f-ae99-bf36916d075c)
+2025-02-03 15:52:12,931 home-moses-frappe-bench:default: Job OK (toss.erp::bcc6669c-4fcd-400f-ae99-bf36916d075c)
+2025-02-03 15:52:12,931 Result is kept for 600 seconds
+2025-02-03 15:52:12,934 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Packed Item-rate-read_only'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::a09fcb0e-b2cf-47f9-8514-af1fa7783766)
+2025-02-03 15:52:12,971 home-moses-frappe-bench:default: Job OK (toss.erp::a09fcb0e-b2cf-47f9-8514-af1fa7783766)
+2025-02-03 15:52:12,971 Result is kept for 600 seconds
+2025-02-03 15:52:12,975 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice Item-discount_account..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::b40fbca3-0b86-4841-b668-74a93448a940)
+2025-02-03 15:52:13,011 home-moses-frappe-bench:default: Job OK (toss.erp::b40fbca3-0b86-4841-b668-74a93448a940)
+2025-02-03 15:52:13,012 Result is kept for 600 seconds
+2025-02-03 15:52:13,015 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice Item-discount_account..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::6c037d49-1a09-4cf7-a703-4e44f1dd2401)
+2025-02-03 15:52:13,059 home-moses-frappe-bench:default: Job OK (toss.erp::6c037d49-1a09-4cf7-a703-4e44f1dd2401)
+2025-02-03 15:52:13,059 Result is kept for 600 seconds
+2025-02-03 15:52:13,063 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-additional_discount_a..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::a7844914-e2b2-4823-9e38-b57e76b7face)
+2025-02-03 15:52:13,110 home-moses-frappe-bench:default: Job OK (toss.erp::a7844914-e2b2-4823-9e38-b57e76b7face)
+2025-02-03 15:52:13,110 Result is kept for 600 seconds
+2025-02-03 15:52:13,114 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-additional_discount_a..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::fbbcc6f4-7eec-4f72-9196-4c5deacd95eb)
+2025-02-03 15:52:13,162 home-moses-frappe-bench:default: Job OK (toss.erp::fbbcc6f4-7eec-4f72-9196-4c5deacd95eb)
+2025-02-03 15:52:13,162 Result is kept for 600 seconds
+2025-02-03 15:52:13,166 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Supplier-naming_series-reqd'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::41cd9905-0dc9-4ab8-a4f2-9b485024d193)
+2025-02-03 15:52:13,208 home-moses-frappe-bench:default: Job OK (toss.erp::41cd9905-0dc9-4ab8-a4f2-9b485024d193)
+2025-02-03 15:52:13,208 Result is kept for 600 seconds
+2025-02-03 15:52:13,212 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Supplier-naming_series-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::f9eea9ef-11db-45ad-9ab5-271a02e8d38b)
+2025-02-03 15:52:13,257 home-moses-frappe-bench:default: Job OK (toss.erp::f9eea9ef-11db-45ad-9ab5-271a02e8d38b)
+2025-02-03 15:52:13,258 Result is kept for 600 seconds
+2025-02-03 15:52:29,083 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Supplier-naming_series-reqd'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::895d2a77-e00e-491e-8492-5b673adf8262)
+2025-02-03 15:52:29,125 home-moses-frappe-bench:default: Job OK (toss.erp::895d2a77-e00e-491e-8492-5b673adf8262)
+2025-02-03 15:52:29,125 Result is kept for 600 seconds
+2025-02-03 15:52:29,129 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Supplier-naming_series-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::0f71f0b0-f994-4010-a6d9-e99056ed5b6d)
+2025-02-03 15:52:29,175 home-moses-frappe-bench:default: Job OK (toss.erp::0f71f0b0-f994-4010-a6d9-e99056ed5b6d)
+2025-02-03 15:52:29,175 Result is kept for 600 seconds
+2025-02-03 15:52:29,178 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Customer-naming_series-reqd'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::1e653f30-4a27-4781-af11-d326dae99019)
+2025-02-03 15:52:29,217 home-moses-frappe-bench:default: Job OK (toss.erp::1e653f30-4a27-4781-af11-d326dae99019)
+2025-02-03 15:52:29,217 Result is kept for 600 seconds
+2025-02-03 15:52:29,221 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Customer-naming_series-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::48244c3d-c5d3-4cf4-8d66-b44250b01856)
+2025-02-03 15:52:29,257 home-moses-frappe-bench:default: Job OK (toss.erp::48244c3d-c5d3-4cf4-8d66-b44250b01856)
+2025-02-03 15:52:29,258 Result is kept for 600 seconds
+2025-02-03 15:52:29,262 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Order-tax_id-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::788d9bbe-4833-46d1-8e8e-28777da5071d)
+2025-02-03 15:52:29,300 home-moses-frappe-bench:default: Job OK (toss.erp::788d9bbe-4833-46d1-8e8e-28777da5071d)
+2025-02-03 15:52:29,300 Result is kept for 600 seconds
+2025-02-03 15:52:29,303 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Order-tax_id-print_hide'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::21a7df23-e402-4509-88e1-d0d3644fea58)
+2025-02-03 15:52:29,344 home-moses-frappe-bench:default: Job OK (toss.erp::21a7df23-e402-4509-88e1-d0d3644fea58)
+2025-02-03 15:52:29,344 Result is kept for 600 seconds
+2025-02-03 15:52:29,348 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-tax_id-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::0ed824f3-b1f6-4717-ae94-49a95ebe1aca)
+2025-02-03 15:52:29,390 home-moses-frappe-bench:default: Job OK (toss.erp::0ed824f3-b1f6-4717-ae94-49a95ebe1aca)
+2025-02-03 15:52:29,390 Result is kept for 600 seconds
+2025-02-03 15:52:29,394 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-tax_id-print_hide'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::0aef68f4-531b-445b-bcc1-8c50e9127b7d)
+2025-02-03 15:52:29,433 home-moses-frappe-bench:default: Job OK (toss.erp::0aef68f4-531b-445b-bcc1-8c50e9127b7d)
+2025-02-03 15:52:29,433 Result is kept for 600 seconds
+2025-02-03 15:52:29,436 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note-tax_id-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::3f9bba4c-21f9-4a7a-9026-e7b9271f0885)
+2025-02-03 15:52:29,481 home-moses-frappe-bench:default: Job OK (toss.erp::3f9bba4c-21f9-4a7a-9026-e7b9271f0885)
+2025-02-03 15:52:29,481 Result is kept for 600 seconds
+2025-02-03 15:52:29,485 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note-tax_id-print_hide'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::1a6cd6ba-2bb3-4c97-ad6c-253c4ee97233)
+2025-02-03 15:52:29,524 home-moses-frappe-bench:default: Job OK (toss.erp::1a6cd6ba-2bb3-4c97-ad6c-253c4ee97233)
+2025-02-03 15:52:29,524 Result is kept for 600 seconds
+2025-02-03 15:52:29,528 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Packed Item-rate-read_only'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::ab627603-fe7d-469d-baea-980811e6186a)
+2025-02-03 15:52:29,565 home-moses-frappe-bench:default: Job OK (toss.erp::ab627603-fe7d-469d-baea-980811e6186a)
+2025-02-03 15:52:29,565 Result is kept for 600 seconds
+2025-02-03 15:52:29,568 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice Item-discount_account..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::5536b9dc-08f1-461f-a006-76c7c0285d97)
+2025-02-03 15:52:29,606 home-moses-frappe-bench:default: Job OK (toss.erp::5536b9dc-08f1-461f-a006-76c7c0285d97)
+2025-02-03 15:52:29,606 Result is kept for 600 seconds
+2025-02-03 15:52:29,609 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice Item-discount_account..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::ee42fdfc-df32-439a-888d-e59a89893824)
+2025-02-03 15:52:29,644 home-moses-frappe-bench:default: Job OK (toss.erp::ee42fdfc-df32-439a-888d-e59a89893824)
+2025-02-03 15:52:29,644 Result is kept for 600 seconds
+2025-02-03 15:52:29,648 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-additional_discount_a..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::daa3eeba-5f26-4d95-bede-660749753544)
+2025-02-03 15:52:29,687 home-moses-frappe-bench:default: Job OK (toss.erp::daa3eeba-5f26-4d95-bede-660749753544)
+2025-02-03 15:52:29,687 Result is kept for 600 seconds
+2025-02-03 15:52:29,692 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-additional_discount_a..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::5af32075-8be6-4bc6-99ef-e025b8966703)
+2025-02-03 15:52:29,729 home-moses-frappe-bench:default: Job OK (toss.erp::5af32075-8be6-4bc6-99ef-e025b8966703)
+2025-02-03 15:52:29,729 Result is kept for 600 seconds
+2025-02-03 15:52:29,732 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Quotation-base_rounded_total-hidden..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::0355834f-45e8-4848-912c-296b5faa640d)
+2025-02-03 15:52:29,775 home-moses-frappe-bench:default: Job OK (toss.erp::0355834f-45e8-4848-912c-296b5faa640d)
+2025-02-03 15:52:29,775 Result is kept for 600 seconds
+2025-02-03 15:52:29,779 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Quotation-base_rounded_total-print_..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::4426b24b-7669-485f-85e2-45b0172eb33c)
+2025-02-03 15:52:29,820 home-moses-frappe-bench:default: Job OK (toss.erp::4426b24b-7669-485f-85e2-45b0172eb33c)
+2025-02-03 15:52:29,820 Result is kept for 600 seconds
+2025-02-03 15:52:29,825 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Quotation-rounded_total-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::b6963ca5-d787-4ec3-886e-e3e7d47466c6)
+2025-02-03 15:52:29,863 home-moses-frappe-bench:default: Job OK (toss.erp::b6963ca5-d787-4ec3-886e-e3e7d47466c6)
+2025-02-03 15:52:29,863 Result is kept for 600 seconds
+2025-02-03 15:52:29,867 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Quotation-rounded_total-print_hide'..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::bba5439f-923a-4eea-a9ef-3c8d2f2d89e4)
+2025-02-03 15:52:29,905 home-moses-frappe-bench:default: Job OK (toss.erp::bba5439f-923a-4eea-a9ef-3c8d2f2d89e4)
+2025-02-03 15:52:29,906 Result is kept for 600 seconds
+2025-02-03 15:52:29,910 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='erpnext.setup.demo.setup_demo_data', kwargs={}, method=<function setup_demo_data at 0x7fe9671a3be0>, site='toss.erp', user='Administrator') (toss.erp::eb99497e-8e77-4447-855c-cbc131341394)
+2025-02-03 15:52:44,404 home-moses-frappe-bench:default: Job OK (toss.erp::eb99497e-8e77-4447-855c-cbc131341394)
+2025-02-03 15:52:44,404 Result is kept for 600 seconds
+2025-02-03 15:52:44,410 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Quotation-disable_rounded_total-def..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::afe3865e-cba2-4a97-89a8-7054bcc88996)
+2025-02-03 15:52:44,448 home-moses-frappe-bench:default: Job OK (toss.erp::afe3865e-cba2-4a97-89a8-7054bcc88996)
+2025-02-03 15:52:44,448 Result is kept for 600 seconds
+2025-02-03 15:52:44,452 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Order-base_rounded_total-hidd..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::875d58d2-cee9-4592-b631-9c15e0ce8fac)
+2025-02-03 15:52:44,490 home-moses-frappe-bench:default: Job OK (toss.erp::875d58d2-cee9-4592-b631-9c15e0ce8fac)
+2025-02-03 15:52:44,490 Result is kept for 600 seconds
+2025-02-03 15:52:44,494 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Order-base_rounded_total-prin..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::6e371dba-3939-46b9-91c6-87b125880730)
+2025-02-03 15:52:44,533 home-moses-frappe-bench:default: Job OK (toss.erp::6e371dba-3939-46b9-91c6-87b125880730)
+2025-02-03 15:52:44,533 Result is kept for 600 seconds
+2025-02-03 15:52:44,538 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Order-rounded_total-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::92c79f4f-6657-4d04-a578-d4c0505e5d59)
+2025-02-03 15:52:44,581 home-moses-frappe-bench:default: Job OK (toss.erp::92c79f4f-6657-4d04-a578-d4c0505e5d59)
+2025-02-03 15:52:44,581 Result is kept for 600 seconds
+2025-02-03 15:52:44,585 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Order-rounded_total-print_hid..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::36c7d894-8da1-4030-95b2-36c6ddcb9816)
+2025-02-03 15:52:44,627 home-moses-frappe-bench:default: Job OK (toss.erp::36c7d894-8da1-4030-95b2-36c6ddcb9816)
+2025-02-03 15:52:44,628 Result is kept for 600 seconds
+2025-02-03 15:52:44,633 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Order-disable_rounded_total-d..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::387a08d1-79fd-4b1c-b700-03c0cbc64333)
+2025-02-03 15:52:44,676 home-moses-frappe-bench:default: Job OK (toss.erp::387a08d1-79fd-4b1c-b700-03c0cbc64333)
+2025-02-03 15:52:44,676 Result is kept for 600 seconds
+2025-02-03 15:52:44,680 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-base_rounded_total-hi..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::4b52e5fd-4c34-4d3c-ab4f-7d0eb09c5c94)
+2025-02-03 15:52:44,720 home-moses-frappe-bench:default: Job OK (toss.erp::4b52e5fd-4c34-4d3c-ab4f-7d0eb09c5c94)
+2025-02-03 15:52:44,720 Result is kept for 600 seconds
+2025-02-03 15:52:44,725 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-base_rounded_total-pr..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::0828da02-c9e2-4211-af16-7f38ecc03f33)
+2025-02-03 15:52:44,764 home-moses-frappe-bench:default: Job OK (toss.erp::0828da02-c9e2-4211-af16-7f38ecc03f33)
+2025-02-03 15:52:44,764 Result is kept for 600 seconds
+2025-02-03 15:52:44,768 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-rounded_total-hidden'..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::533c6a98-867f-4220-b52c-31a8e1a4f7a5)
+2025-02-03 15:52:44,807 home-moses-frappe-bench:default: Job OK (toss.erp::533c6a98-867f-4220-b52c-31a8e1a4f7a5)
+2025-02-03 15:52:44,807 Result is kept for 600 seconds
+2025-02-03 15:52:44,811 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-rounded_total-print_h..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::a07ee2ed-9415-431d-93cd-74b645b74c76)
+2025-02-03 15:52:44,853 home-moses-frappe-bench:default: Job OK (toss.erp::a07ee2ed-9415-431d-93cd-74b645b74c76)
+2025-02-03 15:52:44,853 Result is kept for 600 seconds
+2025-02-03 15:52:44,858 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-disable_rounded_total..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::aafb739d-cb3c-4cfb-ac6d-e7eee2147845)
+2025-02-03 15:52:44,904 home-moses-frappe-bench:default: Job OK (toss.erp::aafb739d-cb3c-4cfb-ac6d-e7eee2147845)
+2025-02-03 15:52:44,904 Result is kept for 600 seconds
+2025-02-03 15:52:44,908 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note-base_rounded_total-hi..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::1ddd6a50-46ed-4906-bc57-9f814cba95fd)
+2025-02-03 15:52:44,946 home-moses-frappe-bench:default: Job OK (toss.erp::1ddd6a50-46ed-4906-bc57-9f814cba95fd)
+2025-02-03 15:52:44,946 Result is kept for 600 seconds
+2025-02-03 15:52:44,950 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note-base_rounded_total-pr..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::a4fa2de8-8399-424b-a25c-e76cfd9101f9)
+2025-02-03 15:52:44,992 home-moses-frappe-bench:default: Job OK (toss.erp::a4fa2de8-8399-424b-a25c-e76cfd9101f9)
+2025-02-03 15:52:44,993 Result is kept for 600 seconds
+2025-02-03 15:52:44,996 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note-rounded_total-hidden'..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::db0ce756-b9a1-466b-82e5-e47e3193b134)
+2025-02-03 15:52:45,037 home-moses-frappe-bench:default: Job OK (toss.erp::db0ce756-b9a1-466b-82e5-e47e3193b134)
+2025-02-03 15:52:45,037 Result is kept for 600 seconds
+2025-02-03 15:52:45,041 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note-rounded_total-print_h..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::9f2fd7df-1324-4e31-9725-147a2c20f1c0)
+2025-02-03 15:52:45,081 home-moses-frappe-bench:default: Job OK (toss.erp::9f2fd7df-1324-4e31-9725-147a2c20f1c0)
+2025-02-03 15:52:45,081 Result is kept for 600 seconds
+2025-02-03 15:52:45,085 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note-disable_rounded_total..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::aa90996d-50dd-4832-a2b6-80911bda5530)
+2025-02-03 15:52:45,127 home-moses-frappe-bench:default: Job OK (toss.erp::aa90996d-50dd-4832-a2b6-80911bda5530)
+2025-02-03 15:52:45,127 Result is kept for 600 seconds
+2025-02-03 15:52:45,131 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Supplier Quotation-base_rounded_tot..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::ea68b359-1f3a-474b-82bb-2e783cb77bb9)
+2025-02-03 15:52:45,171 home-moses-frappe-bench:default: Job OK (toss.erp::ea68b359-1f3a-474b-82bb-2e783cb77bb9)
+2025-02-03 15:52:45,171 Result is kept for 600 seconds
+2025-02-03 15:52:45,177 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Supplier Quotation-base_rounded_tot..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::7e43aed4-2b80-40a9-9f7a-16bfaf78acad)
+2025-02-03 15:52:45,212 home-moses-frappe-bench:default: Job OK (toss.erp::7e43aed4-2b80-40a9-9f7a-16bfaf78acad)
+2025-02-03 15:52:45,213 Result is kept for 600 seconds
+2025-02-03 15:52:45,217 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Supplier Quotation-rounded_total-hi..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::d258264e-d7f3-4bfb-aa0f-a30e250dad76)
+2025-02-03 15:52:45,256 home-moses-frappe-bench:default: Job OK (toss.erp::d258264e-d7f3-4bfb-aa0f-a30e250dad76)
+2025-02-03 15:52:45,257 Result is kept for 600 seconds
+2025-02-03 15:52:45,260 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Supplier Quotation-rounded_total-pr..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::0cfb205e-1ca9-4474-8a9f-d4afe851dd91)
+2025-02-03 15:52:45,298 home-moses-frappe-bench:default: Job OK (toss.erp::0cfb205e-1ca9-4474-8a9f-d4afe851dd91)
+2025-02-03 15:52:45,298 Result is kept for 600 seconds
+2025-02-03 15:52:45,301 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Supplier Quotation-disable_rounded_..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::68e508e9-1a58-4c17-a553-88efaed69917)
+2025-02-03 15:52:45,339 home-moses-frappe-bench:default: Job OK (toss.erp::68e508e9-1a58-4c17-a553-88efaed69917)
+2025-02-03 15:52:45,339 Result is kept for 600 seconds
+2025-02-03 15:52:45,342 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Order-base_rounded_total-h..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::70ff87c2-c102-496d-93d8-9e2d11d340e1)
+2025-02-03 15:52:45,383 home-moses-frappe-bench:default: Job OK (toss.erp::70ff87c2-c102-496d-93d8-9e2d11d340e1)
+2025-02-03 15:52:45,383 Result is kept for 600 seconds
+2025-02-03 15:52:45,387 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Order-base_rounded_total-p..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::56262a80-128c-498d-9c8a-da00905e1671)
+2025-02-03 15:52:45,426 home-moses-frappe-bench:default: Job OK (toss.erp::56262a80-128c-498d-9c8a-da00905e1671)
+2025-02-03 15:52:45,426 Result is kept for 600 seconds
+2025-02-03 15:52:45,430 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Order-rounded_total-hidden..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::4c53961a-5f6f-4418-8a04-5ddf6ee50417)
+2025-02-03 15:52:45,470 home-moses-frappe-bench:default: Job OK (toss.erp::4c53961a-5f6f-4418-8a04-5ddf6ee50417)
+2025-02-03 15:52:45,470 Result is kept for 600 seconds
+2025-02-03 15:52:45,474 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Order-rounded_total-print_..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::a1f4d275-d7f3-49c9-8788-453d32005b84)
+2025-02-03 15:52:45,517 home-moses-frappe-bench:default: Job OK (toss.erp::a1f4d275-d7f3-49c9-8788-453d32005b84)
+2025-02-03 15:52:45,518 Result is kept for 600 seconds
+2025-02-03 15:52:45,521 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Order-disable_rounded_tota..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::0d674777-3687-4f93-bc87-c8725e2b6d0a)
+2025-02-03 15:52:45,563 home-moses-frappe-bench:default: Job OK (toss.erp::0d674777-3687-4f93-bc87-c8725e2b6d0a)
+2025-02-03 15:52:45,564 Result is kept for 600 seconds
+2025-02-03 15:52:45,569 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Invoice-base_rounded_total..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::12a8bac2-0264-4998-a030-6307ff2e4f66)
+2025-02-03 15:52:45,629 home-moses-frappe-bench:default: Job OK (toss.erp::12a8bac2-0264-4998-a030-6307ff2e4f66)
+2025-02-03 15:52:45,630 Result is kept for 600 seconds
+2025-02-03 15:52:45,633 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Invoice-base_rounded_total..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::7b876ba2-d39a-4ae0-badb-60c262f46881)
+2025-02-03 15:52:45,672 home-moses-frappe-bench:default: Job OK (toss.erp::7b876ba2-d39a-4ae0-badb-60c262f46881)
+2025-02-03 15:52:45,673 Result is kept for 600 seconds
+2025-02-03 15:52:45,676 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Invoice-rounded_total-hidd..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::4414f4bf-0158-4a92-8554-08e3dc33afc8)
+2025-02-03 15:52:45,718 home-moses-frappe-bench:default: Job OK (toss.erp::4414f4bf-0158-4a92-8554-08e3dc33afc8)
+2025-02-03 15:52:45,718 Result is kept for 600 seconds
+2025-02-03 15:52:45,723 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Invoice-rounded_total-prin..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::2c90e223-93cc-4a71-97d8-fca1608dc2e1)
+2025-02-03 15:52:45,765 home-moses-frappe-bench:default: Job OK (toss.erp::2c90e223-93cc-4a71-97d8-fca1608dc2e1)
+2025-02-03 15:52:45,765 Result is kept for 600 seconds
+2025-02-03 15:52:45,770 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Invoice-disable_rounded_to..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::777835df-8c02-4374-972a-67a08afde378)
+2025-02-03 15:52:45,810 home-moses-frappe-bench:default: Job OK (toss.erp::777835df-8c02-4374-972a-67a08afde378)
+2025-02-03 15:52:45,810 Result is kept for 600 seconds
+2025-02-03 15:52:45,814 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Receipt-base_rounded_total..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::1aecc356-c0ad-461f-9bfc-2a0522c554d6)
+2025-02-03 15:52:45,861 home-moses-frappe-bench:default: Job OK (toss.erp::1aecc356-c0ad-461f-9bfc-2a0522c554d6)
+2025-02-03 15:52:45,861 Result is kept for 600 seconds
+2025-02-03 15:52:45,865 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Receipt-base_rounded_total..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::af8d3af7-f4a0-4c7c-9f84-baa78813a158)
+2025-02-03 15:52:45,910 home-moses-frappe-bench:default: Job OK (toss.erp::af8d3af7-f4a0-4c7c-9f84-baa78813a158)
+2025-02-03 15:52:45,910 Result is kept for 600 seconds
+2025-02-03 15:52:45,914 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Receipt-rounded_total-hidd..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::456ae44b-4e64-4685-8430-0ee476179dc7)
+2025-02-03 15:52:45,955 home-moses-frappe-bench:default: Job OK (toss.erp::456ae44b-4e64-4685-8430-0ee476179dc7)
+2025-02-03 15:52:45,955 Result is kept for 600 seconds
+2025-02-03 15:52:45,959 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Receipt-rounded_total-prin..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::e2da6a35-1f3d-4595-93ff-b981745ccd16)
+2025-02-03 15:52:45,998 home-moses-frappe-bench:default: Job OK (toss.erp::e2da6a35-1f3d-4595-93ff-b981745ccd16)
+2025-02-03 15:52:45,998 Result is kept for 600 seconds
+2025-02-03 15:52:46,003 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Receipt-disable_rounded_to..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::638d7cc2-2f81-475c-9aab-1818a0d54c80)
+2025-02-03 15:52:46,043 home-moses-frappe-bench:default: Job OK (toss.erp::638d7cc2-2f81-475c-9aab-1818a0d54c80)
+2025-02-03 15:52:46,043 Result is kept for 600 seconds
+2025-02-03 15:52:46,047 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Quotation-in_words-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::0c174fc6-c873-4a0e-adc8-46cec5565a7f)
+2025-02-03 15:52:46,087 home-moses-frappe-bench:default: Job OK (toss.erp::0c174fc6-c873-4a0e-adc8-46cec5565a7f)
+2025-02-03 15:52:46,087 Result is kept for 600 seconds
+2025-02-03 15:52:46,092 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Quotation-in_words-print_hide'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::41755597-6c8a-47a3-8ec7-87d4f67fc8a8)
+2025-02-03 15:52:46,130 home-moses-frappe-bench:default: Job OK (toss.erp::41755597-6c8a-47a3-8ec7-87d4f67fc8a8)
+2025-02-03 15:52:46,131 Result is kept for 600 seconds
+2025-02-03 15:52:46,135 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Order-in_words-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::7e258a5a-d86b-462b-9302-a65122b1aee2)
+2025-02-03 15:52:46,176 home-moses-frappe-bench:default: Job OK (toss.erp::7e258a5a-d86b-462b-9302-a65122b1aee2)
+2025-02-03 15:52:46,176 Result is kept for 600 seconds
+2025-02-03 15:52:46,180 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Order-in_words-print_hide'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::18685473-3162-4aed-b54d-93b02beb5d2f)
+2025-02-03 15:52:46,221 home-moses-frappe-bench:default: Job OK (toss.erp::18685473-3162-4aed-b54d-93b02beb5d2f)
+2025-02-03 15:52:46,221 Result is kept for 600 seconds
+2025-02-03 15:52:46,225 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-in_words-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::a6300550-34b3-4f2b-869a-1410411351d5)
+2025-02-03 15:52:46,264 home-moses-frappe-bench:default: Job OK (toss.erp::a6300550-34b3-4f2b-869a-1410411351d5)
+2025-02-03 15:52:46,264 Result is kept for 600 seconds
+2025-02-03 15:52:46,268 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-in_words-print_hide'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::503d3e3e-5aa7-4ce4-855a-9805cd63c0f8)
+2025-02-03 15:52:46,306 home-moses-frappe-bench:default: Job OK (toss.erp::503d3e3e-5aa7-4ce4-855a-9805cd63c0f8)
+2025-02-03 15:52:46,306 Result is kept for 600 seconds
+2025-02-03 15:52:46,310 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note-in_words-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::5e989a0f-2ca3-4f71-a16b-be78d07000e3)
+2025-02-03 15:52:46,349 home-moses-frappe-bench:default: Job OK (toss.erp::5e989a0f-2ca3-4f71-a16b-be78d07000e3)
+2025-02-03 15:52:46,349 Result is kept for 600 seconds
+2025-02-03 15:52:46,353 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note-in_words-print_hide'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::4780794b-26f5-44ed-97dd-c0b94d35a655)
+2025-02-03 15:52:46,393 home-moses-frappe-bench:default: Job OK (toss.erp::4780794b-26f5-44ed-97dd-c0b94d35a655)
+2025-02-03 15:52:46,393 Result is kept for 600 seconds
+2025-02-03 15:52:46,397 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Supplier Quotation-in_words-hidden'..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::d22f6a4b-57fa-4adf-9614-444bfaf5a861)
+2025-02-03 15:52:46,443 home-moses-frappe-bench:default: Job OK (toss.erp::d22f6a4b-57fa-4adf-9614-444bfaf5a861)
+2025-02-03 15:52:46,443 Result is kept for 600 seconds
+2025-02-03 15:52:46,448 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Supplier Quotation-in_words-print_h..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::61b38168-76b1-4a0f-9613-7be9dbdc1c7f)
+2025-02-03 15:52:46,486 home-moses-frappe-bench:default: Job OK (toss.erp::61b38168-76b1-4a0f-9613-7be9dbdc1c7f)
+2025-02-03 15:52:46,486 Result is kept for 600 seconds
+2025-02-03 15:52:46,490 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Order-in_words-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::fcd41b06-af7b-422f-ae07-5bf626178965)
+2025-02-03 15:52:46,528 home-moses-frappe-bench:default: Job OK (toss.erp::fcd41b06-af7b-422f-ae07-5bf626178965)
+2025-02-03 15:52:46,528 Result is kept for 600 seconds
+2025-02-03 15:52:46,532 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Order-in_words-print_hide'..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::2dae3dd9-a759-47f6-9daa-f30c961c2877)
+2025-02-03 15:52:46,570 home-moses-frappe-bench:default: Job OK (toss.erp::2dae3dd9-a759-47f6-9daa-f30c961c2877)
+2025-02-03 15:52:46,571 Result is kept for 600 seconds
+2025-02-03 15:52:46,574 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Invoice-in_words-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::1a637962-b471-4aff-929f-1f65f27c0f45)
+2025-02-03 15:52:46,614 home-moses-frappe-bench:default: Job OK (toss.erp::1a637962-b471-4aff-929f-1f65f27c0f45)
+2025-02-03 15:52:46,614 Result is kept for 600 seconds
+2025-02-03 15:52:46,618 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Invoice-in_words-print_hid..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::29d6d714-1d4f-431d-bfdd-ce285bb1d4a3)
+2025-02-03 15:52:46,659 home-moses-frappe-bench:default: Job OK (toss.erp::29d6d714-1d4f-431d-bfdd-ce285bb1d4a3)
+2025-02-03 15:52:46,659 Result is kept for 600 seconds
+2025-02-03 15:52:46,664 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Receipt-in_words-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::dd8b9874-5b87-48c8-9dc6-09b5addda5ad)
+2025-02-03 15:52:46,704 home-moses-frappe-bench:default: Job OK (toss.erp::dd8b9874-5b87-48c8-9dc6-09b5addda5ad)
+2025-02-03 15:52:46,704 Result is kept for 600 seconds
+2025-02-03 15:52:46,707 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Receipt-in_words-print_hid..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::45e2c39f-39d5-4436-9ea0-d8a3a5b82d5f)
+2025-02-03 15:52:46,747 home-moses-frappe-bench:default: Job OK (toss.erp::45e2c39f-39d5-4436-9ea0-d8a3a5b82d5f)
+2025-02-03 15:52:46,748 Result is kept for 600 seconds
+2025-02-03 15:52:46,751 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Item-naming_series-reqd'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::c88605f6-da6b-41da-9c32-13da7bb055d7)
+2025-02-03 15:52:46,793 home-moses-frappe-bench:default: Job OK (toss.erp::c88605f6-da6b-41da-9c32-13da7bb055d7)
+2025-02-03 15:52:46,793 Result is kept for 600 seconds
+2025-02-03 15:52:46,797 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Item-naming_series-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::2469b24d-af40-4faa-863c-3fdd4fcde179)
+2025-02-03 15:52:46,837 home-moses-frappe-bench:default: Job OK (toss.erp::2469b24d-af40-4faa-863c-3fdd4fcde179)
+2025-02-03 15:52:46,837 Result is kept for 600 seconds
+2025-02-03 15:52:46,841 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Item-item_code-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::eaad8a49-6981-42bc-9d96-65c73bfa5980)
+2025-02-03 15:52:46,884 home-moses-frappe-bench:default: Job OK (toss.erp::eaad8a49-6981-42bc-9d96-65c73bfa5980)
+2025-02-03 15:52:46,884 Result is kept for 600 seconds
+2025-02-03 15:52:46,888 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Item-item_code-reqd'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::70e8ddf4-d4a8-4ed4-bfa7-006f26532b4f)
+2025-02-03 15:52:46,926 home-moses-frappe-bench:default: Job OK (toss.erp::70e8ddf4-d4a8-4ed4-bfa7-006f26532b4f)
+2025-02-03 15:52:46,926 Result is kept for 600 seconds
+2025-02-03 15:52:46,929 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice Item-barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::b98f7a3e-3569-4f5d-9b7a-8a47bd1c8d7f)
+2025-02-03 15:52:46,966 home-moses-frappe-bench:default: Job OK (toss.erp::b98f7a3e-3569-4f5d-9b7a-8a47bd1c8d7f)
+2025-02-03 15:52:46,966 Result is kept for 600 seconds
+2025-02-03 15:52:46,970 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'POS Invoice Item-barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::f70e645b-dd32-4219-9349-974090155922)
+2025-02-03 15:52:47,008 home-moses-frappe-bench:default: Job OK (toss.erp::f70e645b-dd32-4219-9349-974090155922)
+2025-02-03 15:52:47,008 Result is kept for 600 seconds
+2025-02-03 15:52:47,012 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Job Card-barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::44505aa4-4e27-43b5-8b46-929891fb9b4b)
+2025-02-03 15:52:47,050 home-moses-frappe-bench:default: Job OK (toss.erp::44505aa4-4e27-43b5-8b46-929891fb9b4b)
+2025-02-03 15:52:47,050 Result is kept for 600 seconds
+2025-02-03 15:52:47,054 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Receipt Item-barcode-hidde..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::22c82eef-8ac4-4fcb-b3f0-598295305379)
+2025-02-03 15:52:47,093 home-moses-frappe-bench:default: Job OK (toss.erp::22c82eef-8ac4-4fcb-b3f0-598295305379)
+2025-02-03 15:52:47,093 Result is kept for 600 seconds
+2025-02-03 15:52:47,098 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Item Barcode-barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::15bdbe7a-cda5-454c-a0d2-d61bf2363dc8)
+2025-02-03 15:52:47,136 home-moses-frappe-bench:default: Job OK (toss.erp::15bdbe7a-cda5-454c-a0d2-d61bf2363dc8)
+2025-02-03 15:52:47,136 Result is kept for 600 seconds
+2025-02-03 15:52:47,140 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Stock Reconciliation Item-barcode-h..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::9a911e9f-3ca9-4ef0-b141-e8a67db0b704)
+2025-02-03 15:52:47,177 home-moses-frappe-bench:default: Job OK (toss.erp::9a911e9f-3ca9-4ef0-b141-e8a67db0b704)
+2025-02-03 15:52:47,177 Result is kept for 600 seconds
+2025-02-03 15:52:47,181 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Stock Entry Detail-barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::81c001d7-f1c3-4179-bd6f-e15f1ee8db22)
+2025-02-03 15:52:47,219 home-moses-frappe-bench:default: Job OK (toss.erp::81c001d7-f1c3-4179-bd6f-e15f1ee8db22)
+2025-02-03 15:52:47,220 Result is kept for 600 seconds
+2025-02-03 15:52:47,224 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note Item-barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::2c3c45c3-848d-4681-9e5b-12ab2fcfcc37)
+2025-02-03 15:52:47,267 home-moses-frappe-bench:default: Job OK (toss.erp::2c3c45c3-848d-4681-9e5b-12ab2fcfcc37)
+2025-02-03 15:52:47,267 Result is kept for 600 seconds
+2025-02-03 15:52:47,272 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Item-barcodes-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::22d0748c-bcd5-415d-8f25-171e0b393d42)
+2025-02-03 15:52:47,309 home-moses-frappe-bench:default: Job OK (toss.erp::22d0748c-bcd5-415d-8f25-171e0b393d42)
+2025-02-03 15:52:47,309 Result is kept for 600 seconds
+2025-02-03 15:52:47,312 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'POS Invoice-scan_barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::644f8248-9640-4cfb-bce5-4e49c1670f00)
+2025-02-03 15:52:47,352 home-moses-frappe-bench:default: Job OK (toss.erp::644f8248-9640-4cfb-bce5-4e49c1670f00)
+2025-02-03 15:52:47,352 Result is kept for 600 seconds
+2025-02-03 15:52:47,356 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Invoice-scan_barcode-hidde..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::1d898b25-caf1-4f7a-9320-a38dbb6bef06)
+2025-02-03 15:52:47,396 home-moses-frappe-bench:default: Job OK (toss.erp::1d898b25-caf1-4f7a-9320-a38dbb6bef06)
+2025-02-03 15:52:47,396 Result is kept for 600 seconds
+2025-02-03 15:52:47,401 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice-scan_barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::681324dd-7828-4d1e-b757-89cf4bb222b7)
+2025-02-03 15:52:47,440 home-moses-frappe-bench:default: Job OK (toss.erp::681324dd-7828-4d1e-b757-89cf4bb222b7)
+2025-02-03 15:52:47,440 Result is kept for 600 seconds
+2025-02-03 15:52:47,443 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Order-scan_barcode-hidden'..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::c4fa02d8-18ee-43ea-a25b-a99e5f26f770)
+2025-02-03 15:52:47,480 home-moses-frappe-bench:default: Job OK (toss.erp::c4fa02d8-18ee-43ea-a25b-a99e5f26f770)
+2025-02-03 15:52:47,480 Result is kept for 600 seconds
+2025-02-03 15:52:47,485 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Order-scan_barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::a9f48dc3-f5f9-4e6a-adbc-abb31e576528)
+2025-02-03 15:52:47,522 home-moses-frappe-bench:default: Job OK (toss.erp::a9f48dc3-f5f9-4e6a-adbc-abb31e576528)
+2025-02-03 15:52:47,522 Result is kept for 600 seconds
+2025-02-03 15:52:47,526 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Quotation-scan_barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::14558533-dc5c-4ec2-810d-f8b8bf0211be)
+2025-02-03 15:52:47,566 home-moses-frappe-bench:default: Job OK (toss.erp::14558533-dc5c-4ec2-810d-f8b8bf0211be)
+2025-02-03 15:52:47,567 Result is kept for 600 seconds
+2025-02-03 15:52:47,570 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Stock Entry-scan_barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::d9d2a616-17e7-466f-ba87-dc3bba26476f)
+2025-02-03 15:52:47,609 home-moses-frappe-bench:default: Job OK (toss.erp::d9d2a616-17e7-466f-ba87-dc3bba26476f)
+2025-02-03 15:52:47,610 Result is kept for 600 seconds
+2025-02-03 15:52:47,613 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note-scan_barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::8d10ad52-b8be-47ab-a2c2-b90d53806cba)
+2025-02-03 15:52:47,654 home-moses-frappe-bench:default: Job OK (toss.erp::8d10ad52-b8be-47ab-a2c2-b90d53806cba)
+2025-02-03 15:52:47,654 Result is kept for 600 seconds
+2025-02-03 15:52:47,657 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Receipt-scan_barcode-hidde..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::a38ff187-7aef-45ae-9b02-fdf815c01a2a)
+2025-02-03 15:52:47,695 home-moses-frappe-bench:default: Job OK (toss.erp::a38ff187-7aef-45ae-9b02-fdf815c01a2a)
+2025-02-03 15:52:47,695 Result is kept for 600 seconds
+2025-02-03 15:52:47,701 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Stock Reconciliation-scan_barcode-h..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::af7b1575-3e3e-49af-8633-b3220d8f9929)
+2025-02-03 15:52:47,739 home-moses-frappe-bench:default: Job OK (toss.erp::af7b1575-3e3e-49af-8633-b3220d8f9929)
+2025-02-03 15:52:47,739 Result is kept for 600 seconds
+2025-02-03 15:52:47,742 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Pick List-scan_barcode-hidden'}, method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::29afe6b8-760f-4cb3-85b8-44dd791e21f0)
+2025-02-03 15:52:47,781 home-moses-frappe-bench:default: Job OK (toss.erp::29afe6b8-760f-4cb3-85b8-44dd791e21f0)
+2025-02-03 15:52:47,781 Result is kept for 600 seconds
+2025-02-03 15:52:47,786 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Material Request-scan_barcode-hidde..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::16caf4ac-2850-41d6-8418-dca2c41313db)
+2025-02-03 15:52:47,826 home-moses-frappe-bench:default: Job OK (toss.erp::16caf4ac-2850-41d6-8418-dca2c41313db)
+2025-02-03 15:52:47,826 Result is kept for 600 seconds
+2025-02-03 15:52:47,829 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Sales Invoice Item-target_warehouse..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::33fcc2e4-2a27-4526-a135-b7e8abdabb77)
+2025-02-03 15:52:47,873 home-moses-frappe-bench:default: Job OK (toss.erp::33fcc2e4-2a27-4526-a135-b7e8abdabb77)
+2025-02-03 15:52:47,873 Result is kept for 600 seconds
+2025-02-03 15:52:47,876 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Delivery Note Item-target_warehouse..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::22dbbf5c-7dc4-41d3-a46e-7e30e0b0b548)
+2025-02-03 15:52:47,916 home-moses-frappe-bench:default: Job OK (toss.erp::22dbbf5c-7dc4-41d3-a46e-7e30e0b0b548)
+2025-02-03 15:52:47,916 Result is kept for 600 seconds
+2025-02-03 15:52:47,921 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Invoice Item-from_warehous..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::97bf7a3d-627e-4328-b95a-a88445d928d5)
+2025-02-03 15:52:47,963 home-moses-frappe-bench:default: Job OK (toss.erp::97bf7a3d-627e-4328-b95a-a88445d928d5)
+2025-02-03 15:52:47,963 Result is kept for 600 seconds
+2025-02-03 15:52:47,968 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.model.delete_doc.delete_dynamic_links', kwargs={'doctype': 'Property Setter', 'name': 'Purchase Receipt Item-from_warehous..., method='frappe.model.delete_doc.delete_dynamic_links', site='toss.erp', user='Administrator') (toss.erp::9c2d578d-c528-4c1d-a1b6-6ef46523c996)
+2025-02-03 15:52:48,019 home-moses-frappe-bench:default: Job OK (toss.erp::9c2d578d-c528-4c1d-a1b6-6ef46523c996)
+2025-02-03 15:52:48,020 Result is kept for 600 seconds
+2025-02-03 15:57:37,537 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.user.user.create_contact', kwargs={'user': <User: doctype=User moses.gontse@tossonline.co.za>, 'ignore_mandat..., method='frappe.core.doctype.user.user.create_contact', site='toss.erp', user='Administrator') (toss.erp::a921e7ac-8d55-4394-bb77-497f501ac403)
+2025-02-03 15:57:38,438 home-moses-frappe-bench:default: Job OK (toss.erp::a921e7ac-8d55-4394-bb77-497f501ac403)
+2025-02-03 15:57:38,439 Result is kept for 600 seconds
+2025-02-03 15:57:38,443 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.user.user.update_gravatar', kwargs={'name': 'moses.gontse@tossonline.co.za'}, method='frappe.core.doctype.user.user.update_gravatar', site='toss.erp', user='Administrator') (toss.erp::40331498-ebe8-499a-a889-9fb9d3249024)
+2025-02-03 15:57:38,655 home-moses-frappe-bench:default: Job OK (toss.erp::40331498-ebe8-499a-a889-9fb9d3249024)
+2025-02-03 15:57:38,655 Result is kept for 600 seconds
+2025-02-03 16:04:23,705 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-03 16:04:23,707 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-03 16:04:23,709 Cleaning registries for queue: home-moses-frappe-bench:long
