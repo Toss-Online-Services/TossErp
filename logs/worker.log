@@ -361,3 +361,928 @@
 2025-02-03 16:04:23,705 Cleaning registries for queue: home-moses-frappe-bench:short
 2025-02-03 16:04:23,707 Cleaning registries for queue: home-moses-frappe-bench:default
 2025-02-03 16:04:23,709 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-03 16:17:53,823 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-03 16:17:53,824 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-03 16:17:53,825 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-03 16:30:12,490 Worker 94112db0f1d443509822d160fd16989f [PID 2141]: warm shut down requested
+2025-02-03 16:30:12,542 Unsubscribing from channel rq:pubsub:94112db0f1d443509822d160fd16989f
+Traceback (most recent call last):
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/connection.py", line 357, in connect
+    sock = self.retry.call_with_retry(
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/retry.py", line 62, in call_with_retry
+    return do()
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/connection.py", line 358, in <lambda>
+    lambda: self._connect(), lambda error: self.disconnect(error)
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/connection.py", line 730, in _connect
+    raise err
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/connection.py", line 718, in _connect
+    sock.connect(socket_address)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/moses/frappe-bench/apps/frappe/frappe/utils/bench_helper.py", line 48, in invoke
+    return super().invoke(ctx)
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/click/core.py", line 1697, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/click/core.py", line 1443, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/click/core.py", line 788, in invoke
+    return __callback(*args, **kwargs)
+  File "/home/moses/frappe-bench/apps/frappe/frappe/commands/scheduler.py", line 206, in start_worker
+    start_worker(
+  File "/home/moses/frappe-bench/apps/frappe/frappe/utils/background_jobs.py", line 324, in start_worker
+    worker.work(
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/rq/worker.py", line 458, in work
+    self.teardown()
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/rq/worker.py", line 1049, in teardown
+    self.unsubscribe()
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/rq/worker.py", line 626, in unsubscribe
+    self.pubsub.unsubscribe()
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/client.py", line 982, in unsubscribe
+    return self.execute_command("UNSUBSCRIBE", *args)
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/client.py", line 798, in execute_command
+    self._execute(connection, connection.send_command, *args, **kwargs)
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/client.py", line 841, in _execute
+    return conn.retry.call_with_retry(
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/retry.py", line 65, in call_with_retry
+    fail(error)
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/client.py", line 843, in <lambda>
+    lambda error: self._disconnect_raise_connect(conn, error),
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/client.py", line 830, in _disconnect_raise_connect
+    raise error
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/retry.py", line 62, in call_with_retry
+    return do()
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/client.py", line 842, in <lambda>
+    lambda: command(*args, **kwargs),
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/connection.py", line 556, in send_command
+    self.send_packed_command(
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/connection.py", line 526, in send_packed_command
+    self.connect()
+  File "/home/moses/frappe-bench/env/lib/python3.10/site-packages/redis/connection.py", line 363, in connect
+    raise ConnectionError(self._error_message(e))
+redis.exceptions.ConnectionError: Error 111 connecting to 127.0.0.1:11001. Connection refused.
+
+Error 111 connecting to 127.0.0.1:11001. Connection refused.
+2025-02-03 16:37:13,242 Worker rq:worker:7be5fb2a60ea453da69f7241739985bb started with PID 3178, version 1.16.2
+2025-02-03 16:37:13,243 Subscribing to channel rq:pubsub:7be5fb2a60ea453da69f7241739985bb
+2025-02-03 16:37:13,244 *** Listening on home-moses-frappe-bench:short, home-moses-frappe-bench:default, home-moses-frappe-bench:long...
+2025-02-03 16:37:13,244 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-03 16:37:13,245 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-03 16:37:13,247 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-03 21:14:24,562 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-03 21:14:24,591 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-03 21:14:24,592 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-03 22:35:39,653 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-03 22:35:39,654 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-03 22:35:39,655 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-03 22:37:22,858 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.accounts.doctype.gl_entry.gl_entry.rename_gle_sle_doc..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibrhgdect)
+2025-02-03 22:37:23,429 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibrhgdect)
+2025-02-03 22:37:23,429 Result is kept for 600 seconds
+2025-02-03 22:37:23,433 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.collect_project_stat..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib5uk9fjl)
+2025-02-03 22:37:23,666 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib5uk9fjl)
+2025-02-03 22:37:23,666 Result is kept for 600 seconds
+2025-02-03 22:37:23,672 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.form.document_follow.send_hourly_updates', 'sched..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg462pv80f)
+2025-02-03 22:37:23,837 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg462pv80f)
+2025-02-03 22:37:23,837 Result is kept for 600 seconds
+2025-02-03 22:37:23,842 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.page.backups.backups.delete_downloadable_backups'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4g9f9eo3)
+2025-02-03 22:37:24,033 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4g9f9eo3)
+2025-02-03 22:37:24,033 Result is kept for 600 seconds
+2025-02-03 22:37:24,038 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.core.doctype.prepared_report.prepared_report.expire_st..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4er5ik5j)
+2025-02-03 22:37:24,210 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4er5ik5j)
+2025-02-03 22:37:24,210 Result is kept for 600 seconds
+2025-02-03 22:37:24,214 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.oauth.delete_oauth2_data', 'scheduled_job_type': 'vg4o..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-03 22:37:24,377 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-03 22:37:24,377 Result is kept for 600 seconds
+2025-02-03 22:37:24,382 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.integrations.doctype.google_calendar.google_calendar.s..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4nu7sboo)
+2025-02-03 22:37:24,697 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4nu7sboo)
+2025-02-03 22:37:24,697 Result is kept for 600 seconds
+2025-02-03 22:37:24,702 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.model.utils.user_settings.sync_user_settings', 'schedu..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cbkf5ji)
+2025-02-03 22:37:24,881 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cbkf5ji)
+2025-02-03 22:37:24,881 Result is kept for 600 seconds
+2025-02-03 22:37:24,886 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.hourly_reminder', 's..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibov7o4lg)
+2025-02-03 22:37:25,100 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibov7o4lg)
+2025-02-03 22:37:25,100 Result is kept for 600 seconds
+2025-02-03 22:37:25,105 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.project_status_updat..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib82i9piq)
+2025-02-03 22:37:25,556 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib82i9piq)
+2025-02-03 22:37:25,556 Result is kept for 600 seconds
+2025-02-03 22:37:25,563 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.erpnext_integrations.doctype.plaid_settings.plaid_set..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibqdbn75m)
+2025-02-03 22:37:25,804 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibqdbn75m)
+2025-02-03 22:37:25,804 Result is kept for 600 seconds
+2025-02-03 22:37:25,808 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.newsletter.newsletter.send_scheduled_ema..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4j285e8r)
+2025-02-03 22:37:26,030 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4j285e8r)
+2025-02-03 22:37:26,030 Result is kept for 600 seconds
+2025-02-03 22:37:26,035 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.twofactor.delete_all_barcodes_for_users', 'scheduled_j..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-03 22:37:26,179 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-03 22:37:26,179 Result is kept for 600 seconds
+2025-02-03 22:37:26,185 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 22:37:26,352 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 22:37:26,353 Result is kept for 600 seconds
+2025-02-03 22:37:26,359 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.model.utils.link_count.update_link_count', 'scheduled_..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40e06dh5)
+2025-02-03 22:37:26,549 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40e06dh5)
+2025-02-03 22:37:26,549 Result is kept for 600 seconds
+2025-02-03 22:37:26,553 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.manufacturing.doctype.bom_update_log.bom_update_log.r..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib89ergah)
+2025-02-03 22:37:26,733 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib89ergah)
+2025-02-03 22:37:26,733 Result is kept for 600 seconds
+2025-02-03 22:37:26,736 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.automation.doctype.reminder.reminder.send_reminders', ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-03 22:37:26,933 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-03 22:37:26,933 Result is kept for 600 seconds
+2025-02-03 22:37:26,938 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.personal_data_deletion_request.persona..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4dvqqr7r)
+2025-02-03 22:37:27,163 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4dvqqr7r)
+2025-02-03 22:37:27,163 Result is kept for 600 seconds
+2025-02-03 22:37:27,168 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.notify_unrep..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-03 22:37:27,409 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-03 22:37:27,409 Result is kept for 600 seconds
+2025-02-03 22:37:27,414 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 22:37:27,566 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 22:37:27,567 Result is kept for 600 seconds
+2025-02-03 22:37:27,571 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.web_page.web_page.check_publish_status..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-03 22:37:27,821 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-03 22:37:27,822 Result is kept for 600 seconds
+2025-02-03 22:37:27,830 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.deferred_insert.save_to_db', 'scheduled_job_type': 'vg..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-03 22:37:28,057 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-03 22:37:28,057 Result is kept for 600 seconds
+2025-02-03 22:37:28,061 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.pull', 'sche..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-03 22:37:28,226 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-03 22:37:28,226 Result is kept for 600 seconds
+2025-02-03 22:37:28,230 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.utils.global_search.sync_global_search', 'scheduled_jo..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-03 22:37:28,370 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-03 22:37:28,371 Result is kept for 600 seconds
+2025-02-03 22:37:28,375 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.utilities.doctype.video.video.update_youtube_data', '..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-03 22:37:28,695 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-03 22:37:28,696 Result is kept for 600 seconds
+2025-02-03 22:37:28,701 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 22:37:28,909 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 22:37:28,909 Result is kept for 600 seconds
+2025-02-03 22:37:28,915 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.stock.doctype.repost_item_valuation.repost_item_valua..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idenb2ft1)
+2025-02-03 22:37:29,116 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idenb2ft1)
+2025-02-03 22:37:29,116 Result is kept for 600 seconds
+2025-02-03 22:37:29,121 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.utilities.bulk_transaction.retry', 'scheduled_job_typ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idaojso4c)
+2025-02-03 22:37:29,381 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idaojso4c)
+2025-02-03 22:37:29,381 Result is kept for 600 seconds
+2025-02-03 22:40:02,734 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.pull', 'sche..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-03 22:40:02,943 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-03 22:40:02,944 Result is kept for 600 seconds
+2025-02-03 22:40:02,948 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 22:40:03,734 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 22:40:03,734 Result is kept for 600 seconds
+2025-02-03 22:40:03,738 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 22:40:03,886 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 22:40:03,886 Result is kept for 600 seconds
+2025-02-03 22:40:03,891 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 22:40:04,118 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 22:40:04,118 Result is kept for 600 seconds
+2025-02-03 22:44:05,432 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 22:44:05,663 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 22:44:05,663 Result is kept for 600 seconds
+2025-02-03 22:44:05,669 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 22:44:05,808 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 22:44:05,808 Result is kept for 600 seconds
+2025-02-03 22:48:04,735 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.twofactor.delete_all_barcodes_for_users', 'scheduled_j..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-03 22:48:05,070 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-03 22:48:05,071 Result is kept for 600 seconds
+2025-02-03 22:48:05,075 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-03 22:48:05,076 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-03 22:48:05,078 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-03 22:48:05,080 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 22:48:05,343 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 22:48:05,344 Result is kept for 600 seconds
+2025-02-03 22:48:05,348 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.manufacturing.doctype.bom_update_log.bom_update_log.r..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib89ergah)
+2025-02-03 22:48:05,494 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib89ergah)
+2025-02-03 22:48:05,494 Result is kept for 600 seconds
+2025-02-03 22:48:05,498 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 22:48:05,638 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 22:48:05,638 Result is kept for 600 seconds
+2025-02-03 22:48:05,642 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.notify_unrep..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-03 22:48:05,794 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-03 22:48:05,794 Result is kept for 600 seconds
+2025-02-03 22:48:05,798 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.oauth.delete_oauth2_data', 'scheduled_job_type': 'vg4o..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-03 22:48:05,976 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-03 22:48:05,977 Result is kept for 600 seconds
+2025-02-03 22:48:05,981 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.automation.doctype.reminder.reminder.send_reminders', ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-03 22:48:06,126 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-03 22:48:06,126 Result is kept for 600 seconds
+2025-02-03 22:48:06,131 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.utils.global_search.sync_global_search', 'scheduled_jo..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-03 22:48:06,255 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-03 22:48:06,255 Result is kept for 600 seconds
+2025-02-03 22:48:06,259 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 22:48:06,408 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 22:48:06,408 Result is kept for 600 seconds
+2025-02-03 22:48:06,414 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.web_page.web_page.check_publish_status..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-03 22:48:06,656 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-03 22:48:06,657 Result is kept for 600 seconds
+2025-02-03 22:48:06,661 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.deferred_insert.save_to_db', 'scheduled_job_type': 'vg..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-03 22:48:06,796 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-03 22:48:06,796 Result is kept for 600 seconds
+2025-02-03 22:52:04,886 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.pull', 'sche..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-03 22:52:05,179 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-03 22:52:05,179 Result is kept for 600 seconds
+2025-02-03 22:52:05,183 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 22:52:05,433 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 22:52:05,433 Result is kept for 600 seconds
+2025-02-03 22:52:05,437 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 22:52:05,580 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 22:52:05,580 Result is kept for 600 seconds
+2025-02-03 22:52:05,584 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 22:52:05,726 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 22:52:05,726 Result is kept for 600 seconds
+2025-02-03 22:56:04,401 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 22:56:04,577 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 22:56:04,577 Result is kept for 600 seconds
+2025-02-03 22:56:04,582 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 22:56:04,776 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 22:56:04,776 Result is kept for 600 seconds
+2025-02-03 22:56:04,781 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 22:56:04,927 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 22:56:04,927 Result is kept for 600 seconds
+2025-02-03 23:00:04,184 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.oauth.delete_oauth2_data', 'scheduled_job_type': 'vg4o..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-03 23:00:04,491 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-03 23:00:04,491 Result is kept for 600 seconds
+2025-02-03 23:00:04,494 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-03 23:00:04,495 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-03 23:00:04,496 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-03 23:00:04,497 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.project_status_updat..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib82i9piq)
+2025-02-03 23:00:04,699 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib82i9piq)
+2025-02-03 23:00:04,699 Result is kept for 600 seconds
+2025-02-03 23:00:04,703 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.pull', 'sche..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-03 23:00:04,872 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-03 23:00:04,872 Result is kept for 600 seconds
+2025-02-03 23:00:04,878 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.page.backups.backups.delete_downloadable_backups'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4g9f9eo3)
+2025-02-03 23:00:05,035 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4g9f9eo3)
+2025-02-03 23:00:05,035 Result is kept for 600 seconds
+2025-02-03 23:00:05,039 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.integrations.doctype.google_calendar.google_calendar.s..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4nu7sboo)
+2025-02-03 23:00:05,363 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4nu7sboo)
+2025-02-03 23:00:05,363 Result is kept for 600 seconds
+2025-02-03 23:00:05,369 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.personal_data_deletion_request.persona..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4dvqqr7r)
+2025-02-03 23:00:05,524 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4dvqqr7r)
+2025-02-03 23:00:05,524 Result is kept for 600 seconds
+2025-02-03 23:00:05,529 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.utilities.doctype.video.video.update_youtube_data', '..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-03 23:00:05,832 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-03 23:00:05,832 Result is kept for 600 seconds
+2025-02-03 23:00:05,836 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.utils.global_search.sync_global_search', 'scheduled_jo..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-03 23:00:05,983 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-03 23:00:05,983 Result is kept for 600 seconds
+2025-02-03 23:00:05,987 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 23:00:06,132 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 23:00:06,132 Result is kept for 600 seconds
+2025-02-03 23:00:06,136 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.automation.doctype.reminder.reminder.send_reminders', ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-03 23:00:06,287 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-03 23:00:06,288 Result is kept for 600 seconds
+2025-02-03 23:00:06,293 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.model.utils.user_settings.sync_user_settings', 'schedu..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cbkf5ji)
+2025-02-03 23:00:06,459 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cbkf5ji)
+2025-02-03 23:00:06,459 Result is kept for 600 seconds
+2025-02-03 23:00:06,464 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.form.document_follow.send_hourly_updates', 'sched..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg462pv80f)
+2025-02-03 23:00:06,623 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg462pv80f)
+2025-02-03 23:00:06,623 Result is kept for 600 seconds
+2025-02-03 23:00:06,627 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.manufacturing.doctype.bom_update_log.bom_update_log.r..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib89ergah)
+2025-02-03 23:00:06,778 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib89ergah)
+2025-02-03 23:00:06,778 Result is kept for 600 seconds
+2025-02-03 23:00:06,782 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.deferred_insert.save_to_db', 'scheduled_job_type': 'vg..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-03 23:00:06,917 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-03 23:00:06,917 Result is kept for 600 seconds
+2025-02-03 23:00:06,921 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 23:00:07,172 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 23:00:07,172 Result is kept for 600 seconds
+2025-02-03 23:00:07,176 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.model.utils.link_count.update_link_count', 'scheduled_..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40e06dh5)
+2025-02-03 23:00:07,332 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40e06dh5)
+2025-02-03 23:00:07,332 Result is kept for 600 seconds
+2025-02-03 23:00:07,336 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.hourly_reminder', 's..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibov7o4lg)
+2025-02-03 23:00:07,510 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibov7o4lg)
+2025-02-03 23:00:07,510 Result is kept for 600 seconds
+2025-02-03 23:00:07,514 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.erpnext_integrations.doctype.plaid_settings.plaid_set..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibqdbn75m)
+2025-02-03 23:00:07,713 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibqdbn75m)
+2025-02-03 23:00:07,714 Result is kept for 600 seconds
+2025-02-03 23:00:07,718 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 23:00:07,900 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 23:00:07,900 Result is kept for 600 seconds
+2025-02-03 23:00:07,904 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.collect_project_stat..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib5uk9fjl)
+2025-02-03 23:00:08,067 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib5uk9fjl)
+2025-02-03 23:00:08,067 Result is kept for 600 seconds
+2025-02-03 23:00:08,071 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.web_page.web_page.check_publish_status..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-03 23:00:08,285 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-03 23:00:08,285 Result is kept for 600 seconds
+2025-02-03 23:00:08,289 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.twofactor.delete_all_barcodes_for_users', 'scheduled_j..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-03 23:00:08,435 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-03 23:00:08,435 Result is kept for 600 seconds
+2025-02-03 23:00:08,440 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.notify_unrep..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-03 23:00:08,584 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-03 23:00:08,584 Result is kept for 600 seconds
+2025-02-03 23:00:08,588 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.newsletter.newsletter.send_scheduled_ema..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4j285e8r)
+2025-02-03 23:00:08,773 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4j285e8r)
+2025-02-03 23:00:08,773 Result is kept for 600 seconds
+2025-02-03 23:04:04,247 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 23:04:04,504 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 23:04:04,504 Result is kept for 600 seconds
+2025-02-03 23:04:04,508 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 23:04:04,746 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 23:04:04,746 Result is kept for 600 seconds
+2025-02-03 23:04:04,751 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.utilities.bulk_transaction.retry', 'scheduled_job_typ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idaojso4c)
+2025-02-03 23:04:04,913 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idaojso4c)
+2025-02-03 23:04:04,913 Result is kept for 600 seconds
+2025-02-03 23:45:07,319 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-03 23:45:07,322 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-03 23:45:07,324 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-03 23:45:07,338 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 23:45:08,289 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 23:45:08,290 Result is kept for 600 seconds
+2025-02-03 23:45:08,298 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.automation.doctype.reminder.reminder.send_reminders', ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-03 23:45:08,793 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-03 23:45:08,793 Result is kept for 600 seconds
+2025-02-03 23:45:08,800 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.utils.global_search.sync_global_search', 'scheduled_jo..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-03 23:45:09,250 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-03 23:45:09,250 Result is kept for 600 seconds
+2025-02-03 23:45:09,256 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.accounts.doctype.gl_entry.gl_entry.rename_gle_sle_doc..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibrhgdect)
+2025-02-03 23:45:09,844 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibrhgdect)
+2025-02-03 23:45:09,844 Result is kept for 600 seconds
+2025-02-03 23:45:09,861 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.notify_unrep..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-03 23:45:10,471 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-03 23:45:10,472 Result is kept for 600 seconds
+2025-02-03 23:45:10,497 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.twofactor.delete_all_barcodes_for_users', 'scheduled_j..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-03 23:45:11,064 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-03 23:45:11,064 Result is kept for 600 seconds
+2025-02-03 23:45:11,078 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 23:45:11,313 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 23:45:11,313 Result is kept for 600 seconds
+2025-02-03 23:45:11,318 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.pull', 'sche..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-03 23:45:11,512 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-03 23:45:11,512 Result is kept for 600 seconds
+2025-02-03 23:45:11,520 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.web_page.web_page.check_publish_status..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-03 23:45:11,759 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-03 23:45:11,759 Result is kept for 600 seconds
+2025-02-03 23:45:11,763 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.deferred_insert.save_to_db', 'scheduled_job_type': 'vg..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-03 23:45:11,921 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-03 23:45:11,921 Result is kept for 600 seconds
+2025-02-03 23:45:11,925 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.manufacturing.doctype.bom_update_log.bom_update_log.r..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib89ergah)
+2025-02-03 23:45:12,077 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib89ergah)
+2025-02-03 23:45:12,077 Result is kept for 600 seconds
+2025-02-03 23:45:12,081 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.oauth.delete_oauth2_data', 'scheduled_job_type': 'vg4o..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-03 23:45:12,254 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-03 23:45:12,254 Result is kept for 600 seconds
+2025-02-03 23:45:12,260 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.core.doctype.prepared_report.prepared_report.expire_st..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4er5ik5j)
+2025-02-03 23:45:12,421 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4er5ik5j)
+2025-02-03 23:45:12,422 Result is kept for 600 seconds
+2025-02-03 23:45:12,427 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 23:45:12,603 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-03 23:45:12,603 Result is kept for 600 seconds
+2025-02-03 23:45:12,608 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.utilities.doctype.video.video.update_youtube_data', '..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-03 23:45:13,032 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-03 23:45:13,032 Result is kept for 600 seconds
+2025-02-03 23:45:13,038 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.stock.doctype.repost_item_valuation.repost_item_valua..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idenb2ft1)
+2025-02-03 23:45:13,321 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idenb2ft1)
+2025-02-03 23:45:13,322 Result is kept for 600 seconds
+2025-02-03 23:48:03,575 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 23:48:03,834 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-03 23:48:03,834 Result is kept for 600 seconds
+2025-02-03 23:48:03,837 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 23:48:04,088 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-03 23:48:04,088 Result is kept for 600 seconds
+2025-02-04 05:06:31,114 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-04 05:06:31,139 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-04 05:06:31,139 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-04 05:24:56,049 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-04 05:24:56,057 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-04 05:24:56,059 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-04 07:38:58,233 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-04 07:38:58,259 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-04 07:38:58,260 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-04 07:42:22,838 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.integrations.doctype.google_contacts.google_contacts.s..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg5hqofbg2)
+2025-02-04 07:42:23,242 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg5hqofbg2)
+2025-02-04 07:42:23,242 Result is kept for 600 seconds
+2025-02-04 07:42:23,247 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.social.doctype.energy_point_settings.energy_point_sett..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg5mboshfn)
+2025-02-04 07:42:23,471 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg5mboshfn)
+2025-02-04 07:42:23,471 Result is kept for 600 seconds
+2025-02-04 07:42:23,475 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.erpnext_integrations.doctype.plaid_settings.plaid_set..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibqdbn75m)
+2025-02-04 07:42:23,641 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibqdbn75m)
+2025-02-04 07:42:23,642 Result is kept for 600 seconds
+2025-02-04 07:42:23,646 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.automation.doctype.auto_repeat.auto_repeat.make_auto_r..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg5unmvd49)
+2025-02-04 07:42:23,894 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg5unmvd49)
+2025-02-04 07:42:23,894 Result is kept for 600 seconds
+2025-02-04 07:42:23,898 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.accounts.doctype.fiscal_year.fiscal_year.auto_create_..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib92ajubf)
+2025-02-04 07:42:24,051 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib92ajubf)
+2025-02-04 07:42:24,051 Result is kept for 600 seconds
+2025-02-04 07:42:24,054 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.deferred_insert.save_to_db', 'scheduled_job_type': 'vg..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-04 07:42:24,178 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-04 07:42:24,178 Result is kept for 600 seconds
+2025-02-04 07:42:24,182 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.manufacturing.doctype.bom_update_log.bom_update_log.r..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib89ergah)
+2025-02-04 07:42:24,327 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib89ergah)
+2025-02-04 07:42:24,327 Result is kept for 600 seconds
+2025-02-04 07:42:24,332 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.assets.doctype.asset_maintenance_log.asset_maintenanc..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ic90ppn9d)
+2025-02-04 07:42:24,480 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ic90ppn9d)
+2025-02-04 07:42:24,480 Result is kept for 600 seconds
+2025-02-04 07:42:24,485 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.notifications.clear_notifications', 'scheduled_jo..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4kp0don4)
+2025-02-04 07:42:24,628 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4kp0don4)
+2025-02-04 07:42:24,628 Result is kept for 600 seconds
+2025-02-04 07:42:24,633 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.send_project_status_..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib59bhvrn)
+2025-02-04 07:42:24,808 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib59bhvrn)
+2025-02-04 07:42:24,808 Result is kept for 600 seconds
+2025-02-04 07:42:24,814 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.hourly_reminder', 's..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibov7o4lg)
+2025-02-04 07:42:24,975 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibov7o4lg)
+2025-02-04 07:42:24,976 Result is kept for 600 seconds
+2025-02-04 07:42:24,981 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.buying.doctype.supplier_scorecard.supplier_scorecard...., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibvrp0kfu)
+2025-02-04 07:42:25,138 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibvrp0kfu)
+2025-02-04 07:42:25,138 Result is kept for 600 seconds
+2025-02-04 07:42:25,143 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.sessions.clear_expired_sessions', 'scheduled_job_type'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4ts4h9cu)
+2025-02-04 07:42:25,297 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4ts4h9cu)
+2025-02-04 07:42:25,297 Result is kept for 600 seconds
+2025-02-04 07:42:25,302 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.personal_data_deletion_request.persona..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4pn1fblf)
+2025-02-04 07:42:25,454 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4pn1fblf)
+2025-02-04 07:42:25,454 Result is kept for 600 seconds
+2025-02-04 07:42:25,459 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.core.doctype.log_settings.log_settings.run_log_clean_u..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4jd3gad2)
+2025-02-04 07:42:25,894 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4jd3gad2)
+2025-02-04 07:42:25,894 Result is kept for 600 seconds
+2025-02-04 07:42:25,899 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.crm.doctype.opportunity.opportunity.auto_close_opport..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibrvhdnfo)
+2025-02-04 07:42:26,073 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibrvhdnfo)
+2025-02-04 07:42:26,073 Result is kept for 600 seconds
+2025-02-04 07:42:26,079 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.project_status_updat..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib82i9piq)
+2025-02-04 07:42:26,259 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib82i9piq)
+2025-02-04 07:42:26,259 Result is kept for 600 seconds
+2025-02-04 07:42:26,264 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.stock.reorder_item.reorder_item', 'scheduled_job_type..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib9t3glfk)
+2025-02-04 07:42:26,422 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib9t3glfk)
+2025-02-04 07:42:26,423 Result is kept for 600 seconds
+2025-02-04 07:42:26,428 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.core.doctype.prepared_report.prepared_report.expire_st..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4er5ik5j)
+2025-02-04 07:42:26,555 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4er5ik5j)
+2025-02-04 07:42:26,555 Result is kept for 600 seconds
+2025-02-04 07:42:26,560 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.support.doctype.issue.issue.auto_close_tickets', 'sch..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibenpksn4)
+2025-02-04 07:42:26,706 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibenpksn4)
+2025-02-04 07:42:26,706 Result is kept for 600 seconds
+2025-02-04 07:42:26,711 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.accounts.doctype.gl_entry.gl_entry.rename_gle_sle_doc..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibrhgdect)
+2025-02-04 07:42:26,876 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibrhgdect)
+2025-02-04 07:42:26,877 Result is kept for 600 seconds
+2025-02-04 07:42:26,882 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.selling.doctype.quotation.quotation.set_expired_statu..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibb4jr55j)
+2025-02-04 07:42:27,070 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibb4jr55j)
+2025-02-04 07:42:27,070 Result is kept for 600 seconds
+2025-02-04 07:42:27,075 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.pull', 'sche..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-04 07:42:27,232 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-04 07:42:27,233 Result is kept for 600 seconds
+2025-02-04 07:42:27,236 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.collect_project_stat..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib5uk9fjl)
+2025-02-04 07:42:27,391 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib5uk9fjl)
+2025-02-04 07:42:27,391 Result is kept for 600 seconds
+2025-02-04 07:42:27,396 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.support.doctype.service_level_agreement.service_level..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibo5e2hm5)
+2025-02-04 07:42:27,545 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibo5e2hm5)
+2025-02-04 07:42:27,545 Result is kept for 600 seconds
+2025-02-04 07:42:27,550 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_daily_..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4p45hv5c)
+2025-02-04 07:42:27,697 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4p45hv5c)
+2025-02-04 07:42:27,697 Result is kept for 600 seconds
+2025-02-04 07:42:27,702 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.twofactor.delete_all_barcodes_for_users', 'scheduled_j..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-04 07:42:27,837 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-04 07:42:27,837 Result is kept for 600 seconds
+2025-02-04 07:42:27,842 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.automation.doctype.auto_repeat.auto_repeat.set_auto_re..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg562lfe9l)
+2025-02-04 07:42:28,035 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg562lfe9l)
+2025-02-04 07:42:28,035 Result is kept for 600 seconds
+2025-02-04 07:42:28,039 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.accounts.doctype.process_statement_of_accounts.proces..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ic9fd1t9u)
+2025-02-04 07:42:28,288 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ic9fd1t9u)
+2025-02-04 07:42:28,288 Result is kept for 600 seconds
+2025-02-04 07:42:28,293 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.form.document_follow.send_hourly_updates', 'sched..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg462pv80f)
+2025-02-04 07:42:28,447 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg462pv80f)
+2025-02-04 07:42:28,447 Result is kept for 600 seconds
+2025-02-04 07:42:28,453 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 07:42:28,578 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 07:42:28,578 Result is kept for 600 seconds
+2025-02-04 07:42:28,584 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.automation.doctype.reminder.reminder.send_reminders', ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-04 07:42:28,716 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-04 07:42:28,716 Result is kept for 600 seconds
+2025-02-04 07:42:28,722 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.assets.doctype.asset.asset.update_maintenance_status'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibcpjr817)
+2025-02-04 07:42:28,929 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibcpjr817)
+2025-02-04 07:42:28,929 Result is kept for 600 seconds
+2025-02-04 07:42:28,934 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.buying.doctype.supplier_quotation.supplier_quotation...., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0icp8tok4j)
+2025-02-04 07:42:29,105 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0icp8tok4j)
+2025-02-04 07:42:29,105 Result is kept for 600 seconds
+2025-02-04 07:42:29,110 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.notify_unrep..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-04 07:42:29,245 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-04 07:42:29,245 Result is kept for 600 seconds
+2025-02-04 07:42:29,249 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.controllers.accounts_controller.update_invoice_status..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibgiiuls7)
+2025-02-04 07:42:29,421 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibgiiuls7)
+2025-02-04 07:42:29,422 Result is kept for 600 seconds
+2025-02-04 07:42:29,426 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 07:42:29,597 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 07:42:29,597 Result is kept for 600 seconds
+2025-02-04 07:42:29,602 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.assets.doctype.asset.asset.make_post_gl_entry', 'sche..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibut3j3if)
+2025-02-04 07:42:29,770 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibut3j3if)
+2025-02-04 07:42:29,770 Result is kept for 600 seconds
+2025-02-04 07:42:29,776 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.accounts.utils.run_ledger_health_checks', 'scheduled_..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0icpqvrm25)
+2025-02-04 07:42:29,970 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0icpqvrm25)
+2025-02-04 07:42:29,970 Result is kept for 600 seconds
+2025-02-04 07:42:29,975 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.model.utils.user_settings.sync_user_settings', 'schedu..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cbkf5ji)
+2025-02-04 07:42:30,121 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cbkf5ji)
+2025-02-04 07:42:30,121 Result is kept for 600 seconds
+2025-02-04 07:42:30,125 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.model.utils.link_count.update_link_count', 'scheduled_..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40e06dh5)
+2025-02-04 07:42:30,268 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40e06dh5)
+2025-02-04 07:42:30,268 Result is kept for 600 seconds
+2025-02-04 07:42:30,274 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.stock.doctype.serial_no.serial_no.update_maintenance_..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibb27f4kb)
+2025-02-04 07:42:30,442 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibb27f4kb)
+2025-02-04 07:42:30,442 Result is kept for 600 seconds
+2025-02-04 07:42:30,447 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.setup.doctype.company.company.cache_companies_monthly..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib7ht5l1t)
+2025-02-04 07:42:30,645 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib7ht5l1t)
+2025-02-04 07:42:30,645 Result is kept for 600 seconds
+2025-02-04 07:42:30,649 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.web_page.web_page.check_publish_status..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-04 07:42:30,832 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-04 07:42:30,832 Result is kept for 600 seconds
+2025-02-04 07:42:30,836 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.crm.doctype.contract.contract.update_status_for_contr..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib516ublj)
+2025-02-04 07:42:31,009 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib516ublj)
+2025-02-04 07:42:31,009 Result is kept for 600 seconds
+2025-02-04 07:42:31,014 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.update_project_sales..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib2u8lui9)
+2025-02-04 07:42:31,163 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib2u8lui9)
+2025-02-04 07:42:31,163 Result is kept for 600 seconds
+2025-02-04 07:42:31,168 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 07:42:31,295 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 07:42:31,296 Result is kept for 600 seconds
+2025-02-04 07:42:31,301 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.quality_management.doctype.quality_review.quality_rev..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibpspe8r9)
+2025-02-04 07:42:31,468 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibpspe8r9)
+2025-02-04 07:42:31,468 Result is kept for 600 seconds
+2025-02-04 07:42:31,473 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.oauth.delete_oauth2_data', 'scheduled_job_type': 'vg4o..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-04 07:42:31,624 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-04 07:42:31,624 Result is kept for 600 seconds
+2025-02-04 07:42:31,627 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.integrations.doctype.google_calendar.google_calendar.s..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4nu7sboo)
+2025-02-04 07:42:31,860 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4nu7sboo)
+2025-02-04 07:42:31,860 Result is kept for 600 seconds
+2025-02-04 07:42:31,866 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.page.backups.backups.delete_downloadable_backups'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4g9f9eo3)
+2025-02-04 07:42:32,014 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4g9f9eo3)
+2025-02-04 07:42:32,014 Result is kept for 600 seconds
+2025-02-04 07:42:32,019 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.utilities.doctype.video.video.update_youtube_data', '..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-04 07:42:32,300 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-04 07:42:32,300 Result is kept for 600 seconds
+2025-02-04 07:42:32,305 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.doctype.event.event.send_event_digest', 'schedule..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4ol90mnk)
+2025-02-04 07:42:32,463 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4ol90mnk)
+2025-02-04 07:42:32,463 Result is kept for 600 seconds
+2025-02-04 07:42:32,468 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.crm.doctype.email_campaign.email_campaign.send_email_..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibho4tcgf)
+2025-02-04 07:42:32,676 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibho4tcgf)
+2025-02-04 07:42:32,676 Result is kept for 600 seconds
+2025-02-04 07:42:32,681 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.newsletter.newsletter.send_scheduled_ema..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4j285e8r)
+2025-02-04 07:42:32,862 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4j285e8r)
+2025-02-04 07:42:32,862 Result is kept for 600 seconds
+2025-02-04 07:42:32,867 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.utils.global_search.sync_global_search', 'scheduled_jo..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-04 07:42:32,996 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-04 07:42:32,996 Result is kept for 600 seconds
+2025-02-04 07:42:33,000 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.task.task.set_tasks_as_overdue', 'sc..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibf0d63m1)
+2025-02-04 07:42:33,173 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibf0d63m1)
+2025-02-04 07:42:33,173 Result is kept for 600 seconds
+2025-02-04 07:42:33,177 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.form.document_follow.send_daily_updates', 'schedu..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg5lf80cbm)
+2025-02-04 07:42:33,319 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg5lf80cbm)
+2025-02-04 07:42:33,320 Result is kept for 600 seconds
+2025-02-04 07:42:33,325 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.accounts.utils.auto_create_exchange_rate_revaluation_..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0icrdhnvp4)
+2025-02-04 07:42:33,486 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0icrdhnvp4)
+2025-02-04 07:42:33,486 Result is kept for 600 seconds
+2025-02-04 07:42:33,491 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.crm.doctype.email_campaign.email_campaign.set_email_c..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibs4hebmk)
+2025-02-04 07:42:33,688 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibs4hebmk)
+2025-02-04 07:42:33,688 Result is kept for 600 seconds
+2025-02-04 07:42:33,693 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.personal_data_deletion_request.persona..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4dvqqr7r)
+2025-02-04 07:42:33,845 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4dvqqr7r)
+2025-02-04 07:42:33,845 Result is kept for 600 seconds
+2025-02-04 07:42:33,850 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.automation.doctype.auto_repeat.auto_repeat.create_repeated_entries', kwargs={'data': []}, method='frappe.automation.doctype.auto_repeat.auto_repeat.create_repeated_entries', site='toss.erp', user='Administrator') (toss.erp::4c76978b-f75e-46bd-adbb-823bceb18f4c)
+2025-02-04 07:42:33,963 home-moses-frappe-bench:default: Job OK (toss.erp::4c76978b-f75e-46bd-adbb-823bceb18f4c)
+2025-02-04 07:42:33,963 Result is kept for 600 seconds
+2025-02-04 07:42:33,968 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.crm.utils.open_leads_opportunities_based_on_todays_ev..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0id2vjtitg)
+2025-02-04 07:42:34,120 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0id2vjtitg)
+2025-02-04 07:42:34,120 Result is kept for 600 seconds
+2025-02-04 07:42:34,125 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.setup.doctype.email_digest.email_digest.send', 'sched..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0id0dm0njs)
+2025-02-04 07:42:34,273 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0id0dm0njs)
+2025-02-04 07:42:34,273 Result is kept for 600 seconds
+2025-02-04 07:42:34,277 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.auto_email_report.auto_email_report.send..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg5s1bsv5m)
+2025-02-04 07:42:34,542 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::vg5s1bsv5m)
+2025-02-04 07:42:34,542 Result is kept for 600 seconds
+2025-02-04 07:42:34,547 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.integrations.doctype.dropbox_settings.dropbox_settings..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg5kmj3pm4)
+2025-02-04 07:42:34,829 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::vg5kmj3pm4)
+2025-02-04 07:42:34,829 Result is kept for 600 seconds
+2025-02-04 07:42:34,834 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.integrations.doctype.google_drive.google_drive.daily_b..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg5lgtgk0k)
+2025-02-04 07:42:35,091 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::vg5lgtgk0k)
+2025-02-04 07:42:35,091 Result is kept for 600 seconds
+2025-02-04 07:42:35,096 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.utilities.bulk_transaction.retry', 'scheduled_job_typ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idaojso4c)
+2025-02-04 07:42:35,269 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idaojso4c)
+2025-02-04 07:42:35,270 Result is kept for 600 seconds
+2025-02-04 07:42:35,275 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.manufacturing.doctype.bom_update_tool.bom_update_tool..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idmbvhd7s)
+2025-02-04 07:42:35,417 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idmbvhd7s)
+2025-02-04 07:42:35,417 Result is kept for 600 seconds
+2025-02-04 07:42:35,422 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.stock.doctype.repost_item_valuation.repost_item_valua..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idenb2ft1)
+2025-02-04 07:42:35,577 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idenb2ft1)
+2025-02-04 07:42:35,577 Result is kept for 600 seconds
+2025-02-04 07:42:35,581 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.integrations.doctype.s3_backup_settings.s3_backup_sett..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg5qogvp4c)
+2025-02-04 07:42:35,832 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::vg5qogvp4c)
+2025-02-04 07:42:35,832 Result is kept for 600 seconds
+2025-02-04 07:42:35,836 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.assets.doctype.asset.depreciation.post_depreciation_e..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idnub2a79)
+2025-02-04 07:42:36,020 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idnub2a79)
+2025-02-04 07:42:36,020 Result is kept for 600 seconds
+2025-02-04 07:42:36,024 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.accounts.doctype.process_subscription.process_subscri..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idhqfs5m5)
+2025-02-04 07:42:36,238 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idhqfs5m5)
+2025-02-04 07:42:36,239 Result is kept for 600 seconds
+2025-02-04 07:44:00,154 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 07:44:00,284 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 07:44:00,284 Result is kept for 600 seconds
+2025-02-04 07:44:00,289 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 07:44:00,466 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 07:44:00,466 Result is kept for 600 seconds
+2025-02-04 08:24:16,357 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-04 08:24:16,363 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-04 08:24:16,365 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-04 08:26:19,620 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.oauth.delete_oauth2_data', 'scheduled_job_type': 'vg4o..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-04 08:26:19,830 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-04 08:26:19,830 Result is kept for 600 seconds
+2025-02-04 08:26:19,838 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.manufacturing.doctype.bom_update_log.bom_update_log.r..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib89ergah)
+2025-02-04 08:26:20,008 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib89ergah)
+2025-02-04 08:26:20,008 Result is kept for 600 seconds
+2025-02-04 08:26:20,014 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.twofactor.delete_all_barcodes_for_users', 'scheduled_j..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-04 08:26:20,190 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-04 08:26:20,190 Result is kept for 600 seconds
+2025-02-04 08:26:20,194 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.integrations.doctype.google_calendar.google_calendar.s..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4nu7sboo)
+2025-02-04 08:26:20,539 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4nu7sboo)
+2025-02-04 08:26:20,539 Result is kept for 600 seconds
+2025-02-04 08:26:20,545 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.newsletter.newsletter.send_scheduled_ema..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4j285e8r)
+2025-02-04 08:26:20,805 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4j285e8r)
+2025-02-04 08:26:20,805 Result is kept for 600 seconds
+2025-02-04 08:26:20,810 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.erpnext_integrations.doctype.plaid_settings.plaid_set..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibqdbn75m)
+2025-02-04 08:26:21,020 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibqdbn75m)
+2025-02-04 08:26:21,020 Result is kept for 600 seconds
+2025-02-04 08:26:21,025 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.utilities.doctype.video.video.update_youtube_data', '..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-04 08:26:21,334 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-04 08:26:21,335 Result is kept for 600 seconds
+2025-02-04 08:26:21,340 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.automation.doctype.reminder.reminder.send_reminders', ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-04 08:26:21,535 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-04 08:26:21,535 Result is kept for 600 seconds
+2025-02-04 08:26:21,540 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.collect_project_stat..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib5uk9fjl)
+2025-02-04 08:26:21,752 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib5uk9fjl)
+2025-02-04 08:26:21,752 Result is kept for 600 seconds
+2025-02-04 08:26:21,757 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.page.backups.backups.delete_downloadable_backups'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4g9f9eo3)
+2025-02-04 08:26:21,954 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4g9f9eo3)
+2025-02-04 08:26:21,954 Result is kept for 600 seconds
+2025-02-04 08:26:21,969 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.pull', 'sche..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-04 08:26:22,146 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-04 08:26:22,147 Result is kept for 600 seconds
+2025-02-04 08:26:22,154 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.utils.global_search.sync_global_search', 'scheduled_jo..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-04 08:26:22,319 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-04 08:26:22,320 Result is kept for 600 seconds
+2025-02-04 08:26:22,324 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.model.utils.link_count.update_link_count', 'scheduled_..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40e06dh5)
+2025-02-04 08:26:22,520 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40e06dh5)
+2025-02-04 08:26:22,520 Result is kept for 600 seconds
+2025-02-04 08:26:22,525 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:26:22,783 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:26:22,783 Result is kept for 600 seconds
+2025-02-04 08:26:22,788 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:26:22,973 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:26:22,973 Result is kept for 600 seconds
+2025-02-04 08:26:22,977 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.web_page.web_page.check_publish_status..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-04 08:26:23,208 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-04 08:26:23,208 Result is kept for 600 seconds
+2025-02-04 08:26:23,216 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.project_status_updat..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib82i9piq)
+2025-02-04 08:26:23,420 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib82i9piq)
+2025-02-04 08:26:23,420 Result is kept for 600 seconds
+2025-02-04 08:26:23,425 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:26:23,590 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:26:23,590 Result is kept for 600 seconds
+2025-02-04 08:26:23,598 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.form.document_follow.send_hourly_updates', 'sched..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg462pv80f)
+2025-02-04 08:26:23,807 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg462pv80f)
+2025-02-04 08:26:23,808 Result is kept for 600 seconds
+2025-02-04 08:26:23,815 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.notify_unrep..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-04 08:26:23,997 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-04 08:26:23,997 Result is kept for 600 seconds
+2025-02-04 08:26:24,002 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.deferred_insert.save_to_db', 'scheduled_job_type': 'vg..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-04 08:26:24,164 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-04 08:26:24,164 Result is kept for 600 seconds
+2025-02-04 08:26:24,169 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.personal_data_deletion_request.persona..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4dvqqr7r)
+2025-02-04 08:26:24,346 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4dvqqr7r)
+2025-02-04 08:26:24,347 Result is kept for 600 seconds
+2025-02-04 08:26:24,351 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.model.utils.user_settings.sync_user_settings', 'schedu..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cbkf5ji)
+2025-02-04 08:26:24,520 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cbkf5ji)
+2025-02-04 08:26:24,520 Result is kept for 600 seconds
+2025-02-04 08:26:24,524 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.hourly_reminder', 's..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibov7o4lg)
+2025-02-04 08:26:24,721 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibov7o4lg)
+2025-02-04 08:26:24,721 Result is kept for 600 seconds
+2025-02-04 08:26:24,725 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.utilities.bulk_transaction.retry', 'scheduled_job_typ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idaojso4c)
+2025-02-04 08:26:24,953 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idaojso4c)
+2025-02-04 08:26:24,953 Result is kept for 600 seconds
+2025-02-04 08:26:24,957 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.stock.doctype.repost_item_valuation.repost_item_valua..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idenb2ft1)
+2025-02-04 08:26:25,174 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idenb2ft1)
+2025-02-04 08:26:25,174 Result is kept for 600 seconds
+2025-02-04 08:28:00,920 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:28:01,144 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:28:01,145 Result is kept for 600 seconds
+2025-02-04 08:28:01,149 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:28:01,283 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:28:01,283 Result is kept for 600 seconds
+2025-02-04 08:32:00,161 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.notify_unrep..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-04 08:32:00,454 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-04 08:32:00,455 Result is kept for 600 seconds
+2025-02-04 08:32:00,458 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.web_page.web_page.check_publish_status..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-04 08:32:00,673 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-04 08:32:00,674 Result is kept for 600 seconds
+2025-02-04 08:32:00,678 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.automation.doctype.reminder.reminder.send_reminders', ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-04 08:32:00,823 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-04 08:32:00,824 Result is kept for 600 seconds
+2025-02-04 08:32:00,829 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:32:00,975 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:32:00,975 Result is kept for 600 seconds
+2025-02-04 08:32:00,980 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.oauth.delete_oauth2_data', 'scheduled_job_type': 'vg4o..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-04 08:32:01,147 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-04 08:32:01,147 Result is kept for 600 seconds
+2025-02-04 08:32:01,151 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.utilities.doctype.video.video.update_youtube_data', '..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-04 08:32:01,557 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-04 08:32:01,557 Result is kept for 600 seconds
+2025-02-04 08:32:01,562 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.pull', 'sche..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-04 08:32:01,723 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-04 08:32:01,723 Result is kept for 600 seconds
+2025-02-04 08:32:01,729 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.manufacturing.doctype.bom_update_log.bom_update_log.r..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib89ergah)
+2025-02-04 08:32:01,885 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib89ergah)
+2025-02-04 08:32:01,885 Result is kept for 600 seconds
+2025-02-04 08:32:01,891 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:32:02,154 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:32:02,154 Result is kept for 600 seconds
+2025-02-04 08:32:02,159 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.deferred_insert.save_to_db', 'scheduled_job_type': 'vg..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-04 08:32:02,318 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-04 08:32:02,318 Result is kept for 600 seconds
+2025-02-04 08:32:02,323 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.twofactor.delete_all_barcodes_for_users', 'scheduled_j..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-04 08:32:02,470 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-04 08:32:02,470 Result is kept for 600 seconds
+2025-02-04 08:32:02,473 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:32:02,634 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:32:02,634 Result is kept for 600 seconds
+2025-02-04 08:32:02,638 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.accounts.doctype.gl_entry.gl_entry.rename_gle_sle_doc..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibrhgdect)
+2025-02-04 08:32:02,821 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibrhgdect)
+2025-02-04 08:32:02,821 Result is kept for 600 seconds
+2025-02-04 08:32:02,827 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.core.doctype.prepared_report.prepared_report.expire_st..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4er5ik5j)
+2025-02-04 08:32:02,980 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4er5ik5j)
+2025-02-04 08:32:02,980 Result is kept for 600 seconds
+2025-02-04 08:32:02,985 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.utils.global_search.sync_global_search', 'scheduled_jo..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-04 08:32:03,122 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-04 08:32:03,123 Result is kept for 600 seconds
+2025-02-04 08:36:00,570 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:36:00,882 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:36:00,883 Result is kept for 600 seconds
+2025-02-04 08:36:00,891 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-04 08:36:00,892 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-04 08:36:00,893 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-04 08:36:00,895 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:36:01,197 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:36:01,197 Result is kept for 600 seconds
+2025-02-04 08:36:01,206 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:36:01,595 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:36:01,596 Result is kept for 600 seconds
+2025-02-04 08:40:00,777 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:40:01,175 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:40:01,176 Result is kept for 600 seconds
+2025-02-04 08:40:01,181 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:40:01,335 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:40:01,335 Result is kept for 600 seconds
+2025-02-04 08:40:01,341 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:40:01,486 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:40:01,486 Result is kept for 600 seconds
+2025-02-04 08:40:01,490 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.pull', 'sche..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-04 08:40:01,662 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-04 08:40:01,662 Result is kept for 600 seconds
+2025-02-04 08:44:01,082 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:44:01,236 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:44:01,236 Result is kept for 600 seconds
+2025-02-04 08:44:01,241 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:44:01,445 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:44:01,445 Result is kept for 600 seconds
+2025-02-04 08:48:00,268 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.notify_unrep..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-04 08:48:00,533 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-04 08:48:00,534 Result is kept for 600 seconds
+2025-02-04 08:48:00,537 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-04 08:48:00,538 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-04 08:48:00,539 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-04 08:48:00,540 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.twofactor.delete_all_barcodes_for_users', 'scheduled_j..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-04 08:48:00,680 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-04 08:48:00,680 Result is kept for 600 seconds
+2025-02-04 08:48:00,684 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.deferred_insert.save_to_db', 'scheduled_job_type': 'vg..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-04 08:48:00,826 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-04 08:48:00,826 Result is kept for 600 seconds
+2025-02-04 08:48:00,831 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.automation.doctype.reminder.reminder.send_reminders', ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-04 08:48:00,977 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-04 08:48:00,977 Result is kept for 600 seconds
+2025-02-04 08:48:00,983 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.web_page.web_page.check_publish_status..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-04 08:48:01,185 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-04 08:48:01,186 Result is kept for 600 seconds
+2025-02-04 08:48:01,190 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.oauth.delete_oauth2_data', 'scheduled_job_type': 'vg4o..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-04 08:48:01,363 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-04 08:48:01,363 Result is kept for 600 seconds
+2025-02-04 08:48:01,367 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:48:01,594 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:48:01,595 Result is kept for 600 seconds
+2025-02-04 08:48:01,598 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.utils.global_search.sync_global_search', 'scheduled_jo..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-04 08:48:01,730 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-04 08:48:01,731 Result is kept for 600 seconds
+2025-02-04 08:48:01,735 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.manufacturing.doctype.bom_update_log.bom_update_log.r..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib89ergah)
+2025-02-04 08:48:01,877 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib89ergah)
+2025-02-04 08:48:01,877 Result is kept for 600 seconds
+2025-02-04 08:48:01,882 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:48:02,023 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:48:02,023 Result is kept for 600 seconds
+2025-02-04 08:48:02,027 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:48:02,163 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:48:02,163 Result is kept for 600 seconds
+2025-02-04 08:52:00,591 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:52:00,889 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:52:00,890 Result is kept for 600 seconds
+2025-02-04 08:52:00,896 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.pull', 'sche..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-04 08:52:01,106 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-04 08:52:01,106 Result is kept for 600 seconds
+2025-02-04 08:52:01,112 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:52:01,391 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:52:01,391 Result is kept for 600 seconds
+2025-02-04 08:52:01,397 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:52:01,574 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:52:01,574 Result is kept for 600 seconds
+2025-02-04 08:56:00,868 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:56:01,140 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 08:56:01,140 Result is kept for 600 seconds
+2025-02-04 08:56:01,147 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:56:01,523 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 08:56:01,524 Result is kept for 600 seconds
+2025-02-04 08:56:01,531 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:56:01,752 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 08:56:01,752 Result is kept for 600 seconds
+2025-02-04 09:00:01,008 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.model.utils.user_settings.sync_user_settings', 'schedu..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cbkf5ji)
+2025-02-04 09:00:01,307 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cbkf5ji)
+2025-02-04 09:00:01,308 Result is kept for 600 seconds
+2025-02-04 09:00:01,316 Cleaning registries for queue: home-moses-frappe-bench:short
+2025-02-04 09:00:01,318 Cleaning registries for queue: home-moses-frappe-bench:default
+2025-02-04 09:00:01,319 Cleaning registries for queue: home-moses-frappe-bench:long
+2025-02-04 09:00:01,321 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 09:00:01,570 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 09:00:01,570 Result is kept for 600 seconds
+2025-02-04 09:00:01,575 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.model.utils.link_count.update_link_count', 'scheduled_..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40e06dh5)
+2025-02-04 09:00:01,758 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40e06dh5)
+2025-02-04 09:00:01,758 Result is kept for 600 seconds
+2025-02-04 09:00:01,763 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.form.document_follow.send_hourly_updates', 'sched..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg462pv80f)
+2025-02-04 09:00:01,942 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg462pv80f)
+2025-02-04 09:00:01,942 Result is kept for 600 seconds
+2025-02-04 09:00:01,949 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.web_page.web_page.check_publish_status..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-04 09:00:02,193 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg40q0h3f7)
+2025-02-04 09:00:02,193 Result is kept for 600 seconds
+2025-02-04 09:00:02,198 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.project_status_updat..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib82i9piq)
+2025-02-04 09:00:02,411 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib82i9piq)
+2025-02-04 09:00:02,412 Result is kept for 600 seconds
+2025-02-04 09:00:02,419 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.erpnext_integrations.doctype.plaid_settings.plaid_set..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibqdbn75m)
+2025-02-04 09:00:02,648 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibqdbn75m)
+2025-02-04 09:00:02,648 Result is kept for 600 seconds
+2025-02-04 09:00:02,653 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.newsletter.newsletter.send_scheduled_ema..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4j285e8r)
+2025-02-04 09:00:02,870 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4j285e8r)
+2025-02-04 09:00:02,871 Result is kept for 600 seconds
+2025-02-04 09:00:02,876 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 09:00:03,026 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 09:00:03,026 Result is kept for 600 seconds
+2025-02-04 09:00:03,030 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.integrations.doctype.google_calendar.google_calendar.s..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4nu7sboo)
+2025-02-04 09:00:03,412 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4nu7sboo)
+2025-02-04 09:00:03,413 Result is kept for 600 seconds
+2025-02-04 09:00:03,419 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.notify_unrep..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-04 09:00:03,616 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4prkvc8h)
+2025-02-04 09:00:03,616 Result is kept for 600 seconds
+2025-02-04 09:00:03,622 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.deferred_insert.save_to_db', 'scheduled_job_type': 'vg..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-04 09:00:03,835 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43ajpak6)
+2025-02-04 09:00:03,836 Result is kept for 600 seconds
+2025-02-04 09:00:03,841 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.utils.global_search.sync_global_search', 'scheduled_jo..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-04 09:00:03,995 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4cm6s2av)
+2025-02-04 09:00:03,995 Result is kept for 600 seconds
+2025-02-04 09:00:04,000 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.website.doctype.personal_data_deletion_request.persona..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4dvqqr7r)
+2025-02-04 09:00:04,190 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4dvqqr7r)
+2025-02-04 09:00:04,190 Result is kept for 600 seconds
+2025-02-04 09:00:04,194 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.automation.doctype.reminder.reminder.send_reminders', ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-04 09:00:04,393 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4i25eok0)
+2025-02-04 09:00:04,393 Result is kept for 600 seconds
+2025-02-04 09:00:04,396 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 09:00:04,560 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 09:00:04,560 Result is kept for 600 seconds
+2025-02-04 09:00:04,565 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.oauth.delete_oauth2_data', 'scheduled_job_type': 'vg4o..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-04 09:00:04,769 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4op8j3mb)
+2025-02-04 09:00:04,769 Result is kept for 600 seconds
+2025-02-04 09:00:04,775 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.utilities.doctype.video.video.update_youtube_data', '..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-04 09:00:05,139 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibejelnd0)
+2025-02-04 09:00:05,139 Result is kept for 600 seconds
+2025-02-04 09:00:05,145 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.twofactor.delete_all_barcodes_for_users', 'scheduled_j..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-04 09:00:05,327 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4570bsfj)
+2025-02-04 09:00:05,327 Result is kept for 600 seconds
+2025-02-04 09:00:05,333 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.email_account.email_account.pull', 'sche..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-04 09:00:05,530 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg43qodcgq)
+2025-02-04 09:00:05,530 Result is kept for 600 seconds
+2025-02-04 09:00:05,534 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.hourly_reminder', 's..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ibov7o4lg)
+2025-02-04 09:00:05,745 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ibov7o4lg)
+2025-02-04 09:00:05,745 Result is kept for 600 seconds
+2025-02-04 09:00:05,751 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.manufacturing.doctype.bom_update_log.bom_update_log.r..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib89ergah)
+2025-02-04 09:00:05,958 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib89ergah)
+2025-02-04 09:00:05,958 Result is kept for 600 seconds
+2025-02-04 09:00:05,962 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.desk.page.backups.backups.delete_downloadable_backups'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4g9f9eo3)
+2025-02-04 09:00:06,146 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4g9f9eo3)
+2025-02-04 09:00:06,146 Result is kept for 600 seconds
+2025-02-04 09:00:06,151 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.projects.doctype.project.project.collect_project_stat..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0ib5uk9fjl)
+2025-02-04 09:00:06,357 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::0ib5uk9fjl)
+2025-02-04 09:00:06,358 Result is kept for 600 seconds
+2025-02-04 09:04:00,411 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.stock.doctype.repost_item_valuation.repost_item_valua..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idenb2ft1)
+2025-02-04 09:04:00,702 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idenb2ft1)
+2025-02-04 09:04:00,702 Result is kept for 600 seconds
+2025-02-04 09:04:00,709 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 09:04:00,894 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 09:04:00,894 Result is kept for 600 seconds
+2025-02-04 09:04:00,899 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 09:04:01,198 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 09:04:01,198 Result is kept for 600 seconds
+2025-02-04 09:04:01,208 home-moses-frappe-bench:long: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'erpnext.utilities.bulk_transaction.retry', 'scheduled_job_typ..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::0idaojso4c)
+2025-02-04 09:04:01,507 home-moses-frappe-bench:long: Job OK (toss.erp::scheduled_job::0idaojso4c)
+2025-02-04 09:04:01,508 Result is kept for 600 seconds
+2025-02-04 09:08:00,709 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.doctype.notification.notification.trigger_offset..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 09:08:01,015 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hpi27l5)
+2025-02-04 09:08:01,015 Result is kept for 600 seconds
+2025-02-04 09:08:01,021 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.monitor.flush', 'scheduled_job_type': 'vg4e8urf42'}, method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 09:08:01,276 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4e8urf42)
+2025-02-04 09:08:01,276 Result is kept for 600 seconds
+2025-02-04 09:08:01,282 home-moses-frappe-bench:default: frappe.utils.background_jobs.execute_job(event=None, is_async=True, job_name='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., kwargs={'job_type': 'frappe.email.queue.flush', 'scheduled_job_type': 'vg4hp3hrhb'..., method='frappe.core.doctype.scheduled_job_type.scheduled_job_type.run_scheduled_jo..., site='toss.erp', user='Administrator') (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 09:08:01,599 home-moses-frappe-bench:default: Job OK (toss.erp::scheduled_job::vg4hp3hrhb)
+2025-02-04 09:08:01,599 Result is kept for 600 seconds
