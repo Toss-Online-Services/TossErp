@@ -1,4 +1,6 @@
-﻿namespace eShop.Ordering.Infrastructure.EntityConfigurations;
+﻿using Ordering.Domain.AggregatesModel.BuyerAggregate;
+
+namespace eShop.Ordering.Infrastructure.EntityConfigurations;
 
 class CardTypeEntityTypeConfiguration
     : IEntityTypeConfiguration<CardType>

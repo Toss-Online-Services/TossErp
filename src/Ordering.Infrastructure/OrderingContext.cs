@@ -1,4 +1,5 @@
 ﻿using eShop.IntegrationEventLogEF;
+using Ordering.Domain.AggregatesModel.BuyerAggregate;
 
 namespace eShop.Ordering.Infrastructure;
 

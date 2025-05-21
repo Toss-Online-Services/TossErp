@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Ordering.Domain.AggregatesModel.BuyerAggregate;
 
 namespace eShop.Ordering.Domain.AggregatesModel.BuyerAggregate;
 
