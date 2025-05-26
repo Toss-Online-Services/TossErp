@@ -1,5 +1,7 @@
 using Catalog.Domain.SeedWork;
 using Catalog.Domain.ValueObjects;
+using System.Numerics;
+using Pgvector;
 
 namespace Catalog.Domain.AggregatesModel.CatalogAggregate;
 

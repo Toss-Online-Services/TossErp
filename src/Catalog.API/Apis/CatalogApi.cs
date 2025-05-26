@@ -235,6 +235,152 @@ public static class CatalogApi
             .WithTags("CrossSellProducts")
             .WithDescription("Remove a cross-sell product");
 
+        // Bulk operation endpoints
+        v1.MapPost("/products/bulk-edit", BulkEditProducts)
+            .WithName("BulkEditProducts")
+            .WithTags("BulkOperations")
+            .WithDescription("Bulk edit multiple products");
+
+        v1.MapPost("/products/bulk-delete", BulkDeleteProducts)
+            .WithName("BulkDeleteProducts")
+            .WithTags("BulkOperations")
+            .WithDescription("Bulk delete multiple products");
+
+        v1.MapPost("/products/bulk-publish", BulkPublishProducts)
+            .WithName("BulkPublishProducts")
+            .WithTags("BulkOperations")
+            .WithDescription("Bulk publish multiple products");
+
+        v1.MapPost("/products/bulk-unpublish", BulkUnpublishProducts)
+            .WithName("BulkUnpublishProducts")
+            .WithTags("BulkOperations")
+            .WithDescription("Bulk unpublish multiple products");
+
+        v1.MapPost("/products/attribute-combinations", GetProductAttributeCombinations)
+            .WithName("GetProductAttributeCombinations")
+            .WithTags("ProductAttributeCombinations")
+            .WithDescription("Get all attribute combinations for a product");
+
+        v1.MapPost("/products/attribute-combinations", CreateProductAttributeCombination)
+            .WithName("CreateProductAttributeCombination")
+            .WithTags("ProductAttributeCombinations")
+            .WithDescription("Create a new attribute combination for a product");
+
+        v1.MapPut("/products/attribute-combinations/{combinationId}", UpdateProductAttributeCombination)
+            .WithName("UpdateProductAttributeCombination")
+            .WithTags("ProductAttributeCombinations")
+            .WithDescription("Update an existing attribute combination");
+
+        v1.MapDelete("/products/attribute-combinations/{combinationId}", DeleteProductAttributeCombination)
+            .WithName("DeleteProductAttributeCombination")
+            .WithTags("ProductAttributeCombinations")
+            .WithDescription("Delete an attribute combination");
+
+        v1.MapPost("/products/generate-all-combinations", GenerateAllAttributeCombinations)
+            .WithName("GenerateAllAttributeCombinations")
+            .WithTags("ProductAttributeCombinations")
+            .WithDescription("Generate all possible attribute combinations for a product");
+
+        v1.MapPost("/products/tier-prices", GetTierPrices)
+            .WithName("GetTierPrices")
+            .WithTags("TierPrices")
+            .WithDescription("Get all tier prices for a product");
+
+        v1.MapPost("/products/tier-prices", CreateTierPrice)
+            .WithName("CreateTierPrice")
+            .WithTags("TierPrices")
+            .WithDescription("Create a new tier price for a product");
+
+        v1.MapPut("/products/tier-prices/{tierPriceId}", UpdateTierPrice)
+            .WithName("UpdateTierPrice")
+            .WithTags("TierPrices")
+            .WithDescription("Update an existing tier price");
+
+        v1.MapDelete("/products/tier-prices/{tierPriceId}", DeleteTierPrice)
+            .WithName("DeleteTierPrice")
+            .WithTags("TierPrices")
+            .WithDescription("Delete a tier price");
+
+        v1.MapPost("/products/specifications", GetProductSpecifications)
+            .WithName("GetProductSpecifications")
+            .WithTags("ProductSpecifications")
+            .WithDescription("Get all product specifications");
+
+        v1.MapPost("/products/specifications", CreateProductSpecification)
+            .WithName("CreateProductSpecification")
+            .WithTags("ProductSpecifications")
+            .WithDescription("Create a new product specification");
+
+        v1.MapPut("/products/specifications/{specificationId}", UpdateProductSpecification)
+            .WithName("UpdateProductSpecification")
+            .WithTags("ProductSpecifications")
+            .WithDescription("Update an existing product specification");
+
+        v1.MapDelete("/products/specifications/{specificationId}", DeleteProductSpecification)
+            .WithName("DeleteProductSpecification")
+            .WithTags("ProductSpecifications")
+            .WithDescription("Delete a product specification");
+
+        v1.MapPost("/products/videos", GetProductVideos)
+            .WithName("GetProductVideos")
+            .WithTags("ProductVideos")
+            .WithDescription("Get all product videos");
+
+        v1.MapPost("/products/videos", CreateProductVideo)
+            .WithName("CreateProductVideo")
+            .WithTags("ProductVideos")
+            .WithDescription("Create a new product video");
+
+        v1.MapPut("/products/videos/{videoId}", UpdateProductVideo)
+            .WithName("UpdateProductVideo")
+            .WithTags("ProductVideos")
+            .WithDescription("Update an existing product video");
+
+        v1.MapDelete("/products/videos/{videoId}", DeleteProductVideo)
+            .WithName("DeleteProductVideo")
+            .WithTags("ProductVideos")
+            .WithDescription("Delete a product video");
+
+        v1.MapPost("/products/warehouse-inventory", GetProductWarehouseInventory)
+            .WithName("GetProductWarehouseInventory")
+            .WithTags("ProductWarehouseInventory")
+            .WithDescription("Get all warehouse inventory for a product");
+
+        v1.MapPost("/products/warehouse-inventory", CreateProductWarehouseInventory)
+            .WithName("CreateProductWarehouseInventory")
+            .WithTags("ProductWarehouseInventory")
+            .WithDescription("Create a new warehouse inventory for a product");
+
+        v1.MapPut("/products/warehouse-inventory/{inventoryId}", UpdateProductWarehouseInventory)
+            .WithName("UpdateProductWarehouseInventory")
+            .WithTags("ProductWarehouseInventory")
+            .WithDescription("Update an existing warehouse inventory for a product");
+
+        v1.MapDelete("/products/warehouse-inventory/{inventoryId}", DeleteProductWarehouseInventory)
+            .WithName("DeleteProductWarehouseInventory")
+            .WithTags("ProductWarehouseInventory")
+            .WithDescription("Delete a warehouse inventory for a product");
+
+        v1.MapPost("/products/export-to-xml", ExportProductsToXml)
+            .WithName("ExportProductsToXml")
+            .WithTags("ProductExport")
+            .WithDescription("Export products to XML");
+
+        v1.MapPost("/products/export-to-excel", ExportProductsToExcel)
+            .WithName("ExportProductsToExcel")
+            .WithTags("ProductExport")
+            .WithDescription("Export products to Excel");
+
+        v1.MapPost("/products/import-from-excel", ImportProductsFromExcel)
+            .WithName("ImportProductsFromExcel")
+            .WithTags("ProductExport")
+            .WithDescription("Import products from Excel");
+
+        v1.MapPost("/products/export-to-pdf", ExportCatalogToPdf)
+            .WithName("ExportCatalogToPdf")
+            .WithTags("ProductExport")
+            .WithDescription("Export catalog to PDF");
+
         return app;
     }
 
@@ -751,6 +897,603 @@ public static class CatalogApi
 
         await services.CrossSellProductRepository.DeleteAsync(crossSellProductId);
         return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<PaginatedItems<Product>>, BadRequest>> BulkEditProducts(
+        [AsParameters] CatalogServices services,
+        [AsParameters] PaginationRequest paginationRequest,
+        [FromBody] List<BulkEditProductModel> products)
+    {
+        if (products == null || !products.Any())
+            return TypedResults.BadRequest();
+
+        var updatedProducts = new List<Product>();
+        foreach (var model in products)
+        {
+            var product = await services.ProductRepository.GetByIdAsync(model.Id);
+            if (product == null) continue;
+
+            // Update product properties
+            product.UpdateDetails(
+                model.Name ?? product.Name,
+                model.Description ?? product.Description,
+                model.Price ?? product.Price,
+                model.PictureUri ?? product.PictureUri,
+                model.CatalogTypeId ?? product.CatalogTypeId,
+                model.CatalogBrandId ?? product.CatalogBrandId);
+
+            if (model.AvailableStock.HasValue)
+                product.UpdateStock(model.AvailableStock.Value);
+
+            updatedProducts.Add(product);
+        }
+
+        await services.ProductRepository.UpdateRangeAsync(updatedProducts);
+
+        var paginatedProducts = new PaginatedItems<Product>(
+            paginationRequest.PageIndex,
+            paginationRequest.PageSize,
+            updatedProducts.Count,
+            updatedProducts.Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
+                    .Take(paginationRequest.PageSize));
+
+        return TypedResults.Ok(paginatedProducts);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<PaginatedItems<Product>>, BadRequest>> BulkDeleteProducts(
+        [AsParameters] CatalogServices services,
+        [AsParameters] PaginationRequest paginationRequest,
+        [FromBody] List<int> productIds)
+    {
+        if (productIds == null || !productIds.Any())
+            return TypedResults.BadRequest();
+
+        var products = new List<Product>();
+        foreach (var id in productIds)
+        {
+            var product = await services.ProductRepository.GetByIdAsync(id);
+            if (product != null)
+                products.Add(product);
+        }
+
+        await services.ProductRepository.DeleteRangeAsync(products);
+
+        var paginatedProducts = new PaginatedItems<Product>(
+            paginationRequest.PageIndex,
+            paginationRequest.PageSize,
+            products.Count,
+            products.Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
+                    .Take(paginationRequest.PageSize));
+
+        return TypedResults.Ok(paginatedProducts);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<PaginatedItems<Product>>, BadRequest>> BulkPublishProducts(
+        [AsParameters] CatalogServices services,
+        [AsParameters] PaginationRequest paginationRequest,
+        [FromBody] List<int> productIds)
+    {
+        if (productIds == null || !productIds.Any())
+            return TypedResults.BadRequest();
+
+        var products = new List<Product>();
+        foreach (var id in productIds)
+        {
+            var product = await services.ProductRepository.GetByIdAsync(id);
+            if (product != null)
+            {
+                product.Publish();
+                products.Add(product);
+            }
+        }
+
+        await services.ProductRepository.UpdateRangeAsync(products);
+
+        var paginatedProducts = new PaginatedItems<Product>(
+            paginationRequest.PageIndex,
+            paginationRequest.PageSize,
+            products.Count,
+            products.Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
+                    .Take(paginationRequest.PageSize));
+
+        return TypedResults.Ok(paginatedProducts);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<PaginatedItems<Product>>, BadRequest>> BulkUnpublishProducts(
+        [AsParameters] CatalogServices services,
+        [AsParameters] PaginationRequest paginationRequest,
+        [FromBody] List<int> productIds)
+    {
+        if (productIds == null || !productIds.Any())
+            return TypedResults.BadRequest();
+
+        var products = new List<Product>();
+        foreach (var id in productIds)
+        {
+            var product = await services.ProductRepository.GetByIdAsync(id);
+            if (product != null)
+            {
+                product.Unpublish();
+                products.Add(product);
+            }
+        }
+
+        await services.ProductRepository.UpdateRangeAsync(products);
+
+        var paginatedProducts = new PaginatedItems<Product>(
+            paginationRequest.PageIndex,
+            paginationRequest.PageSize,
+            products.Count,
+            products.Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
+                    .Take(paginationRequest.PageSize));
+
+        return TypedResults.Ok(paginatedProducts);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<PaginatedItems<ProductAttributeCombination>>, BadRequest>> GetProductAttributeCombinations(
+        [AsParameters] CatalogServices services,
+        [AsParameters] PaginationRequest paginationRequest,
+        [Description("The product id")] int productId)
+    {
+        var combinations = await services.ProductAttributeCombinationRepository.GetByProductAsync(productId);
+        
+        var paginatedCombinations = new PaginatedItems<ProductAttributeCombination>(
+            paginationRequest.PageIndex,
+            paginationRequest.PageSize,
+            combinations.Count(),
+            combinations.Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
+                    .Take(paginationRequest.PageSize));
+
+        return TypedResults.Ok(paginatedCombinations);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Created, BadRequest>> CreateProductAttributeCombination(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        ProductAttributeCombination combination)
+    {
+        if (combination == null)
+            return TypedResults.BadRequest();
+
+        combination.ProductId = productId;
+        await services.ProductAttributeCombinationRepository.AddAsync(combination);
+        return TypedResults.Created($"/api/catalog/products/{productId}/attribute-combinations/{combination.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound, BadRequest>> UpdateProductAttributeCombination(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The combination id")] int combinationId,
+        ProductAttributeCombination combination)
+    {
+        if (combination == null)
+            return TypedResults.BadRequest();
+
+        var existingCombination = await services.ProductAttributeCombinationRepository.GetAsync(combinationId);
+        if (existingCombination == null)
+            return TypedResults.NotFound();
+
+        combination.ProductId = productId;
+        await services.ProductAttributeCombinationRepository.UpdateAsync(combination);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> DeleteProductAttributeCombination(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The combination id")] int combinationId)
+    {
+        var combination = await services.ProductAttributeCombinationRepository.GetAsync(combinationId);
+        if (combination == null)
+            return TypedResults.NotFound();
+
+        await services.ProductAttributeCombinationRepository.DeleteAsync(combinationId);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<PaginatedItems<ProductAttributeCombination>>, BadRequest>> GenerateAllAttributeCombinations(
+        [AsParameters] CatalogServices services,
+        [AsParameters] PaginationRequest paginationRequest,
+        [Description("The product id")] int productId)
+    {
+        var product = await services.ProductRepository.GetByIdAsync(productId);
+        if (product == null)
+            return TypedResults.BadRequest();
+
+        var attributeMappings = await services.ProductAttributeMappingRepository.GetByProductAsync(productId);
+        var combinations = new List<ProductAttributeCombination>();
+
+        // Generate all possible combinations
+        foreach (var mapping in attributeMappings)
+        {
+            var values = await services.ProductAttributeValueRepository.GetByAttributeAsync(mapping.Id);
+            foreach (var value in values)
+            {
+                var combination = new ProductAttributeCombination
+                {
+                    ProductId = productId,
+                    AttributesXml = $"{mapping.Id}:{value.Id}",
+                    StockQuantity = 0,
+                    AllowOutOfStockOrders = true
+                };
+                combinations.Add(combination);
+            }
+        }
+
+        await services.ProductAttributeCombinationRepository.AddRangeAsync(combinations);
+
+        var paginatedCombinations = new PaginatedItems<ProductAttributeCombination>(
+            paginationRequest.PageIndex,
+            paginationRequest.PageSize,
+            combinations.Count,
+            combinations.Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
+                    .Take(paginationRequest.PageSize));
+
+        return TypedResults.Ok(paginatedCombinations);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<PaginatedItems<TierPrice>>, BadRequest>> GetTierPrices(
+        [AsParameters] CatalogServices services,
+        [AsParameters] PaginationRequest paginationRequest,
+        [Description("The product id")] int productId)
+    {
+        var tierPrices = await services.TierPriceRepository.GetByProductAsync(productId);
+        
+        var paginatedTierPrices = new PaginatedItems<TierPrice>(
+            paginationRequest.PageIndex,
+            paginationRequest.PageSize,
+            tierPrices.Count(),
+            tierPrices.Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
+                    .Take(paginationRequest.PageSize));
+
+        return TypedResults.Ok(paginatedTierPrices);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Created, BadRequest>> CreateTierPrice(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        TierPrice tierPrice)
+    {
+        if (tierPrice == null)
+            return TypedResults.BadRequest();
+
+        tierPrice.ProductId = productId;
+        await services.TierPriceRepository.AddAsync(tierPrice);
+        return TypedResults.Created($"/api/catalog/products/{productId}/tier-prices/{tierPrice.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound, BadRequest>> UpdateTierPrice(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The tier price id")] int tierPriceId,
+        TierPrice tierPrice)
+    {
+        if (tierPrice == null)
+            return TypedResults.BadRequest();
+
+        var existingTierPrice = await services.TierPriceRepository.GetAsync(tierPriceId);
+        if (existingTierPrice == null)
+            return TypedResults.NotFound();
+
+        tierPrice.ProductId = productId;
+        await services.TierPriceRepository.UpdateAsync(tierPrice);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> DeleteTierPrice(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The tier price id")] int tierPriceId)
+    {
+        var tierPrice = await services.TierPriceRepository.GetAsync(tierPriceId);
+        if (tierPrice == null)
+            return TypedResults.NotFound();
+
+        await services.TierPriceRepository.DeleteAsync(tierPriceId);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<PaginatedItems<ProductSpecificationAttribute>>, BadRequest>> GetProductSpecifications(
+        [AsParameters] CatalogServices services,
+        [AsParameters] PaginationRequest paginationRequest,
+        [Description("The product id")] int productId)
+    {
+        var specifications = await services.ProductSpecificationAttributeRepository.GetByProductAsync(productId);
+        
+        var paginatedSpecifications = new PaginatedItems<ProductSpecificationAttribute>(
+            paginationRequest.PageIndex,
+            paginationRequest.PageSize,
+            specifications.Count(),
+            specifications.Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
+                    .Take(paginationRequest.PageSize));
+
+        return TypedResults.Ok(paginatedSpecifications);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Created, BadRequest>> CreateProductSpecification(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        ProductSpecificationAttribute specification)
+    {
+        if (specification == null)
+            return TypedResults.BadRequest();
+
+        specification.ProductId = productId;
+        await services.ProductSpecificationAttributeRepository.AddAsync(specification);
+        return TypedResults.Created($"/api/catalog/products/{productId}/specifications/{specification.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound, BadRequest>> UpdateProductSpecification(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The specification id")] int specificationId,
+        ProductSpecificationAttribute specification)
+    {
+        if (specification == null)
+            return TypedResults.BadRequest();
+
+        var existingSpecification = await services.ProductSpecificationAttributeRepository.GetAsync(specificationId);
+        if (existingSpecification == null)
+            return TypedResults.NotFound();
+
+        specification.ProductId = productId;
+        await services.ProductSpecificationAttributeRepository.UpdateAsync(specification);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> DeleteProductSpecification(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The specification id")] int specificationId)
+    {
+        var specification = await services.ProductSpecificationAttributeRepository.GetAsync(specificationId);
+        if (specification == null)
+            return TypedResults.NotFound();
+
+        await services.ProductSpecificationAttributeRepository.DeleteAsync(specificationId);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<PaginatedItems<ProductVideo>>, BadRequest>> GetProductVideos(
+        [AsParameters] CatalogServices services,
+        [AsParameters] PaginationRequest paginationRequest,
+        [Description("The product id")] int productId)
+    {
+        var videos = await services.ProductVideoRepository.GetByProductAsync(productId);
+        
+        var paginatedVideos = new PaginatedItems<ProductVideo>(
+            paginationRequest.PageIndex,
+            paginationRequest.PageSize,
+            videos.Count(),
+            videos.Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
+                    .Take(paginationRequest.PageSize));
+
+        return TypedResults.Ok(paginatedVideos);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Created, BadRequest>> CreateProductVideo(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        ProductVideo video)
+    {
+        if (video == null)
+            return TypedResults.BadRequest();
+
+        video.ProductId = productId;
+        await services.ProductVideoRepository.AddAsync(video);
+        return TypedResults.Created($"/api/catalog/products/{productId}/videos/{video.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound, BadRequest>> UpdateProductVideo(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The video id")] int videoId,
+        ProductVideo video)
+    {
+        if (video == null)
+            return TypedResults.BadRequest();
+
+        var existingVideo = await services.ProductVideoRepository.GetAsync(videoId);
+        if (existingVideo == null)
+            return TypedResults.NotFound();
+
+        video.ProductId = productId;
+        await services.ProductVideoRepository.UpdateAsync(video);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> DeleteProductVideo(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The video id")] int videoId)
+    {
+        var video = await services.ProductVideoRepository.GetAsync(videoId);
+        if (video == null)
+            return TypedResults.NotFound();
+
+        await services.ProductVideoRepository.DeleteAsync(videoId);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<PaginatedItems<ProductWarehouseInventory>>, BadRequest>> GetProductWarehouseInventory(
+        [AsParameters] CatalogServices services,
+        [AsParameters] PaginationRequest paginationRequest,
+        [Description("The product id")] int productId)
+    {
+        var inventory = await services.ProductWarehouseInventoryRepository.GetByProductAsync(productId);
+        
+        var paginatedInventory = new PaginatedItems<ProductWarehouseInventory>(
+            paginationRequest.PageIndex,
+            paginationRequest.PageSize,
+            inventory.Count(),
+            inventory.Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
+                    .Take(paginationRequest.PageSize));
+
+        return TypedResults.Ok(paginatedInventory);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Created, BadRequest>> CreateProductWarehouseInventory(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        ProductWarehouseInventory inventory)
+    {
+        if (inventory == null)
+            return TypedResults.BadRequest();
+
+        inventory.ProductId = productId;
+        await services.ProductWarehouseInventoryRepository.AddAsync(inventory);
+        return TypedResults.Created($"/api/catalog/products/{productId}/warehouse-inventory/{inventory.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound, BadRequest>> UpdateProductWarehouseInventory(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The inventory id")] int inventoryId,
+        ProductWarehouseInventory inventory)
+    {
+        if (inventory == null)
+            return TypedResults.BadRequest();
+
+        var existingInventory = await services.ProductWarehouseInventoryRepository.GetAsync(inventoryId);
+        if (existingInventory == null)
+            return TypedResults.NotFound();
+
+        inventory.ProductId = productId;
+        await services.ProductWarehouseInventoryRepository.UpdateAsync(inventory);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> DeleteProductWarehouseInventory(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The inventory id")] int inventoryId)
+    {
+        var inventory = await services.ProductWarehouseInventoryRepository.GetAsync(inventoryId);
+        if (inventory == null)
+            return TypedResults.NotFound();
+
+        await services.ProductWarehouseInventoryRepository.DeleteAsync(inventoryId);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<FileContentResult, BadRequest>> ExportProductsToXml(
+        [AsParameters] CatalogServices services,
+        [Description("The product ids to export")] string productIds)
+    {
+        if (string.IsNullOrEmpty(productIds))
+            return TypedResults.BadRequest();
+
+        var ids = productIds.Split(',').Select(int.Parse).ToList();
+        var products = new List<Product>();
+        
+        foreach (var id in ids)
+        {
+            var product = await services.ProductRepository.GetByIdAsync(id);
+            if (product != null)
+                products.Add(product);
+        }
+
+        var xml = await services.ExportManager.ExportProductsToXmlAsync(products);
+        var fileName = $"products_{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}.xml";
+        
+        return TypedResults.File(
+            System.Text.Encoding.UTF8.GetBytes(xml),
+            "application/xml",
+            fileName);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<FileContentResult, BadRequest>> ExportProductsToExcel(
+        [AsParameters] CatalogServices services,
+        [Description("The product ids to export")] string productIds)
+    {
+        if (string.IsNullOrEmpty(productIds))
+            return TypedResults.BadRequest();
+
+        var ids = productIds.Split(',').Select(int.Parse).ToList();
+        var products = new List<Product>();
+        
+        foreach (var id in ids)
+        {
+            var product = await services.ProductRepository.GetByIdAsync(id);
+            if (product != null)
+                products.Add(product);
+        }
+
+        var excel = await services.ExportManager.ExportProductsToExcelAsync(products);
+        var fileName = $"products_{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}.xlsx";
+        
+        return TypedResults.File(
+            excel,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            fileName);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<int>, BadRequest>> ImportProductsFromExcel(
+        [AsParameters] CatalogServices services,
+        IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return TypedResults.BadRequest();
+
+        using var stream = file.OpenReadStream();
+        var importedCount = await services.ImportManager.ImportProductsFromExcelAsync(stream);
+        
+        return TypedResults.Ok(importedCount);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<FileContentResult, BadRequest>> ExportCatalogToPdf(
+        [AsParameters] CatalogServices services,
+        [Description("The product ids to export")] string productIds)
+    {
+        if (string.IsNullOrEmpty(productIds))
+            return TypedResults.BadRequest();
+
+        var ids = productIds.Split(',').Select(int.Parse).ToList();
+        var products = new List<Product>();
+        
+        foreach (var id in ids)
+        {
+            var product = await services.ProductRepository.GetByIdAsync(id);
+            if (product != null)
+                products.Add(product);
+        }
+
+        var pdf = await services.PdfService.ExportProductsToPdfAsync(products);
+        var fileName = $"catalog_{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}.pdf";
+        
+        return TypedResults.File(
+            pdf,
+            "application/pdf",
+            fileName);
     }
 
     private static string GetImageMimeTypeFromImageFileExtension(string extension) => extension switch

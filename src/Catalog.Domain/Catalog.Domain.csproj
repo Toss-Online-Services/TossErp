@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="MediatR" />
     <PackageReference Include="Pgvector" />
+    <PackageReference Include="System.Numerics.Vectors" />
   </ItemGroup>
 
 </Project>

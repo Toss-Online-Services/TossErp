@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Text.Json;
 
-namespace eShop.IntegrationEventLogEF;
+namespace IntegrationEventLogEF;
 
 public class IntegrationEventLogEntry
 {
@@ -8,29 +9,26 @@ public class IntegrationEventLogEntry
     private static readonly JsonSerializerOptions s_caseInsensitiveOptions = new() { PropertyNameCaseInsensitive = true };
 
     private IntegrationEventLogEntry() { }
-    public IntegrationEventLogEntry(IntegrationEvent @event, Guid transactionId)
+    public IntegrationEventLogEntry(object integrationEvent, string? transactionId = null)
     {
-        EventId = @event.Id;
-        CreationTime = @event.CreationDate;
-        EventTypeName = @event.GetType().FullName;
-        Content = JsonSerializer.Serialize(@event, @event.GetType(), s_indentedOptions);
-        State = EventStateEnum.NotPublished;
+        IntegrationEvent = integrationEvent;
+        EventTypeName = integrationEvent.GetType().FullName ?? throw new ArgumentNullException(nameof(integrationEvent));
+        Content = JsonSerializer.Serialize(integrationEvent, s_indentedOptions);
+        State = EventStateEnum.NotPublished.ToString();
         TimesSent = 0;
         TransactionId = transactionId;
+        CreationTime = DateTime.UtcNow;
     }
     public Guid EventId { get; private set; }
-    [Required]
-    public string EventTypeName { get; private set; }
+    public required string EventTypeName { get; set; }
     [NotMapped]
     public string EventTypeShortName => EventTypeName.Split('.')?.Last();
-    [NotMapped]
-    public IntegrationEvent IntegrationEvent { get; private set; }
-    public EventStateEnum State { get; set; }
+    public required object IntegrationEvent { get; set; }
+    public string? State { get; set; }
     public int TimesSent { get; set; }
-    public DateTime CreationTime { get; private set; }
-    [Required]
-    public string Content { get; private set; }
-    public Guid TransactionId { get; private set; }
+    public DateTime CreationTime { get; set; }
+    public required string Content { get; set; }
+    public string? TransactionId { get; set; }
 
     public IntegrationEventLogEntry DeserializeJsonContent(Type type)
     {

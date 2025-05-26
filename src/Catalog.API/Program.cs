@@ -40,6 +40,15 @@ var withApiVersioning = builder.Services.AddApiVersioning();
 
 builder.AddDefaultOpenApi(withApiVersioning);
 
+// Register services
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IReviewTypeService, ReviewTypeService>();
+builder.Services.AddScoped<IProductTemplateService, ProductTemplateService>();
+builder.Services.AddScoped<IRecentlyViewedProductsService, RecentlyViewedProductsService>();
+builder.Services.AddScoped<IProductAttributeParser, ProductAttributeParser>();
+builder.Services.AddScoped<IProductAttributeFormatter, ProductAttributeFormatter>();
+builder.Services.AddScoped<IProductAttributeService, ProductAttributeService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
