@@ -4,9 +4,9 @@
     {
         public bool HasPassword { get; init; }
 
-        public IList<UserLoginInfo> Logins { get; init; }
+        public required IList<UserLoginInfo> Logins { get; init; }
 
-        public string PhoneNumber { get; init; }
+        public required string PhoneNumber { get; init; }
 
         public bool TwoFactor { get; init; }
 

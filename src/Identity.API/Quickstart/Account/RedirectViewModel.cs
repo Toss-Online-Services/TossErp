@@ -7,5 +7,5 @@ namespace IdentityServerHost.Quickstart.UI;
 
 public class RedirectViewModel
 {
-    public string RedirectUrl { get; set; }
+    public required string RedirectUrl { get; set; }
 }

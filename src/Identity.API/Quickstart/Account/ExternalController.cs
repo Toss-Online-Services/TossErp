@@ -200,6 +200,17 @@ public class ExternalController : Controller
         var user = new ApplicationUser
         {
             UserName = Guid.NewGuid().ToString(),
+            CardNumber = "0000000000000000", // Default value
+            SecurityNumber = "000", // Default value
+            Expiration = "01/25", // Default value
+            CardHolderName = name ?? "Default User", // Use name if available
+            Street = "Default Street",
+            City = "Default City",
+            State = "Default State",
+            Country = "Default Country",
+            ZipCode = "00000",
+            Name = name?.Split(' ').FirstOrDefault() ?? "Default",
+            LastName = name?.Split(' ').Skip(1).FirstOrDefault() ?? "User"
         };
         var identityResult = await _userManager.CreateAsync(user);
         if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);

@@ -1,53 +1,75 @@
-﻿namespace eShop.Ordering.API.Application.Queries;
+﻿namespace Ordering.API.Application.Queries;
 
-public class OrderQueries(OrderingContext context)
-    : IOrderQueries
+public class OrderQueries : IOrderQueries
 {
-    public async Task<Order> GetOrderAsync(int id)
+    private readonly OrderingContext _orderingContext;
+    private readonly ILogger<OrderQueries> _logger;
+
+    public OrderQueries(OrderingContext orderingContext, ILogger<OrderQueries> logger)
     {
-        var order = await context.Orders
+        _orderingContext = orderingContext;
+        _logger = logger;
+    }
+
+    public async Task<OrderViewModel> GetOrderByIdAsync(int id)
+    {
+        _logger.LogInformation("Getting order {OrderId}", id);
+
+        var order = await _orderingContext.Orders
             .Include(o => o.OrderItems)
             .FirstOrDefaultAsync(o => o.Id == id);
-      
-        if (order is null)
-            throw new KeyNotFoundException();
 
-        return new Order
+        if (order == null)
+        {
+            return null;
+        }
+
+        return new OrderViewModel
         {
             OrderNumber = order.Id,
             Date = order.OrderDate,
+            Status = order.OrderStatus.Name,
             Description = order.Description,
-            City = order.Address.City,
-            Country = order.Address.Country,
-            State = order.Address.State,
             Street = order.Address.Street,
-            Zipcode = order.Address.ZipCode,
-            Status = order.OrderStatus.ToString(),
-            Total = order.GetTotal(),
-            OrderItems = order.OrderItems.Select(oi => new Orderitem
+            City = order.Address.City,
+            ZipCode = order.Address.ZipCode,
+            Country = order.Address.Country,
+            OrderItems = order.OrderItems.Select(o => new OrderItemViewModel
             {
-                ProductName = oi.ProductName,
-                Units = oi.Units,
-                UnitPrice = (double)oi.UnitPrice,
-                PictureUrl = oi.PictureUrl
+                ProductId = o.ProductId,
+                ProductName = o.ProductName,
+                UnitPrice = o.UnitPrice,
+                Units = o.Units,
+                PictureUrl = o.PictureUrl
             }).ToList()
         };
     }
 
     public async Task<IEnumerable<OrderSummary>> GetOrdersFromUserAsync(string userId)
     {
-        return await context.Orders
-            .Where(o => o.Buyer.IdentityGuid == userId)  
+        _logger.LogInformation("Getting orders for user {UserId}", userId);
+
+        var orders = await _orderingContext.Orders
+            .Where(o => o.BuyerId == userId)
             .Select(o => new OrderSummary
             {
                 OrderNumber = o.Id,
                 Date = o.OrderDate,
-                Status = o.OrderStatus.ToString(),
-                Total =(double) o.OrderItems.Sum(oi => oi.UnitPrice* oi.Units)
+                Status = o.OrderStatus.Name,
+                Total = o.OrderItems.Sum(i => i.Units * i.UnitPrice)
             })
             .ToListAsync();
-    } 
-    
-    public async Task<IEnumerable<CardType>> GetCardTypesAsync() => 
-        await context.CardTypes.Select(c=> new CardType { Id = c.Id, Name = c.Name }).ToListAsync();
+
+        return orders;
+    }
+
+    public async Task<IEnumerable<CardType>> GetCardTypesAsync()
+    {
+        _logger.LogInformation("Getting card types");
+
+        var cardTypes = await _orderingContext.CardTypes
+            .ToListAsync();
+
+        return cardTypes;
+    }
 }

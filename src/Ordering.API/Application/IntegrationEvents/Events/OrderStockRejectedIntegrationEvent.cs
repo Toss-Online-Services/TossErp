@@ -1,13 +1,12 @@
-﻿namespace eShop.Ordering.API.Application.IntegrationEvents.Events;
+﻿namespace Ordering.API.Application.IntegrationEvents.Events;
 
 public record OrderStockRejectedIntegrationEvent : IntegrationEvent
 {
     public int OrderId { get; }
-
-    public List<ConfirmedOrderStockItem> OrderStockItems { get; }
+    public IEnumerable<ConfirmedOrderStockItem> OrderStockItems { get; }
 
     public OrderStockRejectedIntegrationEvent(int orderId,
-        List<ConfirmedOrderStockItem> orderStockItems)
+        IEnumerable<ConfirmedOrderStockItem> orderStockItems)
     {
         OrderId = orderId;
         OrderStockItems = orderStockItems;

@@ -2,10 +2,10 @@
 
 public class WebhookSubscriptionRequest : IValidatableObject
 {
-    public string Url { get; set; }
-    public string Token { get; set; }
-    public string Event { get; set; }
-    public string GrantUrl { get; set; }
+    public required string Url { get; init; }
+    public string? Token { get; init; }
+    public required string Event { get; init; }
+    public required string GrantUrl { get; init; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -25,5 +25,4 @@ public class WebhookSubscriptionRequest : IValidatableObject
             yield return new ValidationResult($"{Event} is invalid event name", new[] { nameof(Event) });
         }
     }
-
 }

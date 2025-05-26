@@ -1,18 +1,15 @@
-﻿namespace eShop.Ordering.API.Application.IntegrationEvents.Events;
+﻿namespace Ordering.API.Application.IntegrationEvents.Events;
 
 public record OrderStatusChangedToShippedIntegrationEvent : IntegrationEvent
 {
     public int OrderId { get; }
-    public OrderStatus OrderStatus { get; }
+    public string OrderStatus { get; }
     public string BuyerName { get; }
-    public string BuyerIdentityGuid { get; }
 
-    public OrderStatusChangedToShippedIntegrationEvent(
-        int orderId, OrderStatus orderStatus, string buyerName, string buyerIdentityGuid)
+    public OrderStatusChangedToShippedIntegrationEvent(int orderId, string orderStatus, string buyerName)
     {
         OrderId = orderId;
         OrderStatus = orderStatus;
         BuyerName = buyerName;
-        BuyerIdentityGuid = buyerIdentityGuid;
     }
 }

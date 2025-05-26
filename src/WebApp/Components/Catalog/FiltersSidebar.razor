@@ -1,0 +1,129 @@
+@using Catalog.Domain.DTOs
+@using Catalog.Domain.Services
+@inject ICatalogService CatalogService
+
+<div class="filters-sidebar">
+    <div class="filters-header">
+        <h3>Filters</h3>
+        <button class="clear-filters" @onclick="ClearFilters">Clear All</button>
+    </div>
+
+    <div class="filter-section">
+        <h4>Price Range</h4>
+        <div class="price-range">
+            <input type="number" @bind="Filter.MinPrice" placeholder="Min" />
+            <span>to</span>
+            <input type="number" @bind="Filter.MaxPrice" placeholder="Max" />
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <h4>Brands</h4>
+        <div class="brand-list">
+            @foreach (var brand in Brands)
+            {
+                <label class="checkbox-label">
+                    <input type="checkbox" 
+                           checked="@(Filter.BrandId == brand.Id)"
+                           @onchange="() => ToggleBrand(brand.Id)" />
+                    <span>@brand.Name</span>
+                </label>
+            }
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <h4>Types</h4>
+        <div class="type-list">
+            @foreach (var type in Types)
+            {
+                <label class="checkbox-label">
+                    <input type="checkbox" 
+                           checked="@(Filter.TypeId == type.Id)"
+                           @onchange="() => ToggleType(type.Id)" />
+                    <span>@type.Name</span>
+                </label>
+            }
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <h4>Availability</h4>
+        <label class="checkbox-label">
+            <input type="checkbox" 
+                   checked="@Filter.InStock"
+                   @onchange="() => ToggleInStock()" />
+            <span>In Stock Only</span>
+        </label>
+    </div>
+
+    <div class="filter-section">
+        <h4>Sort By</h4>
+        <select @bind="Filter.SortBy" @onchange="OnSortChanged">
+            <option value="">Relevance</option>
+            <option value="name">Name</option>
+            <option value="price">Price</option>
+        </select>
+        <label class="checkbox-label">
+            <input type="checkbox" 
+                   checked="@Filter.SortDescending"
+                   @onchange="() => ToggleSortDirection()" />
+            <span>Descending</span>
+        </label>
+    </div>
+
+    <button class="apply-filters" @onclick="ApplyFilters">Apply Filters</button>
+</div>
+
+@code {
+    [Parameter]
+    public CatalogFilterDto Filter { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<CatalogFilterDto> OnFiltersChanged { get; set; }
+
+    private IEnumerable<CatalogBrandDto> Brands { get; set; } = Enumerable.Empty<CatalogBrandDto>();
+    private IEnumerable<CatalogTypeDto> Types { get; set; } = Enumerable.Empty<CatalogTypeDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Brands = await CatalogService.GetBrandsAsync();
+        Types = await CatalogService.GetTypesAsync();
+    }
+
+    private void ToggleBrand(int brandId)
+    {
+        Filter.BrandId = Filter.BrandId == brandId ? null : brandId;
+    }
+
+    private void ToggleType(int typeId)
+    {
+        Filter.TypeId = Filter.TypeId == typeId ? null : typeId;
+    }
+
+    private void ToggleInStock()
+    {
+        Filter.InStock = !Filter.InStock;
+    }
+
+    private void ToggleSortDirection()
+    {
+        Filter.SortDescending = !Filter.SortDescending;
+    }
+
+    private void OnSortChanged(ChangeEventArgs e)
+    {
+        Filter.SortBy = e.Value?.ToString();
+    }
+
+    private async Task ApplyFilters()
+    {
+        await OnFiltersChanged.InvokeAsync(Filter);
+    }
+
+    private async Task ClearFilters()
+    {
+        Filter = new CatalogFilterDto();
+        await OnFiltersChanged.InvokeAsync(Filter);
+    }
+} 

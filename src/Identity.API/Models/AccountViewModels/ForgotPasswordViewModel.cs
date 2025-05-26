@@ -4,6 +4,6 @@
     {
         [Required]
         [EmailAddress]
-        public string Email { get; init; }
+        public required string Email { get; init; }
     }
 }

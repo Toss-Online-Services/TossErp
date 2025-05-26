@@ -1,4 +1,6 @@
-﻿namespace eShop.Catalog.API.IntegrationEvents.EventHandling;
+﻿using Catalog.Infrastructure.Context;
+
+namespace eShop.Catalog.API.IntegrationEvents.EventHandling;
 
 public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
     CatalogContext catalogContext,

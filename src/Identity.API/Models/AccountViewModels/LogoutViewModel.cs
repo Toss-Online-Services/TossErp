@@ -2,6 +2,7 @@
 {
     public record LogoutViewModel
     {
-        public string LogoutId { get; set; }
+        public required string LogoutId { get; init; }
+        public bool ShowLogoutPrompt { get; init; } = true;
     }
 }

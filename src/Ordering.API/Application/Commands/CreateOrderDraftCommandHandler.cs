@@ -1,16 +1,26 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
+﻿namespace Ordering.API.Application.Commands;
 
 using eShop.Ordering.API.Extensions;
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
+using Microsoft.Extensions.Logging;
 
 // Regular CommandHandler
 public class CreateOrderDraftCommandHandler
     : IRequestHandler<CreateOrderDraftCommand, OrderDraftDTO>
 {
+    private readonly ILogger<CreateOrderDraftCommandHandler> _logger;
+
+    public CreateOrderDraftCommandHandler(ILogger<CreateOrderDraftCommandHandler> logger)
+    {
+        _logger = logger;
+    }
+
     public Task<OrderDraftDTO> Handle(CreateOrderDraftCommand message, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Creating OrderDraft from basket {BuyerId}", message.BuyerId);
+
         var order = Order.NewDraft();
-        var orderItems = message.Items.Select(i => i.ToOrderItemDTO());
+        var orderItems = message.Items.Select(i => i.ToOrderItemDTO()).ToList();
         foreach (var item in orderItems)
         {
             order.AddOrderItem(item.ProductId, item.ProductName, item.UnitPrice, item.Discount, item.PictureUrl, item.Units);

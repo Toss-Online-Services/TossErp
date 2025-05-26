@@ -1,4 +1,4 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
+﻿namespace Ordering.API.Application.Commands;
 
 using eShop.Ordering.Domain.AggregatesModel.OrderAggregate;
 
@@ -28,8 +28,14 @@ public class CreateOrderCommandHandler
 
     public async Task<bool> Handle(CreateOrderCommand message, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling command: {CommandName} - {IdProperty}: {CommandId} ({@Command})", message.GetGenericTypeName(), nameof(message.RequestId), message.RequestId, message);
+
         // Add Integration event to clean the basket
-        var orderStartedIntegrationEvent = new OrderStartedIntegrationEvent(message.UserId);
+        var orderStartedIntegrationEvent = new OrderStartedIntegrationEvent(
+            message.UserId, message.UserName, message.CardTypeId, message.CardNumber,
+            message.CardSecurityNumber, message.CardHolderName, message.CardExpiration,
+            message.City, message.Street, message.State, message.Country, message.ZipCode);
+
         await _orderingIntegrationEventService.AddAndSaveEventAsync(orderStartedIntegrationEvent);
 
         // Add/Update the Buyer AggregateRoot

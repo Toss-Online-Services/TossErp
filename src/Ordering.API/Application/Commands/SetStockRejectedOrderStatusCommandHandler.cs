@@ -1,13 +1,17 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
+﻿namespace Ordering.API.Application.Commands;
 
 // Regular CommandHandler
 public class SetStockRejectedOrderStatusCommandHandler : IRequestHandler<SetStockRejectedOrderStatusCommand, bool>
 {
     private readonly IOrderRepository _orderRepository;
+    private readonly ILogger<SetStockRejectedOrderStatusCommandHandler> _logger;
 
-    public SetStockRejectedOrderStatusCommandHandler(IOrderRepository orderRepository)
+    public SetStockRejectedOrderStatusCommandHandler(
+        IOrderRepository orderRepository,
+        ILogger<SetStockRejectedOrderStatusCommandHandler> logger)
     {
         _orderRepository = orderRepository;
+        _logger = logger;
     }
 
     /// <summary>
@@ -18,8 +22,7 @@ public class SetStockRejectedOrderStatusCommandHandler : IRequestHandler<SetStoc
     /// <returns></returns>
     public async Task<bool> Handle(SetStockRejectedOrderStatusCommand command, CancellationToken cancellationToken)
     {
-        // Simulate a work time for rejecting the stock
-        await Task.Delay(10000, cancellationToken);
+        _logger.LogInformation("Handling command: {CommandName} - {IdProperty}: {CommandId} ({@Command})", command.GetGenericTypeName(), nameof(command.OrderNumber), command.OrderNumber, command);
 
         var orderToUpdate = await _orderRepository.GetAsync(command.OrderNumber);
         if (orderToUpdate == null)
@@ -27,7 +30,11 @@ public class SetStockRejectedOrderStatusCommandHandler : IRequestHandler<SetStoc
             return false;
         }
 
-        orderToUpdate.SetCancelledStatusWhenStockIsRejected(command.OrderStockItems);
+        var orderStockRejectedItems = command.OrderStockItems
+            .Select(c => c.ProductId)
+            .ToList();
+
+        orderToUpdate.SetStockRejectedStatus(orderStockRejectedItems);
 
         return await _orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
     }

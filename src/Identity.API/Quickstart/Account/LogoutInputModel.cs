@@ -6,5 +6,5 @@ namespace IdentityServerHost.Quickstart.UI;
 
 public class LogoutInputModel
 {
-    public string LogoutId { get; set; }
+    public required string LogoutId { get; set; }
 }

@@ -6,5 +6,5 @@ namespace IdentityServerHost.Quickstart.UI;
 
 public class DeviceAuthorizationInputModel : ConsentInputModel
 {
-    public string UserCode { get; set; }
+    public required string UserCode { get; set; }
 }

@@ -1,0 +1,72 @@
+@using Catalog.Domain.DTOs
+@using Catalog.Domain.Services
+@inject IRecommendationService RecommendationService
+@inject NavigationManager NavigationManager
+
+<div class="recommendations-section">
+    <h3>Recommended for You</h3>
+    @if (Recommendations?.Any() == true)
+    {
+        <div class="recommendations-grid">
+            @foreach (var item in Recommendations)
+            {
+                <div class="recommendation-card" @onclick="() => NavigateToItem(item.Id)">
+                    <div class="item-image">
+                        <img src="@item.PictureUri" alt="@item.Name" />
+                        @if (item.AvailableStock <= 0)
+                        {
+                            <div class="out-of-stock-badge">Out of Stock</div>
+                        }
+                    </div>
+                    <div class="item-details">
+                        <h4>@item.Name</h4>
+                        <div class="price">@item.Price.ToString("C")</div>
+                        <div class="rating">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span class="star @(i <= item.Rating ? "filled" : "")">★</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <p>No recommendations available yet. Start browsing to get personalized recommendations!</p>
+            <button class="browse-button" @onclick="NavigateToCatalog">Browse Catalog</button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string UserId { get; set; } = string.Empty;
+
+    private IEnumerable<CatalogItemDto>? Recommendations { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(UserId))
+        {
+            await LoadRecommendations();
+        }
+    }
+
+    private async Task LoadRecommendations()
+    {
+        Recommendations = await RecommendationService.GetPersonalizedRecommendationsAsync(UserId);
+    }
+
+    private void NavigateToItem(int itemId)
+    {
+        NavigationManager.NavigateTo($"/catalog/item/{itemId}");
+    }
+
+    private void NavigateToCatalog()
+    {
+        NavigationManager.NavigateTo("/catalog");
+    }
+} 

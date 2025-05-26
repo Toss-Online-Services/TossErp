@@ -96,34 +96,37 @@ namespace IdentityServerHost.Quickstart.UI
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByNameAsync(model.Username);
-                    await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
-
-                    if (context != null)
+                    if (user != null)
                     {
-                        if (context.IsNativeClient())
+                        await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
+
+                        if (context != null)
                         {
-                            // The client is native, so this change in how to
-                            // return the response is for better UX for the end user.
-                            return this.LoadingPage("Redirect", model.ReturnUrl);
+                            if (context.IsNativeClient())
+                            {
+                                // The client is native, so this change in how to
+                                // return the response is for better UX for the end user.
+                                return this.LoadingPage("Redirect", model.ReturnUrl);
+                            }
+
+                            // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                            return Redirect(model.ReturnUrl);
                         }
 
-                        // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                        return Redirect(model.ReturnUrl);
-                    }
-
-                    // request for a local page
-                    if (Url.IsLocalUrl(model.ReturnUrl))
-                    {
-                        return Redirect(model.ReturnUrl);
-                    }
-                    else if (string.IsNullOrEmpty(model.ReturnUrl))
-                    {
-                        return Redirect("~/");
-                    }
-                    else
-                    {
-                        // user might have clicked on a malicious link - should be logged
-                        throw new Exception("invalid return URL");
+                        // request for a local page
+                        if (Url.IsLocalUrl(model.ReturnUrl))
+                        {
+                            return Redirect(model.ReturnUrl);
+                        }
+                        else if (string.IsNullOrEmpty(model.ReturnUrl))
+                        {
+                            return Redirect("~/");
+                        }
+                        else
+                        {
+                            // user might have clicked on a malicious link - should be logged
+                            throw new Exception("invalid return URL");
+                        }
                     }
                 }
 
@@ -138,7 +141,6 @@ namespace IdentityServerHost.Quickstart.UI
 
             return View(vm);
         }
-
 
         /// <summary>
         /// Show logout page
@@ -169,7 +171,7 @@ namespace IdentityServerHost.Quickstart.UI
             // build a model so the logged out page knows what to display
             var vm = await BuildLoggedOutViewModelAsync(model.LogoutId);
 
-            if (User?.Identity.IsAuthenticated == true)
+            if (User?.Identity?.IsAuthenticated == true)
             {
                 // delete local authentication cookie
                 await _signInManager.SignOutAsync();
@@ -199,7 +201,6 @@ namespace IdentityServerHost.Quickstart.UI
             return View();
         }
 
-
         /*****************************************/
         /* helper APIs for the AccountController */
         /*****************************************/
@@ -216,12 +217,8 @@ namespace IdentityServerHost.Quickstart.UI
                     EnableLocalLogin = local,
                     ReturnUrl = returnUrl,
                     Username = context?.LoginHint,
+                    ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP, DisplayName = context.IdP } }
                 };
-
-                if (!local)
-                {
-                    vm.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP } };
-                }
 
                 return vm;
             }
@@ -273,7 +270,7 @@ namespace IdentityServerHost.Quickstart.UI
         {
             var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
 
-            if (User?.Identity.IsAuthenticated != true)
+            if (User?.Identity?.IsAuthenticated != true)
             {
                 // if the user is not authenticated, then just show logged out page
                 vm.ShowLogoutPrompt = false;
@@ -303,17 +300,17 @@ namespace IdentityServerHost.Quickstart.UI
                 AutomaticRedirectAfterSignOut = AccountOptions.AutomaticRedirectAfterSignOut,
                 PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
                 ClientName = string.IsNullOrEmpty(logout?.ClientName) ? logout?.ClientId : logout?.ClientName,
-                SignOutIframeUrl = logout?.SignOutIFrameUrl,
+                SignOutIframeUrl = logout?.SignOutIframeUrl,
                 LogoutId = logoutId
             };
 
-            if (User?.Identity.IsAuthenticated == true)
+            if (User?.Identity?.IsAuthenticated == true)
             {
                 var idp = User.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
                 if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
                 {
-                    var handler = await _handlerProvider.GetHandlerAsync(HttpContext, idp);
-                    if (handler is IAuthenticationSignOutHandler)
+                    var providerSupportsSignout = await HttpContext.GetSchemeSupportsSignOutAsync(idp);
+                    if (providerSupportsSignout)
                     {
                         if (vm.LogoutId == null)
                         {

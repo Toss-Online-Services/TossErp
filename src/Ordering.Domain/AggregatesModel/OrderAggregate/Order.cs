@@ -9,15 +9,15 @@ public class Order
 
     // Address is a Value Object pattern example persisted as EF Core 2.0 owned entity
     [Required]
-    public Address Address { get; private set; }
+    public Address Address { get; private set; } = null!;
 
     public int? BuyerId { get; private set; }
 
-    public Buyer Buyer { get; }
+    public Buyer? Buyer { get; private set; }
 
     public OrderStatus OrderStatus { get; private set; }
     
-    public string Description { get; private set; }
+    public string Description { get; private set; } = string.Empty;
 
     // Draft orders have this set to true. Currently we don't check anywhere the draft status of an Order, but we could do it if needed
 #pragma warning disable CS0414 // The field 'Order._isDraft' is assigned but its value is never used

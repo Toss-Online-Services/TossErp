@@ -2,7 +2,7 @@
 
 public class WebhookResponse
 {
-    public DateTime Date { get; set; }
-    public string? DestUrl { get; set; }
-    public string? Token { get; set; }
+    public required DateTime Date { get; init; }
+    public string? DestUrl { get; init; }
+    public string? Token { get; init; }
 }

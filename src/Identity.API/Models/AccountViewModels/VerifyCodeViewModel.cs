@@ -3,12 +3,12 @@
     public record VerifyCodeViewModel
     {
         [Required]
-        public string Provider { get; init; }
+        public required string Provider { get; init; }
 
         [Required]
-        public string Code { get; init; }
+        public required string Code { get; init; }
 
-        public string ReturnUrl { get; init; }
+        public string? ReturnUrl { get; init; }
 
         [Display(Name = "Remember this browser?")]
         public bool RememberBrowser { get; init; }

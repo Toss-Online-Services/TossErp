@@ -5,6 +5,6 @@
         [Required]
         [Phone]
         [Display(Name = "Phone number")]
-        public string PhoneNumber { get; init; }
+        public required string PhoneNumber { get; init; }
     }
 }

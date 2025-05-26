@@ -4,9 +4,9 @@ namespace eShop.WebhookClient.Services;
 
 public class WebhookData
 {
-    public DateTime When { get; set; }
+    public required DateTime When { get; init; }
 
-    public string? Payload { get; set; }
+    public required string Payload { get; init; }
 
-    public string? Type { get; set; }
+    public required string Type { get; init; }
 }

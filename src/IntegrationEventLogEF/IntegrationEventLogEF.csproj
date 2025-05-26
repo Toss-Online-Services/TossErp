@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>eShop.IntegrationEventLogEF</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 

@@ -1,13 +1,17 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
+﻿namespace Ordering.API.Application.Commands;
 
 // Regular CommandHandler
 public class ShipOrderCommandHandler : IRequestHandler<ShipOrderCommand, bool>
 {
     private readonly IOrderRepository _orderRepository;
+    private readonly ILogger<ShipOrderCommandHandler> _logger;
 
-    public ShipOrderCommandHandler(IOrderRepository orderRepository)
+    public ShipOrderCommandHandler(
+        IOrderRepository orderRepository,
+        ILogger<ShipOrderCommandHandler> logger)
     {
         _orderRepository = orderRepository;
+        _logger = logger;
     }
 
     /// <summary>
@@ -18,6 +22,8 @@ public class ShipOrderCommandHandler : IRequestHandler<ShipOrderCommand, bool>
     /// <returns></returns>
     public async Task<bool> Handle(ShipOrderCommand command, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling command: {CommandName} - {IdProperty}: {CommandId} ({@Command})", command.GetGenericTypeName(), nameof(command.OrderNumber), command.OrderNumber, command);
+
         var orderToUpdate = await _orderRepository.GetAsync(command.OrderNumber);
         if (orderToUpdate == null)
         {

@@ -1,8 +1,8 @@
-﻿namespace eShop.Ordering.API.Application.Queries;
+﻿namespace Ordering.API.Application.Queries;
 
 public interface IOrderQueries
 {
-    Task<Order> GetOrderAsync(int id);
+    Task<OrderViewModel> GetOrderByIdAsync(int id);
 
     Task<IEnumerable<OrderSummary>> GetOrdersFromUserAsync(string userId);
 

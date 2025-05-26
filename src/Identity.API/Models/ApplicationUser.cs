@@ -4,28 +4,28 @@
     public class ApplicationUser : IdentityUser
     {
         [Required]
-        public string CardNumber { get; set; }
+        public required string CardNumber { get; set; }
         [Required]
-        public string SecurityNumber { get; set; }
+        public required string SecurityNumber { get; set; }
         [Required]
         [RegularExpression(@"(0[1-9]|1[0-2])\/[0-9]{2}", ErrorMessage = "Expiration should match a valid MM/YY value")]
-        public string Expiration { get; set; }
+        public required string Expiration { get; set; }
         [Required]
-        public string CardHolderName { get; set; }
+        public required string CardHolderName { get; set; }
         public int CardType { get; set; }
         [Required]
-        public string Street { get; set; }
+        public required string Street { get; set; }
         [Required]
-        public string City { get; set; }
+        public required string City { get; set; }
         [Required]
-        public string State { get; set; }
+        public required string State { get; set; }
         [Required]
-        public string Country { get; set; }
+        public required string Country { get; set; }
         [Required]
-        public string ZipCode { get; set; }
+        public required string ZipCode { get; set; }
         [Required]
-        public string Name { get; set; }
+        public required string Name { get; set; }
         [Required]
-        public string LastName { get; set; }
+        public required string LastName { get; set; }
     }
 }

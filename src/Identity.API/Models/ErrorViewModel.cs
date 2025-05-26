@@ -4,6 +4,6 @@ namespace eShop.Identity.API.Models
 {
     public record ErrorViewModel
     {
-        public ErrorMessage Error { get; set; }
+        public required ErrorMessage Error { get; set; }
     }
 }

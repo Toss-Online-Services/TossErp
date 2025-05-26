@@ -2,9 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>eShop.EventBusRabbitMQ</RootNamespace>
-    <IsAotCompatible>true</IsAotCompatible>
-    <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,9 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.RabbitMQ.Client" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
-    <PackageReference Include="Polly.Core" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="RabbitMQ.Client" />
   </ItemGroup>
 
   <ItemGroup>

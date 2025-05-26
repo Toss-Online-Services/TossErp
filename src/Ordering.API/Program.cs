@@ -1,21 +1,49 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿namespace Ordering.API;
 
-builder.AddServiceDefaults();
-builder.AddApplicationServices();
-builder.Services.AddProblemDetails();
+public class Program
+{
+    public static readonly string AppName = "Ordering.API";
 
-var withApiVersioning = builder.Services.AddApiVersioning();
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-builder.AddDefaultOpenApi(withApiVersioning);
+        builder.AddServiceDefaults();
 
-var app = builder.Build();
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
 
-app.MapDefaultEndpoints();
+        builder.Services.AddDbContext<OrderingContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("OrderingDb")));
 
-var orders = app.NewVersionedApi("Orders");
+        builder.Services.AddMediatR(cfg => {
+            cfg.RegisterServicesFromAssemblyContaining<Program>();
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidatorBehavior<,>));
+        });
 
-orders.MapOrdersApiV1()
-      .RequireAuthorization();
+        builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+        builder.Services.AddScoped<IOrderQueries, OrderQueries>();
+        builder.Services.AddScoped<IIdentityService, IdentityService>();
+        builder.Services.AddScoped<IOrderingIntegrationEventService, OrderingIntegrationEventService>();
 
-app.UseDefaultOpenApi();
-app.Run();
+        builder.Services.AddSingleton<IEventBus, EventBusRabbitMQ>();
+        builder.Services.AddSingleton<Func<DbConnection, IIntegrationEventLogService>>(sp => (DbConnection c) => new IntegrationEventLogService(c));
+        builder.Services.AddSingleton<IIntegrationEventLogService>(sp => new IntegrationEventLogService(builder.Configuration.GetConnectionString("OrderingDb")));
+
+        var app = builder.Build();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseAuthorization();
+        app.MapControllers();
+
+        app.Run();
+    }
+}

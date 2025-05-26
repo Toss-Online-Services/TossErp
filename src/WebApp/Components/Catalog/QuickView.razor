@@ -1,0 +1,133 @@
+@using Catalog.Domain.DTOs
+@using Catalog.Domain.Services
+@inject ICartService CartService
+@inject IProductComparisonService ComparisonService
+
+@if (Item != null)
+{
+    <div class="quick-view-overlay" @onclick="OnClose">
+        <div class="quick-view-content" @onclick:stopPropagation="true">
+            <button class="close-button" @onclick="OnClose">&times;</button>
+            
+            <div class="quick-view-grid">
+                <div class="item-image">
+                    <img src="@Item.PictureUri" alt="@Item.Name" />
+                </div>
+                
+                <div class="item-details">
+                    <h2>@Item.Name</h2>
+                    <p class="price">@Item.Price.ToString("C")</p>
+                    
+                    <div class="rating">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span class="star @(i <= Item.Rating ? "filled" : "")">★</span>
+                        }
+                    </div>
+                    
+                    <p class="description">@Item.Description</p>
+                    
+                    <div class="stock-status">
+                        <span class="@(Item.AvailableStock > 0 ? "in-stock" : "out-of-stock")">
+                            @(Item.AvailableStock > 0 ? "In Stock" : "Out of Stock")
+                        </span>
+                    </div>
+                    
+                    @if (Item.AvailableStock > 0)
+                    {
+                        <div class="quantity">
+                            <label for="quantity">Quantity:</label>
+                            <div class="quantity-controls">
+                                <button @onclick="() => UpdateQuantity(Quantity - 1)" 
+                                        disabled="@(Quantity <= 1)">-</button>
+                                <input type="number" id="quantity" @bind="Quantity" min="1" 
+                                       max="@Item.AvailableStock" />
+                                <button @onclick="() => UpdateQuantity(Quantity + 1)"
+                                        disabled="@(Quantity >= Item.AvailableStock)">+</button>
+                            </div>
+                        </div>
+                    }
+                    
+                    <div class="actions">
+                        @if (Item.AvailableStock > 0)
+                        {
+                            <button class="add-to-cart" @onclick="AddToCart">Add to Cart</button>
+                        }
+                        <button class="compare-button @(IsInComparison ? "active" : "")" 
+                                @onclick="ToggleComparison">
+                            @(IsInComparison ? "Remove from Compare" : "Add to Compare")
+                        </button>
+                        <button class="view-details" @onclick="ViewDetails">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public CatalogItemDto? Item { get; set; }
+
+    [Parameter]
+    public string UserId { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnViewDetails { get; set; }
+
+    private int Quantity { get; set; } = 1;
+    private bool IsInComparison { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Item != null && !string.IsNullOrEmpty(UserId))
+        {
+            IsInComparison = await ComparisonService.IsInComparisonAsync(UserId, Item.Id);
+        }
+    }
+
+    private void UpdateQuantity(int newQuantity)
+    {
+        if (newQuantity >= 1 && newQuantity <= Item?.AvailableStock)
+        {
+            Quantity = newQuantity;
+        }
+    }
+
+    private async Task AddToCart()
+    {
+        if (Item != null && !string.IsNullOrEmpty(UserId))
+        {
+            await CartService.AddToCartAsync(UserId, Item.Id, Quantity);
+            await OnClose.InvokeAsync();
+        }
+    }
+
+    private async Task ToggleComparison()
+    {
+        if (Item != null && !string.IsNullOrEmpty(UserId))
+        {
+            if (IsInComparison)
+            {
+                await ComparisonService.RemoveFromComparisonAsync(UserId, Item.Id);
+            }
+            else
+            {
+                await ComparisonService.AddToComparisonAsync(UserId, Item.Id);
+            }
+            IsInComparison = !IsInComparison;
+        }
+    }
+
+    private async Task ViewDetails()
+    {
+        if (Item != null)
+        {
+            await OnViewDetails.InvokeAsync(Item.Id);
+            await OnClose.InvokeAsync();
+        }
+    }
+} 

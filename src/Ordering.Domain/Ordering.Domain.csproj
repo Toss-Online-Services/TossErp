@@ -2,10 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Ordering.Domain</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="MediatR" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="System.Reflection.TypeExtensions" />
   </ItemGroup>
 

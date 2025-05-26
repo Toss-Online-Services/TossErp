@@ -2,6 +2,6 @@
 {
     public record FactorViewModel
     {
-        public string Purpose { get; init; }
+        public required string Purpose { get; init; }
     }
 }

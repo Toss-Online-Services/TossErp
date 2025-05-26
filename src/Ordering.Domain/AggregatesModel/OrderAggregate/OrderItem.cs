@@ -6,11 +6,11 @@ public class OrderItem
     : Entity
 {
     [Required]
-    public string ProductName { get; private set; }
+    public string ProductName { get; private set; } = string.Empty;
     
-    public string PictureUrl { get; private set;}
+    public string PictureUrl { get; private set; } = string.Empty;
     
-    public decimal UnitPrice { get; private set;}
+    public decimal UnitPrice { get; private set; }
     
     public decimal Discount { get; private set; }
     

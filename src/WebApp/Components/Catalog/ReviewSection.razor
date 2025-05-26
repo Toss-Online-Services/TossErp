@@ -1,0 +1,183 @@
+@using Catalog.Domain.DTOs
+@using Catalog.Domain.Services
+@inject IReviewService ReviewService
+@inject NavigationManager NavigationManager
+
+<div class="review-section">
+    <div class="review-summary">
+        <div class="average-rating">
+            <h3>Customer Reviews</h3>
+            <div class="rating">
+                <span class="stars">@GetStars(AverageRating)</span>
+                <span class="rating-value">@AverageRating.ToString("F1")</span>
+                <span class="total-reviews">(@TotalReviews reviews)</span>
+            </div>
+        </div>
+        @if (!string.IsNullOrEmpty(UserId))
+        {
+            <button class="write-review" @onclick="ShowReviewForm">Write a Review</button>
+        }
+    </div>
+
+    @if (showReviewForm)
+    {
+        <div class="review-form">
+            <h4>Write Your Review</h4>
+            <div class="rating-input">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <span class="star @(i <= newReview.Rating ? "filled" : "")" 
+                          @onclick="() => SetRating(i)">★</span>
+                }
+            </div>
+            <textarea @bind="newReview.Comment" placeholder="Write your review here..."></textarea>
+            <div class="form-actions">
+                <button @onclick="SubmitReview">Submit Review</button>
+                <button class="cancel" @onclick="CancelReview">Cancel</button>
+            </div>
+        </div>
+    }
+
+    <div class="reviews-list">
+        @foreach (var review in Reviews)
+        {
+            <div class="review-item">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <span class="reviewer-name">@review.UserName</span>
+                        @if (review.IsVerifiedPurchase)
+                        {
+                            <span class="verified-badge">Verified Purchase</span>
+                        }
+                    </div>
+                    <div class="review-rating">
+                        <span class="stars">@GetStars(review.Rating)</span>
+                        <span class="review-date">@review.DateCreated.ToString("MMM dd, yyyy")</span>
+                    </div>
+                </div>
+                <p class="review-comment">@review.Comment</p>
+                <div class="review-actions">
+                    <button class="helpful-button @(review.HelpfulVotes > 0 ? "voted" : "")" 
+                            @onclick="() => VoteReview(review.Id, true)">
+                        Helpful (@review.HelpfulVotes)
+                    </button>
+                    @if (review.UserId == UserId)
+                    {
+                        <button class="edit-button" @onclick="() => EditReview(review)">Edit</button>
+                        <button class="delete-button" @onclick="() => DeleteReview(review.Id)">Delete</button>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (TotalPages > 1)
+    {
+        <div class="pagination">
+            @for (int i = 1; i <= TotalPages; i++)
+            {
+                <button class="page-button @(i == CurrentPage ? "active" : "")" 
+                        @onclick="() => LoadReviews(i)">@i</button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int CatalogItemId { get; set; }
+
+    [Parameter]
+    public string UserId { get; set; } = string.Empty;
+
+    private IEnumerable<ReviewDto> Reviews { get; set; } = Enumerable.Empty<ReviewDto>();
+    private double AverageRating { get; set; }
+    private int TotalReviews { get; set; }
+    private int CurrentPage { get; set; } = 1;
+    private int TotalPages { get; set; }
+    private bool showReviewForm;
+    private ReviewDto newReview = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReviews(1);
+        AverageRating = await ReviewService.GetAverageRatingAsync(CatalogItemId);
+    }
+
+    private async Task LoadReviews(int page)
+    {
+        CurrentPage = page;
+        var reviews = await ReviewService.GetReviewsAsync(CatalogItemId, page);
+        Reviews = reviews;
+        // Assuming we get total count from the service
+        TotalPages = (int)Math.Ceiling(TotalReviews / 10.0);
+    }
+
+    private string GetStars(double rating)
+    {
+        var fullStars = (int)Math.Floor(rating);
+        var halfStar = rating - fullStars >= 0.5;
+        var emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+        return new string('★', fullStars) + 
+               (halfStar ? "½" : "") + 
+               new string('☆', emptyStars);
+    }
+
+    private void ShowReviewForm()
+    {
+        if (string.IsNullOrEmpty(UserId))
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
+        newReview = new ReviewDto
+        {
+            CatalogItemId = CatalogItemId,
+            UserId = UserId,
+            Rating = 0
+        };
+        showReviewForm = true;
+    }
+
+    private void SetRating(int rating)
+    {
+        newReview.Rating = rating;
+    }
+
+    private async Task SubmitReview()
+    {
+        if (newReview.Rating == 0)
+            return;
+
+        await ReviewService.AddReviewAsync(newReview);
+        showReviewForm = false;
+        await LoadReviews(CurrentPage);
+        AverageRating = await ReviewService.GetAverageRatingAsync(CatalogItemId);
+    }
+
+    private void CancelReview()
+    {
+        showReviewForm = false;
+    }
+
+    private async Task EditReview(ReviewDto review)
+    {
+        newReview = review;
+        showReviewForm = true;
+    }
+
+    private async Task DeleteReview(int reviewId)
+    {
+        await ReviewService.DeleteReviewAsync(reviewId);
+        await LoadReviews(CurrentPage);
+        AverageRating = await ReviewService.GetAverageRatingAsync(CatalogItemId);
+    }
+
+    private async Task VoteReview(int reviewId, bool isHelpful)
+    {
+        await ReviewService.VoteReviewAsync(reviewId, isHelpful);
+        await LoadReviews(CurrentPage);
+    }
+} 

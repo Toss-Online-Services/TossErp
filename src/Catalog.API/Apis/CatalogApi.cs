@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Pgvector.EntityFrameworkCore;
+using Catalog.Domain.Entities;
+using Catalog.Domain.Interfaces;
+using Catalog.Infrastructure.Repositories;
 
 namespace eShop.Catalog.API;
 
@@ -17,383 +20,736 @@ public static class CatalogApi
         var v1 = vApi.MapGroup("api/catalog").HasApiVersion(1, 0);
         var v2 = vApi.MapGroup("api/catalog").HasApiVersion(2, 0);
 
-        // Routes for querying catalog items.
-        v1.MapGet("/items", GetAllItemsV1)
-            .WithName("ListItems")
-            .WithSummary("List catalog items")
-            .WithDescription("Get a paginated list of items in the catalog.")
-            .WithTags("Items");
-        v2.MapGet("/items", GetAllItems)
-            .WithName("ListItems-V2")
-            .WithSummary("List catalog items")
-            .WithDescription("Get a paginated list of items in the catalog.")
-            .WithTags("Items");
-        api.MapGet("/items/by", GetItemsByIds)
-            .WithName("BatchGetItems")
-            .WithSummary("Batch get catalog items")
-            .WithDescription("Get multiple items from the catalog")
-            .WithTags("Items");
-        api.MapGet("/items/{id:int}", GetItemById)
-            .WithName("GetItem")
-            .WithSummary("Get catalog item")
-            .WithDescription("Get an item from the catalog")
-            .WithTags("Items");
-        v1.MapGet("/items/by/{name:minlength(1)}", GetItemsByName)
-            .WithName("GetItemsByName")
-            .WithSummary("Get catalog items by name")
-            .WithDescription("Get a paginated list of catalog items with the specified name.")
-            .WithTags("Items");
-        api.MapGet("/items/{id:int}/pic", GetItemPictureById)
-            .WithName("GetItemPicture")
-            .WithSummary("Get catalog item picture")
-            .WithDescription("Get the picture for a catalog item")
-            .WithTags("Items");
+        // Product endpoints
+        v1.MapGet("/products", GetAllProductsV1)
+            .WithName("GetAllProductsV1")
+            .WithTags("Products")
+            .WithDescription("Get all products with pagination");
 
-        // Routes for resolving catalog items using AI.
-        v1.MapGet("/items/withsemanticrelevance/{text:minlength(1)}", GetItemsBySemanticRelevanceV1)
-            .WithName("GetRelevantItems")
-            .WithSummary("Search catalog for relevant items")
-            .WithDescription("Search the catalog for items related to the specified text")
-            .WithTags("Search");
+        v2.MapGet("/products", GetAllProducts)
+            .WithName("GetAllProducts")
+            .WithTags("Products")
+            .WithDescription("Get all products with filtering and pagination");
 
-                // Routes for resolving catalog items using AI.
-        v2.MapGet("/items/withsemanticrelevance", GetItemsBySemanticRelevance)
-            .WithName("GetRelevantItems-V2")
-            .WithSummary("Search catalog for relevant items")
-            .WithDescription("Search the catalog for items related to the specified text")
-            .WithTags("Search");
+        v1.MapGet("/products/{id}", GetProductById)
+            .WithName("GetProductById")
+            .WithTags("Products")
+            .WithDescription("Get a product by its ID");
 
-        // Routes for resolving catalog items by type and brand.
-        v1.MapGet("/items/type/{typeId}/brand/{brandId?}", GetItemsByBrandAndTypeId)
-            .WithName("GetItemsByTypeAndBrand")
-            .WithSummary("Get catalog items by type and brand")
-            .WithDescription("Get catalog items of the specified type and brand")
-            .WithTags("Types");
-        v1.MapGet("/items/type/all/brand/{brandId:int?}", GetItemsByBrandId)
-            .WithName("GetItemsByBrand")
-            .WithSummary("List catalog items by brand")
-            .WithDescription("Get a list of catalog items for the specified brand")
-            .WithTags("Brands");
-        api.MapGet("/catalogtypes",
-            [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-            async (CatalogContext context) => await context.CatalogTypes.OrderBy(x => x.Type).ToListAsync())
-            .WithName("ListItemTypes")
-            .WithSummary("List catalog item types")
-            .WithDescription("Get a list of the types of catalog items")
-            .WithTags("Types");
-        api.MapGet("/catalogbrands",
-            [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-            async (CatalogContext context) => await context.CatalogBrands.OrderBy(x => x.Brand).ToListAsync())
-            .WithName("ListItemBrands")
-            .WithSummary("List catalog item brands")
-            .WithDescription("Get a list of the brands of catalog items")
-            .WithTags("Brands");
+        v1.MapPost("/products", CreateProduct)
+            .WithName("CreateProduct")
+            .WithTags("Products")
+            .WithDescription("Create a new product");
 
-        // Routes for modifying catalog items.
-        v1.MapPut("/items", UpdateItemV1)
-            .WithName("UpdateItem")
-            .WithSummary("Create or replace a catalog item")
-            .WithDescription("Create or replace a catalog item")
-            .WithTags("Items");
-        v2.MapPut("/items/{id:int}", UpdateItem)
-            .WithName("UpdateItem-V2")
-            .WithSummary("Create or replace a catalog item")
-            .WithDescription("Create or replace a catalog item")
-            .WithTags("Items");
-        api.MapPost("/items", CreateItem)
-            .WithName("CreateItem")
-            .WithSummary("Create a catalog item")
-            .WithDescription("Create a new item in the catalog");
-        api.MapDelete("/items/{id:int}", DeleteItemById)
-            .WithName("DeleteItem")
-            .WithSummary("Delete catalog item")
-            .WithDescription("Delete the specified catalog item");
+        v1.MapPut("/products/{id}", UpdateProduct)
+            .WithName("UpdateProduct")
+            .WithTags("Products")
+            .WithDescription("Update an existing product");
+
+        v1.MapDelete("/products/{id}", DeleteProduct)
+            .WithName("DeleteProduct")
+            .WithTags("Products")
+            .WithDescription("Delete a product");
+
+        // Category endpoints
+        v1.MapGet("/categories", GetAllCategories)
+            .WithName("GetAllCategories")
+            .WithTags("Categories")
+            .WithDescription("Get all categories");
+
+        v1.MapGet("/categories/{id}", GetCategoryById)
+            .WithName("GetCategoryById")
+            .WithTags("Categories")
+            .WithDescription("Get a category by its ID");
+
+        v1.MapPost("/categories", CreateCategory)
+            .WithName("CreateCategory")
+            .WithTags("Categories")
+            .WithDescription("Create a new category");
+
+        v1.MapPut("/categories/{id}", UpdateCategory)
+            .WithName("UpdateCategory")
+            .WithTags("Categories")
+            .WithDescription("Update an existing category");
+
+        v1.MapDelete("/categories/{id}", DeleteCategory)
+            .WithName("DeleteCategory")
+            .WithTags("Categories")
+            .WithDescription("Delete a category");
+
+        // Product Attribute endpoints
+        v1.MapGet("/product-attributes", GetAllProductAttributes)
+            .WithName("GetAllProductAttributes")
+            .WithTags("ProductAttributes")
+            .WithDescription("Get all product attributes");
+
+        v1.MapGet("/product-attributes/{id}", GetProductAttributeById)
+            .WithName("GetProductAttributeById")
+            .WithTags("ProductAttributes")
+            .WithDescription("Get a product attribute by its ID");
+
+        v1.MapPost("/product-attributes", CreateProductAttribute)
+            .WithName("CreateProductAttribute")
+            .WithTags("ProductAttributes")
+            .WithDescription("Create a new product attribute");
+
+        v1.MapPut("/product-attributes/{id}", UpdateProductAttribute)
+            .WithName("UpdateProductAttribute")
+            .WithTags("ProductAttributes")
+            .WithDescription("Update an existing product attribute");
+
+        v1.MapDelete("/product-attributes/{id}", DeleteProductAttribute)
+            .WithName("DeleteProductAttribute")
+            .WithTags("ProductAttributes")
+            .WithDescription("Delete a product attribute");
+
+        // Product Attribute Mapping endpoints
+        v1.MapGet("/products/{productId}/attributes", GetProductAttributeMappings)
+            .WithName("GetProductAttributeMappings")
+            .WithTags("ProductAttributeMappings")
+            .WithDescription("Get all attribute mappings for a product");
+
+        v1.MapPost("/products/{productId}/attributes", CreateProductAttributeMapping)
+            .WithName("CreateProductAttributeMapping")
+            .WithTags("ProductAttributeMappings")
+            .WithDescription("Create a new attribute mapping for a product");
+
+        v1.MapPut("/products/{productId}/attributes/{mappingId}", UpdateProductAttributeMapping)
+            .WithName("UpdateProductAttributeMapping")
+            .WithTags("ProductAttributeMappings")
+            .WithDescription("Update an existing attribute mapping");
+
+        v1.MapDelete("/products/{productId}/attributes/{mappingId}", DeleteProductAttributeMapping)
+            .WithName("DeleteProductAttributeMapping")
+            .WithTags("ProductAttributeMappings")
+            .WithDescription("Delete an attribute mapping");
+
+        // Product Attribute Value endpoints
+        v1.MapGet("/product-attributes/{attributeId}/values", GetProductAttributeValues)
+            .WithName("GetProductAttributeValues")
+            .WithTags("ProductAttributeValues")
+            .WithDescription("Get all values for a product attribute");
+
+        v1.MapPost("/product-attributes/{attributeId}/values", CreateProductAttributeValue)
+            .WithName("CreateProductAttributeValue")
+            .WithTags("ProductAttributeValues")
+            .WithDescription("Create a new value for a product attribute");
+
+        v1.MapPut("/product-attributes/{attributeId}/values/{valueId}", UpdateProductAttributeValue)
+            .WithName("UpdateProductAttributeValue")
+            .WithTags("ProductAttributeValues")
+            .WithDescription("Update an existing attribute value");
+
+        v1.MapDelete("/product-attributes/{attributeId}/values/{valueId}", DeleteProductAttributeValue)
+            .WithName("DeleteProductAttributeValue")
+            .WithTags("ProductAttributeValues")
+            .WithDescription("Delete an attribute value");
+
+        // Product Picture endpoints
+        v1.MapGet("/products/{productId}/pictures", GetProductPictures)
+            .WithName("GetProductPictures")
+            .WithTags("ProductPictures")
+            .WithDescription("Get all pictures for a product");
+
+        v1.MapPost("/products/{productId}/pictures", CreateProductPicture)
+            .WithName("CreateProductPicture")
+            .WithTags("ProductPictures")
+            .WithDescription("Add a new picture to a product");
+
+        v1.MapDelete("/products/{productId}/pictures/{pictureId}", DeleteProductPicture)
+            .WithName("DeleteProductPicture")
+            .WithTags("ProductPictures")
+            .WithDescription("Delete a product picture");
+
+        // Product Review endpoints
+        v1.MapGet("/products/{productId}/reviews", GetProductReviews)
+            .WithName("GetProductReviews")
+            .WithTags("ProductReviews")
+            .WithDescription("Get all reviews for a product");
+
+        v1.MapPost("/products/{productId}/reviews", CreateProductReview)
+            .WithName("CreateProductReview")
+            .WithTags("ProductReviews")
+            .WithDescription("Create a new review for a product");
+
+        v1.MapPut("/products/{productId}/reviews/{reviewId}", UpdateProductReview)
+            .WithName("UpdateProductReview")
+            .WithTags("ProductReviews")
+            .WithDescription("Update an existing product review");
+
+        v1.MapDelete("/products/{productId}/reviews/{reviewId}", DeleteProductReview)
+            .WithName("DeleteProductReview")
+            .WithTags("ProductReviews")
+            .WithDescription("Delete a product review");
+
+        // Product Tag endpoints
+        v1.MapGet("/product-tags", GetAllProductTags)
+            .WithName("GetAllProductTags")
+            .WithTags("ProductTags")
+            .WithDescription("Get all product tags");
+
+        v1.MapGet("/products/{productId}/tags", GetProductTags)
+            .WithName("GetProductTags")
+            .WithTags("ProductTags")
+            .WithDescription("Get all tags for a product");
+
+        v1.MapPost("/products/{productId}/tags", AddProductTag)
+            .WithName("AddProductTag")
+            .WithTags("ProductTags")
+            .WithDescription("Add a tag to a product");
+
+        v1.MapDelete("/products/{productId}/tags/{tagId}", RemoveProductTag)
+            .WithName("RemoveProductTag")
+            .WithTags("ProductTags")
+            .WithDescription("Remove a tag from a product");
+
+        // Related Product endpoints
+        v1.MapGet("/products/{productId}/related", GetRelatedProducts)
+            .WithName("GetRelatedProducts")
+            .WithTags("RelatedProducts")
+            .WithDescription("Get all related products");
+
+        v1.MapPost("/products/{productId}/related", AddRelatedProduct)
+            .WithName("AddRelatedProduct")
+            .WithTags("RelatedProducts")
+            .WithDescription("Add a related product");
+
+        v1.MapDelete("/products/{productId}/related/{relatedProductId}", RemoveRelatedProduct)
+            .WithName("RemoveRelatedProduct")
+            .WithTags("RelatedProducts")
+            .WithDescription("Remove a related product");
+
+        // Cross-sell Product endpoints
+        v1.MapGet("/products/{productId}/cross-sells", GetCrossSellProducts)
+            .WithName("GetCrossSellProducts")
+            .WithTags("CrossSellProducts")
+            .WithDescription("Get all cross-sell products");
+
+        v1.MapPost("/products/{productId}/cross-sells", AddCrossSellProduct)
+            .WithName("AddCrossSellProduct")
+            .WithTags("CrossSellProducts")
+            .WithDescription("Add a cross-sell product");
+
+        v1.MapDelete("/products/{productId}/cross-sells/{crossSellProductId}", RemoveCrossSellProduct)
+            .WithName("RemoveCrossSellProduct")
+            .WithTags("CrossSellProducts")
+            .WithDescription("Remove a cross-sell product");
 
         return app;
     }
 
+    // Product endpoints implementation
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Ok<PaginatedItems<CatalogItem>>> GetAllItemsV1(
+    public static async Task<Ok<PaginatedItems<Product>>> GetAllProductsV1(
         [AsParameters] PaginationRequest paginationRequest,
         [AsParameters] CatalogServices services)
     {
-        return await GetAllItems(paginationRequest, services, null, null, null);
+        var products = await services.ProductRepository.GetAllAsync();
+        var paginatedProducts = new PaginatedItems<Product>(
+            paginationRequest.PageIndex,
+            paginationRequest.PageSize,
+            products.Count(),
+            products.Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
+                    .Take(paginationRequest.PageSize));
+
+        return TypedResults.Ok(paginatedProducts);
     }
 
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Ok<PaginatedItems<CatalogItem>>> GetAllItems(
+    public static async Task<Ok<PaginatedItems<Product>>> GetAllProducts(
         [AsParameters] PaginationRequest paginationRequest,
         [AsParameters] CatalogServices services,
-        [Description("The name of the item to return")] string name,
-        [Description("The type of items to return")] int? type,
-        [Description("The brand of items to return")] int? brand)
+        [Description("The name of the product to return")] string name,
+        [Description("The category of products to return")] int? categoryId,
+        [Description("The tag of products to return")] int? tagId)
     {
-        var pageSize = paginationRequest.PageSize;
-        var pageIndex = paginationRequest.PageIndex;
+        var products = await services.ProductRepository.GetAllAsync();
+        
+        if (!string.IsNullOrEmpty(name))
+            products = products.Where(p => p.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+        
+        if (categoryId.HasValue)
+            products = products.Where(p => p.Categories.Any(c => c.Id == categoryId.Value));
+        
+        if (tagId.HasValue)
+            products = products.Where(p => p.ProductTags.Any(t => t.Id == tagId.Value));
 
-        var root = (IQueryable<CatalogItem>)services.Context.CatalogItems;
+        var paginatedProducts = new PaginatedItems<Product>(
+            paginationRequest.PageIndex,
+            paginationRequest.PageSize,
+            products.Count(),
+            products.Skip(paginationRequest.PageSize * paginationRequest.PageIndex)
+                    .Take(paginationRequest.PageSize));
 
-        if (name is not null)
-        {
-            root = root.Where(c => c.Name.StartsWith(name));
-        }
-        if (type is not null)
-        {
-            root = root.Where(c => c.CatalogTypeId == type);
-        }
-        if (brand is not null)
-        {
-            root = root.Where(c => c.CatalogBrandId == brand);
-        }
-
-        var totalItems = await root
-            .LongCountAsync();
-
-        var itemsOnPage = await root
-            .OrderBy(c => c.Name)
-            .Skip(pageSize * pageIndex)
-            .Take(pageSize)
-            .ToListAsync();
-
-        return TypedResults.Ok(new PaginatedItems<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage));
+        return TypedResults.Ok(paginatedProducts);
     }
 
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Ok<List<CatalogItem>>> GetItemsByIds(
+    public static async Task<Results<Ok<Product>, NotFound>> GetProductById(
         [AsParameters] CatalogServices services,
-        [Description("List of ids for catalog items to return")] int[] ids)
+        [Description("The product id")] int id)
     {
-        var items = await services.Context.CatalogItems.Where(item => ids.Contains(item.Id)).ToListAsync();
-        return TypedResults.Ok(items);
-    }
-
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Results<Ok<CatalogItem>, NotFound, BadRequest<ProblemDetails>>> GetItemById(
-        HttpContext httpContext,
-        [AsParameters] CatalogServices services,
-        [Description("The catalog item id")] int id)
-    {
-        if (id <= 0)
-        {
-            return TypedResults.BadRequest<ProblemDetails>(new (){
-                Detail = "Id is not valid"
-            });
-        }
-
-        var item = await services.Context.CatalogItems.Include(ci => ci.CatalogBrand).SingleOrDefaultAsync(ci => ci.Id == id);
-
-        if (item == null)
-        {
+        var product = await services.ProductRepository.GetByIdAsync(id);
+        if (product == null)
             return TypedResults.NotFound();
-        }
 
-        return TypedResults.Ok(item);
+        return TypedResults.Ok(product);
     }
 
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Ok<PaginatedItems<CatalogItem>>> GetItemsByName(
-        [AsParameters] PaginationRequest paginationRequest,
+    public static async Task<Created> CreateProduct(
         [AsParameters] CatalogServices services,
-        [Description("The name of the item to return")] string name)
+        Product product)
     {
-        return await GetAllItems(paginationRequest, services, name, null, null);
+        await services.ProductRepository.AddAsync(product);
+        return TypedResults.Created($"/api/catalog/products/{product.Id}");
     }
 
-    [ProducesResponseType<byte[]>(StatusCodes.Status200OK, "application/octet-stream",
-        [ "image/png", "image/gif", "image/jpeg", "image/bmp", "image/tiff",
-          "image/wmf", "image/jp2", "image/svg+xml", "image/webp" ])]
-    public static async Task<Results<PhysicalFileHttpResult,NotFound>> GetItemPictureById(
-        CatalogContext context,
-        IWebHostEnvironment environment,
-        [Description("The catalog item id")] int id)
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> UpdateProduct(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int id,
+        Product product)
     {
-        var item = await context.CatalogItems.FindAsync(id);
-
-        if (item is null)
-        {
+        var existingProduct = await services.ProductRepository.GetByIdAsync(id);
+        if (existingProduct == null)
             return TypedResults.NotFound();
-        }
 
-        var path = GetFullPath(environment.ContentRootPath, item.PictureFileName);
-
-        string imageFileExtension = Path.GetExtension(item.PictureFileName);
-        string mimetype = GetImageMimeTypeFromImageFileExtension(imageFileExtension);
-        DateTime lastModified = File.GetLastWriteTimeUtc(path);
-
-        return TypedResults.PhysicalFile(path, mimetype, lastModified: lastModified);
+        product.Id = id;
+        await services.ProductRepository.UpdateAsync(product);
+        return TypedResults.NoContent();
     }
 
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Results<Ok<PaginatedItems<CatalogItem>>, RedirectToRouteHttpResult>> GetItemsBySemanticRelevanceV1(
-        [AsParameters] PaginationRequest paginationRequest,
+    public static async Task<Results<NoContent, NotFound>> DeleteProduct(
         [AsParameters] CatalogServices services,
-        [Description("The text string to use when search for related items in the catalog")] string text)
-
+        [Description("The product id")] int id)
     {
-        return await GetItemsBySemanticRelevance(paginationRequest, services, text);
-    }
-
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Results<Ok<PaginatedItems<CatalogItem>>, RedirectToRouteHttpResult>> GetItemsBySemanticRelevance(
-        [AsParameters] PaginationRequest paginationRequest,
-        [AsParameters] CatalogServices services,
-        [Description("The text string to use when search for related items in the catalog"), Required, MinLength(1)] string text)
-    {
-        var pageSize = paginationRequest.PageSize;
-        var pageIndex = paginationRequest.PageIndex;
-
-        if (!services.CatalogAI.IsEnabled)
-        {
-            return await GetItemsByName(paginationRequest, services, text);
-        }
-
-        // Create an embedding for the input search
-        var vector = await services.CatalogAI.GetEmbeddingAsync(text);
-
-        // Get the total number of items
-        var totalItems = await services.Context.CatalogItems
-            .LongCountAsync();
-
-        // Get the next page of items, ordered by most similar (smallest distance) to the input search
-        List<CatalogItem> itemsOnPage;
-        if (services.Logger.IsEnabled(LogLevel.Debug))
-        {
-            var itemsWithDistance = await services.Context.CatalogItems
-                .Select(c => new { Item = c, Distance = c.Embedding.CosineDistance(vector) })
-                .OrderBy(c => c.Distance)
-                .Skip(pageSize * pageIndex)
-                .Take(pageSize)
-                .ToListAsync();
-
-            services.Logger.LogDebug("Results from {text}: {results}", text, string.Join(", ", itemsWithDistance.Select(i => $"{i.Item.Name} => {i.Distance}")));
-
-            itemsOnPage = itemsWithDistance.Select(i => i.Item).ToList();
-        }
-        else
-        {
-            itemsOnPage = await services.Context.CatalogItems
-                .OrderBy(c => c.Embedding.CosineDistance(vector))
-                .Skip(pageSize * pageIndex)
-                .Take(pageSize)
-                .ToListAsync();
-        }
-
-        return TypedResults.Ok(new PaginatedItems<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage));
-    }
-
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Ok<PaginatedItems<CatalogItem>>> GetItemsByBrandAndTypeId(
-        [AsParameters] PaginationRequest paginationRequest,
-        [AsParameters] CatalogServices services,
-        [Description("The type of items to return")] int typeId,
-        [Description("The brand of items to return")] int? brandId)
-    {
-        return await GetAllItems(paginationRequest, services, null, typeId, brandId);
-    }
-
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Ok<PaginatedItems<CatalogItem>>> GetItemsByBrandId(
-        [AsParameters] PaginationRequest paginationRequest,
-        [AsParameters] CatalogServices services,
-        [Description("The brand of items to return")] int? brandId)
-    {
-        return await GetAllItems(paginationRequest, services, null, null, brandId);
-    }
-
-    public static async Task<Results<Created, BadRequest<ProblemDetails>, NotFound<ProblemDetails>>> UpdateItemV1(
-        HttpContext httpContext,
-        [AsParameters] CatalogServices services,
-        CatalogItem productToUpdate)
-    {
-        if (productToUpdate?.Id == null)
-        {
-            return TypedResults.BadRequest<ProblemDetails>(new (){
-                Detail = "Item id must be provided in the request body."
-            });
-        }
-        return await UpdateItem(httpContext, productToUpdate.Id, services, productToUpdate);
-    }
-
-    public static async Task<Results<Created, BadRequest<ProblemDetails>, NotFound<ProblemDetails>>> UpdateItem(
-        HttpContext httpContext,
-        [Description("The id of the catalog item to delete")] int id,
-        [AsParameters] CatalogServices services,
-        CatalogItem productToUpdate)
-    {
-        var catalogItem = await services.Context.CatalogItems.SingleOrDefaultAsync(i => i.Id == id);
-
-        if (catalogItem == null)
-        {
-            return TypedResults.NotFound<ProblemDetails>(new (){
-                Detail = $"Item with id {id} not found."
-            });
-        }
-
-        // Update current product
-        var catalogEntry = services.Context.Entry(catalogItem);
-        catalogEntry.CurrentValues.SetValues(productToUpdate);
-
-        catalogItem.Embedding = await services.CatalogAI.GetEmbeddingAsync(catalogItem);
-
-        var priceEntry = catalogEntry.Property(i => i.Price);
-
-        if (priceEntry.IsModified) // Save product's data and publish integration event through the Event Bus if price has changed
-        {
-            //Create Integration Event to be published through the Event Bus
-            var priceChangedEvent = new ProductPriceChangedIntegrationEvent(catalogItem.Id, productToUpdate.Price, priceEntry.OriginalValue);
-
-            // Achieving atomicity between original Catalog database operation and the IntegrationEventLog thanks to a local transaction
-            await services.EventService.SaveEventAndCatalogContextChangesAsync(priceChangedEvent);
-
-            // Publish through the Event Bus and mark the saved event as published
-            await services.EventService.PublishThroughEventBusAsync(priceChangedEvent);
-        }
-        else // Just save the updated product because the Product's Price hasn't changed.
-        {
-            await services.Context.SaveChangesAsync();
-        }
-        return TypedResults.Created($"/api/catalog/items/{id}");
-    }
-
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Created> CreateItem(
-        [AsParameters] CatalogServices services,
-        CatalogItem product)
-    {
-        var item = new CatalogItem
-        {
-            Id = product.Id,
-            CatalogBrandId = product.CatalogBrandId,
-            CatalogTypeId = product.CatalogTypeId,
-            Description = product.Description,
-            Name = product.Name,
-            PictureFileName = product.PictureFileName,
-            Price = product.Price,
-            AvailableStock = product.AvailableStock,
-            RestockThreshold = product.RestockThreshold,
-            MaxStockThreshold = product.MaxStockThreshold
-        };
-        item.Embedding = await services.CatalogAI.GetEmbeddingAsync(item);
-
-        services.Context.CatalogItems.Add(item);
-        await services.Context.SaveChangesAsync();
-
-        return TypedResults.Created($"/api/catalog/items/{item.Id}");
-    }
-
-    public static async Task<Results<NoContent, NotFound>> DeleteItemById(
-        [AsParameters] CatalogServices services,
-        [Description("The id of the catalog item to delete")] int id)
-    {
-        var item = services.Context.CatalogItems.SingleOrDefault(x => x.Id == id);
-
-        if (item is null)
-        {
+        var product = await services.ProductRepository.GetByIdAsync(id);
+        if (product == null)
             return TypedResults.NotFound();
-        }
 
-        services.Context.CatalogItems.Remove(item);
-        await services.Context.SaveChangesAsync();
+        await services.ProductRepository.DeleteAsync(id);
+        return TypedResults.NoContent();
+    }
+
+    // Category endpoints implementation
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Ok<IEnumerable<Category>>> GetAllCategories(
+        [AsParameters] CatalogServices services)
+    {
+        var categories = await services.CategoryRepository.GetAllAsync();
+        return TypedResults.Ok(categories);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<Category>, NotFound>> GetCategoryById(
+        [AsParameters] CatalogServices services,
+        [Description("The category id")] int id)
+    {
+        var category = await services.CategoryRepository.GetByIdAsync(id);
+        if (category == null)
+            return TypedResults.NotFound();
+
+        return TypedResults.Ok(category);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Created> CreateCategory(
+        [AsParameters] CatalogServices services,
+        Category category)
+    {
+        await services.CategoryRepository.AddAsync(category);
+        return TypedResults.Created($"/api/catalog/categories/{category.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> UpdateCategory(
+        [AsParameters] CatalogServices services,
+        [Description("The category id")] int id,
+        Category category)
+    {
+        var existingCategory = await services.CategoryRepository.GetByIdAsync(id);
+        if (existingCategory == null)
+            return TypedResults.NotFound();
+
+        category.Id = id;
+        await services.CategoryRepository.UpdateAsync(category);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> DeleteCategory(
+        [AsParameters] CatalogServices services,
+        [Description("The category id")] int id)
+    {
+        var category = await services.CategoryRepository.GetByIdAsync(id);
+        if (category == null)
+            return TypedResults.NotFound();
+
+        await services.CategoryRepository.DeleteAsync(id);
+        return TypedResults.NoContent();
+    }
+
+    // Product Attribute endpoints implementation
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Ok<IEnumerable<ProductAttribute>>> GetAllProductAttributes(
+        [AsParameters] CatalogServices services)
+    {
+        var attributes = await services.ProductAttributeRepository.GetAllAsync();
+        return TypedResults.Ok(attributes);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<Ok<ProductAttribute>, NotFound>> GetProductAttributeById(
+        [AsParameters] CatalogServices services,
+        [Description("The product attribute id")] int id)
+    {
+        var attribute = await services.ProductAttributeRepository.GetByIdAsync(id);
+        if (attribute == null)
+            return TypedResults.NotFound();
+
+        return TypedResults.Ok(attribute);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Created> CreateProductAttribute(
+        [AsParameters] CatalogServices services,
+        ProductAttribute attribute)
+    {
+        await services.ProductAttributeRepository.AddAsync(attribute);
+        return TypedResults.Created($"/api/catalog/product-attributes/{attribute.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> UpdateProductAttribute(
+        [AsParameters] CatalogServices services,
+        [Description("The product attribute id")] int id,
+        ProductAttribute attribute)
+    {
+        var existingAttribute = await services.ProductAttributeRepository.GetByIdAsync(id);
+        if (existingAttribute == null)
+            return TypedResults.NotFound();
+
+        attribute.Id = id;
+        await services.ProductAttributeRepository.UpdateAsync(attribute);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> DeleteProductAttribute(
+        [AsParameters] CatalogServices services,
+        [Description("The product attribute id")] int id)
+    {
+        var attribute = await services.ProductAttributeRepository.GetByIdAsync(id);
+        if (attribute == null)
+            return TypedResults.NotFound();
+
+        await services.ProductAttributeRepository.DeleteAsync(id);
+        return TypedResults.NoContent();
+    }
+
+    // Product Attribute Mapping endpoints implementation
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Ok<IEnumerable<ProductAttributeMapping>>> GetProductAttributeMappings(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId)
+    {
+        var mappings = await services.ProductAttributeMappingRepository.GetByProductIdAsync(productId);
+        return TypedResults.Ok(mappings);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Created> CreateProductAttributeMapping(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        ProductAttributeMapping mapping)
+    {
+        mapping.ProductId = productId;
+        await services.ProductAttributeMappingRepository.AddAsync(mapping);
+        return TypedResults.Created($"/api/catalog/products/{productId}/attributes/{mapping.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> UpdateProductAttributeMapping(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The mapping id")] int mappingId,
+        ProductAttributeMapping mapping)
+    {
+        var existingMapping = await services.ProductAttributeMappingRepository.GetByIdAsync(mappingId);
+        if (existingMapping == null || existingMapping.ProductId != productId)
+            return TypedResults.NotFound();
+
+        mapping.Id = mappingId;
+        mapping.ProductId = productId;
+        await services.ProductAttributeMappingRepository.UpdateAsync(mapping);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> DeleteProductAttributeMapping(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The mapping id")] int mappingId)
+    {
+        var mapping = await services.ProductAttributeMappingRepository.GetByIdAsync(mappingId);
+        if (mapping == null || mapping.ProductId != productId)
+            return TypedResults.NotFound();
+
+        await services.ProductAttributeMappingRepository.DeleteAsync(mappingId);
+        return TypedResults.NoContent();
+    }
+
+    // Product Attribute Value endpoints implementation
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Ok<IEnumerable<ProductAttributeValue>>> GetProductAttributeValues(
+        [AsParameters] CatalogServices services,
+        [Description("The attribute id")] int attributeId)
+    {
+        var values = await services.ProductAttributeValueRepository.GetByProductAttributeMappingIdAsync(attributeId);
+        return TypedResults.Ok(values);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Created> CreateProductAttributeValue(
+        [AsParameters] CatalogServices services,
+        [Description("The attribute id")] int attributeId,
+        ProductAttributeValue value)
+    {
+        value.ProductAttributeMappingId = attributeId;
+        await services.ProductAttributeValueRepository.AddAsync(value);
+        return TypedResults.Created($"/api/catalog/product-attributes/{attributeId}/values/{value.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> UpdateProductAttributeValue(
+        [AsParameters] CatalogServices services,
+        [Description("The attribute id")] int attributeId,
+        [Description("The value id")] int valueId,
+        ProductAttributeValue value)
+    {
+        var existingValue = await services.ProductAttributeValueRepository.GetByIdAsync(valueId);
+        if (existingValue == null || existingValue.ProductAttributeMappingId != attributeId)
+            return TypedResults.NotFound();
+
+        value.Id = valueId;
+        value.ProductAttributeMappingId = attributeId;
+        await services.ProductAttributeValueRepository.UpdateAsync(value);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> DeleteProductAttributeValue(
+        [AsParameters] CatalogServices services,
+        [Description("The attribute id")] int attributeId,
+        [Description("The value id")] int valueId)
+    {
+        var value = await services.ProductAttributeValueRepository.GetByIdAsync(valueId);
+        if (value == null || value.ProductAttributeMappingId != attributeId)
+            return TypedResults.NotFound();
+
+        await services.ProductAttributeValueRepository.DeleteAsync(valueId);
+        return TypedResults.NoContent();
+    }
+
+    // Product Picture endpoints implementation
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Ok<IEnumerable<ProductPicture>>> GetProductPictures(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId)
+    {
+        var pictures = await services.ProductPictureRepository.GetByProductIdAsync(productId);
+        return TypedResults.Ok(pictures);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Created> CreateProductPicture(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        ProductPicture picture)
+    {
+        picture.ProductId = productId;
+        await services.ProductPictureRepository.AddAsync(picture);
+        return TypedResults.Created($"/api/catalog/products/{productId}/pictures/{picture.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> DeleteProductPicture(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The picture id")] int pictureId)
+    {
+        var picture = await services.ProductPictureRepository.GetByIdAsync(pictureId);
+        if (picture == null || picture.ProductId != productId)
+            return TypedResults.NotFound();
+
+        await services.ProductPictureRepository.DeleteAsync(pictureId);
+        return TypedResults.NoContent();
+    }
+
+    // Product Review endpoints implementation
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Ok<IEnumerable<ProductReview>>> GetProductReviews(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId)
+    {
+        var reviews = await services.ProductReviewRepository.GetByProductIdAsync(productId);
+        return TypedResults.Ok(reviews);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Created> CreateProductReview(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        ProductReview review)
+    {
+        review.ProductId = productId;
+        await services.ProductReviewRepository.AddAsync(review);
+        return TypedResults.Created($"/api/catalog/products/{productId}/reviews/{review.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> UpdateProductReview(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The review id")] int reviewId,
+        ProductReview review)
+    {
+        var existingReview = await services.ProductReviewRepository.GetByIdAsync(reviewId);
+        if (existingReview == null || existingReview.ProductId != productId)
+            return TypedResults.NotFound();
+
+        review.Id = reviewId;
+        review.ProductId = productId;
+        await services.ProductReviewRepository.UpdateAsync(review);
+        return TypedResults.NoContent();
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> DeleteProductReview(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The review id")] int reviewId)
+    {
+        var review = await services.ProductReviewRepository.GetByIdAsync(reviewId);
+        if (review == null || review.ProductId != productId)
+            return TypedResults.NotFound();
+
+        await services.ProductReviewRepository.DeleteAsync(reviewId);
+        return TypedResults.NoContent();
+    }
+
+    // Product Tag endpoints implementation
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Ok<IEnumerable<ProductTag>>> GetAllProductTags(
+        [AsParameters] CatalogServices services)
+    {
+        var tags = await services.ProductTagRepository.GetAllAsync();
+        return TypedResults.Ok(tags);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Ok<IEnumerable<ProductTag>>> GetProductTags(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId)
+    {
+        var tags = await services.ProductTagRepository.GetByProductIdAsync(productId);
+        return TypedResults.Ok(tags);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Created> AddProductTag(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        ProductTag tag)
+    {
+        tag.ProductId = productId;
+        await services.ProductTagRepository.AddAsync(tag);
+        return TypedResults.Created($"/api/catalog/products/{productId}/tags/{tag.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> RemoveProductTag(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The tag id")] int tagId)
+    {
+        var tag = await services.ProductTagRepository.GetByIdAsync(tagId);
+        if (tag == null || tag.ProductId != productId)
+            return TypedResults.NotFound();
+
+        await services.ProductTagRepository.DeleteAsync(tagId);
+        return TypedResults.NoContent();
+    }
+
+    // Related Product endpoints implementation
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Ok<IEnumerable<RelatedProduct>>> GetRelatedProducts(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId)
+    {
+        var relatedProducts = await services.RelatedProductRepository.GetByProductIdAsync(productId);
+        return TypedResults.Ok(relatedProducts);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Created> AddRelatedProduct(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        RelatedProduct relatedProduct)
+    {
+        relatedProduct.ProductId1 = productId;
+        await services.RelatedProductRepository.AddAsync(relatedProduct);
+        return TypedResults.Created($"/api/catalog/products/{productId}/related/{relatedProduct.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> RemoveRelatedProduct(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The related product id")] int relatedProductId)
+    {
+        var relatedProduct = await services.RelatedProductRepository.GetByIdAsync(relatedProductId);
+        if (relatedProduct == null || (relatedProduct.ProductId1 != productId && relatedProduct.ProductId2 != productId))
+            return TypedResults.NotFound();
+
+        await services.RelatedProductRepository.DeleteAsync(relatedProductId);
+        return TypedResults.NoContent();
+    }
+
+    // Cross-sell Product endpoints implementation
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Ok<IEnumerable<CrossSellProduct>>> GetCrossSellProducts(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId)
+    {
+        var crossSellProducts = await services.CrossSellProductRepository.GetByProductIdAsync(productId);
+        return TypedResults.Ok(crossSellProducts);
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Created> AddCrossSellProduct(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        CrossSellProduct crossSellProduct)
+    {
+        crossSellProduct.ProductId1 = productId;
+        await services.CrossSellProductRepository.AddAsync(crossSellProduct);
+        return TypedResults.Created($"/api/catalog/products/{productId}/cross-sells/{crossSellProduct.Id}");
+    }
+
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    public static async Task<Results<NoContent, NotFound>> RemoveCrossSellProduct(
+        [AsParameters] CatalogServices services,
+        [Description("The product id")] int productId,
+        [Description("The cross-sell product id")] int crossSellProductId)
+    {
+        var crossSellProduct = await services.CrossSellProductRepository.GetByIdAsync(crossSellProductId);
+        if (crossSellProduct == null || (crossSellProduct.ProductId1 != productId && crossSellProduct.ProductId2 != productId))
+            return TypedResults.NotFound();
+
+        await services.CrossSellProductRepository.DeleteAsync(crossSellProductId);
         return TypedResults.NoContent();
     }
 

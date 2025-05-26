@@ -1,4 +1,4 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
+﻿namespace Ordering.API.Application.Commands;
 
 // DDD and CQRS patterns comment: Note that it is recommended to implement immutable Commands
 // In this case, its immutability is achieved by having all the setters as private
@@ -9,51 +9,59 @@
 // http://blog.gauffin.org/2012/06/griffin-container-introducing-command-support/
 // https://docs.microsoft.com/dotnet/csharp/programming-guide/classes-and-structs/how-to-implement-a-lightweight-class-with-auto-implemented-properties
 
-using eShop.Ordering.API.Application.Models;
-using eShop.Ordering.API.Extensions;
+using Ordering.API.Application.Models;
+using Ordering.API.Extensions;
 
 [DataContract]
-public class CreateOrderCommand
-    : IRequest<bool>
+public record CreateOrderCommand : IRequest<bool>
 {
     [DataMember]
     private readonly List<OrderItemDTO> _orderItems;
 
     [DataMember]
-    public string UserId { get; private set; }
+    public string UserId { get; }
 
     [DataMember]
-    public string UserName { get; private set; }
+    public string UserName { get; }
 
     [DataMember]
-    public string City { get; private set; }
+    public string City { get; }
 
     [DataMember]
-    public string Street { get; private set; }
+    public string Street { get; }
 
     [DataMember]
-    public string State { get; private set; }
+    public string State { get; }
 
     [DataMember]
-    public string Country { get; private set; }
+    public string Country { get; }
 
     [DataMember]
-    public string ZipCode { get; private set; }
+    public string ZipCode { get; }
 
     [DataMember]
-    public string CardNumber { get; private set; }
+    public string CardNumber { get; }
 
     [DataMember]
-    public string CardHolderName { get; private set; }
+    public string CardHolderName { get; }
 
     [DataMember]
-    public DateTime CardExpiration { get; private set; }
+    public DateTime CardExpiration { get; }
 
     [DataMember]
-    public string CardSecurityNumber { get; private set; }
+    public string CardSecurityNumber { get; }
 
     [DataMember]
-    public int CardTypeId { get; private set; }
+    public int CardTypeId { get; }
+
+    [DataMember]
+    public string Buyer { get; }
+
+    [DataMember]
+    public Guid RequestId { get; }
+
+    [DataMember]
+    public CustomerBasket Basket { get; }
 
     [DataMember]
     public IEnumerable<OrderItemDTO> OrderItems => _orderItems;
@@ -65,7 +73,7 @@ public class CreateOrderCommand
 
     public CreateOrderCommand(List<BasketItem> basketItems, string userId, string userName, string city, string street, string state, string country, string zipcode,
         string cardNumber, string cardHolderName, DateTime cardExpiration,
-        string cardSecurityNumber, int cardTypeId)
+        string cardSecurityNumber, int cardTypeId, string buyer, Guid requestId, CustomerBasket basket)
     {
         _orderItems = basketItems.ToOrderItemsDTO().ToList();
         UserId = userId;
@@ -80,6 +88,9 @@ public class CreateOrderCommand
         CardExpiration = cardExpiration;
         CardSecurityNumber = cardSecurityNumber;
         CardTypeId = cardTypeId;
+        Buyer = buyer;
+        RequestId = requestId;
+        Basket = basket;
     }
 }
 

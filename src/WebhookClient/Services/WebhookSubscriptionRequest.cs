@@ -2,8 +2,8 @@
 
 public class WebhookSubscriptionRequest
 {
-    public string? Url { get; set; }
-    public string? Token { get; set; }
-    public string? Event { get; set; }
-    public string? GrantUrl { get; set; }
+    public required string Url { get; init; }
+    public string? Token { get; init; }
+    public required string Event { get; init; }
+    public required string GrantUrl { get; init; }
 }

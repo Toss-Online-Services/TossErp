@@ -2,11 +2,11 @@
 
 public class WebhookData
 {
-    public DateTime When { get; }
+    public required DateTime When { get; init; }
 
-    public string Payload { get; }
+    public required string Payload { get; init; }
 
-    public string Type { get; }
+    public required string Type { get; init; }
 
     public WebhookData(WebhookType hookType, object data)
     {

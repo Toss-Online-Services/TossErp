@@ -6,17 +6,16 @@ public class Buyer
     : Entity, IAggregateRoot
 {
     [Required]
-    public string IdentityGuid { get; private set; }
+    public string IdentityGuid { get; private set; } = string.Empty;
 
-    public string Name { get; private set; }
+    public string Name { get; private set; } = string.Empty;
 
-    private List<PaymentMethod> _paymentMethods;
+    private readonly List<PaymentMethod> _paymentMethods;
 
     public IEnumerable<PaymentMethod> PaymentMethods => _paymentMethods.AsReadOnly();
 
     protected Buyer()
     {
-
         _paymentMethods = new List<PaymentMethod>();
     }
 

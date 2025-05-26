@@ -1,4 +1,25 @@
-﻿internal static class Extensions
+﻿using Ordering.API.Infrastructure;
+using Ordering.Infrastructure;
+using Ordering.API.Application.Commands;
+using Ordering.API.Application.Queries;
+using Ordering.API.Application.Validations;
+using Ordering.Domain.AggregatesModel.BuyerAggregate;
+using Ordering.Domain.AggregatesModel.OrderAggregate;
+using ServiceDefaults;
+using FluentValidation;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Ordering.API.Application.Behaviors;
+using Ordering.API.Application.IntegrationEvents.EventHandling;
+using Ordering.API.Application.IntegrationEvents.Events;
+using Ordering.API.Infrastructure.Services;
+using Ordering.Infrastructure.Repositories;
+
+namespace Ordering.API.Extensions;
+
+internal static class Extensions
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {

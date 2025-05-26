@@ -1,10 +1,16 @@
-﻿namespace eShop.Ordering.API.Infrastructure.Services;
+﻿namespace Ordering.API.Infrastructure.Services;
 
-public class IdentityService(IHttpContextAccessor context) : IIdentityService
+public class IdentityService : IIdentityService
 {
-    public string GetUserIdentity()
-        => context.HttpContext?.User.FindFirst("sub")?.Value;
+    private readonly IHttpContextAccessor _context;
+
+    public IdentityService(IHttpContextAccessor context)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    public string GetUserIdentity() => _context.HttpContext?.User?.FindFirst("sub")?.Value;
 
     public string GetUserName()
-        => context.HttpContext?.User.Identity?.Name;
+        => _context.HttpContext?.User.Identity?.Name;
 }

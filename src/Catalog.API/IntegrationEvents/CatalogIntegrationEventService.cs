@@ -1,4 +1,6 @@
-﻿namespace eShop.Catalog.API.IntegrationEvents;
+﻿using Catalog.Infrastructure.Context;
+
+namespace eShop.Catalog.API.IntegrationEvents;
 
 public sealed class CatalogIntegrationEventService(ILogger<CatalogIntegrationEventService> logger,
     IEventBus eventBus,

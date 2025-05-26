@@ -38,19 +38,21 @@ namespace IdentityServerHost.Quickstart.UI
         /// </summary>
         public async Task<IActionResult> Error(string errorId)
         {
-            var vm = new ErrorViewModel();
-
             // retrieve error details from identityserver
             var message = await _interaction.GetErrorContextAsync(errorId);
-            if (message != null)
+            var vm = new ErrorViewModel
             {
-                vm.Error = message;
-
-                if (!_environment.IsDevelopment())
+                Error = message ?? new ErrorMessage
                 {
-                    // only show in development
-                    message.ErrorDescription = null;
+                    Error = "Unknown error",
+                    ErrorDescription = "An unknown error occurred"
                 }
+            };
+
+            if (message != null && !_environment.IsDevelopment())
+            {
+                // only show in development
+                message.ErrorDescription = null;
             }
 
             return View("Error", vm);

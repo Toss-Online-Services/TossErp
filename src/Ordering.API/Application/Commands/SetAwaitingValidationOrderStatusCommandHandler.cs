@@ -1,13 +1,17 @@
-﻿namespace eShop.Ordering.API.Application.Commands;
+﻿namespace Ordering.API.Application.Commands;
 
 // Regular CommandHandler
 public class SetAwaitingValidationOrderStatusCommandHandler : IRequestHandler<SetAwaitingValidationOrderStatusCommand, bool>
 {
     private readonly IOrderRepository _orderRepository;
+    private readonly ILogger<SetAwaitingValidationOrderStatusCommandHandler> _logger;
 
-    public SetAwaitingValidationOrderStatusCommandHandler(IOrderRepository orderRepository)
+    public SetAwaitingValidationOrderStatusCommandHandler(
+        IOrderRepository orderRepository,
+        ILogger<SetAwaitingValidationOrderStatusCommandHandler> logger)
     {
         _orderRepository = orderRepository;
+        _logger = logger;
     }
 
     /// <summary>
@@ -18,6 +22,8 @@ public class SetAwaitingValidationOrderStatusCommandHandler : IRequestHandler<Se
     /// <returns></returns>
     public async Task<bool> Handle(SetAwaitingValidationOrderStatusCommand command, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling command: {CommandName} - {IdProperty}: {CommandId} ({@Command})", command.GetGenericTypeName(), nameof(command.OrderNumber), command.OrderNumber, command);
+
         var orderToUpdate = await _orderRepository.GetAsync(command.OrderNumber);
         if (orderToUpdate == null)
         {

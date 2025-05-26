@@ -1,22 +1,37 @@
-﻿namespace eShop.Ordering.API.Infrastructure;
-public class OrderingContextSeed: IDbSeeder<OrderingContext>
+﻿using Ordering.Domain.AggregatesModel.BuyerAggregate;
+using Ordering.Infrastructure;
+using Ordering.API.Application.Queries;
+using Microsoft.Extensions.Logging;
+
+namespace Ordering.API.Infrastructure;
+
+public class OrderingContextSeed
 {
-    public async Task SeedAsync(OrderingContext context)
+    public async Task SeedAsync(OrderingContext context, ILogger<OrderingContextSeed> logger)
     {
-        if (!context.CardTypes.Any())
+        try
         {
-            context.CardTypes.AddRange(GetPredefinedCardTypes());
+            if (!context.CardTypes.Any())
+            {
+                context.CardTypes.AddRange(GetPredefinedCardTypes());
 
-            await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
+            }
         }
-
-        await context.SaveChangesAsync();
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "EXCEPTION ERROR while migrating {DbContextName}", nameof(OrderingContext));
+            throw;
+        }
     }
 
     private static IEnumerable<CardType> GetPredefinedCardTypes()
     {
-        yield return new CardType { Id = 1, Name = "Amex" };
-        yield return new CardType { Id = 2, Name = "Visa" };
-        yield return new CardType { Id = 3, Name = "MasterCard" };
+        return new List<CardType>
+        {
+            CardType.Amex,
+            CardType.Visa,
+            CardType.MasterCard
+        };
     }
 }

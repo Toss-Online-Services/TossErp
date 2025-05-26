@@ -1,0 +1,12 @@
+namespace Catalog.Application.DTOs;
+
+public class ProductAttributeDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public int DisplayOrder { get; set; }
+    public DateTime CreatedOnUtc { get; set; }
+    public DateTime? UpdatedOnUtc { get; set; }
+    public List<ProductAttributeMappingDto> ProductAttributeMappings { get; set; }
+} 

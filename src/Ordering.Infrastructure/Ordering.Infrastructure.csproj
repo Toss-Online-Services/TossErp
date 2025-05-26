@@ -2,16 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <IsPublishable>false</IsPublishable>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Ordering.Infrastructure</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\IntegrationEventLogEF\IntegrationEventLogEF.csproj" />
     <ProjectReference Include="..\Ordering.Domain\Ordering.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 
 </Project>

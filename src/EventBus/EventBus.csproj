@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>eShop.EventBus</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
