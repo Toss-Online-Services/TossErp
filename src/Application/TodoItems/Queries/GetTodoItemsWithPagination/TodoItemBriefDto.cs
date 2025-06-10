@@ -1,6 +1,6 @@
-﻿using TossErp.Domain.Entities;
+﻿using Inventory.Domain.Entities;
 
-namespace TossErp.Application.TodoItems.Queries.GetTodoItemsWithPagination;
+namespace Inventory.Application.TodoItems.Queries.GetTodoItemsWithPagination;
 
 public class TodoItemBriefDto
 {

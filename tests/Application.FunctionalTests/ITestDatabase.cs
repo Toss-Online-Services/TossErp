@@ -1,6 +1,6 @@
 ﻿using System.Data.Common;
 
-namespace TossErp.Application.FunctionalTests;
+namespace Inventory.Application.FunctionalTests;
 
 public interface ITestDatabase
 {

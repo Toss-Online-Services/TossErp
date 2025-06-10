@@ -1,12 +1,13 @@
-﻿using TossErp.Application.Common.Models;
-using TossErp.Application.TodoItems.Commands.CreateTodoItem;
-using TossErp.Application.TodoItems.Commands.DeleteTodoItem;
-using TossErp.Application.TodoItems.Commands.UpdateTodoItem;
-using TossErp.Application.TodoItems.Commands.UpdateTodoItemDetail;
-using TossErp.Application.TodoItems.Queries.GetTodoItemsWithPagination;
+﻿using Inventory.API.Infrastructure;
+using Inventory.Application.Common.Models;
+using Inventory.Application.TodoItems.Commands.CreateTodoItem;
+using Inventory.Application.TodoItems.Commands.DeleteTodoItem;
+using Inventory.Application.TodoItems.Commands.UpdateTodoItem;
+using Inventory.Application.TodoItems.Commands.UpdateTodoItemDetail;
+using Inventory.Application.TodoItems.Queries.GetTodoItemsWithPagination;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace TossErp.Web.Endpoints;
+namespace Inventory.API.Endpoints;
 
 public class TodoItems : EndpointGroupBase
 {

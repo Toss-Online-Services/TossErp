@@ -1,11 +1,11 @@
-﻿using TossErp.Application.Common.Behaviours;
-using TossErp.Application.Common.Interfaces;
-using TossErp.Application.TodoItems.Commands.CreateTodoItem;
+﻿using Inventory.Application.Common.Behaviours;
+using Inventory.Application.Common.Interfaces;
+using Inventory.Application.TodoItems.Commands.CreateTodoItem;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 
-namespace TossErp.Application.UnitTests.Common.Behaviours;
+namespace Inventory.Application.UnitTests.Common.Behaviours;
 
 public class RequestLoggerTests
 {

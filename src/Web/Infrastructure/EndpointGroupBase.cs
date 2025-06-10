@@ -1,4 +1,4 @@
-﻿namespace TossErp.Web.Infrastructure;
+﻿namespace Inventory.API.Infrastructure;
 
 public abstract class EndpointGroupBase
 {

@@ -1,8 +1,8 @@
-﻿using TossErp.Application.Common.Interfaces;
-using TossErp.Application.Common.Security;
-using TossErp.Domain.Constants;
+﻿using Inventory.Application.Common.Interfaces;
+using Inventory.Application.Common.Security;
+using Inventory.Domain.Constants;
 
-namespace TossErp.Application.TodoLists.Commands.PurgeTodoLists;
+namespace Inventory.Application.TodoLists.Commands.PurgeTodoLists;
 
 [Authorize(Roles = Roles.Administrator)]
 [Authorize(Policy = Policies.CanPurge)]

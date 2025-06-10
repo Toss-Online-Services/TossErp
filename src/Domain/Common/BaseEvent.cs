@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace TossErp.Domain.Common;
+namespace Inventory.Domain.Common;
 
 public abstract class BaseEvent : INotification
 {

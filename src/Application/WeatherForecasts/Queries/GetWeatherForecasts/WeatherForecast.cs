@@ -1,4 +1,4 @@
-﻿namespace TossErp.Application.WeatherForecasts.Queries.GetWeatherForecasts;
+﻿namespace Inventory.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 
 public class WeatherForecast
 {

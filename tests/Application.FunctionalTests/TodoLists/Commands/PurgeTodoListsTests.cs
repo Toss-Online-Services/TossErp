@@ -1,10 +1,10 @@
-﻿using TossErp.Application.Common.Exceptions;
-using TossErp.Application.Common.Security;
-using TossErp.Application.TodoLists.Commands.CreateTodoList;
-using TossErp.Application.TodoLists.Commands.PurgeTodoLists;
-using TossErp.Domain.Entities;
+﻿using Inventory.Application.Common.Exceptions;
+using Inventory.Application.Common.Security;
+using Inventory.Application.TodoLists.Commands.CreateTodoList;
+using Inventory.Application.TodoLists.Commands.PurgeTodoLists;
+using Inventory.Domain.Entities;
 
-namespace TossErp.Application.FunctionalTests.TodoLists.Commands;
+namespace Inventory.Application.FunctionalTests.TodoLists.Commands;
 
 using static Testing;
 

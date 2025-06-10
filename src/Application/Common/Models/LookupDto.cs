@@ -1,6 +1,6 @@
-﻿using TossErp.Domain.Entities;
+﻿using Inventory.Domain.Entities;
 
-namespace TossErp.Application.Common.Models;
+namespace Inventory.Application.Common.Models;
 
 public class LookupDto
 {

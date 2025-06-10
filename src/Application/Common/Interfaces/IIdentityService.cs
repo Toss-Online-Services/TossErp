@@ -1,6 +1,6 @@
-﻿using TossErp.Application.Common.Models;
+﻿using Inventory.Application.Common.Models;
 
-namespace TossErp.Application.Common.Interfaces;
+namespace Inventory.Application.Common.Interfaces;
 
 public interface IIdentityService
 {

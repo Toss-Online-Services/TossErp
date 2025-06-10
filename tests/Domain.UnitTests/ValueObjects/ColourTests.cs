@@ -1,9 +1,9 @@
-﻿using TossErp.Domain.Exceptions;
-using TossErp.Domain.ValueObjects;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
+using Inventory.Domain.ValueObjects;
+using Inventory.Domain.Exceptions;
 
-namespace TossErp.Domain.UnitTests.ValueObjects;
+namespace Inventory.Domain.UnitTests.ValueObjects;
 
 public class ColourTests
 {

@@ -1,13 +1,14 @@
 ﻿using Azure.Identity;
-using TossErp.Application.Common.Interfaces;
+using Inventory.Application.Common.Interfaces;
 using TossErp.Infrastructure.Data;
-using TossErp.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using Inventory.API.Services;
+using Inventory.API.Infrastructure;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Inventory.API;
 
 public static class DependencyInjection
 {

@@ -1,8 +1,8 @@
-﻿using TossErp.Domain.Entities;
+﻿using Inventory.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace TossErp.Infrastructure.Data.Configurations;
+namespace Inventory.Infrastructure.Data.Configurations;
 
 public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
 {

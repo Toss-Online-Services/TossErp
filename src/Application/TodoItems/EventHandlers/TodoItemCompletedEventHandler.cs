@@ -1,7 +1,7 @@
-﻿using TossErp.Domain.Events;
+﻿using Inventory.Domain.Events;
 using Microsoft.Extensions.Logging;
 
-namespace TossErp.Application.TodoItems.EventHandlers;
+namespace Inventory.Application.TodoItems.EventHandlers;
 
 public class TodoItemCompletedEventHandler : INotificationHandler<TodoItemCompletedEvent>
 {

@@ -1,6 +1,6 @@
-﻿using ValidationException = TossErp.Application.Common.Exceptions.ValidationException;
+﻿using ValidationException = Inventory.Application.Common.Exceptions.ValidationException;
 
-namespace TossErp.Application.Common.Behaviours;
+namespace Inventory.Application.Common.Behaviours;
 
 public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
      where TRequest : notnull

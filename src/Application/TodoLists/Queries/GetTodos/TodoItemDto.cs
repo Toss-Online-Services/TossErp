@@ -1,6 +1,6 @@
-﻿using TossErp.Domain.Entities;
+﻿using Inventory.Domain.Entities;
 
-namespace TossErp.Application.TodoLists.Queries.GetTodos;
+namespace Inventory.Application.TodoLists.Queries.GetTodos;
 
 public class TodoItemDto
 {

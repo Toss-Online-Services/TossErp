@@ -1,10 +1,10 @@
-﻿using TossErp.Application.Common.Interfaces;
-using TossErp.Domain.Common;
+﻿using Inventory.Application.Common.Interfaces;
+using Inventory.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace TossErp.Infrastructure.Data.Interceptors;
+namespace Inventory.Infrastructure.Data.Interceptors;
 
 public class AuditableEntityInterceptor : SaveChangesInterceptor
 {

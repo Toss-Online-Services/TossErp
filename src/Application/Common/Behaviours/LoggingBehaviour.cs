@@ -1,8 +1,8 @@
-﻿using TossErp.Application.Common.Interfaces;
+﻿using Inventory.Application.Common.Interfaces;
 using MediatR.Pipeline;
 using Microsoft.Extensions.Logging;
 
-namespace TossErp.Application.Common.Behaviours;
+namespace Inventory.Application.Common.Behaviours;
 
 public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where TRequest : notnull
 {

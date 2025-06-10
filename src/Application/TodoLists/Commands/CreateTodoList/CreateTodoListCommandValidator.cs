@@ -1,6 +1,6 @@
-﻿using TossErp.Application.Common.Interfaces;
+﻿using Inventory.Application.Common.Interfaces;
 
-namespace TossErp.Application.TodoLists.Commands.CreateTodoList;
+namespace Inventory.Application.TodoLists.Commands.CreateTodoList;
 
 public class CreateTodoListCommandValidator : AbstractValidator<CreateTodoListCommand>
 {

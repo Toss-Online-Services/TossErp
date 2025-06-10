@@ -1,8 +1,8 @@
-﻿using TossErp.Application.TodoLists.Queries.GetTodos;
-using TossErp.Domain.Entities;
-using TossErp.Domain.ValueObjects;
+﻿using Inventory.Application.TodoLists.Queries.GetTodos;
+using Inventory.Domain.Entities;
+using Inventory.Domain.ValueObjects;
 
-namespace TossErp.Application.FunctionalTests.TodoLists.Queries;
+namespace Inventory.Application.FunctionalTests.TodoLists.Queries;
 
 using static Testing;
 

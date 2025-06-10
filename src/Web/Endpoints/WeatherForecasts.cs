@@ -1,7 +1,8 @@
-﻿using TossErp.Application.WeatherForecasts.Queries.GetWeatherForecasts;
+﻿using Inventory.API.Infrastructure;
+using Inventory.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace TossErp.Web.Endpoints;
+namespace Inventory.API.Endpoints;
 
 public class WeatherForecasts : EndpointGroupBase
 {

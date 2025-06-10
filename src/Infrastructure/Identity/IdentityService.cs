@@ -1,10 +1,10 @@
-using TossErp.Application.Common.Interfaces;
-using TossErp.Application.Common.Models;
+using Inventory.Application.Common.Interfaces;
+using Inventory.Application.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace TossErp.Infrastructure.Identity;
+namespace Inventory.Infrastructure.Identity;
 
 public class IdentityService : IIdentityService
 {

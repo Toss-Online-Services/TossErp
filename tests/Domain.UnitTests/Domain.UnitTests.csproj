@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <RootNamespace>TossErp.Domain.UnitTests</RootNamespace>
-        <AssemblyName>TossErp.Domain.UnitTests</AssemblyName>
+        <RootNamespace>Inventory.Domain.UnitTests</RootNamespace>
+        <AssemblyName>Inventory.Domain.UnitTests</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
+        <ProjectReference Include="..\..\src\Domain\Inventory.Domain.csproj" />
     </ItemGroup>
 
 </Project>

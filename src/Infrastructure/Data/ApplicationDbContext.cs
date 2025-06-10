@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
-using TossErp.Application.Common.Interfaces;
-using TossErp.Domain.Entities;
-using TossErp.Infrastructure.Identity;
+using Inventory.Application.Common.Interfaces;
+using Inventory.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Inventory.Infrastructure.Identity;
 
-namespace TossErp.Infrastructure.Data;
+namespace Inventory.Infrastructure.Data;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {

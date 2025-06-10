@@ -1,8 +1,8 @@
-﻿using TossErp.Application.TodoLists.Commands.CreateTodoList;
-using TossErp.Application.TodoLists.Commands.DeleteTodoList;
-using TossErp.Domain.Entities;
+﻿using Inventory.Application.TodoLists.Commands.CreateTodoList;
+using Inventory.Application.TodoLists.Commands.DeleteTodoList;
+using Inventory.Domain.Entities;
 
-namespace TossErp.Application.FunctionalTests.TodoLists.Commands;
+namespace Inventory.Application.FunctionalTests.TodoLists.Commands;
 
 using static Testing;
 

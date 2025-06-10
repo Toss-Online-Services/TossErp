@@ -1,6 +1,6 @@
-﻿using TossErp.Application.Common.Models;
+﻿using Inventory.Application.Common.Models;
 
-namespace TossErp.Application.TodoLists.Queries.GetTodos;
+namespace Inventory.Application.TodoLists.Queries.GetTodos;
 
 public class TodosVm
 {

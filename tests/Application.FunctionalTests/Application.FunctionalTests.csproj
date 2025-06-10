@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <RootNamespace>TossErp.Application.FunctionalTests</RootNamespace>
-        <AssemblyName>TossErp.Application.FunctionalTests</AssemblyName>
+        <RootNamespace>Inventory.Application.FunctionalTests</RootNamespace>
+        <AssemblyName>Inventory.Application.FunctionalTests</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
@@ -36,9 +36,10 @@
       <PackageReference Include="System.Configuration.ConfigurationManager" />
       <PackageReference Include="Testcontainers.PostgreSql" />
     </ItemGroup>
-    
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Web\Web.csproj" />
+      <ProjectReference Include="..\..\src\Web\Inventory.API.csproj" />
     </ItemGroup>
+    
+    
 
 </Project>

@@ -1,14 +1,14 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using AutoMapper;
-using TossErp.Application.Common.Interfaces;
-using TossErp.Application.Common.Models;
-using TossErp.Application.TodoItems.Queries.GetTodoItemsWithPagination;
-using TossErp.Application.TodoLists.Queries.GetTodos;
-using TossErp.Domain.Entities;
+using Inventory.Application.Common.Interfaces;
+using Inventory.Application.Common.Models;
+using Inventory.Application.TodoItems.Queries.GetTodoItemsWithPagination;
+using Inventory.Application.TodoLists.Queries.GetTodos;
+using Inventory.Domain.Entities;
 using NUnit.Framework;
 
-namespace TossErp.Application.UnitTests.Common.Mappings;
+namespace Inventory.Application.UnitTests.Common.Mappings;
 
 public class MappingTests
 {

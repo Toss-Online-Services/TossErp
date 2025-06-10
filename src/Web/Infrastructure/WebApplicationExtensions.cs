@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
+using Inventory.API.Infrastructure;
 
-namespace TossErp.Web.Infrastructure;
+namespace Inventory.API.Infrastructure;
 
 public static class WebApplicationExtensions
 {

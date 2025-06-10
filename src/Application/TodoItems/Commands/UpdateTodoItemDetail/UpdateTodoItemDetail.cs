@@ -1,7 +1,7 @@
-﻿using TossErp.Application.Common.Interfaces;
-using TossErp.Domain.Enums;
+﻿using Inventory.Application.Common.Interfaces;
+using Inventory.Domain.Enums;
 
-namespace TossErp.Application.TodoItems.Commands.UpdateTodoItemDetail;
+namespace Inventory.Application.TodoItems.Commands.UpdateTodoItemDetail;
 
 public record UpdateTodoItemDetailCommand : IRequest
 {

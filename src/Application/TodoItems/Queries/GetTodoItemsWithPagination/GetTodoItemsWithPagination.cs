@@ -1,8 +1,8 @@
-﻿using TossErp.Application.Common.Interfaces;
-using TossErp.Application.Common.Mappings;
-using TossErp.Application.Common.Models;
+﻿using Inventory.Application.Common.Interfaces;
+using Inventory.Application.Common.Mappings;
+using Inventory.Application.Common.Models;
 
-namespace TossErp.Application.TodoItems.Queries.GetTodoItemsWithPagination;
+namespace Inventory.Application.TodoItems.Queries.GetTodoItemsWithPagination;
 
 public record GetTodoItemsWithPaginationQuery : IRequest<PaginatedList<TodoItemBriefDto>>
 {

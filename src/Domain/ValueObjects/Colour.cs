@@ -1,4 +1,4 @@
-﻿namespace TossErp.Domain.ValueObjects;
+﻿namespace Inventory.Domain.ValueObjects;
 
 public class Colour(string code) : ValueObject
 {

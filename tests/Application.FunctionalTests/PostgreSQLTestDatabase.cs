@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Respawn;
 
-namespace TossErp.Application.FunctionalTests;
+namespace Inventory.Application.FunctionalTests;
 
 public class PostgreSQLTestDatabase : ITestDatabase
 {

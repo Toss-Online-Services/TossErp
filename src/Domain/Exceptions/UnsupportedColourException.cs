@@ -1,4 +1,4 @@
-﻿namespace TossErp.Domain.Exceptions;
+﻿namespace Inventory.Domain.Exceptions;
 
 public class UnsupportedColourException : Exception
 {

@@ -1,10 +1,11 @@
-﻿using TossErp.Application.TodoLists.Commands.CreateTodoList;
-using TossErp.Application.TodoLists.Commands.DeleteTodoList;
-using TossErp.Application.TodoLists.Commands.UpdateTodoList;
-using TossErp.Application.TodoLists.Queries.GetTodos;
+﻿using Inventory.API.Infrastructure;
+using Inventory.Application.TodoLists.Commands.CreateTodoList;
+using Inventory.Application.TodoLists.Commands.DeleteTodoList;
+using Inventory.Application.TodoLists.Commands.UpdateTodoList;
+using Inventory.Application.TodoLists.Queries.GetTodos;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace TossErp.Web.Endpoints;
+namespace Inventory.API.Endpoints;
 
 public class TodoLists : EndpointGroupBase
 {

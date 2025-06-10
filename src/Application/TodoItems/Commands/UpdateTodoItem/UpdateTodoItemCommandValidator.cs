@@ -1,4 +1,4 @@
-﻿namespace TossErp.Application.TodoItems.Commands.UpdateTodoItem;
+﻿namespace Inventory.Application.TodoItems.Commands.UpdateTodoItem;
 
 public class UpdateTodoItemCommandValidator : AbstractValidator<UpdateTodoItemCommand>
 {

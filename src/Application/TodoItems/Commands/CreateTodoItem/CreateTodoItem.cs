@@ -1,8 +1,8 @@
-﻿using TossErp.Application.Common.Interfaces;
-using TossErp.Domain.Entities;
-using TossErp.Domain.Events;
+﻿using Inventory.Application.Common.Interfaces;
+using Inventory.Domain.Entities;
+using Inventory.Domain.Events;
 
-namespace TossErp.Application.TodoItems.Commands.CreateTodoItem;
+namespace Inventory.Application.TodoItems.Commands.CreateTodoItem;
 
 public record CreateTodoItemCommand : IRequest<int>
 {

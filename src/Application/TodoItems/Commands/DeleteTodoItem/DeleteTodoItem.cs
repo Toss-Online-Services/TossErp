@@ -1,7 +1,7 @@
-﻿using TossErp.Application.Common.Interfaces;
-using TossErp.Domain.Events;
+﻿using Inventory.Application.Common.Interfaces;
+using Inventory.Domain.Events;
 
-namespace TossErp.Application.TodoItems.Commands.DeleteTodoItem;
+namespace Inventory.Application.TodoItems.Commands.DeleteTodoItem;
 
 public record DeleteTodoItemCommand(int Id) : IRequest;
 

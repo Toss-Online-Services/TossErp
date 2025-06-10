@@ -1,6 +1,6 @@
-﻿using TossErp.Application.Common.Models;
+﻿using Inventory.Application.Common.Models;
 
-namespace TossErp.Application.Common.Mappings;
+namespace Inventory.Application.Common.Mappings;
 
 public static class MappingExtensions
 {

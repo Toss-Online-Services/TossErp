@@ -1,9 +1,9 @@
-﻿using TossErp.Application.TodoItems.Commands.CreateTodoItem;
-using TossErp.Application.TodoItems.Commands.UpdateTodoItem;
-using TossErp.Application.TodoLists.Commands.CreateTodoList;
-using TossErp.Domain.Entities;
+﻿using Inventory.Application.TodoItems.Commands.CreateTodoItem;
+using Inventory.Application.TodoItems.Commands.UpdateTodoItem;
+using Inventory.Application.TodoLists.Commands.CreateTodoList;
+using Inventory.Domain.Entities;
 
-namespace TossErp.Application.FunctionalTests.TodoItems.Commands;
+namespace Inventory.Application.FunctionalTests.TodoItems.Commands;
 
 using static Testing;
 

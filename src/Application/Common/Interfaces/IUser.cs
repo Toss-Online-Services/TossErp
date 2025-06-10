@@ -1,4 +1,4 @@
-﻿namespace TossErp.Application.Common.Interfaces;
+﻿namespace Inventory.Application.Common.Interfaces;
 
 public interface IUser
 {

@@ -1,8 +1,7 @@
 ﻿using System.Security.Claims;
+using Inventory.Application.Common.Interfaces;
 
-using TossErp.Application.Common.Interfaces;
-
-namespace TossErp.Web.Services;
+namespace Inventory.API.Services;
 
 public class CurrentUser : IUser
 {

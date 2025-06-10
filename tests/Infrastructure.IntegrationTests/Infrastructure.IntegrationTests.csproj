@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <RootNamespace>TossErp.Infrastructure.IntegrationTests</RootNamespace>
-        <AssemblyName>TossErp.Infrastructure.IntegrationTests</AssemblyName>
+        <RootNamespace>Inventory.Infrastructure.IntegrationTests</RootNamespace>
+        <AssemblyName>Inventory.Infrastructure.IntegrationTests</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

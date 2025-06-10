@@ -1,6 +1,6 @@
-﻿using TossErp.Domain.Entities;
+﻿using Inventory.Domain.Entities;
 
-namespace TossErp.Application.Common.Interfaces;
+namespace Inventory.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {

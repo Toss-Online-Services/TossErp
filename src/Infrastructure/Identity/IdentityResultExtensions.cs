@@ -1,7 +1,7 @@
-﻿using TossErp.Application.Common.Models;
+﻿using Inventory.Application.Common.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace TossErp.Infrastructure.Identity;
+namespace Inventory.Infrastructure.Identity;
 
 public static class IdentityResultExtensions
 {

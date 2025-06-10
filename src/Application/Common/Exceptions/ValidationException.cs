@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace TossErp.Application.Common.Exceptions;
+namespace Inventory.Application.Common.Exceptions;
 
 public class ValidationException : Exception
 {

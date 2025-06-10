@@ -1,9 +1,9 @@
-﻿using TossErp.Application.Common.Exceptions;
+﻿using Inventory.Application.Common.Exceptions;
 using FluentAssertions;
 using FluentValidation.Results;
 using NUnit.Framework;
 
-namespace TossErp.Application.UnitTests.Common.Exceptions;
+namespace Inventory.Application.UnitTests.Common.Exceptions;
 
 public class ValidationExceptionTests
 {

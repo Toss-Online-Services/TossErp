@@ -1,8 +1,9 @@
 ﻿using System.Reflection;
-using TossErp.Application.Common.Behaviours;
+using Inventory.Application.Common.Behaviours;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Inventory.Application;
 
 public static class DependencyInjection
 {

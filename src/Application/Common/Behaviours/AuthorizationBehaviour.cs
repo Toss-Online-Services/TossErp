@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
-using TossErp.Application.Common.Exceptions;
-using TossErp.Application.Common.Interfaces;
-using TossErp.Application.Common.Security;
+using Inventory.Application.Common.Exceptions;
+using Inventory.Application.Common.Interfaces;
+using Inventory.Application.Common.Security;
 
-namespace TossErp.Application.Common.Behaviours;
+namespace Inventory.Application.Common.Behaviours;
 
 public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {

@@ -1,4 +1,4 @@
-﻿namespace TossErp.Domain.Enums;
+﻿namespace Inventory.Domain.Enums;
 
 public enum PriorityLevel
 {

@@ -1,4 +1,4 @@
-﻿using TossErp.Domain.Constants;
+﻿using Inventory.Domain.Constants;
 using TossErp.Infrastructure.Data;
 using TossErp.Infrastructure.Identity;
 using MediatR;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace TossErp.Application.FunctionalTests;
+namespace Inventory.Application.FunctionalTests;
 
 [SetUpFixture]
 public partial class Testing

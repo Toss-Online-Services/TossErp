@@ -1,8 +1,8 @@
-﻿using TossErp.Application.Common.Exceptions;
+﻿using Inventory.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TossErp.Web.Infrastructure;
+namespace Inventory.API.Infrastructure;
 
 public class CustomExceptionHandler : IExceptionHandler
 {

@@ -1,4 +1,4 @@
-﻿namespace TossErp.Application.Common.Models;
+﻿namespace Inventory.Application.Common.Models;
 
 public class PaginatedList<T>
 {

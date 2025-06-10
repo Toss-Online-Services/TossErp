@@ -1,13 +1,13 @@
-﻿using TossErp.Domain.Constants;
-using TossErp.Domain.Entities;
-using TossErp.Infrastructure.Identity;
+﻿using Inventory.Domain.Constants;
+using Inventory.Domain.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Inventory.Infrastructure.Identity;
 
-namespace TossErp.Infrastructure.Data;
+namespace Inventory.Infrastructure.Data;
 
 public static class InitialiserExtensions
 {

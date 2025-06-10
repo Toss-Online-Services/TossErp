@@ -1,4 +1,4 @@
-﻿namespace TossErp.Domain.Events;
+﻿namespace Inventory.Domain.Events;
 
 public class TodoItemDeletedEvent : BaseEvent
 {

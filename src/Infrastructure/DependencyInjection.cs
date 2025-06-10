@@ -1,15 +1,16 @@
-﻿using TossErp.Application.Common.Interfaces;
-using TossErp.Domain.Constants;
-using TossErp.Infrastructure.Data;
-using TossErp.Infrastructure.Data.Interceptors;
-using TossErp.Infrastructure.Identity;
+﻿using Inventory.Application.Common.Interfaces;
+using Inventory.Domain.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Inventory.Infrastructure.Data;
+using Inventory.Infrastructure.Data.Interceptors;
+using Inventory.Infrastructure.Identity;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Inventory.Infrastructure;
 
 public static class DependencyInjection
 {

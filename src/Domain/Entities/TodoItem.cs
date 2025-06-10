@@ -1,4 +1,4 @@
-﻿namespace TossErp.Domain.Entities;
+﻿namespace Inventory.Domain.Entities;
 
 public class TodoItem : BaseAuditableEntity
 {

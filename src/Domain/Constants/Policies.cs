@@ -1,4 +1,4 @@
-﻿namespace TossErp.Domain.Constants;
+﻿namespace Inventory.Domain.Constants;
 
 public abstract class Policies
 {

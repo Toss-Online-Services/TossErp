@@ -1,7 +1,7 @@
-﻿using TossErp.Application.Common.Interfaces;
-using TossErp.Domain.Entities;
+﻿using Inventory.Application.Common.Interfaces;
+using Inventory.Domain.Entities;
 
-namespace TossErp.Application.TodoLists.Commands.CreateTodoList;
+namespace Inventory.Application.TodoLists.Commands.CreateTodoList;
 
 public record CreateTodoListCommand : IRequest<int>
 {

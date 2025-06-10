@@ -1,6 +1,7 @@
-﻿using TossErp.Infrastructure.Identity;
+﻿using Inventory.API.Infrastructure;
+using Inventory.Infrastructure.Identity;
 
-namespace TossErp.Web.Endpoints;
+namespace Inventory.API.Endpoints;
 
 public class Users : EndpointGroupBase
 {

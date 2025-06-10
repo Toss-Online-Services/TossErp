@@ -8,7 +8,7 @@ using Npgsql;
 using Respawn;
 using Testcontainers.PostgreSql;
 
-namespace TossErp.Application.FunctionalTests;
+namespace Inventory.Application.FunctionalTests;
 
 public class PostgreSQLTestcontainersTestDatabase : ITestDatabase
 {

@@ -1,4 +1,4 @@
-﻿namespace TossErp.Application.Common.Security;
+﻿namespace Inventory.Application.Common.Security;
 
 /// <summary>
 /// Specifies the class this attribute is applied to requires authorization.

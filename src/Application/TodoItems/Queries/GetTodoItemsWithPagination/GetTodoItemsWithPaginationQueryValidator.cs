@@ -1,4 +1,4 @@
-﻿namespace TossErp.Application.TodoItems.Queries.GetTodoItemsWithPagination;
+﻿namespace Inventory.Application.TodoItems.Queries.GetTodoItemsWithPagination;
 
 public class GetTodoItemsWithPaginationQueryValidator : AbstractValidator<GetTodoItemsWithPaginationQuery>
 {
