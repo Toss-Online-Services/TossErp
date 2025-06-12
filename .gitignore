@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+# dotenv files
+.env
+
 # User-specific files
 *.rsuser
 *.suo
@@ -17,7 +20,6 @@
 mono_crash.*
 
 # Build results
-tools/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
@@ -400,6 +402,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+.idea
 
 ##
 ## Visual studio for Mac
@@ -479,4 +482,12 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+/user.json
 .azure
