@@ -16,6 +16,7 @@ var catalogDb = postgres.AddDatabase("catalogdb");
 var identityDb = postgres.AddDatabase("identitydb");
 var orderDb = postgres.AddDatabase("orderingdb");
 var webhooksDb = postgres.AddDatabase("webhooksdb");
+var posDb = postgres.AddDatabase("posdb");
 
 var launchProfileName = ShouldUseHttpForEndpoints() ? "http" : "https";
 
@@ -39,6 +40,12 @@ var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
 var orderingApi = builder.AddProject<Projects.Ordering_API>("ordering-api")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
     .WithReference(orderDb).WaitFor(orderDb)
+    .WithHttpHealthCheck("/health")
+    .WithEnvironment("Identity__Url", identityEndpoint);
+
+var posApi = builder.AddProject<Projects.POS_API>("pos-api")
+    .WithReference(rabbitMq).WaitFor(rabbitMq)
+    .WithReference(posDb).WaitFor(posDb)
     .WithHttpHealthCheck("/health")
     .WithEnvironment("Identity__Url", identityEndpoint);
 
@@ -73,6 +80,7 @@ var webApp = builder.AddProject<Projects.WebApp>("webapp", launchProfileName)
     .WithReference(basketApi)
     .WithReference(catalogApi)
     .WithReference(orderingApi)
+    .WithReference(posApi)
     .WithReference(rabbitMq).WaitFor(rabbitMq)
     .WithEnvironment("IdentityUrl", identityEndpoint);
 
@@ -98,7 +106,8 @@ identityApi.WithEnvironment("BasketApiClient", basketApi.GetEndpoint("http"))
            .WithEnvironment("OrderingApiClient", orderingApi.GetEndpoint("http"))
            .WithEnvironment("WebhooksApiClient", webHooksApi.GetEndpoint("http"))
            .WithEnvironment("WebhooksWebClient", webhooksClient.GetEndpoint(launchProfileName))
-           .WithEnvironment("WebAppClient", webApp.GetEndpoint(launchProfileName));
+           .WithEnvironment("WebAppClient", webApp.GetEndpoint(launchProfileName))
+           .WithEnvironment("POSApiClient", posApi.GetEndpoint("http"));
 
 builder.Build().Run();
 
