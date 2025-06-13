@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using eShop.POS.Domain.Common;
 using eShop.POS.Domain.AggregatesModel.SaleAggregate.Events;
-using POS.Domain.SeedWork;
 using System.Collections.ObjectModel;
 
 namespace eShop.POS.Domain.AggregatesModel.SaleAggregate;

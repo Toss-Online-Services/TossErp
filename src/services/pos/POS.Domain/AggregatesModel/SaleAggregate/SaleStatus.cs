@@ -1,9 +1,10 @@
-namespace eShop.POS.Domain.AggregatesModel.SaleAggregate;
+﻿namespace eShop.POS.Domain.AggregatesModel.SaleAggregate;
 
 public enum SaleStatus
 {
     Draft = 0,
     Completed = 1,
     Refunded = 2,
-    Voided = 3
+    Voided = 3,
+    Pending = 4
 } 

@@ -25,8 +25,7 @@ public class ProductRepository : IProductRepository
 
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
-        return await _context.Products
-            .ToListAsync();
+        return await _context.Products.ToListAsync();
     }
 
     public async Task AddAsync(Product product)
@@ -47,9 +46,9 @@ public class ProductRepository : IProductRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> ExistsAsync(string productId)
+    public async Task<bool> ExistsAsync(string id)
     {
-        return await _context.Products.AnyAsync(p => p.Id == productId);
+        return await _context.Products.AnyAsync(p => p.Id == id);
     }
 
     public async Task<Product?> GetByCodeAsync(string code)
@@ -57,16 +56,15 @@ public class ProductRepository : IProductRepository
         return await _context.Products.FirstOrDefaultAsync(p => p.Code == code);
     }
 
-    public async Task<Product> GetByNameAsync(string name)
+    public async Task<Product?> GetByNameAsync(string name)
     {
-        return await _context.Products
-            .FirstOrDefaultAsync(p => p.Name == name);
+        return await _context.Products.FirstOrDefaultAsync(p => p.Name == name);
     }
 
-    public async Task<IEnumerable<Product>> GetByCategoryAsync(string category, string storeId)
+    public async Task<IEnumerable<Product>> GetByCategoryAsync(string category)
     {
         return await _context.Products
-            .Where(p => p.Category == category && p.StoreId == storeId)
+            .Where(p => p.Category == category)
             .OrderBy(p => p.Name)
             .ToListAsync();
     }
@@ -92,18 +90,40 @@ public class ProductRepository : IProductRepository
             .ToListAsync();
     }
 
-    public async Task<Product?> GetAsync(string productId)
-    {
-        return await _context.Products
-            .FirstOrDefaultAsync(p => p.Id == productId);
-    }
-
-    public async Task<IEnumerable<Product>> GetByStoreAsync(string storeId)
+    public async Task<IEnumerable<Product>> GetByStoreIdAsync(string storeId)
     {
         return await _context.Products
             .Where(p => p.StoreId == storeId)
             .OrderBy(p => p.Name)
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Product>> GetByCategoryAsync(string category, string storeId)
+    {
+        return await _context.Products
+            .Where(p => p.Category == category && p.StoreId == storeId)
+            .OrderBy(p => p.Name)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Product>> GetByPriceRangeAsync(decimal minPrice, decimal maxPrice)
+    {
+        return await _context.Products
+            .Where(p => p.Price >= minPrice && p.Price <= maxPrice)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Product>> GetByStockLevelAsync(int threshold)
+    {
+        return await _context.Products
+            .Where(p => p.StockLevel <= threshold)
+            .ToListAsync();
+    }
+
+    public async Task<Product?> GetAsync(string productId)
+    {
+        return await _context.Products
+            .FirstOrDefaultAsync(p => p.Id == productId);
     }
 
     public async Task<IEnumerable<Product>> GetLowStockAsync(string storeId, int threshold)

@@ -1,4 +1,11 @@
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using eShop.POS.Domain.Common;
 using eShop.POS.Infrastructure.Data;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
 namespace eShop.POS.Infrastructure;
 
 static class MediatorExtension

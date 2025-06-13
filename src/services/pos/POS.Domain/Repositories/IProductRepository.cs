@@ -1,5 +1,5 @@
 ﻿#nullable enable
-using POS.Domain.AggregatesModel.ProductAggregate;
+using eShop.POS.Domain.AggregatesModel.ProductAggregate;
 
 namespace POS.Domain.Repositories;
 

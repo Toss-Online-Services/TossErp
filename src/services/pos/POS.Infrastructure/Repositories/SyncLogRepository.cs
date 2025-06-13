@@ -1,6 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using eShop.POS.Domain.AggregatesModel.SyncLogAggregate;
 using eShop.POS.Domain.Repositories;
 using eShop.POS.Infrastructure.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace eShop.POS.Infrastructure.Repositories;
 
@@ -10,7 +16,56 @@ public class SyncLogRepository : ISyncLogRepository
 
     public SyncLogRepository(POSContext context)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    public async Task<SyncLog?> GetByIdAsync(string id)
+    {
+        return await _context.SyncLogs.FindAsync(id);
+    }
+
+    public async Task<IEnumerable<SyncLog>> GetAllAsync()
+    {
+        return await _context.SyncLogs.ToListAsync();
+    }
+
+    public async Task AddAsync(SyncLog syncLog)
+    {
+        await _context.SyncLogs.AddAsync(syncLog);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(SyncLog syncLog)
+    {
+        _context.Entry(syncLog).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(SyncLog syncLog)
+    {
+        _context.SyncLogs.Remove(syncLog);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> ExistsAsync(string id)
+    {
+        return await _context.SyncLogs.AnyAsync(s => s.Id == id);
+    }
+
+    public async Task<IEnumerable<SyncLog>> GetByStoreIdAsync(string storeId)
+    {
+        return await _context.SyncLogs
+            .Where(s => s.StoreId == storeId)
+            .OrderByDescending(s => s.SyncDate)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<SyncLog>> GetByStatusAsync(SyncStatus status)
+    {
+        return await _context.SyncLogs
+            .Where(s => s.Status == status)
+            .OrderByDescending(s => s.SyncDate)
+            .ToListAsync();
     }
 
     public async Task RecordSync(int saleId, string storeId, DateTime syncedAt, CancellationToken cancellationToken = default)

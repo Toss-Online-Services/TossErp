@@ -25,8 +25,7 @@ public class StaffRepository : IStaffRepository
 
     public async Task<IEnumerable<Staff>> GetAllAsync()
     {
-        return await _context.Staff
-            .ToListAsync();
+        return await _context.Staff.ToListAsync();
     }
 
     public async Task AddAsync(Staff staff)
@@ -47,9 +46,9 @@ public class StaffRepository : IStaffRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> ExistsAsync(string staffId)
+    public async Task<bool> ExistsAsync(string id)
     {
-        return await _context.Staff.AnyAsync(s => s.Id == staffId);
+        return await _context.Staff.AnyAsync(s => s.Id == id);
     }
 
     public async Task<Staff?> GetByCodeAsync(string code)
@@ -62,17 +61,16 @@ public class StaffRepository : IStaffRepository
         return await _context.Staff.FirstOrDefaultAsync(s => s.Email == email);
     }
 
+    public async Task<Staff?> GetByPhoneAsync(string phone)
+    {
+        return await _context.Staff.FirstOrDefaultAsync(s => s.Phone == phone);
+    }
+
     public async Task<IEnumerable<Staff>> GetByStoreIdAsync(string storeId)
     {
         return await _context.Staff
             .Where(s => s.StoreId == storeId)
             .ToListAsync();
-    }
-
-    public async Task<Staff?> GetByPhoneAsync(string phone)
-    {
-        return await _context.Staff
-            .FirstOrDefaultAsync(s => s.Phone == phone);
     }
 
     public async Task<IEnumerable<Staff>> GetByRoleAsync(string role)

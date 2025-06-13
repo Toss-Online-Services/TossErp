@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
+
 namespace eShop.POS.Infrastructure.Idempotency;
 
 public interface IRequestManager
 {
-    Task<bool> ExistAsync(Guid id);
+    Task<bool> ExistAsync(string id);
 
-    Task CreateRequestForCommandAsync<T>(Guid id);
+    Task CreateRequestForCommandAsync<T>(string id);
 }

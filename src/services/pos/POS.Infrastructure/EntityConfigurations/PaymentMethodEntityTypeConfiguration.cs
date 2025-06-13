@@ -15,9 +15,12 @@ class PaymentMethodEntityTypeConfiguration
         paymentConfiguration.Ignore(b => b.DomainEvents);
 
         paymentConfiguration.Property(b => b.Id)
-            .UseHiLo("paymentseq", "POS");
+            .HasMaxLength(36)
+            .IsRequired();
 
-        paymentConfiguration.Property<int>("BuyerId");
+        paymentConfiguration.Property<string>("BuyerId")
+            .HasMaxLength(36)
+            .IsRequired();
 
         paymentConfiguration
             .Property("_cardHolderName")
@@ -42,7 +45,8 @@ class PaymentMethodEntityTypeConfiguration
 
         paymentConfiguration
             .Property("_cardTypeId")
-            .HasColumnName("CardTypeId");
+            .HasColumnName("CardTypeId")
+            .HasMaxLength(36);
 
         paymentConfiguration.HasOne(p => p.CardType)
             .WithMany()

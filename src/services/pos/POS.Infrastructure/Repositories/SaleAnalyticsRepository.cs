@@ -3,6 +3,11 @@ using eShop.POS.Domain.AggregatesModel.SaleAggregate;
 using eShop.POS.Domain.Repositories;
 using eShop.POS.Infrastructure.Data;
 using PaymentMethod = eShop.POS.Domain.AggregatesModel.SaleAggregate.PaymentMethod;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace eShop.POS.Infrastructure.Repositories;
 
@@ -12,7 +17,7 @@ public class SaleAnalyticsRepository : ISaleAnalyticsRepository
 
     public SaleAnalyticsRepository(POSContext context)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
     public async Task RecordSaleCompleted(string storeId, string staffId, decimal total, bool isOffline, DateTime completedAt, CancellationToken cancellationToken = default)
@@ -136,6 +141,44 @@ public class SaleAnalyticsRepository : ISaleAnalyticsRepository
             .ToDictionary(
                 g => g.Key,
                 g => g.Sum(s => s.Total)
+            );
+    }
+
+    public async Task<IDictionary<string, int>> GetProductSalesCountAsync(string storeId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+    {
+        var sales = await _context.Sales
+            .Include(s => s.Items)
+            .Where(s => s.StoreId == storeId && 
+                       s.Status == SaleStatus.Completed && 
+                       s.CreatedAt >= startDate && 
+                       s.CreatedAt <= endDate)
+            .ToListAsync(cancellationToken);
+
+        return sales
+            .SelectMany(s => s.Items)
+            .GroupBy(i => i.ProductId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Sum(i => i.Quantity)
+            );
+    }
+
+    public async Task<IDictionary<string, decimal>> GetProductSalesRevenueAsync(string storeId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+    {
+        var sales = await _context.Sales
+            .Include(s => s.Items)
+            .Where(s => s.StoreId == storeId && 
+                       s.Status == SaleStatus.Completed && 
+                       s.CreatedAt >= startDate && 
+                       s.CreatedAt <= endDate)
+            .ToListAsync(cancellationToken);
+
+        return sales
+            .SelectMany(s => s.Items)
+            .GroupBy(i => i.ProductId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Sum(i => i.Total)
             );
     }
 } 

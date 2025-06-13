@@ -14,13 +14,13 @@ public class RequestManager : IRequestManager
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<bool> ExistAsync(Guid id)
+    public async Task<bool> ExistAsync(string id)
     {
         return await _context.Set<ClientRequest>()
             .AnyAsync(r => r.Id == id);
     }
 
-    public async Task CreateRequestForCommandAsync<T>(Guid id)
+    public async Task CreateRequestForCommandAsync<T>(string id)
     {
         var exists = await ExistAsync(id);
 

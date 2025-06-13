@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using eShop.POS.Domain.AggregatesModel.BuyerAggregate;
+
 namespace eShop.POS.Infrastructure.EntityConfigurations;
 
 class CardTypeEntityTypeConfiguration
@@ -8,10 +12,14 @@ class CardTypeEntityTypeConfiguration
         cardTypesConfiguration.ToTable("cardtypes");
 
         cardTypesConfiguration.Property(ct => ct.Id)
-            .ValueGeneratedNever();
+            .HasMaxLength(36)
+            .IsRequired();
 
         cardTypesConfiguration.Property(ct => ct.Name)
             .HasMaxLength(200)
             .IsRequired();
+
+        cardTypesConfiguration.HasIndex(ct => ct.Name)
+            .IsUnique(true);
     }
 }

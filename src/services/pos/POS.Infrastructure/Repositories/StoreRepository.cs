@@ -25,8 +25,7 @@ public class StoreRepository : IStoreRepository
 
     public async Task<IEnumerable<Store>> GetAllAsync()
     {
-        return await _context.Stores
-            .ToListAsync();
+        return await _context.Stores.ToListAsync();
     }
 
     public async Task AddAsync(Store store)
@@ -47,21 +46,9 @@ public class StoreRepository : IStoreRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> ExistsAsync(string storeId)
+    public async Task<bool> ExistsAsync(string id)
     {
-        return await _context.Stores.AnyAsync(s => s.Id == storeId);
-    }
-
-    public async Task<Store?> GetByEmailAsync(string email)
-    {
-        return await _context.Stores.FirstOrDefaultAsync(s => s.Email == email);
-    }
-
-    public async Task<IEnumerable<Store>> GetByOwnerIdAsync(string ownerId)
-    {
-        return await _context.Stores
-            .Where(s => s.OwnerId == ownerId)
-            .ToListAsync();
+        return await _context.Stores.AnyAsync(s => s.Id == id);
     }
 
     public async Task<Store?> GetByCodeAsync(string code)
@@ -69,10 +56,14 @@ public class StoreRepository : IStoreRepository
         return await _context.Stores.FirstOrDefaultAsync(s => s.Code == code);
     }
 
-    public async Task<Store> GetByNameAsync(string name)
+    public async Task<Store?> GetByNameAsync(string name)
     {
-        return await _context.Stores
-            .FirstOrDefaultAsync(s => s.Name == name);
+        return await _context.Stores.FirstOrDefaultAsync(s => s.Name == name);
+    }
+
+    public async Task<Store?> GetByEmailAsync(string email)
+    {
+        return await _context.Stores.FirstOrDefaultAsync(s => s.Email == email);
     }
 
     public async Task<IEnumerable<Store>> GetByRegionAsync(string region)
@@ -80,6 +71,13 @@ public class StoreRepository : IStoreRepository
         return await _context.Stores
             .Where(s => s.Region == region)
             .OrderBy(s => s.Name)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Store>> GetByOwnerIdAsync(string ownerId)
+    {
+        return await _context.Stores
+            .Where(s => s.OwnerId == ownerId)
             .ToListAsync();
     }
 

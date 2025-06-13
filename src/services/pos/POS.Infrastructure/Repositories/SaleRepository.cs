@@ -19,13 +19,75 @@ public class SaleRepository : ISaleRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<Sale?> GetAsync(int saleId)
+    public async Task<Sale?> GetByIdAsync(string id)
     {
         return await _context.Sales
             .Include(s => s.Items)
             .Include(s => s.Payments)
             .Include(s => s.Discounts)
-            .FirstOrDefaultAsync(s => s.Id == saleId);
+            .FirstOrDefaultAsync(s => s.Id == id);
+    }
+
+    public async Task<IEnumerable<Sale>> GetByStoreIdAsync(string storeId)
+    {
+        return await _context.Sales
+            .Include(s => s.Items)
+            .Include(s => s.Payments)
+            .Include(s => s.Discounts)
+            .Where(s => s.StoreId == storeId)
+            .OrderByDescending(s => s.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Sale>> GetByStaffIdAsync(string staffId)
+    {
+        return await _context.Sales
+            .Include(s => s.Items)
+            .Include(s => s.Payments)
+            .Include(s => s.Discounts)
+            .Where(s => s.StaffId == staffId)
+            .OrderByDescending(s => s.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Sale>> GetByCustomerIdAsync(string customerId)
+    {
+        return await _context.Sales
+            .Include(s => s.Items)
+            .Include(s => s.Payments)
+            .Include(s => s.Discounts)
+            .Where(s => s.CustomerId == customerId)
+            .OrderByDescending(s => s.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Sale>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
+    {
+        return await _context.Sales
+            .Include(s => s.Items)
+            .Include(s => s.Payments)
+            .Include(s => s.Discounts)
+            .Where(s => s.CreatedAt >= startDate && s.CreatedAt <= endDate)
+            .OrderByDescending(s => s.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task AddAsync(Sale sale)
+    {
+        await _context.Sales.AddAsync(sale);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Sale sale)
+    {
+        _context.Sales.Update(sale);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Sale sale)
+    {
+        _context.Sales.Remove(sale);
+        await _context.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<Sale>> GetByStoreAsync(string storeId, DateTime startDate, DateTime endDate)
@@ -61,43 +123,6 @@ public class SaleRepository : ISaleRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Sale>> GetByCustomerAsync(string customerId)
-    {
-        return await _context.Sales
-            .Include(s => s.Items)
-            .Include(s => s.Payments)
-            .Include(s => s.Discounts)
-            .Where(s => s.CustomerId == customerId)
-            .OrderByDescending(s => s.CreatedAt)
-            .ToListAsync();
-    }
-
-    public async Task AddAsync(Sale sale)
-    {
-        await _context.Sales.AddAsync(sale);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task UpdateAsync(Sale sale)
-    {
-        _context.Sales.Update(sale);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteAsync(Sale sale)
-    {
-        _context.Sales.Remove(sale);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task<Sale?> GetByIdAsync(int id)
-    {
-        return await _context.Sales
-            .Include(s => s.Items)
-            .Include(s => s.Payments)
-            .FirstOrDefaultAsync(s => s.Id == id);
-    }
-
     public async Task<IEnumerable<Sale>> GetAllAsync()
     {
         return await _context.Sales
@@ -109,15 +134,6 @@ public class SaleRepository : ISaleRepository
     public async Task<bool> ExistsAsync(int id)
     {
         return await _context.Sales.AnyAsync(s => s.Id == id);
-    }
-
-    public async Task<IEnumerable<Sale>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
-    {
-        return await _context.Sales
-            .Include(s => s.Items)
-            .Include(s => s.Payments)
-            .Where(s => s.SaleDate >= startDate && s.SaleDate <= endDate)
-            .ToListAsync();
     }
 
     public async Task<IEnumerable<Sale>> GetByStoreAsync(int storeId)

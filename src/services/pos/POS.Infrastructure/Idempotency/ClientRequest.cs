@@ -1,11 +1,15 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace eShop.POS.Infrastructure.Idempotency;
 
 public class ClientRequest
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; } = null!;
+
     [Required]
-    public string Name { get; set; }
+    [MaxLength(200)]
+    public string Name { get; set; } = null!;
+
     public DateTime Time { get; set; }
 }

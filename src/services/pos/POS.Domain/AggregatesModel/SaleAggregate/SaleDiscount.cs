@@ -24,9 +24,3 @@ public class SaleDiscount : ValueObject
         yield return Type;
     }
 }
-
-public enum DiscountType
-{
-    Percentage,
-    FixedAmount
-} 
