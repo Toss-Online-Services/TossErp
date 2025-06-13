@@ -1,4 +1,4 @@
-using eShop.POS.Domain.SeedWork;
+﻿using POS.Domain.SeedWork;
 
 namespace eShop.POS.Domain.AggregatesModel.OrderAggregate;
 
@@ -9,8 +9,6 @@ public class Address : ValueObject
     public string State { get; private set; }
     public string Country { get; private set; }
     public string ZipCode { get; private set; }
-
-    public Address() { }
 
     public Address(string street, string city, string state, string country, string zipcode)
     {

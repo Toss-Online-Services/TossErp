@@ -1,7 +1,5 @@
-#nullable enable
+﻿#nullable enable
 namespace eShop.POS.Domain.AggregatesModel.SaleAggregate;
-using eShop.POS.Domain.SeedWork;
-
 public class SaleDiscount : ValueObject
 {
     public decimal Amount { get; private set; }

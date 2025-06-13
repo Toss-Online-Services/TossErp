@@ -1,5 +1,4 @@
-#nullable enable
-using System;
+﻿#nullable enable
 using POS.Domain.SeedWork;
 
 namespace POS.Domain.AggregatesModel.StoreAggregate

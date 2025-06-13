@@ -1,6 +1,4 @@
-#nullable enable
-using eShop.POS.Domain.SeedWork;
-
+﻿#nullable enable
 namespace eShop.POS.Domain.AggregatesModel.SaleAggregate;
 
 public class SaleItem : ValueObject

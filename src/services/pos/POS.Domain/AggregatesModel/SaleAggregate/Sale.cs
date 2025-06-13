@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using System.ComponentModel.DataAnnotations;
 using eShop.POS.Domain.Common;
 using eShop.POS.Domain.AggregatesModel.SaleAggregate.Events;
 using POS.Domain.SeedWork;

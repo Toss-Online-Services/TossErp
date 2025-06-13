@@ -1,6 +1,4 @@
-#nullable enable
-using eShop.POS.Domain.AggregatesModel.StaffAggregate;
-
+﻿#nullable enable
 namespace eShop.POS.Domain.Repositories;
 
 public interface IStaffRepository : IRepository<Staff>
