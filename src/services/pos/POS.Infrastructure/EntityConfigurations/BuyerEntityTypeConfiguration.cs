@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using eShop.POS.Domain.AggregatesModel.BuyerAggregate;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+
 namespace eShop.POS.Infrastructure.EntityConfigurations;
 
 class BuyerEntityTypeConfiguration
@@ -10,7 +15,7 @@ class BuyerEntityTypeConfiguration
         buyerConfiguration.Ignore(b => b.DomainEvents);
 
         buyerConfiguration.Property(b => b.Id)
-            .UseHiLo("buyerseq");
+            .UseHiLo("buyerseq", "POS");
 
         buyerConfiguration.Property(b => b.IdentityGuid)
             .HasMaxLength(200);

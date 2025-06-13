@@ -1,20 +1,10 @@
-namespace eShop.POS.Domain.Seedwork;
+#nullable enable
+namespace POS.Domain.SeedWork;
 
 public abstract class Entity
 {
     int? _requestedHashCode;
-    int _Id;
-    public virtual int Id
-    {
-        get
-        {
-            return _Id;
-        }
-        protected set
-        {
-            _Id = value;
-        }
-    }
+    public string Id { get; set; } = string.Empty;
 
     private List<INotification> _domainEvents;
     public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();

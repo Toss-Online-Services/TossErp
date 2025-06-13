@@ -1,3 +1,4 @@
+using eShop.POS.Infrastructure.Data;
 namespace eShop.POS.Infrastructure.Repositories;
 
 public class BuyerRepository

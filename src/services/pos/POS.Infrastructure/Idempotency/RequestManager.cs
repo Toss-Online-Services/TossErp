@@ -1,3 +1,5 @@
+﻿using eShop.POS.Infrastructure.Data;
+using POS.Infrastructure.Data;
 namespace eShop.POS.Infrastructure.Idempotency;
 
 public class RequestManager : IRequestManager

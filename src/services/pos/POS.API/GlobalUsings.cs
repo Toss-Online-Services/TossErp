@@ -23,7 +23,7 @@ global using eShop.POS.Domain.AggregatesModel.BuyerAggregate;
 global using eShop.POS.Domain.AggregatesModel.OrderAggregate;
 global using eShop.POS.Domain.Events;
 global using eShop.POS.Domain.Exceptions;
-global using eShop.POS.Domain.SeedWork;
+global using eShop.POS.Domain.Seedwork;
 global using eShop.POS.Infrastructure;
 global using eShop.POS.Infrastructure.Idempotency;
 global using eShop.POS.Infrastructure.Repositories;

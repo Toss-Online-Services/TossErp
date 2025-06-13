@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using eShop.POS.Domain.AggregatesModel.BuyerAggregate;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+
 namespace eShop.POS.Infrastructure.EntityConfigurations;
 
 class PaymentMethodEntityTypeConfiguration
@@ -10,7 +15,7 @@ class PaymentMethodEntityTypeConfiguration
         paymentConfiguration.Ignore(b => b.DomainEvents);
 
         paymentConfiguration.Property(b => b.Id)
-            .UseHiLo("paymentseq");
+            .UseHiLo("paymentseq", "POS");
 
         paymentConfiguration.Property<int>("BuyerId");
 
