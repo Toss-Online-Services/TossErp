@@ -1,7 +1,6 @@
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace eShop.POS.Infrastructure.Idempotency;
+namespace TossErp.POS.Infrastructure.Idempotency;
 
 public class ClientRequest
 {

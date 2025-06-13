@@ -1,6 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using eShop.POS.Domain.AggregatesModel.BuyerAggregate;
+﻿using eShop.POS.Domain.AggregatesModel.BuyerAggregate;
 
 namespace eShop.POS.Infrastructure.EntityConfigurations;
 

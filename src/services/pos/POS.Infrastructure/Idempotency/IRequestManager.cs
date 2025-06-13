@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
-
-namespace eShop.POS.Infrastructure.Idempotency;
+﻿namespace eShop.POS.Infrastructure.Idempotency;
 
 public interface IRequestManager
 {

@@ -1,18 +1,17 @@
+﻿using ISaleRepository = TossErp.POS.Domain.Repositories.ISaleRepository;
+using TossErp.POS.Domain.AggregatesModel.SaleAggregate;
+using TossErp.POS.Domain.Common;
+using TossErp.POS.Domain.Repositories;
+using TossErp.POS.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using eShop.POS.Domain.AggregatesModel.SaleAggregate;
-using eShop.POS.Domain.Repositories;
-using eShop.POS.Infrastructure.Data;
-using ISaleRepository = eShop.POS.Domain.Repositories.ISaleRepository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace eShop.POS.Infrastructure.Repositories;
+namespace TossErp.POS.Infrastructure.Repositories;
 
 public class SaleRepository : ISaleRepository
 {
     private readonly POSContext _context;
+
+    public IUnitOfWork UnitOfWork => _context;
 
     public SaleRepository(POSContext context)
     {
@@ -75,19 +74,16 @@ public class SaleRepository : ISaleRepository
     public async Task AddAsync(Sale sale)
     {
         await _context.Sales.AddAsync(sale);
-        await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Sale sale)
+    public void Update(Sale sale)
     {
         _context.Sales.Update(sale);
-        await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Sale sale)
+    public void Delete(Sale sale)
     {
         _context.Sales.Remove(sale);
-        await _context.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<Sale>> GetByStoreAsync(string storeId, DateTime startDate, DateTime endDate)
@@ -131,57 +127,29 @@ public class SaleRepository : ISaleRepository
             .ToListAsync();
     }
 
-    public async Task<bool> ExistsAsync(int id)
+    public async Task<bool> ExistsAsync(string id)
     {
         return await _context.Sales.AnyAsync(s => s.Id == id);
-    }
-
-    public async Task<IEnumerable<Sale>> GetByStoreAsync(int storeId)
-    {
-        return await _context.Sales
-            .Include(s => s.Items)
-            .Include(s => s.Payments)
-            .Where(s => s.StoreId == storeId.ToString())
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<Sale>> GetByStaffAsync(int staffId)
-    {
-        return await _context.Sales
-            .Include(s => s.Items)
-            .Include(s => s.Payments)
-            .Where(s => s.StaffId == staffId.ToString())
-            .ToListAsync();
     }
 
     public async Task<decimal> GetTotalSalesByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         return await _context.Sales
-            .Where(s => s.SaleDate >= startDate && s.SaleDate <= endDate)
+            .Where(s => s.CreatedAt >= startDate && s.CreatedAt <= endDate)
             .SumAsync(s => s.TotalAmount);
     }
 
-    public async Task<decimal> GetTotalSalesByStoreAsync(int storeId)
+    public async Task<decimal> GetTotalSalesByStoreAsync(string storeId)
     {
         return await _context.Sales
-            .Where(s => s.StoreId == storeId.ToString())
+            .Where(s => s.StoreId == storeId)
             .SumAsync(s => s.TotalAmount);
     }
 
-    public async Task<decimal> GetTotalSalesByStaffAsync(int staffId)
+    public async Task<decimal> GetTotalSalesByStaffAsync(string staffId)
     {
         return await _context.Sales
-            .Where(s => s.StaffId == staffId.ToString())
+            .Where(s => s.StaffId == staffId)
             .SumAsync(s => s.TotalAmount);
-    }
-
-    public async Task DeleteAsync(int saleId)
-    {
-        var sale = await _context.Sales.FindAsync(saleId);
-        if (sale != null)
-        {
-            _context.Sales.Remove(sale);
-            await _context.SaveChangesAsync();
-        }
     }
 } 

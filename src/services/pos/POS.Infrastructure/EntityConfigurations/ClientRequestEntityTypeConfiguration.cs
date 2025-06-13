@@ -1,8 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using eShop.POS.Infrastructure.Idempotency;
-
-namespace eShop.POS.Infrastructure.EntityConfigurations;
+﻿namespace TossErp.POS.Infrastructure.EntityConfigurations;
 
 class ClientRequestEntityTypeConfiguration
     : IEntityTypeConfiguration<ClientRequest>

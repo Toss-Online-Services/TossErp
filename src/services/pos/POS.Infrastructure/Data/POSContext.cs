@@ -1,15 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-using eShop.POS.Domain.AggregatesModel.ProductAggregate;
-using eShop.POS.Domain.AggregatesModel.StaffAggregate;
-using eShop.POS.Domain.AggregatesModel.StoreAggregate;
-using eShop.POS.Domain.AggregatesModel.SaleAggregate;
-using eShop.POS.Domain.AggregatesModel.BuyerAggregate;
-using eShop.POS.Domain.AggregatesModel.SyncLogAggregate;
-using eShop.POS.Infrastructure.Idempotency;
+﻿namespace TossErp.POS.Infrastructure.Data;
 
-namespace eShop.POS.Infrastructure.Data;
-
-public class POSContext : DbContext
+public class POSContext : DbContext, IUnitOfWork
 {
     public POSContext(DbContextOptions<POSContext> options) : base(options)
     {
@@ -30,5 +21,11 @@ public class POSContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(POSContext).Assembly);
+    }
+
+    public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
+    {
+        await SaveChangesAsync(cancellationToken);
+        return true;
     }
 } 

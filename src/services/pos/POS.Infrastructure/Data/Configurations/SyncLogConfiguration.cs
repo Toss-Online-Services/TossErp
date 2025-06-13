@@ -1,8 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using eShop.POS.Domain.Repositories;
-
-namespace eShop.POS.Infrastructure.Data.Configurations;
+﻿namespace eShop.POS.Infrastructure.Data.Configurations;
 
 public class SyncLogConfiguration : IEntityTypeConfiguration<SyncLog>
 {

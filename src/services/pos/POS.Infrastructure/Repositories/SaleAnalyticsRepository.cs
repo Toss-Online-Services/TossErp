@@ -1,19 +1,16 @@
+﻿using TossErp.POS.Domain.AggregatesModel.SaleAggregate;
+using TossErp.POS.Domain.Common;
+using TossErp.POS.Domain.Repositories;
+using TossErp.POS.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using eShop.POS.Domain.AggregatesModel.SaleAggregate;
-using eShop.POS.Domain.Repositories;
-using eShop.POS.Infrastructure.Data;
-using PaymentMethod = eShop.POS.Domain.AggregatesModel.SaleAggregate.PaymentMethod;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace eShop.POS.Infrastructure.Repositories;
+namespace TossErp.POS.Infrastructure.Repositories;
 
 public class SaleAnalyticsRepository : ISaleAnalyticsRepository
 {
     private readonly POSContext _context;
+
+    public IUnitOfWork UnitOfWork => _context;
 
     public SaleAnalyticsRepository(POSContext context)
     {
@@ -33,7 +30,6 @@ public class SaleAnalyticsRepository : ISaleAnalyticsRepository
         };
 
         await _context.Sales.AddAsync(sale, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task RecordSaleRefunded(string storeId, string staffId, decimal amount, string reason, DateTime refundedAt, CancellationToken cancellationToken = default)
@@ -49,7 +45,6 @@ public class SaleAnalyticsRepository : ISaleAnalyticsRepository
         };
 
         await _context.Sales.AddAsync(sale, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task RecordPayment(string storeId, string staffId, PaymentMethod method, decimal amount, DateTime paymentDate, CancellationToken cancellationToken = default)
@@ -60,7 +55,6 @@ public class SaleAnalyticsRepository : ISaleAnalyticsRepository
         if (sale != null)
         {
             sale.AddPayment(method, amount);
-            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 
@@ -72,7 +66,6 @@ public class SaleAnalyticsRepository : ISaleAnalyticsRepository
         if (sale != null)
         {
             sale.ApplyDiscount(type, amount);
-            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 
@@ -84,7 +77,6 @@ public class SaleAnalyticsRepository : ISaleAnalyticsRepository
         if (sale != null)
         {
             sale.MarkAsSynced(syncedAt);
-            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 

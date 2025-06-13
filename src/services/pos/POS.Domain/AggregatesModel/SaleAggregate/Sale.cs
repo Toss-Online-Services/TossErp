@@ -61,7 +61,7 @@ public class Sale : Entity, IAggregateRoot
         var item = new SaleItem(productId, productName, unitPrice, quantity, pictureUrl: pictureUrl);
         _items.Add(item);
         RecalculateTotal();
-        AddDomainEvent(new SaleItemAddedDomainEvent(this, item));
+        _domainEvents.Add(new SaleItemAddedDomainEvent(this, item));
     }
 
     public void AddPayment(string method, decimal amount, string? reference = null)
@@ -70,7 +70,7 @@ public class Sale : Entity, IAggregateRoot
         _payments.Add(payment);
         _domainEvents.Add(new SalePaymentAddedDomainEvent(this, payment));
 
-        if (Balance <= 0)
+        if (GetBalance() <= 0)
         {
             Complete();
         }

@@ -1,17 +1,16 @@
+﻿using TossErp.POS.Domain.AggregatesModel.ProductAggregate;
+using TossErp.POS.Domain.Common;
+using TossErp.POS.Domain.Repositories;
+using TossErp.POS.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using eShop.POS.Domain.AggregatesModel.ProductAggregate;
-using eShop.POS.Domain.Repositories;
-using eShop.POS.Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace eShop.POS.Infrastructure.Repositories;
+namespace TossErp.POS.Infrastructure.Repositories;
 
 public class ProductRepository : IProductRepository
 {
     private readonly POSContext _context;
+
+    public IUnitOfWork UnitOfWork => _context;
 
     public ProductRepository(POSContext context)
     {
@@ -31,19 +30,16 @@ public class ProductRepository : IProductRepository
     public async Task AddAsync(Product product)
     {
         await _context.Products.AddAsync(product);
-        await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Product product)
+    public void Update(Product product)
     {
         _context.Entry(product).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Product product)
+    public void Delete(Product product)
     {
         _context.Products.Remove(product);
-        await _context.SaveChangesAsync();
     }
 
     public async Task<bool> ExistsAsync(string id)
@@ -106,20 +102,6 @@ public class ProductRepository : IProductRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Product>> GetByPriceRangeAsync(decimal minPrice, decimal maxPrice)
-    {
-        return await _context.Products
-            .Where(p => p.Price >= minPrice && p.Price <= maxPrice)
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<Product>> GetByStockLevelAsync(int threshold)
-    {
-        return await _context.Products
-            .Where(p => p.StockLevel <= threshold)
-            .ToListAsync();
-    }
-
     public async Task<Product?> GetAsync(string productId)
     {
         return await _context.Products
@@ -132,16 +114,6 @@ public class ProductRepository : IProductRepository
             .Where(p => p.StoreId == storeId && p.StockQuantity <= threshold)
             .OrderBy(p => p.StockQuantity)
             .ToListAsync();
-    }
-
-    public async Task DeleteAsync(string productId)
-    {
-        var product = await GetAsync(productId);
-        if (product != null)
-        {
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-        }
     }
 
     public async Task<bool> ExistsAsync(string storeId, string code)

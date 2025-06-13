@@ -11,7 +11,7 @@ public class PaymentMethod : Entity
     public string SecurityNumber { get; set; } = string.Empty;
     public string CardHolderName { get; set; } = string.Empty;
     public DateTime Expiration { get; set; }
-    public CardType CardType { get; set; }
+    public CardType CardType { get; set; } = null!;
     public string BuyerId { get; set; } = string.Empty;
 
     protected PaymentMethod()
@@ -21,7 +21,7 @@ public class PaymentMethod : Entity
         SecurityNumber = string.Empty;
         CardHolderName = string.Empty;
         Expiration = DateTime.MinValue;
-        CardType = null;
+        CardType = new CardType { Id = 0, Name = "Unknown" };
     }
 
     public PaymentMethod(CardType cardType, string alias, string cardNumber, string securityNumber, string cardHolderName, DateTime expiration)
@@ -36,7 +36,7 @@ public class PaymentMethod : Entity
 
     public bool IsEqualTo(int cardTypeId, string cardNumber, DateTime expiration)
     {
-        return CardType != null && CardType.Id == cardTypeId
+        return CardType.Id == cardTypeId
             && this.CardNumber == cardNumber
             && this.Expiration == expiration;
     }

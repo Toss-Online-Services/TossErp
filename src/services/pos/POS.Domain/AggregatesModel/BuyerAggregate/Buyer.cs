@@ -1,7 +1,7 @@
 #nullable enable
-using POS.Domain.SeedWork;
+using eShop.POS.Domain.Seedwork;
 
-namespace POS.Domain.AggregatesModel.BuyerAggregate;
+namespace eShop.POS.Domain.AggregatesModel.BuyerAggregate;
 
 public class Buyer : Entity, IAggregateRoot
 {

@@ -1,18 +1,16 @@
+﻿using TossErp.POS.Domain.AggregatesModel.SyncLogAggregate;
+using TossErp.POS.Domain.Common;
+using TossErp.POS.Domain.Repositories;
+using TossErp.POS.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using eShop.POS.Domain.AggregatesModel.SyncLogAggregate;
-using eShop.POS.Domain.Repositories;
-using eShop.POS.Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace eShop.POS.Infrastructure.Repositories;
+namespace TossErp.POS.Infrastructure.Repositories;
 
 public class SyncLogRepository : ISyncLogRepository
 {
     private readonly POSContext _context;
+
+    public IUnitOfWork UnitOfWork => _context;
 
     public SyncLogRepository(POSContext context)
     {
@@ -32,19 +30,16 @@ public class SyncLogRepository : ISyncLogRepository
     public async Task AddAsync(SyncLog syncLog)
     {
         await _context.SyncLogs.AddAsync(syncLog);
-        await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(SyncLog syncLog)
+    public void Update(SyncLog syncLog)
     {
         _context.Entry(syncLog).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(SyncLog syncLog)
+    public void Delete(SyncLog syncLog)
     {
         _context.SyncLogs.Remove(syncLog);
-        await _context.SaveChangesAsync();
     }
 
     public async Task<bool> ExistsAsync(string id)
@@ -68,7 +63,7 @@ public class SyncLogRepository : ISyncLogRepository
             .ToListAsync();
     }
 
-    public async Task RecordSync(int saleId, string storeId, DateTime syncedAt, CancellationToken cancellationToken = default)
+    public async Task RecordSync(string saleId, string storeId, DateTime syncedAt, CancellationToken cancellationToken = default)
     {
         var syncLog = new SyncLog
         {
@@ -79,7 +74,6 @@ public class SyncLogRepository : ISyncLogRepository
         };
 
         await _context.SyncLogs.AddAsync(syncLog, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<SyncLog>> GetPendingSyncsAsync(string storeId, CancellationToken cancellationToken = default)

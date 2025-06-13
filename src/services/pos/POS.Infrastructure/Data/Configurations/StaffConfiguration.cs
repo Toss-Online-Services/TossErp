@@ -1,6 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using eShop.POS.Domain.AggregatesModel.StaffAggregate;
+﻿using eShop.POS.Domain.AggregatesModel.StaffAggregate;
 
 namespace eShop.POS.Infrastructure.Data.Configurations;
 

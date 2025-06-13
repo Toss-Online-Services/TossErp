@@ -1,17 +1,16 @@
+﻿using TossErp.POS.Domain.AggregatesModel.StoreAggregate;
+using TossErp.POS.Domain.Common;
+using TossErp.POS.Domain.Repositories;
+using TossErp.POS.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using eShop.POS.Domain.AggregatesModel.StoreAggregate;
-using eShop.POS.Domain.Repositories;
-using eShop.POS.Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace eShop.POS.Infrastructure.Repositories;
+namespace TossErp.POS.Infrastructure.Repositories;
 
 public class StoreRepository : IStoreRepository
 {
     private readonly POSContext _context;
+
+    public IUnitOfWork UnitOfWork => _context;
 
     public StoreRepository(POSContext context)
     {
@@ -31,19 +30,16 @@ public class StoreRepository : IStoreRepository
     public async Task AddAsync(Store store)
     {
         await _context.Stores.AddAsync(store);
-        await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Store store)
+    public void Update(Store store)
     {
         _context.Entry(store).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Store store)
+    public void Delete(Store store)
     {
         _context.Stores.Remove(store);
-        await _context.SaveChangesAsync();
     }
 
     public async Task<bool> ExistsAsync(string id)

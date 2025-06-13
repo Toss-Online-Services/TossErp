@@ -1,15 +1,22 @@
 #nullable enable
 using MediatR;
 
-namespace eShop.POS.Domain.SeedWork;
+namespace eShop.POS.Domain.Seedwork;
 
 public abstract class Entity
 {
     int? _requestedHashCode;
-    public string Id { get; set; } = string.Empty;
+    public string Id { get; protected set; } = null!;
 
     private List<INotification> _domainEvents = new();
     public IReadOnlyCollection<INotification> DomainEvents => _domainEvents.AsReadOnly();
+
+    protected Entity() { }
+    
+    protected Entity(string id)
+    {
+        Id = id;
+    }
 
     public void AddDomainEvent(INotification eventItem)
     {

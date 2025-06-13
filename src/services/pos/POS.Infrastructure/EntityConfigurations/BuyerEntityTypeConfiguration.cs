@@ -1,9 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using eShop.POS.Domain.AggregatesModel.BuyerAggregate;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-
-namespace eShop.POS.Infrastructure.EntityConfigurations;
+﻿namespace TossErp.POS.Infrastructure.EntityConfigurations;
 
 class BuyerEntityTypeConfiguration
     : IEntityTypeConfiguration<Buyer>

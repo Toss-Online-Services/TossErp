@@ -1,9 +1,4 @@
-﻿using eShop.POS.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading.Tasks;
-
-namespace eShop.POS.Infrastructure.Idempotency;
+﻿namespace TossErp.POS.Infrastructure.Idempotency;
 
 public class RequestManager : IRequestManager
 {
