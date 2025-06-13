@@ -1,13 +1,13 @@
 using Microsoft.EntityFrameworkCore;
-using POS.Domain.AggregatesModel.StaffAggregate;
-using POS.Domain.Repositories;
-using POS.Infrastructure.Data;
+using eShop.POS.Domain.AggregatesModel.StaffAggregate;
+using eShop.POS.Domain.Repositories;
+using eShop.POS.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace POS.Infrastructure.Repositories;
+namespace eShop.POS.Infrastructure.Repositories;
 
 public class StaffRepository : IStaffRepository
 {
@@ -57,30 +57,16 @@ public class StaffRepository : IStaffRepository
         return await _context.Staff.FirstOrDefaultAsync(s => s.Code == code);
     }
 
-    public async Task<Staff> GetByNameAsync(string name)
+    public async Task<Staff?> GetByEmailAsync(string email)
     {
-        return await _context.Staff
-            .FirstOrDefaultAsync(s => s.Name == name);
+        return await _context.Staff.FirstOrDefaultAsync(s => s.Email == email);
     }
 
-    public async Task<IEnumerable<Staff>> GetByStoreAsync(string storeId)
+    public async Task<IEnumerable<Staff>> GetByStoreIdAsync(string storeId)
     {
         return await _context.Staff
             .Where(s => s.StoreId == storeId)
-            .OrderBy(s => s.Name)
             .ToListAsync();
-    }
-
-    public async Task<Staff?> GetAsync(string staffId)
-    {
-        return await _context.Staff
-            .FirstOrDefaultAsync(s => s.Id == staffId);
-    }
-
-    public async Task<Staff?> GetByEmailAsync(string email)
-    {
-        return await _context.Staff
-            .FirstOrDefaultAsync(s => s.Email == email);
     }
 
     public async Task<Staff?> GetByPhoneAsync(string phone)

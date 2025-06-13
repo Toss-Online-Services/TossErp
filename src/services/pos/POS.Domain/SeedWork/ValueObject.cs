@@ -1,5 +1,5 @@
 #nullable enable
-namespace POS.Domain.SeedWork;
+namespace eShop.POS.Domain.SeedWork;
 
 public abstract class ValueObject
 {
@@ -39,6 +39,6 @@ public abstract class ValueObject
 
     public ValueObject GetCopy()
     {
-        return this.MemberwiseClone() as ValueObject;
+        return (this.MemberwiseClone() as ValueObject)!;
     }
 }

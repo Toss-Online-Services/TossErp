@@ -17,4 +17,8 @@
     <ProjectReference Include="..\..\..\IntegrationEventLogEF\IntegrationEventLogEF.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Configurations\" />
+  </ItemGroup>
+
 </Project>

@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using POS.Domain.AggregatesModel.ProductAggregate;
+using eShop.POS.Domain.AggregatesModel.ProductAggregate;
 
-namespace POS.Infrastructure.Data.Configurations;
+namespace eShop.POS.Infrastructure.Data.Configurations;
 
 public class ProductConfiguration : IEntityTypeConfiguration<Product>
 {

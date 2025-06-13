@@ -1,27 +1,28 @@
-﻿using POS.Domain.SeedWork;
+﻿using eShop.POS.Domain.SeedWork;
 
 namespace eShop.POS.Domain.AggregatesModel.OrderAggregate;
 
 public class Address : ValueObject
 {
-    public string Street { get; private set; }
-    public string City { get; private set; }
-    public string State { get; private set; }
-    public string Country { get; private set; }
-    public string ZipCode { get; private set; }
+    public string Street { get; private set; } = string.Empty;
+    public string City { get; private set; } = string.Empty;
+    public string State { get; private set; } = string.Empty;
+    public string Country { get; private set; } = string.Empty;
+    public string ZipCode { get; private set; } = string.Empty;
 
-    public Address(string street, string city, string state, string country, string zipcode)
+    public Address() { }
+
+    public Address(string street, string city, string state, string country, string zipCode)
     {
         Street = street;
         City = city;
         State = state;
         Country = country;
-        ZipCode = zipcode;
+        ZipCode = zipCode;
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        // Using a yield return statement to return each element one at a time
         yield return Street;
         yield return City;
         yield return State;

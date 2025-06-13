@@ -1,7 +1,9 @@
 #nullable enable
-namespace POS.Domain.Repositories;
+using eShop.POS.Domain.SeedWork;
 
-public interface IRepository<T> where T : class
+namespace eShop.POS.Domain.Repositories;
+
+public interface IRepository<T> where T : class, IAggregateRoot
 {
     Task<T?> GetByIdAsync(string id);
     Task<IEnumerable<T>> GetAllAsync();

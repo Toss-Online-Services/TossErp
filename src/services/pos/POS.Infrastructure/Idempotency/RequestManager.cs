@@ -1,5 +1,8 @@
 ﻿using eShop.POS.Infrastructure.Data;
-using POS.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
+
 namespace eShop.POS.Infrastructure.Idempotency;
 
 public class RequestManager : IRequestManager
@@ -11,13 +14,10 @@ public class RequestManager : IRequestManager
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-
     public async Task<bool> ExistAsync(Guid id)
     {
-        var request = await _context.
-            FindAsync<ClientRequest>(id);
-
-        return request != null;
+        return await _context.Set<ClientRequest>()
+            .AnyAsync(r => r.Id == id);
     }
 
     public async Task CreateRequestForCommandAsync<T>(Guid id)
@@ -25,7 +25,7 @@ public class RequestManager : IRequestManager
         var exists = await ExistAsync(id);
 
         var request = exists ?
-            throw new POSDomainException($"Request with {id} already exists") :
+            throw new InvalidOperationException($"Request with {id} already exists") :
             new ClientRequest()
             {
                 Id = id,

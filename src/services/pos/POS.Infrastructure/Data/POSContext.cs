@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using POS.Domain.AggregatesModel.ProductAggregate;
-using POS.Domain.AggregatesModel.StaffAggregate;
-using POS.Domain.AggregatesModel.StoreAggregate;
+using eShop.POS.Domain.AggregatesModel.ProductAggregate;
+using eShop.POS.Domain.AggregatesModel.StaffAggregate;
+using eShop.POS.Domain.AggregatesModel.StoreAggregate;
 
-namespace POS.Infrastructure.Data;
+namespace eShop.POS.Infrastructure.Data;
 
 public class POSContext : DbContext
 {

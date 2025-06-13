@@ -1,13 +1,13 @@
 using Microsoft.EntityFrameworkCore;
-using POS.Domain.AggregatesModel.ProductAggregate;
-using POS.Domain.Repositories;
-using POS.Infrastructure.Data;
+using eShop.POS.Domain.AggregatesModel.ProductAggregate;
+using eShop.POS.Domain.Repositories;
+using eShop.POS.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace POS.Infrastructure.Repositories;
+namespace eShop.POS.Infrastructure.Repositories;
 
 public class ProductRepository : IProductRepository
 {

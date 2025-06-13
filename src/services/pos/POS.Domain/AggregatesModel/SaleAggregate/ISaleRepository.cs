@@ -1,13 +1,12 @@
+using eShop.POS.Domain.Repositories;
+
 namespace eShop.POS.Domain.AggregatesModel.SaleAggregate;
 
 public interface ISaleRepository : IRepository<Sale>
 {
-    Task<Sale> GetAsync(int saleId);
-    Task<IEnumerable<Sale>> GetByStoreAsync(string storeId, DateTime startDate, DateTime endDate);
-    Task<IEnumerable<Sale>> GetByStaffAsync(string staffId, DateTime startDate, DateTime endDate);
-    Task<IEnumerable<Sale>> GetOfflineSalesAsync();
-    Task<IEnumerable<Sale>> GetByCustomerAsync(string customerId);
-    Task<Sale> AddAsync(Sale sale);
-    Task UpdateAsync(Sale sale);
-    Task DeleteAsync(int saleId);
+    Task<Sale?> GetByIdAsync(string id);
+    Task<IEnumerable<Sale>> GetByStoreIdAsync(string storeId);
+    Task<IEnumerable<Sale>> GetByStaffIdAsync(string staffId);
+    Task<IEnumerable<Sale>> GetByCustomerIdAsync(string customerId);
+    Task<IEnumerable<Sale>> GetByDateRangeAsync(DateTime startDate, DateTime endDate);
 } 

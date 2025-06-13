@@ -1,16 +1,16 @@
+using eShop.POS.Domain.AggregatesModel.BuyerAggregate;
+using eShop.POS.Domain.Common;
+
 namespace eShop.POS.Domain.Events;
 
-public class BuyerAndPaymentMethodVerifiedDomainEvent
-    : INotification
+public class BuyerPaymentMethodVerifiedDomainEvent : DomainEvent
 {
-    public Buyer Buyer { get; private set; }
-    public PaymentMethod Payment { get; private set; }
-    public int OrderId { get; private set; }
+    public Buyer Buyer { get; }
+    public PaymentMethod PaymentMethod { get; }
 
-    public BuyerAndPaymentMethodVerifiedDomainEvent(Buyer buyer, PaymentMethod payment, int orderId)
+    public BuyerPaymentMethodVerifiedDomainEvent(Buyer buyer, PaymentMethod paymentMethod)
     {
         Buyer = buyer;
-        Payment = payment;
-        OrderId = orderId;
+        PaymentMethod = paymentMethod;
     }
 }

@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using POS.Domain.AggregatesModel.StaffAggregate;
+using eShop.POS.Domain.AggregatesModel.StaffAggregate;
 
-namespace POS.Infrastructure.Data.Configurations;
+namespace eShop.POS.Infrastructure.Data.Configurations;
 
 public class StaffConfiguration : IEntityTypeConfiguration<Staff>
 {

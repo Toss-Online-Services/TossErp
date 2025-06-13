@@ -1,9 +1,9 @@
 ﻿#nullable enable
-using POS.Domain.SeedWork;
+using eShop.POS.Domain.SeedWork;
 
-namespace POS.Domain.AggregatesModel.StaffAggregate
+namespace eShop.POS.Domain.AggregatesModel.StaffAggregate
 {
-    public class Staff : Entity
+    public class Staff : Entity, IAggregateRoot
     {
         public string Name { get; set; } = string.Empty;
         public string Code { get; set; } = string.Empty;
@@ -13,6 +13,7 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
         public string StoreId { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
+        public string Pin { get; private set; } = string.Empty;
 
         protected Staff() {
             StoreId = string.Empty;
@@ -20,6 +21,7 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
             Email = string.Empty;
             Role = string.Empty;
             CreatedAt = DateTime.UtcNow;
+            Pin = string.Empty;
         }
 
         public Staff(string storeId, string name, string email, string role)
@@ -29,6 +31,7 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
             Email = email;
             Role = role;
             CreatedAt = DateTime.UtcNow;
+            Pin = string.Empty;
         }
 
         public void UpdateDetails(string name, string? phone)

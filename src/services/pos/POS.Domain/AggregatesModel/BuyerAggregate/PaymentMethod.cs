@@ -1,45 +1,43 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-
+﻿#nullable enable
+using eShop.POS.Domain.SeedWork;
+using System.ComponentModel.DataAnnotations;
 
 namespace eShop.POS.Domain.AggregatesModel.BuyerAggregate;
 
 public class PaymentMethod : Entity
 {
-    [Required]
-    private string _alias;
-    [Required]
-    private string _cardNumber;
-    private string _securityNumber;
-    [Required]
-    private string _cardHolderName;
-    private DateTime _expiration;
+    public string Alias { get; set; } = string.Empty;
+    public string CardNumber { get; set; } = string.Empty;
+    public string SecurityNumber { get; set; } = string.Empty;
+    public string CardHolderName { get; set; } = string.Empty;
+    public DateTime Expiration { get; set; }
+    public CardType CardType { get; set; }
+    public string BuyerId { get; set; } = string.Empty;
 
-    private int _cardTypeId;
-    public CardType CardType { get; private set; }
-
-    protected PaymentMethod() { }
-
-    public PaymentMethod(int cardTypeId, string alias, string cardNumber, string securityNumber, string cardHolderName, DateTime expiration)
+    protected PaymentMethod()
     {
-        _cardNumber = !string.IsNullOrWhiteSpace(cardNumber) ? cardNumber : throw new POSDomainException(nameof(cardNumber));
-        _securityNumber = !string.IsNullOrWhiteSpace(securityNumber) ? securityNumber : throw new POSDomainException(nameof(securityNumber));
-        _cardHolderName = !string.IsNullOrWhiteSpace(cardHolderName) ? cardHolderName : throw new POSDomainException(nameof(cardHolderName));
+        Alias = string.Empty;
+        CardNumber = string.Empty;
+        SecurityNumber = string.Empty;
+        CardHolderName = string.Empty;
+        Expiration = DateTime.MinValue;
+        CardType = null;
+    }
 
-        if (expiration < DateTime.UtcNow)
-        {
-            throw new POSDomainException(nameof(expiration));
-        }
-
-        _alias = alias;
-        _expiration = expiration;
-        _cardTypeId = cardTypeId;
+    public PaymentMethod(CardType cardType, string alias, string cardNumber, string securityNumber, string cardHolderName, DateTime expiration)
+    {
+        CardType = cardType;
+        Alias = alias;
+        CardNumber = cardNumber;
+        SecurityNumber = securityNumber;
+        CardHolderName = cardHolderName;
+        Expiration = expiration;
     }
 
     public bool IsEqualTo(int cardTypeId, string cardNumber, DateTime expiration)
     {
-        return _cardTypeId == cardTypeId
-            && _cardNumber == cardNumber
-            && _expiration == expiration;
+        return CardType != null && CardType.Id == cardTypeId
+            && this.CardNumber == cardNumber
+            && this.Expiration == expiration;
     }
 }

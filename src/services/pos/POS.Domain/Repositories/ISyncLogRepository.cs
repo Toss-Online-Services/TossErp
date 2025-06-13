@@ -1,38 +1,28 @@
-namespace eShop.POS.Domain.Repositories;
+﻿#nullable enable
 
-public interface ISyncLogRepository
+namespace POS.Domain.Repositories;
+
+public interface ISyncLogRepository : IRepository<SyncLog>
 {
-    Task RecordSync(
-        int saleId,
-        string storeId,
-        DateTime syncedAt,
-        CancellationToken cancellationToken = default);
-
-    Task<IEnumerable<SyncLog>> GetPendingSyncsAsync(
-        string storeId,
-        CancellationToken cancellationToken = default);
-
-    Task<IEnumerable<SyncLog>> GetFailedSyncsAsync(
-        string storeId,
-        DateTime startDate,
-        DateTime endDate,
-        CancellationToken cancellationToken = default);
-
-    Task<DateTime?> GetLastSyncTimeAsync(
-        string storeId,
-        CancellationToken cancellationToken = default);
-
-    Task<int> GetPendingSyncCountAsync(
-        string storeId,
-        CancellationToken cancellationToken = default);
+    new Task<SyncLog> AddAsync(SyncLog syncLog);
+    new Task<SyncLog?> GetByIdAsync(string id);
+    Task<IEnumerable<SyncLog>> GetByStoreIdAsync(string storeId);
+    Task<IEnumerable<SyncLog>> GetPendingSyncsAsync();
+    new Task UpdateAsync(SyncLog syncLog);
 }
 
-public class SyncLog
+public class SyncLog : Entity
 {
-    public int Id { get; set; }
-    public int SaleId { get; set; }
-    public string StoreId { get; set; }
-    public DateTime SyncedAt { get; set; }
-    public bool Success { get; set; }
-    public string ErrorMessage { get; set; }
+    public required string StoreId { get; set; }
+    public DateTime SyncDate { get; set; }
+    public SyncStatus Status { get; set; }
+    public required string ErrorMessage { get; set; }
+}
+
+public enum SyncStatus
+{
+    Pending,
+    InProgress,
+    Completed,
+    Failed
 } 

@@ -1,28 +1,29 @@
 #nullable enable
-namespace POS.Domain.SeedWork;
+using MediatR;
+
+namespace eShop.POS.Domain.SeedWork;
 
 public abstract class Entity
 {
     int? _requestedHashCode;
     public string Id { get; set; } = string.Empty;
 
-    private List<INotification> _domainEvents;
-    public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();
+    private List<INotification> _domainEvents = new();
+    public IReadOnlyCollection<INotification> DomainEvents => _domainEvents.AsReadOnly();
 
     public void AddDomainEvent(INotification eventItem)
     {
-        _domainEvents = _domainEvents ?? new List<INotification>();
         _domainEvents.Add(eventItem);
     }
 
     public void RemoveDomainEvent(INotification eventItem)
     {
-        _domainEvents?.Remove(eventItem);
+        _domainEvents.Remove(eventItem);
     }
 
     public void ClearDomainEvents()
     {
-        _domainEvents?.Clear();
+        _domainEvents.Clear();
     }
 
     public bool IsTransient()
@@ -30,7 +31,7 @@ public abstract class Entity
         return this.Id == default;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null || !(obj is Entity))
             return false;
@@ -60,17 +61,17 @@ public abstract class Entity
         }
         else
             return base.GetHashCode();
-
     }
-    public static bool operator ==(Entity left, Entity right)
+
+    public static bool operator ==(Entity? left, Entity? right)
     {
         if (Object.Equals(left, null))
-            return (Object.Equals(right, null)) ? true : false;
+            return Object.Equals(right, null);
         else
             return left.Equals(right);
     }
 
-    public static bool operator !=(Entity left, Entity right)
+    public static bool operator !=(Entity? left, Entity? right)
     {
         return !(left == right);
     }
