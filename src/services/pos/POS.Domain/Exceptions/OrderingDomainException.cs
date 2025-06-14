@@ -1,4 +1,4 @@
-namespace eShop.POS.Domain.Exceptions;
+namespace TossErp.POS.Domain.Exceptions;
 
 /// <summary>
 /// Exception type for domain exceptions

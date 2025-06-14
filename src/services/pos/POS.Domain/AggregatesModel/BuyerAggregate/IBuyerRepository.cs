@@ -1,16 +1,16 @@
-#nullable enable
-using eShop.POS.Domain.AggregatesModel.BuyerAggregate;
+using System.Threading;
+using System.Threading.Tasks;
+using TossErp.POS.Domain.Common;
 
-namespace eShop.POS.Domain.Repositories;
+namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
 
 //This is just the RepositoryContracts or Interface defined at the Domain Layer
 //as requisite for the Buyer Aggregate
 
 public interface IBuyerRepository : IRepository<Buyer>
 {
-    Task<Buyer?> FindAsync(string identityGuid);
-    Task<Buyer?> FindByIdAsync(string id);
-    Buyer Add(Buyer buyer);
-    void Update(Buyer buyer);
+    Task<Buyer?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<Buyer?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+    Task<Buyer?> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default);
 }
 

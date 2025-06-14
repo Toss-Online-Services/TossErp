@@ -1,5 +1,5 @@
 #nullable enable
-namespace eShop.POS.Domain.SeedWork;
+namespace eShop.POS.Domain.Seedwork;
 
 public abstract class ValueObject
 {

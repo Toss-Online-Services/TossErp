@@ -1,15 +1,16 @@
-#nullable enable
-using eShop.POS.Domain.Seedwork;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using TossErp.POS.Domain.Common;
 
-namespace eShop.POS.Domain.Repositories;
-
-public interface IRepository<T> where T : IAggregateRoot
+namespace TossErp.POS.Domain.Repositories
 {
-    IUnitOfWork UnitOfWork { get; }
-    Task<T?> GetByIdAsync(string id);
-    Task<IEnumerable<T>> GetAllAsync();
-    Task<T> AddAsync(T entity);
-    Task UpdateAsync(T entity);
-    Task DeleteAsync(string id);
-    Task<bool> ExistsAsync(string id);
+    public interface IRepository<T> where T : class, IAggregateRoot
+    {
+        Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<T> AddAsync(T entity, CancellationToken cancellationToken = default);
+        Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
+        Task DeleteAsync(T entity, CancellationToken cancellationToken = default);
+    }
 } 

@@ -1,4 +1,8 @@
-﻿namespace eShop.POS.Infrastructure.Data.Configurations;
+﻿using TossErp.POS.Domain.AggregatesModel.SyncLogAggregate;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace TossErp.POS.Infrastructure.Data.Configurations;
 
 public class SyncLogConfiguration : IEntityTypeConfiguration<SyncLog>
 {

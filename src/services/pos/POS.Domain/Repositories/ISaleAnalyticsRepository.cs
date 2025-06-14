@@ -1,68 +1,18 @@
-using eShop.POS.Domain.AggregatesModel.SaleAggregate;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 
-namespace eShop.POS.Domain.Repositories;
-
-public interface ISaleAnalyticsRepository
+namespace TossErp.POS.Domain.Repositories
 {
-    Task RecordSaleCompleted(
-        string storeId,
-        string staffId,
-        decimal total,
-        bool isOffline,
-        DateTime completedAt,
-        CancellationToken cancellationToken = default);
-
-    Task RecordSaleRefunded(
-        string storeId,
-        string staffId,
-        decimal amount,
-        string reason,
-        DateTime refundedAt,
-        CancellationToken cancellationToken = default);
-
-    Task RecordPayment(
-        string storeId,
-        string staffId,
-        eShop.POS.Domain.AggregatesModel.SaleAggregate.PaymentMethod method,
-        decimal amount,
-        DateTime paymentDate,
-        CancellationToken cancellationToken = default);
-
-    Task RecordDiscount(
-        string storeId,
-        string staffId,
-        DiscountType type,
-        decimal amount,
-        DateTime createdAt,
-        CancellationToken cancellationToken = default);
-
-    Task RecordSaleSynced(
-        string storeId,
-        string staffId,
-        DateTime syncedAt,
-        CancellationToken cancellationToken = default);
-
-    Task<decimal> GetTotalSalesAsync(
-        string storeId,
-        DateTime startDate,
-        DateTime endDate,
-        CancellationToken cancellationToken = default);
-
-    Task<decimal> GetTotalRefundsAsync(
-        string storeId,
-        DateTime startDate,
-        DateTime endDate,
-        CancellationToken cancellationToken = default);
-
-    Task<IDictionary<eShop.POS.Domain.AggregatesModel.SaleAggregate.PaymentMethod, decimal>> GetPaymentMethodTotalsAsync(
-        string storeId,
-        DateTime startDate,
-        DateTime endDate,
-        CancellationToken cancellationToken = default);
-
-    Task<IDictionary<string, decimal>> GetStaffPerformanceAsync(
-        string storeId,
-        DateTime startDate,
-        DateTime endDate,
-        CancellationToken cancellationToken = default);
+    public interface ISaleAnalyticsRepository
+    {
+        Task<decimal> GetTotalSalesAsync(int storeId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
+        Task<decimal> GetTotalSalesByPaymentMethodAsync(int storeId, PaymentMethod method, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
+        Task<decimal> GetTotalSalesByProductAsync(int storeId, int productId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
+        Task<decimal> GetTotalSalesByStaffAsync(int storeId, int staffId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
+        Task<IDictionary<DateTime, decimal>> GetDailySalesAsync(int storeId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
+        Task<IDictionary<string, decimal>> GetSalesByCategoryAsync(int storeId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
+    }
 } 

@@ -1,40 +1,88 @@
-#nullable enable
-using eShop.POS.Domain.Seedwork;
+using System;
+using System.Collections.Generic;
+using TossErp.POS.Domain.Common;
+using TossErp.POS.Domain.Events;
 
-namespace eShop.POS.Domain.AggregatesModel.BuyerAggregate;
+namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
 
 public class Buyer : Entity, IAggregateRoot
 {
-    public string IdentityGuid { get; set; } = string.Empty;
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; private set; }
+    public string Email { get; private set; }
+    public string Phone { get; private set; }
+    public Address Address { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
 
-    public List<PaymentMethod> PaymentMethods { get; set; } = new();
+    private readonly List<PaymentMethod> _paymentMethods;
+    public IReadOnlyCollection<PaymentMethod> PaymentMethods => _paymentMethods.AsReadOnly();
 
-    protected Buyer() { }
-
-    public Buyer(string identity, string name)
+    private Buyer()
     {
-        IdentityGuid = identity;
-        Name = name;
+        _paymentMethods = new List<PaymentMethod>();
     }
 
-    public PaymentMethod VerifyOrAddPaymentMethod(
-        CardType cardType, string alias, string cardNumber,
-        string securityNumber, string cardHolderName, DateTime expiration,
-        int orderId)
+    public Buyer(string name, string email, string phone, Address address) : this()
     {
-        var existingPayment = PaymentMethods
-            .SingleOrDefault(p => p.IsEqualTo(cardType.Id, cardNumber, expiration));
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Name cannot be empty");
+        if (string.IsNullOrWhiteSpace(email))
+            throw new DomainException("Email cannot be empty");
+        if (string.IsNullOrWhiteSpace(phone))
+            throw new DomainException("Phone cannot be empty");
+        if (address == null)
+            throw new DomainException("Address cannot be null");
 
-        if (existingPayment != null)
+        Name = name;
+        Email = email;
+        Phone = phone;
+        Address = address;
+        CreatedAt = DateTime.UtcNow;
+    }
+
+    public void Update(string name, string email, string phone, Address address)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Name cannot be empty");
+        if (string.IsNullOrWhiteSpace(email))
+            throw new DomainException("Email cannot be empty");
+        if (string.IsNullOrWhiteSpace(phone))
+            throw new DomainException("Phone cannot be empty");
+        if (address == null)
+            throw new DomainException("Address cannot be null");
+
+        Name = name;
+        Email = email;
+        Phone = phone;
+        Address = address;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void AddPaymentMethod(PaymentMethod paymentMethod)
+    {
+        if (paymentMethod == null)
+            throw new DomainException("Payment method cannot be null");
+
+        _paymentMethods.Add(paymentMethod);
+        AddDomainEvent(new PaymentMethodAddedDomainEvent(this, paymentMethod));
+    }
+
+    public void RemovePaymentMethod(int paymentMethodId)
+    {
+        var paymentMethod = _paymentMethods.Find(pm => pm.Id == paymentMethodId);
+        if (paymentMethod != null)
         {
-            return existingPayment;
+            _paymentMethods.Remove(paymentMethod);
         }
+    }
 
-        var payment = new PaymentMethod(cardType, alias, cardNumber, securityNumber, cardHolderName, expiration);
+    public new void AddDomainEvent(DomainEvent domainEvent)
+    {
+        base.AddDomainEvent(domainEvent);
+    }
 
-        PaymentMethods.Add(payment);
-
-        return payment;
+    public new void ClearDomainEvents()
+    {
+        base.ClearDomainEvents();
     }
 }

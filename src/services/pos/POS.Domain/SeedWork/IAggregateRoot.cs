@@ -1,4 +1,4 @@
-namespace eShop.POS.Domain.SeedWork;
+namespace eShop.POS.Domain.Seedwork;
 
 public interface IAggregateRoot
 {

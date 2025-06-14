@@ -1,10 +1,11 @@
-﻿global using TossErp.POS.Domain.Exceptions;
-global using MediatR;
+﻿global using TossErp.POS.Domain.Common;
 global using TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
-global using TossErp.POS.Domain.Events;
-global using TossErp.POS.Domain.Common;
 global using TossErp.POS.Domain.AggregatesModel.ProductAggregate;
 global using TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 global using TossErp.POS.Domain.AggregatesModel.StaffAggregate;
 global using TossErp.POS.Domain.AggregatesModel.StoreAggregate;
 global using TossErp.POS.Domain.AggregatesModel.SyncLogAggregate;
+global using TossErp.POS.Domain.Repositories;
+global using TossErp.POS.Domain.Exceptions;
+global using MediatR;
+global using TossErp.POS.Domain.Events;

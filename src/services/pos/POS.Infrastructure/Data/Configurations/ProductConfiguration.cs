@@ -1,4 +1,4 @@
-﻿using eShop.POS.Domain.AggregatesModel.ProductAggregate;
+﻿using TossErp.POS.Domain.AggregatesModel.ProductAggregate;
 
 namespace eShop.POS.Infrastructure.Data.Configurations;
 

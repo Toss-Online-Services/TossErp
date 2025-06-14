@@ -1,4 +1,4 @@
-namespace eShop.POS.Domain.AggregatesModel.SaleAggregate;
+namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 
 public enum PaymentMethod
 {
@@ -6,6 +6,5 @@ public enum PaymentMethod
     CreditCard,
     DebitCard,
     MobilePayment,
-    GiftCard,
-    StoreCredit
+    BankTransfer
 } 

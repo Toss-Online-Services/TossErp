@@ -1,61 +1,52 @@
-﻿#nullable enable
-using eShop.POS.Domain.SeedWork;
+﻿using System;
+using TossErp.POS.Domain.Common;
 
-namespace eShop.POS.Domain.AggregatesModel.StaffAggregate
+namespace TossErp.POS.Domain.AggregatesModel.StaffAggregate;
+
+public class Staff : Entity, IAggregateRoot
 {
-    public class Staff : Entity, IAggregateRoot
+    public string Name { get; private set; }
+    public string Email { get; private set; }
+    public string Phone { get; private set; }
+    public string? Address { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
+
+    protected Staff() { }
+
+    public Staff(string name, string email, string phone, string? address = null)
     {
-        public string Name { get; set; } = string.Empty;
-        public string Code { get; set; } = string.Empty;
-        public string? Email { get; set; }
-        public string? Phone { get; set; }
-        public string Role { get; set; } = string.Empty;
-        public string StoreId { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
-        public string Pin { get; private set; } = string.Empty;
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Staff name cannot be empty");
 
-        protected Staff() {
-            StoreId = string.Empty;
-            Name = string.Empty;
-            Email = string.Empty;
-            Role = string.Empty;
-            CreatedAt = DateTime.UtcNow;
-            Pin = string.Empty;
-        }
+        if (string.IsNullOrWhiteSpace(email))
+            throw new DomainException("Staff email cannot be empty");
 
-        public Staff(string storeId, string name, string email, string role)
-        {
-            StoreId = storeId;
-            Name = name;
-            Email = email;
-            Role = role;
-            CreatedAt = DateTime.UtcNow;
-            Pin = string.Empty;
-        }
+        if (string.IsNullOrWhiteSpace(phone))
+            throw new DomainException("Staff phone cannot be empty");
 
-        public void UpdateDetails(string name, string? phone)
-        {
-            Name = name;
-            Phone = phone;
-            UpdatedAt = DateTime.UtcNow;
-        }
+        Name = name;
+        Email = email;
+        Phone = phone;
+        Address = address;
+        CreatedAt = DateTime.UtcNow;
+    }
 
-        public void UpdateRole(string role)
-        {
-            Role = role;
-            UpdatedAt = DateTime.UtcNow;
-        }
+    public void Update(string name, string email, string phone, string? address = null)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Staff name cannot be empty");
 
-        public void SetPin(string pin)
-        {
-            Pin = pin;
-            UpdatedAt = DateTime.UtcNow;
-        }
+        if (string.IsNullOrWhiteSpace(email))
+            throw new DomainException("Staff email cannot be empty");
 
-        public bool ValidatePin(string pin)
-        {
-            return Pin == pin;
-        }
+        if (string.IsNullOrWhiteSpace(phone))
+            throw new DomainException("Staff phone cannot be empty");
+
+        Name = name;
+        Email = email;
+        Phone = phone;
+        Address = address;
+        UpdatedAt = DateTime.UtcNow;
     }
 } 

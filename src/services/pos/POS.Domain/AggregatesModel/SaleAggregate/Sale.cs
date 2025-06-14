@@ -1,9 +1,12 @@
 ﻿#nullable enable
-using eShop.POS.Domain.Common;
-using eShop.POS.Domain.AggregatesModel.SaleAggregate.Events;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using POS.Domain.Common;
+using TossErp.POS.Domain.Events;
 using System.Collections.ObjectModel;
 
-namespace eShop.POS.Domain.AggregatesModel.SaleAggregate;
+namespace POS.Domain.AggregatesModel.SaleAggregate;
 
 public class Sale : Entity, IAggregateRoot
 {
@@ -12,11 +15,17 @@ public class Sale : Entity, IAggregateRoot
     private readonly List<SaleDiscount> _discounts = new();
     private readonly List<DomainEvent> _domainEvents = new();
 
-    public string StoreId { get; private set; } = string.Empty;
-    public string StaffId { get; private set; } = string.Empty;
-    public string StaffName { get; private set; } = string.Empty;
-    public DateTime SaleDate { get; private set; } = DateTime.UtcNow;
+    public string SaleNumber { get; private set; }
+    public DateTime SaleDate { get; private set; }
+    public decimal TotalAmount { get; private set; }
     public SaleStatus Status { get; private set; }
+    public int StoreId { get; private set; }
+    public Store Store { get; private set; }
+    public int? BuyerId { get; private set; }
+    public Buyer Buyer { get; private set; }
+    public int StaffId { get; private set; }
+    public Staff Staff { get; private set; }
+    public string StaffName { get; private set; } = string.Empty;
     public bool IsOffline { get; private set; }
     public DateTime? SyncedAt { get; private set; }
     public string? CustomerId { get; private set; }
@@ -36,32 +45,47 @@ public class Sale : Entity, IAggregateRoot
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; private set; }
     public string Notes { get; private set; } = string.Empty;
-    public decimal TotalAmount { get; private set; }
     public DateTime? VoidedAt { get; private set; }
 
-    public IReadOnlyCollection<SaleItem> Items => new ReadOnlyCollection<SaleItem>(_items);
-    public IReadOnlyCollection<Payment> Payments => new ReadOnlyCollection<Payment>(_payments);
-    public IReadOnlyCollection<SaleDiscount> Discounts => new ReadOnlyCollection<SaleDiscount>(_discounts);
+    public IReadOnlyCollection<SaleItem> SaleItems => _items.AsReadOnly();
+    public IReadOnlyCollection<Payment> Payments => _payments.AsReadOnly();
+    public IReadOnlyCollection<SaleDiscount> Discounts => _discounts.AsReadOnly();
 
     protected Sale() { }
 
-    public Sale(string storeId, string staffId, string staffName, string customerName, string customerPhone, string customerEmail)
+    public Sale(string saleNumber, DateTime saleDate, int storeId, int? buyerId, int staffId)
     {
+        SaleNumber = saleNumber;
+        SaleDate = saleDate;
         StoreId = storeId;
+        BuyerId = buyerId;
         StaffId = staffId;
-        StaffName = staffName;
-        CustomerName = customerName;
-        CustomerPhone = customerPhone;
-        CustomerEmail = customerEmail;
-        Status = SaleStatus.Pending;
+        Status = SaleStatus.Draft;
+        _items = new List<SaleItem>();
     }
 
-    public void AddItem(string productId, string productName, decimal unitPrice, int quantity, string? pictureUrl = null)
+    public void AddSaleItem(int productId, int quantity, decimal unitPrice)
     {
-        var item = new SaleItem(productId, productName, unitPrice, quantity, pictureUrl: pictureUrl);
-        _items.Add(item);
-        RecalculateTotal();
-        _domainEvents.Add(new SaleItemAddedDomainEvent(this, item));
+        var saleItem = new SaleItem(Id, productId, quantity, unitPrice);
+        _items.Add(saleItem);
+        CalculateTotalAmount();
+        _domainEvents.Add(new SaleItemAddedDomainEvent(this, saleItem));
+    }
+
+    public void RemoveSaleItem(int saleItemId)
+    {
+        var saleItem = _items.Find(x => x.Id == saleItemId);
+        if (saleItem != null)
+        {
+            _items.Remove(saleItem);
+            CalculateTotalAmount();
+            _domainEvents.Add(new SaleItemRemovedDomainEvent(this, saleItem));
+        }
+    }
+
+    public void UpdateStatus(SaleStatus newStatus)
+    {
+        Status = newStatus;
     }
 
     public void AddPayment(string method, decimal amount, string? reference = null)
@@ -157,9 +181,13 @@ public class Sale : Entity, IAggregateRoot
     public decimal GetPaymentTotal() => _payments.Sum(p => p.Amount);
     public decimal GetBalance() => GetTotal() - GetPaymentTotal();
 
-    private void RecalculateTotal()
+    private void CalculateTotalAmount()
     {
-        Total = GetSubtotal() - GetDiscountTotal() + GetTipTotal();
+        TotalAmount = 0;
+        foreach (var item in _items)
+        {
+            TotalAmount += item.TotalPrice;
+        }
     }
 
     public IReadOnlyCollection<DomainEvent> GetDomainEvents()

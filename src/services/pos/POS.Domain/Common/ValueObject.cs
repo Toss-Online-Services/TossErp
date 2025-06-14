@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
 namespace TossErp.POS.Domain.Common;
 
 public abstract class ValueObject
@@ -34,5 +39,15 @@ public abstract class ValueObject
         return GetEqualityComponents()
             .Select(x => x != null ? x.GetHashCode() : 0)
             .Aggregate((x, y) => x ^ y);
+    }
+
+    public static bool operator ==(ValueObject? left, ValueObject? right)
+    {
+        return EqualOperator(left!, right!);
+    }
+
+    public static bool operator !=(ValueObject? left, ValueObject? right)
+    {
+        return NotEqualOperator(left!, right!);
     }
 } 

@@ -1,16 +1,15 @@
-using eShop.POS.Domain.AggregatesModel.BuyerAggregate;
-using eShop.POS.Domain.Common;
+using TossErp.POS.Domain.Events;
 
-namespace eShop.POS.Domain.Events;
+namespace TossErp.POS.Domain.Events;
 
 public class BuyerPaymentMethodVerifiedDomainEvent : DomainEvent
 {
-    public Buyer Buyer { get; }
-    public PaymentMethod PaymentMethod { get; }
+    public int BuyerId { get; }
+    public int PaymentMethodId { get; }
 
-    public BuyerPaymentMethodVerifiedDomainEvent(Buyer buyer, PaymentMethod paymentMethod)
+    public BuyerPaymentMethodVerifiedDomainEvent(int buyerId, int paymentMethodId)
     {
-        Buyer = buyer;
-        PaymentMethod = paymentMethod;
+        BuyerId = buyerId;
+        PaymentMethodId = paymentMethodId;
     }
 }

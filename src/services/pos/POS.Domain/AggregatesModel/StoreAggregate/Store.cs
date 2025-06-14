@@ -1,7 +1,7 @@
 ﻿#nullable enable
-using eShop.POS.Domain.SeedWork;
+using TossErp.POS.Domain.Common;
 
-namespace eShop.POS.Domain.AggregatesModel.StoreAggregate;
+namespace TossErp.POS.Domain.AggregatesModel.StoreAggregate;
 
 public class Store : Entity, IAggregateRoot
 {

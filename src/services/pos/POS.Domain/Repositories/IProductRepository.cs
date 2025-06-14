@@ -1,17 +1,18 @@
 ﻿#nullable enable
-using eShop.POS.Domain.AggregatesModel.ProductAggregate;
-using eShop.POS.Domain.Repositories;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using TossErp.POS.Domain.AggregatesModel.ProductAggregate;
+using TossErp.POS.Domain.Common;
 
-namespace eShop.POS.Domain.Repositories;
-
-public interface IProductRepository : IRepository<Product>
+namespace TossErp.POS.Domain.Repositories
 {
-    Task<Product?> GetAsync(string productId);
-    Task<IEnumerable<Product>> GetByStoreAsync(string storeId);
-    Task<IEnumerable<Product>> GetByCategoryAsync(string storeId, string category);
-    Task<IEnumerable<Product>> GetLowStockAsync(string storeId, int threshold);
-    Task<IEnumerable<Product>> GetByStoreIdAsync(string storeId);
-    Task<IEnumerable<Product>> GetByBrandAsync(string brand);
-    Task<IEnumerable<Product>> GetByPriceRangeAsync(decimal minPrice, decimal maxPrice);
-    Task<IEnumerable<Product>> GetByStockLevelAsync(int minStock);
+    public interface IProductRepository : IRepository<Product>
+    {
+        Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<Product?> GetByCodeAsync(string code, CancellationToken cancellationToken = default);
+        Task<Product?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Product>> GetByCategoryAsync(int categoryId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default);
+    }
 } 

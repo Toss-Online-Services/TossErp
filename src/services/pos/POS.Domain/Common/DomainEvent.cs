@@ -1,11 +1,14 @@
-namespace eShop.POS.Domain.Common;
+using System;
+
+namespace POS.Domain.Common;
 
 public abstract class DomainEvent
 {
-    public DateTime OccurredOn { get; }
-
     protected DomainEvent()
     {
-        OccurredOn = DateTime.UtcNow;
+        DateOccurred = DateTimeOffset.UtcNow;
     }
+
+    public bool IsPublished { get; set; }
+    public DateTimeOffset DateOccurred { get; protected set; }
 } 

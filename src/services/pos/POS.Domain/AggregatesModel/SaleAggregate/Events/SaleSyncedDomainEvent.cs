@@ -1,16 +1,16 @@
 #nullable enable
-using eShop.POS.Domain.Common;
+using TossErp.POS.Domain.Events;
 
-namespace eShop.POS.Domain.AggregatesModel.SaleAggregate.Events;
+namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate.Events;
 
 public class SaleSyncedDomainEvent : DomainEvent
 {
-    public Sale Sale { get; }
+    public int SaleId { get; }
     public DateTime SyncedAt { get; }
 
-    public SaleSyncedDomainEvent(Sale sale, DateTime syncedAt)
+    public SaleSyncedDomainEvent(int saleId, DateTime syncedAt)
     {
-        Sale = sale;
+        SaleId = saleId;
         SyncedAt = syncedAt;
     }
 } 

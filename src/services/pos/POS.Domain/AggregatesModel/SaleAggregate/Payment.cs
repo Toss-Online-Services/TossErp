@@ -1,33 +1,24 @@
-﻿using eShop.POS.Domain.SeedWork;
+﻿using System;
+using TossErp.POS.Domain.Common;
 
-namespace eShop.POS.Domain.AggregatesModel.SaleAggregate;
+namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 
-public class Payment : ValueObject
+public class Payment : Entity
 {
-    public string Method { get; private set; } = string.Empty;
+    public int SaleId { get; private set; }
+    public PaymentMethod Method { get; private set; }
     public decimal Amount { get; private set; }
-    public string? Reference { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
-    public Payment() 
-    {
-        CreatedAt = DateTime.UtcNow;
-    }
+    protected Payment() { }
 
-    public Payment(string method, decimal amount, string? reference = null)
+    public Payment(PaymentMethod method, decimal amount)
     {
+        if (amount <= 0)
+            throw new DomainException("Payment amount must be greater than zero");
+
         Method = method;
         Amount = amount;
-        Reference = reference;
         CreatedAt = DateTime.UtcNow;
-    }
-
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Method;
-        yield return Amount;
-        if (Reference != null)
-            yield return Reference;
-        yield return CreatedAt;
     }
 } 

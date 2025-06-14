@@ -1,11 +1,12 @@
-﻿using eShop.POS.Domain.AggregatesModel.SyncLogAggregate;
-using eShop.POS.Domain.Repositories;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using TossErp.POS.Domain.AggregatesModel.SyncLogAggregate;
+using TossErp.POS.Domain.Common;
 
-namespace eShop.POS.Domain.Repositories;
+namespace TossErp.POS.Domain.Repositories;
 
 public interface ISyncLogRepository : IRepository<SyncLog>
 {
-    Task<IEnumerable<SyncLog>> GetByStoreIdAsync(string storeId);
-    Task<IEnumerable<SyncLog>> GetByDateRangeAsync(DateTime startDate, DateTime endDate);
-    Task<IEnumerable<SyncLog>> GetByStatusAsync(SyncStatus status);
+    new Task<SyncLog?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<SyncLog?> GetByEntityIdAsync(string entityType, int entityId, CancellationToken cancellationToken = default);
 } 

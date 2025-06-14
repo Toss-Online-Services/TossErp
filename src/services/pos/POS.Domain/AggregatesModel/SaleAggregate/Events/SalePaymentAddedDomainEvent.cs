@@ -1,16 +1,18 @@
 #nullable enable
-using eShop.POS.Domain.Common;
+using TossErp.POS.Domain.Events;
 
-namespace eShop.POS.Domain.AggregatesModel.SaleAggregate.Events;
+namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate.Events;
 
 public class SalePaymentAddedDomainEvent : DomainEvent
 {
-    public Sale Sale { get; }
-    public Payment Payment { get; }
+    public int SaleId { get; }
+    public int PaymentId { get; }
+    public decimal Amount { get; }
 
-    public SalePaymentAddedDomainEvent(Sale sale, Payment payment)
+    public SalePaymentAddedDomainEvent(int saleId, int paymentId, decimal amount)
     {
-        Sale = sale;
-        Payment = payment;
+        SaleId = saleId;
+        PaymentId = paymentId;
+        Amount = amount;
     }
 } 

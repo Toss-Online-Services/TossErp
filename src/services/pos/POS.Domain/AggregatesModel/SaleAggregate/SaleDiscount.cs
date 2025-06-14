@@ -1,26 +1,37 @@
-﻿using eShop.POS.Domain.SeedWork;
+﻿using System;
+using POS.Domain.Common;
 
-namespace eShop.POS.Domain.AggregatesModel.SaleAggregate;
+namespace POS.Domain.AggregatesModel.SaleAggregate;
 
-public class SaleDiscount : ValueObject
+public class SaleDiscount : Entity
 {
-    public string Name { get; private set; } = string.Empty;
-    public decimal Amount { get; private set; }
+    public int SaleId { get; private set; }
+    public string Name { get; private set; }
     public DiscountType Type { get; private set; }
+    public decimal Value { get; private set; }
+    public decimal Amount { get; private set; }
+    public DateTime CreatedAt { get; private set; }
 
-    public SaleDiscount() { }
+    protected SaleDiscount() { }
 
-    public SaleDiscount(string name, decimal amount, DiscountType type)
+    public SaleDiscount(string name, DiscountType type, decimal value)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Discount name cannot be empty");
+
+        if (value <= 0)
+            throw new DomainException("Discount value must be greater than zero");
+
         Name = name;
-        Amount = amount;
         Type = type;
+        Value = value;
+        CreatedAt = DateTime.UtcNow;
     }
 
-    protected override IEnumerable<object> GetEqualityComponents()
+    public void CalculateAmount(decimal totalAmount)
     {
-        yield return Name;
-        yield return Amount;
-        yield return Type;
+        Amount = Type == DiscountType.Percentage
+            ? totalAmount * (Value / 100)
+            : Value;
     }
 }
