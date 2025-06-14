@@ -9,12 +9,10 @@ namespace TossErp.POS.Domain.Repositories;
 
 public interface IStoreRepository : IRepository<Store>
 {
-    Task<IEnumerable<Store>> GetByRegionAsync(string region);
+    Task<IEnumerable<Store>> GetByRegionAsync(string region, CancellationToken cancellationToken = default);
     Task<IEnumerable<Store>> GetByStatusAsync(string status);
-    Task<Store?> GetByCodeAsync(string code);
+    Task<Store?> GetByCodeAsync(string code, CancellationToken cancellationToken = default);
     Task<Store?> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default);
-    Task<Store?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<Store?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
     Task<Store?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Store>> GetAllAsync(CancellationToken cancellationToken = default);
 } 

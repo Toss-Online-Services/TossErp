@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using TossErp.POS.Domain.Common;
+using TossErp.POS.Domain.SeedWork;
 
 namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate
 {
@@ -12,6 +11,5 @@ namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate
         Task<IEnumerable<Sale>> GetByStaffIdAsync(int staffId, CancellationToken cancellationToken = default);
         Task<IEnumerable<Sale>> GetByBuyerIdAsync(int buyerId, CancellationToken cancellationToken = default);
         Task<IEnumerable<Sale>> GetOfflineSalesAsync(CancellationToken cancellationToken = default);
-        Task<IEnumerable<Sale>> GetByCustomerAsync(int customerId, CancellationToken cancellationToken = default);
     }
 } 

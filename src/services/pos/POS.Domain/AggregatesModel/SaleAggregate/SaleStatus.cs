@@ -1,10 +1,10 @@
-﻿namespace POS.Domain.AggregatesModel.SaleAggregate;
+﻿namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 
 public enum SaleStatus
 {
-    Draft,
-    Pending,
-    Completed,
-    Cancelled,
-    Voided
+    Pending = 0,
+    Completed = 1,
+    Voided = 2,
+    Refunded = 3,
+    Synced = 4
 } 

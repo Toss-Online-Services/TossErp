@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
-namespace TossErp.POS.Domain.Common;
+namespace TossErp.POS.Domain.SeedWork;
 
 public abstract class ValueObject
 {

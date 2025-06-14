@@ -1,14 +1,15 @@
 using System;
 
-namespace POS.Domain.Common;
+namespace TossErp.POS.Domain.SeedWork;
 
 public abstract class DomainEvent
 {
+    public DateTime OccurredOn { get; }
+
     protected DomainEvent()
     {
-        DateOccurred = DateTimeOffset.UtcNow;
+        OccurredOn = DateTime.UtcNow;
     }
 
     public bool IsPublished { get; set; }
-    public DateTimeOffset DateOccurred { get; protected set; }
 } 

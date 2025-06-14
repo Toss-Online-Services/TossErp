@@ -1,37 +1,56 @@
 ﻿using System;
-using POS.Domain.Common;
+using TossErp.POS.Domain.SeedWork;
 
-namespace POS.Domain.AggregatesModel.SaleAggregate;
-
-public class SaleDiscount : Entity
+namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate
 {
-    public int SaleId { get; private set; }
-    public string Name { get; private set; }
-    public DiscountType Type { get; private set; }
-    public decimal Value { get; private set; }
-    public decimal Amount { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-
-    protected SaleDiscount() { }
-
-    public SaleDiscount(string name, DiscountType type, decimal value)
+    public class SaleDiscount : Entity
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException("Discount name cannot be empty");
+        public int SaleId { get; private set; }
+        public string Description { get; private set; }
+        public decimal Amount { get; private set; }
+        public decimal Percentage { get; private set; }
+        public DateTime CreatedAt { get; private set; }
 
-        if (value <= 0)
-            throw new DomainException("Discount value must be greater than zero");
+        protected SaleDiscount()
+        {
+            Description = string.Empty;
+        }
 
-        Name = name;
-        Type = type;
-        Value = value;
-        CreatedAt = DateTime.UtcNow;
-    }
+        public SaleDiscount(int saleId, string description, decimal amount, decimal percentage)
+        {
+            if (saleId <= 0)
+                throw new DomainException("Sale ID must be greater than zero");
+            if (string.IsNullOrWhiteSpace(description))
+                throw new DomainException("Description cannot be empty");
+            if (amount < 0)
+                throw new DomainException("Amount cannot be negative");
+            if (percentage < 0 || percentage > 100)
+                throw new DomainException("Percentage must be between 0 and 100");
 
-    public void CalculateAmount(decimal totalAmount)
-    {
-        Amount = Type == DiscountType.Percentage
-            ? totalAmount * (Value / 100)
-            : Value;
+            SaleId = saleId;
+            Description = description;
+            Amount = amount;
+            Percentage = percentage;
+            CreatedAt = DateTime.UtcNow;
+        }
+
+        public void Update(string description, decimal amount, decimal percentage)
+        {
+            if (string.IsNullOrWhiteSpace(description))
+                throw new DomainException("Description cannot be empty");
+            if (amount < 0)
+                throw new DomainException("Amount cannot be negative");
+            if (percentage < 0 || percentage > 100)
+                throw new DomainException("Percentage must be between 0 and 100");
+
+            Description = description;
+            Amount = amount;
+            Percentage = percentage;
+        }
+
+        public decimal CalculateDiscountAmount(decimal totalAmount)
+        {
+            return Amount + (totalAmount * Percentage / 100);
+        }
     }
 }

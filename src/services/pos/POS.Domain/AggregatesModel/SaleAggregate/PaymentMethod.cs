@@ -1,6 +1,6 @@
 namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 
-public enum PaymentMethod
+public enum PaymentType
 {
     Cash,
     CreditCard,

@@ -13,9 +13,15 @@ public class SyncLog : Entity, IAggregateRoot
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
 
-    protected SyncLog() { }
+    protected SyncLog()
+    {
+        EntityType = string.Empty;
+        Operation = string.Empty;
+        Status = string.Empty;
+        CreatedAt = DateTime.UtcNow;
+    }
 
-    public SyncLog(string entityType, int entityId, string operation, string status, string? errorMessage = null)
+    public SyncLog(string entityType, int entityId, string operation, string status)
     {
         if (string.IsNullOrWhiteSpace(entityType))
             throw new DomainException("Entity type cannot be empty");
@@ -30,7 +36,6 @@ public class SyncLog : Entity, IAggregateRoot
         EntityId = entityId;
         Operation = operation;
         Status = status;
-        ErrorMessage = errorMessage;
         CreatedAt = DateTime.UtcNow;
     }
 

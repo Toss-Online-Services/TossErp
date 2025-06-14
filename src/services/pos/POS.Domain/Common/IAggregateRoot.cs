@@ -1,6 +1,6 @@
 using TossErp.POS.Domain.Events;
 
-namespace TossErp.POS.Domain.Common;
+namespace TossErp.POS.Domain.SeedWork;
 
 public interface IAggregateRoot
 {

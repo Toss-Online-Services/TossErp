@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using TossErp.POS.Domain.Common;
+using TossErp.POS.Domain.SeedWork;
 using TossErp.POS.Domain.Events;
 
 namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
@@ -17,8 +17,13 @@ public class Buyer : Entity, IAggregateRoot
     private readonly List<PaymentMethod> _paymentMethods;
     public IReadOnlyCollection<PaymentMethod> PaymentMethods => _paymentMethods.AsReadOnly();
 
-    private Buyer()
+    protected Buyer()
     {
+        Name = string.Empty;
+        Email = string.Empty;
+        Phone = string.Empty;
+        Address = new Address();
+        CreatedAt = DateTime.UtcNow;
         _paymentMethods = new List<PaymentMethod>();
     }
 

@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using POS.Domain.Common;
+using TossErp.POS.Domain.SeedWork;
 using TossErp.POS.Domain.Events;
 using System.Collections.ObjectModel;
 
-namespace POS.Domain.AggregatesModel.SaleAggregate;
+namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 
 public class Sale : Entity, IAggregateRoot
 {
@@ -20,13 +20,15 @@ public class Sale : Entity, IAggregateRoot
     public decimal TotalAmount { get; private set; }
     public SaleStatus Status { get; private set; }
     public int StoreId { get; private set; }
-    public Store Store { get; private set; }
-    public int? BuyerId { get; private set; }
-    public Buyer Buyer { get; private set; }
     public int StaffId { get; private set; }
-    public Staff Staff { get; private set; }
-    public string StaffName { get; private set; } = string.Empty;
-    public bool IsOffline { get; private set; }
+    public int? BuyerId { get; private set; }
+    public decimal DiscountAmount { get; private set; }
+    public decimal TaxAmount { get; private set; }
+    public decimal GrandTotal { get; private set; }
+    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    public DateTime? CompletedAt { get; private set; }
+    public DateTime? VoidedAt { get; private set; }
+    public DateTime? RefundedAt { get; private set; }
     public DateTime? SyncedAt { get; private set; }
     public string? CustomerId { get; private set; }
     public string CustomerName { get; private set; } = string.Empty;
@@ -36,61 +38,66 @@ public class Sale : Entity, IAggregateRoot
     public bool IsRefund { get; private set; }
     public int? RefundedSaleId { get; private set; }
     public string? RefundReason { get; private set; }
-    public decimal Total { get; private set; }
     public decimal TipAmount { get; private set; }
     public string? TipStaffId { get; private set; }
     public bool IsSynced { get; private set; }
-    public DateTime? CompletedAt { get; private set; }
-    public DateTime? RefundedAt { get; private set; }
-    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; private set; }
     public string Notes { get; private set; } = string.Empty;
-    public DateTime? VoidedAt { get; private set; }
+    public bool IsOffline { get; private set; }
 
-    public IReadOnlyCollection<SaleItem> SaleItems => _items.AsReadOnly();
+    public IReadOnlyCollection<SaleItem> Items => _items.AsReadOnly();
     public IReadOnlyCollection<Payment> Payments => _payments.AsReadOnly();
     public IReadOnlyCollection<SaleDiscount> Discounts => _discounts.AsReadOnly();
 
-    protected Sale() { }
+    protected Sale()
+    {
+        SaleNumber = string.Empty;
+        Status = SaleStatus.Pending;
+        CreatedAt = DateTime.UtcNow;
+        _items = new List<SaleItem>();
+        _payments = new List<Payment>();
+        _discounts = new List<SaleDiscount>();
+    }
 
     public Sale(string saleNumber, DateTime saleDate, int storeId, int? buyerId, int staffId)
     {
+        if (string.IsNullOrWhiteSpace(saleNumber))
+            throw new DomainException("Sale number cannot be empty");
+
         SaleNumber = saleNumber;
         SaleDate = saleDate;
         StoreId = storeId;
         BuyerId = buyerId;
         StaffId = staffId;
-        Status = SaleStatus.Draft;
+        Status = SaleStatus.Pending;
+        CreatedAt = DateTime.UtcNow;
         _items = new List<SaleItem>();
+        _payments = new List<Payment>();
+        _discounts = new List<SaleDiscount>();
     }
 
-    public void AddSaleItem(int productId, int quantity, decimal unitPrice)
+    public void AddItem(int productId, string productName, decimal unitPrice, int quantity, decimal discount = 0)
     {
-        var saleItem = new SaleItem(Id, productId, quantity, unitPrice);
-        _items.Add(saleItem);
+        var item = new SaleItem(Id, productId, productName, unitPrice, quantity, discount);
+        _items.Add(item);
         CalculateTotalAmount();
-        _domainEvents.Add(new SaleItemAddedDomainEvent(this, saleItem));
+        _domainEvents.Add(new SaleItemAddedDomainEvent(this, item));
     }
 
-    public void RemoveSaleItem(int saleItemId)
+    public void RemoveItem(int itemId)
     {
-        var saleItem = _items.Find(x => x.Id == saleItemId);
-        if (saleItem != null)
+        var item = _items.Find(i => i.Id == itemId);
+        if (item != null)
         {
-            _items.Remove(saleItem);
+            _items.Remove(item);
             CalculateTotalAmount();
-            _domainEvents.Add(new SaleItemRemovedDomainEvent(this, saleItem));
+            _domainEvents.Add(new SaleItemRemovedDomainEvent(this, item));
         }
     }
 
-    public void UpdateStatus(SaleStatus newStatus)
+    public void AddPayment(decimal amount, PaymentMethod paymentMethod)
     {
-        Status = newStatus;
-    }
-
-    public void AddPayment(string method, decimal amount, string? reference = null)
-    {
-        var payment = new Payment(method, amount, reference);
+        var payment = new Payment(Id, amount, paymentMethod);
         _payments.Add(payment);
         _domainEvents.Add(new SalePaymentAddedDomainEvent(this, payment));
 
@@ -100,9 +107,9 @@ public class Sale : Entity, IAggregateRoot
         }
     }
 
-    public void AddDiscount(string name, decimal amount, DiscountType type)
+    public void AddDiscount(string description, DiscountType type, decimal amount, decimal percentage)
     {
-        var discount = new SaleDiscount(name, amount, type);
+        var discount = new SaleDiscount(Id, description, type, amount, percentage);
         _discounts.Add(discount);
         _domainEvents.Add(new SaleDiscountAddedDomainEvent(this, discount));
     }
@@ -151,7 +158,7 @@ public class Sale : Entity, IAggregateRoot
         _domainEvents.Add(new SaleCompletedDomainEvent(this));
     }
 
-    public void Void(string reason)
+    public void Void()
     {
         if (Status != SaleStatus.Pending)
             throw new POSDomainException("Only pending sales can be voided.");
@@ -162,7 +169,7 @@ public class Sale : Entity, IAggregateRoot
         _domainEvents.Add(new SaleVoidedDomainEvent(this));
     }
 
-    public void Refund(string reason)
+    public void Refund()
     {
         if (Status != SaleStatus.Completed)
             throw new POSDomainException("Only completed sales can be refunded.");
@@ -170,8 +177,15 @@ public class Sale : Entity, IAggregateRoot
         Status = SaleStatus.Refunded;
         RefundedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
-        RefundReason = reason;
         _domainEvents.Add(new SaleRefundedDomainEvent(this));
+    }
+
+    public decimal CalculateTotal()
+    {
+        decimal total = _items.Sum(item => item.TotalPrice);
+        decimal discountTotal = _discounts.Sum(discount => discount.CalculateDiscountAmount(total));
+        decimal taxTotal = (total - discountTotal) * 0.1m; // Assuming 10% tax
+        return total - discountTotal + taxTotal;
     }
 
     public decimal GetSubtotal() => _items.Sum(i => i.UnitPrice * i.Quantity);
@@ -200,3 +214,4 @@ public class Sale : Entity, IAggregateRoot
         _domainEvents.Clear();
     }
 } 
+

@@ -10,7 +10,6 @@ namespace TossErp.POS.Domain.Repositories;
 
 public interface ISaleRepository : IRepository<Sale>
 {
-    Task<Sale?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<IEnumerable<Sale>> GetByStoreIdAsync(int storeId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
     Task<IEnumerable<Sale>> GetByStaffIdAsync(int staffId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
     Task<IEnumerable<Sale>> GetOfflineSalesAsync();

@@ -1,15 +1,16 @@
 using System.Threading;
 using System.Threading.Tasks;
-using TossErp.POS.Domain.Common;
+using TossErp.POS.Domain.SeedWork;
 
-namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
-
-//This is just the RepositoryContracts or Interface defined at the Domain Layer
-//as requisite for the Buyer Aggregate
-
-public interface IBuyerRepository : IRepository<Buyer>
+namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate
 {
-    Task<Buyer?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
-    Task<Buyer?> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default);
+    //This is just the RepositoryContracts or Interface defined at the Domain Layer
+    //as requisite for the Buyer Aggregate
+
+    public interface IBuyerRepository : IRepository<Buyer>
+    {
+        Task<Buyer?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+        Task<Buyer?> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default);
+    }
 }
 

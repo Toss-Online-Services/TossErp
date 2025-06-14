@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,9 +14,9 @@ public interface IStaffRepository : IRepository<Staff>
     Task<IEnumerable<Staff>> GetByStoreAsync(string storeId);
     Task<Staff?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
     Task<decimal> GetTotalTipsAsync(string staffId, DateTime startDate, DateTime endDate);
-    Task<IEnumerable<Staff>> GetByStoreIdAsync(string storeId);
+    Task<IEnumerable<Staff>> GetByStoreIdAsync(int storeId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Staff>> GetByRoleAsync(string role);
     Task<Staff?> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default);
-    Task<Staff?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Staff>> GetAllAsync(CancellationToken cancellationToken = default);
+    new Task<Staff?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    new Task<IEnumerable<Staff>> GetAllAsync(CancellationToken cancellationToken = default);
 } 
