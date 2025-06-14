@@ -4,13 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using TossErp.POS.Domain.Common;
 
-namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
-
-public interface ISaleRepository : IRepository<Sale>
+namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate
 {
-    new Task<Sale?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Sale>> GetByStoreIdAsync(int storeId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Sale>> GetByStaffIdAsync(int staffId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Sale>> GetOfflineSalesAsync(CancellationToken cancellationToken = default);
-    Task<IEnumerable<Sale>> GetByCustomerAsync(int customerId, CancellationToken cancellationToken = default);
+    public interface ISaleRepository : IRepository<Sale>
+    {
+        Task<IEnumerable<Sale>> GetByStoreIdAsync(int storeId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Sale>> GetByStaffIdAsync(int staffId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Sale>> GetByBuyerIdAsync(int buyerId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Sale>> GetOfflineSalesAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<Sale>> GetByCustomerAsync(int customerId, CancellationToken cancellationToken = default);
+    }
 } 

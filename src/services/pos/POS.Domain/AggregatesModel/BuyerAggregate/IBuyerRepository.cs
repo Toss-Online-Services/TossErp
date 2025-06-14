@@ -9,7 +9,6 @@ namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
 
 public interface IBuyerRepository : IRepository<Buyer>
 {
-    Task<Buyer?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<Buyer?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
     Task<Buyer?> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default);
 }

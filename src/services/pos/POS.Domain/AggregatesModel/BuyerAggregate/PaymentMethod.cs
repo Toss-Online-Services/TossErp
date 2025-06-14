@@ -9,50 +9,51 @@ namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
 public class PaymentMethod : Entity
 {
     public int BuyerId { get; private set; }
-    public string CardType { get; private set; }
-    public string Alias { get; private set; }
     public string CardNumber { get; private set; }
-    public string SecurityNumber { get; private set; }
     public string CardHolderName { get; private set; }
-    public DateTime Expiration { get; private set; }
+    public string ExpirationDate { get; private set; }
+    public string SecurityCode { get; private set; }
+    public bool IsDefault { get; private set; }
     public DateTime CreatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
 
-    protected PaymentMethod() { }
+    private PaymentMethod() { }
 
-    public PaymentMethod(int buyerId, string cardType, string alias, string cardNumber, string securityNumber, string cardHolderName, DateTime expiration)
+    public PaymentMethod(string cardNumber, string cardHolderName, string expirationDate, string securityCode, bool isDefault = false)
     {
-        if (string.IsNullOrWhiteSpace(cardType))
-            throw new DomainException("Card type cannot be empty");
-
-        if (string.IsNullOrWhiteSpace(alias))
-            throw new DomainException("Alias cannot be empty");
-
         if (string.IsNullOrWhiteSpace(cardNumber))
             throw new DomainException("Card number cannot be empty");
-
-        if (string.IsNullOrWhiteSpace(securityNumber))
-            throw new DomainException("Security number cannot be empty");
-
         if (string.IsNullOrWhiteSpace(cardHolderName))
             throw new DomainException("Card holder name cannot be empty");
+        if (string.IsNullOrWhiteSpace(expirationDate))
+            throw new DomainException("Expiration date cannot be empty");
+        if (string.IsNullOrWhiteSpace(securityCode))
+            throw new DomainException("Security code cannot be empty");
 
-        if (expiration < DateTime.UtcNow)
-            throw new DomainException("Card has expired");
-
-        BuyerId = buyerId;
-        CardType = cardType;
-        Alias = alias;
         CardNumber = cardNumber;
-        SecurityNumber = securityNumber;
         CardHolderName = cardHolderName;
-        Expiration = expiration;
+        ExpirationDate = expirationDate;
+        SecurityCode = securityCode;
+        IsDefault = isDefault;
         CreatedAt = DateTime.UtcNow;
     }
 
-    public bool IsEqualTo(int cardTypeId, string cardNumber, DateTime expiration)
+    public void Update(string cardNumber, string cardHolderName, string expirationDate, string securityCode, bool isDefault)
     {
-        return CardType == cardTypeId.ToString()
-            && CardNumber == cardNumber
-            && Expiration == expiration;
+        if (string.IsNullOrWhiteSpace(cardNumber))
+            throw new DomainException("Card number cannot be empty");
+        if (string.IsNullOrWhiteSpace(cardHolderName))
+            throw new DomainException("Card holder name cannot be empty");
+        if (string.IsNullOrWhiteSpace(expirationDate))
+            throw new DomainException("Expiration date cannot be empty");
+        if (string.IsNullOrWhiteSpace(securityCode))
+            throw new DomainException("Security code cannot be empty");
+
+        CardNumber = cardNumber;
+        CardHolderName = cardHolderName;
+        ExpirationDate = expirationDate;
+        SecurityCode = securityCode;
+        IsDefault = isDefault;
+        UpdatedAt = DateTime.UtcNow;
     }
 }
