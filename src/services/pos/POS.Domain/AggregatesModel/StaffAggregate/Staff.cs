@@ -3,7 +3,7 @@ using TossErp.POS.Domain.SeedWork;
 
 namespace TossErp.POS.Domain.AggregatesModel.StaffAggregate
 {
-    public class Staff : Entity, IAggregateRoot
+    public class Staff : AggregateRoot
     {
         public string Name { get; private set; }
         public string Email { get; private set; }

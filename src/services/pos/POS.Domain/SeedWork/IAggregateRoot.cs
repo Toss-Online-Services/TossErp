@@ -1,7 +1,10 @@
-namespace eShop.POS.Domain.Seedwork;
+using System.Collections.Generic;
 
-public interface IAggregateRoot
+namespace TossErp.POS.Domain.SeedWork
 {
-}
-
-
+    public interface IAggregateRoot
+    {
+        IReadOnlyCollection<DomainEvent> DomainEvents { get; }
+        void ClearDomainEvents();
+    }
+} 

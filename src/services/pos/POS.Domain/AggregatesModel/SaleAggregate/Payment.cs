@@ -1,4 +1,5 @@
 ﻿using System;
+using TossErp.POS.Domain.Exceptions;
 using TossErp.POS.Domain.SeedWork;
 
 namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
@@ -7,23 +8,31 @@ public class Payment : Entity
 {
     public int SaleId { get; private set; }
     public decimal Amount { get; private set; }
-    public PaymentMethod PaymentMethod { get; private set; }
-    public DateTime CreatedAt { get; private set; }
+    public string? Reference { get; private set; }
+    public DateTime PaymentDate { get; private set; }
 
     protected Payment()
     {
-        CreatedAt = DateTime.UtcNow;
     }
 
-    public Payment(int saleId, decimal amount, PaymentMethod paymentMethod)
+    public Payment(int saleId, decimal amount, string? reference = null)
     {
+        if (saleId <= 0)
+            throw new DomainException("Sale ID must be greater than zero");
         if (amount <= 0)
-            throw new DomainException("Amount must be greater than zero");
-        if (paymentMethod == null)
             throw new DomainException("Payment amount must be greater than zero");
 
-        Method = method;
+        SaleId = saleId;
         Amount = amount;
-        CreatedAt = DateTime.UtcNow;
+        Reference = reference;
+        PaymentDate = DateTime.UtcNow;
+    }
+
+    public void UpdateAmount(decimal newAmount)
+    {
+        if (newAmount <= 0)
+            throw new DomainException("Payment amount must be greater than zero");
+
+        Amount = newAmount;
     }
 } 

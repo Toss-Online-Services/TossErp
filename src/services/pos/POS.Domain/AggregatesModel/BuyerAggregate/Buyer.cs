@@ -5,7 +5,7 @@ using TossErp.POS.Domain.Events;
 
 namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
 
-public class Buyer : Entity, IAggregateRoot
+public class Buyer : AggregateRoot
 {
     public string Name { get; private set; }
     public string Email { get; private set; }
@@ -79,15 +79,5 @@ public class Buyer : Entity, IAggregateRoot
         {
             _paymentMethods.Remove(paymentMethod);
         }
-    }
-
-    public new void AddDomainEvent(DomainEvent domainEvent)
-    {
-        base.AddDomainEvent(domainEvent);
-    }
-
-    public new void ClearDomainEvents()
-    {
-        base.ClearDomainEvents();
     }
 }

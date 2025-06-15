@@ -4,7 +4,7 @@ using TossErp.POS.Domain.SeedWork;
 
 namespace TossErp.POS.Domain.AggregatesModel.ProductAggregate;
 
-public class Product : Entity, IAggregateRoot
+public class Product : AggregateRoot
 {
     public string StoreId { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;

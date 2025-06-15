@@ -5,45 +5,41 @@ using System.Linq;
 using TossErp.POS.Domain.SeedWork;
 using TossErp.POS.Domain.Events;
 using System.Collections.ObjectModel;
+using TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
+using TossErp.POS.Domain.AggregatesModel.SaleAggregate.Events;
+using TossErp.POS.Domain.Exceptions;
 
 namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 
-public class Sale : Entity, IAggregateRoot
+public class Sale : AggregateRoot
 {
     private readonly List<SaleItem> _items = new();
     private readonly List<Payment> _payments = new();
     private readonly List<SaleDiscount> _discounts = new();
     private readonly List<DomainEvent> _domainEvents = new();
 
-    public string SaleNumber { get; private set; }
+    public string InvoiceNumber { get; private set; }
     public DateTime SaleDate { get; private set; }
-    public decimal TotalAmount { get; private set; }
-    public SaleStatus Status { get; private set; }
-    public int StoreId { get; private set; }
-    public int StaffId { get; private set; }
-    public int? BuyerId { get; private set; }
-    public decimal DiscountAmount { get; private set; }
+    public decimal SubTotal { get; private set; }
     public decimal TaxAmount { get; private set; }
-    public decimal GrandTotal { get; private set; }
-    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
-    public DateTime? CompletedAt { get; private set; }
-    public DateTime? VoidedAt { get; private set; }
-    public DateTime? RefundedAt { get; private set; }
-    public DateTime? SyncedAt { get; private set; }
-    public string? CustomerId { get; private set; }
-    public string CustomerName { get; private set; } = string.Empty;
-    public string CustomerPhone { get; private set; } = string.Empty;
-    public string CustomerEmail { get; private set; } = string.Empty;
-    public string? Note { get; private set; }
-    public bool IsRefund { get; private set; }
-    public int? RefundedSaleId { get; private set; }
-    public string? RefundReason { get; private set; }
-    public decimal TipAmount { get; private set; }
-    public string? TipStaffId { get; private set; }
+    public decimal DiscountAmount { get; private set; }
+    public decimal TotalAmount { get; private set; }
+    public decimal AmountPaid { get; private set; }
+    public decimal Balance { get; private set; }
+    public SaleStatus Status { get; private set; }
+    public string? Notes { get; private set; }
     public bool IsSynced { get; private set; }
-    public DateTime? UpdatedAt { get; private set; }
-    public string Notes { get; private set; } = string.Empty;
-    public bool IsOffline { get; private set; }
+    public DateTime? SyncedAt { get; private set; }
+    public int? StaffId { get; private set; }
+    public Staff? Staff { get; private set; }
+    public int? BuyerId { get; private set; }
+    public Buyer? Buyer { get; private set; }
+    public int? PaymentMethodId { get; private set; }
+    public PaymentMethod? PaymentMethod { get; private set; }
+    public int? AddressId { get; private set; }
+    public Address? Address { get; private set; }
+    public int? CardTypeId { get; private set; }
+    public CardType? CardType { get; private set; }
 
     public IReadOnlyCollection<SaleItem> Items => _items.AsReadOnly();
     public IReadOnlyCollection<Payment> Payments => _payments.AsReadOnly();
@@ -51,29 +47,34 @@ public class Sale : Entity, IAggregateRoot
 
     protected Sale()
     {
-        SaleNumber = string.Empty;
+        InvoiceNumber = string.Empty;
         Status = SaleStatus.Pending;
-        CreatedAt = DateTime.UtcNow;
         _items = new List<SaleItem>();
         _payments = new List<Payment>();
         _discounts = new List<SaleDiscount>();
     }
 
-    public Sale(string saleNumber, DateTime saleDate, int storeId, int? buyerId, int staffId)
+    public Sale(string invoiceNumber, DateTime saleDate, int? staffId = null, int? buyerId = null, 
+        int? paymentMethodId = null, int? addressId = null, int? cardTypeId = null, string? notes = null)
     {
-        if (string.IsNullOrWhiteSpace(saleNumber))
-            throw new DomainException("Sale number cannot be empty");
+        if (string.IsNullOrWhiteSpace(invoiceNumber))
+            throw new DomainException("Invoice number cannot be empty");
 
-        SaleNumber = saleNumber;
-        SaleDate = saleDate;
-        StoreId = storeId;
-        BuyerId = buyerId;
-        StaffId = staffId;
-        Status = SaleStatus.Pending;
-        CreatedAt = DateTime.UtcNow;
         _items = new List<SaleItem>();
         _payments = new List<Payment>();
         _discounts = new List<SaleDiscount>();
+
+        InvoiceNumber = invoiceNumber;
+        SaleDate = saleDate;
+        StaffId = staffId;
+        BuyerId = buyerId;
+        PaymentMethodId = paymentMethodId;
+        AddressId = addressId;
+        CardTypeId = cardTypeId;
+        Notes = notes;
+        Status = SaleStatus.Pending;
+        IsSynced = false;
+        SyncedAt = null;
     }
 
     public void AddItem(int productId, string productName, decimal unitPrice, int quantity, decimal discount = 0)
@@ -81,7 +82,7 @@ public class Sale : Entity, IAggregateRoot
         var item = new SaleItem(Id, productId, productName, unitPrice, quantity, discount);
         _items.Add(item);
         CalculateTotalAmount();
-        _domainEvents.Add(new SaleItemAddedDomainEvent(this, item));
+        AddDomainEvent(new SaleItemAddedDomainEvent(this, item));
     }
 
     public void RemoveItem(int itemId)
@@ -91,15 +92,20 @@ public class Sale : Entity, IAggregateRoot
         {
             _items.Remove(item);
             CalculateTotalAmount();
-            _domainEvents.Add(new SaleItemRemovedDomainEvent(this, item));
+            AddDomainEvent(new SaleItemRemovedDomainEvent(this, item));
         }
     }
 
-    public void AddPayment(decimal amount, PaymentMethod paymentMethod)
+    public void AddPayment(decimal amount, string? reference = null)
     {
-        var payment = new Payment(Id, amount, paymentMethod);
+        if (amount <= 0)
+            throw new DomainException("Payment amount must be greater than zero");
+
+        var payment = new Payment(Id, amount, reference);
         _payments.Add(payment);
-        _domainEvents.Add(new SalePaymentAddedDomainEvent(this, payment));
+        AmountPaid += amount;
+        Balance = TotalAmount - AmountPaid;
+        AddDomainEvent(new SalePaymentAddedDomainEvent(this, payment));
 
         if (GetBalance() <= 0)
         {
@@ -107,77 +113,77 @@ public class Sale : Entity, IAggregateRoot
         }
     }
 
-    public void AddDiscount(string description, DiscountType type, decimal amount, decimal percentage)
+    public void AddDiscount(string name, decimal amount, DiscountType type)
     {
-        var discount = new SaleDiscount(Id, description, type, amount, percentage);
+        var discount = new SaleDiscount(Id, name, amount, type);
         _discounts.Add(discount);
-        _domainEvents.Add(new SaleDiscountAddedDomainEvent(this, discount));
-    }
-
-    public void AddTip(decimal amount, string staffId)
-    {
-        TipAmount = amount;
-        TipStaffId = staffId;
+        AddDomainEvent(new SaleDiscountAddedDomainEvent(this, discount));
     }
 
     public void SetCustomer(string customerId, string? name, string? phone = null, string? email = null)
     {
-        CustomerId = customerId;
-        CustomerName = name ?? string.Empty;
-        CustomerPhone = phone ?? string.Empty;
-        CustomerEmail = email ?? string.Empty;
+        BuyerId = customerId;
+        Buyer = new Buyer(customerId, name, phone, email);
     }
 
     public void AddNotes(string? notes)
     {
-        Note = notes;
-        Notes = notes ?? string.Empty;
+        Notes = notes;
     }
 
     public void MarkAsOffline()
     {
-        IsOffline = true;
+        IsSynced = false;
         SyncedAt = null;
     }
 
     public void MarkAsSynced()
     {
-        IsOffline = false;
+        if (IsSynced)
+            throw new DomainException("Sale is already synced");
+
+        IsSynced = true;
         SyncedAt = DateTime.UtcNow;
-        _domainEvents.Add(new SaleSyncedDomainEvent(this, SyncedAt.Value));
+        AddDomainEvent(new SaleSyncedDomainEvent(this, SyncedAt.Value));
     }
 
     public void Complete()
     {
         if (Status != SaleStatus.Pending)
-            throw new POSDomainException("Only pending sales can be completed.");
+            throw new DomainException("Only pending sales can be completed");
+
+        if (!_items.Any())
+            throw new DomainException("Cannot complete sale without items");
+
+        if (AmountPaid < TotalAmount)
+            throw new DomainException("Cannot complete sale without full payment");
 
         Status = SaleStatus.Completed;
-        CompletedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
-        _domainEvents.Add(new SaleCompletedDomainEvent(this));
+        AddDomainEvent(new SaleCompletedDomainEvent(this));
     }
 
     public void Void()
     {
         if (Status != SaleStatus.Pending)
-            throw new POSDomainException("Only pending sales can be voided.");
+            throw new DomainException("Only pending sales can be voided");
 
         Status = SaleStatus.Voided;
-        VoidedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
-        _domainEvents.Add(new SaleVoidedDomainEvent(this));
+        AddDomainEvent(new SaleVoidedDomainEvent(this));
     }
 
-    public void Refund()
+    public void Refund(decimal amount)
     {
         if (Status != SaleStatus.Completed)
-            throw new POSDomainException("Only completed sales can be refunded.");
+            throw new DomainException("Only completed sales can be refunded");
+
+        if (amount <= 0)
+            throw new DomainException("Refund amount must be greater than zero");
+
+        if (amount > TotalAmount)
+            throw new DomainException("Refund amount cannot exceed total amount");
 
         Status = SaleStatus.Refunded;
-        RefundedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
-        _domainEvents.Add(new SaleRefundedDomainEvent(this));
+        AddDomainEvent(new SaleRefundedDomainEvent(this));
     }
 
     public decimal CalculateTotal()

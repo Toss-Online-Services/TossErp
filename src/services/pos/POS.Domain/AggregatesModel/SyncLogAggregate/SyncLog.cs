@@ -3,7 +3,7 @@ using TossErp.POS.Domain.SeedWork;
 
 namespace TossErp.POS.Domain.AggregatesModel.SyncLogAggregate;
 
-public class SyncLog : Entity, IAggregateRoot
+public class SyncLog : AggregateRoot
 {
     public string EntityType { get; private set; }
     public int EntityId { get; private set; }
