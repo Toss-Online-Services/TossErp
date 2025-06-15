@@ -1,18 +1,17 @@
 #nullable enable
 using TossErp.POS.Domain.Events;
+using TossErp.POS.Domain.SeedWork;
 
 namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate.Events;
 
 public class SaleDiscountAddedDomainEvent : DomainEvent
 {
-    public int SaleId { get; }
-    public int DiscountId { get; }
-    public decimal Amount { get; }
+    public Sale Sale { get; }
+    public SaleDiscount SaleDiscount { get; }
 
-    public SaleDiscountAddedDomainEvent(int saleId, int discountId, decimal amount)
+    public SaleDiscountAddedDomainEvent(Sale sale, SaleDiscount saleDiscount)
     {
-        SaleId = saleId;
-        DiscountId = discountId;
-        Amount = amount;
+        Sale = sale;
+        SaleDiscount = saleDiscount;
     }
 } 

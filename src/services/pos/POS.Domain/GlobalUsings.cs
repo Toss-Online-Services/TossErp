@@ -1,4 +1,4 @@
-﻿global using TossErp.POS.Domain.Common;
+﻿global using TossErp.POS.Domain.SeedWork;
 global using TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
 global using TossErp.POS.Domain.AggregatesModel.ProductAggregate;
 global using TossErp.POS.Domain.AggregatesModel.SaleAggregate;

@@ -1,5 +1,5 @@
 #nullable enable
-using TossErp.POS.Domain.Events;
+using TossErp.POS.Domain.SeedWork;
 
 namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate.Events;
 

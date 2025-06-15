@@ -1,5 +1,5 @@
 using TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
-using TossErp.POS.Domain.Common;
+using TossErp.POS.Domain.SeedWork;
 
 namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate
 {
