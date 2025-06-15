@@ -1,5 +1,4 @@
-﻿using POS.Domain.SeedWork;
-
+﻿
 namespace POS.Domain.AggregatesModel.StoreAggregate;
 
 public class Store : AggregateRoot

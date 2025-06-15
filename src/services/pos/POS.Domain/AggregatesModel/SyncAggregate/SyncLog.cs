@@ -2,18 +2,16 @@
 
 namespace POS.Domain.AggregatesModel.SyncAggregate;
 
-public class SyncLog : Entity
+public class SyncLog : AggregateRoot
 {
     public Guid StoreId { get; private set; }
-    public string EntityType { get; private set; }
+    public required string EntityType { get; set; }
     public Guid EntityId { get; private set; }
     public string Action { get; private set; }
-    public string Status { get; private set; }
+    public string Status { get; set; }
     public string? ErrorMessage { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
-
-    protected SyncLog() { }
+    public DateTime UpdatedAt { get; private set; }    
 
     public SyncLog(Guid storeId, string entityType, Guid entityId, string action)
     {
@@ -47,4 +45,5 @@ public class SyncLog : Entity
         ErrorMessage = errorMessage;
         UpdatedAt = DateTime.UtcNow;
     }
+    
 } 

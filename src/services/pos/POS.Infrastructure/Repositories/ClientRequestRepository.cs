@@ -55,7 +55,7 @@ public class ClientRequestRepository : IClientRequestRepository
     {
         return await _context.ClientRequests
             .Where(c => c.StoreId == storeId)
-            .OrderByDescending(c => c.RequestDate)
+            .OrderByDescending(c => c.CreatedAt)
             .ToListAsync(cancellationToken);
     }
 
@@ -68,7 +68,7 @@ public class ClientRequestRepository : IClientRequestRepository
     {
         return await _context.ClientRequests
             .Where(c => c.StoreId == storeId)
-            .OrderByDescending(c => c.RequestDate)
+            .OrderByDescending(c => c.CreatedAt)
             .FirstOrDefaultAsync(cancellationToken);
     }
 } 
