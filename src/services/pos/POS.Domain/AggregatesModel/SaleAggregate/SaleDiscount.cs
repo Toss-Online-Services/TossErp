@@ -1,6 +1,6 @@
-﻿using System;
-using TossErp.POS.Domain.SeedWork;
-namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate
+﻿using POS.Domain.SeedWork;
+
+namespace POS.Domain.AggregatesModel.SaleAggregate
 {
     public class SaleDiscount : Entity
     {

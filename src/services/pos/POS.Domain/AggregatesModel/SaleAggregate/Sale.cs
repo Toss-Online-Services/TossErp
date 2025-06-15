@@ -1,13 +1,11 @@
 ﻿#nullable enable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using TossErp.POS.Domain.SeedWork;
-using TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
-using TossErp.POS.Domain.AggregatesModel.SaleAggregate.Events;
-using TossErp.POS.Domain.Events;
+using POS.Domain.AggregatesModel.StaffAggregate;
+using POS.Domain.SeedWork;
+using POS.Domain.AggregatesModel.BuyerAggregate;
+using POS.Domain.AggregatesModel.SaleAggregate.Events;
+using POS.Domain.Exceptions;
 
-namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
+namespace POS.Domain.AggregatesModel.SaleAggregate;
 
 public class Sale : AggregateRoot
 {

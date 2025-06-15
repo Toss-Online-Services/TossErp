@@ -1,8 +1,13 @@
-﻿using TossErp.POS.Domain.AggregatesModel.StoreAggregate;
-using TossErp.POS.Domain.Common;
-using TossErp.POS.Domain.Repositories;
-using TossErp.POS.Infrastructure.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using POS.Domain.AggregatesModel.StoreAggregate;
+using POS.Domain.Repositories;
+using TossErp.POS.Infrastructure.Data;
 
 namespace TossErp.POS.Infrastructure.Repositories;
 
@@ -10,26 +15,30 @@ public class StoreRepository : IStoreRepository
 {
     private readonly POSContext _context;
 
-    public IUnitOfWork UnitOfWork => _context;
-
     public StoreRepository(POSContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<Store?> GetByIdAsync(string id)
+    public async Task<Store> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Stores.FindAsync(id);
+        return await _context.Stores.FindAsync(new object[] { id }, cancellationToken);
     }
 
-    public async Task<IEnumerable<Store>> GetAllAsync()
+    public async Task<IEnumerable<Store>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Stores.ToListAsync();
+        return await _context.Stores.ToListAsync(cancellationToken);
     }
 
-    public async Task AddAsync(Store store)
+    public async Task<IEnumerable<Store>> FindAsync(Expression<Func<Store, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        await _context.Stores.AddAsync(store);
+        return await _context.Stores.Where(predicate).ToListAsync(cancellationToken);
+    }
+
+    public async Task<Store> AddAsync(Store store, CancellationToken cancellationToken = default)
+    {
+        await _context.Stores.AddAsync(store, cancellationToken);
+        return store;
     }
 
     public void Update(Store store)
@@ -42,24 +51,19 @@ public class StoreRepository : IStoreRepository
         _context.Stores.Remove(store);
     }
 
-    public async Task<bool> ExistsAsync(string id)
+    public async Task<Store> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
-        return await _context.Stores.AnyAsync(s => s.Id == id);
+        return await _context.Stores.FirstOrDefaultAsync(s => s.Code == code, cancellationToken);
     }
 
-    public async Task<Store?> GetByCodeAsync(string code)
+    public async Task<Store> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await _context.Stores.FirstOrDefaultAsync(s => s.Code == code);
+        return await _context.Stores.FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
     }
 
-    public async Task<Store?> GetByNameAsync(string name)
+    public async Task<Store> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default)
     {
-        return await _context.Stores.FirstOrDefaultAsync(s => s.Name == name);
-    }
-
-    public async Task<Store?> GetByEmailAsync(string email)
-    {
-        return await _context.Stores.FirstOrDefaultAsync(s => s.Email == email);
+        return await _context.Stores.FirstOrDefaultAsync(s => s.Phone == phone, cancellationToken);
     }
 
     public async Task<IEnumerable<Store>> GetByRegionAsync(string region)

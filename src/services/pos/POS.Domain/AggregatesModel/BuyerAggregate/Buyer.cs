@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using TossErp.POS.Domain.SeedWork;
-using TossErp.POS.Domain.Events;
-using DomainException = POS.Domain.Exceptions.DomainException;
+﻿using POS.Domain.Exceptions;
+using POS.Domain.SeedWork;
 
-namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
+namespace POS.Domain.AggregatesModel.BuyerAggregate;
 
 public class Buyer : AggregateRoot
 {

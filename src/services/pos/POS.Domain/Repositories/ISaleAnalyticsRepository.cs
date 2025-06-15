@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using TossErp.POS.Domain.AggregatesModel.SaleAggregate;
+﻿using POS.Domain.AggregatesModel.SaleAggregate;
 
-namespace TossErp.POS.Domain.Repositories
+namespace POS.Domain.Repositories
 {
     public interface ISaleAnalyticsRepository
     {

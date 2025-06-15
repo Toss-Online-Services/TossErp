@@ -1,11 +1,8 @@
 ﻿#nullable enable
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using TossErp.POS.Domain.AggregatesModel.StoreAggregate;
-using TossErp.POS.Domain.Common;
+using POS.Domain.AggregatesModel.StoreAggregate;
+using POS.Domain.Common;
 
-namespace TossErp.POS.Domain.Repositories;
+namespace POS.Domain.Repositories;
 
 public interface IStoreRepository : IRepository<Store>
 {

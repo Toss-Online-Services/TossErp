@@ -1,7 +1,7 @@
-using System;
-using TossErp.POS.Domain.SeedWork;
+﻿using POS.Domain.Exceptions;
+using POS.Domain.SeedWork;
 
-namespace TossErp.POS.Domain.AggregatesModel.SyncLogAggregate;
+namespace POS.Domain.AggregatesModel.SyncLogAggregate;
 
 public class SyncLog : AggregateRoot
 {
@@ -33,11 +33,3 @@ public class SyncLog : AggregateRoot
         SyncTime = DateTime.UtcNow;
     }
 }
-
-public enum SyncStatus
-{
-    Pending,
-    InProgress,
-    Completed,
-    Failed
-} 

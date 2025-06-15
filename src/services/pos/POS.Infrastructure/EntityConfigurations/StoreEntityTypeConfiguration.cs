@@ -1,52 +1,42 @@
-﻿namespace TossErp.POS.Infrastructure.EntityConfigurations;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using POS.Domain.AggregatesModel.StoreAggregate;
 
-class StoreEntityTypeConfiguration
-    : IEntityTypeConfiguration<Store>
+namespace TossErp.POS.Infrastructure.EntityConfigurations;
+
+public class StoreEntityTypeConfiguration : IEntityTypeConfiguration<Store>
 {
-    public void Configure(EntityTypeBuilder<Store> storeConfiguration)
+    public void Configure(EntityTypeBuilder<Store> builder)
     {
-        storeConfiguration.ToTable("stores", "POS");
+        builder.ToTable("stores", "POS");
 
-        storeConfiguration.Ignore(s => s.DomainEvents);
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).HasConversion<string>();
 
-        storeConfiguration.Property(s => s.Id)
-            .HasMaxLength(36)
-            .IsRequired();
+        builder.Property(s => s.Name).HasMaxLength(200).IsRequired();
+        builder.Property(s => s.Code).HasMaxLength(50).IsRequired();
+        builder.Property(s => s.Email).HasMaxLength(100).IsRequired();
+        builder.Property(s => s.Phone).HasMaxLength(20).IsRequired();
+        builder.Property(s => s.TaxNumber).HasMaxLength(50);
+        builder.Property(s => s.Notes).HasMaxLength(500);
 
-        storeConfiguration.Property(s => s.Code)
-            .HasMaxLength(50)
-            .IsRequired();
+        builder.Property(s => s.IsActive).IsRequired();
+        builder.Property(s => s.IsSynced).IsRequired();
 
-        storeConfiguration.Property(s => s.Name)
-            .HasMaxLength(200)
-            .IsRequired();
+        builder.HasIndex(s => s.Code).IsUnique();
+        builder.HasIndex(s => s.Email).IsUnique();
+        builder.HasIndex(s => s.Phone).IsUnique();
+        builder.HasIndex(s => s.TaxNumber).IsUnique();
+        builder.HasIndex(s => s.IsActive);
+        builder.HasIndex(s => s.IsSynced);
 
-        storeConfiguration.Property(s => s.Email)
-            .HasMaxLength(200)
-            .IsRequired();
-
-        storeConfiguration.Property(s => s.Phone)
-            .HasMaxLength(20);
-
-        storeConfiguration.Property(s => s.Address)
-            .HasMaxLength(500);
-
-        storeConfiguration.Property(s => s.Region)
-            .HasMaxLength(100);
-
-        storeConfiguration.Property(s => s.OwnerId)
-            .HasMaxLength(36)
-            .IsRequired();
-
-        storeConfiguration.Property(s => s.IsActive)
-            .IsRequired();
-
-        storeConfiguration.HasIndex(s => s.Code)
-            .IsUnique();
-
-        storeConfiguration.HasIndex(s => s.Email)
-            .IsUnique();
-
-        storeConfiguration.HasIndex(s => s.OwnerId);
+        builder.OwnsOne(s => s.Address, a =>
+        {
+            a.Property(addr => addr.Street).HasMaxLength(200).IsRequired();
+            a.Property(addr => addr.City).HasMaxLength(100).IsRequired();
+            a.Property(addr => addr.State).HasMaxLength(100).IsRequired();
+            a.Property(addr => addr.Country).HasMaxLength(100).IsRequired();
+            a.Property(addr => addr.ZipCode).HasMaxLength(20).IsRequired();
+        });
     }
 } 

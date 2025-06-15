@@ -1,21 +1,39 @@
+using Microsoft.EntityFrameworkCore;
+using TossErp.POS.API.Extensions;
+using TossErp.POS.Infrastructure.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
-builder.AddApplicationServices();
-builder.Services.AddProblemDetails();
+// Add services to the container.
+builder.Services.AddControllers();
 
-var withApiVersioning = builder.Services.AddApiVersioning();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-builder.AddDefaultOpenApi(withApiVersioning);
+// Add DbContext
+builder.Services.AddDbContext<POSContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add Application Services
+builder.Services.AddApplicationServices();
+
+// Add Infrastructure Services
+builder.Services.AddInfrastructureServices();
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-var orders = app.NewVersionedApi("Orders");
+app.UseHttpsRedirection();
 
-orders.MapOrdersApiV1()
-      .RequireAuthorization();
+app.UseAuthorization();
 
-app.UseDefaultOpenApi();
+app.MapControllers();
+
 app.Run();

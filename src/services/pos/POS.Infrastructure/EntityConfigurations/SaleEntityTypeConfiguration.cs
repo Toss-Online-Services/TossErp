@@ -1,78 +1,127 @@
-﻿namespace TossErp.POS.Infrastructure.EntityConfigurations;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using POS.Domain.AggregatesModel.SaleAggregate;
 
-class SaleEntityTypeConfiguration
-    : IEntityTypeConfiguration<Sale>
+namespace TossErp.POS.Infrastructure.EntityConfigurations;
+
+public class SaleEntityTypeConfiguration : IEntityTypeConfiguration<Sale>
 {
-    public void Configure(EntityTypeBuilder<Sale> saleConfiguration)
+    public void Configure(EntityTypeBuilder<Sale> builder)
     {
-        saleConfiguration.ToTable("sales", "POS");
+        builder.ToTable("sales", "POS");
 
-        saleConfiguration.Ignore(s => s.DomainEvents);
-
-        saleConfiguration.Property(s => s.Id)
-            .HasMaxLength(36)
-            .IsRequired();
-
-        saleConfiguration.Property(s => s.StoreId)
-            .HasMaxLength(36)
-            .IsRequired();
-
-        saleConfiguration.Property(s => s.StaffId)
-            .HasMaxLength(36)
-            .IsRequired();
-
-        saleConfiguration.Property(s => s.BuyerId)
-            .HasMaxLength(36);
-
-        saleConfiguration.Property(s => s.Status)
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id)
             .HasConversion<string>()
+            .IsRequired();
+
+        builder.Property(s => s.StoreId)
+            .HasConversion<string>()
+            .IsRequired();
+
+        builder.Property(s => s.StaffId)
+            .HasConversion<string>()
+            .IsRequired();
+
+        builder.Property(s => s.PaymentMethodId)
+            .HasConversion<string>()
+            .IsRequired();
+
+        builder.Property(s => s.BuyerId)
+            .HasConversion<string>();
+
+        builder.Property(s => s.CardTypeId)
+            .HasConversion<string>();
+
+        builder.Property(s => s.CardNumber)
+            .HasMaxLength(50);
+
+        builder.Property(s => s.InvoiceNumber)
             .HasMaxLength(50)
             .IsRequired();
 
-        saleConfiguration.Property(s => s.TotalAmount)
+        builder.Property(s => s.SaleDate)
+            .IsRequired();
+
+        builder.Property(s => s.Status)
+            .HasMaxLength(20)
+            .IsRequired();
+
+        builder.Property(s => s.SubTotal)
             .HasPrecision(18, 2)
             .IsRequired();
 
-        saleConfiguration.Property(s => s.DiscountAmount)
+        builder.Property(s => s.TaxAmount)
             .HasPrecision(18, 2)
             .IsRequired();
 
-        saleConfiguration.Property(s => s.TaxAmount)
+        builder.Property(s => s.DiscountAmount)
             .HasPrecision(18, 2)
             .IsRequired();
 
-        saleConfiguration.Property(s => s.FinalAmount)
+        builder.Property(s => s.TotalAmount)
             .HasPrecision(18, 2)
             .IsRequired();
 
-        saleConfiguration.Property(s => s.PaymentMethodId)
-            .HasMaxLength(36)
+        builder.Property(s => s.AmountPaid)
+            .HasPrecision(18, 2)
             .IsRequired();
 
-        saleConfiguration.Property(s => s.CardTypeId)
-            .HasMaxLength(36);
-
-        saleConfiguration.Property(s => s.CardNumber)
-            .HasMaxLength(50);
-
-        saleConfiguration.Property(s => s.Notes)
-            .HasMaxLength(500);
-
-        saleConfiguration.Property(s => s.CreatedAt)
+        builder.Property(s => s.Balance)
+            .HasPrecision(18, 2)
             .IsRequired();
 
-        saleConfiguration.Property(s => s.UpdatedAt)
+        builder.Property(s => s.IsSynced)
             .IsRequired();
 
-        saleConfiguration.HasIndex(s => s.StoreId);
-        saleConfiguration.HasIndex(s => s.StaffId);
-        saleConfiguration.HasIndex(s => s.BuyerId);
-        saleConfiguration.HasIndex(s => s.Status);
-        saleConfiguration.HasIndex(s => s.CreatedAt);
+        builder.Property(s => s.CreatedAt)
+            .IsRequired();
 
-        saleConfiguration.HasMany(s => s.Items)
+        builder.Property(s => s.UpdatedAt)
+            .IsRequired();
+
+        // Indexes
+        builder.HasIndex(s => s.InvoiceNumber);
+        builder.HasIndex(s => s.SaleDate);
+        builder.HasIndex(s => s.Status);
+        builder.HasIndex(s => s.StaffId);
+        builder.HasIndex(s => s.BuyerId);
+        builder.HasIndex(s => s.IsSynced);
+
+        // Relationships
+        builder.HasMany(s => s.Items)
             .WithOne()
             .HasForeignKey("SaleId")
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(s => s.Payments)
+            .WithOne()
+            .HasForeignKey("SaleId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(s => s.Discounts)
+            .WithOne()
+            .HasForeignKey("SaleId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(s => s.Buyer)
+            .WithMany()
+            .HasForeignKey(s => s.BuyerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(s => s.Staff)
+            .WithMany()
+            .HasForeignKey(s => s.StaffId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(s => s.PaymentMethod)
+            .WithMany()
+            .HasForeignKey(s => s.PaymentMethodId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(s => s.CardType)
+            .WithMany()
+            .HasForeignKey(s => s.CardTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 } 

@@ -1,8 +1,13 @@
-﻿using TossErp.POS.Domain.AggregatesModel.ProductAggregate;
-using TossErp.POS.Domain.Common;
-using TossErp.POS.Domain.Repositories;
-using TossErp.POS.Infrastructure.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using POS.Domain.AggregatesModel.ProductAggregate;
+using POS.Domain.Repositories;
+using TossErp.POS.Infrastructure.Data;
 
 namespace TossErp.POS.Infrastructure.Repositories;
 
@@ -10,26 +15,45 @@ public class ProductRepository : IProductRepository
 {
     private readonly POSContext _context;
 
-    public IUnitOfWork UnitOfWork => _context;
-
     public ProductRepository(POSContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<Product?> GetByIdAsync(string id)
+    public async Task<Product> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Products.FindAsync(id);
+        return await _context.Products.FindAsync(new object[] { id }, cancellationToken);
     }
 
-    public async Task<IEnumerable<Product>> GetAllAsync()
+    public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Products.ToListAsync();
+        return await _context.Products.ToListAsync(cancellationToken);
     }
 
-    public async Task AddAsync(Product product)
+    public async Task<IEnumerable<Product>> FindAsync(Expression<Func<Product, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        await _context.Products.AddAsync(product);
+        return await _context.Products.Where(predicate).ToListAsync(cancellationToken);
+    }
+
+    public async Task<Product> AddAsync(Product product, CancellationToken cancellationToken = default)
+    {
+        await _context.Products.AddAsync(product, cancellationToken);
+        return product;
+    }
+
+    public async Task<Product> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
+    {
+        return await _context.Products.FirstOrDefaultAsync(p => p.Code == code, cancellationToken);
+    }
+
+    public async Task<Product> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+    {
+        return await _context.Products.FirstOrDefaultAsync(p => p.Name == name, cancellationToken);
+    }
+
+    public async Task<IEnumerable<Product>> GetByCategoryAsync(string category, CancellationToken cancellationToken = default)
+    {
+        return await _context.Products.Where(p => p.Category == category).ToListAsync(cancellationToken);
     }
 
     public void Update(Product product)
@@ -47,14 +71,16 @@ public class ProductRepository : IProductRepository
         return await _context.Products.AnyAsync(p => p.Id == id);
     }
 
-    public async Task<Product?> GetByCodeAsync(string code)
+    public async Task<Product?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
-        return await _context.Products.FirstOrDefaultAsync(p => p.Code == code);
+        return await _context.Products
+            .FirstOrDefaultAsync(p => p.Code == code, cancellationToken);
     }
 
-    public async Task<Product?> GetByNameAsync(string name)
+    public async Task<Product?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        return await _context.Products.FirstOrDefaultAsync(p => p.Name == name);
+        return await _context.Products
+            .FirstOrDefaultAsync(p => p.Name == name, cancellationToken);
     }
 
     public async Task<IEnumerable<Product>> GetByCategoryAsync(string category)
@@ -86,12 +112,12 @@ public class ProductRepository : IProductRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Product>> GetByStoreIdAsync(string storeId)
+    public async Task<IEnumerable<Product>> GetByStoreIdAsync(Guid storeId, CancellationToken cancellationToken = default)
     {
         return await _context.Products
             .Where(p => p.StoreId == storeId)
             .OrderBy(p => p.Name)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Product>> GetByCategoryAsync(string category, string storeId)
@@ -119,5 +145,21 @@ public class ProductRepository : IProductRepository
     public async Task<bool> ExistsAsync(string storeId, string code)
     {
         return await _context.Products.AnyAsync(p => p.StoreId == storeId && p.Code == code);
+    }
+
+    public async Task<IEnumerable<Product>> GetBySkuAsync(string sku, CancellationToken cancellationToken = default)
+    {
+        return await _context.Products
+            .Where(p => p.SKU == sku)
+            .OrderBy(p => p.Name)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Product>> GetByBarcodeAsync(string barcode, CancellationToken cancellationToken = default)
+    {
+        return await _context.Products
+            .Where(p => p.Barcode == barcode)
+            .OrderBy(p => p.Name)
+            .ToListAsync(cancellationToken);
     }
 } 

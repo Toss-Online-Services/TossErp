@@ -1,49 +1,83 @@
-﻿namespace TossErp.POS.Infrastructure.EntityConfigurations;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using POS.Domain.AggregatesModel.ProductAggregate;
 
-class ProductEntityTypeConfiguration
-    : IEntityTypeConfiguration<Product>
+namespace TossErp.POS.Infrastructure.EntityConfigurations;
+
+public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
 {
-    public void Configure(EntityTypeBuilder<Product> productConfiguration)
+    public void Configure(EntityTypeBuilder<Product> builder)
     {
-        productConfiguration.ToTable("products", "POS");
+        builder.ToTable("products", "POS");
 
-        productConfiguration.Ignore(p => p.DomainEvents);
-
-        productConfiguration.Property(p => p.Id)
-            .HasMaxLength(36)
+        builder.HasKey(p => p.Id);
+        builder.Property(p => p.Id)
+            .HasConversion<string>()
             .IsRequired();
 
-        productConfiguration.Property(p => p.Code)
+        builder.Property(p => p.StoreId)
+            .HasConversion<string>()
+            .IsRequired();
+
+        builder.Property(p => p.Code)
             .HasMaxLength(50)
             .IsRequired();
 
-        productConfiguration.Property(p => p.Name)
+        builder.Property(p => p.Name)
             .HasMaxLength(200)
             .IsRequired();
 
-        productConfiguration.Property(p => p.Description)
+        builder.Property(p => p.Description)
             .HasMaxLength(500);
 
-        productConfiguration.Property(p => p.Category)
-            .HasMaxLength(100);
-
-        productConfiguration.Property(p => p.Brand)
-            .HasMaxLength(100);
-
-        productConfiguration.Property(p => p.StoreId)
-            .HasMaxLength(36)
+        builder.Property(p => p.SKU)
+            .HasMaxLength(50)
             .IsRequired();
 
-        productConfiguration.Property(p => p.Price)
+        builder.Property(p => p.Barcode)
+            .HasMaxLength(50);
+
+        builder.Property(p => p.UnitPrice)
             .HasPrecision(18, 2)
             .IsRequired();
 
-        productConfiguration.Property(p => p.StockQuantity)
+        builder.Property(p => p.TaxRate)
+            .HasPrecision(5, 2)
             .IsRequired();
 
-        productConfiguration.HasIndex(p => new { p.StoreId, p.Code })
-            .IsUnique();
+        builder.Property(p => p.StockQuantity)
+            .HasPrecision(18, 2)
+            .IsRequired();
 
-        productConfiguration.HasIndex(p => p.StoreId);
+        builder.Property(p => p.MinStockLevel)
+            .HasPrecision(18, 2)
+            .IsRequired();
+
+        builder.Property(p => p.MaxStockLevel)
+            .HasPrecision(18, 2)
+            .IsRequired();
+
+        builder.Property(p => p.Status)
+            .HasMaxLength(20)
+            .IsRequired();
+
+        builder.Property(p => p.CreatedAt)
+            .IsRequired();
+
+        builder.Property(p => p.UpdatedAt)
+            .IsRequired();
+
+        // Indexes
+        builder.HasIndex(p => p.StoreId);
+        builder.HasIndex(p => new { p.StoreId, p.Code }).IsUnique();
+        builder.HasIndex(p => new { p.StoreId, p.SKU }).IsUnique();
+        builder.HasIndex(p => p.Barcode);
+        builder.HasIndex(p => p.Status);
+
+        // Relationships
+        builder.HasOne<Store>()
+            .WithMany()
+            .HasForeignKey(p => p.StoreId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 } 

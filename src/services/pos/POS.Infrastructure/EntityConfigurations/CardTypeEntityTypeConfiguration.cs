@@ -1,23 +1,32 @@
-﻿using eShop.POS.Domain.AggregatesModel.BuyerAggregate;
+﻿using POS.Domain.AggregatesModel.BuyerAggregate;
 
-namespace eShop.POS.Infrastructure.EntityConfigurations;
+namespace TossErp.POS.Infrastructure.EntityConfigurations;
 
-class CardTypeEntityTypeConfiguration
-    : IEntityTypeConfiguration<CardType>
+public class CardTypeEntityTypeConfiguration : IEntityTypeConfiguration<CardType>
 {
-    public void Configure(EntityTypeBuilder<CardType> cardTypesConfiguration)
+    public void Configure(EntityTypeBuilder<CardType> builder)
     {
-        cardTypesConfiguration.ToTable("cardtypes");
+        builder.ToTable("card_types", "POS");
 
-        cardTypesConfiguration.Property(ct => ct.Id)
-            .HasMaxLength(36)
+        builder.HasKey(ct => ct.Id);
+        builder.Property(ct => ct.Id)
+            .HasConversion<string>()
             .IsRequired();
 
-        cardTypesConfiguration.Property(ct => ct.Name)
-            .HasMaxLength(200)
+        builder.Property(ct => ct.Name)
+            .HasMaxLength(50)
             .IsRequired();
 
-        cardTypesConfiguration.HasIndex(ct => ct.Name)
-            .IsUnique(true);
+        builder.Property(ct => ct.Description)
+            .HasMaxLength(200);
+
+        builder.Property(ct => ct.CreatedAt)
+            .IsRequired();
+
+        builder.Property(ct => ct.UpdatedAt)
+            .IsRequired();
+
+        // Indexes
+        builder.HasIndex(ct => ct.Name).IsUnique();
     }
 }

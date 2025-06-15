@@ -1,8 +1,7 @@
 ﻿#nullable enable
-using System;
-using TossErp.POS.Domain.SeedWork;
+using POS.Domain.SeedWork;
 
-namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate
+namespace POS.Domain.AggregatesModel.BuyerAggregate
 {
     public class PaymentMethod : Entity
     {

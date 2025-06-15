@@ -1,7 +1,6 @@
-﻿using System;
-using TossErp.POS.Domain.SeedWork;
+﻿using POS.Domain.SeedWork;
 
-namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
+namespace POS.Domain.AggregatesModel.SaleAggregate;
 
 public class SaleItem : Entity
 {
@@ -85,6 +84,6 @@ public class SaleItem : Entity
 
     public decimal GetTotalPrice()
     {
-        return (UnitPrice * Quantity) - Discount;
+        return UnitPrice * Quantity - Discount;
     }
 } 

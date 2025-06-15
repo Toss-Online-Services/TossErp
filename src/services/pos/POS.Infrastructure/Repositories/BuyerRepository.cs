@@ -1,8 +1,13 @@
-﻿using TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
-using TossErp.POS.Domain.Common;
-using TossErp.POS.Domain.Repositories;
-using TossErp.POS.Infrastructure.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using POS.Domain.AggregatesModel.BuyerAggregate;
+using POS.Domain.Repositories;
+using TossErp.POS.Infrastructure.Data;
 
 namespace TossErp.POS.Infrastructure.Repositories;
 
@@ -10,30 +15,30 @@ public class BuyerRepository : IBuyerRepository
 {
     private readonly POSContext _context;
 
-    public IUnitOfWork UnitOfWork => _context;
-
     public BuyerRepository(POSContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<Buyer?> GetByIdAsync(string id)
+    public async Task<Buyer> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Buyers
-            .Include(b => b.PaymentMethods)
-            .FirstOrDefaultAsync(b => b.Id == id);
+        return await _context.Buyers.FindAsync(new object[] { id }, cancellationToken);
     }
 
-    public async Task<IEnumerable<Buyer>> GetAllAsync()
+    public async Task<IEnumerable<Buyer>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Buyers
-            .Include(b => b.PaymentMethods)
-            .ToListAsync();
+        return await _context.Buyers.ToListAsync(cancellationToken);
     }
 
-    public async Task AddAsync(Buyer buyer)
+    public async Task<IEnumerable<Buyer>> FindAsync(Expression<Func<Buyer, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        await _context.Buyers.AddAsync(buyer);
+        return await _context.Buyers.Where(predicate).ToListAsync(cancellationToken);
+    }
+
+    public async Task<Buyer> AddAsync(Buyer buyer, CancellationToken cancellationToken = default)
+    {
+        await _context.Buyers.AddAsync(buyer, cancellationToken);
+        return buyer;
     }
 
     public void Update(Buyer buyer)
@@ -46,15 +51,22 @@ public class BuyerRepository : IBuyerRepository
         _context.Buyers.Remove(buyer);
     }
 
-    public async Task<bool> ExistsAsync(string id)
+    public async Task<Buyer> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await _context.Buyers.AnyAsync(b => b.Id == id);
+        return await _context.Buyers.FirstOrDefaultAsync(b => b.Email == email, cancellationToken);
     }
 
-    public async Task<Buyer?> GetByIdentityGuidAsync(string identityGuid)
+    public async Task<Buyer> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default)
+    {
+        return await _context.Buyers.FirstOrDefaultAsync(b => b.Phone == phone, cancellationToken);
+    }
+
+    public async Task<IEnumerable<Buyer>> GetByStoreIdAsync(Guid storeId, CancellationToken cancellationToken = default)
     {
         return await _context.Buyers
             .Include(b => b.PaymentMethods)
-            .FirstOrDefaultAsync(b => b.IdentityGuid == identityGuid);
+            .Where(b => b.StoreId == storeId)
+            .OrderBy(b => b.Name)
+            .ToListAsync(cancellationToken);
     }
 }

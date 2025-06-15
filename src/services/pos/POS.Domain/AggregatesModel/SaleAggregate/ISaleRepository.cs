@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using TossErp.POS.Domain.SeedWork;
+﻿using POS.Domain.Common;
 
-namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate
+namespace POS.Domain.AggregatesModel.SaleAggregate
 {
     public interface ISaleRepository : IRepository<Sale>
     {

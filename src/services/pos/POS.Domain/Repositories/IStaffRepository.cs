@@ -1,12 +1,7 @@
 ﻿#nullable enable
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using TossErp.POS.Domain.AggregatesModel.StaffAggregate;
-using TossErp.POS.Domain.Common;
-using TossErp.POS.Domain.Repositories;
-namespace TossErp.POS.Domain.Repositories;
+using POS.Domain.AggregatesModel.StaffAggregate;
+using POS.Domain.Common;
+namespace POS.Domain.Repositories;
 
 public interface IStaffRepository : IRepository<Staff>
 {

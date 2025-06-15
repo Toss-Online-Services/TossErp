@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace TossErp.POS.Domain.SeedWork
+﻿namespace POS.Domain.SeedWork
 {
     public abstract class AggregateRoot : Entity, IAggregateRoot
     {

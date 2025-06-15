@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
+using POS.Domain.SeedWork;
 
-namespace TossErp.POS.Domain.SeedWork;
+namespace POS.Domain.Common;
 
 public interface IRepository<T> where T : class, IAggregateRoot
 {

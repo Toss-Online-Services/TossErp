@@ -1,8 +1,13 @@
-﻿using TossErp.POS.Domain.AggregatesModel.SyncLogAggregate;
-using TossErp.POS.Domain.Common;
-using TossErp.POS.Domain.Repositories;
-using TossErp.POS.Infrastructure.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using POS.Domain.AggregatesModel.SyncAggregate;
+using POS.Domain.Repositories;
+using TossErp.POS.Infrastructure.Data;
 
 namespace TossErp.POS.Infrastructure.Repositories;
 
@@ -10,26 +15,30 @@ public class SyncLogRepository : ISyncLogRepository
 {
     private readonly POSContext _context;
 
-    public IUnitOfWork UnitOfWork => _context;
-
     public SyncLogRepository(POSContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<SyncLog?> GetByIdAsync(string id)
+    public async Task<SyncLog> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.SyncLogs.FindAsync(id);
+        return await _context.SyncLogs.FindAsync(new object[] { id }, cancellationToken);
     }
 
-    public async Task<IEnumerable<SyncLog>> GetAllAsync()
+    public async Task<IEnumerable<SyncLog>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.SyncLogs.ToListAsync();
+        return await _context.SyncLogs.ToListAsync(cancellationToken);
     }
 
-    public async Task AddAsync(SyncLog syncLog)
+    public async Task<IEnumerable<SyncLog>> FindAsync(Expression<Func<SyncLog, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        await _context.SyncLogs.AddAsync(syncLog);
+        return await _context.SyncLogs.Where(predicate).ToListAsync(cancellationToken);
+    }
+
+    public async Task<SyncLog> AddAsync(SyncLog log, CancellationToken cancellationToken = default)
+    {
+        await _context.SyncLogs.AddAsync(log, cancellationToken);
+        return log;
     }
 
     public void Update(SyncLog syncLog)
@@ -42,25 +51,26 @@ public class SyncLogRepository : ISyncLogRepository
         _context.SyncLogs.Remove(syncLog);
     }
 
-    public async Task<bool> ExistsAsync(string id)
+    public async Task<SyncLog?> GetByEntityIdAsync(string entityType, Guid entityId, CancellationToken cancellationToken = default)
     {
-        return await _context.SyncLogs.AnyAsync(s => s.Id == id);
+        return await _context.SyncLogs
+            .FirstOrDefaultAsync(sl => sl.EntityType == entityType && sl.EntityId == entityId, cancellationToken);
     }
 
-    public async Task<IEnumerable<SyncLog>> GetByStoreIdAsync(string storeId)
+    public async Task<IEnumerable<SyncLog>> GetByStoreIdAsync(Guid storeId, CancellationToken cancellationToken = default)
     {
         return await _context.SyncLogs
             .Where(s => s.StoreId == storeId)
             .OrderByDescending(s => s.SyncDate)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<SyncLog>> GetByStatusAsync(SyncStatus status)
+    public async Task<IEnumerable<SyncLog>> GetByStatusAsync(string status, CancellationToken cancellationToken = default)
     {
         return await _context.SyncLogs
             .Where(s => s.Status == status)
             .OrderByDescending(s => s.SyncDate)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
     public async Task RecordSync(string saleId, string storeId, DateTime syncedAt, CancellationToken cancellationToken = default)
@@ -109,5 +119,18 @@ public class SyncLogRepository : ISyncLogRepository
     {
         return await _context.SyncLogs
             .CountAsync(s => s.StoreId == storeId && !s.Success, cancellationToken);
+    }
+
+    public async Task<SyncLog?> GetLastSyncByStoreIdAsync(Guid storeId, CancellationToken cancellationToken = default)
+    {
+        return await _context.SyncLogs
+            .Where(s => s.StoreId == storeId)
+            .OrderByDescending(s => s.SyncDate)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<SyncLog>> GetByEntityTypeAsync(string entityType, CancellationToken cancellationToken = default)
+    {
+        return await _context.SyncLogs.Where(l => l.EntityType == entityType).ToListAsync(cancellationToken);
     }
 } 

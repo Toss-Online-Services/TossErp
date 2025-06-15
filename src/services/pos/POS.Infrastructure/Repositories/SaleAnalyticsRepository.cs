@@ -1,8 +1,12 @@
-﻿using TossErp.POS.Domain.AggregatesModel.SaleAggregate;
-using TossErp.POS.Domain.Common;
-using TossErp.POS.Domain.Repositories;
-using TossErp.POS.Infrastructure.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using POS.Domain.AggregatesModel.SaleAggregate;
+using POS.Domain.Repositories;
+using TossErp.POS.Infrastructure.Data;
 
 namespace TossErp.POS.Infrastructure.Repositories;
 
@@ -10,11 +14,39 @@ public class SaleAnalyticsRepository : ISaleAnalyticsRepository
 {
     private readonly POSContext _context;
 
-    public IUnitOfWork UnitOfWork => _context;
-
     public SaleAnalyticsRepository(POSContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    public async Task<decimal> GetTotalSalesByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+    {
+        return await _context.Sales
+            .Where(s => s.SaleDate >= startDate && s.SaleDate <= endDate)
+            .SumAsync(s => s.TotalAmount, cancellationToken);
+    }
+
+    public async Task<decimal> GetTotalSalesByStoreAsync(Guid storeId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+    {
+        return await _context.Sales
+            .Where(s => s.StoreId == storeId && s.SaleDate >= startDate && s.SaleDate <= endDate)
+            .SumAsync(s => s.TotalAmount, cancellationToken);
+    }
+
+    public async Task<decimal> GetTotalSalesByStaffAsync(Guid staffId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+    {
+        return await _context.Sales
+            .Where(s => s.StaffId == staffId && s.SaleDate >= startDate && s.SaleDate <= endDate)
+            .SumAsync(s => s.TotalAmount, cancellationToken);
+    }
+
+    public async Task<IEnumerable<Sale>> GetTopSellingProductsAsync(int count, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+    {
+        return await _context.Sales
+            .Where(s => s.SaleDate >= startDate && s.SaleDate <= endDate)
+            .OrderByDescending(s => s.TotalAmount)
+            .Take(count)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task RecordSaleCompleted(string storeId, string staffId, decimal total, bool isOffline, DateTime completedAt, CancellationToken cancellationToken = default)

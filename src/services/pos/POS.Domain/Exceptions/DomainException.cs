@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace POS.Domain.Exceptions;
+﻿namespace POS.Domain.Exceptions;
 
 public class DomainException : Exception
 {

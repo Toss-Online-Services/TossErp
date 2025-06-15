@@ -1,7 +1,6 @@
-﻿using System;
-using TossErp.POS.Domain.SeedWork;
+﻿using POS.Domain.SeedWork;
 
-namespace TossErp.POS.Domain.AggregatesModel.StaffAggregate
+namespace POS.Domain.AggregatesModel.StaffAggregate
 {
     public class Staff : AggregateRoot
     {

@@ -1,8 +1,14 @@
-﻿using TossErp.POS.Domain.AggregatesModel.StaffAggregate;
-using TossErp.POS.Domain.Common;
-using TossErp.POS.Domain.Repositories;
-using TossErp.POS.Infrastructure.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using POS.Domain.AggregatesModel.StaffAggregate;
+using POS.Domain.Common;
+using POS.Domain.Repositories;
+using TossErp.POS.Infrastructure.Data;
 
 namespace TossErp.POS.Infrastructure.Repositories;
 
@@ -17,19 +23,25 @@ public class StaffRepository : IStaffRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<Staff?> GetByIdAsync(string id)
+    public async Task<Staff> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Staff.FindAsync(id);
+        return await _context.Staff.FindAsync(new object[] { id }, cancellationToken);
     }
 
-    public async Task<IEnumerable<Staff>> GetAllAsync()
+    public async Task<IEnumerable<Staff>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Staff.ToListAsync();
+        return await _context.Staff.ToListAsync(cancellationToken);
     }
 
-    public async Task AddAsync(Staff staff)
+    public async Task<IEnumerable<Staff>> FindAsync(Expression<Func<Staff, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        await _context.Staff.AddAsync(staff);
+        return await _context.Staff.Where(predicate).ToListAsync(cancellationToken);
+    }
+
+    public async Task<Staff> AddAsync(Staff staff, CancellationToken cancellationToken = default)
+    {
+        await _context.Staff.AddAsync(staff, cancellationToken);
+        return staff;
     }
 
     public void Update(Staff staff)
@@ -52,21 +64,19 @@ public class StaffRepository : IStaffRepository
         return await _context.Staff.FirstOrDefaultAsync(s => s.Code == code);
     }
 
-    public async Task<Staff?> GetByEmailAsync(string email)
+    public async Task<Staff> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await _context.Staff.FirstOrDefaultAsync(s => s.Email == email);
+        return await _context.Staff.FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
     }
 
-    public async Task<Staff?> GetByPhoneAsync(string phone)
+    public async Task<Staff> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default)
     {
-        return await _context.Staff.FirstOrDefaultAsync(s => s.Phone == phone);
+        return await _context.Staff.FirstOrDefaultAsync(s => s.Phone == phone, cancellationToken);
     }
 
-    public async Task<IEnumerable<Staff>> GetByStoreIdAsync(string storeId)
+    public async Task<IEnumerable<Staff>> GetByStoreIdAsync(Guid storeId, CancellationToken cancellationToken = default)
     {
-        return await _context.Staff
-            .Where(s => s.StoreId == storeId)
-            .ToListAsync();
+        return await _context.Staff.Where(s => s.StoreId == storeId).ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Staff>> GetByRoleAsync(string role)

@@ -1,4 +1,4 @@
-namespace TossErp.POS.Domain.Exceptions;
+﻿namespace POS.Domain.Exceptions;
 
 /// <summary>
 /// Exception type for domain exceptions

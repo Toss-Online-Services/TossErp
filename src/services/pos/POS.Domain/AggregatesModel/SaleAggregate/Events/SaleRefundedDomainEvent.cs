@@ -1,7 +1,9 @@
-#nullable enable
-using TossErp.POS.Domain.SeedWork;
+﻿#nullable enable
 
-namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate.Events;
+#nullable enable
+using POS.Domain.SeedWork;
+
+namespace POS.Domain.AggregatesModel.SaleAggregate.Events;
 
 public class SaleRefundedDomainEvent : DomainEvent
 {

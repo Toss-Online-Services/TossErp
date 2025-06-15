@@ -1,4 +1,4 @@
-﻿namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
+﻿namespace POS.Domain.AggregatesModel.SaleAggregate;
 
 public enum SaleStatus
 {

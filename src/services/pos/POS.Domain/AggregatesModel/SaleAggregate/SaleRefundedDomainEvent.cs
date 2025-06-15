@@ -1,7 +1,6 @@
-using TossErp.POS.Domain.AggregatesModel.SaleAggregate;
-using TossErp.POS.Domain.SeedWork;
+﻿using POS.Domain.SeedWork;
 
-namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate
+namespace POS.Domain.AggregatesModel.SaleAggregate
 {
     public class SaleRefundedDomainEvent : DomainEvent
     {

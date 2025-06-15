@@ -1,50 +1,47 @@
-﻿namespace TossErp.POS.Infrastructure.EntityConfigurations;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using POS.Domain.AggregatesModel.StaffAggregate;
 
-class StaffEntityTypeConfiguration
-    : IEntityTypeConfiguration<Staff>
+namespace TossErp.POS.Infrastructure.EntityConfigurations;
+
+public class StaffEntityTypeConfiguration : IEntityTypeConfiguration<Staff>
 {
-    public void Configure(EntityTypeBuilder<Staff> staffConfiguration)
+    public void Configure(EntityTypeBuilder<Staff> builder)
     {
-        staffConfiguration.ToTable("staff", "POS");
+        builder.ToTable("staff", "POS");
 
-        staffConfiguration.Ignore(s => s.DomainEvents);
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).HasConversion<string>();
 
-        staffConfiguration.Property(s => s.Id)
-            .HasMaxLength(36)
-            .IsRequired();
+        builder.Property(s => s.StoreId).HasConversion<string>().IsRequired();
 
-        staffConfiguration.Property(s => s.Code)
-            .HasMaxLength(50)
-            .IsRequired();
+        builder.Property(s => s.Name).HasMaxLength(200).IsRequired();
+        builder.Property(s => s.Email).HasMaxLength(100).IsRequired();
+        builder.Property(s => s.Phone).HasMaxLength(20).IsRequired();
+        builder.Property(s => s.Position).HasMaxLength(100).IsRequired();
+        builder.Property(s => s.Notes).HasMaxLength(500);
 
-        staffConfiguration.Property(s => s.Name)
-            .HasMaxLength(200)
-            .IsRequired();
+        builder.Property(s => s.IsActive).IsRequired();
+        builder.Property(s => s.IsSynced).IsRequired();
 
-        staffConfiguration.Property(s => s.Email)
-            .HasMaxLength(200)
-            .IsRequired();
+        builder.HasIndex(s => s.StoreId);
+        builder.HasIndex(s => s.Email).IsUnique();
+        builder.HasIndex(s => s.Phone).IsUnique();
+        builder.HasIndex(s => s.IsActive);
+        builder.HasIndex(s => s.IsSynced);
 
-        staffConfiguration.Property(s => s.Phone)
-            .HasMaxLength(20);
+        builder.OwnsOne(s => s.Address, a =>
+        {
+            a.Property(addr => addr.Street).HasMaxLength(200).IsRequired();
+            a.Property(addr => addr.City).HasMaxLength(100).IsRequired();
+            a.Property(addr => addr.State).HasMaxLength(100).IsRequired();
+            a.Property(addr => addr.Country).HasMaxLength(100).IsRequired();
+            a.Property(addr => addr.ZipCode).HasMaxLength(20).IsRequired();
+        });
 
-        staffConfiguration.Property(s => s.StoreId)
-            .HasMaxLength(36)
-            .IsRequired();
-
-        staffConfiguration.Property(s => s.Role)
-            .HasMaxLength(50)
-            .IsRequired();
-
-        staffConfiguration.HasIndex(s => new { s.StoreId, s.Code })
-            .IsUnique();
-
-        staffConfiguration.HasIndex(s => s.Email)
-            .IsUnique();
-
-        staffConfiguration.HasIndex(s => s.Phone)
-            .IsUnique();
-
-        staffConfiguration.HasIndex(s => s.StoreId);
+        builder.HasOne(s => s.Store)
+            .WithMany()
+            .HasForeignKey(s => s.StoreId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 } 

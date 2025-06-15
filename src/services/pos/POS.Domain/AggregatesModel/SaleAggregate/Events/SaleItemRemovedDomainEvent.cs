@@ -1,6 +1,6 @@
-using TossErp.POS.Domain.SeedWork;
+﻿using POS.Domain.SeedWork;
 
-namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate.Events
+namespace POS.Domain.AggregatesModel.SaleAggregate.Events
 {
     public class SaleItemRemovedDomainEvent : DomainEvent
     {

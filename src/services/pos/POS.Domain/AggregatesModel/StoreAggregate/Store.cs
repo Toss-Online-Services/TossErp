@@ -1,7 +1,6 @@
-﻿using System;
-using TossErp.POS.Domain.SeedWork;
+﻿using POS.Domain.SeedWork;
 
-namespace TossErp.POS.Domain.AggregatesModel.StoreAggregate;
+namespace POS.Domain.AggregatesModel.StoreAggregate;
 
 public class Store : AggregateRoot
 {

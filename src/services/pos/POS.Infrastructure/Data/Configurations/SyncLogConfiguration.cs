@@ -1,6 +1,6 @@
-﻿using TossErp.POS.Domain.AggregatesModel.SyncLogAggregate;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using POS.Domain.AggregatesModel.SyncLogAggregate;
 
 namespace TossErp.POS.Infrastructure.Data.Configurations;
 
