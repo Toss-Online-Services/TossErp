@@ -51,21 +51,25 @@ public class POSContext : DbContext, IUnitOfWork
         });
     }
 
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
     {
         await SaveChangesAsync(cancellationToken);
         return true;
     }
 
-    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
         if (_currentTransaction != null)
         {
-            return _currentTransaction;
+            return;
         }
 
         _currentTransaction = await Database.BeginTransactionAsync(cancellationToken);
-        return _currentTransaction;
     }
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
@@ -111,5 +115,11 @@ public class POSContext : DbContext, IUnitOfWork
                 _currentTransaction = null;
             }
         }
+    }
+
+    public override void Dispose()
+    {
+        _currentTransaction?.Dispose();
+        base.Dispose();
     }
 } 
