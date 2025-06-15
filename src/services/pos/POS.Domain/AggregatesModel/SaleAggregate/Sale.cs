@@ -1,9 +1,11 @@
 ﻿#nullable enable
 using POS.Domain.AggregatesModel.StaffAggregate;
+using POS.Domain.Common;
 using POS.Domain.SeedWork;
 using POS.Domain.AggregatesModel.BuyerAggregate;
 using POS.Domain.AggregatesModel.SaleAggregate.Events;
 using POS.Domain.Exceptions;
+using POS.Domain.AggregatesModel.StoreAggregate;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate;
 
@@ -13,6 +15,8 @@ public class Sale : AggregateRoot
     private readonly List<Payment> _payments = new();
     private readonly List<SaleDiscount> _discounts = new();
 
+    public Guid StoreId { get; private set; }
+    public Store Store { get; private set; } = null!;
     public string InvoiceNumber { get; private set; }
     public DateTime SaleDate { get; private set; }
     public decimal SubTotal { get; private set; }
@@ -35,6 +39,8 @@ public class Sale : AggregateRoot
     public Address? Address { get; private set; }
     public Guid? CardTypeId { get; private set; }
     public CardType? CardType { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
 
     public IReadOnlyCollection<SaleItem> Items => _items.AsReadOnly();
     public IReadOnlyCollection<Payment> Payments => _payments.AsReadOnly();
@@ -47,11 +53,14 @@ public class Sale : AggregateRoot
         _items = new List<SaleItem>();
         _payments = new List<Payment>();
         _discounts = new List<SaleDiscount>();
+        CreatedAt = DateTime.UtcNow;
     }
 
-    public Sale(string invoiceNumber, DateTime saleDate, Guid? staffId = null, Guid? buyerId = null, 
+    public Sale(Guid storeId, string invoiceNumber, DateTime saleDate, Guid? staffId = null, Guid? buyerId = null, 
         Guid? paymentMethodId = null, Guid? addressId = null, Guid? cardTypeId = null, string? notes = null)
     {
+        if (storeId == Guid.Empty)
+            throw new DomainException("Store ID cannot be empty");
         if (string.IsNullOrWhiteSpace(invoiceNumber))
             throw new DomainException("Invoice number cannot be empty");
 
@@ -59,6 +68,7 @@ public class Sale : AggregateRoot
         _payments = new List<Payment>();
         _discounts = new List<SaleDiscount>();
 
+        StoreId = storeId;
         InvoiceNumber = invoiceNumber;
         SaleDate = saleDate;
         StaffId = staffId;
@@ -70,6 +80,7 @@ public class Sale : AggregateRoot
         Status = SaleStatus.Pending;
         IsSynced = false;
         SyncedAt = null;
+        CreatedAt = DateTime.UtcNow;
     }
 
     public void AddItem(Guid productId, string productName, decimal unitPrice, int quantity, decimal discount = 0)
@@ -91,12 +102,12 @@ public class Sale : AggregateRoot
         }
     }
 
-    public void AddPayment(decimal amount, string? reference = null)
+    public void AddPayment(decimal amount, PaymentType type, string? reference = null, string? cardLast4 = null, string? cardType = null)
     {
         if (amount <= 0)
             throw new DomainException("Payment amount must be greater than zero");
 
-        var payment = new Payment(Id, amount, reference);
+        var payment = new Payment(Id, amount, type, reference, cardLast4, cardType);
         _payments.Add(payment);
         AmountPaid += amount;
         Balance = TotalAmount - AmountPaid;
@@ -108,9 +119,9 @@ public class Sale : AggregateRoot
         }
     }
 
-    public void AddDiscount(string name, decimal amount, DiscountType type)
+    public void AddDiscount(string name, decimal amount, DiscountType type, string? reason = null, Guid? staffId = null)
     {
-        var discount = new SaleDiscount(Id, name, amount, type);
+        var discount = new SaleDiscount(Id, name, amount, type, reason, staffId);
         _discounts.Add(discount);
         CalculateTotalAmount();
         AddDomainEvent(new SaleDiscountAddedDomainEvent(this, discount));
@@ -122,19 +133,21 @@ public class Sale : AggregateRoot
             throw new DomainException("Customer name cannot be empty");
 
         BuyerId = customerId;
-        var address = new Address("N/A", "N/A", "N/A", "N/A", "N/A"); // Create address with placeholder values
-        Buyer = new Buyer(customerId, name, email ?? string.Empty, phone ?? string.Empty, address);
+        // We don't create a new Buyer here since it should be loaded from the repository
+        // The Buyer entity will be populated by EF Core when the sale is loaded
     }
 
     public void AddNotes(string? notes)
     {
         Notes = notes;
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void MarkAsOffline()
     {
         IsSynced = false;
         SyncedAt = null;
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void MarkAsSynced()
@@ -144,6 +157,7 @@ public class Sale : AggregateRoot
 
         IsSynced = true;
         SyncedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
         AddDomainEvent(new SaleSyncedDomainEvent(this, SyncedAt.Value));
     }
 
@@ -159,6 +173,7 @@ public class Sale : AggregateRoot
             throw new DomainException("Cannot complete sale without full payment");
 
         Status = SaleStatus.Completed;
+        UpdatedAt = DateTime.UtcNow;
         AddDomainEvent(new SaleCompletedDomainEvent(this));
     }
 
@@ -168,6 +183,7 @@ public class Sale : AggregateRoot
             throw new DomainException("Only pending sales can be voided");
 
         Status = SaleStatus.Voided;
+        UpdatedAt = DateTime.UtcNow;
         AddDomainEvent(new SaleVoidedDomainEvent(this));
     }
 
@@ -183,6 +199,7 @@ public class Sale : AggregateRoot
             throw new DomainException("Refund amount cannot exceed total amount");
 
         Status = SaleStatus.Refunded;
+        UpdatedAt = DateTime.UtcNow;
         AddDomainEvent(new SaleRefundedDomainEvent(this));
     }
 
@@ -200,6 +217,7 @@ public class Sale : AggregateRoot
         TaxAmount = (SubTotal - DiscountAmount) * 0.1m; // Assuming 10% tax
         TotalAmount = SubTotal - DiscountAmount + TaxAmount;
         Balance = TotalAmount - AmountPaid;
+        UpdatedAt = DateTime.UtcNow;
     }
-} 
+}
 

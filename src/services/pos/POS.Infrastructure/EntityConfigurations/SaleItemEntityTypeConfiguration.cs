@@ -2,73 +2,45 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using POS.Domain.AggregatesModel.SaleAggregate;
 
-namespace TossErp.POS.Infrastructure.EntityConfigurations;
+namespace POS.Infrastructure.EntityConfigurations;
 
 public class SaleItemEntityTypeConfiguration : IEntityTypeConfiguration<SaleItem>
 {
     public void Configure(EntityTypeBuilder<SaleItem> builder)
     {
-        builder.ToTable("sale_items", "POS");
+        builder.ToTable("SaleItems", "POS");
 
-        builder.HasKey(si => si.Id);
-        builder.Property(si => si.Id)
-            .HasConversion<string>()
-            .IsRequired();
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).IsRequired();
 
-        builder.Property(si => si.SaleId)
-            .HasConversion<string>()
-            .IsRequired();
+        builder.Property(x => x.SaleId).IsRequired();
+        builder.Property(x => x.ProductId).IsRequired();
+        builder.Property(x => x.ProductName).IsRequired().HasMaxLength(200);
+        builder.Property(x => x.Category).HasMaxLength(100);
+        builder.Property(x => x.Barcode).HasMaxLength(50);
+        builder.Property(x => x.Variant).HasMaxLength(100);
+        builder.Property(x => x.Quantity).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.UnitPrice).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.TaxRate).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.SubTotal).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.TaxAmount).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.TotalAmount).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.Discount).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.CreatedAt).IsRequired();
+        builder.Property(x => x.UpdatedAt);
 
-        builder.Property(si => si.ProductId)
-            .HasConversion<string>()
-            .IsRequired();
+        builder.HasIndex(x => x.SaleId);
+        builder.HasIndex(x => x.ProductId);
+        builder.HasIndex(x => x.Barcode);
 
-        builder.Property(si => si.ProductName)
-            .HasMaxLength(200)
-            .IsRequired();
-
-        builder.Property(si => si.Quantity)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(si => si.UnitPrice)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(si => si.TaxRate)
-            .HasPrecision(5, 2)
-            .IsRequired();
-
-        builder.Property(si => si.SubTotal)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(si => si.TaxAmount)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(si => si.TotalAmount)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(si => si.Discount)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(si => si.CreatedAt)
-            .IsRequired();
-
-        builder.Property(si => si.UpdatedAt)
-            .IsRequired();
-
-        // Indexes
-        builder.HasIndex(si => si.SaleId);
-        builder.HasIndex(si => si.ProductId);
-
-        // Relationships
-        builder.HasOne<Sale>()
-            .WithMany(s => s.Items)
-            .HasForeignKey(si => si.SaleId)
+        builder.HasOne(x => x.Sale)
+            .WithMany(x => x.Items)
+            .HasForeignKey(x => x.SaleId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(x => x.Product)
+            .WithMany()
+            .HasForeignKey(x => x.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 } 

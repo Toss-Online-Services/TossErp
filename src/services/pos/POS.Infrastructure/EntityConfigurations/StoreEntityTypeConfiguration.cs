@@ -2,35 +2,36 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using POS.Domain.AggregatesModel.StoreAggregate;
 
-namespace TossErp.POS.Infrastructure.EntityConfigurations;
+namespace POS.Infrastructure.EntityConfigurations;
 
 public class StoreEntityTypeConfiguration : IEntityTypeConfiguration<Store>
 {
     public void Configure(EntityTypeBuilder<Store> builder)
     {
-        builder.ToTable("stores", "POS");
+        builder.ToTable("Stores", "POS");
 
-        builder.HasKey(s => s.Id);
-        builder.Property(s => s.Id).HasConversion<string>();
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).IsRequired();
 
-        builder.Property(s => s.Name).HasMaxLength(200).IsRequired();
-        builder.Property(s => s.Code).HasMaxLength(50).IsRequired();
-        builder.Property(s => s.Email).HasMaxLength(100).IsRequired();
-        builder.Property(s => s.Phone).HasMaxLength(20).IsRequired();
-        builder.Property(s => s.TaxNumber).HasMaxLength(50);
-        builder.Property(s => s.Notes).HasMaxLength(500);
+        builder.Property(x => x.Name).IsRequired().HasMaxLength(200);
+        builder.Property(x => x.Description).HasMaxLength(1000);
+        builder.Property(x => x.Code).HasMaxLength(50);
+        builder.Property(x => x.TaxId).HasMaxLength(50);
+        builder.Property(x => x.Notes).HasMaxLength(500);
+        builder.Property(x => x.Phone).HasMaxLength(20);
+        builder.Property(x => x.Email).HasMaxLength(100);
+        builder.Property(x => x.Website).HasMaxLength(200);
+        builder.Property(x => x.Logo).HasMaxLength(500);
+        builder.Property(x => x.Currency).HasMaxLength(10);
+        builder.Property(x => x.TimeZone).HasMaxLength(50);
+        builder.Property(x => x.Status).HasMaxLength(50).IsRequired();
+        builder.Property(x => x.IsActive).IsRequired();
+        builder.Property(x => x.IsSynced).IsRequired();
+        builder.Property(x => x.SyncedAt);
+        builder.Property(x => x.CreatedAt).IsRequired();
+        builder.Property(x => x.UpdatedAt);
 
-        builder.Property(s => s.IsActive).IsRequired();
-        builder.Property(s => s.IsSynced).IsRequired();
-
-        builder.HasIndex(s => s.Code).IsUnique();
-        builder.HasIndex(s => s.Email).IsUnique();
-        builder.HasIndex(s => s.Phone).IsUnique();
-        builder.HasIndex(s => s.TaxNumber).IsUnique();
-        builder.HasIndex(s => s.IsActive);
-        builder.HasIndex(s => s.IsSynced);
-
-        builder.OwnsOne(s => s.Address, a =>
+        builder.OwnsOne(x => x.Address, a =>
         {
             a.Property(addr => addr.Street).HasMaxLength(200).IsRequired();
             a.Property(addr => addr.City).HasMaxLength(100).IsRequired();
@@ -38,5 +39,13 @@ public class StoreEntityTypeConfiguration : IEntityTypeConfiguration<Store>
             a.Property(addr => addr.Country).HasMaxLength(100).IsRequired();
             a.Property(addr => addr.ZipCode).HasMaxLength(20).IsRequired();
         });
+
+        builder.HasIndex(x => x.Code).IsUnique();
+        builder.HasIndex(x => x.TaxId).IsUnique();
+        builder.HasIndex(x => x.Email).IsUnique();
+        builder.HasIndex(x => x.Phone).IsUnique();
+        builder.HasIndex(x => x.Status);
+        builder.HasIndex(x => x.IsActive);
+        builder.HasIndex(x => x.IsSynced);
     }
 } 

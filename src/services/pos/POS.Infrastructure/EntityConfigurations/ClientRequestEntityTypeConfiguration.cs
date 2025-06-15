@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using POS.Domain.AggregatesModel.SyncAggregate;
+﻿using POS.Domain.AggregatesModel.SyncAggregate;
 
 namespace TossErp.POS.Infrastructure.EntityConfigurations;
 
@@ -14,12 +12,10 @@ public class ClientRequestEntityTypeConfiguration : IEntityTypeConfiguration<Cli
         builder.Property(c => c.Id).HasConversion<string>();
 
         builder.Property(c => c.StoreId).HasConversion<string>().IsRequired();
-
         builder.Property(c => c.RequestType).HasMaxLength(50).IsRequired();
         builder.Property(c => c.RequestData).HasMaxLength(2000).IsRequired();
         builder.Property(c => c.Status).HasMaxLength(20).IsRequired();
         builder.Property(c => c.ErrorMessage).HasMaxLength(500);
-
         builder.Property(c => c.CreatedAt).IsRequired();
         builder.Property(c => c.UpdatedAt).IsRequired();
 

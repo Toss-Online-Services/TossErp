@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
 using POS.Domain.AggregatesModel.StoreAggregate;
 using POS.Domain.Repositories;
 using TossErp.POS.Infrastructure.Data;
@@ -20,7 +14,7 @@ public class StoreRepository : IStoreRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<Store> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Store?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Stores.FindAsync(new object[] { id }, cancellationToken);
     }

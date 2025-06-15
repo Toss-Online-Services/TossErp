@@ -1,32 +1,25 @@
-﻿using POS.Domain.AggregatesModel.BuyerAggregate;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using POS.Domain.AggregatesModel.BuyerAggregate;
 
-namespace TossErp.POS.Infrastructure.EntityConfigurations;
+namespace POS.Infrastructure.EntityConfigurations;
 
 public class CardTypeEntityTypeConfiguration : IEntityTypeConfiguration<CardType>
 {
     public void Configure(EntityTypeBuilder<CardType> builder)
     {
-        builder.ToTable("card_types", "POS");
+        builder.ToTable("CardTypes", POSContext.DEFAULT_SCHEMA);
 
-        builder.HasKey(ct => ct.Id);
-        builder.Property(ct => ct.Id)
-            .HasConversion<string>()
-            .IsRequired();
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).IsRequired();
 
-        builder.Property(ct => ct.Name)
-            .HasMaxLength(50)
-            .IsRequired();
+        builder.Property(x => x.Name).IsRequired().HasMaxLength(100);
+        builder.Property(x => x.Icon).HasMaxLength(500);
+        builder.Property(x => x.IsActive).IsRequired();
+        builder.Property(x => x.CreatedAt).IsRequired();
+        builder.Property(x => x.UpdatedAt);
 
-        builder.Property(ct => ct.Description)
-            .HasMaxLength(200);
-
-        builder.Property(ct => ct.CreatedAt)
-            .IsRequired();
-
-        builder.Property(ct => ct.UpdatedAt)
-            .IsRequired();
-
-        // Indexes
-        builder.HasIndex(ct => ct.Name).IsUnique();
+        builder.HasIndex(x => x.Name).IsUnique();
+        builder.HasIndex(x => x.IsActive);
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
 using POS.Domain.AggregatesModel.StaffAggregate;
 using POS.Domain.Common;
 using POS.Domain.Repositories;
@@ -23,7 +17,7 @@ public class StaffRepository : IStaffRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<Staff> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Staff?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Staff.FindAsync(new object[] { id }, cancellationToken);
     }

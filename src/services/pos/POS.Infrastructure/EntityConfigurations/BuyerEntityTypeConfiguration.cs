@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using POS.Domain.AggregatesModel.BuyerAggregate;
+﻿using POS.Domain.AggregatesModel.BuyerAggregate;
 
 namespace TossErp.POS.Infrastructure.EntityConfigurations;
 
@@ -18,16 +16,18 @@ public class BuyerEntityTypeConfiguration : IEntityTypeConfiguration<Buyer>
         builder.Property(b => b.Name).HasMaxLength(200).IsRequired();
         builder.Property(b => b.Email).HasMaxLength(100).IsRequired();
         builder.Property(b => b.Phone).HasMaxLength(20).IsRequired();
+        builder.Property(b => b.TaxId).HasMaxLength(50);
         builder.Property(b => b.Notes).HasMaxLength(500);
+        builder.Property(b => b.Status).HasMaxLength(50).IsRequired();
 
-        builder.Property(b => b.IsActive).IsRequired();
-        builder.Property(b => b.IsSynced).IsRequired();
+        builder.Property(b => b.CreatedAt).IsRequired();
+        builder.Property(b => b.UpdatedAt);
 
         builder.HasIndex(b => b.StoreId);
         builder.HasIndex(b => b.Email).IsUnique();
         builder.HasIndex(b => b.Phone).IsUnique();
-        builder.HasIndex(b => b.IsActive);
-        builder.HasIndex(b => b.IsSynced);
+        builder.HasIndex(b => b.TaxId).IsUnique();
+        builder.HasIndex(b => b.Status);
 
         builder.OwnsOne(b => b.Address, a =>
         {

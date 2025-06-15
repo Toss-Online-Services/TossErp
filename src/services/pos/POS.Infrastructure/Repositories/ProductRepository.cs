@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
 using POS.Domain.AggregatesModel.ProductAggregate;
 using POS.Domain.Repositories;
 using TossErp.POS.Infrastructure.Data;
@@ -20,7 +14,7 @@ public class ProductRepository : IProductRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<Product> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Products.FindAsync(new object[] { id }, cancellationToken);
     }
@@ -46,9 +40,10 @@ public class ProductRepository : IProductRepository
         return await _context.Products.FirstOrDefaultAsync(p => p.Code == code, cancellationToken);
     }
 
-    public async Task<Product> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<Product?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        return await _context.Products.FirstOrDefaultAsync(p => p.Name == name, cancellationToken);
+        return await _context.Products
+            .FirstOrDefaultAsync(p => p.Name == name, cancellationToken);
     }
 
     public async Task<IEnumerable<Product>> GetByCategoryAsync(string category, CancellationToken cancellationToken = default)
@@ -69,18 +64,6 @@ public class ProductRepository : IProductRepository
     public async Task<bool> ExistsAsync(string id)
     {
         return await _context.Products.AnyAsync(p => p.Id == id);
-    }
-
-    public async Task<Product?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
-    {
-        return await _context.Products
-            .FirstOrDefaultAsync(p => p.Code == code, cancellationToken);
-    }
-
-    public async Task<Product?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-    {
-        return await _context.Products
-            .FirstOrDefaultAsync(p => p.Name == name, cancellationToken);
     }
 
     public async Task<IEnumerable<Product>> GetByCategoryAsync(string category)

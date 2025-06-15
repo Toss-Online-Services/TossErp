@@ -1,12 +1,18 @@
 ﻿using POS.Domain.SeedWork;
+using POS.Domain.AggregatesModel.ProductAggregate;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate;
 
 public class SaleItem : Entity
 {
     public Guid SaleId { get; private set; }
+    public Sale Sale { get; private set; } = null!;
     public Guid ProductId { get; private set; }
+    public Product Product { get; private set; } = null!;
     public string ProductName { get; private set; }
+    public string? Category { get; private set; }
+    public string? Barcode { get; private set; }
+    public string? Variant { get; private set; }
     public decimal Quantity { get; private set; }
     public decimal UnitPrice { get; private set; }
     public decimal TaxRate { get; private set; }
@@ -23,7 +29,8 @@ public class SaleItem : Entity
         CreatedAt = DateTime.UtcNow;
     }
 
-    public SaleItem(Guid productId, string productName, decimal quantity, decimal unitPrice, decimal taxRate)
+    public SaleItem(Guid productId, string productName, decimal quantity, decimal unitPrice, decimal taxRate, 
+        string? category = null, string? barcode = null, string? variant = null)
     {
         if (productId == Guid.Empty)
             throw new DomainException("Product ID cannot be empty");
@@ -38,6 +45,9 @@ public class SaleItem : Entity
 
         ProductId = productId;
         ProductName = productName;
+        Category = category;
+        Barcode = barcode;
+        Variant = variant;
         Quantity = quantity;
         UnitPrice = unitPrice;
         TaxRate = taxRate;
@@ -75,11 +85,23 @@ public class SaleItem : Entity
         UpdatedAt = DateTime.UtcNow;
     }
 
+    public void ApplyDiscount(decimal discountAmount)
+    {
+        if (discountAmount < 0)
+            throw new DomainException("Discount amount cannot be negative");
+        if (discountAmount > SubTotal)
+            throw new DomainException("Discount amount cannot be greater than subtotal");
+
+        Discount = discountAmount;
+        CalculateTotals();
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     private void CalculateTotals()
     {
         SubTotal = Quantity * UnitPrice;
-        TaxAmount = SubTotal * (TaxRate / 100);
-        TotalAmount = SubTotal + TaxAmount;
+        TaxAmount = SubTotal * TaxRate;
+        TotalAmount = SubTotal + TaxAmount - Discount;
     }
 
     public decimal GetTotalPrice()

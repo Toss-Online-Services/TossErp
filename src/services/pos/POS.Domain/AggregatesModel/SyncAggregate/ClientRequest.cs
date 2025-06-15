@@ -1,7 +1,7 @@
 ﻿using POS.Domain.SeedWork;
 namespace POS.Domain.AggregatesModel.SyncAggregate;
 
-public class ClientRequest : Entity
+public class ClientRequest : AggregateRoot
 {
     public Guid StoreId { get; private set; }
     public string RequestType { get; private set; }

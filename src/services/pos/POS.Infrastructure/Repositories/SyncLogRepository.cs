@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
 using POS.Domain.AggregatesModel.SyncAggregate;
 using POS.Domain.Repositories;
 using TossErp.POS.Infrastructure.Data;
@@ -20,7 +14,7 @@ public class SyncLogRepository : ISyncLogRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<SyncLog> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<SyncLog?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.SyncLogs.FindAsync(new object[] { id }, cancellationToken);
     }
@@ -35,10 +29,10 @@ public class SyncLogRepository : ISyncLogRepository
         return await _context.SyncLogs.Where(predicate).ToListAsync(cancellationToken);
     }
 
-    public async Task<SyncLog> AddAsync(SyncLog log, CancellationToken cancellationToken = default)
+    public async Task<SyncLog> AddAsync(SyncLog syncLog, CancellationToken cancellationToken = default)
     {
-        await _context.SyncLogs.AddAsync(log, cancellationToken);
-        return log;
+        await _context.SyncLogs.AddAsync(syncLog, cancellationToken);
+        return syncLog;
     }
 
     public void Update(SyncLog syncLog)

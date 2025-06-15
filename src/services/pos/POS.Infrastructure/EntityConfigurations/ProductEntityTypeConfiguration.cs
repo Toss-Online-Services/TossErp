@@ -1,83 +1,51 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using POS.Domain.AggregatesModel.ProductAggregate;
+using POS.Domain.AggregatesModel.StoreAggregate;
 
-namespace TossErp.POS.Infrastructure.EntityConfigurations;
+namespace POS.Infrastructure.EntityConfigurations;
 
 public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
 {
     public void Configure(EntityTypeBuilder<Product> builder)
     {
-        builder.ToTable("products", "POS");
+        builder.ToTable("Products", POSContext.DEFAULT_SCHEMA);
 
-        builder.HasKey(p => p.Id);
-        builder.Property(p => p.Id)
-            .HasConversion<string>()
-            .IsRequired();
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).IsRequired();
 
-        builder.Property(p => p.StoreId)
-            .HasConversion<string>()
-            .IsRequired();
+        builder.Property(x => x.StoreId).IsRequired();
+        builder.Property(x => x.Name).IsRequired().HasMaxLength(200);
+        builder.Property(x => x.Description).HasMaxLength(1000);
+        builder.Property(x => x.Barcode).HasMaxLength(50);
+        builder.Property(x => x.SKU).HasMaxLength(50);
+        builder.Property(x => x.Category).HasMaxLength(100);
+        builder.Property(x => x.Price).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.Cost).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.TaxRate).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.Stock).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.MinStock).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.MaxStock).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.Unit).HasMaxLength(50);
+        builder.Property(x => x.Brand).HasMaxLength(100);
+        builder.Property(x => x.Supplier).HasMaxLength(200);
+        builder.Property(x => x.ImageUrl).HasMaxLength(500);
+        builder.Property(x => x.IsActive).IsRequired();
+        builder.Property(x => x.IsSynced).IsRequired();
+        builder.Property(x => x.SyncedAt);
+        builder.Property(x => x.CreatedAt).IsRequired();
+        builder.Property(x => x.UpdatedAt);
 
-        builder.Property(p => p.Code)
-            .HasMaxLength(50)
-            .IsRequired();
+        builder.HasIndex(x => x.StoreId);
+        builder.HasIndex(x => x.Barcode).IsUnique();
+        builder.HasIndex(x => x.SKU).IsUnique();
+        builder.HasIndex(x => x.Category);
+        builder.HasIndex(x => x.IsActive);
+        builder.HasIndex(x => x.IsSynced);
 
-        builder.Property(p => p.Name)
-            .HasMaxLength(200)
-            .IsRequired();
-
-        builder.Property(p => p.Description)
-            .HasMaxLength(500);
-
-        builder.Property(p => p.SKU)
-            .HasMaxLength(50)
-            .IsRequired();
-
-        builder.Property(p => p.Barcode)
-            .HasMaxLength(50);
-
-        builder.Property(p => p.UnitPrice)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(p => p.TaxRate)
-            .HasPrecision(5, 2)
-            .IsRequired();
-
-        builder.Property(p => p.StockQuantity)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(p => p.MinStockLevel)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(p => p.MaxStockLevel)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(p => p.Status)
-            .HasMaxLength(20)
-            .IsRequired();
-
-        builder.Property(p => p.CreatedAt)
-            .IsRequired();
-
-        builder.Property(p => p.UpdatedAt)
-            .IsRequired();
-
-        // Indexes
-        builder.HasIndex(p => p.StoreId);
-        builder.HasIndex(p => new { p.StoreId, p.Code }).IsUnique();
-        builder.HasIndex(p => new { p.StoreId, p.SKU }).IsUnique();
-        builder.HasIndex(p => p.Barcode);
-        builder.HasIndex(p => p.Status);
-
-        // Relationships
-        builder.HasOne<Store>()
+        builder.HasOne(x => x.Store)
             .WithMany()
-            .HasForeignKey(p => p.StoreId)
+            .HasForeignKey(x => x.StoreId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 } 

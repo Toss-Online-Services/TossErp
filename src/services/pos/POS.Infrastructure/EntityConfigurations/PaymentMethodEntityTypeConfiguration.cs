@@ -2,37 +2,43 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using POS.Domain.AggregatesModel.BuyerAggregate;
 
-
-namespace TossErp.POS.Infrastructure.EntityConfigurations;
+namespace POS.Infrastructure.EntityConfigurations;
 
 public class PaymentMethodEntityTypeConfiguration : IEntityTypeConfiguration<PaymentMethod>
 {
     public void Configure(EntityTypeBuilder<PaymentMethod> builder)
     {
-        builder.ToTable("payment_methods", "POS");
+        builder.ToTable("PaymentMethods", POSContext.DEFAULT_SCHEMA);
 
-        builder.HasKey(p => p.Id);
-        builder.Property(p => p.Id).HasConversion<string>();
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).IsRequired();
 
-        builder.Property(p => p.StoreId).HasConversion<string>().IsRequired();
+        builder.Property(x => x.BuyerId).IsRequired();
+        builder.Property(x => x.CardNumber).IsRequired().HasMaxLength(50);
+        builder.Property(x => x.CardHolderName).IsRequired().HasMaxLength(200);
+        builder.Property(x => x.ExpirationDate).IsRequired().HasMaxLength(10);
+        builder.Property(x => x.SecurityCode).HasMaxLength(10);
+        builder.Property(x => x.Alias).HasMaxLength(100);
+        builder.Property(x => x.CardTypeId).IsRequired();
+        builder.Property(x => x.IsDefault).IsRequired();
+        builder.Property(x => x.IsActive).IsRequired();
+        builder.Property(x => x.CreatedAt).IsRequired();
+        builder.Property(x => x.UpdatedAt);
 
-        builder.Property(p => p.Name).HasMaxLength(100).IsRequired();
-        builder.Property(p => p.Description).HasMaxLength(500);
-        builder.Property(p => p.Type).HasMaxLength(50).IsRequired();
-        builder.Property(p => p.Notes).HasMaxLength(500);
+        builder.HasIndex(x => x.BuyerId);
+        builder.HasIndex(x => x.CardNumber);
+        builder.HasIndex(x => x.CardTypeId);
+        builder.HasIndex(x => x.IsDefault);
+        builder.HasIndex(x => x.IsActive);
 
-        builder.Property(p => p.IsActive).IsRequired();
-        builder.Property(p => p.IsSynced).IsRequired();
+        builder.HasOne(x => x.Buyer)
+            .WithMany(x => x.PaymentMethods)
+            .HasForeignKey(x => x.BuyerId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(p => p.StoreId);
-        builder.HasIndex(p => p.Name).IsUnique();
-        builder.HasIndex(p => p.Type);
-        builder.HasIndex(p => p.IsActive);
-        builder.HasIndex(p => p.IsSynced);
-
-        builder.HasOne(p => p.Store)
+        builder.HasOne(x => x.CardType)
             .WithMany()
-            .HasForeignKey(p => p.StoreId)
+            .HasForeignKey(x => x.CardTypeId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
 using POS.Domain.AggregatesModel.SaleAggregate;
 using POS.Domain.Repositories;
 using TossErp.POS.Infrastructure.Data;
@@ -20,7 +14,7 @@ public class SaleDiscountRepository : ISaleDiscountRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<SaleDiscount> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<SaleDiscount?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.SaleDiscounts.FindAsync(new object[] { id }, cancellationToken);
     }
@@ -35,10 +29,10 @@ public class SaleDiscountRepository : ISaleDiscountRepository
         return await _context.SaleDiscounts.Where(predicate).ToListAsync(cancellationToken);
     }
 
-    public async Task<SaleDiscount> AddAsync(SaleDiscount discount, CancellationToken cancellationToken = default)
+    public async Task<SaleDiscount> AddAsync(SaleDiscount saleDiscount, CancellationToken cancellationToken = default)
     {
-        await _context.SaleDiscounts.AddAsync(discount, cancellationToken);
-        return discount;
+        await _context.SaleDiscounts.AddAsync(saleDiscount, cancellationToken);
+        return saleDiscount;
     }
 
     public void Update(SaleDiscount saleDiscount)

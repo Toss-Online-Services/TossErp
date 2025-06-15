@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using POS.Domain.AggregatesModel.StaffAggregate;
+﻿using POS.Domain.AggregatesModel.StaffAggregate;
 using POS.Domain.AggregatesModel.StoreAggregate;
 using POS.Domain.AggregatesModel.SaleAggregate;
 using POS.Domain.AggregatesModel.ProductAggregate;
@@ -15,6 +12,8 @@ namespace TossErp.POS.Infrastructure.Data;
 public class POSContext : DbContext, IUnitOfWork
 {
     private IDbContextTransaction? _currentTransaction;
+
+    public const string DEFAULT_SCHEMA = "POS";
 
     public POSContext(DbContextOptions<POSContext> options) : base(options)
     {

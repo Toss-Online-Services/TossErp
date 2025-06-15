@@ -2,36 +2,38 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using POS.Domain.AggregatesModel.SyncAggregate;
 
-namespace TossErp.POS.Infrastructure.EntityConfigurations;
+namespace POS.Infrastructure.EntityConfigurations;
 
 public class SyncLogEntityTypeConfiguration : IEntityTypeConfiguration<SyncLog>
 {
     public void Configure(EntityTypeBuilder<SyncLog> builder)
     {
-        builder.ToTable("sync_logs", "POS");
+        builder.ToTable("SyncLogs", POSContext.DEFAULT_SCHEMA);
 
-        builder.HasKey(s => s.Id);
-        builder.Property(s => s.Id).HasConversion<string>();
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).IsRequired();
 
-        builder.Property(s => s.StoreId).HasConversion<string>().IsRequired();
+        builder.Property(x => x.StoreId).IsRequired();
+        builder.Property(x => x.EntityType).IsRequired().HasMaxLength(100);
+        builder.Property(x => x.EntityId).IsRequired().HasMaxLength(50);
+        builder.Property(x => x.Action).IsRequired().HasMaxLength(50);
+        builder.Property(x => x.Status).IsRequired().HasMaxLength(50);
+        builder.Property(x => x.ErrorMessage).HasMaxLength(500);
+        builder.Property(x => x.RetryCount).IsRequired();
+        builder.Property(x => x.LastRetryAt);
+        builder.Property(x => x.CreatedAt).IsRequired();
+        builder.Property(x => x.UpdatedAt);
 
-        builder.Property(s => s.Status).HasMaxLength(20).IsRequired();
-        builder.Property(s => s.Type).HasMaxLength(50).IsRequired();
-        builder.Property(s => s.Message).HasMaxLength(500);
-        builder.Property(s => s.Details).HasMaxLength(2000);
+        builder.HasIndex(x => x.StoreId);
+        builder.HasIndex(x => x.EntityType);
+        builder.HasIndex(x => x.EntityId);
+        builder.HasIndex(x => x.Action);
+        builder.HasIndex(x => x.Status);
+        builder.HasIndex(x => x.CreatedAt);
 
-        builder.Property(s => s.SyncDate).IsRequired();
-        builder.Property(s => s.Success).IsRequired();
-
-        builder.HasIndex(s => s.StoreId);
-        builder.HasIndex(s => s.Status);
-        builder.HasIndex(s => s.Type);
-        builder.HasIndex(s => s.SyncDate);
-        builder.HasIndex(s => s.Success);
-
-        builder.HasOne(s => s.Store)
+        builder.HasOne(x => x.Store)
             .WithMany()
-            .HasForeignKey(s => s.StoreId)
+            .HasForeignKey(x => x.StoreId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 } 

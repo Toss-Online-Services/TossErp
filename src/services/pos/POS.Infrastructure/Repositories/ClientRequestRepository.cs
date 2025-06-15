@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
 using POS.Domain.AggregatesModel.SyncAggregate;
 using POS.Domain.Repositories;
 using TossErp.POS.Infrastructure.Data;
@@ -20,7 +14,7 @@ public class ClientRequestRepository : IClientRequestRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<ClientRequest> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ClientRequest?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.ClientRequests.FindAsync(new object[] { id }, cancellationToken);
     }
@@ -35,10 +29,10 @@ public class ClientRequestRepository : IClientRequestRepository
         return await _context.ClientRequests.Where(predicate).ToListAsync(cancellationToken);
     }
 
-    public async Task<ClientRequest> AddAsync(ClientRequest request, CancellationToken cancellationToken = default)
+    public async Task<ClientRequest> AddAsync(ClientRequest clientRequest, CancellationToken cancellationToken = default)
     {
-        await _context.ClientRequests.AddAsync(request, cancellationToken);
-        return request;
+        await _context.ClientRequests.AddAsync(clientRequest, cancellationToken);
+        return clientRequest;
     }
 
     public void Update(ClientRequest clientRequest)

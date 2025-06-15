@@ -1,4 +1,4 @@
-﻿using eShop.POS.Domain.AggregatesModel.StaffAggregate;
+﻿using POS.Domain.AggregatesModel.StaffAggregate;
 
 namespace eShop.POS.Infrastructure.Data.Configurations;
 

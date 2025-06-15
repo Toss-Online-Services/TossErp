@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using POS.Domain.AggregatesModel.SaleAggregate;
+﻿using POS.Domain.AggregatesModel.SaleAggregate;
 using POS.Domain.Repositories;
 using TossErp.POS.Infrastructure.Data;
+using POS.Domain.AggregatesModel.SaleAnalyticsAggregate;
 
 namespace TossErp.POS.Infrastructure.Repositories;
 
@@ -17,6 +12,48 @@ public class SaleAnalyticsRepository : ISaleAnalyticsRepository
     public SaleAnalyticsRepository(POSContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    public async Task<decimal> GetTotalSalesAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Sales.SumAsync(s => s.Total, cancellationToken);
+    }
+
+    public async Task<decimal> GetTotalSalesByPaymentMethodAsync(PaymentType method, CancellationToken cancellationToken = default)
+    {
+        return await _context.Sales
+            .Where(s => s.PaymentMethod == method)
+            .SumAsync(s => s.Total, cancellationToken);
+    }
+
+    public async Task<decimal> GetTotalSalesByProductAsync(int productId, CancellationToken cancellationToken = default)
+    {
+        return await _context.SaleItems
+            .Where(i => i.ProductId == productId)
+            .SumAsync(i => i.Total, cancellationToken);
+    }
+
+    public async Task<decimal> GetTotalSalesByStaffAsync(int staffId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Sales
+            .Where(s => s.StaffId == staffId)
+            .SumAsync(s => s.Total, cancellationToken);
+    }
+
+    public async Task<IEnumerable<dynamic>> GetDailySalesAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Sales
+            .GroupBy(s => s.SaleDate.Date)
+            .Select(g => new { Date = g.Key, Total = g.Sum(s => s.Total) })
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<dynamic>> GetSalesByCategoryAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.SaleItems
+            .GroupBy(i => i.Category)
+            .Select(g => new { Category = g.Key, Total = g.Sum(i => i.Total) })
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<decimal> GetTotalSalesByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
@@ -30,13 +67,6 @@ public class SaleAnalyticsRepository : ISaleAnalyticsRepository
     {
         return await _context.Sales
             .Where(s => s.StoreId == storeId && s.SaleDate >= startDate && s.SaleDate <= endDate)
-            .SumAsync(s => s.TotalAmount, cancellationToken);
-    }
-
-    public async Task<decimal> GetTotalSalesByStaffAsync(Guid staffId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
-    {
-        return await _context.Sales
-            .Where(s => s.StaffId == staffId && s.SaleDate >= startDate && s.SaleDate <= endDate)
             .SumAsync(s => s.TotalAmount, cancellationToken);
     }
 
@@ -204,5 +234,31 @@ public class SaleAnalyticsRepository : ISaleAnalyticsRepository
                 g => g.Key,
                 g => g.Sum(i => i.Total)
             );
+    }
+
+    public async Task<SaleAnalytics?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.SaleAnalytics.FindAsync(new object[] { id }, cancellationToken);
+    }
+
+    public async Task<IEnumerable<SaleAnalytics>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.SaleAnalytics.ToListAsync(cancellationToken);
+    }
+
+    public async Task<SaleAnalytics> AddAsync(SaleAnalytics saleAnalytics, CancellationToken cancellationToken = default)
+    {
+        await _context.SaleAnalytics.AddAsync(saleAnalytics, cancellationToken);
+        return saleAnalytics;
+    }
+
+    public void Update(SaleAnalytics saleAnalytics)
+    {
+        _context.Entry(saleAnalytics).State = EntityState.Modified;
+    }
+
+    public void Delete(SaleAnalytics saleAnalytics)
+    {
+        _context.SaleAnalytics.Remove(saleAnalytics);
     }
 } 

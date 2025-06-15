@@ -1,18 +1,19 @@
 ﻿#nullable enable
 
-#nullable enable
 using POS.Domain.SeedWork;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate.Events;
 
 public class SaleRefundedDomainEvent : DomainEvent
 {
-    public int SaleId { get; }
+    public Guid SaleId { get; }
     public decimal RefundAmount { get; }
+    public DateTime RefundedAt { get; }
 
-    public SaleRefundedDomainEvent(int saleId, decimal refundAmount)
+    public SaleRefundedDomainEvent(Sale sale, decimal refundAmount)
     {
-        SaleId = saleId;
+        SaleId = sale.Id;
         RefundAmount = refundAmount;
+        RefundedAt = DateTime.UtcNow;
     }
 } 
