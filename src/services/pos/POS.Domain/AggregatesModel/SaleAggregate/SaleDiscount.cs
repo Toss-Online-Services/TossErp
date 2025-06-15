@@ -1,12 +1,10 @@
 ﻿using System;
-using TossErp.POS.Domain.Exceptions;
 using TossErp.POS.Domain.SeedWork;
-
 namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate
 {
     public class SaleDiscount : Entity
     {
-        public int SaleId { get; private set; }
+        public Guid SaleId { get; private set; }
         public string Name { get; private set; }
         public decimal Amount { get; private set; }
         public DiscountType Type { get; private set; }
@@ -16,10 +14,10 @@ namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate
             Name = string.Empty;
         }
 
-        public SaleDiscount(int saleId, string name, decimal amount, DiscountType type)
+        public SaleDiscount(Guid saleId, string name, decimal amount, DiscountType type)
         {
-            if (saleId <= 0)
-                throw new DomainException("Sale ID must be greater than zero");
+            if (saleId == Guid.Empty)
+                throw new DomainException("Sale ID cannot be empty");
             if (string.IsNullOrWhiteSpace(name))
                 throw new DomainException("Discount name cannot be empty");
             if (amount < 0)

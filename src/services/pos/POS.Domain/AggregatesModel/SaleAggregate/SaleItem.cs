@@ -1,13 +1,12 @@
 ﻿using System;
-using TossErp.POS.Domain.Exceptions;
 using TossErp.POS.Domain.SeedWork;
 
 namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 
 public class SaleItem : Entity
 {
-    public int SaleId { get; private set; }
-    public int ProductId { get; private set; }
+    public Guid SaleId { get; private set; }
+    public Guid ProductId { get; private set; }
     public string ProductName { get; private set; }
     public decimal Quantity { get; private set; }
     public decimal UnitPrice { get; private set; }
@@ -25,8 +24,10 @@ public class SaleItem : Entity
         CreatedAt = DateTime.UtcNow;
     }
 
-    public SaleItem(int productId, string productName, decimal quantity, decimal unitPrice, decimal taxRate)
+    public SaleItem(Guid productId, string productName, decimal quantity, decimal unitPrice, decimal taxRate)
     {
+        if (productId == Guid.Empty)
+            throw new DomainException("Product ID cannot be empty");
         if (string.IsNullOrWhiteSpace(productName))
             throw new DomainException("Product name cannot be empty");
         if (quantity <= 0)

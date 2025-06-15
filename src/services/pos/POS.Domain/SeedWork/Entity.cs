@@ -11,7 +11,7 @@ namespace TossErp.POS.Domain.SeedWork
             Id = Guid.NewGuid();
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is not Entity other)
                 return false;
@@ -28,7 +28,7 @@ namespace TossErp.POS.Domain.SeedWork
             return Id == other.Id;
         }
 
-        public static bool operator ==(Entity left, Entity right)
+        public static bool operator ==(Entity? left, Entity? right)
         {
             if (left is null && right is null)
                 return true;
@@ -39,7 +39,7 @@ namespace TossErp.POS.Domain.SeedWork
             return left.Equals(right);
         }
 
-        public static bool operator !=(Entity left, Entity right)
+        public static bool operator !=(Entity? left, Entity? right)
         {
             return !(left == right);
         }

@@ -11,7 +11,7 @@ namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate
         public string Country { get; private set; }
         public string ZipCode { get; private set; }
 
-        protected Address()
+        public Address()
         {
             Street = string.Empty;
             City = string.Empty;

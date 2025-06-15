@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace POS.Domain.Exceptions;
+namespace TossErp.POS.Domain.SeedWork;
 
 public class DomainException : Exception
 {

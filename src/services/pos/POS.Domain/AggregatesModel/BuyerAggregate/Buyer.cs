@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TossErp.POS.Domain.SeedWork;
 using TossErp.POS.Domain.Events;
+using DomainException = POS.Domain.Exceptions.DomainException;
 
 namespace TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
 
@@ -27,8 +28,10 @@ public class Buyer : AggregateRoot
         _paymentMethods = new List<PaymentMethod>();
     }
 
-    public Buyer(string name, string email, string phone, Address address) : this()
+    public Buyer(Guid id, string name, string email, string phone, Address address) : this()
     {
+        if (id == Guid.Empty)
+            throw new DomainException("ID cannot be empty");
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Name cannot be empty");
         if (string.IsNullOrWhiteSpace(email))
@@ -38,6 +41,7 @@ public class Buyer : AggregateRoot
         if (address == null)
             throw new DomainException("Address cannot be null");
 
+        Id = id;
         Name = name;
         Email = email;
         Phone = phone;
@@ -72,7 +76,7 @@ public class Buyer : AggregateRoot
         AddDomainEvent(new PaymentMethodAddedDomainEvent(this, paymentMethod));
     }
 
-    public void RemovePaymentMethod(int paymentMethodId)
+    public void RemovePaymentMethod(Guid paymentMethodId)
     {
         var paymentMethod = _paymentMethods.Find(pm => pm.Id == paymentMethodId);
         if (paymentMethod != null)

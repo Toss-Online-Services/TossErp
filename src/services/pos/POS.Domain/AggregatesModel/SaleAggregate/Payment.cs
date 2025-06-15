@@ -6,7 +6,7 @@ namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 
 public class Payment : Entity
 {
-    public int SaleId { get; private set; }
+    public Guid SaleId { get; private set; }
     public decimal Amount { get; private set; }
     public string? Reference { get; private set; }
     public DateTime PaymentDate { get; private set; }
@@ -15,10 +15,10 @@ public class Payment : Entity
     {
     }
 
-    public Payment(int saleId, decimal amount, string? reference = null)
+    public Payment(Guid saleId, decimal amount, string? reference = null)
     {
-        if (saleId <= 0)
-            throw new DomainException("Sale ID must be greater than zero");
+        if (saleId == Guid.Empty)
+            throw new DomainException("Sale ID cannot be empty");
         if (amount <= 0)
             throw new DomainException("Payment amount must be greater than zero");
 

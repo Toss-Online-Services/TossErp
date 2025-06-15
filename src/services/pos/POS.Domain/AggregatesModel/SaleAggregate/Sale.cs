@@ -3,11 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TossErp.POS.Domain.SeedWork;
-using TossErp.POS.Domain.Events;
-using System.Collections.ObjectModel;
 using TossErp.POS.Domain.AggregatesModel.BuyerAggregate;
 using TossErp.POS.Domain.AggregatesModel.SaleAggregate.Events;
-using TossErp.POS.Domain.Exceptions;
+using TossErp.POS.Domain.Events;
 
 namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 
@@ -16,7 +14,6 @@ public class Sale : AggregateRoot
     private readonly List<SaleItem> _items = new();
     private readonly List<Payment> _payments = new();
     private readonly List<SaleDiscount> _discounts = new();
-    private readonly List<DomainEvent> _domainEvents = new();
 
     public string InvoiceNumber { get; private set; }
     public DateTime SaleDate { get; private set; }
@@ -30,15 +27,15 @@ public class Sale : AggregateRoot
     public string? Notes { get; private set; }
     public bool IsSynced { get; private set; }
     public DateTime? SyncedAt { get; private set; }
-    public int? StaffId { get; private set; }
+    public Guid? StaffId { get; private set; }
     public Staff? Staff { get; private set; }
-    public int? BuyerId { get; private set; }
+    public Guid? BuyerId { get; private set; }
     public Buyer? Buyer { get; private set; }
-    public int? PaymentMethodId { get; private set; }
+    public Guid? PaymentMethodId { get; private set; }
     public PaymentMethod? PaymentMethod { get; private set; }
-    public int? AddressId { get; private set; }
+    public Guid? AddressId { get; private set; }
     public Address? Address { get; private set; }
-    public int? CardTypeId { get; private set; }
+    public Guid? CardTypeId { get; private set; }
     public CardType? CardType { get; private set; }
 
     public IReadOnlyCollection<SaleItem> Items => _items.AsReadOnly();
@@ -54,8 +51,8 @@ public class Sale : AggregateRoot
         _discounts = new List<SaleDiscount>();
     }
 
-    public Sale(string invoiceNumber, DateTime saleDate, int? staffId = null, int? buyerId = null, 
-        int? paymentMethodId = null, int? addressId = null, int? cardTypeId = null, string? notes = null)
+    public Sale(string invoiceNumber, DateTime saleDate, Guid? staffId = null, Guid? buyerId = null, 
+        Guid? paymentMethodId = null, Guid? addressId = null, Guid? cardTypeId = null, string? notes = null)
     {
         if (string.IsNullOrWhiteSpace(invoiceNumber))
             throw new DomainException("Invoice number cannot be empty");
@@ -77,15 +74,15 @@ public class Sale : AggregateRoot
         SyncedAt = null;
     }
 
-    public void AddItem(int productId, string productName, decimal unitPrice, int quantity, decimal discount = 0)
+    public void AddItem(Guid productId, string productName, decimal unitPrice, int quantity, decimal discount = 0)
     {
-        var item = new SaleItem(Id, productId, productName, unitPrice, quantity, discount);
+        var item = new SaleItem(productId, productName, quantity, unitPrice, 0.1m); // Assuming 10% tax rate
         _items.Add(item);
         CalculateTotalAmount();
         AddDomainEvent(new SaleItemAddedDomainEvent(this, item));
     }
 
-    public void RemoveItem(int itemId)
+    public void RemoveItem(Guid itemId)
     {
         var item = _items.Find(i => i.Id == itemId);
         if (item != null)
@@ -117,13 +114,18 @@ public class Sale : AggregateRoot
     {
         var discount = new SaleDiscount(Id, name, amount, type);
         _discounts.Add(discount);
+        CalculateTotalAmount();
         AddDomainEvent(new SaleDiscountAddedDomainEvent(this, discount));
     }
 
-    public void SetCustomer(string customerId, string? name, string? phone = null, string? email = null)
+    public void SetCustomer(Guid customerId, string name, string? phone = null, string? email = null)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Customer name cannot be empty");
+
         BuyerId = customerId;
-        Buyer = new Buyer(customerId, name, phone, email);
+        var address = new Address("N/A", "N/A", "N/A", "N/A", "N/A"); // Create address with placeholder values
+        Buyer = new Buyer(customerId, name, email ?? string.Empty, phone ?? string.Empty, address);
     }
 
     public void AddNotes(string? notes)
@@ -186,14 +188,6 @@ public class Sale : AggregateRoot
         AddDomainEvent(new SaleRefundedDomainEvent(this));
     }
 
-    public decimal CalculateTotal()
-    {
-        decimal total = _items.Sum(item => item.TotalPrice);
-        decimal discountTotal = _discounts.Sum(discount => discount.CalculateDiscountAmount(total));
-        decimal taxTotal = (total - discountTotal) * 0.1m; // Assuming 10% tax
-        return total - discountTotal + taxTotal;
-    }
-
     public decimal GetSubtotal() => _items.Sum(i => i.UnitPrice * i.Quantity);
     public decimal GetDiscountTotal() => _discounts.Where(d => d.Type != DiscountType.Tip).Sum(d => d.Amount);
     public decimal GetTipTotal() => _discounts.Where(d => d.Type == DiscountType.Tip).Sum(d => d.Amount);
@@ -203,21 +197,11 @@ public class Sale : AggregateRoot
 
     private void CalculateTotalAmount()
     {
-        TotalAmount = 0;
-        foreach (var item in _items)
-        {
-            TotalAmount += item.TotalPrice;
-        }
-    }
-
-    public IReadOnlyCollection<DomainEvent> GetDomainEvents()
-    {
-        return _domainEvents.AsReadOnly();
-    }
-
-    public new void ClearDomainEvents()
-    {
-        _domainEvents.Clear();
+        SubTotal = GetSubtotal();
+        DiscountAmount = GetDiscountTotal();
+        TaxAmount = (SubTotal - DiscountAmount) * 0.1m; // Assuming 10% tax
+        TotalAmount = SubTotal - DiscountAmount + TaxAmount;
+        Balance = TotalAmount - AmountPaid;
     }
 } 
 
