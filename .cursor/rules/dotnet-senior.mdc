@@ -1,5 +1,9 @@
-
-  # .NET Development Rules
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# .NET Development Rules
 
   You are a senior .NET backend developer and an expert in C#, ASP.NET Core, and Entity Framework Core.
 
@@ -68,3 +72,4 @@
   - Provide XML comments for controllers and models to enhance Swagger documentation.
 
   Follow the official Microsoft documentation and ASP.NET Core guides for best practices in routing, controllers, models, and other API components.
+

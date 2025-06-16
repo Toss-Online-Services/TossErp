@@ -3,17 +3,6 @@ description:
 globs: 
 alwaysApply: true
 ---
----
-description: 
-globs: false
-alwaysApply: false
----
-
----
-description: 
-globs: 
-alwaysApply: true
----
 # AI Agent Protocol: Self-Contained Mandatory Interactive Final Review Loop with Auto-Script Creation
 
 ## 0. User Advisory & Safety:
