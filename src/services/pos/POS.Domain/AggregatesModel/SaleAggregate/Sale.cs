@@ -105,10 +105,37 @@ public class Sale : AggregateRoot
 
     public void AddItem(int productId, string? storeId, int quantity, decimal unitPrice, string? category)
     {
+        if (Status != SaleStatus.Pending)
+            throw new DomainException("Can only add items to a pending sale");
+
+        if (quantity <= 0)
+            throw new DomainException("Quantity must be greater than zero");
+
+        if (unitPrice < 0)
+            throw new DomainException("Unit price cannot be negative");
+
         var item = new SaleItem(productId, productId, storeId, quantity, unitPrice, category);
         _items.Add(item);
         CalculateTotalAmount();
         AddDomainEvent(new SaleItemAddedDomainEvent(this, item));
+    }
+
+    public void UpdateItemQuantity(Guid itemId, int quantity)
+    {
+        if (Status != SaleStatus.Pending)
+            throw new DomainException("Can only update items in a pending sale");
+
+        if (quantity <= 0)
+            throw new DomainException("Quantity must be greater than zero");
+
+        var item = _items.Find(i => i.Id == itemId);
+        if (item == null)
+            throw new DomainException("Item not found");
+
+        var oldQuantity = item.Quantity;
+        item.UpdateQuantity(quantity);
+        CalculateTotalAmount();
+        AddDomainEvent(new SaleItemQuantityUpdatedDomainEvent(this, item, oldQuantity, quantity));
     }
 
     public void RemoveItem(Guid itemId)
@@ -124,8 +151,17 @@ public class Sale : AggregateRoot
 
     public void AddPayment(decimal amount, PaymentType type, string? reference = null, string? cardLast4 = null, string? cardType = null)
     {
+        if (Status == SaleStatus.Voided)
+            throw new DomainException("Cannot add payment to a voided sale");
+
+        if (Status == SaleStatus.Refunded)
+            throw new DomainException("Cannot add payment to a refunded sale");
+
         if (amount <= 0)
             throw new DomainException("Payment amount must be greater than zero");
+
+        if (amount > GetBalance())
+            throw new DomainException("Payment amount cannot exceed balance");
 
         var payment = new Payment(Id, amount, type, reference, cardLast4, cardType);
         _payments.Add(payment);
@@ -141,16 +177,51 @@ public class Sale : AggregateRoot
 
     public void AddDiscount(string? code, string? storeId, DiscountType type, decimal amount, DateTime startDate, DateTime endDate)
     {
+        if (Status != SaleStatus.Pending)
+            throw new DomainException("Can only add discounts to a pending sale");
+
+        if (amount <= 0)
+            throw new DomainException("Discount amount must be greater than zero");
+
+        if (type == DiscountType.Percentage && amount > 100)
+            throw new DomainException("Percentage discount cannot exceed 100%");
+
+        if (startDate > endDate)
+            throw new DomainException("Discount start date must be before end date");
+
         var discount = new SaleDiscount(code, storeId, type, amount, startDate, endDate);
         _discounts.Add(discount);
         CalculateTotalAmount();
         AddDomainEvent(new SaleDiscountAddedDomainEvent(this, discount));
     }
 
+    public void RemoveDiscount(Guid discountId)
+    {
+        if (Status != SaleStatus.Pending)
+            throw new DomainException("Can only remove discounts from a pending sale");
+
+        var discount = _discounts.Find(d => d.Id == discountId);
+        if (discount == null)
+            throw new DomainException("Discount not found");
+
+        _discounts.Remove(discount);
+        CalculateTotalAmount();
+        AddDomainEvent(new SaleDiscountRemovedDomainEvent(this, discount));
+    }
+
     public void SetCustomer(Guid customerId, string name, string? phone = null, string? email = null)
     {
+        if (Status != SaleStatus.Pending)
+            throw new DomainException("Can only set customer for a pending sale");
+
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Customer name cannot be empty");
+
+        if (email != null && !IsValidEmail(email))
+            throw new DomainException("Invalid email format");
+
+        if (phone != null && !IsValidPhone(phone))
+            throw new DomainException("Invalid phone format");
 
         BuyerId = customerId;
         CustomerId = customerId.ToString();
@@ -158,35 +229,52 @@ public class Sale : AggregateRoot
         CustomerPhone = phone;
         CustomerEmail = email;
         UpdatedAt = DateTime.UtcNow;
+        AddDomainEvent(new SaleCustomerUpdatedDomainEvent(this, customerId, name));
     }
 
     public void SetStaff(Guid staffId, string name)
     {
+        if (Status != SaleStatus.Pending)
+            throw new DomainException("Can only set staff for a pending sale");
+
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Staff name cannot be empty");
 
         StaffId = staffId;
         StaffName = name;
         UpdatedAt = DateTime.UtcNow;
+        AddDomainEvent(new SaleStaffUpdatedDomainEvent(this, staffId, name));
     }
 
     public void AddNotes(string? notes)
     {
+        if (Status != SaleStatus.Pending)
+            throw new DomainException("Can only add notes to a pending sale");
+
         Notes = notes;
         UpdatedAt = DateTime.UtcNow;
+        AddDomainEvent(new SaleNotesUpdatedDomainEvent(this, notes));
     }
 
     public void MarkAsOffline()
     {
+        if (IsOffline)
+            throw new DomainException("Sale is already offline");
+
+        IsOffline = true;
         IsSynced = false;
         SyncedAt = null;
         UpdatedAt = DateTime.UtcNow;
+        AddDomainEvent(new SaleMarkedAsOfflineDomainEvent(this));
     }
 
     public void MarkAsSynced()
     {
         if (IsSynced)
             throw new DomainException("Sale is already synced");
+
+        if (!IsOffline)
+            throw new DomainException("Only offline sales can be marked as synced");
 
         IsSynced = true;
         SyncedAt = DateTime.UtcNow;
@@ -216,6 +304,9 @@ public class Sale : AggregateRoot
         if (Status != SaleStatus.Pending)
             throw new DomainException("Only pending sales can be voided");
 
+        if (_payments.Any())
+            throw new DomainException("Cannot void a sale with payments");
+
         Status = SaleStatus.Voided;
         UpdatedAt = DateTime.UtcNow;
         AddDomainEvent(new SaleVoidedDomainEvent(this));
@@ -239,6 +330,24 @@ public class Sale : AggregateRoot
         RefundReason = reason;
         UpdatedAt = DateTime.UtcNow;
         AddDomainEvent(new SaleRefundedDomainEvent(this, amount, reason));
+    }
+
+    private bool IsValidEmail(string email)
+    {
+        try
+        {
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private bool IsValidPhone(string phone)
+    {
+        return System.Text.RegularExpressions.Regex.IsMatch(phone, @"^\+?[0-9]{10,15}$");
     }
 
     public decimal GetSubtotal() => _items.Sum(i => i.UnitPrice * i.Quantity);
