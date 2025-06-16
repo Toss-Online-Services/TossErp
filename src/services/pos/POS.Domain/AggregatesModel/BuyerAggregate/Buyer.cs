@@ -1,4 +1,5 @@
 ﻿using POS.Domain.AggregatesModel.StoreAggregate;
+using POS.Domain.Common;
 using POS.Domain.Exceptions;
 using POS.Domain.SeedWork;
 
