@@ -1,102 +1,124 @@
-﻿using POS.Domain.AggregatesModel.StoreAggregate;
-using POS.Domain.SeedWork;
+﻿using POS.Domain.Common;
+using POS.Domain.Models;
 
 namespace POS.Domain.AggregatesModel.StaffAggregate
 {
-    public class Staff : AggregateRoot
+    public class Staff : Entity
     {
-        public Guid StoreId { get; private set; }
-        public Store Store { get; private set; } = null!;
         public string Name { get; private set; }
-        public string? Email { get; private set; }
-        public string? Phone { get; private set; }
-        public string? Position { get; private set; }
-        public string? Department { get; private set; }
-        public string? EmployeeId { get; private set; }
-        public string? TaxId { get; private set; }
-        public string? Notes { get; private set; }
-        public string Status { get; private set; }
-        public bool IsActive { get; private set; }
-        public bool IsSynced { get; private set; }
-        public DateTime? SyncedAt { get; private set; }
-        public DateTime CreatedAt { get; private set; }
-        public DateTime? UpdatedAt { get; private set; }
-        public string Code { get; private set; }
+        public string Email { get; private set; }
+        public string Phone { get; private set; }
         public string Role { get; private set; }
+        public Guid StoreId { get; private set; }
+        public bool IsActive { get; private set; }
+        public DateTime CreatedAt { get; private set; }
+        public DateTime? LastModifiedAt { get; private set; }
+        public StaffSchedule Schedule { get; private set; }
+        public StaffPermissions Permissions { get; private set; }
 
-        protected Staff()
+        private Staff() { } // For EF Core
+
+        public Staff(
+            string name,
+            string email,
+            string phone,
+            string role,
+            Guid storeId,
+            StaffSchedule schedule,
+            StaffPermissions permissions)
         {
-            Name = string.Empty;
-            Code = string.Empty;
-            Role = string.Empty;
-            Status = "Active";
-            CreatedAt = DateTime.UtcNow;
-            IsActive = true;
-        }
-
-        public Staff(Guid storeId, string name, string code, string role, string? email = null, string? phone = null, string? position = null,
-            string? department = null, string? employeeId = null, string? taxId = null, string? notes = null)
-        {
-            if (storeId == Guid.Empty)
-                throw new DomainException("Store ID cannot be empty");
-            if (string.IsNullOrWhiteSpace(name))
-                throw new DomainException("Name cannot be empty");
-            if (string.IsNullOrWhiteSpace(code))
-                throw new DomainException("Code cannot be empty");
-            if (string.IsNullOrWhiteSpace(role))
-                throw new DomainException("Role cannot be empty");
-
-            StoreId = storeId;
             Name = name;
-            Code = code;
+            Email = email;
+            Phone = phone;
             Role = role;
-            Email = email;
-            Phone = phone;
-            Position = position;
-            Department = department;
-            EmployeeId = employeeId;
-            TaxId = taxId;
-            Notes = notes;
-            Status = "Active";
+            StoreId = storeId;
+            Schedule = schedule;
+            Permissions = permissions;
             IsActive = true;
             CreatedAt = DateTime.UtcNow;
         }
 
-        public void Update(string name, string? email = null, string? phone = null, string? position = null,
-            string? department = null, string? employeeId = null, string? taxId = null, string? notes = null)
+        public void UpdateDetails(
+            string name,
+            string email,
+            string phone,
+            string role)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new DomainException("Name cannot be empty");
-
             Name = name;
             Email = email;
             Phone = phone;
-            Position = position;
-            Department = department;
-            EmployeeId = employeeId;
-            TaxId = taxId;
-            Notes = notes;
-            UpdatedAt = DateTime.UtcNow;
+            Role = role;
+            LastModifiedAt = DateTime.UtcNow;
+        }
+
+        public void UpdateSchedule(StaffSchedule schedule)
+        {
+            Schedule = schedule;
+            LastModifiedAt = DateTime.UtcNow;
+        }
+
+        public void UpdatePermissions(StaffPermissions permissions)
+        {
+            Permissions = permissions;
+            LastModifiedAt = DateTime.UtcNow;
         }
 
         public void Deactivate()
         {
-            if (!IsActive)
-                throw new DomainException("Staff is already inactive");
-
             IsActive = false;
-            Status = "Inactive";
-            UpdatedAt = DateTime.UtcNow;
+            LastModifiedAt = DateTime.UtcNow;
         }
 
-        public void Activate()
+        public void Reactivate()
         {
-            if (IsActive)
-                throw new DomainException("Staff is already active");
-
             IsActive = true;
-            Status = "Active";
-            UpdatedAt = DateTime.UtcNow;
+            LastModifiedAt = DateTime.UtcNow;
+        }
+    }
+
+    public class StaffSchedule
+    {
+        public DayOfWeek Day { get; private set; }
+        public TimeSpan StartTime { get; private set; }
+        public TimeSpan EndTime { get; private set; }
+        public bool IsWorking { get; private set; }
+
+        private StaffSchedule() { } // For EF Core
+
+        public StaffSchedule(DayOfWeek day, TimeSpan startTime, TimeSpan endTime, bool isWorking)
+        {
+            Day = day;
+            StartTime = startTime;
+            EndTime = endTime;
+            IsWorking = isWorking;
+        }
+    }
+
+    public class StaffPermissions
+    {
+        public bool CanManageInventory { get; private set; }
+        public bool CanManageStaff { get; private set; }
+        public bool CanManageProducts { get; private set; }
+        public bool CanProcessRefunds { get; private set; }
+        public bool CanViewReports { get; private set; }
+        public bool CanManageSettings { get; private set; }
+
+        private StaffPermissions() { } // For EF Core
+
+        public StaffPermissions(
+            bool canManageInventory,
+            bool canManageStaff,
+            bool canManageProducts,
+            bool canProcessRefunds,
+            bool canViewReports,
+            bool canManageSettings)
+        {
+            CanManageInventory = canManageInventory;
+            CanManageStaff = canManageStaff;
+            CanManageProducts = canManageProducts;
+            CanProcessRefunds = canProcessRefunds;
+            CanViewReports = canViewReports;
+            CanManageSettings = canManageSettings;
         }
     }
 } 

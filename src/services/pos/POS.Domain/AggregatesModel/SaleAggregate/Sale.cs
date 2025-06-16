@@ -1,13 +1,15 @@
 ﻿#nullable enable
 using POS.Domain.AggregatesModel.StaffAggregate;
 using POS.Domain.SeedWork;
-using POS.Domain.AggregatesModel.BuyerAggregate;
 using POS.Domain.AggregatesModel.SaleAggregate.Events;
 using POS.Domain.Exceptions;
 using POS.Domain.AggregatesModel.StoreAggregate;
 using POS.Domain.Enums;
 using POS.Domain.Models;
 using PaymentMethodModel = POS.Domain.Models.PaymentMethod;
+using POS.Domain.Common.ValueObjects;
+using POS.Domain.Events;
+using POS.Domain.Common;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate;
 
@@ -21,10 +23,10 @@ public class Sale : AggregateRoot
     public Store Store { get; private set; } = null!;
     public string InvoiceNumber { get; private set; }
     public DateTime SaleDate { get; private set; }
-    public decimal SubTotal { get; private set; }
-    public decimal TaxAmount { get; private set; }
-    public decimal DiscountAmount { get; private set; }
-    public decimal TotalAmount { get; private set; }
+    public Money SubTotal { get; private set; }
+    public Money TaxAmount { get; private set; }
+    public Money DiscountAmount { get; private set; }
+    public Money TotalAmount { get; private set; }
     public decimal AmountPaid { get; private set; }
     public decimal Balance { get; private set; }
     public SaleStatus Status { get; private set; }
@@ -35,7 +37,6 @@ public class Sale : AggregateRoot
     public Staff? Staff { get; private set; }
     public string? StaffName { get; private set; }
     public Guid? BuyerId { get; private set; }
-    public Buyer? Buyer { get; private set; }
     public string? CustomerId { get; private set; }
     public string? CustomerName { get; private set; }
     public string? CustomerPhone { get; private set; }
@@ -43,9 +44,8 @@ public class Sale : AggregateRoot
     public Guid? PaymentMethodId { get; private set; }
     public PaymentMethodModel? PaymentMethod { get; private set; }
     public Guid? AddressId { get; private set; }
-    public Address? Address { get; private set; }
+    public POS.Domain.Common.ValueObjects.Address? Address { get; private set; }
     public Guid? CardTypeId { get; private set; }
-    public CardType? CardType { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
@@ -56,7 +56,7 @@ public class Sale : AggregateRoot
     public IReadOnlyCollection<Payment> Payments => _payments.AsReadOnly();
     public IReadOnlyCollection<SaleDiscount> Discounts => _discounts.AsReadOnly();
 
-    protected Sale()
+    private Sale()
     {
         InvoiceNumber = string.Empty;
         Status = SaleStatus.Pending;
@@ -130,7 +130,7 @@ public class Sale : AggregateRoot
         var payment = new Payment(Id, amount, type, reference, cardLast4, cardType);
         _payments.Add(payment);
         AmountPaid += amount;
-        Balance = TotalAmount - AmountPaid;
+        Balance = TotalAmount.Amount - AmountPaid;
         AddDomainEvent(new SalePaymentAddedDomainEvent(this, payment));
 
         if (GetBalance() <= 0)
@@ -202,7 +202,7 @@ public class Sale : AggregateRoot
         if (!_items.Any())
             throw new DomainException("Cannot complete sale without items");
 
-        if (AmountPaid < TotalAmount)
+        if (AmountPaid < TotalAmount.Amount)
             throw new DomainException("Cannot complete sale without full payment");
 
         Status = SaleStatus.Completed;
@@ -229,7 +229,7 @@ public class Sale : AggregateRoot
         if (amount <= 0)
             throw new DomainException("Refund amount must be greater than zero");
 
-        if (amount > TotalAmount)
+        if (amount > TotalAmount.Amount)
             throw new DomainException("Refund amount cannot exceed total amount");
 
         if (string.IsNullOrWhiteSpace(reason))
@@ -250,11 +250,11 @@ public class Sale : AggregateRoot
 
     private void CalculateTotalAmount()
     {
-        SubTotal = GetSubtotal();
-        DiscountAmount = GetDiscountTotal();
-        TaxAmount = (SubTotal - DiscountAmount) * 0.1m; // Assuming 10% tax
-        TotalAmount = SubTotal - DiscountAmount + TaxAmount;
-        Balance = TotalAmount - AmountPaid;
+        SubTotal = new Money(GetSubtotal(), Currency);
+        DiscountAmount = new Money(GetDiscountTotal(), Currency);
+        TaxAmount = new Money((GetSubtotal() - GetDiscountTotal()) * 0.1m, Currency);
+        TotalAmount = new Money(GetSubtotal() - GetDiscountTotal() + GetTipTotal(), Currency);
+        Balance = GetTotal() - GetPaymentTotal();
         UpdatedAt = DateTime.UtcNow;
     }
 }

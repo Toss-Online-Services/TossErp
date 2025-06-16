@@ -1,83 +1,63 @@
-﻿using POS.Domain.SeedWork;
-using POS.Domain.AggregatesModel.ProductAggregate;
+﻿using POS.Domain.Common.ValueObjects;
+using POS.Domain.SeedWork;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate;
 
 public class SaleItem : Entity
 {
-    public int SaleId { get; private set; }
-    public int ProductId { get; private set; }
-    public string? StoreId { get; private set; }
+    public Guid ProductId { get; private set; }
+    public string ProductName { get; private set; }
+    public Money UnitPrice { get; private set; }
     public int Quantity { get; private set; }
-    public decimal UnitPrice { get; private set; }
-    public decimal Total { get; private set; }
-    public string? Category { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public string? ProductName { get; private set; }
-    public string? Barcode { get; private set; }
-    public string? Variant { get; private set; }
     public decimal TaxRate { get; private set; }
-    public decimal SubTotal { get; private set; }
-    public decimal TaxAmount { get; private set; }
-    public decimal TotalAmount { get; private set; }
-    public decimal Discount { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
+    public Money Subtotal { get; private set; }
+    public Money TaxAmount { get; private set; }
+    public Money Total { get; private set; }
 
-    private SaleItem() { }
+    private SaleItem() { } // For EF Core
 
-    public SaleItem(int saleId, int productId, string? storeId, int quantity, decimal unitPrice, string? category)
+    public SaleItem(Guid productId, string productName, decimal unitPrice, int quantity, decimal taxRate, string currency)
     {
-        SaleId = saleId;
+        if (string.IsNullOrWhiteSpace(productName))
+            throw new ArgumentException("Product name cannot be empty", nameof(productName));
+        if (unitPrice < 0)
+            throw new ArgumentException("Unit price cannot be negative", nameof(unitPrice));
+        if (quantity <= 0)
+            throw new ArgumentException("Quantity must be greater than zero", nameof(quantity));
+        if (taxRate < 0 || taxRate > 100)
+            throw new ArgumentException("Tax rate must be between 0 and 100", nameof(taxRate));
+
         ProductId = productId;
-        StoreId = storeId;
-        Quantity = quantity;
-        UnitPrice = unitPrice;
-        Category = category;
-        Total = quantity * unitPrice;
-        CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
-        SubTotal = Total;
-        TotalAmount = Total;
-    }
-
-    public void UpdateQuantity(int quantity)
-    {
-        Quantity = quantity;
-        Total = quantity * UnitPrice;
-        SubTotal = Total;
-        TotalAmount = Total + TaxAmount - Discount;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void UpdateUnitPrice(decimal unitPrice)
-    {
-        UnitPrice = unitPrice;
-        Total = Quantity * unitPrice;
-        SubTotal = Total;
-        TotalAmount = Total + TaxAmount - Discount;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void UpdateTaxRate(decimal taxRate)
-    {
-        TaxRate = taxRate;
-        TaxAmount = SubTotal * (taxRate / 100);
-        TotalAmount = SubTotal + TaxAmount - Discount;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void UpdateDiscount(decimal discount)
-    {
-        Discount = discount;
-        TotalAmount = SubTotal + TaxAmount - discount;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void UpdateProductDetails(string productName, string? barcode, string? variant)
-    {
         ProductName = productName;
-        Barcode = barcode;
-        Variant = variant;
-        UpdatedAt = DateTime.UtcNow;
+        UnitPrice = new Money(unitPrice, currency);
+        Quantity = quantity;
+        TaxRate = taxRate;
+
+        CalculateTotals();
+    }
+
+    public void UpdateQuantity(int newQuantity)
+    {
+        if (newQuantity <= 0)
+            throw new ArgumentException("Quantity must be greater than zero", nameof(newQuantity));
+
+        Quantity = newQuantity;
+        CalculateTotals();
+    }
+
+    public void UpdateUnitPrice(decimal newUnitPrice)
+    {
+        if (newUnitPrice < 0)
+            throw new ArgumentException("Unit price cannot be negative", nameof(newUnitPrice));
+
+        UnitPrice = new Money(newUnitPrice, UnitPrice.Currency);
+        CalculateTotals();
+    }
+
+    private void CalculateTotals()
+    {
+        Subtotal = UnitPrice * Quantity;
+        TaxAmount = new Money(Subtotal.Amount * (TaxRate / 100), Subtotal.Currency);
+        Total = Subtotal + TaxAmount;
     }
 } 
