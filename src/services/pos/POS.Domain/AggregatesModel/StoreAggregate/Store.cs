@@ -25,17 +25,19 @@ public class Store : AggregateRoot
     public DateTime? SyncedAt { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
+    public string OwnerId { get; private set; }
 
     protected Store()
     {
         Name = string.Empty;
+        OwnerId = string.Empty;
         Address = new Address();
         Status = "Active";
         CreatedAt = DateTime.UtcNow;
         IsActive = true;
     }
 
-    public Store(string name, Address address, string? description = null, string? code = null, string? taxId = null,
+    public Store(string name, Address address, string ownerId, string? description = null, string? code = null, string? taxId = null,
         string? notes = null, string? phone = null, string? email = null, string? website = null,
         string? logo = null, string? currency = null, string? timeZone = null)
     {
@@ -43,9 +45,12 @@ public class Store : AggregateRoot
             throw new DomainException("Name cannot be empty");
         if (address == null)
             throw new DomainException("Address cannot be null");
+        if (string.IsNullOrWhiteSpace(ownerId))
+            throw new DomainException("OwnerId cannot be empty");
 
         Name = name;
         Address = address;
+        OwnerId = ownerId;
         Description = description;
         Code = code;
         TaxId = taxId;

@@ -33,8 +33,13 @@ public class Sale : AggregateRoot
     public DateTime? SyncedAt { get; private set; }
     public Guid? StaffId { get; private set; }
     public Staff? Staff { get; private set; }
+    public string? StaffName { get; private set; }
     public Guid? BuyerId { get; private set; }
     public Buyer? Buyer { get; private set; }
+    public string? CustomerId { get; private set; }
+    public string? CustomerName { get; private set; }
+    public string? CustomerPhone { get; private set; }
+    public string? CustomerEmail { get; private set; }
     public Guid? PaymentMethodId { get; private set; }
     public PaymentMethodModel? PaymentMethod { get; private set; }
     public Guid? AddressId { get; private set; }
@@ -45,6 +50,7 @@ public class Sale : AggregateRoot
     public DateTime? UpdatedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
     public bool IsOffline { get; private set; }
+    public string? RefundReason { get; private set; }
 
     public IReadOnlyCollection<SaleItem> Items => _items.AsReadOnly();
     public IReadOnlyCollection<Payment> Payments => _payments.AsReadOnly();
@@ -58,10 +64,13 @@ public class Sale : AggregateRoot
         _payments = new List<Payment>();
         _discounts = new List<SaleDiscount>();
         CreatedAt = DateTime.UtcNow;
+        DomainEvents = new List<DomainEvent>();
     }
 
-    public Sale(Guid storeId, string invoiceNumber, DateTime saleDate, Guid? staffId = null, Guid? buyerId = null, 
-        Guid? paymentMethodId = null, Guid? addressId = null, Guid? cardTypeId = null, string? notes = null, bool isOffline = false)
+    public Sale(Guid storeId, string invoiceNumber, DateTime saleDate, Guid? staffId = null, string? staffName = null, 
+        Guid? buyerId = null, string? customerId = null, string? customerName = null, string? customerPhone = null, 
+        string? customerEmail = null, Guid? paymentMethodId = null, Guid? addressId = null, Guid? cardTypeId = null, 
+        string? notes = null, bool isOffline = false)
     {
         if (storeId == Guid.Empty)
             throw new DomainException("Store ID cannot be empty");
@@ -76,7 +85,12 @@ public class Sale : AggregateRoot
         InvoiceNumber = invoiceNumber;
         SaleDate = saleDate;
         StaffId = staffId;
+        StaffName = staffName;
         BuyerId = buyerId;
+        CustomerId = customerId;
+        CustomerName = customerName;
+        CustomerPhone = customerPhone;
+        CustomerEmail = customerEmail;
         PaymentMethodId = paymentMethodId;
         AddressId = addressId;
         CardTypeId = cardTypeId;
@@ -86,6 +100,7 @@ public class Sale : AggregateRoot
         SyncedAt = null;
         CreatedAt = DateTime.UtcNow;
         IsOffline = isOffline;
+        DomainEvents = new List<DomainEvent>();
     }
 
     public void AddItem(int productId, string? storeId, int quantity, decimal unitPrice, string? category)
@@ -138,8 +153,21 @@ public class Sale : AggregateRoot
             throw new DomainException("Customer name cannot be empty");
 
         BuyerId = customerId;
-        // We don't create a new Buyer here since it should be loaded from the repository
-        // The Buyer entity will be populated by EF Core when the sale is loaded
+        CustomerId = customerId.ToString();
+        CustomerName = name;
+        CustomerPhone = phone;
+        CustomerEmail = email;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void SetStaff(Guid staffId, string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Staff name cannot be empty");
+
+        StaffId = staffId;
+        StaffName = name;
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void AddNotes(string? notes)
@@ -193,7 +221,7 @@ public class Sale : AggregateRoot
         AddDomainEvent(new SaleVoidedDomainEvent(this));
     }
 
-    public void Refund(decimal amount)
+    public void Refund(decimal amount, string reason)
     {
         if (Status != SaleStatus.Completed)
             throw new DomainException("Only completed sales can be refunded");
@@ -204,9 +232,13 @@ public class Sale : AggregateRoot
         if (amount > TotalAmount)
             throw new DomainException("Refund amount cannot exceed total amount");
 
+        if (string.IsNullOrWhiteSpace(reason))
+            throw new DomainException("Refund reason is required");
+
         Status = SaleStatus.Refunded;
+        RefundReason = reason;
         UpdatedAt = DateTime.UtcNow;
-        AddDomainEvent(new SaleRefundedDomainEvent(this));
+        AddDomainEvent(new SaleRefundedDomainEvent(this, amount, reason));
     }
 
     public decimal GetSubtotal() => _items.Sum(i => i.UnitPrice * i.Quantity);

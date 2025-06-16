@@ -6,6 +6,6 @@ namespace POS.Domain.Repositories;
 
 public interface ISyncLogRepository : IRepository<SyncLog>
 {
-    new Task<SyncLog?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<SyncLog?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<SyncLog?> GetByEntityIdAsync(string entityType, Guid entityId, CancellationToken cancellationToken = default);
 } 

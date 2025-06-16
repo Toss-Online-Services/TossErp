@@ -7,4 +7,3 @@ global using System.Threading.Tasks;
 global using MediatR;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
-global using TossErp.POS.Infrastructure.Data;

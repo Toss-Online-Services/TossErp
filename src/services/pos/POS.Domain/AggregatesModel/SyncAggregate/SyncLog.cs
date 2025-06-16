@@ -17,17 +17,23 @@ public class SyncLog : AggregateRoot
     public DateTime? LastRetryAt { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
+    public DateTime SyncDate { get; private set; }
+    public string? SaleId { get; private set; }
+    public DateTime? SyncedAt { get; private set; }
+    public bool Success { get; private set; }
 
-    protected SyncLog()
+    public SyncLog()
     {
         EntityType = string.Empty;
         EntityId = string.Empty;
         Action = string.Empty;
         Status = "Pending";
         CreatedAt = DateTime.UtcNow;
+        SyncDate = DateTime.UtcNow;
+        Success = false;
     }
 
-    public SyncLog(Guid storeId, string entityType, string entityId, string action)
+    public SyncLog(Guid storeId, string entityType, string entityId, string action, string? saleId = null)
     {
         if (storeId == Guid.Empty)
             throw new DomainException("Store ID cannot be empty");
@@ -42,9 +48,12 @@ public class SyncLog : AggregateRoot
         EntityType = entityType;
         EntityId = entityId;
         Action = action;
+        SaleId = saleId;
         Status = "Pending";
         RetryCount = 0;
         CreatedAt = DateTime.UtcNow;
+        SyncDate = DateTime.UtcNow;
+        Success = false;
     }
 
     public void SetStatus(string status, string? errorMessage = null)
@@ -63,6 +72,8 @@ public class SyncLog : AggregateRoot
             throw new DomainException("Sync log is already processed");
 
         Status = "Processed";
+        Success = true;
+        SyncedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -73,6 +84,7 @@ public class SyncLog : AggregateRoot
 
         Status = "Failed";
         ErrorMessage = errorMessage;
+        Success = false;
         UpdatedAt = DateTime.UtcNow;
     }
 

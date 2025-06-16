@@ -21,25 +21,35 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
         public DateTime? SyncedAt { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime? UpdatedAt { get; private set; }
+        public string Code { get; private set; }
+        public string Role { get; private set; }
 
         protected Staff()
         {
             Name = string.Empty;
+            Code = string.Empty;
+            Role = string.Empty;
             Status = "Active";
             CreatedAt = DateTime.UtcNow;
             IsActive = true;
         }
 
-        public Staff(Guid storeId, string name, string? email = null, string? phone = null, string? position = null,
+        public Staff(Guid storeId, string name, string code, string role, string? email = null, string? phone = null, string? position = null,
             string? department = null, string? employeeId = null, string? taxId = null, string? notes = null)
         {
             if (storeId == Guid.Empty)
                 throw new DomainException("Store ID cannot be empty");
             if (string.IsNullOrWhiteSpace(name))
                 throw new DomainException("Name cannot be empty");
+            if (string.IsNullOrWhiteSpace(code))
+                throw new DomainException("Code cannot be empty");
+            if (string.IsNullOrWhiteSpace(role))
+                throw new DomainException("Role cannot be empty");
 
             StoreId = storeId;
             Name = name;
+            Code = code;
+            Role = role;
             Email = email;
             Phone = phone;
             Position = position;

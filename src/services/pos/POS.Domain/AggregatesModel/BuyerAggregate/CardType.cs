@@ -10,6 +10,7 @@ public class CardType : AggregateRoot
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
+    public string? StoreId { get; private set; }
 
     protected CardType()
     {
@@ -17,9 +18,10 @@ public class CardType : AggregateRoot
         Icon = string.Empty;
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
+        DomainEvents = new List<DomainEvent>();
     }
 
-    public CardType(string name, string icon)
+    public CardType(string name, string icon, string? storeId = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Name cannot be empty");
@@ -28,11 +30,13 @@ public class CardType : AggregateRoot
 
         Name = name;
         Icon = icon;
+        StoreId = storeId;
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
+        DomainEvents = new List<DomainEvent>();
     }
 
-    public void Update(string name, string? icon = null)
+    public void Update(string name, string? icon = null, string? storeId = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Name cannot be empty");
@@ -40,6 +44,8 @@ public class CardType : AggregateRoot
         Name = name;
         if (icon != null)
             Icon = icon;
+        if (storeId != null)
+            StoreId = storeId;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -61,10 +67,10 @@ public class CardType : AggregateRoot
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public static readonly CardType Visa = new("Visa", "/images/cards/visa.png");
-    public static readonly CardType MasterCard = new("MasterCard", "/images/cards/mastercard.png");
-    public static readonly CardType AmericanExpress = new("American Express", "/images/cards/amex.png");
-    public static readonly CardType Discover = new("Discover", "/images/cards/discover.png");
+    public static readonly CardType Visa = new("Visa", "/images/cards/visa.png") { DomainEvents = new List<DomainEvent>() };
+    public static readonly CardType MasterCard = new("MasterCard", "/images/cards/mastercard.png") { DomainEvents = new List<DomainEvent>() };
+    public static readonly CardType AmericanExpress = new("American Express", "/images/cards/amex.png") { DomainEvents = new List<DomainEvent>() };
+    public static readonly CardType Discover = new("Discover", "/images/cards/discover.png") { DomainEvents = new List<DomainEvent>() };
 }
 
 // CardType is generic and can be reused for POS domain. Consider extending for POS-specific payment types in the future.

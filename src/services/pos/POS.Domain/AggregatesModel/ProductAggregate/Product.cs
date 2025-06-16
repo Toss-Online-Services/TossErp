@@ -28,6 +28,12 @@ public class Product : AggregateRoot
     public DateTime? SyncedAt { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
+    public decimal StockQuantity { get; private set; }
+    public decimal LowStockThreshold { get; private set; }
+    public string Code { get; set; }
+    public Guid CategoryId { get; set; }
+    public int StockLevel { get; set; }
+    public string Sku { get; set; }
 
     protected Product()
     {
@@ -35,6 +41,8 @@ public class Product : AggregateRoot
         CreatedAt = DateTime.UtcNow;
         IsActive = true;
         IsSynced = false;
+        Code = string.Empty;
+        Sku = string.Empty;
     }
 
     public Product(Guid storeId, string name, decimal price, decimal cost, decimal taxRate, decimal stock,
@@ -80,6 +88,8 @@ public class Product : AggregateRoot
         IsActive = true;
         IsSynced = false;
         CreatedAt = DateTime.UtcNow;
+        Code = string.Empty;
+        Sku = string.Empty;
     }
 
     public void Update(string name, decimal price, decimal cost, decimal taxRate,

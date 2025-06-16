@@ -3,12 +3,9 @@
     public abstract class Entity
     {
         public Guid Id { get; protected set; }
+        public List<DomainEvent> DomainEvents { get; set; } = new List<DomainEvent>();
 
-        protected Entity()
-        {
-            Id = Guid.NewGuid();
-        }
-
+        
         public override bool Equals(object? obj)
         {
             if (obj is not Entity other)

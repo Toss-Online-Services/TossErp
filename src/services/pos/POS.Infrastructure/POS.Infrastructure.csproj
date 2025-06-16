@@ -19,9 +19,4 @@
     <ProjectReference Include="..\POS.Domain\POS.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\Configurations\" />
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

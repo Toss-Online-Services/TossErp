@@ -19,6 +19,9 @@ namespace POS.Domain.AggregatesModel.BuyerAggregate
         public bool IsActive { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime? UpdatedAt { get; private set; }
+        public string Type { get; set; }
+        public object Name { get; set; }
+        public string Code { get; set; }
 
         protected PaymentMethod()
         {
@@ -27,6 +30,9 @@ namespace POS.Domain.AggregatesModel.BuyerAggregate
             ExpirationDate = string.Empty;
             CreatedAt = DateTime.UtcNow;
             IsActive = true;
+            Type = string.Empty;
+            Name = string.Empty;
+            Code = string.Empty;
         }
 
         public PaymentMethod(Guid buyerId, string cardNumber, string cardHolderName, string expirationDate,
@@ -53,6 +59,9 @@ namespace POS.Domain.AggregatesModel.BuyerAggregate
             IsDefault = false;
             IsActive = true;
             CreatedAt = DateTime.UtcNow;
+            Type = string.Empty;
+            Name = string.Empty;
+            Code = string.Empty;
         }
 
         public void Update(string cardHolderName, string expirationDate, string? securityCode = null, string? alias = null)

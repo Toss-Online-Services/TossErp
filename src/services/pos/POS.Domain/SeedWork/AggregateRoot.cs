@@ -1,9 +1,11 @@
-﻿namespace POS.Domain.SeedWork
+﻿
+namespace POS.Domain.SeedWork
 {
     public abstract class AggregateRoot : Entity, IAggregateRoot
     {
         private readonly List<DomainEvent> _domainEvents = new();
-        public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+        IReadOnlyCollection<DomainEvent> IAggregateRoot.DomainEvents => throw new NotImplementedException();
 
         protected void AddDomainEvent(DomainEvent domainEvent)
         {
