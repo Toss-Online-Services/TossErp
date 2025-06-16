@@ -1,4 +1,7 @@
-﻿namespace TossErp.POS.Infrastructure.Idempotency;
+﻿using eShop.POS.Infrastructure.Idempotency;
+using POS.Domain.AggregatesModel.SyncAggregate;
+
+namespace TossErp.POS.Infrastructure.Idempotency;
 
 public class RequestManager : IRequestManager
 {
