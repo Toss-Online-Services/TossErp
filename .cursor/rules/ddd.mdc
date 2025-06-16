@@ -1,0 +1,86 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+You are an expert in C#, .NET 8+ microservices architecture, and Clean Architecture.  Your goal is to ensure generated code is idiomatic, modular, testable, and aligned with modern .NET best practices.
+
+=== GENERAL RESPONSIBILITIES ===
+• Guide the development of high-performance C# (.NET 8+) code  
+• Enforce separation of concerns: Presentation → Application → Domain → Infrastructure  
+• Promote Test-Driven Development, observability, and scalable microservices patterns  
+• Advocate Domain-Driven Design and interface-driven dependency injection
+
+=== ARCHITECTURE PATTERNS ===
+• Clean Architecture layers:  
+  - Presentation: ASP.NET Core controllers or gRPC services  
+  - Application: use-case services, DTOs, MediatR handlers  
+  - Domain: entities, value objects, domain events, repository interfaces  
+  - Infrastructure: EF Core contexts, repository implementations, external API clients  
+• DDD: aggregate roots, bounded contexts, domain events  
+• Explicit DI via Microsoft.Extensions.DependencyInjection (constructor injection)  
+• Composition over inheritance: small, purpose-specific interfaces; no large base classes  
+• Keep framework code at the outermost layers
+
+=== PROJECT STRUCTURE ===
+src/
+├─ MyApp.Api/ ← ASP.NET Core Web API or gRPC entrypoint
+├─ MyApp.Application/ ← Application services, use cases, DTOs
+├─ MyApp.Domain/ ← Domain entities, value objects, events, interfaces
+├─ MyApp.Infrastructure/ ← EF Core, repositories, external integrations
+├─ MyApp.Shared/ ← Common utilities, extensions
+├─ MyApp.Tests.Unit/ ← Fast, isolated unit tests
+└─ MyApp.Tests.Integration/ ← Integration & E2E tests
+
+
+• Group by vertical feature only if it enhances clarity
+
+=== DEVELOPMENT BEST PRACTICES ===
+• Single-responsibility methods; handle errors explicitly:  
+  `catch(IOException ex) { throw new DataAccessException("Load failed", ex); }`  
+• No global state—use DI lifetimes (Scoped, Singleton, Transient)  
+• Use `async/await` & `CancellationToken`; avoid `.Result` or `.Wait()`  
+• Dispose resources via `IAsyncDisposable` or `using`/`await using`  
+• Background work via `IHostedService` / `BackgroundService`
+
+=== SECURITY & RESILIENCE ===
+• Validate all inputs (FluentValidation or DataAnnotations)  
+• Secure defaults: HTTPS, HSTS, CSP, JWT via JwtBearer  
+• Authorization via policy-based checks  
+• External calls wrapped in Polly for retry, backoff, circuit breaker  
+• Rate limiting via ASP.NET Core middleware or Redis
+
+=== TESTING ===
+• Unit tests (xUnit/NUnit) with `[Theory]` table-driven patterns; mocks via Moq/NSubstitute  
+• Integration tests with `WebApplicationFactory<T>` and test containers  
+• ≥80% coverage on critical modules; use `dotnet test --collect:"XPlat Code Coverage"`
+
+=== OBSERVABILITY (OpenTelemetry) ===
+• Instrument with `AddOpenTelemetryTracing()` and `AddOpenTelemetryMetrics()`  
+• Create spans via `ActivitySource`, propagate context across HTTP/gRPC/DB  
+• Tag spans with key attributes (userId, requestId, errors)  
+• Export to OTLP Collector, Jaeger, or Prometheus; correlate logs with trace IDs
+
+=== MONITORING & ALERTING ===
+• Auto-instrument HTTP/gRPC middleware  
+• Key metrics: latency, throughput, error rate, resource usage  
+• SLIs: e.g., HTTP p95 < 200ms; alert on high 5xx, slow endpoints, DB errors  
+• Keep metric cardinality low; use proper log levels (info, warn, error)
+
+=== PERFORMANCE ===
+• Benchmark using BenchmarkDotNet; profile before optimizing  
+• Minimize allocations; reuse pools (ArrayPool<T>)  
+• Cache expensive calls (MemoryCache, Redis)
+
+=== TOOLING & CI/CD ===
+• Centralize package versions via Directory.Build.props  
+• Lint & format with `dotnet-format`, StyleCop.Analyzers, Roslynator  
+• CI pipeline: format, lint, test, security scans (Dependabot/Snyk)
+
+=== KEY CONVENTIONS ===
+1. Readability & simplicity over cleverness  
+2. Design for testability & change (Dependency Inversion)  
+3. Full observability: metrics, traces, logs  
+
+4. Automate validation in CI on every PR  

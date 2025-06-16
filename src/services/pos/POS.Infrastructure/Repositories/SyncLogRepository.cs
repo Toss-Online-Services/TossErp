@@ -2,6 +2,8 @@
 using POS.Domain.AggregatesModel.SyncAggregate;
 using POS.Domain.Repositories;
 using TossErp.POS.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using ISyncLogRepository = POS.Domain.Repositories.ISyncLogRepository;
 
 namespace TossErp.POS.Infrastructure.Repositories;
 
@@ -14,41 +16,50 @@ public class SyncLogRepository : ISyncLogRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<SyncLog?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<SyncLog?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await _context.SyncLogs.FindAsync(new object[] { id }, cancellationToken);
-    }
-
-    public async Task<IEnumerable<SyncLog>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        return await _context.SyncLogs.ToListAsync(cancellationToken);
-    }
-
-    public async Task<IEnumerable<SyncLog>> FindAsync(Expression<Func<SyncLog, bool>> predicate, CancellationToken cancellationToken = default)
-    {
-        return await _context.SyncLogs.Where(predicate).ToListAsync(cancellationToken);
-    }
-
-    public async Task<SyncLog> AddAsync(SyncLog syncLog, CancellationToken cancellationToken = default)
-    {
-        await _context.SyncLogs.AddAsync(syncLog, cancellationToken);
-        return syncLog;
-    }
-
-    public void Update(SyncLog syncLog)
-    {
-        _context.Entry(syncLog).State = EntityState.Modified;
-    }
-
-    public void Delete(SyncLog syncLog)
-    {
-        _context.SyncLogs.Remove(syncLog);
+        return await _context.SyncLogs
+            .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
     public async Task<SyncLog?> GetByEntityIdAsync(string entityType, Guid entityId, CancellationToken cancellationToken = default)
     {
         return await _context.SyncLogs
-            .FirstOrDefaultAsync(sl => sl.EntityType == entityType && sl.EntityId == entityId, cancellationToken);
+            .FirstOrDefaultAsync(s => s.EntityType == entityType && s.EntityId == entityId, cancellationToken);
+    }
+
+    public async Task<IEnumerable<SyncLog>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.SyncLogs
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<SyncLog?> FindAsync(Expression<Func<SyncLog, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        return await _context.SyncLogs
+            .FirstOrDefaultAsync(predicate, cancellationToken);
+    }
+
+    public async Task AddAsync(SyncLog entity, CancellationToken cancellationToken = default)
+    {
+        await _context.SyncLogs.AddAsync(entity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateAsync(SyncLog entity, CancellationToken cancellationToken = default)
+    {
+        _context.SyncLogs.Update(entity);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var syncLog = await _context.SyncLogs.FindAsync(new object[] { id }, cancellationToken);
+        if (syncLog != null)
+        {
+            _context.SyncLogs.Remove(syncLog);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 
     public async Task<IEnumerable<SyncLog>> GetByStoreIdAsync(Guid storeId, CancellationToken cancellationToken = default)

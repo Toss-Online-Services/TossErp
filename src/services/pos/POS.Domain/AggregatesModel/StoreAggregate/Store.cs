@@ -1,11 +1,12 @@
-﻿using POS.Domain.Common;
-using POS.Domain.Exceptions;
+﻿using POS.Domain.Exceptions;
 using POS.Domain.SeedWork;
+using POS.Domain.Models;
 
 namespace POS.Domain.AggregatesModel.StoreAggregate;
 
 public class Store : AggregateRoot
 {
+    public new int Id { get; set; }
     public string Name { get; private set; }
     public string? Description { get; private set; }
     public string? Code { get; private set; }

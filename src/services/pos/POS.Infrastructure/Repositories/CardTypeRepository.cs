@@ -2,6 +2,8 @@
 using POS.Domain.AggregatesModel.BuyerAggregate;
 using POS.Domain.Repositories;
 using TossErp.POS.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using ICardTypeRepository = POS.Domain.Repositories.ICardTypeRepository;
 
 namespace TossErp.POS.Infrastructure.Repositories;
 
@@ -16,33 +18,42 @@ public class CardTypeRepository : ICardTypeRepository
 
     public async Task<CardType?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await _context.CardTypes.FindAsync(new object[] { id }, cancellationToken);
+        return await _context.CardTypes
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<CardType>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.CardTypes.ToListAsync(cancellationToken);
+        return await _context.CardTypes
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<CardType>> FindAsync(Expression<Func<CardType, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<CardType?> FindAsync(Expression<Func<CardType, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        return await _context.CardTypes.Where(predicate).ToListAsync(cancellationToken);
+        return await _context.CardTypes
+            .FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
-    public async Task<CardType> AddAsync(CardType cardType, CancellationToken cancellationToken = default)
+    public async Task AddAsync(CardType entity, CancellationToken cancellationToken = default)
     {
-        await _context.CardTypes.AddAsync(cardType, cancellationToken);
-        return cardType;
+        await _context.CardTypes.AddAsync(entity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public void Update(CardType cardType)
+    public async Task UpdateAsync(CardType entity, CancellationToken cancellationToken = default)
     {
-        _context.Entry(cardType).State = EntityState.Modified;
+        _context.CardTypes.Update(entity);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public void Delete(CardType cardType)
+    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
-        _context.CardTypes.Remove(cardType);
+        var cardType = await _context.CardTypes.FindAsync(new object[] { id }, cancellationToken);
+        if (cardType != null)
+        {
+            _context.CardTypes.Remove(cardType);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 
     public async Task<CardType> GetByNameAsync(string name, CancellationToken cancellationToken = default)

@@ -3,8 +3,9 @@ using POS.Domain.AggregatesModel.StoreAggregate;
 using POS.Domain.AggregatesModel.SaleAggregate;
 using POS.Domain.AggregatesModel.ProductAggregate;
 using POS.Domain.AggregatesModel.BuyerAggregate;
-using POS.Domain.Common;
+using POS.Domain.SeedWork;
 using POS.Domain.AggregatesModel.SyncAggregate;
+using POS.Domain.AggregatesModel.TransactionAggregate;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace TossErp.POS.Infrastructure.Data;
@@ -31,6 +32,7 @@ public class POSContext : DbContext, IUnitOfWork
     public DbSet<CardType> CardTypes { get; set; }
     public DbSet<SyncLog> SyncLogs { get; set; }
     public DbSet<ClientRequest> ClientRequests { get; set; }
+    public DbSet<Transaction> Transactions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

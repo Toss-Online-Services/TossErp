@@ -1,7 +1,10 @@
 ﻿using System.Linq.Expressions;
-using POS.Domain.AggregatesModel.SyncAggregate;
+using Microsoft.EntityFrameworkCore;
+using POS.Domain.AggregatesModel.ClientRequestAggregate;
 using POS.Domain.Repositories;
 using TossErp.POS.Infrastructure.Data;
+using POS.Domain.Common;
+using POS.Domain.SeedWork;
 
 namespace TossErp.POS.Infrastructure.Repositories;
 
@@ -14,7 +17,9 @@ public class ClientRequestRepository : IClientRequestRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<ClientRequest?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public IUnitOfWork UnitOfWork => _context;
+
+    public async Task<ClientRequest?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return await _context.ClientRequests.FindAsync(new object[] { id }, cancellationToken);
     }
@@ -29,23 +34,30 @@ public class ClientRequestRepository : IClientRequestRepository
         return await _context.ClientRequests.Where(predicate).ToListAsync(cancellationToken);
     }
 
-    public async Task<ClientRequest> AddAsync(ClientRequest clientRequest, CancellationToken cancellationToken = default)
+    public async Task AddAsync(ClientRequest clientRequest, CancellationToken cancellationToken = default)
     {
         await _context.ClientRequests.AddAsync(clientRequest, cancellationToken);
-        return clientRequest;
     }
 
-    public void Update(ClientRequest clientRequest)
+    public async Task UpdateAsync(ClientRequest clientRequest, CancellationToken cancellationToken = default)
     {
         _context.Entry(clientRequest).State = EntityState.Modified;
+        await Task.CompletedTask;
     }
 
-    public void Delete(ClientRequest clientRequest)
+    public async Task DeleteAsync(ClientRequest clientRequest, CancellationToken cancellationToken = default)
     {
         _context.ClientRequests.Remove(clientRequest);
+        await Task.CompletedTask;
     }
 
-    public async Task<IEnumerable<ClientRequest>> GetByStoreIdAsync(Guid storeId, CancellationToken cancellationToken = default)
+    public async Task<ClientRequest?> GetByRequestIdAsync(string requestId, CancellationToken cancellationToken = default)
+    {
+        return await _context.ClientRequests
+            .FirstOrDefaultAsync(c => c.RequestId == requestId, cancellationToken);
+    }
+
+    public async Task<IEnumerable<ClientRequest>> GetByStoreAsync(string storeId, CancellationToken cancellationToken = default)
     {
         return await _context.ClientRequests
             .Where(c => c.StoreId == storeId)
@@ -53,16 +65,11 @@ public class ClientRequestRepository : IClientRequestRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<ClientRequest>> GetByRequestTypeAsync(string requestType, CancellationToken cancellationToken = default)
-    {
-        return await _context.ClientRequests.Where(r => r.RequestType == requestType).ToListAsync(cancellationToken);
-    }
-
-    public async Task<ClientRequest?> GetLastRequestByStoreIdAsync(Guid storeId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<ClientRequest>> GetByStatusAsync(string status, CancellationToken cancellationToken = default)
     {
         return await _context.ClientRequests
-            .Where(c => c.StoreId == storeId)
+            .Where(c => c.Status == status)
             .OrderByDescending(c => c.CreatedAt)
-            .FirstOrDefaultAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
     }
 } 

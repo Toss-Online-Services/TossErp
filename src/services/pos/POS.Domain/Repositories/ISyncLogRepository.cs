@@ -1,6 +1,6 @@
 ﻿using POS.Domain.AggregatesModel.SyncAggregate;
 using POS.Domain.AggregatesModel.SyncLogAggregate;
-using POS.Domain.Common;
+using POS.Domain.Repositories;
 
 namespace POS.Domain.Repositories;
 

@@ -1,6 +1,6 @@
 ﻿#nullable enable
 using POS.Domain.AggregatesModel.StoreAggregate;
-using POS.Domain.Common;
+using POS.Domain.Repositories;
 
 namespace POS.Domain.Repositories;
 

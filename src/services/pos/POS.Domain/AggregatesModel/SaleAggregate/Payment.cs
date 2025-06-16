@@ -1,5 +1,6 @@
 ﻿using POS.Domain.Exceptions;
 using POS.Domain.SeedWork;
+using POS.Domain.Enums;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate;
 

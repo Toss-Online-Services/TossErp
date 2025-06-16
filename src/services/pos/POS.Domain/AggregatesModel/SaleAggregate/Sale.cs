@@ -1,11 +1,13 @@
 ﻿#nullable enable
 using POS.Domain.AggregatesModel.StaffAggregate;
-using POS.Domain.Common;
 using POS.Domain.SeedWork;
 using POS.Domain.AggregatesModel.BuyerAggregate;
 using POS.Domain.AggregatesModel.SaleAggregate.Events;
 using POS.Domain.Exceptions;
 using POS.Domain.AggregatesModel.StoreAggregate;
+using POS.Domain.Enums;
+using POS.Domain.Models;
+using PaymentMethodModel = POS.Domain.Models.PaymentMethod;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate;
 
@@ -34,13 +36,15 @@ public class Sale : AggregateRoot
     public Guid? BuyerId { get; private set; }
     public Buyer? Buyer { get; private set; }
     public Guid? PaymentMethodId { get; private set; }
-    public PaymentMethod? PaymentMethod { get; private set; }
+    public PaymentMethodModel? PaymentMethod { get; private set; }
     public Guid? AddressId { get; private set; }
     public Address? Address { get; private set; }
     public Guid? CardTypeId { get; private set; }
     public CardType? CardType { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
+    public DateTime? CompletedAt { get; private set; }
+    public bool IsOffline { get; private set; }
 
     public IReadOnlyCollection<SaleItem> Items => _items.AsReadOnly();
     public IReadOnlyCollection<Payment> Payments => _payments.AsReadOnly();
@@ -57,7 +61,7 @@ public class Sale : AggregateRoot
     }
 
     public Sale(Guid storeId, string invoiceNumber, DateTime saleDate, Guid? staffId = null, Guid? buyerId = null, 
-        Guid? paymentMethodId = null, Guid? addressId = null, Guid? cardTypeId = null, string? notes = null)
+        Guid? paymentMethodId = null, Guid? addressId = null, Guid? cardTypeId = null, string? notes = null, bool isOffline = false)
     {
         if (storeId == Guid.Empty)
             throw new DomainException("Store ID cannot be empty");
@@ -81,11 +85,12 @@ public class Sale : AggregateRoot
         IsSynced = false;
         SyncedAt = null;
         CreatedAt = DateTime.UtcNow;
+        IsOffline = isOffline;
     }
 
-    public void AddItem(Guid productId, string productName, decimal unitPrice, int quantity, decimal discount = 0)
+    public void AddItem(int productId, string? storeId, int quantity, decimal unitPrice, string? category)
     {
-        var item = new SaleItem(productId, productName, quantity, unitPrice, 0.1m); // Assuming 10% tax rate
+        var item = new SaleItem(productId, productId, storeId, quantity, unitPrice, category);
         _items.Add(item);
         CalculateTotalAmount();
         AddDomainEvent(new SaleItemAddedDomainEvent(this, item));
@@ -119,9 +124,9 @@ public class Sale : AggregateRoot
         }
     }
 
-    public void AddDiscount(string name, decimal amount, DiscountType type, string? reason = null, Guid? staffId = null)
+    public void AddDiscount(string? code, string? storeId, DiscountType type, decimal amount, DateTime startDate, DateTime endDate)
     {
-        var discount = new SaleDiscount(Id, name, amount, type, reason, staffId);
+        var discount = new SaleDiscount(code, storeId, type, amount, startDate, endDate);
         _discounts.Add(discount);
         CalculateTotalAmount();
         AddDomainEvent(new SaleDiscountAddedDomainEvent(this, discount));
@@ -174,6 +179,7 @@ public class Sale : AggregateRoot
 
         Status = SaleStatus.Completed;
         UpdatedAt = DateTime.UtcNow;
+        CompletedAt = DateTime.UtcNow;
         AddDomainEvent(new SaleCompletedDomainEvent(this));
     }
 
@@ -219,5 +225,13 @@ public class Sale : AggregateRoot
         Balance = TotalAmount - AmountPaid;
         UpdatedAt = DateTime.UtcNow;
     }
+}
+
+public enum SaleStatus
+{
+    Pending,
+    Completed,
+    Voided,
+    Refunded
 }
 
