@@ -1,9 +1,10 @@
-using POS.Domain.Common;
+﻿using POS.Domain.Common;
 using POS.Domain.Common.Events;
 using POS.Domain.Common.ValueObjects;
 using POS.Domain.Exceptions;
 using POS.Domain.SeedWork;
 using POS.Domain.AggregatesModel.InventoryAggregate.Events;
+using POS.Domain.Enums;
 
 namespace POS.Domain.AggregatesModel.InventoryAggregate
 {
