@@ -111,7 +111,7 @@ namespace POS.Domain.AggregatesModel.PaymentAggregate
             LastRetryAt = DateTime.UtcNow;
             UpdatedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new PaymentRetryDomainEvent(Id, SaleId, Amount, Method.ToString(), RetryCount));
+            AddDomainEvent(new PaymentRetryDomainEvent(Id, RetryCount, "System", LastRetryAt.Value));
         }
 
         public void ProcessPartialRefund(decimal refundAmount, string reason)
@@ -128,7 +128,7 @@ namespace POS.Domain.AggregatesModel.PaymentAggregate
             PartialRefundAmount += refundAmount;
             UpdatedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new PaymentRefundedDomainEvent(Id, SaleId, refundAmount, reason));
+            AddDomainEvent(new PaymentRefundedDomainEvent(Id, refundAmount, "System", UpdatedAt.Value, reason));
         }
 
         public void AddPaymentSplit(PaymentSplit split)

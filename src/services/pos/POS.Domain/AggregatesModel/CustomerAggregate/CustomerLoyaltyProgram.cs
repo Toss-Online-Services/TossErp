@@ -20,7 +20,18 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public DateTime CreatedAt { get; private set; }
         public DateTime? LastModifiedAt { get; private set; }
 
-        private CustomerLoyaltyProgram() { }
+        private CustomerLoyaltyProgram()
+        {
+            ProgramName = string.Empty;
+            MembershipNumber = string.Empty;
+            MembershipTier = string.Empty;
+            EnrollmentDate = DateTime.UtcNow;
+            PointsBalance = 0;
+            LifetimePoints = 0;
+            IsActive = true;
+            ReferralCount = 0;
+            CreatedAt = DateTime.UtcNow;
+        }
 
         public CustomerLoyaltyProgram(
             string programName,

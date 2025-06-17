@@ -87,7 +87,7 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             PhoneNumber = phoneNumber;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerContactInfoUpdatedDomainEvent(Id, firstName, lastName, email, phoneNumber));
+            AddDomainEvent(new CustomerContactInfoUpdatedDomainEvent(Id, firstName, lastName, email, phoneNumber, LastModifiedAt.Value));
         }
 
         public void UpdateAddress(Address address)
@@ -95,7 +95,16 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             Address = address;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerAddressUpdatedDomainEvent(Id, address));
+            AddDomainEvent(new CustomerAddressUpdatedDomainEvent(
+                Id,
+                Guid.NewGuid(),
+                address.Street,
+                address.City,
+                address.State,
+                address.Country,
+                address.ZipCode,
+                "Primary",
+                LastModifiedAt.Value));
         }
 
         public void SetCreditLimit(decimal creditLimit)
@@ -103,10 +112,11 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             if (creditLimit < 0)
                 throw new DomainException("Credit limit cannot be negative");
 
+            var oldCreditLimit = CreditLimit;
             CreditLimit = creditLimit;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerCreditLimitUpdatedDomainEvent(Id, creditLimit));
+            AddDomainEvent(new CustomerCreditLimitUpdatedDomainEvent(Id, oldCreditLimit, creditLimit, "System", LastModifiedAt.Value));
         }
 
         public void SetPaymentTerms(int days)
@@ -114,18 +124,20 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             if (days < 0)
                 throw new DomainException("Payment terms cannot be negative");
 
+            var oldPaymentTerms = PaymentTerms;
             PaymentTerms = days;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerPaymentTermsUpdatedDomainEvent(Id, days));
+            AddDomainEvent(new CustomerPaymentTermsUpdatedDomainEvent(Id, oldPaymentTerms.ToString(), days.ToString(), "System", LastModifiedAt.Value));
         }
 
         public void UpdateBalance(decimal amount)
         {
+            var oldBalance = Balance;
             Balance += amount;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerBalanceUpdatedDomainEvent(Id, Balance));
+            AddDomainEvent(new CustomerBalanceUpdatedDomainEvent(Id, oldBalance, Balance, "System", "USD", LastModifiedAt.Value));
         }
 
         public void RecordPurchase(decimal amount)
@@ -138,15 +150,16 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             PurchaseCount++;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerPurchaseRecordedDomainEvent(Id, amount, LastPurchaseDate.Value));
+            AddDomainEvent(new CustomerPurchaseRecordedDomainEvent(Id, Guid.NewGuid(), amount, "USD", LastModifiedAt.Value));
         }
 
         public void SetCustomerType(CustomerType type)
         {
+            var oldType = CustomerType;
             CustomerType = type;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerTypeUpdatedDomainEvent(Id, type));
+            AddDomainEvent(new CustomerTypeUpdatedDomainEvent(Id, oldType.ToString(), type.ToString(), "System", LastModifiedAt.Value));
         }
 
         public void AddPriceList(PriceList priceList)
@@ -157,7 +170,7 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             PriceLists.Add(priceList);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerPriceListAddedDomainEvent(Id, priceList.Id));
+            AddDomainEvent(new CustomerPriceListAddedDomainEvent(Id, priceList.Id, priceList.Name, false, "System", LastModifiedAt.Value));
         }
 
         public void RemovePriceList(Guid priceListId)
@@ -169,7 +182,7 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             PriceLists.Remove(priceList);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerPriceListRemovedDomainEvent(Id, priceListId));
+            AddDomainEvent(new CustomerPriceListRemovedDomainEvent(Id, priceListId, priceList.Name, "System", LastModifiedAt.Value));
         }
 
         public void EnrollInLoyaltyProgram(LoyaltyProgram program)
@@ -180,7 +193,7 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             LoyaltyProgram = program;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerEnrolledInLoyaltyProgramDomainEvent(Id, program.Id));
+            AddDomainEvent(new CustomerEnrolledInLoyaltyProgramDomainEvent(Id, program.Id, program.Name, program.MembershipNumber, program.MembershipTier, "System", LastModifiedAt.Value));
         }
 
         public void AddContact(CustomerContact contact)
@@ -191,7 +204,16 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             Contacts.Add(contact);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerContactAddedDomainEvent(Id, contact.Id));
+            AddDomainEvent(new CustomerContactAddedDomainEvent(
+                Id,
+                contact.Id,
+                contact.FirstName,
+                contact.LastName,
+                contact.Email,
+                contact.PhoneNumber,
+                contact.Title ?? "General",
+                "System",
+                LastModifiedAt.Value));
         }
 
         public void RemoveContact(Guid contactId)
@@ -203,15 +225,27 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             Contacts.Remove(contact);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerContactRemovedDomainEvent(Id, contactId));
+            AddDomainEvent(new CustomerContactRemovedDomainEvent(Id, contactId, contact.FirstName, contact.LastName, "System", LastModifiedAt.Value));
         }
 
         public void AddDocument(CustomerDocument document)
         {
+            if (Documents.Any(d => d.Name == document.Name))
+                throw new DomainException("Document with this name already exists");
+
             Documents.Add(document);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerDocumentAddedDomainEvent(Id, document.Id));
+            AddDomainEvent(new CustomerDocumentAddedDomainEvent(
+                Id,
+                document.Id,
+                document.Name,
+                document.FileType,
+                document.FilePath,
+                document.UploadedBy,
+                document.Description ?? string.Empty,
+                LastModifiedAt.Value
+            ));
         }
 
         public void RemoveDocument(Guid documentId)
@@ -223,32 +257,34 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             Documents.Remove(document);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerDocumentRemovedDomainEvent(Id, documentId));
+            AddDomainEvent(new CustomerDocumentRemovedDomainEvent(Id, documentId, document.Name, document.FileType, "System", LastModifiedAt.Value));
         }
 
         public void AddNote(string note, string createdBy)
         {
-            if (string.IsNullOrWhiteSpace(note))
-                throw new DomainException("Note cannot be empty");
-            if (string.IsNullOrWhiteSpace(createdBy))
-                throw new DomainException("Note creator cannot be empty");
-
             var customerNote = new CustomerNote(note, createdBy);
             CustomerNotes.Add(customerNote);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerNoteAddedDomainEvent(Id, customerNote.Id));
+            AddDomainEvent(new CustomerNoteAddedDomainEvent(
+                Id,
+                customerNote.Id,
+                "Customer Note",
+                note,
+                "General",
+                createdBy,
+                LastModifiedAt.Value));
         }
 
         public void Deactivate()
         {
             if (!IsActive)
-                throw new DomainException("Customer is already inactive");
+                throw new DomainException("Customer is already deactivated");
 
             IsActive = false;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerDeactivatedDomainEvent(Id));
+            AddDomainEvent(new CustomerDeactivatedDomainEvent(Id, LastModifiedAt.Value));
         }
 
         public void Reactivate()
@@ -259,7 +295,7 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             IsActive = true;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerReactivatedDomainEvent(Id));
+            AddDomainEvent(new CustomerReactivatedDomainEvent(Id, LastModifiedAt.Value));
         }
 
         public void UpdatePreferences(
@@ -275,34 +311,41 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             string? dietaryRestrictions = null,
             string? specialInstructions = null)
         {
-            Preferences.UpdateNotificationPreferences(
-                receiveEmailNotifications,
-                receiveSMSNotifications,
-                receivePostalMail);
-
+            var oldPreferences = Preferences;
+            
+            if (receiveEmailNotifications.HasValue)
+                Preferences.UpdateNotificationPreferences(emailNotifications: receiveEmailNotifications);
+            if (receiveSMSNotifications.HasValue)
+                Preferences.UpdateNotificationPreferences(smsNotifications: receiveSMSNotifications);
+            if (receivePostalMail.HasValue)
+                Preferences.UpdateNotificationPreferences(postalMail: receivePostalMail);
             if (preferredLanguage != null)
                 Preferences.UpdateLanguage(preferredLanguage);
-
             if (preferredCurrency != null)
                 Preferences.UpdateCurrency(preferredCurrency);
-
             if (preferredPaymentMethod != null)
                 Preferences.SetPreferredPaymentMethod(preferredPaymentMethod);
-
             if (preferredShippingMethod != null)
                 Preferences.SetPreferredShippingMethod(preferredShippingMethod);
-
-            Preferences.UpdateMarketingPreferences(optInMarketing, optInThirdParty);
-
+            if (optInMarketing.HasValue || optInThirdParty.HasValue)
+                Preferences.UpdateMarketingPreferences(optInMarketing, optInThirdParty);
             if (dietaryRestrictions != null)
                 Preferences.SetDietaryRestrictions(dietaryRestrictions);
-
             if (specialInstructions != null)
                 Preferences.SetSpecialInstructions(specialInstructions);
 
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerPreferencesUpdatedDomainEvent(Id));
+            AddDomainEvent(new CustomerPreferencesUpdatedDomainEvent(
+                Id,
+                oldPreferences.ReceiveEmailNotifications,
+                oldPreferences.ReceiveSMSNotifications,
+                oldPreferences.ReceivePostalMail,
+                oldPreferences.PreferredLanguage,
+                oldPreferences.PreferredCurrency,
+                oldPreferences.PreferredPaymentMethod ?? string.Empty,
+                oldPreferences.DietaryRestrictions ?? string.Empty,
+                LastModifiedAt.Value));
         }
 
         public string FullName => $"{FirstName} {LastName}";

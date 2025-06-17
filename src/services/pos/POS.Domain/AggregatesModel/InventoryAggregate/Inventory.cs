@@ -67,12 +67,13 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             if (newQuantity < 0)
                 throw new DomainException("Quantity cannot be negative");
 
+            var oldQuantity = Quantity;
             var adjustment = new InventoryAdjustment(Quantity, newQuantity, reason);
             Adjustments.Add(adjustment);
             Quantity = newQuantity;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new InventoryQuantityUpdatedDomainEvent(Id, Quantity, reason));
+            AddDomainEvent(new InventoryQuantityUpdatedDomainEvent(Id, oldQuantity, newQuantity, reason, LastModifiedAt.Value));
         }
 
         public void SetLotNumber(string lotNumber)
@@ -80,10 +81,11 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             if (string.IsNullOrWhiteSpace(lotNumber))
                 throw new DomainException("Lot number cannot be empty");
 
+            var oldLotNumber = LotNumber ?? string.Empty;
             LotNumber = lotNumber;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new InventoryLotNumberUpdatedDomainEvent(Id, lotNumber));
+            AddDomainEvent(new InventoryLotNumberUpdatedDomainEvent(Id, oldLotNumber, lotNumber, LastModifiedAt.Value));
         }
 
         public void SetExpiryDate(DateTime expiryDate)
@@ -91,10 +93,11 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             if (expiryDate <= DateTime.UtcNow)
                 throw new DomainException("Expiry date must be in the future");
 
+            var oldExpiryDate = ExpiryDate;
             ExpiryDate = expiryDate;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new InventoryExpiryDateUpdatedDomainEvent(Id, expiryDate));
+            AddDomainEvent(new InventoryExpiryDateUpdatedDomainEvent(Id, oldExpiryDate, expiryDate, "System", LastModifiedAt.Value));
         }
 
         public void SetSerialNumber(string serialNumber)
@@ -102,18 +105,20 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             if (string.IsNullOrWhiteSpace(serialNumber))
                 throw new DomainException("Serial number cannot be empty");
 
+            var oldSerialNumber = SerialNumber ?? string.Empty;
             SerialNumber = serialNumber;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new InventorySerialNumberUpdatedDomainEvent(Id, serialNumber));
+            AddDomainEvent(new InventorySerialNumberUpdatedDomainEvent(Id, oldSerialNumber, serialNumber, "System", LastModifiedAt.Value));
         }
 
         public void SetUnitOfMeasure(UnitOfMeasure unitOfMeasure)
         {
+            var oldUnitOfMeasure = UnitOfMeasure.ToString();
             UnitOfMeasure = unitOfMeasure;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new InventoryUnitOfMeasureUpdatedDomainEvent(Id, unitOfMeasure));
+            AddDomainEvent(new InventoryUnitOfMeasureUpdatedDomainEvent(Id, oldUnitOfMeasure, unitOfMeasure.ToString(), "System", LastModifiedAt.Value));
         }
 
         public void UpdateUnitCost(decimal unitCost)
@@ -121,10 +126,11 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             if (unitCost < 0)
                 throw new DomainException("Unit cost cannot be negative");
 
+            var oldUnitCost = UnitCost;
             UnitCost = unitCost;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new InventoryUnitCostUpdatedDomainEvent(Id, unitCost));
+            AddDomainEvent(new InventoryUnitCostUpdatedDomainEvent(Id, oldUnitCost, unitCost, "USD", "System", LastModifiedAt.Value));
         }
 
         public void SetLocation(string location, string binNumber)
@@ -132,11 +138,12 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             if (string.IsNullOrWhiteSpace(location))
                 throw new DomainException("Location cannot be empty");
 
+            var oldLocation = Location ?? string.Empty;
             Location = location;
             BinNumber = binNumber;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new InventoryLocationUpdatedDomainEvent(Id, location, binNumber));
+            AddDomainEvent(new InventoryLocationUpdatedDomainEvent(Id, oldLocation, location, "System", LastModifiedAt.Value));
         }
 
         public void Reserve(int quantity, string reason)
@@ -151,7 +158,7 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             Reservations.Add(reservation);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new InventoryReservedDomainEvent(Id, quantity, reason));
+            AddDomainEvent(new InventoryReservedDomainEvent(Id, quantity, "System", LastModifiedAt.Value));
         }
 
         public void ReleaseReservation(Guid reservationId)
@@ -163,7 +170,7 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             Reservations.Remove(reservation);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new InventoryReservationReleasedDomainEvent(Id, reservationId));
+            AddDomainEvent(new InventoryReservationReleasedDomainEvent(Id, reservation.Quantity, "System", LastModifiedAt.Value));
         }
 
         public void Deactivate()
@@ -174,7 +181,7 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             IsActive = false;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new InventoryDeactivatedDomainEvent(Id));
+            AddDomainEvent(new InventoryDeactivatedDomainEvent(Id, "System", LastModifiedAt.Value));
         }
 
         public void Reactivate()
@@ -185,7 +192,7 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             IsActive = true;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new InventoryReactivatedDomainEvent(Id));
+            AddDomainEvent(new InventoryReactivatedDomainEvent(Id, "System", LastModifiedAt.Value));
         }
 
         public int AvailableQuantity => Quantity - Reservations.Sum(r => r.Quantity);

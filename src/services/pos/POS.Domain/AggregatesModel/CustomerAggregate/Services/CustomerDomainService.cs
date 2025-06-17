@@ -41,8 +41,9 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate.Services
             if (preferredLanguage != null || preferredCurrency != null)
             {
                 customer.UpdatePreferences(
-                    preferredLanguage ?? "en",
-                    preferredCurrency ?? "USD");
+                    preferredLanguage: preferredLanguage ?? "en",
+                    preferredCurrency: preferredCurrency ?? "USD"
+                );
             }
 
             return await _customerRepository.AddAsync(customer, cancellationToken);
