@@ -34,6 +34,9 @@ public class Sale : AggregateRoot
     public DateTime? CancelledAt { get; private set; }
     public string? CancellationReason { get; private set; }
     public Common.ValueObjects.Address? Address { get; private set; }
+    public bool RequiresSync { get; private set; }
+    public DateTime? LastSyncedAt { get; private set; }
+    public string? SyncError { get; private set; }
 
     private readonly List<SaleItem> _items = new();
     public IReadOnlyCollection<SaleItem> Items => _items.AsReadOnly();
@@ -50,19 +53,28 @@ public class Sale : AggregateRoot
         Status = SaleStatus.Pending;
     }
 
-    public Sale(string saleNumber, Guid storeId, Guid? customerId = null, Guid? staffId = null)
+    public Sale(
+        string saleNumber,
+        Guid storeId,
+        Guid? customerId = null,
+        Guid? staffId = null)
     {
         if (string.IsNullOrWhiteSpace(saleNumber))
-            throw new DomainException("Sale number cannot be empty");
-        if (storeId == Guid.Empty)
-            throw new DomainException("Store ID cannot be empty");
+            throw new DomainException("Sale number is required");
 
+        if (storeId == Guid.Empty)
+            throw new DomainException("Store ID is required");
+
+        Id = Guid.NewGuid();
         SaleNumber = saleNumber;
         StoreId = storeId;
         CustomerId = customerId;
         StaffId = staffId;
         Status = SaleStatus.Pending;
         CreatedAt = DateTime.UtcNow;
+        RequiresSync = true;
+
+        AddDomainEvent(new SaleOfflineCreatedDomainEvent(Id, SaleNumber, StoreId, CreatedAt, RequiresSync));
     }
 
     public void AddItem(SaleItem item)
@@ -239,29 +251,18 @@ public class Sale : AggregateRoot
 
     public void Void(string reason, Guid? approvedBy = null, bool requiresManagerApproval = true)
     {
-        if (Status != SaleStatus.Completed)
-            throw new DomainException("Can only void a completed sale");
+        if (Status != SaleStatus.Pending && Status != SaleStatus.Processing)
+            throw new DomainException("Can only cancel a pending or processing sale");
 
         if (string.IsNullOrWhiteSpace(reason))
-            throw new DomainException("Void reason cannot be empty");
+            throw new DomainException("Cancellation reason cannot be empty");
 
-        if (requiresManagerApproval && approvedBy == null)
-            throw new DomainException("Manager approval is required for voiding a sale");
-
-        // Check if the sale is within voidable time window (e.g., same day)
-        if (CompletedAt.HasValue && (DateTime.UtcNow - CompletedAt.Value).TotalHours > 24)
-            throw new DomainException("Cannot void a sale that is more than 24 hours old");
-
-        // Check if there are any refunds already processed
-        if (_payments.Any(p => p.Status == PaymentStatus.Refunded))
-            throw new DomainException("Cannot void a sale that has refunded payments");
-
-        Status = SaleStatus.Voided;
+        Status = SaleStatus.Cancelled;
         CancelledAt = DateTime.UtcNow;
         CancellationReason = reason;
         UpdatedAt = DateTime.UtcNow;
 
-        AddDomainEvent(new SaleVoidedDomainEvent(Id, reason, CancelledAt.Value, approvedBy));
+        AddDomainEvent(new SaleCancelledDomainEvent(Id, reason, CancelledAt.Value));
     }
 
     public void Refund(string reason, decimal refundAmount, Guid? processedBy = null)
@@ -319,6 +320,21 @@ public class Sale : AggregateRoot
 
         if (Total < 0)
             Total = 0;
+    }
+
+    public void MarkAsSynced(bool success, string? errorMessage = null)
+    {
+        LastSyncedAt = DateTime.UtcNow;
+        RequiresSync = !success;
+        SyncError = errorMessage;
+
+        AddDomainEvent(new SaleSyncedDomainEvent(Id, SaleNumber, StoreId, LastSyncedAt.Value, success, errorMessage));
+    }
+
+    public void MarkForSync()
+    {
+        RequiresSync = true;
+        SyncError = null;
     }
 }
 
