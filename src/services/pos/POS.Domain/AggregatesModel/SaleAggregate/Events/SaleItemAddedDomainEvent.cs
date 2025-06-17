@@ -1,18 +1,17 @@
 ﻿#nullable enable
 
-#nullable enable
-using POS.Domain.SeedWork;
+using POS.Domain.Common.Events;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate.Events;
 
-public class SaleItemAddedDomainEvent : DomainEvent
+public class SaleItemAddedDomainEvent : IDomainEvent
 {
-    public Sale Sale { get; }
-    public SaleItem SaleItem { get; }
+    public Guid SaleId { get; }
+    public Guid SaleItemId { get; }
 
-    public SaleItemAddedDomainEvent(Sale sale, SaleItem saleItem)
+    public SaleItemAddedDomainEvent(Guid saleId, Guid saleItemId)
     {
-        Sale = sale;
-        SaleItem = saleItem;
+        SaleId = saleId;
+        SaleItemId = saleItemId;
     }
 } 

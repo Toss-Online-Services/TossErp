@@ -1,63 +1,87 @@
-﻿using POS.Domain.Common.ValueObjects;
-using POS.Domain.SeedWork;
+﻿using POS.Domain.Common;
+using POS.Domain.Common.ValueObjects;
+using POS.Domain.Models;
+using POS.Domain.AggregatesModel.SaleAggregate.Events;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate;
 
 public class SaleItem : Entity
 {
+    public Guid SaleId { get; private set; }
     public Guid ProductId { get; private set; }
     public string ProductName { get; private set; }
-    public Money UnitPrice { get; private set; }
+    public decimal UnitPrice { get; private set; }
     public int Quantity { get; private set; }
-    public decimal TaxRate { get; private set; }
-    public Money Subtotal { get; private set; }
-    public Money TaxAmount { get; private set; }
-    public Money Total { get; private set; }
+    public decimal Discount { get; private set; }
+    public decimal TotalPrice { get; private set; }
+    public SaleItemStatus Status { get; private set; }
 
-    private SaleItem() { } // For EF Core
+    private SaleItem() { } // For EF
 
-    public SaleItem(Guid productId, string productName, decimal unitPrice, int quantity, decimal taxRate, string currency)
+    public SaleItem(
+        Guid id,
+        Guid saleId,
+        Guid productId,
+        string productName,
+        decimal unitPrice,
+        int quantity,
+        decimal discount = 0) : base(id)
     {
-        if (string.IsNullOrWhiteSpace(productName))
-            throw new ArgumentException("Product name cannot be empty", nameof(productName));
-        if (unitPrice < 0)
-            throw new ArgumentException("Unit price cannot be negative", nameof(unitPrice));
-        if (quantity <= 0)
-            throw new ArgumentException("Quantity must be greater than zero", nameof(quantity));
-        if (taxRate < 0 || taxRate > 100)
-            throw new ArgumentException("Tax rate must be between 0 and 100", nameof(taxRate));
-
+        SaleId = saleId;
         ProductId = productId;
         ProductName = productName;
-        UnitPrice = new Money(unitPrice, currency);
+        UnitPrice = unitPrice;
         Quantity = quantity;
-        TaxRate = taxRate;
-
-        CalculateTotals();
+        Discount = discount;
+        TotalPrice = CalculateTotalPrice();
+        Status = SaleItemStatus.Active;
     }
 
     public void UpdateQuantity(int newQuantity)
     {
         if (newQuantity <= 0)
-            throw new ArgumentException("Quantity must be greater than zero", nameof(newQuantity));
+            throw new DomainException("Quantity must be greater than zero");
 
+        var oldQuantity = Quantity;
         Quantity = newQuantity;
-        CalculateTotals();
+        TotalPrice = CalculateTotalPrice();
+
+        AddDomainEvent(new SaleItemQuantityChangedDomainEvent(
+            SaleId,
+            Id,
+            oldQuantity,
+            newQuantity,
+            DateTime.UtcNow));
     }
 
-    public void UpdateUnitPrice(decimal newUnitPrice)
+    public void ApplyDiscount(decimal discountAmount)
     {
-        if (newUnitPrice < 0)
-            throw new ArgumentException("Unit price cannot be negative", nameof(newUnitPrice));
+        if (discountAmount < 0)
+            throw new DomainException("Discount cannot be negative");
 
-        UnitPrice = new Money(newUnitPrice, UnitPrice.Currency);
-        CalculateTotals();
+        if (discountAmount > TotalPrice)
+            throw new DomainException("Discount cannot be greater than total price");
+
+        Discount = discountAmount;
+        TotalPrice = CalculateTotalPrice();
     }
 
-    private void CalculateTotals()
+    public void Remove()
     {
-        Subtotal = UnitPrice * Quantity;
-        TaxAmount = new Money(Subtotal.Amount * (TaxRate / 100), Subtotal.Currency);
-        Total = Subtotal + TaxAmount;
+        if (Status == SaleItemStatus.Removed)
+            throw new DomainException("Item is already removed");
+
+        Status = SaleItemStatus.Removed;
+
+        AddDomainEvent(new SaleItemRemovedDomainEvent(
+            SaleId,
+            Id,
+            "Item removed from sale",
+            DateTime.UtcNow));
+    }
+
+    private decimal CalculateTotalPrice()
+    {
+        return (UnitPrice * Quantity) - Discount;
     }
 } 

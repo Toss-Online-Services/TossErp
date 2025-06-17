@@ -1,35 +1,36 @@
 using POS.Domain.Common;
 using POS.Domain.Models;
+using POS.Domain.AggregatesModel.InventoryAggregate.Events;
 
 namespace POS.Domain.AggregatesModel.InventoryAggregate
 {
     public class Inventory : Entity
     {
         public Guid StoreId { get; private set; }
-        public int ProductId { get; private set; }
+        public Guid ProductId { get; private set; }
+        public int Quantity { get; private set; }
+        public string Reason { get; private set; }
         public int CurrentStock { get; private set; }
         public int MinimumStock { get; private set; }
         public int MaximumStock { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime? LastModifiedAt { get; private set; }
-        public List<StockMovement> Movements { get; private set; }
+        public List<InventoryMovement> Movements { get; private set; }
 
-        private Inventory() { } // For EF Core
+        private Inventory()
+        {
+            Reason = string.Empty;
+            Movements = new List<InventoryMovement>();
+        } // For EF Core
 
-        public Inventory(
-            Guid storeId,
-            int productId,
-            int currentStock,
-            int minimumStock,
-            int maximumStock)
+        public Inventory(Guid storeId, Guid productId, int quantity, string reason)
         {
             StoreId = storeId;
             ProductId = productId;
-            CurrentStock = currentStock;
-            MinimumStock = minimumStock;
-            MaximumStock = maximumStock;
-            CreatedAt = DateTime.UtcNow;
-            Movements = new List<StockMovement>();
+            Quantity = quantity;
+            Reason = reason;
+            Movements = new List<InventoryMovement>();
+            AddDomainEvent(new InventoryCreatedDomainEvent(Id, productId, storeId));
         }
 
         public void AdjustStock(int quantity, string reason, string? reference = null)
@@ -40,12 +41,13 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             CurrentStock += quantity;
             LastModifiedAt = DateTime.UtcNow;
 
-            var movement = new StockMovement(
+            var movement = new InventoryMovement(
                 Id,
                 quantity,
                 reason,
                 reference);
             Movements.Add(movement);
+            AddDomainEvent(new InventoryMovementAddedDomainEvent(Id, movement.Id));
         }
 
         public void UpdateStockLevels(int minimumStock, int maximumStock)
@@ -60,13 +62,14 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             MinimumStock = minimumStock;
             MaximumStock = maximumStock;
             LastModifiedAt = DateTime.UtcNow;
+            AddDomainEvent(new InventoryUpdatedDomainEvent(Id));
         }
 
         public bool IsLowStock() => CurrentStock <= MinimumStock;
         public bool IsOverstocked() => MaximumStock > 0 && CurrentStock >= MaximumStock;
     }
 
-    public class StockMovement
+    public class InventoryMovement
     {
         public Guid InventoryId { get; private set; }
         public int Quantity { get; private set; }
@@ -74,9 +77,9 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
         public string? Reference { get; private set; }
         public DateTime CreatedAt { get; private set; }
 
-        private StockMovement() { } // For EF Core
+        private InventoryMovement() { } // For EF Core
 
-        public StockMovement(
+        public InventoryMovement(
             Guid inventoryId,
             int quantity,
             string reason,
@@ -87,6 +90,7 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
             Reason = reason;
             Reference = reference;
             CreatedAt = DateTime.UtcNow;
+            AddDomainEvent(new InventoryMovementAddedDomainEvent(inventoryId, Id));
         }
     }
 } 

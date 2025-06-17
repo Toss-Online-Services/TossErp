@@ -1,46 +1,51 @@
 using POS.Domain.Common;
 using POS.Domain.Models;
+using POS.Domain.Common.ValueObjects;
+using POS.Domain.AggregatesModel.PaymentAggregate.Events;
+using POS.Domain.Common.Events;
 
 namespace POS.Domain.AggregatesModel.PaymentAggregate
 {
     public class Payment : Entity
     {
-        public string TransactionId { get; private set; }
-        public Guid StoreId { get; private set; }
-        public Guid? SaleId { get; private set; }
+        public Guid SaleId { get; private set; }
         public decimal Amount { get; private set; }
-        public string Currency { get; private set; }
+        public Money AmountObj { get; private set; }
         public PaymentMethod Method { get; private set; }
+        public string TransactionId { get; private set; }
+        public string Currency { get; private set; }
         public PaymentStatus Status { get; private set; }
-        public string? Reference { get; private set; }
-        public string? Notes { get; private set; }
         public DateTime CreatedAt { get; private set; }
-        public DateTime? LastModifiedAt { get; private set; }
+        public DateTime? ProcessedAt { get; private set; }
+        public string? ErrorMessage { get; private set; }
         public List<PaymentEvent> Events { get; private set; }
 
-        private Payment() { } // For EF Core
+        private Payment()
+        {
+            TransactionId = string.Empty;
+            Currency = "USD";
+            Method = PaymentMethod.Cash;
+            AmountObj = new Money(0, "USD");
+            Events = new List<PaymentEvent>();
+        }
 
         public Payment(
-            string transactionId,
-            Guid storeId,
+            Guid saleId,
             decimal amount,
-            string currency,
             PaymentMethod method,
-            Guid? saleId = null,
-            string? reference = null,
-            string? notes = null)
+            string transactionId,
+            string currency)
         {
-            TransactionId = transactionId;
-            StoreId = storeId;
-            Amount = amount;
-            Currency = currency;
-            Method = method;
             SaleId = saleId;
-            Reference = reference;
-            Notes = notes;
+            Amount = amount;
+            Method = method;
+            TransactionId = transactionId;
+            Currency = currency;
+            AmountObj = new Money(amount, currency);
             Status = PaymentStatus.Pending;
             CreatedAt = DateTime.UtcNow;
             Events = new List<PaymentEvent>();
+            AddDomainEvent(new PaymentCreatedDomainEvent(Id, saleId, amount, method));
         }
 
         public void Process()
@@ -49,8 +54,8 @@ namespace POS.Domain.AggregatesModel.PaymentAggregate
                 throw new InvalidOperationException("Payment is not in pending status");
 
             Status = PaymentStatus.Processing;
-            LastModifiedAt = DateTime.UtcNow;
-            Events.Add(new PaymentEvent(Id, PaymentEventType.Processing));
+            ProcessedAt = DateTime.UtcNow;
+            AddDomainEvent(new PaymentStatusChangedDomainEvent(Id, PaymentStatus.Processing));
         }
 
         public void Complete()
@@ -59,8 +64,8 @@ namespace POS.Domain.AggregatesModel.PaymentAggregate
                 throw new InvalidOperationException("Payment is not in processing status");
 
             Status = PaymentStatus.Completed;
-            LastModifiedAt = DateTime.UtcNow;
-            Events.Add(new PaymentEvent(Id, PaymentEventType.Completed));
+            ProcessedAt = DateTime.UtcNow;
+            AddDomainEvent(new PaymentStatusChangedDomainEvent(Id, PaymentStatus.Completed));
         }
 
         public void Fail(string reason)
@@ -69,9 +74,9 @@ namespace POS.Domain.AggregatesModel.PaymentAggregate
                 throw new InvalidOperationException("Cannot fail a completed payment");
 
             Status = PaymentStatus.Failed;
-            Notes = reason;
-            LastModifiedAt = DateTime.UtcNow;
-            Events.Add(new PaymentEvent(Id, PaymentEventType.Failed, reason));
+            ErrorMessage = reason;
+            ProcessedAt = DateTime.UtcNow;
+            AddDomainEvent(new PaymentStatusChangedDomainEvent(Id, PaymentStatus.Failed));
         }
 
         public void Refund(string reason)
@@ -80,9 +85,14 @@ namespace POS.Domain.AggregatesModel.PaymentAggregate
                 throw new InvalidOperationException("Can only refund completed payments");
 
             Status = PaymentStatus.Refunded;
-            Notes = reason;
-            LastModifiedAt = DateTime.UtcNow;
-            Events.Add(new PaymentEvent(Id, PaymentEventType.Refunded, reason));
+            ErrorMessage = reason;
+            ProcessedAt = DateTime.UtcNow;
+            AddDomainEvent(new PaymentStatusChangedDomainEvent(Id, PaymentStatus.Refunded));
+        }
+
+        private void AddDomainEvent(IDomainEvent domainEvent)
+        {
+            // Implementation of AddDomainEvent method
         }
     }
 
@@ -104,6 +114,7 @@ namespace POS.Domain.AggregatesModel.PaymentAggregate
             Type = type;
             Details = details;
             CreatedAt = DateTime.UtcNow;
+            AddDomainEvent(new PaymentEventAddedDomainEvent(paymentId, Guid.NewGuid()));
         }
     }
 

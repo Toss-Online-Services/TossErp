@@ -7,7 +7,11 @@ public class Money : ValueObject
     public decimal Amount { get; private set; }
     public string Currency { get; private set; }
 
-    private Money() { } // For EF Core
+    private Money()
+    {
+        Amount = 0;
+        Currency = "USD";
+    } // For EF Core
 
     public Money(decimal amount, string currency)
     {

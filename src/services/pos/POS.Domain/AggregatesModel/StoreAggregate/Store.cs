@@ -2,6 +2,7 @@
 using POS.Domain.SeedWork;
 using POS.Domain.Models;
 using POS.Domain.Common;
+using POS.Domain.AggregatesModel.StoreAggregate.Events;
 
 namespace POS.Domain.AggregatesModel.StoreAggregate;
 
@@ -23,7 +24,7 @@ public class Store : AggregateRoot
     public string? BannerUrl { get; private set; }
     public string? SocialMediaLinks { get; private set; }
     public StoreSettings Settings { get; private set; }
-    public List<OperatingHours> OperatingHours { get; private set; }
+    public List<StoreHours> OperatingHours { get; private set; }
     public string TimeZone { get; private set; }
     public List<StoreDevice> Devices { get; private set; }
     public List<StorePrinter> Printers { get; private set; }
@@ -37,6 +38,10 @@ public class Store : AggregateRoot
         TimeZone = string.Empty;
         CreatedAt = DateTime.UtcNow;
         IsActive = true;
+        Settings = new StoreSettings();
+        OperatingHours = new List<StoreHours>();
+        Devices = new List<StoreDevice>();
+        Printers = new List<StorePrinter>();
     }
 
     public Store(
@@ -79,7 +84,7 @@ public class Store : AggregateRoot
         CreatedAt = DateTime.UtcNow;
         TimeZone = timeZone;
         Settings = new StoreSettings();
-        OperatingHours = new List<OperatingHours>();
+        OperatingHours = new List<StoreHours>();
         Devices = new List<StoreDevice>();
         Printers = new List<StorePrinter>();
 
@@ -141,7 +146,7 @@ public class Store : AggregateRoot
         }
         else
         {
-            hours = new OperatingHours(day, openTime, closeTime);
+            hours = new StoreHours(day, openTime, closeTime);
             OperatingHours.Add(hours);
         }
         LastModifiedAt = DateTime.UtcNow;
@@ -253,7 +258,22 @@ public class StoreSettings
     public string? EmailTemplate { get; private set; }
     public string? SMSTemplate { get; private set; }
 
-    private StoreSettings() { } // For EF Core
+    public StoreSettings()
+    {
+        EnableTax = false;
+        TaxRate = 0;
+        EnableDiscounts = false;
+        MaxDiscountPercentage = 0;
+        RequireCustomerInfo = false;
+        EnableLoyaltyProgram = false;
+        ReceiptHeader = string.Empty;
+        ReceiptFooter = string.Empty;
+        EnableStockAlerts = false;
+        EnableEmailNotifications = false;
+        EnableSMSNotifications = false;
+        EmailTemplate = null;
+        SMSTemplate = null;
+    }
 
     public StoreSettings(
         bool enableTax,
@@ -295,7 +315,7 @@ public class StoreHours
 
     private StoreHours() { } // For EF Core
 
-    public StoreHours(DayOfWeek day, TimeSpan openTime, TimeSpan closeTime, bool isOpen)
+    public StoreHours(DayOfWeek day, TimeSpan openTime, TimeSpan closeTime, bool isOpen = true)
     {
         Day = day;
         OpenTime = openTime;
@@ -318,7 +338,14 @@ public class StoreDevice
     public bool IsActive { get; private set; }
     public DateTime LastSeen { get; private set; }
 
-    private StoreDevice() { } // For EF Core
+    private StoreDevice()
+    {
+        DeviceId = string.Empty;
+        Name = string.Empty;
+        Type = string.Empty;
+        IsActive = true;
+        LastSeen = DateTime.UtcNow;
+    }
 
     public StoreDevice(string deviceId, string type, string? name = null)
     {
@@ -343,7 +370,14 @@ public class StorePrinter
     public bool IsDefault { get; private set; }
     public bool IsActive { get; private set; }
 
-    private StorePrinter() { } // For EF Core
+    private StorePrinter()
+    {
+        PrinterId = string.Empty;
+        Name = string.Empty;
+        Type = string.Empty;
+        IsDefault = false;
+        IsActive = true;
+    }
 
     public StorePrinter(string printerId, string type, string? name = null)
     {

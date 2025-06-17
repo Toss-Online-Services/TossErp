@@ -1,15 +1,19 @@
-﻿using POS.Domain.SeedWork;
+﻿using POS.Domain.Common.Events;
 
-namespace POS.Domain.AggregatesModel.SaleAggregate.Events
+namespace POS.Domain.AggregatesModel.SaleAggregate.Events;
+
+public class SaleItemRemovedDomainEvent : IDomainEvent
 {
-    public class SaleItemRemovedDomainEvent : DomainEvent
+    public Guid SaleId { get; }
+    public Guid SaleItemId { get; }
+    public string Reason { get; }
+    public DateTime RemovedAt { get; }
+
+    public SaleItemRemovedDomainEvent(Guid saleId, Guid saleItemId, string reason, DateTime removedAt)
     {
-        public Sale Sale { get; }
-        public SaleItem SaleItem { get; }
-        public SaleItemRemovedDomainEvent(Sale sale, SaleItem saleItem)
-        {
-            Sale = sale;
-            SaleItem = saleItem;
-        }
+        SaleId = saleId;
+        SaleItemId = saleItemId;
+        Reason = reason;
+        RemovedAt = removedAt;
     }
 } 

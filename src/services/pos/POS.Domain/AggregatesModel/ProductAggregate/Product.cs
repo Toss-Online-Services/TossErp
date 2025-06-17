@@ -5,6 +5,8 @@ using POS.Domain.Common.ValueObjects;
 using POS.Domain.Events;
 using POS.Domain.Common;
 using POS.Domain.Models;
+using POS.Domain.AggregatesModel.ProductAggregate.Events;
+using POS.Domain.Common.Events;
 
 namespace POS.Domain.AggregatesModel.ProductAggregate;
 
@@ -25,7 +27,13 @@ public class Product : Entity
     public DateTime CreatedAt { get; private set; }
     public DateTime? LastModifiedAt { get; private set; }
 
-    private Product() { } // For EF Core
+    private Product()
+    {
+        Name = string.Empty;
+        Description = string.Empty;
+        SKU = string.Empty;
+        Barcode = string.Empty;
+    } // For EF Core
 
     public Product(
         string name,
@@ -51,6 +59,7 @@ public class Product : Entity
         LowStockThreshold = lowStockThreshold;
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
+        AddDomainEvent(new ProductCreatedDomainEvent(Id, name, sku));
     }
 
     public void UpdateDetails(
@@ -66,12 +75,14 @@ public class Product : Entity
         CostPrice = costPrice;
         CategoryId = categoryId;
         LastModifiedAt = DateTime.UtcNow;
+        AddDomainEvent(new ProductUpdatedDomainEvent(Id, name, description, SKU, Barcode));
     }
 
     public void UpdateStock(int quantity)
     {
         StockQuantity = quantity;
         LastModifiedAt = DateTime.UtcNow;
+        AddDomainEvent(new ProductStockUpdatedDomainEvent(Id, quantity));
     }
 
     public void AdjustStock(int adjustment)
@@ -92,11 +103,18 @@ public class Product : Entity
     {
         IsActive = false;
         LastModifiedAt = DateTime.UtcNow;
+        AddDomainEvent(new ProductDeactivatedDomainEvent(Id));
     }
 
     public void Reactivate()
     {
         IsActive = true;
         LastModifiedAt = DateTime.UtcNow;
+        AddDomainEvent(new ProductReactivatedDomainEvent(Id));
+    }
+
+    public void AddDomainEvent(IDomainEvent domainEvent)
+    {
+        // Implementation of AddDomainEvent method
     }
 } 

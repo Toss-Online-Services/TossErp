@@ -1,5 +1,6 @@
 ﻿using POS.Domain.Common;
 using POS.Domain.Models;
+using POS.Domain.AggregatesModel.StaffAggregate.Events;
 
 namespace POS.Domain.AggregatesModel.StaffAggregate
 {
@@ -16,7 +17,18 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
         public StaffSchedule Schedule { get; private set; }
         public StaffPermissions Permissions { get; private set; }
 
-        private Staff() { } // For EF Core
+        private Staff()
+        {
+            Name = string.Empty;
+            Email = string.Empty;
+            Phone = string.Empty;
+            Role = string.Empty;
+            StoreId = Guid.Empty;
+            IsActive = false;
+            CreatedAt = DateTime.UtcNow;
+            Schedule = new StaffSchedule();
+            Permissions = new StaffPermissions();
+        }
 
         public Staff(
             string name,
@@ -36,6 +48,7 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
             Permissions = permissions;
             IsActive = true;
             CreatedAt = DateTime.UtcNow;
+            AddDomainEvent(new StaffCreatedDomainEvent(Id, name, email, role));
         }
 
         public void UpdateDetails(
@@ -49,30 +62,35 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
             Phone = phone;
             Role = role;
             LastModifiedAt = DateTime.UtcNow;
+            AddDomainEvent(new StaffUpdatedDomainEvent(Id, name, email, role));
         }
 
         public void UpdateSchedule(StaffSchedule schedule)
         {
             Schedule = schedule;
             LastModifiedAt = DateTime.UtcNow;
+            AddDomainEvent(new StaffScheduleUpdatedDomainEvent(Id));
         }
 
         public void UpdatePermissions(StaffPermissions permissions)
         {
             Permissions = permissions;
             LastModifiedAt = DateTime.UtcNow;
+            AddDomainEvent(new StaffPermissionsUpdatedDomainEvent(Id));
         }
 
         public void Deactivate()
         {
             IsActive = false;
             LastModifiedAt = DateTime.UtcNow;
+            AddDomainEvent(new StaffDeactivatedDomainEvent(Id));
         }
 
         public void Reactivate()
         {
             IsActive = true;
             LastModifiedAt = DateTime.UtcNow;
+            AddDomainEvent(new StaffReactivatedDomainEvent(Id));
         }
     }
 
@@ -83,7 +101,13 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
         public TimeSpan EndTime { get; private set; }
         public bool IsWorking { get; private set; }
 
-        private StaffSchedule() { } // For EF Core
+        public StaffSchedule()
+        {
+            Day = DayOfWeek.Monday;
+            StartTime = TimeSpan.Zero;
+            EndTime = TimeSpan.Zero;
+            IsWorking = false;
+        }
 
         public StaffSchedule(DayOfWeek day, TimeSpan startTime, TimeSpan endTime, bool isWorking)
         {
@@ -103,7 +127,15 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
         public bool CanViewReports { get; private set; }
         public bool CanManageSettings { get; private set; }
 
-        private StaffPermissions() { } // For EF Core
+        public StaffPermissions()
+        {
+            CanManageInventory = false;
+            CanManageStaff = false;
+            CanManageProducts = false;
+            CanProcessRefunds = false;
+            CanViewReports = false;
+            CanManageSettings = false;
+        }
 
         public StaffPermissions(
             bool canManageInventory,

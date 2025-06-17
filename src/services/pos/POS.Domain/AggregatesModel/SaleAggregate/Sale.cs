@@ -101,9 +101,10 @@ public class Sale : AggregateRoot
         CreatedAt = DateTime.UtcNow;
         IsOffline = isOffline;
         DomainEvents = new List<DomainEvent>();
+        AddDomainEvent(new SaleCreatedDomainEvent(Id, storeId, customerId));
     }
 
-    public void AddItem(int productId, string? storeId, int quantity, decimal unitPrice, string? category)
+    public void AddItem(Guid productId, string productName, decimal unitPrice, int quantity, decimal taxRate)
     {
         if (Status != SaleStatus.Pending)
             throw new DomainException("Can only add items to a pending sale");
@@ -114,10 +115,13 @@ public class Sale : AggregateRoot
         if (unitPrice < 0)
             throw new DomainException("Unit price cannot be negative");
 
-        var item = new SaleItem(productId, productId, storeId, quantity, unitPrice, category);
+        if (taxRate < 0 || taxRate > 100)
+            throw new DomainException("Tax rate must be between 0 and 100");
+
+        var item = new SaleItem(productId, productName, unitPrice, quantity, taxRate, "USD");
         _items.Add(item);
         CalculateTotalAmount();
-        AddDomainEvent(new SaleItemAddedDomainEvent(this, item));
+        AddDomainEvent(new SaleItemAddedDomainEvent(Id, item.Id));
     }
 
     public void UpdateItemQuantity(Guid itemId, int quantity)
@@ -145,7 +149,7 @@ public class Sale : AggregateRoot
         {
             _items.Remove(item);
             CalculateTotalAmount();
-            AddDomainEvent(new SaleItemRemovedDomainEvent(this, item));
+            AddDomainEvent(new SaleItemRemovedDomainEvent(Id, itemId));
         }
     }
 
@@ -167,7 +171,7 @@ public class Sale : AggregateRoot
         _payments.Add(payment);
         AmountPaid += amount;
         Balance = TotalAmount.Amount - AmountPaid;
-        AddDomainEvent(new SalePaymentAddedDomainEvent(this, payment));
+        AddDomainEvent(new SalePaymentAddedDomainEvent(Id, payment.Id));
 
         if (GetBalance() <= 0)
         {
