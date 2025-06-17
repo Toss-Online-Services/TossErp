@@ -15,7 +15,15 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public DateTime CreatedAt { get; private set; }
         public DateTime? LastModifiedAt { get; private set; }
 
-        private CustomerContact() { }
+        private CustomerContact()
+        {
+            FirstName = string.Empty;
+            LastName = string.Empty;
+            Email = string.Empty;
+            PhoneNumber = string.Empty;
+            IsPrimary = false;
+            CreatedAt = DateTime.UtcNow;
+        }
 
         public CustomerContact(string firstName, string lastName, string email, string phoneNumber, 
             string? title = null, string? department = null, bool isPrimary = false)

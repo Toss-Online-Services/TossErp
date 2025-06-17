@@ -11,7 +11,12 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
         public DateTime? ReleasedAt { get; private set; }
         public bool IsReleased => ReleasedAt.HasValue;
 
-        private InventoryReservation() { }
+        private InventoryReservation()
+        {
+            Quantity = 0;
+            Reason = string.Empty;
+            CreatedAt = DateTime.UtcNow;
+        }
 
         public InventoryReservation(int quantity, string reason)
         {

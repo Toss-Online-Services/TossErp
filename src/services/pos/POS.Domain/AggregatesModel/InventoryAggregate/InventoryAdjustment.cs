@@ -14,7 +14,13 @@ namespace POS.Domain.AggregatesModel.InventoryAggregate
         public DateTime? ApprovedAt { get; private set; }
         public bool IsApproved => ApprovedAt.HasValue;
 
-        private InventoryAdjustment() { }
+        private InventoryAdjustment()
+        {
+            PreviousQuantity = 0;
+            NewQuantity = 0;
+            Reason = string.Empty;
+            CreatedAt = DateTime.UtcNow;
+        }
 
         public InventoryAdjustment(int previousQuantity, int newQuantity, string reason)
         {

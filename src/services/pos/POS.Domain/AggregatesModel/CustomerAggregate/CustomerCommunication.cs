@@ -22,7 +22,16 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public DateTime CreatedAt { get; private set; }
         public DateTime? LastModifiedAt { get; private set; }
 
-        private CustomerCommunication() { }
+        private CustomerCommunication()
+        {
+            CommunicationType = string.Empty;
+            Subject = string.Empty;
+            Content = string.Empty;
+            SentAt = DateTime.UtcNow;
+            IsRead = false;
+            CreatedAt = DateTime.UtcNow;
+            IsOutbound = true;
+        }
 
         public CustomerCommunication(
             string communicationType,

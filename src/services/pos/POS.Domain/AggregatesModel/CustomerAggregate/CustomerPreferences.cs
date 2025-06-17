@@ -19,7 +19,17 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public DateTime CreatedAt { get; private set; }
         public DateTime? LastModifiedAt { get; private set; }
 
-        private CustomerPreferences() { }
+        private CustomerPreferences()
+        {
+            ReceiveEmailNotifications = true;
+            ReceiveSMSNotifications = false;
+            ReceivePostalMail = false;
+            PreferredLanguage = "en";
+            PreferredCurrency = "USD";
+            OptInMarketing = false;
+            OptInThirdParty = false;
+            CreatedAt = DateTime.UtcNow;
+        }
 
         public CustomerPreferences(
             string preferredLanguage = "en",

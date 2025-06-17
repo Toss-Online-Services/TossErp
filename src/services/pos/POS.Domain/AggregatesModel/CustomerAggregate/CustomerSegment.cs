@@ -20,7 +20,15 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public string CreatedBy { get; private set; }
         public string? LastModifiedBy { get; private set; }
 
-        private CustomerSegment() { }
+        private CustomerSegment()
+        {
+            Name = string.Empty;
+            Description = string.Empty;
+            IsActive = true;
+            CustomerCount = 0;
+            CreatedAt = DateTime.UtcNow;
+            CreatedBy = string.Empty;
+        }
 
         public CustomerSegment(
             string name,

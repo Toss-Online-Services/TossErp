@@ -19,6 +19,7 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public DateTime? LastModifiedAt { get; private set; }
         public bool IsActive { get; private set; }
         public string? Notes { get; private set; }
+        public CustomerPreferences Preferences { get; private set; }
 
         // New properties for advanced customer management
         public decimal CreditLimit { get; private set; }
@@ -46,6 +47,7 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             CustomerNotes = new List<CustomerNote>();
             IsActive = true;
             CreatedAt = DateTime.UtcNow;
+            Preferences = new CustomerPreferences();
         }
 
         public Customer(string firstName, string lastName, string email, string phoneNumber) : this()
@@ -258,6 +260,49 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             LastModifiedAt = DateTime.UtcNow;
 
             AddDomainEvent(new CustomerReactivatedDomainEvent(Id));
+        }
+
+        public void UpdatePreferences(
+            bool? receiveEmailNotifications = null,
+            bool? receiveSMSNotifications = null,
+            bool? receivePostalMail = null,
+            string? preferredLanguage = null,
+            string? preferredCurrency = null,
+            string? preferredPaymentMethod = null,
+            string? preferredShippingMethod = null,
+            bool? optInMarketing = null,
+            bool? optInThirdParty = null,
+            string? dietaryRestrictions = null,
+            string? specialInstructions = null)
+        {
+            Preferences.UpdateNotificationPreferences(
+                receiveEmailNotifications,
+                receiveSMSNotifications,
+                receivePostalMail);
+
+            if (preferredLanguage != null)
+                Preferences.UpdateLanguage(preferredLanguage);
+
+            if (preferredCurrency != null)
+                Preferences.UpdateCurrency(preferredCurrency);
+
+            if (preferredPaymentMethod != null)
+                Preferences.SetPreferredPaymentMethod(preferredPaymentMethod);
+
+            if (preferredShippingMethod != null)
+                Preferences.SetPreferredShippingMethod(preferredShippingMethod);
+
+            Preferences.UpdateMarketingPreferences(optInMarketing, optInThirdParty);
+
+            if (dietaryRestrictions != null)
+                Preferences.SetDietaryRestrictions(dietaryRestrictions);
+
+            if (specialInstructions != null)
+                Preferences.SetSpecialInstructions(specialInstructions);
+
+            LastModifiedAt = DateTime.UtcNow;
+
+            AddDomainEvent(new CustomerPreferencesUpdatedDomainEvent(Id));
         }
 
         public string FullName => $"{FirstName} {LastName}";

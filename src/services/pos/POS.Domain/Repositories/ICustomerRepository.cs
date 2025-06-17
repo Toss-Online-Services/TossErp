@@ -1,13 +1,15 @@
 using POS.Domain.AggregatesModel.CustomerAggregate;
+using POS.Domain.Repositories;
 
 namespace POS.Domain.Repositories
 {
     public interface ICustomerRepository : IRepository<Customer>
     {
-        Task<Customer?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
-        Task<Customer?> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default);
-        Task<IEnumerable<Customer>> GetByStoreAsync(Guid storeId, CancellationToken cancellationToken = default);
-        Task<IEnumerable<Customer>> GetTopCustomersBySpendingAsync(Guid storeId, int count, CancellationToken cancellationToken = default);
-        Task<IEnumerable<Customer>> GetActiveCustomersAsync(Guid storeId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Customer>> GetBySegmentAsync(Guid segmentId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Customer>> GetHighValueCustomersAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<Customer>> GetLoyalCustomersAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<Customer>> GetAtRiskCustomersAsync(CancellationToken cancellationToken = default);
+        Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken = default);
+        Task<bool> ExistsByPhoneAsync(string phone, CancellationToken cancellationToken = default);
     }
 } 

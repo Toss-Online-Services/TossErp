@@ -12,6 +12,5 @@ public interface IStaffRepository : IRepository<Staff>
     Task<IEnumerable<Staff>> GetByStoreIdAsync(int storeId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Staff>> GetByRoleAsync(string role);
     Task<Staff?> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default);
-    new Task<Staff?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     new Task<IEnumerable<Staff>> GetAllAsync(CancellationToken cancellationToken = default);
 } 

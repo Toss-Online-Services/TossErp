@@ -1,3 +1,4 @@
+using POS.Domain.Repositories;
 using POS.Domain.AggregatesModel.InventoryAggregate;
 
 namespace POS.Domain.Repositories

@@ -17,7 +17,15 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public DateTime? ResolvedAt { get; private set; }
         public string? ResolvedBy { get; private set; }
 
-        private CustomerNote() { }
+        private CustomerNote()
+        {
+            Content = string.Empty;
+            CreatedBy = string.Empty;
+            CreatedAt = DateTime.UtcNow;
+            IsPrivate = false;
+            Priority = 0;
+            IsResolved = false;
+        }
 
         public CustomerNote(string content, string createdBy, bool isPrivate = false, 
             string? category = null, int priority = 0)

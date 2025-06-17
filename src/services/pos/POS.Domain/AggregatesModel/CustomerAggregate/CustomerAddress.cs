@@ -20,7 +20,17 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public double? Latitude { get; private set; }
         public double? Longitude { get; private set; }
 
-        private CustomerAddress() { }
+        private CustomerAddress()
+        {
+            Street = string.Empty;
+            City = string.Empty;
+            State = string.Empty;
+            Country = string.Empty;
+            PostalCode = string.Empty;
+            AddressType = string.Empty;
+            CreatedAt = DateTime.UtcNow;
+            IsActive = true;
+        }
 
         public CustomerAddress(
             string street,

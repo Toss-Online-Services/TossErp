@@ -13,7 +13,11 @@ namespace POS.Domain.AggregatesModel.PaymentAggregate
         public string? RawResponse { get; private set; }
         public DateTime ResponseTime { get; private set; }
 
-        private PaymentGatewayResponse() { }
+        private PaymentGatewayResponse()
+        {
+            Status = string.Empty;
+            ResponseTime = DateTime.UtcNow;
+        }
 
         public PaymentGatewayResponse(string status, string? transactionId = null, 
             string? authorizationCode = null, string? errorCode = null, 

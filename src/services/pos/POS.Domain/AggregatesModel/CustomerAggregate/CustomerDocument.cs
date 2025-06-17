@@ -19,7 +19,17 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public DateTime? VerifiedAt { get; private set; }
         public string? VerifiedBy { get; private set; }
 
-        private CustomerDocument() { }
+        private CustomerDocument()
+        {
+            Name = string.Empty;
+            FilePath = string.Empty;
+            FileType = string.Empty;
+            FileSize = 0;
+            UploadedBy = string.Empty;
+            UploadedAt = DateTime.UtcNow;
+            IsRequired = false;
+            IsVerified = false;
+        }
 
         public CustomerDocument(string name, string filePath, string fileType, long fileSize, 
             string uploadedBy, string? description = null, DateTime? expiryDate = null, bool isRequired = false)
