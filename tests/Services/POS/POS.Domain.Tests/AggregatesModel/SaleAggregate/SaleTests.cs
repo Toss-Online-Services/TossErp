@@ -132,11 +132,10 @@ public class SaleTests
     {
         // Arrange
         var sale = new Sale(SaleNumber, _storeId, _customerId, _staffId);
-        var item = new SaleItem(Guid.NewGuid(), sale.Id, Guid.NewGuid(), "Test Product", 10.00m, 2, 0.10m);
+        var item = TestDataFactory.SaleFactory.CreateValidSaleItem(sale.Id);
         sale.AddItem(item);
-        // Get the total after adding the item
         var totalAfterItems = sale.Total;
-        var payment = new Payment(Guid.NewGuid(), sale.Id, totalAfterItems, PaymentType.Cash, null, null, null);
+        var payment = new Payment(Guid.NewGuid(), sale.Id, totalAfterItems, PaymentType.Cash);
         sale.AddPayment(payment);
 
         // Act
@@ -174,7 +173,7 @@ public class SaleTests
     {
         // Arrange
         var sale = new Sale(SaleNumber, _storeId, _customerId, _staffId);
-        const string reason = "Customer cancelled";
+        var reason = "Test cancellation reason";
 
         // Act
         sale.Cancel(reason);
@@ -185,16 +184,20 @@ public class SaleTests
         Assert.Equal(reason, sale.CancellationReason);
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    public void Cancel_WithInvalidReason_ThrowsDomainException(string invalidReason)
+    [Fact]
+    public void Cancel_WhenSaleIsNotPending_ThrowsDomainException()
     {
         // Arrange
         var sale = new Sale(SaleNumber, _storeId, _customerId, _staffId);
+        var item = TestDataFactory.SaleFactory.CreateValidSaleItem(sale.Id);
+        sale.AddItem(item);
+        var totalAfterItems = sale.Total;
+        var payment = new Payment(Guid.NewGuid(), sale.Id, totalAfterItems, PaymentType.Cash);
+        sale.AddPayment(payment);
+        sale.Complete();
 
         // Act & Assert
-        Assert.Throws<DomainException>(() => sale.Cancel(invalidReason));
+        Assert.Throws<DomainException>(() => sale.Cancel("Test reason"));
     }
 
     [Fact]
@@ -202,7 +205,7 @@ public class SaleTests
     {
         // Arrange
         var sale = new Sale(SaleNumber, _storeId, _customerId, _staffId);
-        var discount = TestDataFactory.SaleFactory.CreateValidSaleDiscount();
+        var discount = new SaleDiscount(null, sale.StoreId.ToString(), DiscountType.Percentage, 10.00m, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
 
         // Act
         sale.AddDiscount(discount);
@@ -210,6 +213,22 @@ public class SaleTests
         // Assert
         Assert.Single(sale.Discounts);
         Assert.Equal(discount.Amount, sale.Discount);
+    }
+
+    [Fact]
+    public void RemoveDiscount_WhenDiscountExists_RemovesDiscountSuccessfully()
+    {
+        // Arrange
+        var sale = new Sale(SaleNumber, _storeId, _customerId, _staffId);
+        var discount = new SaleDiscount(null, sale.StoreId.ToString(), DiscountType.Percentage, 10.00m, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
+        sale.AddDiscount(discount);
+
+        // Act
+        sale.RemoveDiscount(discount.Id);
+
+        // Assert
+        Assert.Empty(sale.Discounts);
+        Assert.Equal(0m, sale.Discount);
     }
 
     [Fact]
@@ -228,7 +247,7 @@ public class SaleTests
     }
 
     [Fact]
-    public void MarkAsSynced_WithSuccess_UpdatesSyncStatusCorrectly()
+    public void MarkAsSynced_WithSuccess_UpdatesSyncStatusSuccessfully()
     {
         // Arrange
         var sale = new Sale(SaleNumber, _storeId, _customerId, _staffId);
@@ -238,23 +257,22 @@ public class SaleTests
 
         // Assert
         Assert.False(sale.RequiresSync);
-        Assert.Null(sale.SyncError);
         Assert.NotNull(sale.LastSyncedAt);
+        Assert.Null(sale.SyncError);
     }
 
     [Fact]
-    public void MarkAsSynced_WithFailure_UpdatesSyncStatusCorrectly()
+    public void MarkForSync_SetsRequiresSyncToTrue()
     {
         // Arrange
         var sale = new Sale(SaleNumber, _storeId, _customerId, _staffId);
-        const string errorMessage = "Sync failed";
+        sale.MarkAsSynced(true);
 
         // Act
-        sale.MarkAsSynced(false, errorMessage);
+        sale.MarkForSync();
 
         // Assert
         Assert.True(sale.RequiresSync);
-        Assert.Equal(errorMessage, sale.SyncError);
-        Assert.NotNull(sale.LastSyncedAt);
+        Assert.Null(sale.SyncError);
     }
 } 
