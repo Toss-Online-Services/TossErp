@@ -22,15 +22,10 @@
     <PackageReference Include="Moq" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Bogus" />
-    <PackageReference Include="AutoFixture" />
-    <PackageReference Include="AutoFixture.Xunit2" />
-    <PackageReference Include="AutoFixture.AutoMoq" />
-    <PackageReference Include="Faker.Net" />
-    <PackageReference Include="Shouldly" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\POS.Domain\POS.Domain.csproj" />
+    <ProjectReference Include="..\..\..\..\src\services\pos\POS.Domain\POS.Domain.csproj" />
   </ItemGroup>
 
 </Project> 

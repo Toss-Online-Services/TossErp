@@ -53,7 +53,7 @@ public class MoneyTests
         var money2 = new Money(200.00m, "USD");
 
         // Act
-        var result = money1.Add(money2);
+        var result = money1 + money2;
 
         // Assert
         result.Amount.Should().Be(300.00m);
@@ -68,8 +68,8 @@ public class MoneyTests
         var money2 = new Money(200.00m, "EUR");
 
         // Act & Assert
-        var action = () => money1.Add(money2);
-        action.Should().Throw<InvalidOperationException>()
+        var action = () => { var _ = money1 + money2; };
+        action.Should().Throw<POS.Domain.Exceptions.DomainException>()
             .WithMessage("Cannot add money with different currencies");
     }
 
@@ -81,7 +81,7 @@ public class MoneyTests
         var money2 = new Money(100.00m, "USD");
 
         // Act
-        var result = money1.Subtract(money2);
+        var result = money1 - money2;
 
         // Assert
         result.Amount.Should().Be(200.00m);
@@ -96,8 +96,8 @@ public class MoneyTests
         var money2 = new Money(100.00m, "EUR");
 
         // Act & Assert
-        var action = () => money1.Subtract(money2);
-        action.Should().Throw<InvalidOperationException>()
+        var action = () => { var _ = money1 - money2; };
+        action.Should().Throw<POS.Domain.Exceptions.DomainException>()
             .WithMessage("Cannot subtract money with different currencies");
     }
 
@@ -109,7 +109,7 @@ public class MoneyTests
         var multiplier = 2.5m;
 
         // Act
-        var result = money.Multiply(multiplier);
+        var result = money * multiplier;
 
         // Assert
         result.Amount.Should().Be(250.00m);
@@ -124,8 +124,8 @@ public class MoneyTests
         var multiplier = -2.5m;
 
         // Act & Assert
-        var action = () => money.Multiply(multiplier);
-        action.Should().Throw<ArgumentException>()
+        var action = () => { var _ = money * multiplier; };
+        action.Should().Throw<POS.Domain.Exceptions.DomainException>()
             .WithMessage("Multiplier cannot be negative");
     }
 

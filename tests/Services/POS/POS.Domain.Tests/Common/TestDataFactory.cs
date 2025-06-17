@@ -1,6 +1,9 @@
 using Bogus;
 using POS.Domain.AggregatesModel.SaleAggregate;
 using POS.Domain.Common.ValueObjects;
+using POS.Domain.Enums;
+using POS.Domain.Models;
+using Address = POS.Domain.Common.ValueObjects.Address;
 
 namespace POS.Domain.Tests.Common;
 
@@ -8,56 +11,60 @@ public static class TestDataFactory
 {
     private static readonly Faker Faker = new();
 
-    public static class Sale
+    public static class SaleFactory
     {
-        public static SaleAggregate CreateValidSale()
+        public static Sale CreateValidSale()
         {
             var saleNumber = Faker.Random.AlphaNumeric(10).ToUpper();
+            var storeId = Faker.Random.Guid();
             var customerId = Faker.Random.Guid();
             var staffId = Faker.Random.Guid();
-            var storeId = Faker.Random.Guid();
-            var terminalId = Faker.Random.Guid();
-            var saleDate = Faker.Date.Recent();
 
-            return new SaleAggregate(
+            return new Sale(
                 saleNumber,
-                customerId,
-                staffId,
                 storeId,
-                terminalId,
-                saleDate
+                customerId,
+                staffId
             );
         }
 
-        public static SaleItem CreateValidSaleItem()
+        public static SaleItem CreateValidSaleItem(Guid? saleId = null)
         {
+            var id = Faker.Random.Guid();
+            var saleIdValue = saleId ?? Faker.Random.Guid();
             var productId = Faker.Random.Guid();
-            var quantity = Faker.Random.Int(1, 10);
+            var productName = Faker.Commerce.ProductName();
             var unitPrice = Faker.Random.Decimal(1, 1000);
-            var discount = Faker.Random.Decimal(0, unitPrice * 0.2m);
-            var tax = Faker.Random.Decimal(0, unitPrice * 0.1m);
-
+            var quantity = Faker.Random.Int(1, 10);
+            var taxRate = Faker.Random.Decimal(0, 20);
             return new SaleItem(
+                id,
+                saleIdValue,
                 productId,
-                quantity,
+                productName,
                 unitPrice,
-                discount,
-                tax
+                quantity,
+                taxRate
             );
         }
 
-        public static SalePayment CreateValidSalePayment()
+        public static Payment CreateValidPayment(Guid? saleId = null)
         {
-            var method = Faker.PickRandom<PaymentMethod>();
+            var id = Faker.Random.Guid();
+            var saleIdValue = saleId ?? Faker.Random.Guid();
             var amount = Faker.Random.Decimal(1, 1000);
+            var method = Faker.PickRandom<PaymentType>();
             var reference = Faker.Random.AlphaNumeric(10);
-            var notes = Faker.Lorem.Sentence();
-
-            return new SalePayment(
-                method,
+            var cardLast4 = Faker.Random.Bool() ? Faker.Random.ReplaceNumbers("####") : null;
+            var cardType = Faker.Random.Bool() ? "Visa" : null;
+            return new Payment(
+                id,
+                saleIdValue,
                 amount,
+                method,
                 reference,
-                notes
+                cardLast4,
+                cardType
             );
         }
 
@@ -65,26 +72,17 @@ public static class TestDataFactory
         {
             var type = Faker.PickRandom<DiscountType>();
             var amount = Faker.Random.Decimal(1, 1000);
-            var reason = Faker.Lorem.Sentence();
-
+            var description = Faker.Lorem.Sentence();
             return new SaleDiscount(
                 type,
                 amount,
-                reason
+                description
             );
         }
     }
 
     public static class ValueObjects
     {
-        public static Money CreateValidMoney()
-        {
-            var amount = Faker.Random.Decimal(1, 1000);
-            var currency = Faker.PickRandom("USD", "EUR", "GBP");
-
-            return new Money(amount, currency);
-        }
-
         public static Address CreateValidAddress()
         {
             var street = Faker.Address.StreetAddress();
@@ -94,6 +92,13 @@ public static class TestDataFactory
             var country = Faker.Address.Country();
 
             return new Address(street, city, state, zipCode, country);
+        }
+
+        public static Money CreateValidMoney()
+        {
+            var amount = Faker.Random.Decimal(1, 1000);
+            var currency = Faker.PickRandom("USD", "EUR", "GBP");
+            return new Money(amount, currency);
         }
     }
 } 

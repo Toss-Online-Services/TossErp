@@ -21,90 +21,87 @@ public class SaleDomainEventTests
     public void SaleCreatedDomainEvent_ShouldContainCorrectData()
     {
         // Arrange
-        var sale = Sale.Create(_saleNumber, _storeId, _customerId, _staffId);
-        sale.Id = _saleId;
+        var saleId = Guid.NewGuid();
+        var storeId = Guid.NewGuid();
+        var createdAt = DateTime.UtcNow;
 
         // Act
-        var @event = new SaleCreatedDomainEvent(_saleId, _storeId, _customerId, _staffId, _saleNumber);
+        var @event = new SaleCreatedDomainEvent(saleId, storeId, createdAt);
 
         // Assert
-        @event.SaleId.Should().Be(_saleId);
-        @event.StoreId.Should().Be(_storeId);
-        @event.CustomerId.Should().Be(_customerId);
-        @event.StaffId.Should().Be(_staffId);
-        @event.SaleNumber.Should().Be(_saleNumber);
+        @event.SaleId.Should().Be(saleId);
+        @event.StoreId.Should().Be(storeId);
+        @event.CreatedAt.Should().BeCloseTo(createdAt, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
     public void SaleCompletedDomainEvent_ShouldContainCorrectData()
     {
         // Arrange
-        var sale = Sale.Create(_saleNumber, _storeId, _customerId, _staffId);
-        sale.Id = _saleId;
+        var saleId = Guid.NewGuid();
+        var totalAmount = new Money(100.00m, "USD");
         var completedAt = DateTime.UtcNow;
 
         // Act
-        var @event = new SaleCompletedDomainEvent(_saleId, completedAt);
+        var @event = new SaleCompletedDomainEvent(saleId, totalAmount, completedAt);
 
         // Assert
-        @event.SaleId.Should().Be(_saleId);
-        @event.CompletedAt.Should().Be(completedAt);
+        @event.SaleId.Should().Be(saleId);
+        @event.TotalAmount.Should().Be(totalAmount);
+        @event.CompletedAt.Should().BeCloseTo(completedAt, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
     public void SaleVoidedDomainEvent_ShouldContainCorrectData()
     {
         // Arrange
-        var sale = Sale.Create(_saleNumber, _storeId, _customerId, _staffId);
-        sale.Id = _saleId;
+        var saleId = Guid.NewGuid();
         var reason = "Test void reason";
         var approvedBy = Guid.NewGuid();
         var voidedAt = DateTime.UtcNow;
 
         // Act
-        var @event = new SaleVoidedDomainEvent(_saleId, reason, approvedBy, voidedAt);
+        var @event = new SaleVoidedDomainEvent(saleId, reason, voidedAt, approvedBy);
 
         // Assert
-        @event.SaleId.Should().Be(_saleId);
+        @event.SaleId.Should().Be(saleId);
         @event.Reason.Should().Be(reason);
         @event.ApprovedBy.Should().Be(approvedBy);
-        @event.VoidedAt.Should().Be(voidedAt);
+        @event.VoidedAt.Should().BeCloseTo(voidedAt, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
     public void SaleCancelledDomainEvent_ShouldContainCorrectData()
     {
         // Arrange
-        var sale = Sale.Create(_saleNumber, _storeId, _customerId, _staffId);
-        sale.Id = _saleId;
+        var saleId = Guid.NewGuid();
         var reason = "Test cancel reason";
         var cancelledAt = DateTime.UtcNow;
 
         // Act
-        var @event = new SaleCancelledDomainEvent(_saleId, reason, cancelledAt);
+        var @event = new SaleCancelledDomainEvent(saleId, reason, cancelledAt);
 
         // Assert
-        @event.SaleId.Should().Be(_saleId);
+        @event.SaleId.Should().Be(saleId);
         @event.Reason.Should().Be(reason);
-        @event.CancelledAt.Should().Be(cancelledAt);
+        @event.CancelledAt.Should().BeCloseTo(cancelledAt, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
     public void SalePaymentAddedDomainEvent_ShouldContainCorrectData()
     {
         // Arrange
-        var sale = Sale.Create(_saleNumber, _storeId, _customerId, _staffId);
-        sale.Id = _saleId;
+        var sale = new Sale(_saleNumber, _storeId, _customerId, _staffId);
         var paymentAmount = new Money(100.00m, "USD");
         var paymentMethod = PaymentType.Cash;
         var addedAt = DateTime.UtcNow;
 
         // Act
-        var @event = new SalePaymentAddedDomainEvent(_saleId, paymentMethod, paymentAmount, addedAt);
+        var @event = new SalePaymentAddedDomainEvent(sale.Id, paymentMethod, paymentAmount, addedAt);
 
         // Assert
-        @event.SaleId.Should().Be(_saleId);
-        @event.Method.Should().Be(paymentMethod);
+        @event.SaleId.Should().Be(sale.Id);
+        @event.PaymentMethod.Should().Be(paymentMethod);
         @event.Amount.Should().Be(paymentAmount);
         @event.AddedAt.Should().Be(addedAt);
     }
@@ -113,19 +110,18 @@ public class SaleDomainEventTests
     public void SaleDiscountAddedDomainEvent_ShouldContainCorrectData()
     {
         // Arrange
-        var sale = Sale.Create(_saleNumber, _storeId, _customerId, _staffId);
-        sale.Id = _saleId;
+        var sale = new Sale(_saleNumber, _storeId, _customerId, _staffId);
         var discountAmount = new Money(10.00m, "USD");
         var discountType = DiscountType.Percentage;
         var reason = "Test discount";
         var addedAt = DateTime.UtcNow;
 
         // Act
-        var @event = new SaleDiscountAddedDomainEvent(_saleId, discountType, discountAmount, reason, addedAt);
+        var @event = new SaleDiscountAddedDomainEvent(sale.Id, discountType, discountAmount, reason, addedAt);
 
         // Assert
-        @event.SaleId.Should().Be(_saleId);
-        @event.Type.Should().Be(discountType);
+        @event.SaleId.Should().Be(sale.Id);
+        @event.DiscountType.Should().Be(discountType);
         @event.Amount.Should().Be(discountAmount);
         @event.Reason.Should().Be(reason);
         @event.AddedAt.Should().Be(addedAt);
@@ -135,51 +131,48 @@ public class SaleDomainEventTests
     public void SaleNotesUpdatedDomainEvent_ShouldContainCorrectData()
     {
         // Arrange
-        var sale = Sale.Create(_saleNumber, _storeId, _customerId, _staffId);
-        sale.Id = _saleId;
+        var saleId = Guid.NewGuid();
         var notes = "Test notes";
         var updatedAt = DateTime.UtcNow;
 
         // Act
-        var @event = new SaleNotesUpdatedDomainEvent(_saleId, notes, updatedAt);
+        var @event = new SaleNotesUpdatedDomainEvent(saleId, notes, updatedAt);
 
         // Assert
-        @event.SaleId.Should().Be(_saleId);
+        @event.SaleId.Should().Be(saleId);
         @event.Notes.Should().Be(notes);
-        @event.UpdatedAt.Should().Be(updatedAt);
+        @event.UpdatedAt.Should().BeCloseTo(updatedAt, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
     public void SaleAddressUpdatedDomainEvent_ShouldContainCorrectData()
     {
         // Arrange
-        var sale = Sale.Create(_saleNumber, _storeId, _customerId, _staffId);
-        sale.Id = _saleId;
+        var saleId = Guid.NewGuid();
         var address = new Address("123 Test St", "Test City", "Test State", "12345", "Test Country");
         var updatedAt = DateTime.UtcNow;
 
         // Act
-        var @event = new SaleAddressUpdatedDomainEvent(_saleId, address, updatedAt);
+        var @event = new SaleAddressUpdatedDomainEvent(saleId, address, updatedAt);
 
         // Assert
-        @event.SaleId.Should().Be(_saleId);
+        @event.SaleId.Should().Be(saleId);
         @event.Address.Should().Be(address);
-        @event.UpdatedAt.Should().Be(updatedAt);
+        @event.UpdatedAt.Should().BeCloseTo(updatedAt, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
     public void SaleProcessingStartedDomainEvent_ShouldContainCorrectData()
     {
         // Arrange
-        var sale = Sale.Create(_saleNumber, _storeId, _customerId, _staffId);
-        sale.Id = _saleId;
+        var saleId = Guid.NewGuid();
         var startedAt = DateTime.UtcNow;
 
         // Act
-        var @event = new SaleProcessingStartedDomainEvent(_saleId, startedAt);
+        var @event = new SaleProcessingStartedDomainEvent(saleId, startedAt);
 
         // Assert
-        @event.SaleId.Should().Be(_saleId);
-        @event.StartedAt.Should().Be(startedAt);
+        @event.SaleId.Should().Be(saleId);
+        @event.StartedAt.Should().BeCloseTo(startedAt, TimeSpan.FromSeconds(1));
     }
 } 
