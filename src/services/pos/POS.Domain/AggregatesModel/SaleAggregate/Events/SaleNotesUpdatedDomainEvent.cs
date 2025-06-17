@@ -1,16 +1,17 @@
-using POS.Domain.SeedWork;
-using System;
+using POS.Domain.Common.Events;
 
-namespace POS.Domain.AggregatesModel.SaleAggregate.Events
+namespace POS.Domain.AggregatesModel.SaleAggregate.Events;
+
+public class SaleNotesUpdatedDomainEvent : IDomainEvent
 {
-    public class SaleNotesUpdatedDomainEvent : DomainEvent
+    public Guid SaleId { get; }
+    public string? Notes { get; }
+    public DateTime UpdatedAt { get; }
+
+    public SaleNotesUpdatedDomainEvent(Guid saleId, string? notes, DateTime updatedAt)
     {
-        public Guid SaleId { get; }
-        public string Notes { get; }
-        public SaleNotesUpdatedDomainEvent(Guid saleId, string notes)
-        {
-            SaleId = saleId;
-            Notes = notes;
-        }
+        SaleId = saleId;
+        Notes = notes;
+        UpdatedAt = updatedAt;
     }
 } 

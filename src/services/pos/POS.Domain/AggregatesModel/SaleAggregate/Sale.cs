@@ -173,6 +173,8 @@ public class Sale : AggregateRoot
 
         Address = address;
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new SaleAddressUpdatedDomainEvent(Id, address, UpdatedAt.Value));
     }
 
     public void UpdateNotes(string? notes)
@@ -182,6 +184,8 @@ public class Sale : AggregateRoot
 
         Notes = notes;
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new SaleNotesUpdatedDomainEvent(Id, notes, UpdatedAt.Value));
     }
 
     public void StartProcessing()
@@ -191,6 +195,8 @@ public class Sale : AggregateRoot
 
         Status = SaleStatus.Processing;
         UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new SaleProcessingStartedDomainEvent(Id, UpdatedAt.Value));
     }
 
     public void Complete()
