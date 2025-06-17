@@ -1,20 +1,20 @@
-﻿
-namespace POS.Domain.SeedWork
+﻿using POS.Domain.Common.Events;
+
+namespace POS.Domain.SeedWork;
+
+public abstract class AggregateRoot : Entity
 {
-    public abstract class AggregateRoot : Entity, IAggregateRoot
+   
+    private readonly List<IDomainEvent> _domainEvents = new();
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    protected void AddDomainEvent(IDomainEvent domainEvent)
     {
-        private readonly List<DomainEvent> _domainEvents = new();
+        _domainEvents.Add(domainEvent);
+    }
 
-        IReadOnlyCollection<DomainEvent> IAggregateRoot.DomainEvents => throw new NotImplementedException();
-
-        protected void AddDomainEvent(DomainEvent domainEvent)
-        {
-            _domainEvents.Add(domainEvent);
-        }
-
-        public void ClearDomainEvents()
-        {
-            _domainEvents.Clear();
-        }
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
     }
 } 

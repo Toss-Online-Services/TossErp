@@ -1,14 +1,17 @@
-using POS.Domain.SeedWork;
+using POS.Domain.Common.Events;
 using System;
 
 namespace POS.Domain.AggregatesModel.StoreAggregate.Events
 {
-    public class StoreReactivatedDomainEvent : DomainEvent
+    public class StoreReactivatedDomainEvent : IDomainEvent
     {
         public Guid StoreId { get; }
-        public StoreReactivatedDomainEvent(Guid storeId)
+        public DateTime ReactivatedAt { get; }
+
+        public StoreReactivatedDomainEvent(Guid storeId, DateTime reactivatedAt)
         {
             StoreId = storeId;
+            ReactivatedAt = reactivatedAt;
         }
     }
 } 

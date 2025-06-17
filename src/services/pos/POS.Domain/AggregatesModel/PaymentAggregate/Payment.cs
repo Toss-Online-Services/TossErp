@@ -1,98 +1,95 @@
 using POS.Domain.Common;
-using POS.Domain.Models;
-using POS.Domain.Common.ValueObjects;
-using POS.Domain.AggregatesModel.PaymentAggregate.Events;
 using POS.Domain.Common.Events;
+using POS.Domain.Common.ValueObjects;
+using POS.Domain.Enums;
+using POS.Domain.Exceptions;
+using POS.Domain.SeedWork;
+using POS.Domain.AggregatesModel.PaymentAggregate.Events;
 
 namespace POS.Domain.AggregatesModel.PaymentAggregate
 {
-    public class Payment : Entity
+    public class Payment : AggregateRoot
     {
         public Guid SaleId { get; private set; }
         public decimal Amount { get; private set; }
-        public Money AmountObj { get; private set; }
-        public PaymentMethod Method { get; private set; }
-        public string TransactionId { get; private set; }
-        public string Currency { get; private set; }
+        public POS.Domain.Enums.PaymentMethod Method { get; private set; }
         public PaymentStatus Status { get; private set; }
+        public string? Reference { get; private set; }
+        public string? CardLast4 { get; private set; }
+        public string? CardType { get; private set; }
         public DateTime CreatedAt { get; private set; }
-        public DateTime? ProcessedAt { get; private set; }
-        public string? ErrorMessage { get; private set; }
+        public DateTime? UpdatedAt { get; private set; }
         public List<PaymentEvent> Events { get; private set; }
 
         private Payment()
         {
-            TransactionId = string.Empty;
-            Currency = "USD";
-            Method = PaymentMethod.Cash;
-            AmountObj = new Money(0, "USD");
+            CreatedAt = DateTime.UtcNow;
+            Status = PaymentStatus.Pending;
             Events = new List<PaymentEvent>();
         }
 
-        public Payment(
-            Guid saleId,
-            decimal amount,
-            PaymentMethod method,
-            string transactionId,
-            string currency)
+        public Payment(Guid saleId, decimal amount, POS.Domain.Enums.PaymentMethod method, string? reference = null, string? cardLast4 = null, string? cardType = null)
         {
+            if (saleId == Guid.Empty)
+                throw new DomainException("Sale ID cannot be empty");
+            if (amount <= 0)
+                throw new DomainException("Amount must be greater than zero");
+
             SaleId = saleId;
             Amount = amount;
             Method = method;
-            TransactionId = transactionId;
-            Currency = currency;
-            AmountObj = new Money(amount, currency);
-            Status = PaymentStatus.Pending;
+            Reference = reference;
+            CardLast4 = cardLast4;
+            CardType = cardType;
             CreatedAt = DateTime.UtcNow;
+            Status = PaymentStatus.Pending;
             Events = new List<PaymentEvent>();
-            AddDomainEvent(new PaymentCreatedDomainEvent(Id, saleId, amount, method));
+
+            AddDomainEvent(new PaymentCreatedDomainEvent(Id, saleId, amount, method.ToString()));
         }
 
         public void Process()
         {
             if (Status != PaymentStatus.Pending)
-                throw new InvalidOperationException("Payment is not in pending status");
+                throw new DomainException("Can only process pending payments");
 
             Status = PaymentStatus.Processing;
-            ProcessedAt = DateTime.UtcNow;
-            AddDomainEvent(new PaymentStatusChangedDomainEvent(Id, PaymentStatus.Processing));
+            UpdatedAt = DateTime.UtcNow;
+
+            AddDomainEvent(new PaymentStatusChangedDomainEvent(Id, Status, DateTime.UtcNow));
         }
 
         public void Complete()
         {
             if (Status != PaymentStatus.Processing)
-                throw new InvalidOperationException("Payment is not in processing status");
+                throw new DomainException("Can only complete processing payments");
 
             Status = PaymentStatus.Completed;
-            ProcessedAt = DateTime.UtcNow;
-            AddDomainEvent(new PaymentStatusChangedDomainEvent(Id, PaymentStatus.Completed));
+            UpdatedAt = DateTime.UtcNow;
+
+            AddDomainEvent(new PaymentStatusChangedDomainEvent(Id, Status, DateTime.UtcNow));
         }
 
-        public void Fail(string reason)
+        public void Fail()
         {
             if (Status == PaymentStatus.Completed)
-                throw new InvalidOperationException("Cannot fail a completed payment");
+                throw new DomainException("Cannot fail a completed payment");
 
             Status = PaymentStatus.Failed;
-            ErrorMessage = reason;
-            ProcessedAt = DateTime.UtcNow;
-            AddDomainEvent(new PaymentStatusChangedDomainEvent(Id, PaymentStatus.Failed));
+            UpdatedAt = DateTime.UtcNow;
+
+            AddDomainEvent(new PaymentStatusChangedDomainEvent(Id, Status, DateTime.UtcNow));
         }
 
-        public void Refund(string reason)
+        public void Refund()
         {
             if (Status != PaymentStatus.Completed)
-                throw new InvalidOperationException("Can only refund completed payments");
+                throw new DomainException("Can only refund completed payments");
 
             Status = PaymentStatus.Refunded;
-            ErrorMessage = reason;
-            ProcessedAt = DateTime.UtcNow;
-            AddDomainEvent(new PaymentStatusChangedDomainEvent(Id, PaymentStatus.Refunded));
-        }
+            UpdatedAt = DateTime.UtcNow;
 
-        private void AddDomainEvent(IDomainEvent domainEvent)
-        {
-            // Implementation of AddDomainEvent method
+            AddDomainEvent(new PaymentStatusChangedDomainEvent(Id, Status, DateTime.UtcNow));
         }
     }
 
@@ -114,7 +111,6 @@ namespace POS.Domain.AggregatesModel.PaymentAggregate
             Type = type;
             Details = details;
             CreatedAt = DateTime.UtcNow;
-            AddDomainEvent(new PaymentEventAddedDomainEvent(paymentId, Guid.NewGuid()));
         }
     }
 

@@ -1,32 +1,55 @@
-﻿using POS.Domain.Common.ValueObjects;
+﻿using POS.Domain.Common;
+using POS.Domain.Common.ValueObjects;
+using POS.Domain.Enums;
+using POS.Domain.Exceptions;
 using POS.Domain.Models;
 using POS.Domain.SeedWork;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate;
 
-public class Payment : Entity
+public class Payment : AggregateRoot
 {
-    public POS.Domain.Models.PaymentMethod Method { get; private set; }
+    public POS.Domain.Enums.PaymentMethod Method { get; private set; }
     public decimal Amount { get; private set; }
     public string Currency { get; private set; }
     public string? Reference { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public Money AmountObj { get; private set; }
     public string? Notes { get; private set; }
+    public PaymentStatus Status { get; private set; }
+    public string? CardLast4 { get; private set; }
+    public string? CardType { get; private set; }
+    public Guid SaleId { get; private set; }
 
-    private Payment() { } // For EF Core
-
-    public Payment(POS.Domain.Models.PaymentMethod method, decimal amount, string currency, string? reference = null)
+    private Payment()
     {
-        if (amount <= 0)
-            throw new ArgumentException("Amount must be greater than zero", nameof(amount));
-
-        Method = method;
-        Amount = amount;
-        Currency = currency;
-        Reference = reference;
+        Method = POS.Domain.Enums.PaymentMethod.Cash;
+        Currency = "USD";
+        AmountObj = new Money(0, Currency);
+        Status = PaymentStatus.Pending;
         CreatedAt = DateTime.UtcNow;
-        AmountObj = new Money(amount, currency);
+    }
+
+    public Payment(Guid id, Guid saleId, decimal amount, POS.Domain.Enums.PaymentMethod method, string? reference = null, string? cardLast4 = null, string? cardType = null)
+    {
+        if (id == Guid.Empty)
+            throw new DomainException("Payment ID cannot be empty");
+        if (saleId == Guid.Empty)
+            throw new DomainException("Sale ID cannot be empty");
+        if (amount <= 0)
+            throw new DomainException("Amount must be greater than zero");
+
+        Id = id;
+        SaleId = saleId;
+        Method = method;
+        Currency = "USD";
+        AmountObj = new Money(amount, Currency);
+        Reference = reference;
+        CardLast4 = cardLast4;
+        CardType = cardType;
+        Status = PaymentStatus.Pending;
+        CreatedAt = DateTime.UtcNow;
+        AddDomainEvent(new PaymentCreatedDomainEvent(Id, saleId, amount, method.ToString()));
     }
 
     public void AddNote(string note)

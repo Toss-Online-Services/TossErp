@@ -1,4 +1,5 @@
 using POS.Domain.Common;
+using POS.Domain.SeedWork;
 
 namespace POS.Domain.Common.ValueObjects;
 
@@ -8,48 +9,65 @@ public class Address : ValueObject
     public string City { get; private set; }
     public string State { get; private set; }
     public string Country { get; private set; }
-    public string PostalCode { get; private set; }
-    public string? AdditionalInfo { get; private set; }
+    public string ZipCode { get; private set; }
 
-    private Address()
+    public Address()
     {
         Street = string.Empty;
         City = string.Empty;
         State = string.Empty;
         Country = string.Empty;
-        PostalCode = string.Empty;
-        AdditionalInfo = null;
-    } // For EF Core
+        ZipCode = string.Empty;
+    }
 
-    public Address(
-        string street,
-        string city,
-        string state,
-        string country,
-        string postalCode,
-        string? additionalInfo = null)
+    public Address(string street, string city, string state, string country, string zipCode)
     {
         if (string.IsNullOrWhiteSpace(street))
             throw new DomainException("Street cannot be empty");
-
         if (string.IsNullOrWhiteSpace(city))
             throw new DomainException("City cannot be empty");
-
         if (string.IsNullOrWhiteSpace(state))
             throw new DomainException("State cannot be empty");
-
         if (string.IsNullOrWhiteSpace(country))
             throw new DomainException("Country cannot be empty");
-
-        if (string.IsNullOrWhiteSpace(postalCode))
-            throw new DomainException("Postal code cannot be empty");
+        if (string.IsNullOrWhiteSpace(zipCode))
+            throw new DomainException("Zip code cannot be empty");
 
         Street = street;
         City = city;
         State = state;
         Country = country;
-        PostalCode = postalCode;
-        AdditionalInfo = additionalInfo;
+        ZipCode = zipCode;
+    }
+
+    public static Address Create(string street, string city, string state, string country, string zipCode)
+    {
+        return new Address(street, city, state, country, zipCode);
+    }
+
+    public void Update(string street, string city, string state, string country, string zipCode)
+    {
+        if (string.IsNullOrWhiteSpace(street))
+            throw new DomainException("Street cannot be empty");
+        if (string.IsNullOrWhiteSpace(city))
+            throw new DomainException("City cannot be empty");
+        if (string.IsNullOrWhiteSpace(state))
+            throw new DomainException("State cannot be empty");
+        if (string.IsNullOrWhiteSpace(country))
+            throw new DomainException("Country cannot be empty");
+        if (string.IsNullOrWhiteSpace(zipCode))
+            throw new DomainException("Zip code cannot be empty");
+
+        Street = street;
+        City = city;
+        State = state;
+        Country = country;
+        ZipCode = zipCode;
+    }
+
+    public override string ToString()
+    {
+        return $"{Street}, {City}, {State} {ZipCode}, {Country}";
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
@@ -58,37 +76,7 @@ public class Address : ValueObject
         yield return City;
         yield return State;
         yield return Country;
-        yield return PostalCode;
-        yield return AdditionalInfo;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is Address other)
-        {
-            return Street == other.Street &&
-                   City == other.City &&
-                   State == other.State &&
-                   Country == other.Country &&
-                   PostalCode == other.PostalCode &&
-                   AdditionalInfo == other.AdditionalInfo;
-        }
-        return false;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Street, City, State, Country, PostalCode, AdditionalInfo);
-    }
-
-    public override string ToString()
-    {
-        var address = $"{Street}, {City}, {State} {PostalCode}, {Country}";
-        if (!string.IsNullOrWhiteSpace(AdditionalInfo))
-        {
-            address += $" ({AdditionalInfo})";
-        }
-        return address;
+        yield return ZipCode;
     }
 
     public bool IsInCountry(string country)
@@ -108,16 +96,16 @@ public class Address : ValueObject
 
     public bool HasPostalCode(string postalCode)
     {
-        return PostalCode.Equals(postalCode, StringComparison.OrdinalIgnoreCase);
+        return ZipCode.Equals(postalCode, StringComparison.OrdinalIgnoreCase);
     }
 
     public Address WithAdditionalInfo(string additionalInfo)
     {
-        return new Address(Street, City, State, Country, PostalCode, additionalInfo);
+        return new Address(Street, City, State, Country, ZipCode);
     }
 
     public Address WithoutAdditionalInfo()
     {
-        return new Address(Street, City, State, Country, PostalCode);
+        return new Address(Street, City, State, Country, ZipCode);
     }
 } 

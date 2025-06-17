@@ -4,7 +4,7 @@ using POS.Domain.AggregatesModel.CustomerAggregate.Events;
 
 namespace POS.Domain.AggregatesModel.CustomerAggregate
 {
-    public class Customer : Entity
+    public class Customer : AggregateRoot
     {
         public string Name { get; private set; }
         public string Email { get; private set; }
@@ -62,13 +62,13 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public void Deactivate()
         {
             IsActive = false;
-            AddDomainEvent(new CustomerDeactivatedDomainEvent(Id));
+            AddDomainEvent(new CustomerDeactivatedDomainEvent(Id, DateTime.UtcNow));
         }
 
         public void Reactivate()
         {
             IsActive = true;
-            AddDomainEvent(new CustomerReactivatedDomainEvent(Id));
+            AddDomainEvent(new CustomerReactivatedDomainEvent(Id, DateTime.UtcNow));
         }
     }
 } 

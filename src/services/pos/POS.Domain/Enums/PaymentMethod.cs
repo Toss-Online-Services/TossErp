@@ -5,9 +5,6 @@ public enum PaymentMethod
     Cash,
     CreditCard,
     DebitCard,
-    MobileWallet,
-    QRCode,
-    BankTransfer,
-    Voucher,
-    Other
+    MobilePayment,
+    BankTransfer
 } 

@@ -14,27 +14,47 @@ public class SaleItem : Entity
     public int Quantity { get; private set; }
     public decimal Discount { get; private set; }
     public decimal TotalPrice { get; private set; }
+    public decimal TaxRate { get; private set; }
     public SaleItemStatus Status { get; private set; }
+    public decimal Total => TotalPrice;
 
-    private SaleItem() { } // For EF
-
-    public SaleItem(
-        Guid id,
-        Guid saleId,
-        Guid productId,
-        string productName,
-        decimal unitPrice,
-        int quantity,
-        decimal discount = 0) : base(id)
+    private SaleItem()
     {
+        ProductName = string.Empty;
+        UnitPrice = 0;
+        Quantity = 0;
+        Discount = 0;
+        TotalPrice = 0;
+        TaxRate = 0;
+        Status = SaleItemStatus.Active;
+    }
+
+    public SaleItem(Guid id, Guid saleId, Guid productId, string productName, decimal unitPrice, int quantity, decimal taxRate)
+    {
+        if (id == Guid.Empty)
+            throw new DomainException("Item ID cannot be empty");
+        if (saleId == Guid.Empty)
+            throw new DomainException("Sale ID cannot be empty");
+        if (productId == Guid.Empty)
+            throw new DomainException("Product ID cannot be empty");
+        if (string.IsNullOrWhiteSpace(productName))
+            throw new DomainException("Product name cannot be empty");
+        if (unitPrice < 0)
+            throw new DomainException("Unit price cannot be negative");
+        if (quantity <= 0)
+            throw new DomainException("Quantity must be greater than zero");
+        if (taxRate < 0 || taxRate > 100)
+            throw new DomainException("Tax rate must be between 0 and 100");
+
+        Id = id;
         SaleId = saleId;
         ProductId = productId;
         ProductName = productName;
         UnitPrice = unitPrice;
         Quantity = quantity;
-        Discount = discount;
-        TotalPrice = CalculateTotalPrice();
+        TaxRate = taxRate;
         Status = SaleItemStatus.Active;
+        TotalPrice = CalculateTotalPrice();
     }
 
     public void UpdateQuantity(int newQuantity)
@@ -45,13 +65,6 @@ public class SaleItem : Entity
         var oldQuantity = Quantity;
         Quantity = newQuantity;
         TotalPrice = CalculateTotalPrice();
-
-        AddDomainEvent(new SaleItemQuantityChangedDomainEvent(
-            SaleId,
-            Id,
-            oldQuantity,
-            newQuantity,
-            DateTime.UtcNow));
     }
 
     public void ApplyDiscount(decimal discountAmount)
@@ -72,12 +85,6 @@ public class SaleItem : Entity
             throw new DomainException("Item is already removed");
 
         Status = SaleItemStatus.Removed;
-
-        AddDomainEvent(new SaleItemRemovedDomainEvent(
-            SaleId,
-            Id,
-            "Item removed from sale",
-            DateTime.UtcNow));
     }
 
     private decimal CalculateTotalPrice()

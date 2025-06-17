@@ -10,7 +10,7 @@ using POS.Domain.Common.Events;
 
 namespace POS.Domain.AggregatesModel.ProductAggregate;
 
-public class Product : Entity
+public class Product : AggregateRoot
 {
     public Guid StoreId { get; private set; }
     public Store Store { get; private set; } = null!;
@@ -82,7 +82,7 @@ public class Product : Entity
     {
         StockQuantity = quantity;
         LastModifiedAt = DateTime.UtcNow;
-        AddDomainEvent(new ProductStockUpdatedDomainEvent(Id, quantity));
+        AddDomainEvent(new ProductStockUpdatedDomainEvent(Id, quantity, DateTime.UtcNow));
     }
 
     public void AdjustStock(int adjustment)
@@ -103,18 +103,13 @@ public class Product : Entity
     {
         IsActive = false;
         LastModifiedAt = DateTime.UtcNow;
-        AddDomainEvent(new ProductDeactivatedDomainEvent(Id));
+        AddDomainEvent(new ProductDeactivatedDomainEvent(Id, DateTime.UtcNow));
     }
 
     public void Reactivate()
     {
         IsActive = true;
         LastModifiedAt = DateTime.UtcNow;
-        AddDomainEvent(new ProductReactivatedDomainEvent(Id));
-    }
-
-    public void AddDomainEvent(IDomainEvent domainEvent)
-    {
-        // Implementation of AddDomainEvent method
+        AddDomainEvent(new ProductReactivatedDomainEvent(Id, DateTime.UtcNow));
     }
 } 

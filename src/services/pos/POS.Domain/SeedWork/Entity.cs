@@ -2,8 +2,12 @@
 {
     public abstract class Entity
     {
-        public Guid Id { get; protected set; }
-        public List<DomainEvent> DomainEvents { get; set; } = new List<DomainEvent>();
+        protected Entity() { }
+        protected Entity(Guid id)
+        {
+            Id = id;
+        }
+        public Guid Id { get; protected set; }      
 
         
         public override bool Equals(object? obj)

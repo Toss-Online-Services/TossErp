@@ -1,14 +1,15 @@
-using POS.Domain.SeedWork;
-using System;
+using POS.Domain.Common.Events;
 
-namespace POS.Domain.AggregatesModel.StoreAggregate.Events
+namespace POS.Domain.AggregatesModel.StoreAggregate.Events;
+
+public class StoreOperatingHoursUpdatedDomainEvent : IDomainEvent
 {
-    public class StoreOperatingHoursUpdatedDomainEvent : DomainEvent
+    public Guid StoreId { get; }
+    public DateTime UpdatedAt { get; }
+
+    public StoreOperatingHoursUpdatedDomainEvent(Guid storeId, DateTime updatedAt)
     {
-        public Guid StoreId { get; }
-        public StoreOperatingHoursUpdatedDomainEvent(Guid storeId)
-        {
-            StoreId = storeId;
-        }
+        StoreId = storeId;
+        UpdatedAt = updatedAt;
     }
 } 

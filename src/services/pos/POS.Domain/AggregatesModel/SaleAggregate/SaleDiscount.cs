@@ -1,5 +1,7 @@
 ﻿using POS.Domain.SeedWork;
 using POS.Domain.Enums;
+using POS.Domain.Common;
+using POS.Domain.Exceptions;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate;
 
@@ -13,8 +15,13 @@ public class SaleDiscount : Entity
     public DateTime StartDate { get; private set; }
     public DateTime EndDate { get; private set; }
     public DateTime CreatedAt { get; private set; }
+    public string DiscountType { get; private set; }
+    public string? Description { get; private set; }
 
-    private SaleDiscount() { }
+    private SaleDiscount()
+    {
+        Type = DiscountType.Percentage;
+    }
 
     public SaleDiscount(string? code, string? storeId, DiscountType type, decimal amount, DateTime startDate, DateTime endDate)
     {
@@ -28,6 +35,16 @@ public class SaleDiscount : Entity
         CreatedAt = DateTime.UtcNow;
     }
 
+    public SaleDiscount(DiscountType type, decimal amount, string? description = null)
+    {
+        if (amount <= 0)
+            throw new DomainException("Discount amount must be greater than zero");
+
+        Type = type;
+        Amount = amount;
+        Description = description;
+    }
+
     public void Deactivate()
     {
         Status = "Inactive";
@@ -37,5 +54,17 @@ public class SaleDiscount : Entity
     {
         var now = DateTime.UtcNow;
         return Status == "Active" && now >= StartDate && now <= EndDate;
+    }
+
+    public void UpdateAmount(decimal amount)
+    {
+        if (amount <= 0)
+            throw new DomainException("Discount amount must be greater than zero");
+        Amount = amount;
+    }
+
+    public void UpdateDescription(string? description)
+    {
+        Description = description;
     }
 }

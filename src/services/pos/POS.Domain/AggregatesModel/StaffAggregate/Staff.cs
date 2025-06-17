@@ -4,7 +4,7 @@ using POS.Domain.AggregatesModel.StaffAggregate.Events;
 
 namespace POS.Domain.AggregatesModel.StaffAggregate
 {
-    public class Staff : Entity
+    public class Staff : AggregateRoot
     {
         public string Name { get; private set; }
         public string Email { get; private set; }

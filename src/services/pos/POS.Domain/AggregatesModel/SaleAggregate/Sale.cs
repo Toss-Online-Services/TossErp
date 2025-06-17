@@ -10,365 +10,227 @@ using PaymentMethodModel = POS.Domain.Models.PaymentMethod;
 using POS.Domain.Common.ValueObjects;
 using POS.Domain.Events;
 using POS.Domain.Common;
+using POS.Domain.Common.Events;
+using POS.Domain.Exceptions;
+using POS.Domain.SeedWork;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate;
 
 public class Sale : AggregateRoot
 {
-    private readonly List<SaleItem> _items = new();
-    private readonly List<Payment> _payments = new();
-    private readonly List<SaleDiscount> _discounts = new();
-
+    public string SaleNumber { get; private set; }
     public Guid StoreId { get; private set; }
-    public Store Store { get; private set; } = null!;
-    public string InvoiceNumber { get; private set; }
-    public DateTime SaleDate { get; private set; }
-    public Money SubTotal { get; private set; }
-    public Money TaxAmount { get; private set; }
-    public Money DiscountAmount { get; private set; }
-    public Money TotalAmount { get; private set; }
-    public decimal AmountPaid { get; private set; }
-    public decimal Balance { get; private set; }
-    public SaleStatus Status { get; private set; }
-    public string? Notes { get; private set; }
-    public bool IsSynced { get; private set; }
-    public DateTime? SyncedAt { get; private set; }
+    public Guid? CustomerId { get; private set; }
     public Guid? StaffId { get; private set; }
-    public Staff? Staff { get; private set; }
-    public string? StaffName { get; private set; }
-    public Guid? BuyerId { get; private set; }
-    public string? CustomerId { get; private set; }
-    public string? CustomerName { get; private set; }
-    public string? CustomerPhone { get; private set; }
-    public string? CustomerEmail { get; private set; }
-    public Guid? PaymentMethodId { get; private set; }
-    public PaymentMethodModel? PaymentMethod { get; private set; }
-    public Guid? AddressId { get; private set; }
-    public POS.Domain.Common.ValueObjects.Address? Address { get; private set; }
-    public Guid? CardTypeId { get; private set; }
+    public decimal Subtotal { get; private set; }
+    public decimal Tax { get; private set; }
+    public decimal Discount { get; private set; }
+    public decimal Total { get; private set; }
+    public string Status { get; private set; }
+    public string? Notes { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
-    public bool IsOffline { get; private set; }
-    public string? RefundReason { get; private set; }
+    public DateTime? CancelledAt { get; private set; }
+    public string? CancellationReason { get; private set; }
+    public Common.ValueObjects.Address? Address { get; private set; }
 
+    private readonly List<SaleItem> _items = new();
     public IReadOnlyCollection<SaleItem> Items => _items.AsReadOnly();
+
+    private readonly List<Payment> _payments = new();
     public IReadOnlyCollection<Payment> Payments => _payments.AsReadOnly();
+
+    private readonly List<SaleDiscount> _discounts = new();
     public IReadOnlyCollection<SaleDiscount> Discounts => _discounts.AsReadOnly();
 
     private Sale()
     {
-        InvoiceNumber = string.Empty;
-        Status = SaleStatus.Pending;
-        _items = new List<SaleItem>();
-        _payments = new List<Payment>();
-        _discounts = new List<SaleDiscount>();
-        CreatedAt = DateTime.UtcNow;
-        DomainEvents = new List<DomainEvent>();
+        SaleNumber = string.Empty;
+        Status = string.Empty;
     }
 
-    public Sale(Guid storeId, string invoiceNumber, DateTime saleDate, Guid? staffId = null, string? staffName = null, 
-        Guid? buyerId = null, string? customerId = null, string? customerName = null, string? customerPhone = null, 
-        string? customerEmail = null, Guid? paymentMethodId = null, Guid? addressId = null, Guid? cardTypeId = null, 
-        string? notes = null, bool isOffline = false)
+    public Sale(string saleNumber, Guid storeId, Guid? customerId = null, Guid? staffId = null)
     {
+        if (string.IsNullOrWhiteSpace(saleNumber))
+            throw new DomainException("Sale number cannot be empty");
         if (storeId == Guid.Empty)
             throw new DomainException("Store ID cannot be empty");
-        if (string.IsNullOrWhiteSpace(invoiceNumber))
-            throw new DomainException("Invoice number cannot be empty");
 
-        _items = new List<SaleItem>();
-        _payments = new List<Payment>();
-        _discounts = new List<SaleDiscount>();
-
+        SaleNumber = saleNumber;
         StoreId = storeId;
-        InvoiceNumber = invoiceNumber;
-        SaleDate = saleDate;
-        StaffId = staffId;
-        StaffName = staffName;
-        BuyerId = buyerId;
         CustomerId = customerId;
-        CustomerName = customerName;
-        CustomerPhone = customerPhone;
-        CustomerEmail = customerEmail;
-        PaymentMethodId = paymentMethodId;
-        AddressId = addressId;
-        CardTypeId = cardTypeId;
-        Notes = notes;
-        Status = SaleStatus.Pending;
-        IsSynced = false;
-        SyncedAt = null;
+        StaffId = staffId;
+        Status = "Pending";
         CreatedAt = DateTime.UtcNow;
-        IsOffline = isOffline;
-        DomainEvents = new List<DomainEvent>();
-        AddDomainEvent(new SaleCreatedDomainEvent(Id, storeId, customerId));
     }
 
-    public void AddItem(Guid productId, string productName, decimal unitPrice, int quantity, decimal taxRate)
+    public void AddItem(SaleItem item)
     {
-        if (Status != SaleStatus.Pending)
-            throw new DomainException("Can only add items to a pending sale");
+        if (Status != "Pending")
+            throw new DomainException("Cannot add items to a non-pending sale");
 
-        if (quantity <= 0)
-            throw new DomainException("Quantity must be greater than zero");
+        var existingItem = _items.FirstOrDefault(i => i.ProductId == item.ProductId);
+        if (existingItem != null)
+        {
+            existingItem.UpdateQuantity(existingItem.Quantity + item.Quantity);
+        }
+        else
+        {
+            _items.Add(item);
+        }
 
-        if (unitPrice < 0)
-            throw new DomainException("Unit price cannot be negative");
-
-        if (taxRate < 0 || taxRate > 100)
-            throw new DomainException("Tax rate must be between 0 and 100");
-
-        var item = new SaleItem(productId, productName, unitPrice, quantity, taxRate, "USD");
-        _items.Add(item);
-        CalculateTotalAmount();
-        AddDomainEvent(new SaleItemAddedDomainEvent(Id, item.Id));
+        RecalculateTotals();
+        UpdatedAt = DateTime.UtcNow;
     }
 
-    public void UpdateItemQuantity(Guid itemId, int quantity)
+    public void UpdateItemQuantity(Guid productId, int quantity)
     {
-        if (Status != SaleStatus.Pending)
-            throw new DomainException("Can only update items in a pending sale");
+        if (Status != "Pending")
+            throw new DomainException("Cannot update items in a non-pending sale");
 
-        if (quantity <= 0)
-            throw new DomainException("Quantity must be greater than zero");
-
-        var item = _items.Find(i => i.Id == itemId);
+        var item = _items.FirstOrDefault(i => i.ProductId == productId);
         if (item == null)
-            throw new DomainException("Item not found");
+            throw new DomainException($"Item with product ID {productId} not found");
 
-        var oldQuantity = item.Quantity;
         item.UpdateQuantity(quantity);
-        CalculateTotalAmount();
-        AddDomainEvent(new SaleItemQuantityUpdatedDomainEvent(this, item, oldQuantity, quantity));
+        RecalculateTotals();
+        UpdatedAt = DateTime.UtcNow;
     }
 
-    public void RemoveItem(Guid itemId)
+    public void RemoveItem(Guid productId)
     {
-        var item = _items.Find(i => i.Id == itemId);
-        if (item != null)
-        {
-            _items.Remove(item);
-            CalculateTotalAmount();
-            AddDomainEvent(new SaleItemRemovedDomainEvent(Id, itemId));
-        }
+        if (Status != "Pending")
+            throw new DomainException("Cannot remove items from a non-pending sale");
+
+        var item = _items.FirstOrDefault(i => i.ProductId == productId);
+        if (item == null)
+            throw new DomainException($"Item with product ID {productId} not found");
+
+        _items.Remove(item);
+        RecalculateTotals();
+        UpdatedAt = DateTime.UtcNow;
     }
 
-    public void AddPayment(decimal amount, PaymentType type, string? reference = null, string? cardLast4 = null, string? cardType = null)
+    public void AddPayment(Payment payment)
     {
-        if (Status == SaleStatus.Voided)
-            throw new DomainException("Cannot add payment to a voided sale");
+        if (Status != "Pending" && Status != "Processing")
+            throw new DomainException("Cannot add payment to a completed or cancelled sale");
 
-        if (Status == SaleStatus.Refunded)
-            throw new DomainException("Cannot add payment to a refunded sale");
-
-        if (amount <= 0)
-            throw new DomainException("Payment amount must be greater than zero");
-
-        if (amount > GetBalance())
-            throw new DomainException("Payment amount cannot exceed balance");
-
-        var payment = new Payment(Id, amount, type, reference, cardLast4, cardType);
         _payments.Add(payment);
-        AmountPaid += amount;
-        Balance = TotalAmount.Amount - AmountPaid;
-        AddDomainEvent(new SalePaymentAddedDomainEvent(Id, payment.Id));
+        RecalculateTotals();
+        UpdatedAt = DateTime.UtcNow;
 
-        if (GetBalance() <= 0)
-        {
-            Complete();
-        }
+        AddDomainEvent(new PaymentCreatedDomainEvent(payment.Id, Id, payment.Amount, payment.PaymentMethod));
     }
 
-    public void AddDiscount(string? code, string? storeId, DiscountType type, decimal amount, DateTime startDate, DateTime endDate)
+    public void AddDiscount(SaleDiscount discount)
     {
-        if (Status != SaleStatus.Pending)
-            throw new DomainException("Can only add discounts to a pending sale");
+        if (Status != "Pending")
+            throw new DomainException("Cannot add discount to a non-pending sale");
 
-        if (amount <= 0)
-            throw new DomainException("Discount amount must be greater than zero");
-
-        if (type == DiscountType.Percentage && amount > 100)
-            throw new DomainException("Percentage discount cannot exceed 100%");
-
-        if (startDate > endDate)
-            throw new DomainException("Discount start date must be before end date");
-
-        var discount = new SaleDiscount(code, storeId, type, amount, startDate, endDate);
         _discounts.Add(discount);
-        CalculateTotalAmount();
-        AddDomainEvent(new SaleDiscountAddedDomainEvent(this, discount));
+        RecalculateTotals();
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void RemoveDiscount(Guid discountId)
     {
-        if (Status != SaleStatus.Pending)
-            throw new DomainException("Can only remove discounts from a pending sale");
+        if (Status != "Pending")
+            throw new DomainException("Cannot remove discount from a non-pending sale");
 
-        var discount = _discounts.Find(d => d.Id == discountId);
+        var discount = _discounts.FirstOrDefault(d => d.Id == discountId);
         if (discount == null)
-            throw new DomainException("Discount not found");
+            throw new DomainException($"Discount with ID {discountId} not found");
 
         _discounts.Remove(discount);
-        CalculateTotalAmount();
-        AddDomainEvent(new SaleDiscountRemovedDomainEvent(this, discount));
-    }
-
-    public void SetCustomer(Guid customerId, string name, string? phone = null, string? email = null)
-    {
-        if (Status != SaleStatus.Pending)
-            throw new DomainException("Can only set customer for a pending sale");
-
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException("Customer name cannot be empty");
-
-        if (email != null && !IsValidEmail(email))
-            throw new DomainException("Invalid email format");
-
-        if (phone != null && !IsValidPhone(phone))
-            throw new DomainException("Invalid phone format");
-
-        BuyerId = customerId;
-        CustomerId = customerId.ToString();
-        CustomerName = name;
-        CustomerPhone = phone;
-        CustomerEmail = email;
+        RecalculateTotals();
         UpdatedAt = DateTime.UtcNow;
-        AddDomainEvent(new SaleCustomerUpdatedDomainEvent(this, customerId, name));
     }
 
-    public void SetStaff(Guid staffId, string name)
+    public void UpdateCustomer(Guid? customerId)
     {
-        if (Status != SaleStatus.Pending)
-            throw new DomainException("Can only set staff for a pending sale");
+        if (Status != "Pending")
+            throw new DomainException("Cannot update customer for a non-pending sale");
 
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException("Staff name cannot be empty");
+        CustomerId = customerId;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateStaff(Guid? staffId)
+    {
+        if (Status != "Pending")
+            throw new DomainException("Cannot update staff for a non-pending sale");
 
         StaffId = staffId;
-        StaffName = name;
         UpdatedAt = DateTime.UtcNow;
-        AddDomainEvent(new SaleStaffUpdatedDomainEvent(this, staffId, name));
     }
 
-    public void AddNotes(string? notes)
+    public void UpdateAddress(Common.ValueObjects.Address? address)
     {
-        if (Status != SaleStatus.Pending)
-            throw new DomainException("Can only add notes to a pending sale");
+        if (Status != "Pending")
+            throw new DomainException("Cannot update address for a non-pending sale");
+
+        Address = address;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateNotes(string? notes)
+    {
+        if (Status != "Pending")
+            throw new DomainException("Cannot update notes for a non-pending sale");
 
         Notes = notes;
         UpdatedAt = DateTime.UtcNow;
-        AddDomainEvent(new SaleNotesUpdatedDomainEvent(this, notes));
-    }
-
-    public void MarkAsOffline()
-    {
-        if (IsOffline)
-            throw new DomainException("Sale is already offline");
-
-        IsOffline = true;
-        IsSynced = false;
-        SyncedAt = null;
-        UpdatedAt = DateTime.UtcNow;
-        AddDomainEvent(new SaleMarkedAsOfflineDomainEvent(this));
-    }
-
-    public void MarkAsSynced()
-    {
-        if (IsSynced)
-            throw new DomainException("Sale is already synced");
-
-        if (!IsOffline)
-            throw new DomainException("Only offline sales can be marked as synced");
-
-        IsSynced = true;
-        SyncedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
-        AddDomainEvent(new SaleSyncedDomainEvent(this, SyncedAt.Value));
     }
 
     public void Complete()
     {
-        if (Status != SaleStatus.Pending)
-            throw new DomainException("Only pending sales can be completed");
+        if (Status != "Pending" && Status != "Processing")
+            throw new DomainException("Cannot complete a non-pending or non-processing sale");
 
-        if (!_items.Any())
-            throw new DomainException("Cannot complete sale without items");
+        if (_items.Count == 0)
+            throw new DomainException("Cannot complete a sale without items");
 
-        if (AmountPaid < TotalAmount.Amount)
-            throw new DomainException("Cannot complete sale without full payment");
+        if (_payments.Count == 0)
+            throw new DomainException("Cannot complete a sale without payments");
 
-        Status = SaleStatus.Completed;
-        UpdatedAt = DateTime.UtcNow;
+        var totalPaid = _payments.Sum(p => p.Amount);
+        if (totalPaid < Total)
+            throw new DomainException("Total paid amount is less than the sale total");
+
+        Status = "Completed";
         CompletedAt = DateTime.UtcNow;
-        AddDomainEvent(new SaleCompletedDomainEvent(this));
-    }
-
-    public void Void()
-    {
-        if (Status != SaleStatus.Pending)
-            throw new DomainException("Only pending sales can be voided");
-
-        if (_payments.Any())
-            throw new DomainException("Cannot void a sale with payments");
-
-        Status = SaleStatus.Voided;
         UpdatedAt = DateTime.UtcNow;
-        AddDomainEvent(new SaleVoidedDomainEvent(this));
+
+        AddDomainEvent(new SaleCompletedDomainEvent(Id, Total, CompletedAt.Value));
     }
 
-    public void Refund(decimal amount, string reason)
+    public void Cancel(string reason)
     {
-        if (Status != SaleStatus.Completed)
-            throw new DomainException("Only completed sales can be refunded");
-
-        if (amount <= 0)
-            throw new DomainException("Refund amount must be greater than zero");
-
-        if (amount > TotalAmount.Amount)
-            throw new DomainException("Refund amount cannot exceed total amount");
+        if (Status != "Pending" && Status != "Processing")
+            throw new DomainException("Cannot cancel a completed or already cancelled sale");
 
         if (string.IsNullOrWhiteSpace(reason))
-            throw new DomainException("Refund reason is required");
+            throw new DomainException("Cancellation reason cannot be empty");
 
-        Status = SaleStatus.Refunded;
-        RefundReason = reason;
+        Status = "Cancelled";
+        CancelledAt = DateTime.UtcNow;
+        CancellationReason = reason;
         UpdatedAt = DateTime.UtcNow;
-        AddDomainEvent(new SaleRefundedDomainEvent(this, amount, reason));
+
+        AddDomainEvent(new SaleCancelledDomainEvent(Id, reason, CancelledAt.Value));
     }
 
-    private bool IsValidEmail(string email)
+    private void RecalculateTotals()
     {
-        try
-        {
-            var addr = new System.Net.Mail.MailAddress(email);
-            return addr.Address == email;
-        }
-        catch
-        {
-            return false;
-        }
-    }
+        Subtotal = _items.Sum(i => i.Total);
+        Discount = _discounts.Sum(d => d.Amount);
+        Tax = (Subtotal - Discount) * 0.1m; // 10% tax rate
+        Total = Subtotal - Discount + Tax;
 
-    private bool IsValidPhone(string phone)
-    {
-        return System.Text.RegularExpressions.Regex.IsMatch(phone, @"^\+?[0-9]{10,15}$");
-    }
-
-    public decimal GetSubtotal() => _items.Sum(i => i.UnitPrice * i.Quantity);
-    public decimal GetDiscountTotal() => _discounts.Where(d => d.Type != DiscountType.Tip).Sum(d => d.Amount);
-    public decimal GetTipTotal() => _discounts.Where(d => d.Type == DiscountType.Tip).Sum(d => d.Amount);
-    public decimal GetTotal() => GetSubtotal() - GetDiscountTotal() + GetTipTotal();
-    public decimal GetPaymentTotal() => _payments.Sum(p => p.Amount);
-    public decimal GetBalance() => GetTotal() - GetPaymentTotal();
-
-    private void CalculateTotalAmount()
-    {
-        SubTotal = new Money(GetSubtotal(), Currency);
-        DiscountAmount = new Money(GetDiscountTotal(), Currency);
-        TaxAmount = new Money((GetSubtotal() - GetDiscountTotal()) * 0.1m, Currency);
-        TotalAmount = new Money(GetSubtotal() - GetDiscountTotal() + GetTipTotal(), Currency);
-        Balance = GetTotal() - GetPaymentTotal();
-        UpdatedAt = DateTime.UtcNow;
+        if (Total < 0)
+            Total = 0;
     }
 }
 
