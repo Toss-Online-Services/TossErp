@@ -1,6 +1,8 @@
-﻿namespace POS.Domain.SeedWork
+﻿using POS.Domain.Common.Events;
+
+namespace POS.Domain.SeedWork
 {
-    public abstract class DomainEvent
+    public abstract class DomainEvent : IDomainEvent
     {
         public DateTime OccurredOn { get; }
 
