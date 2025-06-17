@@ -12,7 +12,7 @@ namespace POS.Domain.AggregatesModel.PaymentAggregate
     {
         public Guid SaleId { get; private set; }
         public decimal Amount { get; private set; }
-        public POS.Domain.Enums.PaymentMethod Method { get; private set; }
+        public POS.Domain.Enums.PaymentType Method { get; private set; }
         public PaymentStatus Status { get; private set; }
         public string? Reference { get; private set; }
         public string? CardLast4 { get; private set; }
@@ -28,7 +28,7 @@ namespace POS.Domain.AggregatesModel.PaymentAggregate
             Events = new List<PaymentEvent>();
         }
 
-        public Payment(Guid saleId, decimal amount, POS.Domain.Enums.PaymentMethod method, string? reference = null, string? cardLast4 = null, string? cardType = null)
+        public Payment(Guid saleId, decimal amount, POS.Domain.Enums.PaymentType method, string? reference = null, string? cardLast4 = null, string? cardType = null)
         {
             if (saleId == Guid.Empty)
                 throw new DomainException("Sale ID cannot be empty");

@@ -1,4 +1,5 @@
-﻿using POS.Domain.Common;
+﻿using POS.Domain.AggregatesModel.PaymentAggregate.Events;
+using POS.Domain.Common;
 using POS.Domain.Common.ValueObjects;
 using POS.Domain.Enums;
 using POS.Domain.Exceptions;
@@ -9,7 +10,7 @@ namespace POS.Domain.AggregatesModel.SaleAggregate;
 
 public class Payment : AggregateRoot
 {
-    public POS.Domain.Enums.PaymentMethod Method { get; private set; }
+    public PaymentType Method { get; private set; }
     public decimal Amount { get; private set; }
     public string Currency { get; private set; }
     public string? Reference { get; private set; }
@@ -23,14 +24,14 @@ public class Payment : AggregateRoot
 
     private Payment()
     {
-        Method = POS.Domain.Enums.PaymentMethod.Cash;
+        Method = POS.Domain.Enums.PaymentType.Cash;
         Currency = "USD";
         AmountObj = new Money(0, Currency);
         Status = PaymentStatus.Pending;
         CreatedAt = DateTime.UtcNow;
     }
 
-    public Payment(Guid id, Guid saleId, decimal amount, POS.Domain.Enums.PaymentMethod method, string? reference = null, string? cardLast4 = null, string? cardType = null)
+    public Payment(Guid id, Guid saleId, decimal amount, POS.Domain.Enums.PaymentType method, string? reference = null, string? cardLast4 = null, string? cardType = null)
     {
         if (id == Guid.Empty)
             throw new DomainException("Payment ID cannot be empty");

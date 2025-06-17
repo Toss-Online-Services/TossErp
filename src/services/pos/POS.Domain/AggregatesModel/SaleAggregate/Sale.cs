@@ -121,7 +121,7 @@ public class Sale : AggregateRoot
         RecalculateTotals();
         UpdatedAt = DateTime.UtcNow;
 
-        AddDomainEvent(new PaymentCreatedDomainEvent(payment.Id, Id, payment.Amount, payment.PaymentMethod));
+        AddDomainEvent(new PaymentCreatedDomainEvent(payment.Id, Id, payment.Amount, payment.Method.ToString()));
     }
 
     public void AddDiscount(SaleDiscount discount)

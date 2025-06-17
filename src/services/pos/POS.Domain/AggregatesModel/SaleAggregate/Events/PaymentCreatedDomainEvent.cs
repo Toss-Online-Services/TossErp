@@ -2,7 +2,7 @@ using POS.Domain.Common.Events;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate.Events;
 
-public class PaymentCreatedDomainEvent : DomainEvent
+public class PaymentCreatedDomainEvent : DomainEvent, IDomainEvent
 {
     public Guid PaymentId { get; }
     public Guid SaleId { get; }

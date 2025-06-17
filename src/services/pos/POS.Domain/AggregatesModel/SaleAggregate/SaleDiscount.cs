@@ -10,24 +10,23 @@ public class SaleDiscount : Entity
     public string? Code { get; private set; }
     public string? StoreId { get; private set; }
     public string? Status { get; private set; }
-    public DiscountType Type { get; private set; }
+    public DiscountType DiscountType { get; private set; }
     public decimal Amount { get; private set; }
     public DateTime StartDate { get; private set; }
     public DateTime EndDate { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    public string DiscountType { get; private set; }
     public string? Description { get; private set; }
 
     private SaleDiscount()
     {
-        Type = DiscountType.Percentage;
+        DiscountType = DiscountType.Percentage;
     }
 
-    public SaleDiscount(string? code, string? storeId, DiscountType type, decimal amount, DateTime startDate, DateTime endDate)
+    public SaleDiscount(string? code, string? storeId, POS.Domain.Enums.DiscountType type, decimal amount, DateTime startDate, DateTime endDate)
     {
         Code = code;
         StoreId = storeId;
-        Type = type;
+        DiscountType = type;
         Amount = amount;
         StartDate = startDate;
         EndDate = endDate;
@@ -35,12 +34,12 @@ public class SaleDiscount : Entity
         CreatedAt = DateTime.UtcNow;
     }
 
-    public SaleDiscount(DiscountType type, decimal amount, string? description = null)
+    public SaleDiscount(POS.Domain.Enums.DiscountType type, decimal amount, string? description = null)
     {
         if (amount <= 0)
             throw new DomainException("Discount amount must be greater than zero");
 
-        Type = type;
+        DiscountType = type;
         Amount = amount;
         Description = description;
     }
