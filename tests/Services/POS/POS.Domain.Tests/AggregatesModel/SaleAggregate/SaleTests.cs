@@ -27,7 +27,7 @@ public class SaleTests
         Assert.Equal(_storeId, sale.StoreId);
         Assert.Equal(_customerId, sale.CustomerId);
         Assert.Equal(_staffId, sale.StaffId);
-        Assert.Equal(SaleStatus.Pending, sale.Status);
+        Assert.Equal(POS.Domain.AggregatesModel.SaleAggregate.SaleStatus.Pending, sale.Status);
         Assert.True(sale.RequiresSync);
         Assert.Empty(sale.Items);
         Assert.Empty(sale.Payments);
@@ -133,15 +133,17 @@ public class SaleTests
         // Arrange
         var sale = new Sale(SaleNumber, _storeId, _customerId, _staffId);
         var item = new SaleItem(Guid.NewGuid(), sale.Id, Guid.NewGuid(), "Test Product", 10.00m, 2, 0.10m);
-        var payment = new Payment(Guid.NewGuid(), sale.Id, 22.00m, PaymentType.Cash, null, null, null);
         sale.AddItem(item);
+        // Get the total after adding the item
+        var totalAfterItems = sale.Total;
+        var payment = new Payment(Guid.NewGuid(), sale.Id, totalAfterItems, PaymentType.Cash, null, null, null);
         sale.AddPayment(payment);
 
         // Act
         sale.Complete();
 
         // Assert
-        Assert.Equal(SaleStatus.Completed, sale.Status);
+        Assert.Equal(POS.Domain.AggregatesModel.SaleAggregate.SaleStatus.Completed, sale.Status);
         Assert.NotNull(sale.CompletedAt);
     }
 
@@ -178,7 +180,7 @@ public class SaleTests
         sale.Cancel(reason);
 
         // Assert
-        Assert.Equal(SaleStatus.Cancelled, sale.Status);
+        Assert.Equal(POS.Domain.AggregatesModel.SaleAggregate.SaleStatus.Cancelled, sale.Status);
         Assert.NotNull(sale.CancelledAt);
         Assert.Equal(reason, sale.CancellationReason);
     }

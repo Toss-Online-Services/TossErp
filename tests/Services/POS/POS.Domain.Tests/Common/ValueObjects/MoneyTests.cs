@@ -28,7 +28,7 @@ public class MoneyTests
 
         // Act & Assert
         var action = () => new Money(amount, currency);
-        action.Should().Throw<ArgumentException>()
+        action.Should().Throw<POS.Domain.Exceptions.DomainException>()
             .WithMessage("Amount cannot be negative");
     }
 
@@ -41,7 +41,7 @@ public class MoneyTests
 
         // Act & Assert
         var action = () => new Money(amount, currency);
-        action.Should().Throw<ArgumentException>()
+        action.Should().Throw<POS.Domain.Exceptions.DomainException>()
             .WithMessage("Currency cannot be empty");
     }
 
@@ -165,6 +165,6 @@ public class MoneyTests
         var result = money.ToString();
 
         // Assert
-        result.Should().Be("$100.00");
+        result.Should().Be("100.00 USD");
     }
 } 

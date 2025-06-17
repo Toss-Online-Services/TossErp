@@ -14,8 +14,6 @@ public class SaleDomainEventTests
     private readonly Guid _customerId = Guid.NewGuid();
     private readonly Guid _staffId = Guid.NewGuid();
     private readonly string _saleNumber = "SALE-001";
-    private readonly Money _itemPrice = new(100.00m, "USD");
-    private readonly int _itemQuantity = 2;
 
     [Fact]
     public void SaleCreatedDomainEvent_ShouldContainCorrectData()
@@ -39,7 +37,7 @@ public class SaleDomainEventTests
     {
         // Arrange
         var saleId = Guid.NewGuid();
-        var totalAmount = new Money(100.00m, "USD");
+        var totalAmount = 100.00m;
         var completedAt = DateTime.UtcNow;
 
         // Act
@@ -92,18 +90,14 @@ public class SaleDomainEventTests
     {
         // Arrange
         var sale = new Sale(_saleNumber, _storeId, _customerId, _staffId);
-        var paymentAmount = new Money(100.00m, "USD");
-        var paymentMethod = PaymentType.Cash;
-        var addedAt = DateTime.UtcNow;
+        var paymentId = Guid.NewGuid();
 
         // Act
-        var @event = new SalePaymentAddedDomainEvent(sale.Id, paymentMethod, paymentAmount, addedAt);
+        var @event = new SalePaymentAddedDomainEvent(sale.Id, paymentId);
 
         // Assert
         @event.SaleId.Should().Be(sale.Id);
-        @event.PaymentMethod.Should().Be(paymentMethod);
-        @event.Amount.Should().Be(paymentAmount);
-        @event.AddedAt.Should().Be(addedAt);
+        @event.PaymentId.Should().Be(paymentId);
     }
 
     [Fact]
@@ -111,20 +105,14 @@ public class SaleDomainEventTests
     {
         // Arrange
         var sale = new Sale(_saleNumber, _storeId, _customerId, _staffId);
-        var discountAmount = new Money(10.00m, "USD");
-        var discountType = DiscountType.Percentage;
-        var reason = "Test discount";
-        var addedAt = DateTime.UtcNow;
+        var discount = new SaleDiscount(DiscountType.Percentage, 10.00m, "Test discount");
 
         // Act
-        var @event = new SaleDiscountAddedDomainEvent(sale.Id, discountType, discountAmount, reason, addedAt);
+        var @event = new SaleDiscountAddedDomainEvent(sale, discount);
 
         // Assert
-        @event.SaleId.Should().Be(sale.Id);
-        @event.DiscountType.Should().Be(discountType);
-        @event.Amount.Should().Be(discountAmount);
-        @event.Reason.Should().Be(reason);
-        @event.AddedAt.Should().Be(addedAt);
+        @event.Sale.Should().Be(sale);
+        @event.SaleDiscount.Should().Be(discount);
     }
 
     [Fact]
