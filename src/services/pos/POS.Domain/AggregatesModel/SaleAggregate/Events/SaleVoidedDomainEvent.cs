@@ -1,18 +1,19 @@
-﻿#nullable enable
-
-#nullable enable
-using POS.Domain.SeedWork;
+﻿using POS.Domain.Common.Events;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate.Events;
 
-public class SaleVoidedDomainEvent : DomainEvent
+public class SaleVoidedDomainEvent : IDomainEvent
 {
-    public int SaleId { get; }
+    public Guid SaleId { get; }
     public string Reason { get; }
+    public DateTime VoidedAt { get; }
+    public Guid? ApprovedBy { get; }
 
-    public SaleVoidedDomainEvent(int saleId, string reason)
+    public SaleVoidedDomainEvent(Guid saleId, string reason, DateTime voidedAt, Guid? approvedBy = null)
     {
         SaleId = saleId;
         Reason = reason;
+        VoidedAt = voidedAt;
+        ApprovedBy = approvedBy;
     }
-} 
+}

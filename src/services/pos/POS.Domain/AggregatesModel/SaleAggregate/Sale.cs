@@ -26,7 +26,7 @@ public class Sale : AggregateRoot
     public decimal Tax { get; private set; }
     public decimal Discount { get; private set; }
     public decimal Total { get; private set; }
-    public string Status { get; private set; }
+    public SaleStatus Status { get; private set; }
     public string? Notes { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
@@ -47,7 +47,7 @@ public class Sale : AggregateRoot
     private Sale()
     {
         SaleNumber = string.Empty;
-        Status = string.Empty;
+        Status = SaleStatus.Pending;
     }
 
     public Sale(string saleNumber, Guid storeId, Guid? customerId = null, Guid? staffId = null)
@@ -61,13 +61,13 @@ public class Sale : AggregateRoot
         StoreId = storeId;
         CustomerId = customerId;
         StaffId = staffId;
-        Status = "Pending";
+        Status = SaleStatus.Pending;
         CreatedAt = DateTime.UtcNow;
     }
 
     public void AddItem(SaleItem item)
     {
-        if (Status != "Pending")
+        if (Status != SaleStatus.Pending)
             throw new DomainException("Cannot add items to a non-pending sale");
 
         var existingItem = _items.FirstOrDefault(i => i.ProductId == item.ProductId);
@@ -86,7 +86,7 @@ public class Sale : AggregateRoot
 
     public void UpdateItemQuantity(Guid productId, int quantity)
     {
-        if (Status != "Pending")
+        if (Status != SaleStatus.Pending)
             throw new DomainException("Cannot update items in a non-pending sale");
 
         var item = _items.FirstOrDefault(i => i.ProductId == productId);
@@ -100,7 +100,7 @@ public class Sale : AggregateRoot
 
     public void RemoveItem(Guid productId)
     {
-        if (Status != "Pending")
+        if (Status != SaleStatus.Pending)
             throw new DomainException("Cannot remove items from a non-pending sale");
 
         var item = _items.FirstOrDefault(i => i.ProductId == productId);
@@ -114,7 +114,7 @@ public class Sale : AggregateRoot
 
     public void AddPayment(Payment payment)
     {
-        if (Status != "Pending" && Status != "Processing")
+        if (Status != SaleStatus.Pending && Status != SaleStatus.Processing)
             throw new DomainException("Cannot add payment to a completed or cancelled sale");
 
         _payments.Add(payment);
@@ -126,7 +126,7 @@ public class Sale : AggregateRoot
 
     public void AddDiscount(SaleDiscount discount)
     {
-        if (Status != "Pending")
+        if (Status != SaleStatus.Pending)
             throw new DomainException("Cannot add discount to a non-pending sale");
 
         _discounts.Add(discount);
@@ -136,7 +136,7 @@ public class Sale : AggregateRoot
 
     public void RemoveDiscount(Guid discountId)
     {
-        if (Status != "Pending")
+        if (Status != SaleStatus.Pending)
             throw new DomainException("Cannot remove discount from a non-pending sale");
 
         var discount = _discounts.FirstOrDefault(d => d.Id == discountId);
@@ -150,7 +150,7 @@ public class Sale : AggregateRoot
 
     public void UpdateCustomer(Guid? customerId)
     {
-        if (Status != "Pending")
+        if (Status != SaleStatus.Pending)
             throw new DomainException("Cannot update customer for a non-pending sale");
 
         CustomerId = customerId;
@@ -159,7 +159,7 @@ public class Sale : AggregateRoot
 
     public void UpdateStaff(Guid? staffId)
     {
-        if (Status != "Pending")
+        if (Status != SaleStatus.Pending)
             throw new DomainException("Cannot update staff for a non-pending sale");
 
         StaffId = staffId;
@@ -168,7 +168,7 @@ public class Sale : AggregateRoot
 
     public void UpdateAddress(Common.ValueObjects.Address? address)
     {
-        if (Status != "Pending")
+        if (Status != SaleStatus.Pending)
             throw new DomainException("Cannot update address for a non-pending sale");
 
         Address = address;
@@ -177,17 +177,26 @@ public class Sale : AggregateRoot
 
     public void UpdateNotes(string? notes)
     {
-        if (Status != "Pending")
+        if (Status != SaleStatus.Pending)
             throw new DomainException("Cannot update notes for a non-pending sale");
 
         Notes = notes;
         UpdatedAt = DateTime.UtcNow;
     }
 
+    public void StartProcessing()
+    {
+        if (Status != SaleStatus.Pending)
+            throw new DomainException("Can only start processing a pending sale");
+
+        Status = SaleStatus.Processing;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     public void Complete()
     {
-        if (Status != "Pending" && Status != "Processing")
-            throw new DomainException("Cannot complete a non-pending or non-processing sale");
+        if (Status != SaleStatus.Pending && Status != SaleStatus.Processing)
+            throw new DomainException("Can only complete a pending or processing sale");
 
         if (_items.Count == 0)
             throw new DomainException("Cannot complete a sale without items");
@@ -199,7 +208,7 @@ public class Sale : AggregateRoot
         if (totalPaid < Total)
             throw new DomainException("Total paid amount is less than the sale total");
 
-        Status = "Completed";
+        Status = SaleStatus.Completed;
         CompletedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
 
@@ -208,19 +217,92 @@ public class Sale : AggregateRoot
 
     public void Cancel(string reason)
     {
-        if (Status != "Pending" && Status != "Processing")
-            throw new DomainException("Cannot cancel a completed or already cancelled sale");
+        if (Status != SaleStatus.Pending && Status != SaleStatus.Processing)
+            throw new DomainException("Can only cancel a pending or processing sale");
 
         if (string.IsNullOrWhiteSpace(reason))
             throw new DomainException("Cancellation reason cannot be empty");
 
-        Status = "Cancelled";
+        Status = SaleStatus.Cancelled;
         CancelledAt = DateTime.UtcNow;
         CancellationReason = reason;
         UpdatedAt = DateTime.UtcNow;
 
         AddDomainEvent(new SaleCancelledDomainEvent(Id, reason, CancelledAt.Value));
     }
+
+    public void Void(string reason, Guid? approvedBy = null, bool requiresManagerApproval = true)
+    {
+        if (Status != SaleStatus.Completed)
+            throw new DomainException("Can only void a completed sale");
+
+        if (string.IsNullOrWhiteSpace(reason))
+            throw new DomainException("Void reason cannot be empty");
+
+        if (requiresManagerApproval && approvedBy == null)
+            throw new DomainException("Manager approval is required for voiding a sale");
+
+        // Check if the sale is within voidable time window (e.g., same day)
+        if (CompletedAt.HasValue && (DateTime.UtcNow - CompletedAt.Value).TotalHours > 24)
+            throw new DomainException("Cannot void a sale that is more than 24 hours old");
+
+        // Check if there are any refunds already processed
+        if (_payments.Any(p => p.Status == PaymentStatus.Refunded))
+            throw new DomainException("Cannot void a sale that has refunded payments");
+
+        Status = SaleStatus.Voided;
+        CancelledAt = DateTime.UtcNow;
+        CancellationReason = reason;
+        UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new SaleVoidedDomainEvent(Id, reason, CancelledAt.Value, approvedBy));
+    }
+
+    public void Refund(string reason, decimal refundAmount, Guid? processedBy = null)
+    {
+        if (Status != SaleStatus.Completed)
+            throw new DomainException("Can only refund a completed sale");
+
+        if (string.IsNullOrWhiteSpace(reason))
+            throw new DomainException("Refund reason cannot be empty");
+
+        if (refundAmount <= 0)
+            throw new DomainException("Refund amount must be greater than zero");
+
+        if (refundAmount > Total)
+            throw new DomainException("Refund amount cannot exceed the sale total");
+
+        // Check if the sale is within refundable time window (e.g., 30 days)
+        if (CompletedAt.HasValue && (DateTime.UtcNow - CompletedAt.Value).TotalDays > 30)
+            throw new DomainException("Cannot refund a sale that is more than 30 days old");
+
+        // Check if there are any voided payments
+        if (_payments.Any(p => p.Status == PaymentStatus.Voided))
+            throw new DomainException("Cannot refund a sale that has voided payments");
+
+        Status = SaleStatus.Refunded;
+        CancelledAt = DateTime.UtcNow;
+        CancellationReason = reason;
+        UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new SaleRefundedDomainEvent(Id, reason, CancelledAt.Value, refundAmount, processedBy));
+    }
+
+    public bool CanBeModified => Status == SaleStatus.Pending || Status == SaleStatus.Processing;
+    public bool IsFinalized => Status == SaleStatus.Completed || Status == SaleStatus.Voided || Status == SaleStatus.Refunded;
+    public bool IsActive => Status == SaleStatus.Pending || Status == SaleStatus.Processing;
+
+    public bool CanBeVoided => 
+        Status == SaleStatus.Completed && 
+        CompletedAt.HasValue && 
+        (DateTime.UtcNow - CompletedAt.Value).TotalHours <= 24 &&
+        !_payments.Any(p => p.Status == PaymentStatus.Refunded);
+
+    public bool CanBeRefunded => 
+        Status == SaleStatus.Completed && 
+        CompletedAt.HasValue && 
+        (DateTime.UtcNow - CompletedAt.Value).TotalDays <= 30 &&
+        !_payments.Any(p => p.Status == PaymentStatus.Voided);
 
     private void RecalculateTotals()
     {
@@ -232,13 +314,5 @@ public class Sale : AggregateRoot
         if (Total < 0)
             Total = 0;
     }
-}
-
-public enum SaleStatus
-{
-    Pending,
-    Completed,
-    Voided,
-    Refunded
 }
 
