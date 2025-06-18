@@ -5,15 +5,23 @@ using POS.Domain.Enums;
 using POS.Domain.Exceptions;
 using POS.Domain.SeedWork;
 using POS.Domain.AggregatesModel.CustomerAggregate.Events;
+using POS.Domain.AggregatesModel.CustomerAggregate.ValueObjects;
 
 namespace POS.Domain.AggregatesModel.CustomerAggregate
 {
     public class Customer : AggregateRoot
     {
-        public string FirstName { get; private set; }
-        public string LastName { get; private set; }
-        public string Email { get; private set; }
-        public string PhoneNumber { get; private set; }
+        private CustomerName _name;
+        private ContactInfo _contactInfo;
+        private readonly List<PriceList> _priceLists = new();
+        private readonly List<CustomerContact> _contacts = new();
+        private readonly List<CustomerDocument> _documents = new();
+        private readonly List<CustomerNote> _customerNotes = new();
+
+        public string FirstName => _name.FirstName;
+        public string LastName => _name.LastName;
+        public string Email => _contactInfo.Email;
+        public string PhoneNumber => _contactInfo.PhoneNumber;
         public Address? Address { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime? LastModifiedAt { get; private set; }
@@ -29,22 +37,16 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public decimal TotalPurchases { get; private set; }
         public int PurchaseCount { get; private set; }
         public CustomerType CustomerType { get; private set; }
-        public List<PriceList> PriceLists { get; private set; }
+        public IReadOnlyCollection<PriceList> PriceLists => _priceLists.AsReadOnly();
         public LoyaltyProgram? LoyaltyProgram { get; private set; }
-        public List<CustomerContact> Contacts { get; private set; }
-        public List<CustomerDocument> Documents { get; private set; }
-        public List<CustomerNote> CustomerNotes { get; private set; }
+        public IReadOnlyCollection<CustomerContact> Contacts => _contacts.AsReadOnly();
+        public IReadOnlyCollection<CustomerDocument> Documents => _documents.AsReadOnly();
+        public IReadOnlyCollection<CustomerNote> CustomerNotes => _customerNotes.AsReadOnly();
 
         private Customer()
         {
-            FirstName = string.Empty;
-            LastName = string.Empty;
-            Email = string.Empty;
-            PhoneNumber = string.Empty;
-            PriceLists = new List<PriceList>();
-            Contacts = new List<CustomerContact>();
-            Documents = new List<CustomerDocument>();
-            CustomerNotes = new List<CustomerNote>();
+            _name = new CustomerName(string.Empty, string.Empty);
+            _contactInfo = new ContactInfo(string.Empty, string.Empty);
             IsActive = true;
             CreatedAt = DateTime.UtcNow;
             Preferences = new CustomerPreferences();
@@ -52,21 +54,8 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 
         public Customer(string firstName, string lastName, string email, string phoneNumber) : this()
         {
-            if (string.IsNullOrWhiteSpace(firstName))
-                throw new DomainException("First name cannot be empty");
-            if (string.IsNullOrWhiteSpace(lastName))
-                throw new DomainException("Last name cannot be empty");
-            if (string.IsNullOrWhiteSpace(email))
-                throw new DomainException("Email cannot be empty");
-            if (!IsValidEmail(email))
-                throw new DomainException("Invalid email format");
-            if (string.IsNullOrWhiteSpace(phoneNumber))
-                throw new DomainException("Phone number cannot be empty");
-
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            PhoneNumber = phoneNumber;
+            _name = CustomerName.Create(firstName, lastName);
+            _contactInfo = ContactInfo.Create(email, phoneNumber);
             CustomerType = CustomerType.Regular;
 
             AddDomainEvent(new CustomerCreatedDomainEvent(Id, firstName, lastName, email));
@@ -74,24 +63,20 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 
         public void UpdateContactInfo(string firstName, string lastName, string email, string phoneNumber)
         {
-            if (string.IsNullOrWhiteSpace(firstName))
-                throw new DomainException("First name cannot be empty");
-            if (string.IsNullOrWhiteSpace(lastName))
-                throw new DomainException("Last name cannot be empty");
-            if (string.IsNullOrWhiteSpace(email))
-                throw new DomainException("Email cannot be empty");
-            if (!IsValidEmail(email))
-                throw new DomainException("Invalid email format");
-            if (string.IsNullOrWhiteSpace(phoneNumber))
-                throw new DomainException("Phone number cannot be empty");
+            var newName = CustomerName.Create(firstName, lastName);
+            var newContactInfo = ContactInfo.Create(email, phoneNumber);
 
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            PhoneNumber = phoneNumber;
+            _name = newName;
+            _contactInfo = newContactInfo;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerContactInfoUpdatedDomainEvent(Id, firstName, lastName, email, phoneNumber, LastModifiedAt.Value));
+            AddDomainEvent(new CustomerContactInfoUpdatedDomainEvent(
+                Id, 
+                firstName, 
+                lastName, 
+                email, 
+                phoneNumber, 
+                LastModifiedAt.Value));
         }
 
         public void UpdateAddress(Address address)
@@ -168,25 +153,36 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 
         public void AddPriceList(PriceList priceList)
         {
-            if (PriceLists.Any(p => p.Id == priceList.Id))
+            if (_priceLists.Any(p => p.Id == priceList.Id))
                 throw new DomainException("Price list already exists");
 
-            PriceLists.Add(priceList);
+            _priceLists.Add(priceList);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerPriceListAddedDomainEvent(Id, priceList.Id, priceList.Name, false, "System", LastModifiedAt.Value));
+            AddDomainEvent(new CustomerPriceListAddedDomainEvent(
+                Id, 
+                priceList.Id, 
+                priceList.Name, 
+                false, 
+                "System", 
+                LastModifiedAt.Value));
         }
 
         public void RemovePriceList(Guid priceListId)
         {
-            var priceList = PriceLists.FirstOrDefault(p => p.Id == priceListId);
+            var priceList = _priceLists.FirstOrDefault(p => p.Id == priceListId);
             if (priceList == null)
                 throw new DomainException("Price list not found");
 
-            PriceLists.Remove(priceList);
+            _priceLists.Remove(priceList);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerPriceListRemovedDomainEvent(Id, priceListId, priceList.Name, "System", LastModifiedAt.Value));
+            AddDomainEvent(new CustomerPriceListRemovedDomainEvent(
+                Id, 
+                priceListId, 
+                priceList.Name, 
+                "System", 
+                LastModifiedAt.Value));
         }
 
         public void EnrollInLoyaltyProgram(LoyaltyProgram program)
@@ -202,10 +198,10 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 
         public void AddContact(CustomerContact contact)
         {
-            if (Contacts.Any(c => c.Email == contact.Email))
+            if (_contacts.Any(c => c.Email == contact.Email))
                 throw new DomainException("Contact with this email already exists");
 
-            Contacts.Add(contact);
+            _contacts.Add(contact);
             LastModifiedAt = DateTime.UtcNow;
 
             AddDomainEvent(new CustomerContactAddedDomainEvent(
@@ -222,22 +218,28 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 
         public void RemoveContact(Guid contactId)
         {
-            var contact = Contacts.FirstOrDefault(c => c.Id == contactId);
+            var contact = _contacts.FirstOrDefault(c => c.Id == contactId);
             if (contact == null)
                 throw new DomainException("Contact not found");
 
-            Contacts.Remove(contact);
+            _contacts.Remove(contact);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerContactRemovedDomainEvent(Id, contactId, contact.FirstName, contact.LastName, "System", LastModifiedAt.Value));
+            AddDomainEvent(new CustomerContactRemovedDomainEvent(
+                Id, 
+                contactId, 
+                contact.FirstName, 
+                contact.LastName, 
+                "System", 
+                LastModifiedAt.Value));
         }
 
         public void AddDocument(CustomerDocument document)
         {
-            if (Documents.Any(d => d.Name == document.Name))
+            if (_documents.Any(d => d.Name == document.Name))
                 throw new DomainException("Document with this name already exists");
 
-            Documents.Add(document);
+            _documents.Add(document);
             LastModifiedAt = DateTime.UtcNow;
 
             AddDomainEvent(new CustomerDocumentAddedDomainEvent(
@@ -248,35 +250,37 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
                 document.FilePath,
                 document.UploadedBy,
                 document.Description ?? string.Empty,
-                LastModifiedAt.Value
-            ));
+                LastModifiedAt.Value));
         }
 
         public void RemoveDocument(Guid documentId)
         {
-            var document = Documents.FirstOrDefault(d => d.Id == documentId);
+            var document = _documents.FirstOrDefault(d => d.Id == documentId);
             if (document == null)
                 throw new DomainException("Document not found");
 
-            Documents.Remove(document);
+            _documents.Remove(document);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerDocumentRemovedDomainEvent(Id, documentId, document.Name, document.FileType, "System", LastModifiedAt.Value));
+            AddDomainEvent(new CustomerDocumentRemovedDomainEvent(
+                Id, 
+                documentId, 
+                document.Name, 
+                "System", 
+                LastModifiedAt.Value));
         }
 
         public void AddNote(string note, string createdBy)
         {
             var customerNote = new CustomerNote(note, createdBy);
-            CustomerNotes.Add(customerNote);
+            _customerNotes.Add(customerNote);
             LastModifiedAt = DateTime.UtcNow;
 
             AddDomainEvent(new CustomerNoteAddedDomainEvent(
-                Id,
-                customerNote.Id,
-                "Customer Note",
-                note,
-                "General",
-                createdBy,
+                Id, 
+                customerNote.Id, 
+                note, 
+                createdBy, 
                 LastModifiedAt.Value));
         }
 
@@ -352,7 +356,7 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
                 LastModifiedAt.Value));
         }
 
-        public string FullName => $"{FirstName} {LastName}";
+        public string FullName => _name.FullName;
         public bool HasCreditAvailable => Balance < CreditLimit;
         public decimal AvailableCredit => CreditLimit - Balance;
         public bool IsOverdue => Balance > 0 && LastPurchaseDate.HasValue && 

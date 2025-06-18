@@ -150,6 +150,8 @@ public class SaleTests
         Console.WriteLine($"Sale Total: {sale.Total}");
 
         var payment = new Payment(Guid.NewGuid(), sale.Id, sale.Total, PaymentType.Cash);
+        Console.WriteLine($"Payment Amount: {payment.Amount}"); // Debug output for payment amount
+
         sale.AddPayment(payment);
 
         // Debug output for payment comparison
@@ -227,6 +229,8 @@ public class SaleTests
         Console.WriteLine($"Sale Total: {sale.Total}");
 
         var payment = new Payment(Guid.NewGuid(), sale.Id, sale.Total, PaymentType.Cash);
+        Console.WriteLine($"Payment Amount: {payment.Amount}"); // Debug output for payment amount
+
         sale.AddPayment(payment);
 
         // Debug output for payment comparison

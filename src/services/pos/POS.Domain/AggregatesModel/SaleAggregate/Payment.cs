@@ -44,6 +44,7 @@ public class Payment : AggregateRoot
         SaleId = saleId;
         Method = method;
         Currency = "USD";
+        Amount = amount;
         AmountObj = new Money(amount, Currency);
         Reference = reference;
         CardLast4 = cardLast4;
