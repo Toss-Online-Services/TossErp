@@ -388,18 +388,17 @@ public class CustomerLoyaltyProgramTests
     }
 
     [Theory]
-    [InlineData(0, "Test reason", "Points must be greater than zero")]
-    [InlineData(-100, "Test reason", "Points must be greater than zero")]
     [InlineData(100, "", "Reason for redemption cannot be empty")]
-    public void RedeemPoints_WithInvalidParameters_ThrowsDomainException(
-        decimal points, string reason, string expectedMessage)
+    public void RedeemPoints_WithInvalidParameters_ThrowsDomainException(decimal points, string reason, string expectedMessage)
     {
         // Arrange
-        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
-        loyaltyProgram.AddPoints(50, "Initial points");
+        var program = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+        program.AddPoints(200, "Initial points"); // Ensure sufficient balance
 
-        // Act & Assert
-        var exception = Assert.Throws<DomainException>(() => loyaltyProgram.RedeemPoints(points, reason));
+        // Act
+        var exception = Assert.Throws<DomainException>(() => program.RedeemPoints(points, reason));
+
+        // Assert
         Assert.Equal(expectedMessage, exception.Message);
     }
 

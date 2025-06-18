@@ -4,6 +4,7 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 {
     public class LoyaltyProgram : ValueObject
     {
+        private readonly ITimeProvider _timeProvider;
         public Guid Id { get; private set; }
         public string Name { get; private set; }
         public string Description { get; private set; }
@@ -17,13 +18,14 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 
         private LoyaltyProgram()
         {
+            _timeProvider = new SystemTimeProvider();
             Id = Guid.NewGuid();
             Name = string.Empty;
             Description = string.Empty;
             MembershipNumber = string.Empty;
             MembershipTier = string.Empty;
             PointsBalance = 0;
-            EnrolledAt = DateTime.UtcNow;
+            EnrolledAt = _timeProvider.UtcNow;
             IsActive = true;
             EnrolledBy = string.Empty;
         }
@@ -34,8 +36,11 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             string membershipNumber,
             string membershipTier,
             string enrolledBy,
-            DateTime? expiresAt = null)
+            DateTime? expiresAt = null,
+            ITimeProvider? timeProvider = null)
         {
+            _timeProvider = timeProvider ?? new SystemTimeProvider();
+
             if (string.IsNullOrWhiteSpace(name))
                 throw new DomainException("Loyalty program name cannot be empty");
 
@@ -56,7 +61,7 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             MembershipNumber = membershipNumber;
             MembershipTier = membershipTier;
             PointsBalance = 0;
-            EnrolledAt = DateTime.UtcNow;
+            EnrolledAt = _timeProvider.UtcNow;
             ExpiresAt = expiresAt;
             IsActive = true;
             EnrolledBy = enrolledBy;
@@ -134,13 +139,13 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 
         public void SetExpiryDate(DateTime? expiryDate)
         {
-            if (expiryDate.HasValue && expiryDate.Value < DateTime.UtcNow)
+            if (expiryDate.HasValue && expiryDate.Value < _timeProvider.UtcNow)
                 throw new DomainException("Expiry date cannot be in the past");
 
             ExpiresAt = expiryDate;
         }
 
-        public bool IsExpired => ExpiresAt.HasValue && ExpiresAt.Value < DateTime.UtcNow;
+        public bool IsExpired => ExpiresAt.HasValue && ExpiresAt.Value < _timeProvider.UtcNow;
 
         protected override IEnumerable<object> GetEqualityComponents()
         {

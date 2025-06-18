@@ -1,6 +1,8 @@
 using POS.Domain.AggregatesModel.CustomerAggregate;
 using POS.Domain.Exceptions;
 using Xunit;
+using POS.Domain.Common;
+using FluentAssertions;
 
 namespace POS.Domain.Tests.AggregatesModel.CustomerAggregate.ValueObjects;
 
@@ -92,13 +94,20 @@ public class LoyaltyProgramTests
     public void AddPoints_WhenExpired_ThrowsDomainException()
     {
         // Arrange
-        var loyaltyProgram = new LoyaltyProgram("Test", "Test", "TEST123", "Bronze", "Test User");
-        loyaltyProgram.SetExpiryDate(DateTime.UtcNow.AddDays(-1));
+        var fakeTime = new FakeTimeProvider { UtcNow = DateTime.UtcNow };
+        var expiry = fakeTime.UtcNow.AddDays(1);
+        var program = new LoyaltyProgram("Test", "Test", "TEST123", "Bronze", "Test User", expiry, fakeTime);
+        // Advance time to after expiry
+        fakeTime.UtcNow = expiry.AddSeconds(1);
+        var pointsToAdd = 100m;
+        var reason = "Purchase";
 
-        // Act & Assert
-        var exception = Assert.Throws<DomainException>(() => 
-            loyaltyProgram.AddPoints(100, "Test reason"));
-        Assert.Equal("Cannot add points to an expired loyalty program", exception.Message);
+        // Act
+        var action = () => program.AddPoints(pointsToAdd, reason);
+
+        // Assert
+        action.Should().Throw<DomainException>()
+            .WithMessage("Cannot add points to an expired loyalty program");
     }
 
     [Fact]
@@ -164,14 +173,20 @@ public class LoyaltyProgramTests
     public void RedeemPoints_WhenExpired_ThrowsDomainException()
     {
         // Arrange
-        var loyaltyProgram = new LoyaltyProgram("Test", "Test", "TEST123", "Bronze", "Test User");
-        loyaltyProgram.AddPoints(100, "Initial points");
-        loyaltyProgram.SetExpiryDate(DateTime.UtcNow.AddDays(-1));
+        var fakeTime = new FakeTimeProvider { UtcNow = DateTime.UtcNow };
+        var expiry = fakeTime.UtcNow.AddDays(1);
+        var program = new LoyaltyProgram("Test", "Test", "TEST123", "Bronze", "Test User", expiry, fakeTime);
+        // Advance time to after expiry
+        fakeTime.UtcNow = expiry.AddSeconds(1);
+        var pointsToRedeem = 100m;
+        var reason = "Reward";
 
-        // Act & Assert
-        var exception = Assert.Throws<DomainException>(() => 
-            loyaltyProgram.RedeemPoints(50, "Test reason"));
-        Assert.Equal("Cannot redeem points from an expired loyalty program", exception.Message);
+        // Act
+        var action = () => program.RedeemPoints(pointsToRedeem, reason);
+
+        // Assert
+        action.Should().Throw<DomainException>()
+            .WithMessage("Cannot redeem points from an expired loyalty program");
     }
 
     [Fact]
@@ -228,13 +243,19 @@ public class LoyaltyProgramTests
     public void Reactivate_WhenExpired_ThrowsDomainException()
     {
         // Arrange
-        var loyaltyProgram = new LoyaltyProgram("Test", "Test", "TEST123", "Bronze", "Test User");
-        loyaltyProgram.Deactivate();
-        loyaltyProgram.SetExpiryDate(DateTime.UtcNow.AddDays(-1));
+        var fakeTime = new FakeTimeProvider { UtcNow = DateTime.UtcNow };
+        var expiry = fakeTime.UtcNow.AddDays(1);
+        var program = new LoyaltyProgram("Test", "Test", "TEST123", "Bronze", "Test User", expiry, fakeTime);
+        // Advance time to after expiry
+        fakeTime.UtcNow = expiry.AddSeconds(1);
+        program.Deactivate();
 
-        // Act & Assert
-        var exception = Assert.Throws<DomainException>(() => loyaltyProgram.Reactivate());
-        Assert.Equal("Cannot reactivate an expired loyalty program", exception.Message);
+        // Act
+        var action = () => program.Reactivate();
+
+        // Assert
+        action.Should().Throw<DomainException>()
+            .WithMessage("Cannot reactivate an expired loyalty program");
     }
 
     [Fact]
@@ -280,13 +301,19 @@ public class LoyaltyProgramTests
     public void UpdateMembershipTier_WhenExpired_ThrowsDomainException()
     {
         // Arrange
-        var loyaltyProgram = new LoyaltyProgram("Test", "Test", "TEST123", "Bronze", "Test User");
-        loyaltyProgram.SetExpiryDate(DateTime.UtcNow.AddDays(-1));
+        var fakeTime = new FakeTimeProvider { UtcNow = DateTime.UtcNow };
+        var expiry = fakeTime.UtcNow.AddDays(1);
+        var program = new LoyaltyProgram("Test", "Test", "TEST123", "Bronze", "Test User", expiry, fakeTime);
+        // Advance time to after expiry
+        fakeTime.UtcNow = expiry.AddSeconds(1);
+        var newTier = "Platinum";
 
-        // Act & Assert
-        var exception = Assert.Throws<DomainException>(() => 
-            loyaltyProgram.UpdateMembershipTier("Silver"));
-        Assert.Equal("Cannot update tier of an expired loyalty program", exception.Message);
+        // Act
+        var action = () => program.UpdateMembershipTier(newTier);
+
+        // Assert
+        action.Should().Throw<DomainException>()
+            .WithMessage("Cannot update tier of an expired loyalty program");
     }
 
     [Fact]
@@ -308,12 +335,16 @@ public class LoyaltyProgramTests
     public void SetExpiryDate_WithPastDate_ThrowsDomainException()
     {
         // Arrange
-        var loyaltyProgram = new LoyaltyProgram("Test", "Test", "TEST123", "Bronze", "Test User");
-        var expiryDate = DateTime.UtcNow.AddDays(-1);
+        var fakeTime = new FakeTimeProvider { UtcNow = DateTime.UtcNow };
+        var program = new LoyaltyProgram("Test", "Test", "TEST123", "Bronze", "Test User", null, fakeTime);
+        var pastDate = fakeTime.UtcNow.AddDays(-1);
 
-        // Act & Assert
-        var exception = Assert.Throws<DomainException>(() => loyaltyProgram.SetExpiryDate(expiryDate));
-        Assert.Equal("Expiry date cannot be in the past", exception.Message);
+        // Act
+        var action = () => program.SetExpiryDate(pastDate);
+
+        // Assert
+        action.Should().Throw<DomainException>()
+            .WithMessage("Expiry date cannot be in the past");
     }
 
     [Fact]
@@ -330,4 +361,10 @@ public class LoyaltyProgramTests
         Assert.Null(loyaltyProgram.ExpiresAt);
         Assert.False(loyaltyProgram.IsExpired);
     }
+}
+
+// Add a fake time provider for testing
+public class FakeTimeProvider : ITimeProvider
+{
+    public DateTime UtcNow { get; set; }
 } 

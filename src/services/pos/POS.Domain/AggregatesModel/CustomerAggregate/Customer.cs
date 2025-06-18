@@ -48,8 +48,9 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 
         private Customer()
         {
-            _name = new CustomerName(string.Empty, string.Empty);
-            _contactInfo = new ContactInfo(string.Empty, string.Empty);
+            // Initialize with default values that will be overridden
+            _name = null!;
+            _contactInfo = null!;
             _creditLimit = new CreditLimit(0);
             _paymentTerms = new PaymentTerms(30, "Net 30");
             _balance = new CustomerBalance(0);
@@ -60,8 +61,9 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 
         public Customer(string firstName, string lastName, string email, string phoneNumber) : this()
         {
-            _name = CustomerName.Create(firstName, lastName);
+            // Validate and create value objects in the correct order
             _contactInfo = ContactInfo.Create(email, phoneNumber);
+            _name = CustomerName.Create(firstName, lastName);
             CustomerType = CustomerType.Regular;
 
             AddDomainEvent(new CustomerCreatedDomainEvent(Id, firstName, lastName, email));
