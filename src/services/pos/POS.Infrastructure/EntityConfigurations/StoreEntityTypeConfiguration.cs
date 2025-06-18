@@ -30,7 +30,7 @@ public class StoreEntityTypeConfiguration : IEntityTypeConfiguration<Store>
             a.Property(addr => addr.City).HasMaxLength(100);
             a.Property(addr => addr.State).HasMaxLength(100);
             a.Property(addr => addr.Country).HasMaxLength(100);
-            a.Property(addr => addr.PostalCode).HasMaxLength(20);
+            a.Property(addr => addr.ZipCode).HasMaxLength(20);
         });
 
         builder.Property(s => s.Phone)
@@ -72,21 +72,9 @@ public class StoreEntityTypeConfiguration : IEntityTypeConfiguration<Store>
         // Configure Settings value object
         builder.OwnsOne(s => s.Settings, settings =>
         {
-            settings.Property(s => s.Currency)
-                .IsRequired()
-                .HasMaxLength(3);
             settings.Property(s => s.TaxRate)
                 .IsRequired()
                 .HasPrecision(5, 2);
-            settings.Property(s => s.Language)
-                .IsRequired()
-                .HasMaxLength(10);
-            settings.Property(s => s.DateFormat)
-                .IsRequired()
-                .HasMaxLength(20);
-            settings.Property(s => s.TimeFormat)
-                .IsRequired()
-                .HasMaxLength(20);
         });
 
         builder.Property(s => s.CreatedAt)

@@ -20,6 +20,8 @@ public class Order : Entity, IAggregateRoot
     public Money TotalAmount { get; private set; }
     public Money TaxAmount { get; private set; }
     public Money DiscountAmount { get; private set; }
+    public decimal TaxRate { get; private set; }
+    public decimal DiscountPercentage { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
     public string? Notes { get; private set; }
@@ -36,20 +38,24 @@ public class Order : Entity, IAggregateRoot
     { 
         OrderNumber = string.Empty;
         Status = OrderStatus.Created;
-        TotalAmount = Money.FromDecimal(0, "USD");
-        TaxAmount = Money.FromDecimal(0, "USD");
-        DiscountAmount = Money.FromDecimal(0, "USD");
+        TotalAmount = new Money(0, "USD");
+        TaxAmount = new Money(0, "USD");
+        DiscountAmount = new Money(0, "USD");
+        TaxRate = 0.1m; // Default 10% tax rate
+        DiscountPercentage = 0m; // Default no discount
         CreatedAt = DateTime.UtcNow;
     }
 
-    public Order(string orderNumber, Guid customerId, string? notes = null, string? createdBy = null)
+    public Order(string orderNumber, Guid customerId, decimal taxRate = 0.1m, decimal discountPercentage = 0m, string? notes = null, string? createdBy = null)
     {
         OrderNumber = Guard.Against.NullOrWhiteSpace(orderNumber, nameof(orderNumber));
         CustomerId = Guard.Against.Default(customerId, nameof(customerId));
         Status = OrderStatus.Created;
-        TotalAmount = Money.FromDecimal(0, "USD"); // Default currency
-        TaxAmount = Money.FromDecimal(0, "USD");
-        DiscountAmount = Money.FromDecimal(0, "USD");
+        TotalAmount = new Money(0, "USD"); // Default currency
+        TaxAmount = new Money(0, "USD");
+        DiscountAmount = new Money(0, "USD");
+        TaxRate = Guard.Against.Negative(taxRate, nameof(taxRate));
+        DiscountPercentage = Guard.Against.Negative(discountPercentage, nameof(discountPercentage));
         CreatedAt = DateTime.UtcNow;
         Notes = notes;
         CreatedBy = createdBy;
@@ -181,11 +187,46 @@ public class Order : Entity, IAggregateRoot
     private void RecalculateTotals()
     {
         var subtotal = _orderItems.Sum(item => item.TotalPrice.Amount);
-        var tax = subtotal * 0.1m; // 10% tax rate
-        var discount = 0m; // Calculate discount based on business rules
+        
+        // Calculate tax using the configured rate
+        var tax = subtotal * TaxRate;
+        
+        // Calculate discount using the configured percentage
+        var discount = subtotal * DiscountPercentage;
+        
+        // Ensure currency consistency across all amounts
+        var currency = _orderItems.FirstOrDefault()?.UnitPrice.Currency ?? "USD";
+        
+        TotalAmount = new Money(subtotal + tax - discount, currency);
+        TaxAmount = new Money(tax, currency);
+        DiscountAmount = new Money(discount, currency);
+    }
 
-        TotalAmount = Money.FromDecimal(subtotal + tax - discount, "USD");
-        TaxAmount = Money.FromDecimal(tax, "USD");
-        DiscountAmount = Money.FromDecimal(discount, "USD");
+    public void UpdateTaxRate(decimal newTaxRate, string? updatedBy = null)
+    {
+        Guard.Against.Negative(newTaxRate, nameof(newTaxRate));
+        
+        if (Status != OrderStatus.Created && Status != OrderStatus.Draft)
+            throw new DomainException("Can only update tax rate for created or draft orders");
+
+        TaxRate = newTaxRate;
+        RecalculateTotals();
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = updatedBy;
+        AddDomainEvent(new OrderTaxRateUpdatedDomainEvent(this, newTaxRate));
+    }
+
+    public void UpdateDiscountPercentage(decimal newDiscountPercentage, string? updatedBy = null)
+    {
+        Guard.Against.Negative(newDiscountPercentage, nameof(newDiscountPercentage));
+        
+        if (Status != OrderStatus.Created && Status != OrderStatus.Draft)
+            throw new DomainException("Can only update discount percentage for created or draft orders");
+
+        DiscountPercentage = newDiscountPercentage;
+        RecalculateTotals();
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = updatedBy;
+        AddDomainEvent(new OrderDiscountPercentageUpdatedDomainEvent(this, newDiscountPercentage));
     }
 } 

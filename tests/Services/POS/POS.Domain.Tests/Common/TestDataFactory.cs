@@ -4,6 +4,7 @@ using POS.Domain.Common.ValueObjects;
 using POS.Domain.Enums;
 using POS.Domain.Models;
 using Address = POS.Domain.Common.ValueObjects.Address;
+using POS.Domain.ValueObjects;
 
 namespace POS.Domain.Tests.Common;
 

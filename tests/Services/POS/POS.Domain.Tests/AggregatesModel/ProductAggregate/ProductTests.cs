@@ -3,6 +3,7 @@ using POS.Domain.AggregatesModel.ProductAggregate;
 using POS.Domain.Common.ValueObjects;
 using POS.Domain.Enums;
 using POS.Domain.Exceptions;
+using POS.Domain.ValueObjects;
 using Xunit;
 
 namespace POS.Domain.Tests.AggregatesModel.ProductAggregate;
@@ -13,7 +14,7 @@ public class ProductTests
     private readonly string _description;
     private readonly string _sku;
     private readonly string _barcode;
-    private readonly decimal _price;
+    private readonly Money _price;
     private readonly decimal _costPrice;
     private readonly int _categoryId;
     private readonly Guid _storeId;
@@ -26,7 +27,7 @@ public class ProductTests
         _description = "Test Description";
         _sku = "TEST-SKU-001";
         _barcode = "123456789012";
-        _price = 99.99m;
+        _price = new Money(99.99m, "USD");
         _costPrice = 49.99m;
         _categoryId = 1;
         _storeId = Guid.NewGuid();
@@ -150,7 +151,7 @@ public class ProductTests
 
         var newName = "Updated Product";
         var newDescription = "Updated Description";
-        var newPrice = 149.99m;
+        var newPrice = new Money(149.99m, "USD");
         var newCostPrice = 74.99m;
         var newCategoryId = 2;
 
@@ -269,7 +270,7 @@ public class ProductTests
             _stockQuantity,
             _lowStockThreshold);
 
-        var adjustment = -50;
+        var adjustment = -30;
 
         // Act
         product.AdjustStock(adjustment);
@@ -318,14 +319,16 @@ public class ProductTests
             _costPrice,
             _categoryId,
             _storeId,
-            _lowStockThreshold - 1,
+            _stockQuantity,
             _lowStockThreshold);
 
+        product.UpdateStock(_lowStockThreshold - 1);
+
         // Act
-        var isLowStock = product.IsLowStock();
+        var result = product.IsLowStock();
 
         // Assert
-        isLowStock.Should().BeTrue();
+        result.Should().BeTrue();
     }
 
     [Fact]
@@ -341,14 +344,16 @@ public class ProductTests
             _costPrice,
             _categoryId,
             _storeId,
-            _lowStockThreshold + 1,
+            _stockQuantity,
             _lowStockThreshold);
 
+        product.UpdateStock(_lowStockThreshold + 1);
+
         // Act
-        var isLowStock = product.IsLowStock();
+        var result = product.IsLowStock();
 
         // Assert
-        isLowStock.Should().BeFalse();
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -401,7 +406,7 @@ public class ProductTests
     }
 
     [Fact]
-    public void Reactivate_WhenInactive_ActivatesSuccessfully()
+    public void Activate_WhenInactive_ActivatesSuccessfully()
     {
         // Arrange
         var product = new Product(
@@ -419,7 +424,7 @@ public class ProductTests
         product.Deactivate();
 
         // Act
-        product.Reactivate();
+        product.Activate();
 
         // Assert
         product.IsActive.Should().BeTrue();
@@ -427,7 +432,7 @@ public class ProductTests
     }
 
     [Fact]
-    public void Reactivate_WhenAlreadyActive_ThrowsDomainException()
+    public void Activate_WhenAlreadyActive_ThrowsDomainException()
     {
         // Arrange
         var product = new Product(
@@ -443,7 +448,7 @@ public class ProductTests
             _lowStockThreshold);
 
         // Act
-        var act = () => product.Reactivate();
+        var act = () => product.Activate();
 
         // Assert
         act.Should().Throw<DomainException>();

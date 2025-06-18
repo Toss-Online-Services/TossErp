@@ -28,25 +28,31 @@ public class InventoryRepository : IRepository<Inventory>
     public async Task<Inventory?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Inventories
+            .Include(i => i.Movements)
+            .Include(i => i.Reservations)
+            .Include(i => i.Adjustments)
             .FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<Inventory>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Inventories
+            .Include(i => i.Movements)
+            .Include(i => i.Reservations)
+            .Include(i => i.Adjustments)
             .OrderBy(i => i.ProductId)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Inventory>> GetAsync(Specification<Inventory> specification, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Inventory>> GetAsync(Expression<Func<Inventory, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var query = _context.Inventories.AsQueryable();
-        if (specification != null)
-        {
-            var predicate = specification.ToExpression();
-            query = query.Where(predicate);
-        }
-        return await query.OrderBy(i => i.ProductId).ToListAsync(cancellationToken);
+        return await _context.Inventories
+            .Include(i => i.Movements)
+            .Include(i => i.Reservations)
+            .Include(i => i.Adjustments)
+            .Where(predicate)
+            .OrderBy(i => i.ProductId)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(Inventory inventory, CancellationToken cancellationToken = default)
@@ -76,15 +82,9 @@ public class InventoryRepository : IRepository<Inventory>
             .AnyAsync(i => i.Id == id, cancellationToken);
     }
 
-    public async Task<int> CountAsync(Specification<Inventory> specification, CancellationToken cancellationToken = default)
+    public async Task<int> CountAsync(Expression<Func<Inventory, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var query = _context.Inventories.AsQueryable();
-        if (specification != null)
-        {
-            var predicate = specification.ToExpression();
-            query = query.Where(predicate);
-        }
-        return await query.CountAsync(cancellationToken);
+        return await _context.Inventories.CountAsync(predicate, cancellationToken);
     }
 
     // Overloads without CancellationToken
@@ -92,49 +92,57 @@ public class InventoryRepository : IRepository<Inventory>
     public Task UpdateAsync(Inventory inventory) => UpdateAsync(inventory, default);
     public Task DeleteAsync(Inventory inventory) => DeleteAsync(inventory, default);
 
-    public async Task<Inventory> GetAsync(int inventoryId)
+    public async Task<Inventory?> GetAsync(Guid inventoryId)
     {
         var inventory = await _context.Inventories
-            .Include(i => i.Product)
-            .Include(i => i.Store)
+            .Include(i => i.Movements)
+            .Include(i => i.Reservations)
+            .Include(i => i.Adjustments)
             .FirstOrDefaultAsync(i => i.Id == inventoryId);
 
         return inventory;
     }
 
-    public async Task<Inventory> GetByProductAndStoreAsync(int productId, int storeId)
+    public async Task<Inventory?> GetByProductAndStoreAsync(Guid productId, Guid storeId)
     {
         var inventory = await _context.Inventories
-            .Include(i => i.Product)
-            .Include(i => i.Store)
-            .FirstOrDefaultAsync(i => i.Product.Id == productId && i.Store.Id == storeId);
+            .Include(i => i.Movements)
+            .Include(i => i.Reservations)
+            .Include(i => i.Adjustments)
+            .FirstOrDefaultAsync(i => i.ProductId == productId && i.StoreId == storeId);
 
         return inventory;
     }
 
-    public async Task<IEnumerable<Inventory>> GetByStoreAsync(int storeId)
+    public async Task<IEnumerable<Inventory>> GetByStoreAsync(Guid storeId)
     {
         return await _context.Inventories
-            .Include(i => i.Product)
-            .Where(i => i.Store.Id == storeId)
-            .OrderBy(i => i.Product.Name)
+            .Include(i => i.Movements)
+            .Include(i => i.Reservations)
+            .Include(i => i.Adjustments)
+            .Where(i => i.StoreId == storeId)
+            .OrderBy(i => i.ProductId)
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Inventory>> GetLowStockAsync(int storeId)
+    public async Task<IEnumerable<Inventory>> GetLowStockAsync(Guid storeId)
     {
         return await _context.Inventories
-            .Include(i => i.Product)
-            .Where(i => i.Store.Id == storeId && i.Quantity <= i.MinQuantity)
+            .Include(i => i.Movements)
+            .Include(i => i.Reservations)
+            .Include(i => i.Adjustments)
+            .Where(i => i.StoreId == storeId && i.Quantity <= i.MinimumStock)
             .OrderBy(i => i.Quantity)
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Inventory>> GetOverstockAsync(int storeId)
+    public async Task<IEnumerable<Inventory>> GetOverstockAsync(Guid storeId)
     {
         return await _context.Inventories
-            .Include(i => i.Product)
-            .Where(i => i.Store.Id == storeId && i.Quantity >= i.MaxQuantity)
+            .Include(i => i.Movements)
+            .Include(i => i.Reservations)
+            .Include(i => i.Adjustments)
+            .Where(i => i.StoreId == storeId && i.Quantity >= i.MaximumStock)
             .OrderByDescending(i => i.Quantity)
             .ToListAsync();
     }

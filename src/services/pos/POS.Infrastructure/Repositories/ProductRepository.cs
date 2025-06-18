@@ -28,25 +28,34 @@ public class ProductRepository : IRepository<Product>
     public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Products
+            //.Include(p => p.Categories)
+            //.Include(p => p.Variants)
+            //.Include(p => p.Attributes)
+            //.Include(p => p.Images)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Products
+            //.Include(p => p.Categories)
+            //.Include(p => p.Variants)
+            //.Include(p => p.Attributes)
+            //.Include(p => p.Images)
             .OrderBy(p => p.Name)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Product>> GetAsync(Specification<Product> specification, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Product>> GetAsync(Expression<Func<Product, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var query = _context.Products.AsQueryable();
-        if (specification != null)
-        {
-            var predicate = specification.ToExpression();
-            query = query.Where(predicate);
-        }
-        return await query.OrderBy(p => p.Name).ToListAsync(cancellationToken);
+        return await _context.Products
+            //.Include(p => p.Categories)
+            //.Include(p => p.Variants)
+            //.Include(p => p.Attributes)
+            //.Include(p => p.Images)
+            .Where(predicate)
+            .OrderBy(p => p.Name)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(Product product, CancellationToken cancellationToken = default)
@@ -76,19 +85,82 @@ public class ProductRepository : IRepository<Product>
             .AnyAsync(p => p.Id == id, cancellationToken);
     }
 
-    public async Task<int> CountAsync(Specification<Product> specification, CancellationToken cancellationToken = default)
+    public async Task<int> CountAsync(Expression<Func<Product, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var query = _context.Products.AsQueryable();
-        if (specification != null)
-        {
-            var predicate = specification.ToExpression();
-            query = query.Where(predicate);
-        }
-        return await query.CountAsync(cancellationToken);
+        return await _context.Products.CountAsync(predicate, cancellationToken);
     }
 
     // Overloads without CancellationToken
     public Task<Product> AddAsync(Product product) => AddAsync(product, default);
     public Task UpdateAsync(Product product) => UpdateAsync(product, default);
     public Task DeleteAsync(Product product) => DeleteAsync(product, default);
+
+    public async Task<Product?> GetBySkuAsync(string sku)
+    {
+        return await _context.Products
+            //.Include(p => p.Categories)
+            //.Include(p => p.Variants)
+            //.Include(p => p.Attributes)
+            //.Include(p => p.Images)
+            .FirstOrDefaultAsync(p => p.SKU == sku);
+    }
+
+    // Commented out: GetByCategoryAsync, since Product does not have Categories navigation
+    //public async Task<IEnumerable<Product>> GetByCategoryAsync(Guid categoryId)
+    //{
+    //    return await _context.Products
+    //        .Include(p => p.Categories)
+    //        .Include(p => p.Variants)
+    //        .Include(p => p.Attributes)
+    //        .Include(p => p.Images)
+    //        .Where(p => p.Categories.Any(c => c.Id == categoryId))
+    //        .OrderBy(p => p.Name)
+    //        .ToListAsync();
+    //}
+
+    public async Task<IEnumerable<Product>> GetActiveProductsAsync()
+    {
+        return await _context.Products
+            //.Include(p => p.Categories)
+            //.Include(p => p.Variants)
+            //.Include(p => p.Attributes)
+            //.Include(p => p.Images)
+            .Where(p => p.IsActive)
+            .OrderBy(p => p.Name)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Product>> GetByPriceRangeAsync(decimal minPrice, decimal maxPrice)
+    {
+        return await _context.Products
+            //.Include(p => p.Categories)
+            //.Include(p => p.Variants)
+            //.Include(p => p.Attributes)
+            //.Include(p => p.Images)
+            .Where(p => p.Price.Amount >= minPrice && p.Price.Amount <= maxPrice)
+            .OrderBy(p => p.Name)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Product>> GetByStockLevelAsync(int minStockLevel)
+    {
+        return await _context.Products
+            //.Include(p => p.Categories)
+            //.Include(p => p.Variants)
+            //.Include(p => p.Attributes)
+            //.Include(p => p.Images)
+            .Where(p => p.StockQuantity <= minStockLevel)
+            .OrderBy(p => p.Name)
+            .ToListAsync();
+    }
+
+    public void Update(Product product)
+    {
+        _context.Entry(product).State = EntityState.Modified;
+    }
+
+    public void Delete(Product product)
+    {
+        _context.Products.Remove(product);
+    }
 } 

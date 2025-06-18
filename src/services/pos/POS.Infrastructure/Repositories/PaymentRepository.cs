@@ -34,19 +34,16 @@ public class PaymentRepository : IRepository<Payment>
     public async Task<IEnumerable<Payment>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Payments
-            .OrderByDescending(p => p.PaymentDate)
+            .OrderByDescending(p => p.CreatedAt)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Payment>> GetAsync(Specification<Payment> specification, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Payment>> GetAsync(Expression<Func<Payment, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var query = _context.Payments.AsQueryable();
-        if (specification != null)
-        {
-            var predicate = specification.ToExpression();
-            query = query.Where(predicate);
-        }
-        return await query.OrderByDescending(p => p.PaymentDate).ToListAsync(cancellationToken);
+        return await _context.Payments
+            .Where(predicate)
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(Payment payment, CancellationToken cancellationToken = default)
@@ -76,15 +73,9 @@ public class PaymentRepository : IRepository<Payment>
             .AnyAsync(p => p.Id == id, cancellationToken);
     }
 
-    public async Task<int> CountAsync(Specification<Payment> specification, CancellationToken cancellationToken = default)
+    public async Task<int> CountAsync(Expression<Func<Payment, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var query = _context.Payments.AsQueryable();
-        if (specification != null)
-        {
-            var predicate = specification.ToExpression();
-            query = query.Where(predicate);
-        }
-        return await query.CountAsync(cancellationToken);
+        return await _context.Payments.CountAsync(predicate, cancellationToken);
     }
 
     // Overloads without CancellationToken
@@ -92,36 +83,28 @@ public class PaymentRepository : IRepository<Payment>
     public Task UpdateAsync(Payment payment) => UpdateAsync(payment, default);
     public Task DeleteAsync(Payment payment) => DeleteAsync(payment, default);
 
-    public async Task<Payment> GetAsync(int paymentId)
+    public async Task<Payment?> GetAsync(Guid paymentId)
     {
         var payment = await _context.Payments
-            .Include(p => p.Order)
+            .Include(p => p.PaymentSplits)
             .FirstOrDefaultAsync(p => p.Id == paymentId);
 
         return payment;
     }
 
-    public async Task<Payment> GetByTransactionIdAsync(string transactionId)
+    public async Task<Payment?> GetByTransactionIdAsync(string transactionId)
     {
         var payment = await _context.Payments
-            .Include(p => p.Order)
+            .Include(p => p.PaymentSplits)
             .FirstOrDefaultAsync(p => p.TransactionId == transactionId);
 
         return payment;
     }
 
-    public async Task<IEnumerable<Payment>> GetByOrderAsync(int orderId)
-    {
-        return await _context.Payments
-            .Where(p => p.Order.Id == orderId)
-            .OrderByDescending(p => p.CreatedAt)
-            .ToListAsync();
-    }
-
     public async Task<IEnumerable<Payment>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         return await _context.Payments
-            .Include(p => p.Order)
+            .Include(p => p.PaymentSplits)
             .Where(p => p.CreatedAt >= startDate && p.CreatedAt <= endDate)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();

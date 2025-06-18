@@ -1,5 +1,5 @@
 using FluentAssertions;
-using POS.Domain.Common.ValueObjects;
+using POS.Domain.ValueObjects;
 using POS.Domain.Tests.Common;
 using Xunit;
 

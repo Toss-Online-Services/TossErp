@@ -26,6 +26,14 @@ public class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
             .IsRequired()
             .HasMaxLength(50);
 
+        builder.Property(o => o.TaxRate)
+            .IsRequired()
+            .HasPrecision(5, 4); // Allows values from 0 to 1 with 4 decimal places
+
+        builder.Property(o => o.DiscountPercentage)
+            .IsRequired()
+            .HasPrecision(5, 4); // Allows values from 0 to 1 with 4 decimal places
+
         // Configure Money value objects
         builder.OwnsOne(o => o.TotalAmount, money =>
         {

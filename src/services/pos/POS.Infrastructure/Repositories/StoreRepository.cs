@@ -28,25 +28,31 @@ public class StoreRepository : IRepository<Store>
     public async Task<Store?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Stores
+            .Include(s => s.StoreHours)
+            .Include(s => s.Devices)
+            .Include(s => s.Printers)
             .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<Store>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Stores
+            .Include(s => s.StoreHours)
+            .Include(s => s.Devices)
+            .Include(s => s.Printers)
             .OrderBy(s => s.Name)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Store>> GetAsync(Specification<Store> specification, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Store>> GetAsync(Expression<Func<Store, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var query = _context.Stores.AsQueryable();
-        if (specification != null)
-        {
-            var predicate = specification.ToExpression();
-            query = query.Where(predicate);
-        }
-        return await query.OrderBy(s => s.Name).ToListAsync(cancellationToken);
+        return await _context.Stores
+            .Include(s => s.StoreHours)
+            .Include(s => s.Devices)
+            .Include(s => s.Printers)
+            .Where(predicate)
+            .OrderBy(s => s.Name)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(Store store, CancellationToken cancellationToken = default)
@@ -76,19 +82,63 @@ public class StoreRepository : IRepository<Store>
             .AnyAsync(s => s.Id == id, cancellationToken);
     }
 
-    public async Task<int> CountAsync(Specification<Store> specification, CancellationToken cancellationToken = default)
+    public async Task<int> CountAsync(Expression<Func<Store, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var query = _context.Stores.AsQueryable();
-        if (specification != null)
-        {
-            var predicate = specification.ToExpression();
-            query = query.Where(predicate);
-        }
-        return await query.CountAsync(cancellationToken);
+        return await _context.Stores.CountAsync(predicate, cancellationToken);
     }
 
     // Overloads without CancellationToken
     public Task<Store> AddAsync(Store store) => AddAsync(store, default);
     public Task UpdateAsync(Store store) => UpdateAsync(store, default);
     public Task DeleteAsync(Store store) => DeleteAsync(store, default);
+
+    public async Task<Store?> GetByCodeAsync(string code)
+    {
+        return await _context.Stores
+            .Include(s => s.StoreHours)
+            .Include(s => s.Devices)
+            .Include(s => s.Printers)
+            .FirstOrDefaultAsync(s => s.Code == code);
+    }
+
+    public async Task<Store?> GetByEmailAsync(string email)
+    {
+        return await _context.Stores
+            .Include(s => s.StoreHours)
+            .Include(s => s.Devices)
+            .Include(s => s.Printers)
+            .FirstOrDefaultAsync(s => s.Email == email);
+    }
+
+    public async Task<IEnumerable<Store>> GetActiveStoresAsync()
+    {
+        return await _context.Stores
+            .Include(s => s.StoreHours)
+            .Include(s => s.Devices)
+            .Include(s => s.Printers)
+            .Where(s => s.IsActive)
+            .OrderBy(s => s.Name)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Store>> GetByTimeZoneAsync(string timeZone)
+    {
+        return await _context.Stores
+            .Include(s => s.StoreHours)
+            .Include(s => s.Devices)
+            .Include(s => s.Printers)
+            .Where(s => s.TimeZone == timeZone)
+            .OrderBy(s => s.Name)
+            .ToListAsync();
+    }
+
+    public void Update(Store store)
+    {
+        _context.Entry(store).State = EntityState.Modified;
+    }
+
+    public void Delete(Store store)
+    {
+        _context.Stores.Remove(store);
+    }
 } 

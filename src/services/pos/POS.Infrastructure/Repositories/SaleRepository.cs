@@ -28,35 +28,24 @@ public class SaleRepository : IRepository<Sale>
     public async Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Sales
-            .Include(s => s.SaleItems)
+            //.Include(s => s.SaleItems)
             .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<Sale>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Sales
-            .Include(s => s.SaleItems)
-            .OrderByDescending(s => s.SaleDate)
+            //.Include(s => s.SaleItems)
+            .OrderBy(s => s.CreatedAt)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Sale>> GetAsync(Specification<Sale> specification, CancellationToken cancellationToken = default)
-    {
-        var query = _context.Sales.AsQueryable();
-        if (specification != null)
-        {
-            var predicate = specification.ToExpression();
-            query = query.Where(predicate);
-        }
-        return await query.OrderByDescending(s => s.SaleDate).ToListAsync(cancellationToken);
-    }
-
-    public async Task<IEnumerable<Sale>> GetListAsync(Expression<Func<Sale, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Sale>> GetAsync(Expression<Func<Sale, bool>> predicate, CancellationToken cancellationToken = default)
     {
         return await _context.Sales
-            .Include(s => s.SaleItems)
+            //.Include(s => s.SaleItems)
             .Where(predicate)
-            .OrderByDescending(s => s.SaleDate)
+            .OrderBy(s => s.CreatedAt)
             .ToListAsync(cancellationToken);
     }
 
@@ -87,19 +76,68 @@ public class SaleRepository : IRepository<Sale>
             .AnyAsync(s => s.Id == id, cancellationToken);
     }
 
-    public async Task<int> CountAsync(Specification<Sale> specification, CancellationToken cancellationToken = default)
+    public async Task<int> CountAsync(Expression<Func<Sale, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var query = _context.Sales.AsQueryable();
-        if (specification != null)
-        {
-            var predicate = specification.ToExpression();
-            query = query.Where(predicate);
-        }
-        return await query.CountAsync(cancellationToken);
+        return await _context.Sales.CountAsync(predicate, cancellationToken);
     }
 
     // Overloads without CancellationToken
     public Task<Sale> AddAsync(Sale sale) => AddAsync(sale, default);
     public Task UpdateAsync(Sale sale) => UpdateAsync(sale, default);
     public Task DeleteAsync(Sale sale) => DeleteAsync(sale, default);
+
+    public async Task<Sale?> GetBySaleNumberAsync(string saleNumber)
+    {
+        var sale = await _context.Sales
+            //.Include(s => s.SaleItems)
+            .FirstOrDefaultAsync(s => s.SaleNumber == saleNumber);
+
+        return sale;
+    }
+
+    public async Task<IEnumerable<Sale>> GetByCustomerAsync(Guid customerId)
+    {
+        return await _context.Sales
+            //.Include(s => s.SaleItems)
+            .Where(s => s.CustomerId == customerId)
+            .OrderByDescending(s => s.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Sale>> GetByStoreAsync(Guid storeId)
+    {
+        return await _context.Sales
+            //.Include(s => s.SaleItems)
+            .Where(s => s.StoreId == storeId)
+            .OrderByDescending(s => s.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Sale>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
+    {
+        return await _context.Sales
+            //.Include(s => s.SaleItems)
+            .Where(s => s.CreatedAt >= startDate && s.CreatedAt <= endDate)
+            .OrderByDescending(s => s.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Sale>> GetByStatusAsync(SaleStatus status)
+    {
+        return await _context.Sales
+            //.Include(s => s.SaleItems)
+            .Where(s => s.Status == status)
+            .OrderByDescending(s => s.CreatedAt)
+            .ToListAsync();
+    }
+
+    public void Update(Sale sale)
+    {
+        _context.Entry(sale).State = EntityState.Modified;
+    }
+
+    public void Delete(Sale sale)
+    {
+        _context.Sales.Remove(sale);
+    }
 } 

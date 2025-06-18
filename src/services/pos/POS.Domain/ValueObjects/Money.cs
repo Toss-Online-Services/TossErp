@@ -1,4 +1,4 @@
-using Ardalis.GuardClauses;
+using POS.Domain.SeedWork;
 
 namespace POS.Domain.ValueObjects;
 
@@ -10,41 +10,44 @@ public class Money : ValueObject
     public decimal Amount { get; }
     public string Currency { get; }
 
-    private Money() { Currency = string.Empty; }
-
     public Money(decimal amount, string currency)
     {
-        Amount = Guard.Against.Negative(amount, nameof(amount));
-        Currency = Guard.Against.NullOrWhiteSpace(currency, nameof(currency)).ToUpper();
-    }
+        if (amount < 0)
+            throw new ArgumentException("Amount cannot be negative", nameof(amount));
 
-    public static Money FromDecimal(decimal amount, string currency)
-    {
-        return new Money(amount, currency);
+        if (string.IsNullOrWhiteSpace(currency))
+            throw new ArgumentException("Currency cannot be empty", nameof(currency));
+
+        Amount = amount;
+        Currency = currency.ToUpperInvariant();
     }
 
     public static Money operator +(Money left, Money right)
     {
-        Guard.Against.InvalidInput(left, nameof(left), m => m.Currency == right.Currency, "Cannot add money with different currencies");
+        if (left.Currency != right.Currency)
+            throw new InvalidOperationException("Cannot add money with different currencies");
+
         return new Money(left.Amount + right.Amount, left.Currency);
     }
 
     public static Money operator -(Money left, Money right)
     {
-        Guard.Against.InvalidInput(left, nameof(left), m => m.Currency == right.Currency, "Cannot subtract money with different currencies");
-        Guard.Against.InvalidInput(left, nameof(left), m => m.Amount >= right.Amount, "Result cannot be negative");
+        if (left.Currency != right.Currency)
+            throw new InvalidOperationException("Cannot subtract money with different currencies");
+
         return new Money(left.Amount - right.Amount, left.Currency);
     }
 
     public static Money operator *(Money money, decimal multiplier)
     {
-        Guard.Against.Negative(multiplier, nameof(multiplier));
         return new Money(money.Amount * multiplier, money.Currency);
     }
 
     public static Money operator /(Money money, decimal divisor)
     {
-        Guard.Against.NegativeOrZero(divisor, nameof(divisor));
+        if (divisor == 0)
+            throw new DivideByZeroException();
+
         return new Money(money.Amount / divisor, money.Currency);
     }
 
@@ -52,8 +55,10 @@ public class Money : ValueObject
     {
         if (ReferenceEquals(left, null) && ReferenceEquals(right, null))
             return true;
+
         if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
             return false;
+
         return left.Amount == right.Amount && left.Currency == right.Currency;
     }
 
@@ -64,34 +69,37 @@ public class Money : ValueObject
 
     public static bool operator >(Money left, Money right)
     {
-        Guard.Against.InvalidInput(left, nameof(left), m => m.Currency == right.Currency, "Cannot compare money with different currencies");
+        if (left.Currency != right.Currency)
+            throw new InvalidOperationException("Cannot compare money with different currencies");
         return left.Amount > right.Amount;
     }
 
     public static bool operator <(Money left, Money right)
     {
-        Guard.Against.InvalidInput(left, nameof(left), m => m.Currency == right.Currency, "Cannot compare money with different currencies");
+        if (left.Currency != right.Currency)
+            throw new InvalidOperationException("Cannot compare money with different currencies");
         return left.Amount < right.Amount;
     }
 
     public static bool operator >=(Money left, Money right)
     {
-        Guard.Against.InvalidInput(left, nameof(left), m => m.Currency == right.Currency, "Cannot compare money with different currencies");
+        if (left.Currency != right.Currency)
+            throw new InvalidOperationException("Cannot compare money with different currencies");
         return left.Amount >= right.Amount;
     }
 
     public static bool operator <=(Money left, Money right)
     {
-        Guard.Against.InvalidInput(left, nameof(left), m => m.Currency == right.Currency, "Cannot compare money with different currencies");
+        if (left.Currency != right.Currency)
+            throw new InvalidOperationException("Cannot compare money with different currencies");
         return left.Amount <= right.Amount;
     }
 
     public override bool Equals(object? obj)
     {
         if (obj is Money other)
-        {
             return Amount == other.Amount && Currency == other.Currency;
-        }
+
         return false;
     }
 
@@ -102,7 +110,7 @@ public class Money : ValueObject
 
     public override string ToString()
     {
-        return $"{Amount} {Currency}";
+        return $"{Amount:F2} {Currency}";
     }
 
     public Money Round(int decimals = 2)

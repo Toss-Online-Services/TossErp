@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using POS.Domain.AggregatesModel.CustomerAggregate;
+using POS.Domain.AggregatesModel.CustomerAggregate.ValueObjects;
 
 namespace POS.Infrastructure.EntityConfigurations;
 
@@ -16,55 +17,40 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
             .UseHiLo("customerseq", POSContext.DEFAULT_SCHEMA);
 
         // Configure CustomerName value object
-        builder.OwnsOne(c => c._name, name =>
+        builder.OwnsOne(typeof(CustomerName), "_name", name =>
         {
-            name.Property(n => n.FirstName)
+            name.Property(nameof(CustomerName.FirstName))
                 .IsRequired()
                 .HasMaxLength(100);
-            name.Property(n => n.LastName)
+            name.Property(nameof(CustomerName.LastName))
                 .IsRequired()
                 .HasMaxLength(100);
         });
 
         // Configure ContactInfo value object
-        builder.OwnsOne(c => c._contactInfo, contact =>
+        builder.OwnsOne(typeof(ContactInfo), "_contactInfo", contact =>
         {
-            contact.Property(c => c.Email)
+            contact.Property(nameof(ContactInfo.Email))
                 .IsRequired()
                 .HasMaxLength(100);
-            contact.Property(c => c.PhoneNumber)
+            contact.Property(nameof(ContactInfo.PhoneNumber))
                 .IsRequired()
                 .HasMaxLength(20);
         });
 
         // Configure CreditLimit value object
-        builder.OwnsOne(c => c._creditLimit, credit =>
-        {
-            credit.Property(c => c.Amount)
-                .IsRequired()
-                .HasPrecision(18, 2);
-        });
+        builder.Property(c => c.CreditLimit)
+            .IsRequired()
+            .HasPrecision(18, 2);
 
         // Configure PaymentTerms value object
-        builder.OwnsOne(c => c._paymentTerms, terms =>
-        {
-            terms.Property(t => t.Days)
-                .IsRequired();
-            terms.Property(t => t.Description)
-                .IsRequired()
-                .HasMaxLength(50);
-        });
+        builder.Property(c => c.PaymentTerms)
+            .IsRequired();
 
         // Configure CustomerBalance value object
-        builder.OwnsOne(c => c._balance, balance =>
-        {
-            balance.Property(b => b.Amount)
-                .IsRequired()
-                .HasPrecision(18, 2);
-            balance.Property(b => b.Currency)
-                .IsRequired()
-                .HasMaxLength(3);
-        });
+        builder.Property(c => c.Balance)
+            .IsRequired()
+            .HasPrecision(18, 2);
 
         // Configure Address value object
         builder.OwnsOne(c => c.Address, address =>
@@ -73,7 +59,7 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
             address.Property(a => a.City).HasMaxLength(100);
             address.Property(a => a.State).HasMaxLength(100);
             address.Property(a => a.Country).HasMaxLength(100);
-            address.Property(a => a.PostalCode).HasMaxLength(20);
+            address.Property(a => a.ZipCode).HasMaxLength(20);
         });
 
         // Configure LoyaltyProgram value object
@@ -83,8 +69,8 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
             loyalty.Property(l => l.Name).IsRequired().HasMaxLength(100);
             loyalty.Property(l => l.MembershipNumber).IsRequired().HasMaxLength(50);
             loyalty.Property(l => l.MembershipTier).IsRequired().HasMaxLength(50);
-            loyalty.Property(l => l.Points).IsRequired();
-            loyalty.Property(l => l.EnrollmentDate).IsRequired();
+            loyalty.Property(l => l.PointsBalance).IsRequired();
+            loyalty.Property(l => l.EnrolledAt).IsRequired();
         });
 
         builder.Property(c => c.CreatedAt)

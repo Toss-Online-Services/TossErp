@@ -36,19 +36,17 @@ public class OrderRepository : IRepository<Order>
     {
         return await _context.Orders
             .Include(o => o.OrderItems)
-            .OrderByDescending(o => o.OrderDate)
+            .OrderByDescending(o => o.CreatedAt)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Order>> GetAsync(Specification<Order> specification, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Order>> GetAsync(Expression<Func<Order, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var query = _context.Orders.AsQueryable();
-        if (specification != null)
-        {
-            var predicate = specification.ToExpression();
-            query = query.Where(predicate);
-        }
-        return await query.OrderByDescending(o => o.OrderDate).ToListAsync(cancellationToken);
+        return await _context.Orders
+            .Include(o => o.OrderItems)
+            .Where(predicate)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(Order order, CancellationToken cancellationToken = default)
@@ -78,15 +76,9 @@ public class OrderRepository : IRepository<Order>
             .AnyAsync(o => o.Id == id, cancellationToken);
     }
 
-    public async Task<int> CountAsync(Specification<Order> specification, CancellationToken cancellationToken = default)
+    public async Task<int> CountAsync(Expression<Func<Order, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var query = _context.Orders.AsQueryable();
-        if (specification != null)
-        {
-            var predicate = specification.ToExpression();
-            query = query.Where(predicate);
-        }
-        return await query.CountAsync(cancellationToken);
+        return await _context.Orders.CountAsync(predicate, cancellationToken);
     }
 
     // Overloads without CancellationToken
@@ -94,40 +86,29 @@ public class OrderRepository : IRepository<Order>
     public Task UpdateAsync(Order order) => UpdateAsync(order, default);
     public Task DeleteAsync(Order order) => DeleteAsync(order, default);
 
-    public async Task<Order> GetAsync(int orderId)
+    public async Task<Order?> GetAsync(Guid orderId)
     {
         var order = await _context.Orders
-            .Include(o => o.Customer)
-            .Include(o => o.Store)
+            .Include(o => o.OrderItems)
             .FirstOrDefaultAsync(o => o.Id == orderId);
 
         return order;
     }
 
-    public async Task<Order> GetByOrderNumberAsync(string orderNumber)
+    public async Task<Order?> GetByOrderNumberAsync(string orderNumber)
     {
         var order = await _context.Orders
-            .Include(o => o.Customer)
-            .Include(o => o.Store)
+            .Include(o => o.OrderItems)
             .FirstOrDefaultAsync(o => o.OrderNumber == orderNumber);
 
         return order;
     }
 
-    public async Task<IEnumerable<Order>> GetByCustomerAsync(int customerId)
+    public async Task<IEnumerable<Order>> GetByCustomerAsync(Guid customerId)
     {
         return await _context.Orders
-            .Include(o => o.Store)
-            .Where(o => o.Customer.Id == customerId)
-            .OrderByDescending(o => o.CreatedAt)
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<Order>> GetByStoreAsync(int storeId)
-    {
-        return await _context.Orders
-            .Include(o => o.Customer)
-            .Where(o => o.Store.Id == storeId)
+            .Include(o => o.OrderItems)
+            .Where(o => o.CustomerId == customerId)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }
@@ -135,8 +116,7 @@ public class OrderRepository : IRepository<Order>
     public async Task<IEnumerable<Order>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         return await _context.Orders
-            .Include(o => o.Customer)
-            .Include(o => o.Store)
+            .Include(o => o.OrderItems)
             .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();

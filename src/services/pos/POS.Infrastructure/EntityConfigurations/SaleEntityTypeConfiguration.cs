@@ -76,7 +76,7 @@ public class SaleEntityTypeConfiguration : IEntityTypeConfiguration<Sale>
             a.Property(addr => addr.City).HasMaxLength(100);
             a.Property(addr => addr.State).HasMaxLength(100);
             a.Property(addr => addr.Country).HasMaxLength(100);
-            a.Property(addr => addr.PostalCode).HasMaxLength(20);
+            a.Property(addr => addr.ZipCode).HasMaxLength(20);
         });
 
         // Configure collections
