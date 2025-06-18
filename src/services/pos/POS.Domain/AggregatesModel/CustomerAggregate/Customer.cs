@@ -13,6 +13,9 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
     {
         private CustomerName _name;
         private ContactInfo _contactInfo;
+        private CreditLimit _creditLimit;
+        private PaymentTerms _paymentTerms;
+        private CustomerBalance _balance;
         private readonly List<PriceList> _priceLists = new();
         private readonly List<CustomerContact> _contacts = new();
         private readonly List<CustomerDocument> _documents = new();
@@ -30,9 +33,9 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public CustomerPreferences Preferences { get; private set; }
 
         // New properties for advanced customer management
-        public decimal CreditLimit { get; private set; }
-        public int PaymentTerms { get; private set; }
-        public decimal Balance { get; private set; }
+        public decimal CreditLimit => _creditLimit.Amount;
+        public int PaymentTerms => _paymentTerms.Days;
+        public decimal Balance => _balance.Amount;
         public DateTime? LastPurchaseDate { get; private set; }
         public decimal TotalPurchases { get; private set; }
         public int PurchaseCount { get; private set; }
@@ -47,6 +50,9 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         {
             _name = new CustomerName(string.Empty, string.Empty);
             _contactInfo = new ContactInfo(string.Empty, string.Empty);
+            _creditLimit = new CreditLimit(0);
+            _paymentTerms = new PaymentTerms(30, "Net 30");
+            _balance = new CustomerBalance(0);
             IsActive = true;
             CreatedAt = DateTime.UtcNow;
             Preferences = new CustomerPreferences();
@@ -98,35 +104,45 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 
         public void SetCreditLimit(decimal creditLimit)
         {
-            if (creditLimit < 0)
-                throw new DomainException("Credit limit cannot be negative");
-
-            var oldCreditLimit = CreditLimit;
-            CreditLimit = creditLimit;
+            var oldCreditLimit = _creditLimit;
+            _creditLimit = new CreditLimit(creditLimit);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerCreditLimitUpdatedDomainEvent(Id, oldCreditLimit, creditLimit, "System", LastModifiedAt.Value));
+            AddDomainEvent(new CustomerCreditLimitUpdatedDomainEvent(
+                Id, 
+                oldCreditLimit.Amount, 
+                creditLimit, 
+                "System", 
+                LastModifiedAt.Value));
         }
 
-        public void SetPaymentTerms(int days)
+        public void SetPaymentTerms(int days, string description)
         {
-            if (days < 0)
-                throw new DomainException("Payment terms cannot be negative");
-
-            var oldPaymentTerms = PaymentTerms;
-            PaymentTerms = days;
+            var oldPaymentTerms = _paymentTerms;
+            _paymentTerms = new PaymentTerms(days, description);
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerPaymentTermsUpdatedDomainEvent(Id, oldPaymentTerms.ToString(), days.ToString(), "System", LastModifiedAt.Value));
+            AddDomainEvent(new CustomerPaymentTermsUpdatedDomainEvent(
+                Id, 
+                oldPaymentTerms.Days.ToString(), 
+                days.ToString(), 
+                "System", 
+                LastModifiedAt.Value));
         }
 
         public void UpdateBalance(decimal amount)
         {
-            var oldBalance = Balance;
-            Balance += amount;
+            var oldBalance = _balance;
+            _balance = amount > 0 ? _balance.Add(amount) : _balance.Subtract(Math.Abs(amount));
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerBalanceUpdatedDomainEvent(Id, oldBalance, Balance, "System", "USD", LastModifiedAt.Value));
+            AddDomainEvent(new CustomerBalanceUpdatedDomainEvent(
+                Id, 
+                oldBalance.Amount, 
+                _balance.Amount, 
+                "System", 
+                _balance.Currency, 
+                LastModifiedAt.Value));
         }
 
         public void RecordPurchase(decimal amount)
@@ -139,7 +155,12 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             PurchaseCount++;
             LastModifiedAt = DateTime.UtcNow;
 
-            AddDomainEvent(new CustomerPurchaseRecordedDomainEvent(Id, Guid.NewGuid(), amount, "USD", LastModifiedAt.Value));
+            AddDomainEvent(new CustomerPurchaseRecordedDomainEvent(
+                Id, 
+                Guid.NewGuid(), 
+                amount, 
+                _balance.Currency, 
+                LastModifiedAt.Value));
         }
 
         public void SetCustomerType(CustomerType type)
@@ -263,10 +284,11 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
             LastModifiedAt = DateTime.UtcNow;
 
             AddDomainEvent(new CustomerDocumentRemovedDomainEvent(
-                Id, 
-                documentId, 
-                document.Name, 
-                "System", 
+                Id,
+                documentId,
+                document.FileType,
+                document.Name,
+                "System",
                 LastModifiedAt.Value));
         }
 
@@ -281,6 +303,8 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
                 customerNote.Id, 
                 note, 
                 createdBy, 
+                "System", 
+                "General", 
                 LastModifiedAt.Value));
         }
 
@@ -357,10 +381,10 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         }
 
         public string FullName => _name.FullName;
-        public bool HasCreditAvailable => Balance < CreditLimit;
-        public decimal AvailableCredit => CreditLimit - Balance;
-        public bool IsOverdue => Balance > 0 && LastPurchaseDate.HasValue && 
-            (DateTime.UtcNow - LastPurchaseDate.Value).TotalDays > PaymentTerms;
+        public bool HasCreditAvailable => _creditLimit.HasAvailableCredit(_balance.Amount);
+        public decimal AvailableCredit => _creditLimit.GetAvailableCredit(_balance.Amount);
+        public bool IsOverdue => _balance.IsPositive && LastPurchaseDate.HasValue && 
+            _paymentTerms.IsOverdue(LastPurchaseDate.Value);
 
         private static bool IsValidEmail(string email)
         {

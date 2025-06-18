@@ -291,4 +291,263 @@ public class CustomerLoyaltyProgramTests
         // Act & Assert
         program.IsExpired.Should().BeFalse();
     }
+
+    [Fact]
+    public void Create_WithValidParameters_CreatesLoyaltyProgram()
+    {
+        // Arrange
+        var programName = "Test Program";
+        var membershipNumber = "TEST123";
+        var membershipTier = "Bronze";
+        var referralCode = "REF123";
+
+        // Act
+        var loyaltyProgram = new CustomerLoyaltyProgram(
+            programName,
+            membershipNumber,
+            membershipTier,
+            referralCode: referralCode);
+
+        // Assert
+        Assert.NotEqual(Guid.Empty, loyaltyProgram.Id);
+        Assert.Equal(programName, loyaltyProgram.ProgramName);
+        Assert.Equal(membershipNumber, loyaltyProgram.MembershipNumber);
+        Assert.Equal(membershipTier, loyaltyProgram.MembershipTier);
+        Assert.Equal(0, loyaltyProgram.PointsBalance);
+        Assert.Equal(0, loyaltyProgram.LifetimePoints);
+        Assert.True(loyaltyProgram.IsActive);
+        Assert.Equal(referralCode, loyaltyProgram.ReferralCode);
+        Assert.Equal(0, loyaltyProgram.ReferralCount);
+        Assert.NotEqual(default, loyaltyProgram.CreatedAt);
+        Assert.Null(loyaltyProgram.LastModifiedAt);
+    }
+
+    [Theory]
+    [InlineData("", "TEST123", "Bronze", "Program name cannot be empty")]
+    [InlineData("Test Program", "", "Bronze", "Membership number cannot be empty")]
+    [InlineData("Test Program", "TEST123", "", "Membership tier cannot be empty")]
+    public void Create_WithInvalidParameters_ThrowsDomainException(
+        string programName, string membershipNumber, string membershipTier, string expectedMessage)
+    {
+        // Act & Assert
+        var exception = Assert.Throws<DomainException>(() => 
+            new CustomerLoyaltyProgram(programName, membershipNumber, membershipTier));
+        Assert.Equal(expectedMessage, exception.Message);
+    }
+
+    [Fact]
+    public void AddPoints_WithValidAmount_AddsPoints()
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+        var points = 100m;
+        var reason = "Test points";
+
+        // Act
+        loyaltyProgram.AddPoints(points, reason);
+
+        // Assert
+        Assert.Equal(points, loyaltyProgram.PointsBalance);
+        Assert.Equal(points, loyaltyProgram.LifetimePoints);
+        Assert.NotEqual(default, loyaltyProgram.LastPointsEarned);
+        Assert.NotEqual(default, loyaltyProgram.LastModifiedAt);
+    }
+
+    [Theory]
+    [InlineData(0, "Test reason", "Points must be greater than zero")]
+    [InlineData(-100, "Test reason", "Points must be greater than zero")]
+    [InlineData(100, "", "Reason for points cannot be empty")]
+    public void AddPoints_WithInvalidParameters_ThrowsDomainException(
+        decimal points, string reason, string expectedMessage)
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+
+        // Act & Assert
+        var exception = Assert.Throws<DomainException>(() => loyaltyProgram.AddPoints(points, reason));
+        Assert.Equal(expectedMessage, exception.Message);
+    }
+
+    [Fact]
+    public void RedeemPoints_WithValidAmount_RedeemsPoints()
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+        loyaltyProgram.AddPoints(100, "Initial points");
+        var points = 50m;
+        var reason = "Test redemption";
+
+        // Act
+        loyaltyProgram.RedeemPoints(points, reason);
+
+        // Assert
+        Assert.Equal(50m, loyaltyProgram.PointsBalance);
+        Assert.Equal(100m, loyaltyProgram.LifetimePoints);
+        Assert.NotEqual(default, loyaltyProgram.LastPointsRedeemed);
+        Assert.NotEqual(default, loyaltyProgram.LastModifiedAt);
+    }
+
+    [Theory]
+    [InlineData(0, "Test reason", "Points must be greater than zero")]
+    [InlineData(-100, "Test reason", "Points must be greater than zero")]
+    [InlineData(100, "", "Reason for redemption cannot be empty")]
+    public void RedeemPoints_WithInvalidParameters_ThrowsDomainException(
+        decimal points, string reason, string expectedMessage)
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+        loyaltyProgram.AddPoints(50, "Initial points");
+
+        // Act & Assert
+        var exception = Assert.Throws<DomainException>(() => loyaltyProgram.RedeemPoints(points, reason));
+        Assert.Equal(expectedMessage, exception.Message);
+    }
+
+    [Fact]
+    public void RedeemPoints_WithInsufficientBalance_ThrowsDomainException()
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+        loyaltyProgram.AddPoints(50, "Initial points");
+
+        // Act & Assert
+        var exception = Assert.Throws<DomainException>(() => 
+            loyaltyProgram.RedeemPoints(100, "Test reason"));
+        Assert.Equal("Insufficient points balance", exception.Message);
+    }
+
+    [Fact]
+    public void UpdateMembershipTier_WithValidTier_UpdatesTier()
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+        var newTier = "Silver";
+
+        // Act
+        loyaltyProgram.UpdateMembershipTier(newTier);
+
+        // Assert
+        Assert.Equal(newTier, loyaltyProgram.MembershipTier);
+        Assert.NotEqual(default, loyaltyProgram.LastModifiedAt);
+    }
+
+    [Theory]
+    [InlineData("")]
+    public void UpdateMembershipTier_WithInvalidTier_ThrowsDomainException(string newTier)
+    {
+        // Arrange
+        var program = new CustomerLoyaltyProgram(_programName, _membershipNumber, _membershipTier);
+
+        // Act
+        var action = () => program.UpdateMembershipTier(newTier);
+
+        // Assert
+        action.Should().Throw<DomainException>()
+            .WithMessage("Membership tier cannot be empty");
+    }
+
+    [Fact]
+    public void UpdateExpiryDate_WithValidDate_UpdatesExpiryDate()
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+        var expiryDate = DateTime.UtcNow.AddDays(30);
+
+        // Act
+        loyaltyProgram.UpdateExpiryDate(expiryDate);
+
+        // Assert
+        Assert.Equal(expiryDate, loyaltyProgram.ExpiryDate);
+        Assert.NotEqual(default, loyaltyProgram.LastModifiedAt);
+    }
+
+    [Fact]
+    public void UpdateExpiryDate_WithNull_ClearsExpiryDate()
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+        loyaltyProgram.UpdateExpiryDate(DateTime.UtcNow.AddDays(30));
+
+        // Act
+        loyaltyProgram.UpdateExpiryDate(null);
+
+        // Assert
+        Assert.Null(loyaltyProgram.ExpiryDate);
+        Assert.NotEqual(default, loyaltyProgram.LastModifiedAt);
+    }
+
+    [Fact]
+    public void Deactivate_SetsIsActiveToFalse()
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+
+        // Act
+        loyaltyProgram.Deactivate();
+
+        // Assert
+        Assert.False(loyaltyProgram.IsActive);
+        Assert.NotEqual(default, loyaltyProgram.LastModifiedAt);
+    }
+
+    [Fact]
+    public void Reactivate_SetsIsActiveToTrue()
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+        loyaltyProgram.Deactivate();
+
+        // Act
+        loyaltyProgram.Reactivate();
+
+        // Assert
+        Assert.True(loyaltyProgram.IsActive);
+        Assert.NotEqual(default, loyaltyProgram.LastModifiedAt);
+    }
+
+    [Fact]
+    public void IncrementReferralCount_IncrementsCount()
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+
+        // Act
+        loyaltyProgram.IncrementReferralCount();
+
+        // Assert
+        Assert.Equal(1, loyaltyProgram.ReferralCount);
+        Assert.NotEqual(default, loyaltyProgram.LastModifiedAt);
+    }
+
+    [Fact]
+    public void IsExpired_WithFutureExpiryDate_ReturnsFalse()
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+        loyaltyProgram.UpdateExpiryDate(DateTime.UtcNow.AddDays(30));
+
+        // Act & Assert
+        Assert.False(loyaltyProgram.IsExpired);
+    }
+
+    [Fact]
+    public void IsExpired_WithPastExpiryDate_ReturnsTrue()
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+        loyaltyProgram.UpdateExpiryDate(DateTime.UtcNow.AddDays(-1));
+
+        // Act & Assert
+        Assert.True(loyaltyProgram.IsExpired);
+    }
+
+    [Fact]
+    public void IsExpired_WithNoExpiryDate_ReturnsFalse()
+    {
+        // Arrange
+        var loyaltyProgram = new CustomerLoyaltyProgram("Test", "TEST123", "Bronze");
+
+        // Act & Assert
+        Assert.False(loyaltyProgram.IsExpired);
+    }
 } 

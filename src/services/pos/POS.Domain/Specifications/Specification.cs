@@ -1,20 +1,25 @@
 namespace POS.Domain.Specifications
 {
-    public abstract class Specification<T>
+    public interface ISpecification<T>
+    {
+        bool IsSatisfiedBy(T entity);
+    }
+
+    public abstract class Specification<T> : ISpecification<T>
     {
         public abstract bool IsSatisfiedBy(T entity);
 
-        public Specification<T> And(Specification<T> other)
+        public ISpecification<T> And(ISpecification<T> other)
         {
             return new AndSpecification<T>(this, other);
         }
 
-        public Specification<T> Or(Specification<T> other)
+        public ISpecification<T> Or(ISpecification<T> other)
         {
             return new OrSpecification<T>(this, other);
         }
 
-        public Specification<T> Not()
+        public ISpecification<T> Not()
         {
             return new NotSpecification<T>(this);
         }
@@ -22,10 +27,10 @@ namespace POS.Domain.Specifications
 
     public class AndSpecification<T> : Specification<T>
     {
-        private readonly Specification<T> _left;
-        private readonly Specification<T> _right;
+        private readonly ISpecification<T> _left;
+        private readonly ISpecification<T> _right;
 
-        public AndSpecification(Specification<T> left, Specification<T> right)
+        public AndSpecification(ISpecification<T> left, ISpecification<T> right)
         {
             _left = left ?? throw new ArgumentNullException(nameof(left));
             _right = right ?? throw new ArgumentNullException(nameof(right));
@@ -39,10 +44,10 @@ namespace POS.Domain.Specifications
 
     public class OrSpecification<T> : Specification<T>
     {
-        private readonly Specification<T> _left;
-        private readonly Specification<T> _right;
+        private readonly ISpecification<T> _left;
+        private readonly ISpecification<T> _right;
 
-        public OrSpecification(Specification<T> left, Specification<T> right)
+        public OrSpecification(ISpecification<T> left, ISpecification<T> right)
         {
             _left = left ?? throw new ArgumentNullException(nameof(left));
             _right = right ?? throw new ArgumentNullException(nameof(right));
@@ -56,9 +61,9 @@ namespace POS.Domain.Specifications
 
     public class NotSpecification<T> : Specification<T>
     {
-        private readonly Specification<T> _specification;
+        private readonly ISpecification<T> _specification;
 
-        public NotSpecification(Specification<T> specification)
+        public NotSpecification(ISpecification<T> specification)
         {
             _specification = specification ?? throw new ArgumentNullException(nameof(specification));
         }
