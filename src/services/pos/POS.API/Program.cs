@@ -19,6 +19,7 @@ using POS.API.Application.Queries;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using POS.Domain.SeedWork;
+using POS.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,11 +79,7 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(POS.API.Appli
 builder.Services.AddScoped<POS.API.Application.IntegrationEvents.IPOSIntegrationEventService, POS.API.Application.IntegrationEvents.POSIntegrationEventService>();
 
 // Register EventBus and IntegrationEventLogService
-builder.Services.AddSingleton<eShop.EventBus.Abstractions.IEventBus, eShop.EventBusRabbitMQ.EventBusRabbitMQ>();
-builder.Services.AddScoped<Func<System.Data.Common.DbConnection, eShop.IntegrationEventLogEF.Services.IIntegrationEventLogService>>(sp =>
-{
-    return (dbConnection) => new eShop.IntegrationEventLogEF.Services.IntegrationEventLogService<POSContext>(dbConnection);
-});
+builder.AddApplicationServices();
 
 // Register Event Handlers
 builder.Services.AddTransient<eShop.EventBus.Abstractions.IIntegrationEventHandler<POS.API.Application.IntegrationEvents.Events.ProductCreatedIntegrationEvent>, POS.API.EventHandlers.ProductCreatedIntegrationEventHandler>();

@@ -78,8 +78,17 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Guid>
         // Publish integration event
         var integrationEvent = new SaleCompletedIntegrationEvent(
             sale.Id,
+            Guid.Empty, // OrderId not available in Sale
+            sale.CustomerId ?? Guid.Empty,
+            sale.StoreId,
             sale.Total,
-            sale.CreatedAt);
+            sale.Tax,
+            sale.Discount,
+            string.Empty, // PaymentMethod not available
+            sale.Status.ToString(),
+            sale.CompletedAt ?? DateTime.UtcNow,
+            new List<SaleItemDto>() // Sale items not available in this context
+        );
 
         await _integrationEventService.AddAndSaveEventAsync(integrationEvent);
         await _integrationEventService.PublishEventsThroughEventBusAsync(sale.Id);

@@ -98,9 +98,13 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
         // Publish integration event
         var integrationEvent = new OrderCreatedIntegrationEvent(
             order.Id,
-            order.OrderNumber,
             order.CustomerId,
-            order.CreatedAt);
+            Guid.Empty, // StoreId not available in Order
+            order.TotalAmount.Amount,
+            order.Status.ToString(),
+            order.CreatedAt,
+            new List<OrderItemDto>() // Order items not available in this context
+        );
 
         await _integrationEventService.AddAndSaveEventAsync(integrationEvent);
         await _integrationEventService.PublishEventsThroughEventBusAsync(order.Id);
