@@ -69,6 +69,26 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Register MediatR pipeline behaviors
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(POS.API.Application.Behaviors.LoggingBehavior<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(POS.API.Application.Behaviors.ValidatorBehavior<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(POS.API.Application.Behaviors.TransactionBehavior<,>));
+
+// Register Integration Event Service
+builder.Services.AddScoped<POS.API.Application.IntegrationEvents.IPOSIntegrationEventService, POS.API.Application.IntegrationEvents.POSIntegrationEventService>();
+
+// Register EventBus and IntegrationEventLogService
+builder.Services.AddSingleton<eShop.EventBus.Abstractions.IEventBus, eShop.EventBusRabbitMQ.EventBusRabbitMQ>();
+builder.Services.AddScoped<Func<System.Data.Common.DbConnection, eShop.IntegrationEventLogEF.Services.IIntegrationEventLogService>>(sp =>
+{
+    return (dbConnection) => new eShop.IntegrationEventLogEF.Services.IntegrationEventLogService<POSContext>(dbConnection);
+});
+
+// Register Event Handlers
+builder.Services.AddTransient<eShop.EventBus.Abstractions.IIntegrationEventHandler<POS.API.Application.IntegrationEvents.Events.ProductCreatedIntegrationEvent>, POS.API.EventHandlers.ProductCreatedIntegrationEventHandler>();
+builder.Services.AddTransient<eShop.EventBus.Abstractions.IIntegrationEventHandler<POS.API.Application.IntegrationEvents.Events.OrderCreatedIntegrationEvent>, POS.API.EventHandlers.OrderCreatedIntegrationEventHandler>();
+builder.Services.AddTransient<eShop.EventBus.Abstractions.IIntegrationEventHandler<POS.API.Application.IntegrationEvents.Events.SaleCompletedIntegrationEvent>, POS.API.EventHandlers.SaleCompletedIntegrationEventHandler>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

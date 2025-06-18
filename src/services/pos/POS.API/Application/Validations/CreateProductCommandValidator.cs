@@ -7,30 +7,31 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
 {
     public CreateProductCommandValidator()
     {
-        RuleFor(x => x.Name)
+        RuleFor(command => command.Name)
             .NotEmpty()
-            .MaximumLength(100)
-            .WithMessage("Product name is required and must not exceed 100 characters");
+            .MaximumLength(200)
+            .WithMessage("Product name is required and cannot exceed 200 characters.");
 
-        RuleFor(x => x.Description)
-            .MaximumLength(500)
-            .WithMessage("Product description must not exceed 500 characters");
+        RuleFor(command => command.SKU)
+            .NotEmpty()
+            .MaximumLength(50)
+            .WithMessage("SKU is required and cannot exceed 50 characters.");
 
-        RuleFor(x => x.Price)
+        RuleFor(command => command.Price)
             .GreaterThan(0)
-            .WithMessage("Product price must be greater than 0");
+            .WithMessage("Price must be greater than zero.");
 
-        RuleFor(x => x.SKU)
+        RuleFor(command => command.StoreId)
             .NotEmpty()
-            .MaximumLength(50)
-            .WithMessage("SKU is required and must not exceed 50 characters");
+            .WithMessage("Store ID is required.");
 
-        RuleFor(x => x.Barcode)
-            .MaximumLength(50)
-            .WithMessage("Barcode must not exceed 50 characters");
-
-        RuleFor(x => x.CategoryId)
+        RuleFor(command => command.CategoryId)
             .NotEmpty()
-            .WithMessage("Category ID is required");
+            .WithMessage("Category ID is required.");
+
+        RuleFor(command => command.Description)
+            .MaximumLength(1000)
+            .When(command => !string.IsNullOrEmpty(command.Description))
+            .WithMessage("Description cannot exceed 1000 characters.");
     }
 } 
