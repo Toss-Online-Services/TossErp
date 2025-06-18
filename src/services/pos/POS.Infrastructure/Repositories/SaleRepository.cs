@@ -28,14 +28,14 @@ public class SaleRepository : IRepository<Sale>
     public async Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Sales
-            //.Include(s => s.SaleItems)
+            .Include(s => s.Items)
             .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<Sale>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Sales
-            //.Include(s => s.SaleItems)
+            .Include(s => s.Items)
             .OrderBy(s => s.CreatedAt)
             .ToListAsync(cancellationToken);
     }
@@ -43,7 +43,7 @@ public class SaleRepository : IRepository<Sale>
     public async Task<IEnumerable<Sale>> GetAsync(Expression<Func<Sale, bool>> predicate, CancellationToken cancellationToken = default)
     {
         return await _context.Sales
-            //.Include(s => s.SaleItems)
+            .Include(s => s.Items)
             .Where(predicate)
             .OrderBy(s => s.CreatedAt)
             .ToListAsync(cancellationToken);
@@ -89,7 +89,7 @@ public class SaleRepository : IRepository<Sale>
     public async Task<Sale?> GetBySaleNumberAsync(string saleNumber)
     {
         var sale = await _context.Sales
-            //.Include(s => s.SaleItems)
+            .Include(s => s.Items)
             .FirstOrDefaultAsync(s => s.SaleNumber == saleNumber);
 
         return sale;
@@ -98,7 +98,7 @@ public class SaleRepository : IRepository<Sale>
     public async Task<IEnumerable<Sale>> GetByCustomerAsync(Guid customerId)
     {
         return await _context.Sales
-            //.Include(s => s.SaleItems)
+            .Include(s => s.Items)
             .Where(s => s.CustomerId == customerId)
             .OrderByDescending(s => s.CreatedAt)
             .ToListAsync();
@@ -107,7 +107,7 @@ public class SaleRepository : IRepository<Sale>
     public async Task<IEnumerable<Sale>> GetByStoreAsync(Guid storeId)
     {
         return await _context.Sales
-            //.Include(s => s.SaleItems)
+            .Include(s => s.Items)
             .Where(s => s.StoreId == storeId)
             .OrderByDescending(s => s.CreatedAt)
             .ToListAsync();
@@ -116,7 +116,7 @@ public class SaleRepository : IRepository<Sale>
     public async Task<IEnumerable<Sale>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         return await _context.Sales
-            //.Include(s => s.SaleItems)
+            .Include(s => s.Items)
             .Where(s => s.CreatedAt >= startDate && s.CreatedAt <= endDate)
             .OrderByDescending(s => s.CreatedAt)
             .ToListAsync();
@@ -125,7 +125,7 @@ public class SaleRepository : IRepository<Sale>
     public async Task<IEnumerable<Sale>> GetByStatusAsync(SaleStatus status)
     {
         return await _context.Sales
-            //.Include(s => s.SaleItems)
+            .Include(s => s.Items)
             .Where(s => s.Status == status)
             .OrderByDescending(s => s.CreatedAt)
             .ToListAsync();
