@@ -11,6 +11,7 @@ namespace POS.Domain.SeedWork;
 /// </summary>
 public interface IRepository<T> where T : class
 {
+    IUnitOfWork UnitOfWork { get; }
     Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);

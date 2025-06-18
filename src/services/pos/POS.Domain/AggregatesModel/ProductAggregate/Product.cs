@@ -23,7 +23,7 @@ public class Product : Entity, IAggregateRoot
     public string Barcode { get; private set; }
     public Money Price { get; private set; }
     public decimal CostPrice { get; private set; }
-    public int CategoryId { get; private set; }
+    public Guid CategoryId { get; private set; }
     public bool IsActive { get; private set; }
     public int StockQuantity { get; private set; }
     public int LowStockThreshold { get; private set; }
@@ -49,7 +49,7 @@ public class Product : Entity, IAggregateRoot
         string barcode,
         Money price,
         decimal costPrice,
-        int categoryId,
+        Guid categoryId,
         Guid storeId,
         int stockQuantity,
         int lowStockThreshold)
@@ -81,7 +81,7 @@ public class Product : Entity, IAggregateRoot
         string description,
         Money price,
         decimal costPrice,
-        int categoryId)
+        Guid categoryId)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Product name cannot be empty");
