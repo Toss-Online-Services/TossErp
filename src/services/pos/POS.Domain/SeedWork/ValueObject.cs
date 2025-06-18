@@ -1,46 +1,51 @@
-﻿namespace POS.Domain.SeedWork
+﻿namespace POS.Domain.SeedWork;
+
+/// <summary>
+/// Base class for value objects
+/// </summary>
+public abstract class ValueObject
 {
-    public abstract class ValueObject
+    protected static bool EqualOperator(ValueObject left, ValueObject right)
     {
-        protected static bool EqualOperator(ValueObject? left, ValueObject? right)
+        if (left is null ^ right is null)
         {
-            if (left is null ^ right is null)
-                return false;
+            return false;
+        }
+        return left?.Equals(right!) != false;
+    }
 
-            return left?.Equals(right) != false;
+    protected static bool NotEqualOperator(ValueObject left, ValueObject right)
+    {
+        return !EqualOperator(left, right);
+    }
+
+    protected abstract IEnumerable<object> GetEqualityComponents();
+
+    public override bool Equals(object? obj)
+    {
+        if (obj == null || obj.GetType() != GetType())
+        {
+            return false;
         }
 
-        protected static bool NotEqualOperator(ValueObject? left, ValueObject? right)
-        {
-            return !EqualOperator(left, right);
-        }
+        var other = (ValueObject)obj;
+        return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
+    }
 
-        protected abstract IEnumerable<object> GetEqualityComponents();
+    public override int GetHashCode()
+    {
+        return GetEqualityComponents()
+            .Select(x => x != null ? x.GetHashCode() : 0)
+            .Aggregate((x, y) => x ^ y);
+    }
 
-        public override bool Equals(object? obj)
-        {
-            if (obj == null || obj.GetType() != GetType())
-                return false;
+    public static bool operator ==(ValueObject left, ValueObject right)
+    {
+        return EqualOperator(left, right);
+    }
 
-            var other = (ValueObject)obj;
-            return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
-        }
-
-        public override int GetHashCode()
-        {
-            return GetEqualityComponents()
-                .Select(x => x != null ? x.GetHashCode() : 0)
-                .Aggregate((x, y) => x ^ y);
-        }
-
-        public static bool operator ==(ValueObject? left, ValueObject? right)
-        {
-            return EqualOperator(left, right);
-        }
-
-        public static bool operator !=(ValueObject? left, ValueObject? right)
-        {
-            return NotEqualOperator(left, right);
-        }
+    public static bool operator !=(ValueObject left, ValueObject right)
+    {
+        return NotEqualOperator(left, right);
     }
 } 

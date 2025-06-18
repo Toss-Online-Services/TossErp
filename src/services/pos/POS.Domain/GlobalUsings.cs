@@ -1,3 +1,11 @@
-﻿global using POS.Domain.Exceptions;
+﻿global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Linq.Expressions;
+global using System.Threading;
+global using System.Threading.Tasks;
+global using MediatR;
+global using POS.Domain.Events;
+global using POS.Domain.Exceptions;
 global using POS.Domain.SeedWork;
-global using POS.Domain.Repositories;
+global using POS.Domain.ValueObjects;

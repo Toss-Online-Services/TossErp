@@ -1,17 +1,19 @@
-using POS.Domain.Common.Events;
+using POS.Domain.SeedWork;
+using POS.Domain.AggregatesModel.ProductAggregate;
 
 namespace POS.Domain.AggregatesModel.ProductAggregate.Events;
 
-public class ProductStockUpdatedDomainEvent : IDomainEvent
+/// <summary>
+/// Event raised when a product's stock is updated
+/// </summary>
+public class ProductStockUpdatedDomainEvent : DomainEvent
 {
     public Guid ProductId { get; }
-    public int Quantity { get; }
-    public DateTime UpdatedAt { get; }
+    public int NewStockQuantity { get; }
 
-    public ProductStockUpdatedDomainEvent(Guid productId, int quantity, DateTime updatedAt)
+    public ProductStockUpdatedDomainEvent(Product product)
     {
-        ProductId = productId;
-        Quantity = quantity;
-        UpdatedAt = updatedAt;
+        ProductId = product.Id;
+        NewStockQuantity = product.StockQuantity;
     }
 } 

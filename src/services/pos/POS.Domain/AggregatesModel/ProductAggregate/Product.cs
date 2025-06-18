@@ -7,10 +7,14 @@ using POS.Domain.Common;
 using POS.Domain.Models;
 using POS.Domain.AggregatesModel.ProductAggregate.Events;
 using POS.Domain.Common.Events;
+using POS.Domain.ValueObjects;
 
 namespace POS.Domain.AggregatesModel.ProductAggregate;
 
-public class Product : AggregateRoot
+/// <summary>
+/// Represents a product in the POS system
+/// </summary>
+public class Product : Entity
 {
     public Guid StoreId { get; private set; }
     public Store Store { get; private set; } = null!;
@@ -18,7 +22,7 @@ public class Product : AggregateRoot
     public string Description { get; private set; }
     public string SKU { get; private set; }
     public string Barcode { get; private set; }
-    public decimal Price { get; private set; }
+    public Money Price { get; private set; }
     public decimal CostPrice { get; private set; }
     public int CategoryId { get; private set; }
     public bool IsActive { get; private set; }
@@ -26,6 +30,7 @@ public class Product : AggregateRoot
     public int LowStockThreshold { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? LastModifiedAt { get; private set; }
+    public ProductCategory Category { get; private set; }
 
     private Product()
     {
@@ -40,7 +45,7 @@ public class Product : AggregateRoot
         string description,
         string sku,
         string barcode,
-        decimal price,
+        Money price,
         decimal costPrice,
         int categoryId,
         Guid storeId,
@@ -65,13 +70,13 @@ public class Product : AggregateRoot
         LowStockThreshold = lowStockThreshold;
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
-        AddDomainEvent(new ProductCreatedDomainEvent(Id, name, sku));
+        AddDomainEvent(new ProductCreatedDomainEvent(this));
     }
 
     public void UpdateDetails(
         string name,
         string description,
-        decimal price,
+        Money price,
         decimal costPrice,
         int categoryId)
     {
@@ -83,14 +88,14 @@ public class Product : AggregateRoot
         CostPrice = costPrice;
         CategoryId = categoryId;
         LastModifiedAt = DateTime.UtcNow;
-        AddDomainEvent(new ProductUpdatedDomainEvent(Id, name, description, SKU, Barcode));
+        AddDomainEvent(new ProductUpdatedDomainEvent(this));
     }
 
     public void UpdateStock(int quantity)
     {
-        StockQuantity = quantity;
+        StockQuantity = Guard.Against.Negative(quantity, nameof(quantity));
         LastModifiedAt = DateTime.UtcNow;
-        AddDomainEvent(new ProductStockUpdatedDomainEvent(Id, quantity, DateTime.UtcNow));
+        AddDomainEvent(new ProductStockUpdatedDomainEvent(this));
     }
 
     public void AdjustStock(int adjustment)
@@ -113,15 +118,15 @@ public class Product : AggregateRoot
             throw new DomainException("Product is already inactive");
         IsActive = false;
         LastModifiedAt = DateTime.UtcNow;
-        AddDomainEvent(new ProductDeactivatedDomainEvent(Id, DateTime.UtcNow));
+        AddDomainEvent(new ProductDeactivatedDomainEvent(this));
     }
 
-    public void Reactivate()
+    public void Activate()
     {
         if (IsActive)
             throw new DomainException("Product is already active");
         IsActive = true;
         LastModifiedAt = DateTime.UtcNow;
-        AddDomainEvent(new ProductReactivatedDomainEvent(Id, DateTime.UtcNow));
+        AddDomainEvent(new ProductActivatedDomainEvent(this));
     }
 } 

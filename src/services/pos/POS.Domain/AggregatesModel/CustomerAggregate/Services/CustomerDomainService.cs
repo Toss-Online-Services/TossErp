@@ -1,5 +1,4 @@
-﻿using POS.Domain.Repositories;
-using POS.Domain.Common;
+﻿using POS.Domain.Common;
 using POS.Domain.Exceptions;
 using POS.Domain.Specifications;
 

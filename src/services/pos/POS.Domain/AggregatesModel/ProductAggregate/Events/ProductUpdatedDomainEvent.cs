@@ -1,23 +1,23 @@
-using POS.Domain.Common.Events;
+using POS.Domain.SeedWork;
+using POS.Domain.AggregatesModel.ProductAggregate;
 
 namespace POS.Domain.AggregatesModel.ProductAggregate.Events;
 
-public class ProductUpdatedDomainEvent : IDomainEvent
+/// <summary>
+/// Event raised when a product is updated
+/// </summary>
+public class ProductUpdatedDomainEvent : DomainEvent
 {
     public Guid ProductId { get; }
     public string Name { get; }
     public string Description { get; }
-    public string SKU { get; }
-    public string Barcode { get; }
-    public DateTime UpdatedAt { get; }
+    public Money Price { get; }
 
-    public ProductUpdatedDomainEvent(Guid productId, string name, string description, string sku, string barcode)
+    public ProductUpdatedDomainEvent(Product product)
     {
-        ProductId = productId;
-        Name = name;
-        Description = description;
-        SKU = sku;
-        Barcode = barcode;
-        UpdatedAt = DateTime.UtcNow;
+        ProductId = product.Id;
+        Name = product.Name;
+        Description = product.Description;
+        Price = product.Price;
     }
 } 

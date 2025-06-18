@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using POS.Domain.AggregatesModel.SaleAggregate;
-using POS.Domain.Repositories;
 using POS.Domain.AggregatesModel.PaymentAggregate;
 using POS.Domain.Enums;
 

@@ -1,51 +1,66 @@
-﻿namespace POS.Domain.SeedWork
+﻿namespace POS.Domain.SeedWork;
+
+/// <summary>
+/// Base class for domain entities
+/// </summary>
+public abstract class Entity
 {
-    public abstract class Entity
+    private readonly List<DomainEvent> _domainEvents = new();
+    
+    public Guid Id { get; protected set; }
+
+    protected Entity()
     {
-        protected Entity() { }
-        protected Entity(Guid id)
-        {
-            Id = id;
-        }
-        public Guid Id { get; protected set; }      
+        Id = Guid.NewGuid();
+    }
 
-        
-        public override bool Equals(object? obj)
-        {
-            if (obj is not Entity other)
-                return false;
+    public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
-            if (ReferenceEquals(this, other))
-                return true;
+    protected void AddDomainEvent(DomainEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
 
-            if (GetType() != other.GetType())
-                return false;
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
 
-            if (Id == Guid.Empty || other.Id == Guid.Empty)
-                return false;
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Entity other)
+            return false;
 
-            return Id == other.Id;
-        }
+        if (ReferenceEquals(this, other))
+            return true;
 
-        public static bool operator ==(Entity? left, Entity? right)
-        {
-            if (left is null && right is null)
-                return true;
+        if (GetType() != other.GetType())
+            return false;
 
-            if (left is null || right is null)
-                return false;
+        if (Id == Guid.Empty || other.Id == Guid.Empty)
+            return false;
 
-            return left.Equals(right);
-        }
+        return Id == other.Id;
+    }
 
-        public static bool operator !=(Entity? left, Entity? right)
-        {
-            return !(left == right);
-        }
+    public static bool operator ==(Entity? left, Entity? right)
+    {
+        if (left is null && right is null)
+            return true;
 
-        public override int GetHashCode()
-        {
-            return (GetType().ToString() + Id).GetHashCode();
-        }
+        if (left is null || right is null)
+            return false;
+
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Entity? left, Entity? right)
+    {
+        return !(left == right);
+    }
+
+    public override int GetHashCode()
+    {
+        return (GetType().ToString() + Id).GetHashCode();
     }
 } 

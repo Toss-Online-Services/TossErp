@@ -1,9 +1,8 @@
 using POS.Domain.AggregatesModel.CustomerAggregate;
-using POS.Domain.Repositories;
 
 namespace POS.Domain.Repositories
 {
-    public interface ICustomerLoyaltyProgramRepository : IRepository<CustomerLoyaltyProgram>
+    public interface ICustomerLoyaltyProgramRepository
     {
         Task<CustomerLoyaltyProgram?> GetByIdAsync(Guid id);
         Task<CustomerLoyaltyProgram?> GetByMembershipNumberAsync(string membershipNumber, CancellationToken cancellationToken = default);

@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using POS.Domain.AggregatesModel.StaffAggregate;
-using POS.Domain.Repositories;
 namespace POS.Domain.Repositories;
 
 public interface IStaffRepository : IRepository<Staff>

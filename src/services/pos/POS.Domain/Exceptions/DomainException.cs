@@ -1,5 +1,8 @@
 ﻿namespace POS.Domain.Exceptions;
 
+/// <summary>
+/// Base class for domain exceptions
+/// </summary>
 public class DomainException : Exception
 {
     public DomainException()

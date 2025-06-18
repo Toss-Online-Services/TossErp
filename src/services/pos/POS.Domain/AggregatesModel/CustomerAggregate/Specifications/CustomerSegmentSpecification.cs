@@ -1,5 +1,4 @@
-using POS.Domain.Common;
-using POS.Domain.Specifications;
+﻿using POS.Domain.Common;
 
 namespace POS.Domain.AggregatesModel.CustomerAggregate.Specifications
 {

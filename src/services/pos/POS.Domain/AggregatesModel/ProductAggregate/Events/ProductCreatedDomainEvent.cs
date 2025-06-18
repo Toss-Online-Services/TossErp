@@ -1,19 +1,23 @@
-using POS.Domain.Common.Events;
+using POS.Domain.SeedWork;
+using POS.Domain.AggregatesModel.ProductAggregate;
 
 namespace POS.Domain.AggregatesModel.ProductAggregate.Events;
 
-public class ProductCreatedDomainEvent : IDomainEvent
+/// <summary>
+/// Event raised when a new product is created
+/// </summary>
+public class ProductCreatedDomainEvent : DomainEvent
 {
     public Guid ProductId { get; }
     public string Name { get; }
-    public string SKU { get; }
-    public DateTime CreatedAt { get; }
+    public string Sku { get; }
+    public decimal Price { get; }
 
-    public ProductCreatedDomainEvent(Guid productId, string name, string sku)
+    public ProductCreatedDomainEvent(Product product)
     {
-        ProductId = productId;
-        Name = name;
-        SKU = sku;
-        CreatedAt = DateTime.UtcNow;
+        ProductId = product.Id;
+        Name = product.Name;
+        Sku = product.Sku;
+        Price = product.Price;
     }
 } 

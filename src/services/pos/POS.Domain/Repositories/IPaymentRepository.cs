@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using POS.Domain.AggregatesModel.PaymentAggregate;
-using POS.Domain.Repositories;
 using POS.Domain.Enums;
 
 namespace POS.Domain.Repositories;
 
-public interface IPaymentRepository : IRepository<Payment>
+public interface IPaymentRepository
 {
     Task<Payment?> GetByTransactionIdAsync(string transactionId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Payment>> GetByOrderIdAsync(Guid orderId, CancellationToken cancellationToken = default);

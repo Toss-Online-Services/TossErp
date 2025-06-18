@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using POS.Domain.AggregatesModel.ProductAggregate;
-using POS.Domain.Repositories;
 using POS.Domain.Enums;
 
 namespace POS.Domain.Repositories
 {
-    public interface IProductRepository : IRepository<Product>
+    public interface IProductRepository
     {
         Task<Product?> GetBySkuAsync(string sku, CancellationToken cancellationToken = default);
         Task<IEnumerable<Product>> GetByCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default);

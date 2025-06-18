@@ -1,5 +1,4 @@
 using POS.Domain.AggregatesModel.SaleAggregate;
-using POS.Domain.Repositories;
 
 namespace POS.Domain.Repositories;
 
