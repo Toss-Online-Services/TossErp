@@ -102,15 +102,12 @@ namespace POS.Domain.AggregatesModel.PaymentAggregate
         {
             if (Status != PaymentStatus.Failed)
                 throw new DomainException("Can only retry failed payments");
-
             if (RetryCount >= 3)
                 throw new DomainException("Maximum retry attempts reached");
-
             Status = PaymentStatus.Pending;
             RetryCount++;
             LastRetryAt = DateTime.UtcNow;
             UpdatedAt = DateTime.UtcNow;
-
             AddDomainEvent(new PaymentRetryDomainEvent(Id, RetryCount, "System", LastRetryAt.Value));
         }
 

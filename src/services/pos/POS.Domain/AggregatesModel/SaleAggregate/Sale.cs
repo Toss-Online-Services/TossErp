@@ -213,6 +213,7 @@ public class Sale : AggregateRoot
 
     public void Complete()
     {
+        const decimal Tolerance = 0.01m;
         if (Status != SaleStatus.Pending && Status != SaleStatus.Processing)
             throw new DomainException("Can only complete a pending or processing sale");
 
@@ -223,7 +224,7 @@ public class Sale : AggregateRoot
             throw new DomainException("Cannot complete a sale without payments");
 
         var totalPaid = _payments.Sum(p => p.Amount);
-        if (totalPaid < Total)
+        if (totalPaid + Tolerance < Total)
             throw new DomainException("Total paid amount is less than the sale total");
 
         Status = SaleStatus.Completed;

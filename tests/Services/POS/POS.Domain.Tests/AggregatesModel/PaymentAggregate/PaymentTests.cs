@@ -185,16 +185,14 @@ public class PaymentTests
     {
         // Arrange
         var payment = new Payment(_saleId, _amount, _method);
+        for (int i = 0; i < 3; i++)
+        {
+            payment.Process();
+            payment.Fail("Payment failed");
+            payment.Retry();
+        }
         payment.Process();
-        payment.Fail("Payment failed");
-        payment.Retry();
-        payment.Process();
-        payment.Fail("Payment failed");
-        payment.Retry();
-        payment.Process();
-        payment.Fail("Payment failed");
-        payment.Retry();
-
+        payment.Fail("Payment failed"); // Ensure failed state before final retry
         // Act & Assert
         var action = () => payment.Retry();
         action.Should().Throw<DomainException>().WithMessage("Maximum retry attempts reached");

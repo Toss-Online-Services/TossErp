@@ -132,11 +132,31 @@ public class SaleTests
     {
         // Arrange
         var sale = new Sale(SaleNumber, _storeId, _customerId, _staffId);
-        var item = TestDataFactory.SaleFactory.CreateValidSaleItem(sale.Id);
+        var item = new SaleItem(
+            Guid.NewGuid(),
+            sale.Id,
+            Guid.NewGuid(),
+            "Test Product",
+            100.00m,  // Fixed price
+            2,        // Fixed quantity
+            0.10m     // Fixed tax rate
+        );
         sale.AddItem(item);
-        var totalAfterItems = sale.Total;
-        var payment = new Payment(Guid.NewGuid(), sale.Id, totalAfterItems, PaymentType.Cash);
+
+        // Debug output
+        Console.WriteLine($"Item Total: {item.Total}");
+        Console.WriteLine($"Sale Subtotal: {sale.Subtotal}");
+        Console.WriteLine($"Sale Tax: {sale.Tax}");
+        Console.WriteLine($"Sale Total: {sale.Total}");
+
+        var payment = new Payment(Guid.NewGuid(), sale.Id, sale.Total, PaymentType.Cash);
         sale.AddPayment(payment);
+
+        // Debug output for payment comparison
+        var totalPaid = sale.Payments.Sum(p => p.Amount);
+        Console.WriteLine($"Total Paid: {totalPaid}");
+        Console.WriteLine($"Sale Total: {sale.Total}");
+        Console.WriteLine($"Difference: {sale.Total - totalPaid}");
 
         // Act
         sale.Complete();
@@ -189,11 +209,32 @@ public class SaleTests
     {
         // Arrange
         var sale = new Sale(SaleNumber, _storeId, _customerId, _staffId);
-        var item = TestDataFactory.SaleFactory.CreateValidSaleItem(sale.Id);
+        var item = new SaleItem(
+            Guid.NewGuid(),
+            sale.Id,
+            Guid.NewGuid(),
+            "Test Product",
+            100.00m,  // Fixed price
+            2,        // Fixed quantity
+            0.10m     // Fixed tax rate
+        );
         sale.AddItem(item);
-        var totalAfterItems = sale.Total;
-        var payment = new Payment(Guid.NewGuid(), sale.Id, totalAfterItems, PaymentType.Cash);
+
+        // Debug output
+        Console.WriteLine($"Item Total: {item.Total}");
+        Console.WriteLine($"Sale Subtotal: {sale.Subtotal}");
+        Console.WriteLine($"Sale Tax: {sale.Tax}");
+        Console.WriteLine($"Sale Total: {sale.Total}");
+
+        var payment = new Payment(Guid.NewGuid(), sale.Id, sale.Total, PaymentType.Cash);
         sale.AddPayment(payment);
+
+        // Debug output for payment comparison
+        var totalPaid = sale.Payments.Sum(p => p.Amount);
+        Console.WriteLine($"Total Paid: {totalPaid}");
+        Console.WriteLine($"Sale Total: {sale.Total}");
+        Console.WriteLine($"Difference: {sale.Total - totalPaid}");
+
         sale.Complete();
 
         // Act & Assert

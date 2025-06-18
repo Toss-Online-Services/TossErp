@@ -75,6 +75,8 @@ public class Store : AggregateRoot
             throw new DomainException("Store email cannot be empty");
         if (string.IsNullOrWhiteSpace(timeZone))
             throw new DomainException("TimeZone cannot be empty");
+        if (address == null)
+            throw new DomainException("Store address cannot be null");
 
         Name = name;
         Code = code;
@@ -116,6 +118,8 @@ public class Store : AggregateRoot
             throw new DomainException("Store phone cannot be empty");
         if (string.IsNullOrWhiteSpace(email))
             throw new DomainException("Store email cannot be empty");
+        if (address == null)
+            throw new DomainException("Store address cannot be null");
 
         Name = name;
         Code = code;
@@ -136,6 +140,8 @@ public class Store : AggregateRoot
 
     public void UpdateSettings(StoreSettings settings)
     {
+        if (settings == null)
+            throw new DomainException("Store settings cannot be null");
         Settings = settings;
         UpdatedAt = DateTime.UtcNow;
     }

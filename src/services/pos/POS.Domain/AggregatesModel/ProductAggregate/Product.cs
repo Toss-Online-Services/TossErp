@@ -47,6 +47,12 @@ public class Product : AggregateRoot
         int stockQuantity,
         int lowStockThreshold)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Product name cannot be empty");
+        if (string.IsNullOrWhiteSpace(sku))
+            throw new DomainException("Product SKU cannot be empty");
+        if (string.IsNullOrWhiteSpace(barcode))
+            throw new DomainException("Product barcode cannot be empty");
         Name = name;
         Description = description;
         SKU = sku;
@@ -69,6 +75,8 @@ public class Product : AggregateRoot
         decimal costPrice,
         int categoryId)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Product name cannot be empty");
         Name = name;
         Description = description;
         Price = price;
@@ -101,6 +109,8 @@ public class Product : AggregateRoot
 
     public void Deactivate()
     {
+        if (!IsActive)
+            throw new DomainException("Product is already inactive");
         IsActive = false;
         LastModifiedAt = DateTime.UtcNow;
         AddDomainEvent(new ProductDeactivatedDomainEvent(Id, DateTime.UtcNow));
@@ -108,6 +118,8 @@ public class Product : AggregateRoot
 
     public void Reactivate()
     {
+        if (IsActive)
+            throw new DomainException("Product is already active");
         IsActive = true;
         LastModifiedAt = DateTime.UtcNow;
         AddDomainEvent(new ProductReactivatedDomainEvent(Id, DateTime.UtcNow));

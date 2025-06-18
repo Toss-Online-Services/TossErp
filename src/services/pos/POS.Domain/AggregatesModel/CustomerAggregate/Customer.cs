@@ -58,6 +58,8 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
                 throw new DomainException("Last name cannot be empty");
             if (string.IsNullOrWhiteSpace(email))
                 throw new DomainException("Email cannot be empty");
+            if (!IsValidEmail(email))
+                throw new DomainException("Invalid email format");
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 throw new DomainException("Phone number cannot be empty");
 
@@ -78,6 +80,8 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
                 throw new DomainException("Last name cannot be empty");
             if (string.IsNullOrWhiteSpace(email))
                 throw new DomainException("Email cannot be empty");
+            if (!IsValidEmail(email))
+                throw new DomainException("Invalid email format");
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 throw new DomainException("Phone number cannot be empty");
 
@@ -353,5 +357,18 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public decimal AvailableCredit => CreditLimit - Balance;
         public bool IsOverdue => Balance > 0 && LastPurchaseDate.HasValue && 
             (DateTime.UtcNow - LastPurchaseDate.Value).TotalDays > PaymentTerms;
+
+        private static bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 } 
