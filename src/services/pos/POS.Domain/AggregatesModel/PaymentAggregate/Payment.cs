@@ -1,6 +1,6 @@
 using POS.Domain.Common;
 using POS.Domain.Common.Events;
-using POS.Domain.Common.ValueObjects;
+using POS.Domain.ValueObjects;
 using POS.Domain.Enums;
 using POS.Domain.Exceptions;
 using POS.Domain.SeedWork;

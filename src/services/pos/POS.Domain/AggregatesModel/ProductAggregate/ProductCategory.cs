@@ -1,3 +1,5 @@
+using POS.Domain.SeedWork;
+
 namespace POS.Domain.AggregatesModel.ProductAggregate;
 
 /// <summary>
@@ -10,9 +12,10 @@ public class ProductCategory : Entity
     public bool IsActive { get; private set; }
     public Guid? ParentCategoryId { get; private set; }
     public ProductCategory? ParentCategory { get; private set; }
-    public IReadOnlyCollection<ProductCategory> SubCategories { get; private set; }
+    private readonly List<ProductCategory> _subCategories = new();
+    public IReadOnlyCollection<ProductCategory> SubCategories => _subCategories.AsReadOnly();
 
-    private ProductCategory() { } // For EF Core
+    private ProductCategory() { Name = string.Empty; Description = string.Empty; }
 
     public ProductCategory(string name, string description, ProductCategory? parentCategory = null)
     {
@@ -21,7 +24,6 @@ public class ProductCategory : Entity
         ParentCategory = parentCategory;
         ParentCategoryId = parentCategory?.Id;
         IsActive = true;
-        SubCategories = new List<ProductCategory>();
     }
 
     public void UpdateDetails(string name, string description)
@@ -46,5 +48,11 @@ public class ProductCategory : Entity
     {
         ParentCategory = parentCategory;
         ParentCategoryId = parentCategory?.Id;
+    }
+
+    public void AddSubCategory(ProductCategory subCategory)
+    {
+        Guard.Against.Null(subCategory, nameof(subCategory));
+        _subCategories.Add(subCategory);
     }
 } 

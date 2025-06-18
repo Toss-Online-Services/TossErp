@@ -9,3 +9,4 @@ global using POS.Domain.Events;
 global using POS.Domain.Exceptions;
 global using POS.Domain.SeedWork;
 global using POS.Domain.ValueObjects;
+global using Ardalis.GuardClauses;

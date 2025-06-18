@@ -1,9 +1,0 @@
-﻿using POS.Domain.AggregatesModel.SyncAggregate;
-using POS.Domain.AggregatesModel.SyncLogAggregate;
-
-namespace POS.Domain.Repositories;
-
-public interface ISyncLogRepository : IRepository<SyncLog>
-{
-    Task<SyncLog?> GetByEntityIdAsync(string entityType, Guid entityId, CancellationToken cancellationToken = default);
-} 

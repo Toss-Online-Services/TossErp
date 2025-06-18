@@ -1,23 +1,25 @@
-using POS.Domain.Events;
+﻿using POS.Domain.Events;
 using POS.Domain.ValueObjects;
 using POS.Domain.AggregatesModel.OrderAggregate.Events;
+using POS.Domain.AggregatesModel.ProductAggregate;
+using POS.Domain.SeedWork;
 
 namespace POS.Domain.AggregatesModel.OrderAggregate;
 
 /// <summary>
 /// Represents an order in the POS system
 /// </summary>
-public class Order : Entity
+public class Order : Entity, IAggregateRoot
 {
     private readonly List<OrderItem> _orderItems = new();
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
     
-    public string OrderNumber { get; private set; }
+    public required string OrderNumber { get; set; }
     public Guid CustomerId { get; private set; }
-    public OrderStatus Status { get; private set; }
-    public Money TotalAmount { get; private set; }
-    public Money TaxAmount { get; private set; }
-    public Money DiscountAmount { get; private set; }
+    public required OrderStatus Status { get; set; }
+    public required Money TotalAmount { get; set; }
+    public required Money TaxAmount { get; set; }
+    public required Money DiscountAmount { get; set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
     public string? Notes { get; private set; }
@@ -38,17 +40,12 @@ public class Order : Entity
         AddDomainEvent(new OrderCreatedDomainEvent(this));
     }
 
-    public void AddItem(Product product, int quantity, Money unitPrice)
+    public void AddItem(Guid productId, string productName, string productSku, int quantity, Money unitPrice, string? notes = null)
     {
-        Guard.Against.Null(product, nameof(product));
-        Guard.Against.NegativeOrZero(quantity, nameof(quantity));
-        Guard.Against.Null(unitPrice, nameof(unitPrice));
-
-        var orderItem = new OrderItem(product.Id, quantity, unitPrice);
-        _orderItems.Add(orderItem);
-
+        var item = new OrderItem(productId, productName, productSku, quantity, unitPrice, notes);
+        _orderItems.Add(item);
         RecalculateTotals();
-        AddDomainEvent(new OrderItemAddedDomainEvent(this, orderItem));
+        AddDomainEvent(new OrderItemAddedDomainEvent(this, item));
     }
 
     public void RemoveItem(Guid productId)

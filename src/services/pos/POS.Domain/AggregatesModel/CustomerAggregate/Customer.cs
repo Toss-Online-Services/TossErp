@@ -1,11 +1,12 @@
-using POS.Domain.Common;
+﻿using POS.Domain.Common;
 using POS.Domain.Common.Events;
-using POS.Domain.Common.ValueObjects;
 using POS.Domain.Enums;
 using POS.Domain.Exceptions;
 using POS.Domain.SeedWork;
 using POS.Domain.AggregatesModel.CustomerAggregate.Events;
 using POS.Domain.AggregatesModel.CustomerAggregate.ValueObjects;
+using POS.Domain.ValueObjects;
+using POS.Domain.Common.ValueObjects;
 
 namespace POS.Domain.AggregatesModel.CustomerAggregate
 {
@@ -193,10 +194,7 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 
         public void RemovePriceList(Guid priceListId)
         {
-            var priceList = _priceLists.FirstOrDefault(p => p.Id == priceListId);
-            if (priceList == null)
-                throw new DomainException("Price list not found");
-
+            var priceList = _priceLists.FirstOrDefault(p => p.Id == priceListId) ?? throw new DomainException("Price list not found");
             _priceLists.Remove(priceList);
             LastModifiedAt = DateTime.UtcNow;
 
@@ -210,9 +208,6 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
 
         public void EnrollInLoyaltyProgram(LoyaltyProgram program)
         {
-            if (LoyaltyProgram != null)
-                throw new DomainException("Customer is already enrolled in a loyalty program");
-
             LoyaltyProgram = program;
             LastModifiedAt = DateTime.UtcNow;
 
@@ -387,6 +382,20 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate
         public decimal AvailableCredit => _creditLimit.GetAvailableCredit(_balance.Amount);
         public bool IsOverdue => _balance.IsPositive && LastPurchaseDate.HasValue && 
             _paymentTerms.IsOverdue(LastPurchaseDate.Value);
+
+        public bool IsSameSegment(Customer? other)
+        {
+            if (other == null)
+                return false;
+            return CustomerType.ToString().Equals(other.CustomerType.ToString());
+        }
+
+        public bool IsSameLoyaltyProgram(Customer? other)
+        {
+            if (other == null)
+                return false;
+            return LoyaltyProgram?.Name?.Equals(other.LoyaltyProgram?.Name) ?? false;
+        }
 
         private static bool IsValidEmail(string email)
         {

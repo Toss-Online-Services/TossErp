@@ -4,7 +4,7 @@ using POS.Domain.Models;
 using POS.Domain.Common;
 using POS.Domain.AggregatesModel.StoreAggregate.Events;
 using POS.Domain.Common.Events;
-using POS.Domain.Common.ValueObjects;
+using POS.Domain.ValueObjects;
 
 namespace POS.Domain.AggregatesModel.StoreAggregate;
 
@@ -44,9 +44,16 @@ public class Store : AggregateRoot
         Address = new POS.Domain.Common.ValueObjects.Address();
         Phone = string.Empty;
         Email = string.Empty;
-        TimeZone = string.Empty;
-        CreatedAt = DateTime.UtcNow;
+        Website = string.Empty;
+        Description = string.Empty;
+        TaxId = string.Empty;
+        LicenseNumber = string.Empty;
+        LogoUrl = string.Empty;
+        BannerUrl = string.Empty;
+        SocialMediaLinks = string.Empty;
         IsActive = true;
+        CreatedAt = DateTime.UtcNow;
+        TimeZone = string.Empty;
         Settings = new StoreSettings();
     }
 
@@ -74,9 +81,7 @@ public class Store : AggregateRoot
         if (string.IsNullOrWhiteSpace(email))
             throw new DomainException("Store email cannot be empty");
         if (string.IsNullOrWhiteSpace(timeZone))
-            throw new DomainException("TimeZone cannot be empty");
-        if (address == null)
-            throw new DomainException("Store address cannot be null");
+            throw new DomainException("TimeZone cannot be empty");        
 
         Name = name;
         Code = code;
@@ -117,9 +122,7 @@ public class Store : AggregateRoot
         if (string.IsNullOrWhiteSpace(phone))
             throw new DomainException("Store phone cannot be empty");
         if (string.IsNullOrWhiteSpace(email))
-            throw new DomainException("Store email cannot be empty");
-        if (address == null)
-            throw new DomainException("Store address cannot be null");
+            throw new DomainException("Store email cannot be empty");       
 
         Name = name;
         Code = code;

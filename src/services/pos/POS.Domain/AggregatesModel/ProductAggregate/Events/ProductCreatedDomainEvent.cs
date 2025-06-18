@@ -10,14 +10,14 @@ public class ProductCreatedDomainEvent : DomainEvent
 {
     public Guid ProductId { get; }
     public string Name { get; }
-    public string Sku { get; }
+    public string SKU { get; }
     public decimal Price { get; }
 
     public ProductCreatedDomainEvent(Product product)
     {
         ProductId = product.Id;
         Name = product.Name;
-        Sku = product.Sku;
-        Price = product.Price;
+        SKU = product.SKU;
+        Price = product.Price.Amount;
     }
 } 

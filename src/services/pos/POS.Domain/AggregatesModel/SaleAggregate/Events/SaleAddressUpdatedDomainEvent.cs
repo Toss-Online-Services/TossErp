@@ -1,5 +1,6 @@
-using POS.Domain.Common.Events;
+﻿using POS.Domain.Common.Events;
 using POS.Domain.Common.ValueObjects;
+using POS.Domain.ValueObjects;
 
 namespace POS.Domain.AggregatesModel.SaleAggregate.Events;
 

@@ -1,9 +1,8 @@
 ﻿#nullable enable
 using POS.Domain.AggregatesModel.StoreAggregate;
 using POS.Domain.SeedWork;
-using POS.Domain.Common.ValueObjects;
-using POS.Domain.Events;
 using POS.Domain.Common;
+using POS.Domain.Events;
 using POS.Domain.Models;
 using POS.Domain.AggregatesModel.ProductAggregate.Events;
 using POS.Domain.Common.Events;
@@ -14,7 +13,7 @@ namespace POS.Domain.AggregatesModel.ProductAggregate;
 /// <summary>
 /// Represents a product in the POS system
 /// </summary>
-public class Product : Entity
+public class Product : Entity, IAggregateRoot
 {
     public Guid StoreId { get; private set; }
     public Store Store { get; private set; } = null!;
@@ -38,6 +37,9 @@ public class Product : Entity
         Description = string.Empty;
         SKU = string.Empty;
         Barcode = string.Empty;
+        Price = new Money(0, "USD");
+        Category = new ProductCategory("Default", "Default Category");
+        Store = null!; // Required for EF Core
     } // For EF Core
 
     public Product(
@@ -65,6 +67,7 @@ public class Product : Entity
         Price = price;
         CostPrice = costPrice;
         CategoryId = categoryId;
+        Category = new ProductCategory("Default", "Default Category"); // Initialize with default, will be updated by EF Core
         StoreId = storeId;
         StockQuantity = stockQuantity;
         LowStockThreshold = lowStockThreshold;
@@ -128,5 +131,15 @@ public class Product : Entity
         IsActive = true;
         LastModifiedAt = DateTime.UtcNow;
         AddDomainEvent(new ProductActivatedDomainEvent(this));
+    }
+
+    public void UpdatePrice(Money newPrice)
+    {
+        Price = Guard.Against.Null(newPrice, nameof(newPrice));
+    }
+
+    public void UpdateCategory(ProductCategory newCategory)
+    {
+        Category = Guard.Against.Null(newCategory, nameof(newCategory));
     }
 } 

@@ -1,4 +1,7 @@
-﻿using POS.Domain.Common;
+﻿using System;
+using System.Linq.Expressions;
+using POS.Domain.Common;
+using POS.Domain.SeedWork;
 
 namespace POS.Domain.AggregatesModel.CustomerAggregate.Specifications
 {
@@ -37,6 +40,11 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate.Specifications
 
             return true;
         }
+
+        public override Expression<Func<Customer, bool>> ToExpression()
+        {
+            return customer => IsSatisfiedBy(customer);
+        }
     }
 
     public class HighValueCustomerSpecification : Specification<Customer>
@@ -67,6 +75,11 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate.Specifications
             return customer.TotalPurchases >= _minimumSpend && 
                    customer.PurchaseCount >= _minimumOrders;
         }
+
+        public override Expression<Func<Customer, bool>> ToExpression()
+        {
+            return customer => IsSatisfiedBy(customer);
+        }
     }
 
     public class LoyalCustomerSpecification : Specification<Customer>
@@ -93,6 +106,11 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate.Specifications
 
             return customer.PurchaseCount >= _minimumOrders;
         }
+
+        public override Expression<Func<Customer, bool>> ToExpression()
+        {
+            return customer => IsSatisfiedBy(customer);
+        }
     }
 
     public class AtRiskCustomerSpecification : Specification<Customer>
@@ -116,6 +134,11 @@ namespace POS.Domain.AggregatesModel.CustomerAggregate.Specifications
             var timeSinceLastPurchase = DateTime.UtcNow - customer.LastPurchaseDate.Value;
             return timeSinceLastPurchase > _inactivityThreshold && 
                    customer.TotalPurchases >= _minimumPreviousSpend;
+        }
+
+        public override Expression<Func<Customer, bool>> ToExpression()
+        {
+            return customer => IsSatisfiedBy(customer);
         }
     }
 } 

@@ -7,7 +7,7 @@ using POS.Domain.AggregatesModel.StoreAggregate;
 using POS.Domain.Enums;
 using POS.Domain.Models;
 using PaymentMethodModel = POS.Domain.Models.PaymentMethod;
-using POS.Domain.Common.ValueObjects;
+using POS.Domain.ValueObjects;
 using POS.Domain.Events;
 using POS.Domain.Common;
 using POS.Domain.Common.Events;

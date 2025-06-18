@@ -1,24 +1,25 @@
+using System;
+using System.Linq.Expressions;
 using POS.Domain.SeedWork;
 using POS.Domain.AggregatesModel.CustomerAggregate;
 using POS.Domain.Common;
 using POS.Domain.Exceptions;
-using POS.Domain.Specifications;
 
 namespace POS.Domain.AggregatesModel.CustomerAggregate.Specifications;
 
 public static class ComplexCustomerSpecifications
 {
-    public class HasActiveLoyaltyProgram : ISpecification<Customer>
+    public class HasActiveLoyaltyProgram : Specification<Customer>
     {
-        public bool IsSatisfiedBy(Customer customer)
+        public override bool IsSatisfiedBy(Customer customer)
         {
-            return customer.LoyaltyProgram != null && 
-                   customer.LoyaltyProgram.IsActive && 
+            return customer.LoyaltyProgram?.IsActive == true && 
                    !customer.LoyaltyProgram.IsExpired;
         }
+        public override Expression<Func<Customer, bool>> ToExpression() => customer => IsSatisfiedBy(customer);
     }
 
-    public class HasAvailablePoints : ISpecification<Customer>
+    public class HasAvailablePoints : Specification<Customer>
     {
         private readonly decimal _requiredPoints;
 
@@ -29,16 +30,16 @@ public static class ComplexCustomerSpecifications
             _requiredPoints = requiredPoints;
         }
 
-        public bool IsSatisfiedBy(Customer customer)
+        public override bool IsSatisfiedBy(Customer customer)
         {
-            return customer.LoyaltyProgram != null && 
-                   customer.LoyaltyProgram.IsActive && 
+            return customer.LoyaltyProgram?.IsActive == true && 
                    !customer.LoyaltyProgram.IsExpired &&
                    customer.LoyaltyProgram.PointsBalance >= _requiredPoints;
         }
+        public override Expression<Func<Customer, bool>> ToExpression() => customer => IsSatisfiedBy(customer);
     }
 
-    public class IsEligibleForTierUpgrade : ISpecification<Customer>
+    public class IsEligibleForTierUpgrade : Specification<Customer>
     {
         private readonly decimal _requiredPoints;
         private readonly string _targetTier;
@@ -54,17 +55,17 @@ public static class ComplexCustomerSpecifications
             _targetTier = targetTier;
         }
 
-        public bool IsSatisfiedBy(Customer customer)
+        public override bool IsSatisfiedBy(Customer customer)
         {
-            return customer.LoyaltyProgram != null && 
-                   customer.LoyaltyProgram.IsActive && 
+            return customer.LoyaltyProgram?.IsActive == true && 
                    !customer.LoyaltyProgram.IsExpired &&
                    customer.LoyaltyProgram.PointsBalance >= _requiredPoints &&
                    customer.LoyaltyProgram.MembershipTier != _targetTier;
         }
+        public override Expression<Func<Customer, bool>> ToExpression() => customer => IsSatisfiedBy(customer);
     }
 
-    public class HasRecentPurchase : ISpecification<Customer>
+    public class HasRecentPurchase : Specification<Customer>
     {
         private readonly int _daysThreshold;
 
@@ -75,14 +76,15 @@ public static class ComplexCustomerSpecifications
             _daysThreshold = daysThreshold;
         }
 
-        public bool IsSatisfiedBy(Customer customer)
+        public override bool IsSatisfiedBy(Customer customer)
         {
             return customer.LastPurchaseDate.HasValue && 
                    (DateTime.UtcNow - customer.LastPurchaseDate.Value).TotalDays <= _daysThreshold;
         }
+        public override Expression<Func<Customer, bool>> ToExpression() => customer => IsSatisfiedBy(customer);
     }
 
-    public class HasHighValuePurchases : ISpecification<Customer>
+    public class HasHighValuePurchases : Specification<Customer>
     {
         private readonly decimal _minimumValue;
         private readonly int _daysThreshold;
@@ -98,15 +100,16 @@ public static class ComplexCustomerSpecifications
             _daysThreshold = daysThreshold;
         }
 
-        public bool IsSatisfiedBy(Customer customer)
+        public override bool IsSatisfiedBy(Customer customer)
         {
             return customer.LastPurchaseDate.HasValue && 
                    (DateTime.UtcNow - customer.LastPurchaseDate.Value).TotalDays <= _daysThreshold &&
                    customer.TotalPurchases >= _minimumValue;
         }
+        public override Expression<Func<Customer, bool>> ToExpression() => customer => IsSatisfiedBy(customer);
     }
 
-    public class HasPreferredPaymentMethod : ISpecification<Customer>
+    public class HasPreferredPaymentMethod : Specification<Customer>
     {
         private readonly string _paymentMethod;
 
@@ -117,14 +120,14 @@ public static class ComplexCustomerSpecifications
             _paymentMethod = paymentMethod;
         }
 
-        public bool IsSatisfiedBy(Customer customer)
+        public override bool IsSatisfiedBy(Customer customer)
         {
-            return customer.Preferences != null && 
-                   customer.Preferences.PreferredPaymentMethod == _paymentMethod;
+            return customer.Preferences?.PreferredPaymentMethod == _paymentMethod;
         }
+        public override Expression<Func<Customer, bool>> ToExpression() => customer => IsSatisfiedBy(customer);
     }
 
-    public class HasPreferredShippingMethod : ISpecification<Customer>
+    public class HasPreferredShippingMethod : Specification<Customer>
     {
         private readonly string _shippingMethod;
 
@@ -135,38 +138,39 @@ public static class ComplexCustomerSpecifications
             _shippingMethod = shippingMethod;
         }
 
-        public bool IsSatisfiedBy(Customer customer)
+        public override bool IsSatisfiedBy(Customer customer)
         {
-            return customer.Preferences != null && 
-                   customer.Preferences.PreferredShippingMethod == _shippingMethod;
+            return customer.Preferences?.PreferredShippingMethod == _shippingMethod;
         }
+        public override Expression<Func<Customer, bool>> ToExpression() => customer => IsSatisfiedBy(customer);
     }
 
-    public class HasOptedInForMarketing : ISpecification<Customer>
+    public class HasOptedInForMarketing : Specification<Customer>
     {
-        public bool IsSatisfiedBy(Customer customer)
+        public override bool IsSatisfiedBy(Customer customer)
         {
-            return customer.Preferences != null && 
-                   customer.Preferences.OptInMarketing;
+            return customer.Preferences?.OptInMarketing == true;
         }
+        public override Expression<Func<Customer, bool>> ToExpression() => customer => IsSatisfiedBy(customer);
     }
 
-    public class HasOptedInForThirdParty : ISpecification<Customer>
+    public class HasOptedInForThirdParty : Specification<Customer>
     {
-        public bool IsSatisfiedBy(Customer customer)
+        public override bool IsSatisfiedBy(Customer customer)
         {
-            return customer.Preferences != null && 
-                   customer.Preferences.OptInThirdParty;
+            return customer.Preferences?.OptInThirdParty == true;
         }
+        public override Expression<Func<Customer, bool>> ToExpression() => customer => IsSatisfiedBy(customer);
     }
 
-    public class HasSpecialRequirements : ISpecification<Customer>
+    public class HasSpecialRequirements : Specification<Customer>
     {
-        public bool IsSatisfiedBy(Customer customer)
+        public override bool IsSatisfiedBy(Customer customer)
         {
             return customer.Preferences != null && 
                    (!string.IsNullOrWhiteSpace(customer.Preferences.DietaryRestrictions) ||
                     !string.IsNullOrWhiteSpace(customer.Preferences.SpecialInstructions));
         }
+        public override Expression<Func<Customer, bool>> ToExpression() => customer => IsSatisfiedBy(customer);
     }
 } 
