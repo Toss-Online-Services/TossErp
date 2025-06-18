@@ -1,8 +1,8 @@
 using FluentAssertions;
 using POS.Domain.AggregatesModel.PaymentAggregate;
 using POS.Domain.Common.ValueObjects;
-using POS.Domain.Enums;
 using POS.Domain.Exceptions;
+using POS.Domain.Enums;
 using Xunit;
 
 namespace POS.Domain.Tests.AggregatesModel.PaymentAggregate;
@@ -39,7 +39,7 @@ public class PaymentTests
         payment.Reference.Should().Be(_reference);
         payment.CardLast4.Should().Be(_cardLast4);
         payment.CardType.Should().Be(_cardType);
-        payment.Status.Should().Be(PaymentStatus.Pending);
+        payment.Status.Should().Be(POS.Domain.AggregatesModel.PaymentAggregate.PaymentStatus.Pending);
         payment.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
     }
 
@@ -77,7 +77,7 @@ public class PaymentTests
         payment.Process();
 
         // Assert
-        payment.Status.Should().Be(PaymentStatus.Processing);
+        payment.Status.Should().Be(POS.Domain.AggregatesModel.PaymentAggregate.PaymentStatus.Processing);
         payment.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
     }
 
@@ -106,7 +106,7 @@ public class PaymentTests
         payment.Complete(transactionId, authorizationCode);
 
         // Assert
-        payment.Status.Should().Be(PaymentStatus.Completed);
+        payment.Status.Should().Be(POS.Domain.AggregatesModel.PaymentAggregate.PaymentStatus.Completed);
         payment.TransactionId.Should().Be(transactionId);
         payment.AuthorizationCode.Should().Be(authorizationCode);
         payment.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
@@ -135,7 +135,7 @@ public class PaymentTests
         payment.Fail(errorMessage);
 
         // Assert
-        payment.Status.Should().Be(PaymentStatus.Failed);
+        payment.Status.Should().Be(POS.Domain.AggregatesModel.PaymentAggregate.PaymentStatus.Failed);
         payment.ErrorMessage.Should().Be(errorMessage);
         payment.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
     }
@@ -163,7 +163,7 @@ public class PaymentTests
         payment.Retry();
 
         // Assert
-        payment.Status.Should().Be(PaymentStatus.Pending);
+        payment.Status.Should().Be(POS.Domain.AggregatesModel.PaymentAggregate.PaymentStatus.Pending);
         payment.RetryCount.Should().Be(1);
         payment.LastRetryAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
         payment.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
@@ -262,9 +262,10 @@ public class PaymentTests
         var payment = new Payment(_saleId, _amount, _method);
         payment.Process();
         payment.Complete("TRX123", "AUTH123");
+        payment.ProcessPartialRefund(50.00m, "Partial refund");
 
         // Act & Assert
-        var action = () => payment.ProcessPartialRefund(150.00m, "Customer returned item");
+        var action = () => payment.ProcessPartialRefund(60.00m, "Exceeding refund");
         action.Should().Throw<DomainException>().WithMessage("Refund amount cannot exceed remaining amount");
     }
 
@@ -290,8 +291,8 @@ public class PaymentTests
     {
         // Arrange
         var payment = new Payment(_saleId, _amount, _method);
-        payment.Process();
         var split = new PaymentSplit(50.00m, PaymentType.Cash);
+        payment.Process();
 
         // Act & Assert
         var action = () => payment.AddPaymentSplit(split);
@@ -303,12 +304,10 @@ public class PaymentTests
     {
         // Arrange
         var payment = new Payment(_saleId, _amount, _method);
-        var split1 = new PaymentSplit(60.00m, PaymentType.Cash);
-        var split2 = new PaymentSplit(50.00m, PaymentType.CreditCard);
+        payment.AddPaymentSplit(new PaymentSplit(50.00m, PaymentType.Cash));
 
         // Act & Assert
-        payment.AddPaymentSplit(split1);
-        var action = () => payment.AddPaymentSplit(split2);
+        var action = () => payment.AddPaymentSplit(new PaymentSplit(60.00m, PaymentType.Cash));
         action.Should().Throw<DomainException>().WithMessage("Total split amount cannot exceed payment amount");
     }
 
@@ -347,7 +346,7 @@ public class PaymentTests
     {
         // Arrange
         var payment = new Payment(_saleId, _amount, _method);
-        var response = new PaymentGatewayResponse("Success", "TRX123", "AUTH123");
+        var response = new PaymentGatewayResponse("00", "TRX123", "AUTH123", null, null, "{\"transaction_id\":\"TRX123\"}");
 
         // Act
         payment.UpdateGatewayResponse(response);

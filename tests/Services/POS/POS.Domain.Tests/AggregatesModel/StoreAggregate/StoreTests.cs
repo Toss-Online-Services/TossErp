@@ -15,49 +15,49 @@ public class StoreTests
     private readonly string _phone;
     private readonly string _email;
     private readonly string _timeZone;
-    private readonly string _website;
-    private readonly string _description;
-    private readonly string _taxId;
-    private readonly string _licenseNumber;
-    private readonly string _logoUrl;
-    private readonly string _bannerUrl;
-    private readonly Dictionary<string, string> _socialMediaLinks;
-    private readonly StoreSettings _settings;
+    private readonly string? _website;
+    private readonly string? _description;
+    private readonly string? _taxId;
+    private readonly string? _licenseNumber;
+    private readonly string? _logoUrl;
+    private readonly string? _bannerUrl;
+    private readonly string? _socialMediaLinks;
 
     public StoreTests()
     {
         _name = "Test Store";
         _code = "TS001";
-        _address = new Address("123 Main St", "Test City", "Test State", "Test Country", "12345");
+        _address = new Address("123 Test St", "Test City", "Test State", "Test Country", "12345");
         _phone = "+1234567890";
-        _email = "store@example.com";
-        _timeZone = "America/New_York";
+        _email = "test@store.com";
+        _timeZone = "UTC";
         _website = "https://teststore.com";
         _description = "Test store description";
-        _taxId = "TAX123456";
-        _licenseNumber = "LIC123456";
+        _taxId = "TAX123";
+        _licenseNumber = "LIC123";
         _logoUrl = "https://teststore.com/logo.png";
         _bannerUrl = "https://teststore.com/banner.png";
-        _socialMediaLinks = new Dictionary<string, string>
-        {
-            { "Facebook", "https://facebook.com/teststore" },
-            { "Twitter", "https://twitter.com/teststore" }
-        };
-        _settings = new StoreSettings
-        {
-            Currency = "USD",
-            Language = "en-US",
-            TaxRate = 0.08m,
-            EnableLoyaltyProgram = true,
-            EnableInventoryTracking = true
-        };
+        _socialMediaLinks = "https://facebook.com/teststore";
     }
 
     [Fact]
     public void Constructor_WithValidParameters_CreatesStoreSuccessfully()
     {
         // Act
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
 
         // Assert
         store.Name.Should().Be(_name);
@@ -72,100 +72,172 @@ public class StoreTests
         store.LicenseNumber.Should().Be(_licenseNumber);
         store.LogoUrl.Should().Be(_logoUrl);
         store.BannerUrl.Should().Be(_bannerUrl);
-        store.SocialMediaLinks.Should().BeEquivalentTo(_socialMediaLinks);
-        store.Settings.Should().Be(_settings);
+        store.SocialMediaLinks.Should().Be(_socialMediaLinks);
         store.IsActive.Should().BeTrue();
         store.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        store.UpdatedAt.Should().BeNull();
+        store.StoreHours.Should().BeEmpty();
+        store.Devices.Should().BeEmpty();
+        store.Printers.Should().BeEmpty();
     }
 
-    [Fact]
-    public void Constructor_WithEmptyName_ThrowsDomainException()
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Constructor_WithEmptyName_ThrowsDomainException(string name)
     {
-        // Act & Assert
-        var action = () => new Store(string.Empty, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        action.Should().Throw<DomainException>().WithMessage("Name cannot be empty");
+        // Act
+        var act = () => new Store(
+            name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Store name cannot be empty");
     }
 
-    [Fact]
-    public void Constructor_WithEmptyCode_ThrowsDomainException()
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Constructor_WithEmptyCode_ThrowsDomainException(string code)
     {
-        // Act & Assert
-        var action = () => new Store(_name, string.Empty, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        action.Should().Throw<DomainException>().WithMessage("Code cannot be empty");
+        // Act
+        var act = () => new Store(
+            _name,
+            code,
+            _address,
+            _phone,
+            _email,
+            _timeZone);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Store code cannot be empty");
     }
 
     [Fact]
     public void Constructor_WithNullAddress_ThrowsDomainException()
     {
-        // Act & Assert
-        var action = () => new Store(_name, _code, null, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        action.Should().Throw<DomainException>().WithMessage("Address cannot be null");
+        // Act
+        var act = () => new Store(
+            _name,
+            _code,
+            null!,
+            _phone,
+            _email,
+            _timeZone);
+
+        // Assert
+        act.Should().Throw<DomainException>();
     }
 
-    [Fact]
-    public void Constructor_WithEmptyPhone_ThrowsDomainException()
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Constructor_WithEmptyPhone_ThrowsDomainException(string phone)
     {
-        // Act & Assert
-        var action = () => new Store(_name, _code, _address, string.Empty, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        action.Should().Throw<DomainException>().WithMessage("Phone cannot be empty");
+        // Act
+        var act = () => new Store(
+            _name,
+            _code,
+            _address,
+            phone,
+            _email,
+            _timeZone);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Store phone cannot be empty");
     }
 
-    [Fact]
-    public void Constructor_WithEmptyEmail_ThrowsDomainException()
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Constructor_WithEmptyEmail_ThrowsDomainException(string email)
     {
-        // Act & Assert
-        var action = () => new Store(_name, _code, _address, _phone, string.Empty, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        action.Should().Throw<DomainException>().WithMessage("Email cannot be empty");
+        // Act
+        var act = () => new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            email,
+            _timeZone);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Store email cannot be empty");
     }
 
-    [Fact]
-    public void Constructor_WithInvalidEmail_ThrowsDomainException()
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Constructor_WithEmptyTimeZone_ThrowsDomainException(string timeZone)
     {
-        // Act & Assert
-        var action = () => new Store(_name, _code, _address, _phone, "invalid-email", _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        action.Should().Throw<DomainException>().WithMessage("Invalid email format");
-    }
+        // Act
+        var act = () => new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            timeZone);
 
-    [Fact]
-    public void Constructor_WithEmptyTimeZone_ThrowsDomainException()
-    {
-        // Act & Assert
-        var action = () => new Store(_name, _code, _address, _phone, _email, string.Empty, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        action.Should().Throw<DomainException>().WithMessage("Time zone cannot be empty");
-    }
-
-    [Fact]
-    public void Constructor_WithNullSettings_ThrowsDomainException()
-    {
-        // Act & Assert
-        var action = () => new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, null);
-        action.Should().Throw<DomainException>().WithMessage("Settings cannot be null");
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("TimeZone cannot be empty");
     }
 
     [Fact]
     public void UpdateDetails_WithValidParameters_UpdatesSuccessfully()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
         var newName = "Updated Store";
-        var newCode = "TS002";
-        var newAddress = new Address("456 Oak St", "Suite 200", "Newtown", "NY", "67890", "USA");
-        var newPhone = "0987654321";
-        var newEmail = "updated@example.com";
+        var newCode = "US001";
+        var newAddress = new Address("456 Updated St", "Updated City", "Updated State", "Updated Country", "54321");
+        var newPhone = "+9876543210";
+        var newEmail = "updated@store.com";
         var newWebsite = "https://updatedstore.com";
         var newDescription = "Updated store description";
         var newTaxId = "TAX456";
         var newLicenseNumber = "LIC456";
         var newLogoUrl = "https://updatedstore.com/logo.png";
         var newBannerUrl = "https://updatedstore.com/banner.png";
-        var newSocialMediaLinks = new Dictionary<string, string>
-        {
-            { "Facebook", "https://facebook.com/updatedstore" },
-            { "Twitter", "https://twitter.com/updatedstore" }
-        };
+        var newSocialMediaLinks = "https://facebook.com/updatedstore";
 
         // Act
-        store.UpdateDetails(newName, newCode, newAddress, newPhone, newEmail, newWebsite, newDescription, newTaxId, newLicenseNumber, newLogoUrl, newBannerUrl, newSocialMediaLinks);
+        store.UpdateDetails(
+            newName,
+            newCode,
+            newAddress,
+            newPhone,
+            newEmail,
+            newWebsite,
+            newDescription,
+            newTaxId,
+            newLicenseNumber,
+            newLogoUrl,
+            newBannerUrl,
+            newSocialMediaLinks);
 
         // Assert
         store.Name.Should().Be(newName);
@@ -179,23 +251,245 @@ public class StoreTests
         store.LicenseNumber.Should().Be(newLicenseNumber);
         store.LogoUrl.Should().Be(newLogoUrl);
         store.BannerUrl.Should().Be(newBannerUrl);
-        store.SocialMediaLinks.Should().BeEquivalentTo(newSocialMediaLinks);
+        store.SocialMediaLinks.Should().Be(newSocialMediaLinks);
         store.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateDetails_WithEmptyName_ThrowsDomainException(string name)
+    {
+        // Arrange
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        // Act
+        var act = () => store.UpdateDetails(
+            name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Store name cannot be empty");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateDetails_WithEmptyCode_ThrowsDomainException(string code)
+    {
+        // Arrange
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        // Act
+        var act = () => store.UpdateDetails(
+            _name,
+            code,
+            _address,
+            _phone,
+            _email,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Store code cannot be empty");
+    }
+
+    [Fact]
+    public void UpdateDetails_WithNullAddress_ThrowsDomainException()
+    {
+        // Arrange
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        // Act
+        var act = () => store.UpdateDetails(
+            _name,
+            _code,
+            null!,
+            _phone,
+            _email,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        // Assert
+        act.Should().Throw<DomainException>();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateDetails_WithEmptyPhone_ThrowsDomainException(string phone)
+    {
+        // Arrange
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        // Act
+        var act = () => store.UpdateDetails(
+            _name,
+            _code,
+            _address,
+            phone,
+            _email,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Store phone cannot be empty");
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateDetails_WithEmptyEmail_ThrowsDomainException(string email)
+    {
+        // Arrange
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        // Act
+        var act = () => store.UpdateDetails(
+            _name,
+            _code,
+            _address,
+            _phone,
+            email,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Store email cannot be empty");
     }
 
     [Fact]
     public void UpdateSettings_WithValidSettings_UpdatesSuccessfully()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var newSettings = new StoreSettings
-        {
-            Currency = "EUR",
-            Language = "de-DE",
-            TaxRate = 0.09m,
-            EnableLoyaltyProgram = false,
-            EnableInventoryTracking = false
-        };
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var newSettings = new StoreSettings(
+            enableTax: true,
+            taxRate: 0.1m,
+            enableDiscounts: true,
+            maxDiscountPercentage: 20,
+            requireCustomerInfo: true,
+            enableLoyaltyProgram: true,
+            receiptHeader: "Updated Header",
+            receiptFooter: "Updated Footer",
+            enableStockAlerts: true,
+            enableEmailNotifications: true,
+            enableSMSNotifications: true,
+            emailTemplate: "Updated Email Template",
+            smsTemplate: "Updated SMS Template");
 
         // Act
         store.UpdateSettings(newSettings);
@@ -206,11 +500,54 @@ public class StoreTests
     }
 
     [Fact]
-    public void AddStoreHours_WithValidHours_AddsSuccessfully()
+    public void UpdateSettings_WithNullSettings_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var storeHours = new StoreHours(DayOfWeek.Monday, new TimeSpan(9, 0, 0), new TimeSpan(17, 0, 0), true);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        // Act
+        var act = () => store.UpdateSettings(null!);
+
+        // Assert
+        act.Should().Throw<DomainException>();
+    }
+
+    [Fact]
+    public void AddStoreHours_WithValidParameters_AddsSuccessfully()
+    {
+        // Arrange
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var storeHours = new StoreHours(
+            DayOfWeek.Monday,
+            TimeSpan.FromHours(9),
+            TimeSpan.FromHours(17));
 
         // Act
         store.AddStoreHours(storeHours);
@@ -225,31 +562,74 @@ public class StoreTests
     public void AddStoreHours_WithDuplicateDay_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var storeHours = new StoreHours(DayOfWeek.Monday, new TimeSpan(9, 0, 0), new TimeSpan(17, 0, 0), true);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var storeHours = new StoreHours(
+            DayOfWeek.Monday,
+            TimeSpan.FromHours(9),
+            TimeSpan.FromHours(17));
+
         store.AddStoreHours(storeHours);
 
-        // Act & Assert
-        var action = () => store.AddStoreHours(storeHours);
-        action.Should().Throw<DomainException>().WithMessage("Store hours for Monday already exist");
+        // Act
+        var act = () => store.AddStoreHours(storeHours);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage($"Store hours for {DayOfWeek.Monday} already exist");
     }
 
     [Fact]
-    public void UpdateStoreHours_WithValidHours_UpdatesSuccessfully()
+    public void UpdateStoreHours_WithValidParameters_UpdatesSuccessfully()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var storeHours = new StoreHours(DayOfWeek.Monday, new TimeSpan(9, 0, 0), new TimeSpan(17, 0, 0), true);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var storeHours = new StoreHours(
+            DayOfWeek.Monday,
+            TimeSpan.FromHours(9),
+            TimeSpan.FromHours(17));
+
         store.AddStoreHours(storeHours);
-        var updatedHours = new StoreHours(DayOfWeek.Monday, new TimeSpan(10, 0, 0), new TimeSpan(18, 0, 0), true);
+
+        var updatedStoreHours = new StoreHours(
+            DayOfWeek.Monday,
+            TimeSpan.FromHours(10),
+            TimeSpan.FromHours(18));
 
         // Act
-        store.UpdateStoreHours(updatedHours);
+        store.UpdateStoreHours(updatedStoreHours);
 
         // Assert
-        store.StoreHours.Should().ContainSingle();
-        store.StoreHours.First().OpenTime.Should().Be(new TimeSpan(10, 0, 0));
-        store.StoreHours.First().CloseTime.Should().Be(new TimeSpan(18, 0, 0));
+        var updatedHours = store.StoreHours.First();
+        updatedHours.OpenTime.Should().Be(TimeSpan.FromHours(10));
+        updatedHours.CloseTime.Should().Be(TimeSpan.FromHours(18));
         store.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
     }
 
@@ -257,24 +637,62 @@ public class StoreTests
     public void UpdateStoreHours_WithNonExistentDay_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var storeHours = new StoreHours(DayOfWeek.Monday, new TimeSpan(9, 0, 0), new TimeSpan(17, 0, 0), true);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
 
-        // Act & Assert
-        var action = () => store.UpdateStoreHours(storeHours);
-        action.Should().Throw<DomainException>().WithMessage("Store hours for Monday do not exist");
+        var storeHours = new StoreHours(
+            DayOfWeek.Monday,
+            TimeSpan.FromHours(9),
+            TimeSpan.FromHours(17));
+
+        // Act
+        var act = () => store.UpdateStoreHours(storeHours);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage($"Store hours for {DayOfWeek.Monday} do not exist");
     }
 
     [Fact]
     public void RemoveStoreHours_WithValidDay_RemovesSuccessfully()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var storeHours = new StoreHours(DayOfWeek.Monday, new TimeSpan(9, 0, 0), new TimeSpan(17, 0, 0), true);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var storeHours = new StoreHours(
+            DayOfWeek.Monday,
+            TimeSpan.FromHours(9),
+            TimeSpan.FromHours(17));
+
         store.AddStoreHours(storeHours);
 
         // Act
-        store.RemoveStoreHours("Monday");
+        store.RemoveStoreHours(DayOfWeek.Monday.ToString());
 
         // Assert
         store.StoreHours.Should().BeEmpty();
@@ -285,30 +703,76 @@ public class StoreTests
     public void RemoveStoreHours_WithInvalidDay_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
 
-        // Act & Assert
-        var action = () => store.RemoveStoreHours("InvalidDay");
-        action.Should().Throw<DomainException>().WithMessage("Invalid day: InvalidDay");
+        // Act
+        var act = () => store.RemoveStoreHours("InvalidDay");
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Invalid day: InvalidDay");
     }
 
     [Fact]
     public void RemoveStoreHours_WithNonExistentDay_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
 
-        // Act & Assert
-        var action = () => store.RemoveStoreHours("Monday");
-        action.Should().Throw<DomainException>().WithMessage("Store hours for Monday do not exist");
+        // Act
+        var act = () => store.RemoveStoreHours(DayOfWeek.Monday.ToString());
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage($"Store hours for {DayOfWeek.Monday} do not exist");
     }
 
     [Fact]
-    public void AddDevice_WithValidDevice_AddsSuccessfully()
+    public void AddDevice_WithValidParameters_AddsSuccessfully()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var device = new StoreDevice("DEV001", "POS", "Main Register");
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var device = new StoreDevice("DEV001", "POS", "Main POS Terminal");
 
         // Act
         store.AddDevice(device);
@@ -323,51 +787,114 @@ public class StoreTests
     public void AddDevice_WithDuplicateDeviceId_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var device = new StoreDevice("DEV001", "POS", "Main Register");
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var device = new StoreDevice("DEV001", "POS", "Main POS Terminal");
         store.AddDevice(device);
 
-        // Act & Assert
-        var action = () => store.AddDevice(device);
-        action.Should().Throw<DomainException>().WithMessage("Device with ID DEV001 already exists");
+        // Act
+        var act = () => store.AddDevice(device);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Device with ID DEV001 already exists");
     }
 
     [Fact]
-    public void UpdateDevice_WithValidDevice_UpdatesSuccessfully()
+    public void UpdateDevice_WithValidParameters_UpdatesSuccessfully()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var device = new StoreDevice("DEV001", "POS", "Main Register");
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var device = new StoreDevice("DEV001", "POS", "Main POS Terminal");
         store.AddDevice(device);
-        var updatedDevice = new StoreDevice("DEV001", "POS", "Updated Register");
+
+        var updatedDevice = new StoreDevice("DEV001", "POS", "Updated POS Terminal");
 
         // Act
         store.UpdateDevice(updatedDevice);
 
         // Assert
-        store.Devices.Should().ContainSingle();
-        store.Devices.First().Name.Should().Be("Updated Register");
+        var updated = store.Devices.First();
+        updated.Name.Should().Be("Updated POS Terminal");
         store.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
-    public void UpdateDevice_WithNonExistentDevice_ThrowsDomainException()
+    public void UpdateDevice_WithNonExistentDeviceId_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var device = new StoreDevice("DEV001", "POS", "Main Register");
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
 
-        // Act & Assert
-        var action = () => store.UpdateDevice(device);
-        action.Should().Throw<DomainException>().WithMessage("Device with ID DEV001 does not exist");
+        var device = new StoreDevice("DEV001", "POS", "Main POS Terminal");
+
+        // Act
+        var act = () => store.UpdateDevice(device);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Device with ID DEV001 does not exist");
     }
 
     [Fact]
     public void RemoveDevice_WithValidDeviceId_RemovesSuccessfully()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var device = new StoreDevice("DEV001", "POS", "Main Register");
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var device = new StoreDevice("DEV001", "POS", "Main POS Terminal");
         store.AddDevice(device);
 
         // Act
@@ -382,19 +909,49 @@ public class StoreTests
     public void RemoveDevice_WithNonExistentDeviceId_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
 
-        // Act & Assert
-        var action = () => store.RemoveDevice("DEV001");
-        action.Should().Throw<DomainException>().WithMessage("Device with ID DEV001 does not exist");
+        // Act
+        var act = () => store.RemoveDevice("DEV001");
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Device with ID DEV001 does not exist");
     }
 
     [Fact]
-    public void AddPrinter_WithValidPrinter_AddsSuccessfully()
+    public void AddPrinter_WithValidParameters_AddsSuccessfully()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var printer = new StorePrinter("PRN001", "Receipt", "Main Printer");
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var printer = new StorePrinter("PRN001", "Receipt", "Main Receipt Printer");
 
         // Act
         store.AddPrinter(printer);
@@ -409,51 +966,114 @@ public class StoreTests
     public void AddPrinter_WithDuplicatePrinterId_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var printer = new StorePrinter("PRN001", "Receipt", "Main Printer");
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var printer = new StorePrinter("PRN001", "Receipt", "Main Receipt Printer");
         store.AddPrinter(printer);
 
-        // Act & Assert
-        var action = () => store.AddPrinter(printer);
-        action.Should().Throw<DomainException>().WithMessage("Printer with ID PRN001 already exists");
+        // Act
+        var act = () => store.AddPrinter(printer);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Printer with ID PRN001 already exists");
     }
 
     [Fact]
-    public void UpdatePrinter_WithValidPrinter_UpdatesSuccessfully()
+    public void UpdatePrinter_WithValidParameters_UpdatesSuccessfully()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var printer = new StorePrinter("PRN001", "Receipt", "Main Printer");
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var printer = new StorePrinter("PRN001", "Receipt", "Main Receipt Printer");
         store.AddPrinter(printer);
-        var updatedPrinter = new StorePrinter("PRN001", "Receipt", "Updated Printer");
+
+        var updatedPrinter = new StorePrinter("PRN001", "Receipt", "Updated Receipt Printer");
 
         // Act
         store.UpdatePrinter(updatedPrinter);
 
         // Assert
-        store.Printers.Should().ContainSingle();
-        store.Printers.First().Name.Should().Be("Updated Printer");
+        var updated = store.Printers.First();
+        updated.Name.Should().Be("Updated Receipt Printer");
         store.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
-    public void UpdatePrinter_WithNonExistentPrinter_ThrowsDomainException()
+    public void UpdatePrinter_WithNonExistentPrinterId_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var printer = new StorePrinter("PRN001", "Receipt", "Main Printer");
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
 
-        // Act & Assert
-        var action = () => store.UpdatePrinter(printer);
-        action.Should().Throw<DomainException>().WithMessage("Printer with ID PRN001 does not exist");
+        var printer = new StorePrinter("PRN001", "Receipt", "Main Receipt Printer");
+
+        // Act
+        var act = () => store.UpdatePrinter(printer);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Printer with ID PRN001 does not exist");
     }
 
     [Fact]
     public void RemovePrinter_WithValidPrinterId_RemovesSuccessfully()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
-        var printer = new StorePrinter("PRN001", "Receipt", "Main Printer");
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
+        var printer = new StorePrinter("PRN001", "Receipt", "Main Receipt Printer");
         store.AddPrinter(printer);
 
         // Act
@@ -468,18 +1088,47 @@ public class StoreTests
     public void RemovePrinter_WithNonExistentPrinterId_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
 
-        // Act & Assert
-        var action = () => store.RemovePrinter("PRN001");
-        action.Should().Throw<DomainException>().WithMessage("Printer with ID PRN001 does not exist");
+        // Act
+        var act = () => store.RemovePrinter("PRN001");
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Printer with ID PRN001 does not exist");
     }
 
     [Fact]
     public void Deactivate_WhenActive_DeactivatesSuccessfully()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
 
         // Act
         store.Deactivate();
@@ -493,19 +1142,50 @@ public class StoreTests
     public void Deactivate_WhenAlreadyInactive_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
         store.Deactivate();
 
-        // Act & Assert
-        var action = () => store.Deactivate();
-        action.Should().Throw<DomainException>().WithMessage("Store is already deactivated");
+        // Act
+        var act = () => store.Deactivate();
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Store is already deactivated");
     }
 
     [Fact]
     public void Activate_WhenInactive_ActivatesSuccessfully()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
+
         store.Deactivate();
 
         // Act
@@ -520,10 +1200,26 @@ public class StoreTests
     public void Activate_WhenAlreadyActive_ThrowsDomainException()
     {
         // Arrange
-        var store = new Store(_name, _code, _address, _phone, _email, _timeZone, _website, _description, _taxId, _licenseNumber, _logoUrl, _bannerUrl, _socialMediaLinks, _settings);
+        var store = new Store(
+            _name,
+            _code,
+            _address,
+            _phone,
+            _email,
+            _timeZone,
+            _website,
+            _description,
+            _taxId,
+            _licenseNumber,
+            _logoUrl,
+            _bannerUrl,
+            _socialMediaLinks);
 
-        // Act & Assert
-        var action = () => store.Activate();
-        action.Should().Throw<DomainException>().WithMessage("Store is already active");
+        // Act
+        var act = () => store.Activate();
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Store is already active");
     }
 } 

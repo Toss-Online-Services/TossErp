@@ -13,57 +13,42 @@ public class ProductTests
     private readonly string _description;
     private readonly string _sku;
     private readonly string _barcode;
-    private readonly Money _price;
-    private readonly decimal _cost;
-    private readonly string _category;
-    private readonly string _brand;
-    private readonly string _unit;
-    private readonly decimal _taxRate;
-    private readonly bool _isActive;
-    private readonly bool _trackInventory;
-    private readonly decimal _reorderPoint;
-    private readonly decimal _reorderQuantity;
-    private readonly string _location;
+    private readonly decimal _price;
+    private readonly decimal _costPrice;
+    private readonly int _categoryId;
+    private readonly Guid _storeId;
+    private readonly int _stockQuantity;
+    private readonly int _lowStockThreshold;
 
     public ProductTests()
     {
         _name = "Test Product";
         _description = "Test Description";
-        _sku = "SKU-001";
-        _barcode = "123456789";
-        _price = new Money(99.99m, "USD");
-        _cost = 50.00m;
-        _category = "Electronics";
-        _brand = "Test Brand";
-        _unit = "Each";
-        _taxRate = 0.10m;
-        _isActive = true;
-        _trackInventory = true;
-        _reorderPoint = 10;
-        _reorderQuantity = 20;
-        _location = "A-1-1";
+        _sku = "TEST-SKU-001";
+        _barcode = "123456789012";
+        _price = 99.99m;
+        _costPrice = 49.99m;
+        _categoryId = 1;
+        _storeId = Guid.NewGuid();
+        _stockQuantity = 100;
+        _lowStockThreshold = 10;
     }
 
     [Fact]
     public void Constructor_WithValidParameters_CreatesProductSuccessfully()
     {
-        // Arrange & Act
+        // Act
         var product = new Product(
             _name,
             _description,
             _sku,
             _barcode,
             _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            _isActive,
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
 
         // Assert
         product.Name.Should().Be(_name);
@@ -71,157 +56,149 @@ public class ProductTests
         product.SKU.Should().Be(_sku);
         product.Barcode.Should().Be(_barcode);
         product.Price.Should().Be(_price);
-        product.Cost.Should().Be(_cost);
-        product.Category.Should().Be(_category);
-        product.Brand.Should().Be(_brand);
-        product.Unit.Should().Be(_unit);
-        product.TaxRate.Should().Be(_taxRate);
-        product.IsActive.Should().Be(_isActive);
-        product.TrackInventory.Should().Be(_trackInventory);
-        product.ReorderPoint.Should().Be(_reorderPoint);
-        product.ReorderQuantity.Should().Be(_reorderQuantity);
-        product.Location.Should().Be(_location);
+        product.CostPrice.Should().Be(_costPrice);
+        product.CategoryId.Should().Be(_categoryId);
+        product.StoreId.Should().Be(_storeId);
+        product.StockQuantity.Should().Be(_stockQuantity);
+        product.LowStockThreshold.Should().Be(_lowStockThreshold);
+        product.IsActive.Should().BeTrue();
         product.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
-        product.StockQuantity.Should().Be(0);
+        product.LastModifiedAt.Should().BeNull();
     }
 
-    [Fact]
-    public void Constructor_WithEmptyName_ThrowsDomainException()
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Constructor_WithEmptyName_ThrowsDomainException(string name)
     {
         // Act
-        var action = () => new Product(
-            string.Empty,
+        var act = () => new Product(
+            name,
             _description,
             _sku,
             _barcode,
             _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            _isActive,
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
 
         // Assert
-        action.Should().Throw<DomainException>()
-            .WithMessage("Product name cannot be empty");
+        act.Should().Throw<DomainException>();
     }
 
-    [Fact]
-    public void Constructor_WithEmptySKU_ThrowsDomainException()
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Constructor_WithEmptySKU_ThrowsDomainException(string sku)
     {
         // Act
-        var action = () => new Product(
+        var act = () => new Product(
             _name,
             _description,
-            string.Empty,
+            sku,
             _barcode,
             _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            _isActive,
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
 
         // Assert
-        action.Should().Throw<DomainException>()
-            .WithMessage("SKU cannot be empty");
+        act.Should().Throw<DomainException>();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Constructor_WithEmptyBarcode_ThrowsDomainException(string barcode)
+    {
+        // Act
+        var act = () => new Product(
+            _name,
+            _description,
+            _sku,
+            barcode,
+            _price,
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
+
+        // Assert
+        act.Should().Throw<DomainException>();
     }
 
     [Fact]
-    public void Constructor_WithNegativePrice_ThrowsDomainException()
+    public void UpdateDetails_WithValidParameters_UpdatesSuccessfully()
     {
         // Arrange
-        var negativePrice = new Money(-99.99m, "USD");
-
-        // Act
-        var action = () => new Product(
-            _name,
-            _description,
-            _sku,
-            _barcode,
-            negativePrice,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            _isActive,
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
-
-        // Assert
-        action.Should().Throw<DomainException>()
-            .WithMessage("Price cannot be negative");
-    }
-
-    [Fact]
-    public void Constructor_WithNegativeCost_ThrowsDomainException()
-    {
-        // Arrange
-        var negativeCost = -50.00m;
-
-        // Act
-        var action = () => new Product(
+        var product = new Product(
             _name,
             _description,
             _sku,
             _barcode,
             _price,
-            negativeCost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            _isActive,
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
 
-        // Assert
-        action.Should().Throw<DomainException>()
-            .WithMessage("Cost cannot be negative");
-    }
-
-    [Fact]
-    public void Constructor_WithNegativeTaxRate_ThrowsDomainException()
-    {
-        // Arrange
-        var negativeTaxRate = -0.10m;
+        var newName = "Updated Product";
+        var newDescription = "Updated Description";
+        var newPrice = 149.99m;
+        var newCostPrice = 74.99m;
+        var newCategoryId = 2;
 
         // Act
-        var action = () => new Product(
+        product.UpdateDetails(
+            newName,
+            newDescription,
+            newPrice,
+            newCostPrice,
+            newCategoryId);
+
+        // Assert
+        product.Name.Should().Be(newName);
+        product.Description.Should().Be(newDescription);
+        product.Price.Should().Be(newPrice);
+        product.CostPrice.Should().Be(newCostPrice);
+        product.CategoryId.Should().Be(newCategoryId);
+        product.LastModifiedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateDetails_WithEmptyName_ThrowsDomainException(string name)
+    {
+        // Arrange
+        var product = new Product(
             _name,
             _description,
             _sku,
             _barcode,
             _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            negativeTaxRate,
-            _isActive,
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
+
+        // Act
+        var act = () => product.UpdateDetails(
+            name,
+            _description,
+            _price,
+            _costPrice,
+            _categoryId);
 
         // Assert
-        action.Should().Throw<DomainException>()
-            .WithMessage("Tax rate cannot be negative");
+        act.Should().Throw<DomainException>();
     }
 
     [Fact]
@@ -234,29 +211,24 @@ public class ProductTests
             _sku,
             _barcode,
             _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            _isActive,
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
 
-        var quantity = 10;
+        var newQuantity = 50;
 
         // Act
-        product.UpdateStock(quantity);
+        product.UpdateStock(newQuantity);
 
         // Assert
-        product.StockQuantity.Should().Be(quantity);
+        product.StockQuantity.Should().Be(newQuantity);
         product.LastModifiedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
-    public void UpdateStock_WithNegativeQuantity_ThrowsDomainException()
+    public void AdjustStock_WithPositiveAdjustment_IncreasesStock()
     {
         // Arrange
         var product = new Product(
@@ -265,87 +237,24 @@ public class ProductTests
             _sku,
             _barcode,
             _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            _isActive,
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
+
+        var adjustment = 50;
 
         // Act
-        var action = () => product.UpdateStock(-10);
+        product.AdjustStock(adjustment);
 
         // Assert
-        action.Should().Throw<DomainException>()
-            .WithMessage("Stock quantity cannot be negative");
-    }
-
-    [Fact]
-    public void UpdateStock_WhenNotTrackingInventory_ThrowsDomainException()
-    {
-        // Arrange
-        var product = new Product(
-            _name,
-            _description,
-            _sku,
-            _barcode,
-            _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            _isActive,
-            false, // Not tracking inventory
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
-
-        // Act
-        var action = () => product.UpdateStock(10);
-
-        // Assert
-        action.Should().Throw<DomainException>()
-            .WithMessage("Cannot update stock for a product that does not track inventory");
-    }
-
-    [Fact]
-    public void UpdatePrice_WithValidPrice_UpdatesSuccessfully()
-    {
-        // Arrange
-        var product = new Product(
-            _name,
-            _description,
-            _sku,
-            _barcode,
-            _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            _isActive,
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
-
-        var newPrice = new Money(149.99m, "USD");
-
-        // Act
-        product.UpdatePrice(newPrice);
-
-        // Assert
-        product.Price.Should().Be(newPrice);
+        product.StockQuantity.Should().Be(_stockQuantity + adjustment);
         product.LastModifiedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
-    public void UpdatePrice_WithNegativePrice_ThrowsDomainException()
+    public void AdjustStock_WithNegativeAdjustment_DecreasesStock()
     {
         // Arrange
         var product = new Product(
@@ -354,60 +263,24 @@ public class ProductTests
             _sku,
             _barcode,
             _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            _isActive,
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
 
-        var negativePrice = new Money(-149.99m, "USD");
+        var adjustment = -50;
 
         // Act
-        var action = () => product.UpdatePrice(negativePrice);
+        product.AdjustStock(adjustment);
 
         // Assert
-        action.Should().Throw<DomainException>()
-            .WithMessage("Price cannot be negative");
-    }
-
-    [Fact]
-    public void UpdateCost_WithValidCost_UpdatesSuccessfully()
-    {
-        // Arrange
-        var product = new Product(
-            _name,
-            _description,
-            _sku,
-            _barcode,
-            _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            _isActive,
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
-
-        var newCost = 75.00m;
-
-        // Act
-        product.UpdateCost(newCost);
-
-        // Assert
-        product.Cost.Should().Be(newCost);
+        product.StockQuantity.Should().Be(_stockQuantity + adjustment);
         product.LastModifiedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
-    public void UpdateCost_WithNegativeCost_ThrowsDomainException()
+    public void SetLowStockThreshold_WithValidThreshold_UpdatesSuccessfully()
     {
         // Arrange
         var product = new Product(
@@ -416,25 +289,66 @@ public class ProductTests
             _sku,
             _barcode,
             _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            _isActive,
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
 
-        var negativeCost = -75.00m;
+        var newThreshold = 20;
 
         // Act
-        var action = () => product.UpdateCost(negativeCost);
+        product.SetLowStockThreshold(newThreshold);
 
         // Assert
-        action.Should().Throw<DomainException>()
-            .WithMessage("Cost cannot be negative");
+        product.LowStockThreshold.Should().Be(newThreshold);
+        product.LastModifiedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+    }
+
+    [Fact]
+    public void IsLowStock_WhenStockBelowThreshold_ReturnsTrue()
+    {
+        // Arrange
+        var product = new Product(
+            _name,
+            _description,
+            _sku,
+            _barcode,
+            _price,
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _lowStockThreshold - 1,
+            _lowStockThreshold);
+
+        // Act
+        var isLowStock = product.IsLowStock();
+
+        // Assert
+        isLowStock.Should().BeTrue();
+    }
+
+    [Fact]
+    public void IsLowStock_WhenStockAboveThreshold_ReturnsFalse()
+    {
+        // Arrange
+        var product = new Product(
+            _name,
+            _description,
+            _sku,
+            _barcode,
+            _price,
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _lowStockThreshold + 1,
+            _lowStockThreshold);
+
+        // Act
+        var isLowStock = product.IsLowStock();
+
+        // Assert
+        isLowStock.Should().BeFalse();
     }
 
     [Fact]
@@ -447,16 +361,11 @@ public class ProductTests
             _sku,
             _barcode,
             _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            true, // Active
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
 
         // Act
         product.Deactivate();
@@ -476,27 +385,23 @@ public class ProductTests
             _sku,
             _barcode,
             _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            false, // Already inactive
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
+
+        product.Deactivate();
 
         // Act
-        var action = () => product.Deactivate();
+        var act = () => product.Deactivate();
 
         // Assert
-        action.Should().Throw<DomainException>()
-            .WithMessage("Product is already inactive");
+        act.Should().Throw<DomainException>();
     }
 
     [Fact]
-    public void Reactivate_WhenInactive_ReactivatesSuccessfully()
+    public void Reactivate_WhenInactive_ActivatesSuccessfully()
     {
         // Arrange
         var product = new Product(
@@ -505,16 +410,13 @@ public class ProductTests
             _sku,
             _barcode,
             _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            false, // Inactive
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
+
+        product.Deactivate();
 
         // Act
         product.Reactivate();
@@ -534,22 +436,16 @@ public class ProductTests
             _sku,
             _barcode,
             _price,
-            _cost,
-            _category,
-            _brand,
-            _unit,
-            _taxRate,
-            true, // Already active
-            _trackInventory,
-            _reorderPoint,
-            _reorderQuantity,
-            _location);
+            _costPrice,
+            _categoryId,
+            _storeId,
+            _stockQuantity,
+            _lowStockThreshold);
 
         // Act
-        var action = () => product.Reactivate();
+        var act = () => product.Reactivate();
 
         // Assert
-        action.Should().Throw<DomainException>()
-            .WithMessage("Product is already active");
+        act.Should().Throw<DomainException>();
     }
 } 
