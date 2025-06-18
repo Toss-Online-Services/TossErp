@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +15,7 @@ using POS.Domain.SeedWork;
 using POS.Infrastructure.EntityConfigurations;
 using POS.Infrastructure.Idempotency;
 using ClientRequest = POS.Infrastructure.Idempotency.ClientRequest;
+using PaymentAggregate = POS.Domain.AggregatesModel.PaymentAggregate;
 
 namespace POS.Infrastructure;
 
@@ -28,7 +29,7 @@ public class POSContext : DbContext, IUnitOfWork
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Product> Products { get; set; }
-    public DbSet<Payment> Payments { get; set; }
+    public DbSet<PaymentAggregate.Payment> Payments { get; set; }
     public DbSet<Sale> Sales { get; set; }
     public DbSet<SyncLog> SyncLogs { get; set; }
     public DbSet<Inventory> Inventories { get; set; }
@@ -53,7 +54,6 @@ public class POSContext : DbContext, IUnitOfWork
         modelBuilder.ApplyConfiguration(new SaleEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new StaffEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new StoreEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new ClientRequestEntityTypeConfiguration());
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using POS.Domain.AggregatesModel.PaymentAggregate;
 
@@ -100,15 +100,24 @@ public class PaymentEntityTypeConfiguration : IEntityTypeConfiguration<Payment>
             .HasForeignKey("PaymentId")
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Configure Sale relationship
-        builder.HasOne<SaleAggregate.Sale>()
-            .WithMany()
-            .HasForeignKey(p => p.SaleId)
-            .OnDelete(DeleteBehavior.Restrict);
-
+        // Configure indexes
         builder.HasIndex(p => p.TransactionId)
             .IsUnique();
 
         builder.HasIndex(p => p.CreatedAt);
+
+        builder.HasIndex(p => p.SaleId);
+
+        builder.HasIndex(p => p.Status);
+
+        builder.HasIndex(p => p.IsReconciled);
+
+        builder.HasIndex(p => p.Method);
+
+        builder.HasIndex(p => p.UpdatedAt);
+
+        builder.HasIndex(p => p.LastRetryAt);
+
+        builder.HasIndex(p => p.ReconciledAt);
     }
 } 

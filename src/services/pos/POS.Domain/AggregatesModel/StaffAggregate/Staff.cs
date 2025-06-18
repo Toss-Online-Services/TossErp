@@ -10,6 +10,7 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
         public string Email { get; private set; }
         public string Phone { get; private set; }
         public string Role { get; private set; }
+        public string PIN { get; private set; }
         public Guid StoreId { get; private set; }
         public bool IsActive { get; private set; }
         public DateTime CreatedAt { get; private set; }
@@ -23,6 +24,7 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
             Email = string.Empty;
             Phone = string.Empty;
             Role = string.Empty;
+            PIN = string.Empty;
             StoreId = Guid.Empty;
             IsActive = false;
             CreatedAt = DateTime.UtcNow;
@@ -35,6 +37,7 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
             string email,
             string phone,
             string role,
+            string pin,
             Guid storeId,
             StaffSchedule schedule,
             StaffPermissions permissions)
@@ -43,6 +46,7 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
             Email = email;
             Phone = phone;
             Role = role;
+            PIN = pin;
             StoreId = storeId;
             Schedule = schedule;
             Permissions = permissions;
@@ -55,12 +59,14 @@ namespace POS.Domain.AggregatesModel.StaffAggregate
             string name,
             string email,
             string phone,
-            string role)
+            string role,
+            string pin)
         {
             Name = name;
             Email = email;
             Phone = phone;
             Role = role;
+            PIN = pin;
             LastModifiedAt = DateTime.UtcNow;
             AddDomainEvent(new StaffUpdatedDomainEvent(Id, name, email, role));
         }

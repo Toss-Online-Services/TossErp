@@ -15,21 +15,77 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
         builder.Property(c => c.Id)
             .UseHiLo("customerseq", POSContext.DEFAULT_SCHEMA);
 
-        builder.Property(c => c.FirstName)
-            .IsRequired()
-            .HasMaxLength(100);
+        // Configure CustomerName value object
+        builder.OwnsOne(c => c._name, name =>
+        {
+            name.Property(n => n.FirstName)
+                .IsRequired()
+                .HasMaxLength(100);
+            name.Property(n => n.LastName)
+                .IsRequired()
+                .HasMaxLength(100);
+        });
 
-        builder.Property(c => c.LastName)
-            .IsRequired()
-            .HasMaxLength(100);
+        // Configure ContactInfo value object
+        builder.OwnsOne(c => c._contactInfo, contact =>
+        {
+            contact.Property(c => c.Email)
+                .IsRequired()
+                .HasMaxLength(100);
+            contact.Property(c => c.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(20);
+        });
 
-        builder.Property(c => c.Email)
-            .IsRequired()
-            .HasMaxLength(100);
+        // Configure CreditLimit value object
+        builder.OwnsOne(c => c._creditLimit, credit =>
+        {
+            credit.Property(c => c.Amount)
+                .IsRequired()
+                .HasPrecision(18, 2);
+        });
 
-        builder.Property(c => c.PhoneNumber)
-            .IsRequired()
-            .HasMaxLength(20);
+        // Configure PaymentTerms value object
+        builder.OwnsOne(c => c._paymentTerms, terms =>
+        {
+            terms.Property(t => t.Days)
+                .IsRequired();
+            terms.Property(t => t.Description)
+                .IsRequired()
+                .HasMaxLength(50);
+        });
+
+        // Configure CustomerBalance value object
+        builder.OwnsOne(c => c._balance, balance =>
+        {
+            balance.Property(b => b.Amount)
+                .IsRequired()
+                .HasPrecision(18, 2);
+            balance.Property(b => b.Currency)
+                .IsRequired()
+                .HasMaxLength(3);
+        });
+
+        // Configure Address value object
+        builder.OwnsOne(c => c.Address, address =>
+        {
+            address.Property(a => a.Street).HasMaxLength(200);
+            address.Property(a => a.City).HasMaxLength(100);
+            address.Property(a => a.State).HasMaxLength(100);
+            address.Property(a => a.Country).HasMaxLength(100);
+            address.Property(a => a.PostalCode).HasMaxLength(20);
+        });
+
+        // Configure LoyaltyProgram value object
+        builder.OwnsOne(c => c.LoyaltyProgram, loyalty =>
+        {
+            loyalty.Property(l => l.Id).IsRequired();
+            loyalty.Property(l => l.Name).IsRequired().HasMaxLength(100);
+            loyalty.Property(l => l.MembershipNumber).IsRequired().HasMaxLength(50);
+            loyalty.Property(l => l.MembershipTier).IsRequired().HasMaxLength(50);
+            loyalty.Property(l => l.Points).IsRequired();
+            loyalty.Property(l => l.EnrollmentDate).IsRequired();
+        });
 
         builder.Property(c => c.CreatedAt)
             .IsRequired();
@@ -52,12 +108,6 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
         builder.Property(c => c.CustomerType)
             .IsRequired();
 
-        builder.HasIndex(c => c.Email)
-            .IsUnique();
-
-        builder.HasIndex(c => c.PhoneNumber)
-            .IsUnique();
-
         // Configure value objects
         builder.OwnsOne(c => c.Preferences, preferences =>
         {
@@ -67,7 +117,11 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
             preferences.Property(p => p.PreferredLanguage).IsRequired().HasMaxLength(10);
             preferences.Property(p => p.PreferredCurrency).IsRequired().HasMaxLength(3);
             preferences.Property(p => p.PreferredPaymentMethod).HasMaxLength(50);
+            preferences.Property(p => p.PreferredShippingMethod).HasMaxLength(50);
+            preferences.Property(p => p.OptInMarketing).IsRequired();
+            preferences.Property(p => p.OptInThirdParty).IsRequired();
             preferences.Property(p => p.DietaryRestrictions).HasMaxLength(200);
+            preferences.Property(p => p.SpecialInstructions).HasMaxLength(500);
         });
 
         // Configure relationships
@@ -90,5 +144,20 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
             .WithOne()
             .HasForeignKey("CustomerId")
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Configure indexes
+        builder.HasIndex(c => c.Email)
+            .IsUnique();
+
+        builder.HasIndex(c => c.PhoneNumber)
+            .IsUnique();
+
+        builder.HasIndex(c => c.CustomerType);
+
+        builder.HasIndex(c => c.IsActive);
+
+        builder.HasIndex(c => c.LastPurchaseDate);
+
+        builder.HasIndex(c => c.TotalPurchases);
     }
 } 

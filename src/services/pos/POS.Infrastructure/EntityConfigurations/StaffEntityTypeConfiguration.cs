@@ -27,16 +27,13 @@ public class StaffEntityTypeConfiguration : IEntityTypeConfiguration<Staff>
             .IsRequired()
             .HasMaxLength(20);
 
-        builder.Property(s => s.Address)
-            .HasMaxLength(500);
-
         builder.Property(s => s.Role)
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(s => s.Status)
+        builder.Property(s => s.PIN)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(20);
 
         builder.Property(s => s.StoreId)
             .IsRequired();
@@ -68,16 +65,24 @@ public class StaffEntityTypeConfiguration : IEntityTypeConfiguration<Staff>
             permissions.Property(p => p.CanManageSettings).IsRequired();
         });
 
-        // Configure relationships
-        builder.HasOne(s => s.Store)
-            .WithMany()
-            .HasForeignKey(s => s.StoreId)
-            .OnDelete(DeleteBehavior.Restrict);
-
+        // Configure indexes
         builder.HasIndex(s => s.Email)
             .IsUnique();
 
         builder.HasIndex(s => s.Phone)
             .IsUnique();
+
+        builder.HasIndex(s => s.PIN)
+            .IsUnique();
+
+        builder.HasIndex(s => s.StoreId);
+
+        builder.HasIndex(s => s.Role);
+
+        builder.HasIndex(s => s.IsActive);
+
+        builder.HasIndex(s => s.CreatedAt);
+
+        builder.HasIndex(s => s.Name);
     }
 } 

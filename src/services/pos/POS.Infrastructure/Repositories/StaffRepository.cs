@@ -25,12 +25,12 @@ public class StaffRepository : IStaffRepository
 
     public async Task<Staff?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Staff.Include(s => s.Store).FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+        return await _context.Staff.FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<Staff>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Staff.Include(s => s.Store).OrderBy(s => s.Name).ToListAsync(cancellationToken);
+        return await _context.Staff.OrderBy(s => s.Name).ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Staff>> GetAsync(Specification<Staff> specification, CancellationToken cancellationToken = default)
@@ -79,15 +79,27 @@ public class StaffRepository : IStaffRepository
     public async Task<Staff?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _context.Staff
-            .Include(s => s.Store)
             .FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
     }
 
     public async Task<Staff?> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default)
     {
         return await _context.Staff
-            .Include(s => s.Store)
             .FirstOrDefaultAsync(s => s.Phone == phone, cancellationToken);
+    }
+
+    public async Task<Staff?> GetByPINAsync(string pin)
+    {
+        return await _context.Staff
+            .FirstOrDefaultAsync(s => s.PIN == pin);
+    }
+
+    public async Task<IEnumerable<Staff>> GetByStoreAsync(string storeId)
+    {
+        return await _context.Staff
+            .Where(s => s.StoreId.ToString() == storeId)
+            .OrderBy(s => s.Name)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<Staff>> GetByStoreIdAsync(int storeId, CancellationToken cancellationToken = default)
@@ -106,41 +118,21 @@ public class StaffRepository : IStaffRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<decimal> GetTotalTipsAsync(string staffId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
-    {
-        // Assuming there's a Tips table or a related entity that tracks tips
-        // Adjust the query based on your actual data model
-        return await _context.Staff
-            .Where(s => s.Id.ToString() == staffId)
-            .SelectMany(s => s.Tips.Where(t => t.Date >= startDate && t.Date <= endDate))
-            .SumAsync(t => t.Amount, cancellationToken);
-    }
-
-    public async Task<Staff?> GetByPINAsync(string pin, CancellationToken cancellationToken = default)
-    {
-        // Assuming there's a PIN property or related entity
-        // Adjust the query based on your actual data model
-        return await _context.Staff
-            .Include(s => s.Store)
-            .FirstOrDefaultAsync(s => s.PIN == pin, cancellationToken);
-    }
-
     public async Task<IEnumerable<Staff>> GetByRoleAsync(string role, CancellationToken cancellationToken = default)
     {
         return await _context.Staff
-            .Include(s => s.Store)
             .Where(s => s.Role == role)
             .OrderBy(s => s.Name)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Staff>> GetByStoreAsync(string storeId, CancellationToken cancellationToken = default)
+    public async Task<decimal> GetTotalTipsAsync(string staffId, DateTime startDate, DateTime endDate)
     {
-        return await _context.Staff
-            .Include(s => s.Store)
-            .Where(s => s.StoreId.ToString() == storeId)
-            .OrderBy(s => s.Name)
-            .ToListAsync(cancellationToken);
+        return await _context.Sales
+            .Where(s => s.StaffId.ToString() == staffId && 
+                       s.CreatedAt >= startDate && 
+                       s.CreatedAt <= endDate)
+            .SumAsync(s => s.TipAmount);
     }
 
     // Overloads without CancellationToken
@@ -152,8 +144,5 @@ public class StaffRepository : IStaffRepository
     public Task<Staff?> GetByPhoneAsync(string phone) => GetByPhoneAsync(phone, default);
     public Task<IEnumerable<Staff>> GetByStoreIdAsync(int storeId) => GetByStoreIdAsync(storeId, default);
     public Task<IEnumerable<Staff>> GetActiveStaffAsync() => GetActiveStaffAsync(default);
-    public Task<decimal> GetTotalTipsAsync(string staffId, DateTime startDate, DateTime endDate) => GetTotalTipsAsync(staffId, startDate, endDate, default);
-    public Task<Staff?> GetByPINAsync(string pin) => GetByPINAsync(pin, default);
     public Task<IEnumerable<Staff>> GetByRoleAsync(string role) => GetByRoleAsync(role, default);
-    public Task<IEnumerable<Staff>> GetByStoreAsync(string storeId) => GetByStoreAsync(storeId, default);
 } 

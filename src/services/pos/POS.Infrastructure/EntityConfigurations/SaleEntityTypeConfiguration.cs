@@ -19,15 +19,26 @@ public class SaleEntityTypeConfiguration : IEntityTypeConfiguration<Sale>
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(s => s.TotalAmount)
+        builder.Property(s => s.StoreId)
+            .IsRequired();
+
+        builder.Property(s => s.CustomerId);
+
+        builder.Property(s => s.StaffId);
+
+        builder.Property(s => s.Subtotal)
             .IsRequired()
             .HasPrecision(18, 2);
 
-        builder.Property(s => s.DiscountAmount)
+        builder.Property(s => s.Tax)
             .IsRequired()
             .HasPrecision(18, 2);
 
-        builder.Property(s => s.TaxAmount)
+        builder.Property(s => s.Discount)
+            .IsRequired()
+            .HasPrecision(18, 2);
+
+        builder.Property(s => s.Total)
             .IsRequired()
             .HasPrecision(18, 2);
 
@@ -35,30 +46,77 @@ public class SaleEntityTypeConfiguration : IEntityTypeConfiguration<Sale>
             .IsRequired()
             .HasMaxLength(50);
 
+        builder.Property(s => s.Notes)
+            .HasMaxLength(500);
+
         builder.Property(s => s.CreatedAt)
             .IsRequired();
 
-        builder.Property(s => s.UpdatedAt)
+        builder.Property(s => s.UpdatedAt);
+
+        builder.Property(s => s.CompletedAt);
+
+        builder.Property(s => s.CancelledAt);
+
+        builder.Property(s => s.CancellationReason)
+            .HasMaxLength(500);
+
+        builder.Property(s => s.RequiresSync)
             .IsRequired();
 
-        builder.HasOne(s => s.Customer)
-            .WithMany()
-            .HasForeignKey("CustomerId")
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(s => s.LastSyncedAt);
 
-        builder.HasOne(s => s.Store)
-            .WithMany()
-            .HasForeignKey("StoreId")
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(s => s.SyncError)
+            .HasMaxLength(500);
 
-        builder.HasOne(s => s.Payment)
+        // Configure Address value object
+        builder.OwnsOne(s => s.Address, a =>
+        {
+            a.Property(addr => addr.Street).HasMaxLength(200);
+            a.Property(addr => addr.City).HasMaxLength(100);
+            a.Property(addr => addr.State).HasMaxLength(100);
+            a.Property(addr => addr.Country).HasMaxLength(100);
+            a.Property(addr => addr.PostalCode).HasMaxLength(20);
+        });
+
+        // Configure collections
+        builder.HasMany(s => s.Items)
             .WithOne()
-            .HasForeignKey<Sale>("PaymentId")
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey("SaleId")
+            .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasMany(s => s.Payments)
+            .WithOne()
+            .HasForeignKey("SaleId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(s => s.Discounts)
+            .WithOne()
+            .HasForeignKey("SaleId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Configure indexes
         builder.HasIndex(s => s.SaleNumber)
             .IsUnique();
 
         builder.HasIndex(s => s.CreatedAt);
+
+        builder.HasIndex(s => s.StoreId);
+
+        builder.HasIndex(s => s.CustomerId);
+
+        builder.HasIndex(s => s.StaffId);
+
+        builder.HasIndex(s => s.Status);
+
+        builder.HasIndex(s => s.RequiresSync);
+
+        builder.HasIndex(s => s.UpdatedAt);
+
+        builder.HasIndex(s => s.CompletedAt);
+
+        builder.HasIndex(s => s.CancelledAt);
+
+        builder.HasIndex(s => s.Total);
     }
 } 

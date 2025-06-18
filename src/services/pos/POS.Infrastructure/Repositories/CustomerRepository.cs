@@ -34,7 +34,7 @@ public class CustomerRepository : IRepository<Customer>
     public async Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Customers
-            .OrderBy(c => c.Name)
+            .OrderBy(c => c.LastName).ThenBy(c => c.FirstName)
             .ToListAsync(cancellationToken);
     }
 
@@ -46,7 +46,7 @@ public class CustomerRepository : IRepository<Customer>
             var predicate = specification.ToExpression();
             query = query.Where(predicate);
         }
-        return await query.OrderBy(c => c.Name).ToListAsync(cancellationToken);
+        return await query.OrderBy(c => c.LastName).ThenBy(c => c.FirstName).ToListAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(Customer customer, CancellationToken cancellationToken = default)

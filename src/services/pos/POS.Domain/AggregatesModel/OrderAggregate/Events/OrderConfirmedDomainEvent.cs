@@ -2,6 +2,9 @@ using POS.Domain.SeedWork;
 
 namespace POS.Domain.AggregatesModel.OrderAggregate.Events;
 
+/// <summary>
+/// Event raised when an order is confirmed
+/// </summary>
 public class OrderConfirmedDomainEvent : DomainEvent
 {
     public Guid OrderId { get; }

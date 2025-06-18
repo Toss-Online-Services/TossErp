@@ -14,19 +14,35 @@ public class Order : Entity, IAggregateRoot
     private readonly List<OrderItem> _orderItems = new();
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
     
-    public required string OrderNumber { get; set; }
+    public string OrderNumber { get; private set; }
     public Guid CustomerId { get; private set; }
-    public required OrderStatus Status { get; set; }
-    public required Money TotalAmount { get; set; }
-    public required Money TaxAmount { get; set; }
-    public required Money DiscountAmount { get; set; }
+    public OrderStatus Status { get; private set; }
+    public Money TotalAmount { get; private set; }
+    public Money TaxAmount { get; private set; }
+    public Money DiscountAmount { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
     public string? Notes { get; private set; }
 
-    private Order() { } // For EF Core
+    // Audit fields
+    public DateTime? UpdatedAt { get; private set; }
+    public DateTime? DeletedAt { get; private set; }
+    public string? CreatedBy { get; private set; }
+    public string? UpdatedBy { get; private set; }
+    public string? DeletedBy { get; private set; }
 
-    public Order(string orderNumber, Guid customerId, string? notes = null)
+    // For EF Core
+    private Order() 
+    { 
+        OrderNumber = string.Empty;
+        Status = OrderStatus.Created;
+        TotalAmount = Money.FromDecimal(0, "USD");
+        TaxAmount = Money.FromDecimal(0, "USD");
+        DiscountAmount = Money.FromDecimal(0, "USD");
+        CreatedAt = DateTime.UtcNow;
+    }
+
+    public Order(string orderNumber, Guid customerId, string? notes = null, string? createdBy = null)
     {
         OrderNumber = Guard.Against.NullOrWhiteSpace(orderNumber, nameof(orderNumber));
         CustomerId = Guard.Against.Default(customerId, nameof(customerId));
@@ -36,12 +52,22 @@ public class Order : Entity, IAggregateRoot
         DiscountAmount = Money.FromDecimal(0, "USD");
         CreatedAt = DateTime.UtcNow;
         Notes = notes;
+        CreatedBy = createdBy;
 
         AddDomainEvent(new OrderCreatedDomainEvent(this));
     }
 
     public void AddItem(Guid productId, string productName, string productSku, int quantity, Money unitPrice, string? notes = null)
     {
+        Guard.Against.Default(productId, nameof(productId));
+        Guard.Against.NullOrWhiteSpace(productName, nameof(productName));
+        Guard.Against.NullOrWhiteSpace(productSku, nameof(productSku));
+        Guard.Against.NegativeOrZero(quantity, nameof(quantity));
+        Guard.Against.Null(unitPrice, nameof(unitPrice));
+
+        if (Status != OrderStatus.Created && Status != OrderStatus.Draft)
+            throw new DomainException("Can only add items to created or draft orders");
+
         var item = new OrderItem(productId, productName, productSku, quantity, unitPrice, notes);
         _orderItems.Add(item);
         RecalculateTotals();
@@ -50,6 +76,11 @@ public class Order : Entity, IAggregateRoot
 
     public void RemoveItem(Guid productId)
     {
+        Guard.Against.Default(productId, nameof(productId));
+
+        if (Status != OrderStatus.Created && Status != OrderStatus.Draft)
+            throw new DomainException("Can only remove items from created or draft orders");
+
         var item = _orderItems.FirstOrDefault(i => i.ProductId == productId);
         if (item == null) return;
 
@@ -60,6 +91,12 @@ public class Order : Entity, IAggregateRoot
 
     public void UpdateItemQuantity(Guid productId, int quantity)
     {
+        Guard.Against.Default(productId, nameof(productId));
+        Guard.Against.NegativeOrZero(quantity, nameof(quantity));
+
+        if (Status != OrderStatus.Created && Status != OrderStatus.Draft)
+            throw new DomainException("Can only update quantities in created or draft orders");
+
         var item = _orderItems.FirstOrDefault(i => i.ProductId == productId);
         if (item == null) return;
 
@@ -70,8 +107,11 @@ public class Order : Entity, IAggregateRoot
 
     public void Confirm()
     {
-        if (Status != OrderStatus.Created)
-            throw new DomainException("Only created orders can be confirmed");
+        if (Status != OrderStatus.Created && Status != OrderStatus.Draft)
+            throw new DomainException("Only created or draft orders can be confirmed");
+
+        if (_orderItems.Count == 0)
+            throw new DomainException("Cannot confirm an order with no items");
 
         Status = OrderStatus.Confirmed;
         AddDomainEvent(new OrderConfirmedDomainEvent(this));
@@ -96,28 +136,46 @@ public class Order : Entity, IAggregateRoot
         AddDomainEvent(new OrderCompletedDomainEvent(this));
     }
 
-    public void Cancel()
+    public void Cancel(string? reason = null, string? cancelledBy = null)
     {
         if (Status == OrderStatus.Completed || Status == OrderStatus.Refunded)
             throw new DomainException("Completed or refunded orders cannot be cancelled");
 
         Status = OrderStatus.Cancelled;
-        AddDomainEvent(new OrderCancelledDomainEvent(this));
+        Notes = reason;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = cancelledBy;
+        AddDomainEvent(new OrderCancelledDomainEvent(this, reason));
     }
 
-    public void Refund()
+    public void Refund(string? reason = null, string? refundedBy = null)
     {
         if (Status != OrderStatus.Completed)
             throw new DomainException("Only completed orders can be refunded");
 
         Status = OrderStatus.Refunded;
-        AddDomainEvent(new OrderRefundedDomainEvent(this));
+        Notes = reason;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = refundedBy;
+        AddDomainEvent(new OrderRefundedDomainEvent(this, reason));
     }
 
-    public void UpdateNotes(string notes)
+    public void UpdateNotes(string? notes, string? updatedBy = null)
     {
         Notes = notes;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = updatedBy;
         AddDomainEvent(new OrderNotesUpdatedDomainEvent(this));
+    }
+
+    public void Delete(string? deletedBy = null)
+    {
+        if (Status != OrderStatus.Cancelled && Status != OrderStatus.Refunded)
+            throw new DomainException("Only cancelled or refunded orders can be deleted");
+
+        DeletedAt = DateTime.UtcNow;
+        DeletedBy = deletedBy;
+        AddDomainEvent(new OrderDeletedDomainEvent(this));
     }
 
     private void RecalculateTotals()

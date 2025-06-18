@@ -71,15 +71,47 @@ public class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
             .HasForeignKey("OrderId")
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Configure Customer relationship
-        builder.HasOne(o => o.Customer)
-            .WithMany()
-            .HasForeignKey(o => o.CustomerId)
-            .OnDelete(DeleteBehavior.Restrict);
-
+        // Add indexes for performance
         builder.HasIndex(o => o.OrderNumber)
             .IsUnique();
 
+        builder.HasIndex(o => o.CustomerId);
+
+        builder.HasIndex(o => o.Status);
+
         builder.HasIndex(o => o.CreatedAt);
+
+        builder.HasIndex(o => o.CompletedAt);
+
+        builder.HasIndex(o => o.UpdatedAt);
+
+        builder.HasIndex(o => o.DeletedAt);
+
+        builder.HasIndex(o => o.CreatedBy);
+
+        // Add audit fields
+        builder.Property(o => o.CreatedAt)
+            .IsRequired();
+
+        builder.Property(o => o.UpdatedAt)
+            .IsRequired(false);
+
+        builder.Property(o => o.DeletedAt)
+            .IsRequired(false);
+
+        builder.Property(o => o.CreatedBy)
+            .HasMaxLength(50)
+            .IsRequired(false);
+
+        builder.Property(o => o.UpdatedBy)
+            .HasMaxLength(50)
+            .IsRequired(false);
+
+        builder.Property(o => o.DeletedBy)
+            .HasMaxLength(50)
+            .IsRequired(false);
+
+        // Add soft delete filter
+        builder.HasQueryFilter(o => o.DeletedAt == null);
     }
 } 

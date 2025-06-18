@@ -19,23 +19,114 @@ public class StoreEntityTypeConfiguration : IEntityTypeConfiguration<Store>
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(s => s.Address)
+        builder.Property(s => s.Code)
             .IsRequired()
-            .HasMaxLength(500);
+            .HasMaxLength(50);
+
+        // Configure Address value object
+        builder.OwnsOne(s => s.Address, a =>
+        {
+            a.Property(addr => addr.Street).HasMaxLength(200);
+            a.Property(addr => addr.City).HasMaxLength(100);
+            a.Property(addr => addr.State).HasMaxLength(100);
+            a.Property(addr => addr.Country).HasMaxLength(100);
+            a.Property(addr => addr.PostalCode).HasMaxLength(20);
+        });
 
         builder.Property(s => s.Phone)
+            .IsRequired()
             .HasMaxLength(20);
 
         builder.Property(s => s.Email)
+            .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(s => s.TaxNumber)
+        builder.Property(s => s.Website)
+            .HasMaxLength(200);
+
+        builder.Property(s => s.Description)
+            .HasMaxLength(1000);
+
+        builder.Property(s => s.IsActive)
+            .IsRequired();
+
+        builder.Property(s => s.TaxId)
             .HasMaxLength(50);
+
+        builder.Property(s => s.LicenseNumber)
+            .HasMaxLength(50);
+
+        builder.Property(s => s.LogoUrl)
+            .HasMaxLength(500);
+
+        builder.Property(s => s.BannerUrl)
+            .HasMaxLength(500);
+
+        builder.Property(s => s.SocialMediaLinks)
+            .HasMaxLength(1000);
+
+        builder.Property(s => s.TimeZone)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        // Configure Settings value object
+        builder.OwnsOne(s => s.Settings, settings =>
+        {
+            settings.Property(s => s.Currency)
+                .IsRequired()
+                .HasMaxLength(3);
+            settings.Property(s => s.TaxRate)
+                .IsRequired()
+                .HasPrecision(5, 2);
+            settings.Property(s => s.Language)
+                .IsRequired()
+                .HasMaxLength(10);
+            settings.Property(s => s.DateFormat)
+                .IsRequired()
+                .HasMaxLength(20);
+            settings.Property(s => s.TimeFormat)
+                .IsRequired()
+                .HasMaxLength(20);
+        });
 
         builder.Property(s => s.CreatedAt)
             .IsRequired();
 
-        builder.Property(s => s.UpdatedAt)
-            .IsRequired();
+        builder.Property(s => s.UpdatedAt);
+
+        // Configure collections
+        builder.HasMany(s => s.StoreHours)
+            .WithOne()
+            .HasForeignKey("StoreId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(s => s.Devices)
+            .WithOne()
+            .HasForeignKey("StoreId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(s => s.Printers)
+            .WithOne()
+            .HasForeignKey("StoreId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Configure indexes
+        builder.HasIndex(s => s.Code)
+            .IsUnique();
+
+        builder.HasIndex(s => s.Email)
+            .IsUnique();
+
+        builder.HasIndex(s => s.Phone);
+
+        builder.HasIndex(s => s.IsActive);
+
+        builder.HasIndex(s => s.Name);
+
+        builder.HasIndex(s => s.UpdatedAt);
+
+        builder.HasIndex(s => s.TimeZone);
+
+        builder.HasIndex(s => s.TaxId);
     }
 } 

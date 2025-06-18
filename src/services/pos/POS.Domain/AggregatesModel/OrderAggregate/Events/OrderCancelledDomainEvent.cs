@@ -1,5 +1,6 @@
 using POS.Domain.Events;
 using POS.Domain.AggregatesModel.OrderAggregate;
+using POS.Domain.SeedWork;
 
 namespace POS.Domain.AggregatesModel.OrderAggregate.Events;
 
@@ -12,10 +13,10 @@ public class OrderCancelledDomainEvent : DomainEvent
     public string OrderNumber { get; }
     public string? CancellationReason { get; }
 
-    public OrderCancelledDomainEvent(Order order)
+    public OrderCancelledDomainEvent(Order order, string? reason)
     {
         OrderId = order.Id;
         OrderNumber = order.OrderNumber;
-        CancellationReason = order.Notes;
+        CancellationReason = reason;
     }
 } 
