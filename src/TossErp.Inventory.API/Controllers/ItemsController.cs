@@ -4,100 +4,178 @@ using TossErp.Inventory.Domain.AggregatesModel.ItemAggregate;
 using TossErp.Inventory.Domain.Enums;
 using TossErp.Inventory.Infrastructure.Repositories;
 using TossErp.Domain.SeedWork;
+using TossErp.Shared.DTOs;
+using TossErp.Inventory.API.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TossErp.Inventory.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ItemsController : ControllerBase
     {
         private readonly IItemRepository _itemRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<ItemsController> _logger;
+        private readonly IItemService _itemService;
 
-        public ItemsController(IItemRepository itemRepository, IUnitOfWork unitOfWork, ILogger<ItemsController> logger)
+        public ItemsController(IItemRepository itemRepository, IUnitOfWork unitOfWork, ILogger<ItemsController> logger, IItemService itemService)
         {
             _itemRepository = itemRepository ?? throw new ArgumentNullException(nameof(itemRepository));
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _itemService = itemService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<ItemListDto>> GetItems(
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10,
-            [FromQuery] ItemType? itemType = null,
-            [FromQuery] Guid? categoryId = null,
-            [FromQuery] Guid? brandId = null,
-            [FromQuery] Guid? supplierId = null)
+        public async Task<IActionResult> GetItems([FromQuery] string? searchTerm, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
             try
             {
-                var items = await _itemRepository.GetActiveItemsAsync();
-
-                // Apply filters
-                if (itemType.HasValue)
-                {
-                    items = items.Where(i => i.ItemType == itemType.Value);
-                }
-
-                if (categoryId.HasValue)
-                {
-                    items = items.Where(i => i.CategoryId == categoryId.Value);
-                }
-
-                if (brandId.HasValue)
-                {
-                    items = items.Where(i => i.BrandId == brandId.Value);
-                }
-
-                if (supplierId.HasValue)
-                {
-                    items = items.Where(i => i.SupplierId == supplierId.Value);
-                }
-
-                var totalCount = items.Count();
-
-                var pagedItems = items
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .Select(MapToDto)
-                    .ToList();
-
-                var result = new ItemListDto
-                {
-                    Items = pagedItems,
-                    TotalCount = totalCount,
-                    PageNumber = pageNumber,
-                    PageSize = pageSize
-                };
-
-                return Ok(result);
+                var items = await _itemService.GetItemsAsync(searchTerm, page, pageSize);
+                return Ok(items);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving items");
-                return StatusCode(500, "An error occurred while retrieving items");
+                return StatusCode(500, new { message = "Failed to retrieve items", error = ex.Message });
             }
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ItemDto>> GetItem(Guid id)
+        public async Task<IActionResult> GetItem(Guid id)
         {
             try
             {
-                var item = await _itemRepository.GetByIdAsync(id);
+                var item = await _itemService.GetItemByIdAsync(id);
                 if (item == null)
                 {
-                    return NotFound($"Item with ID {id} not found");
+                    return NotFound();
                 }
-
-                return Ok(MapToDto(item));
+                return Ok(item);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving item with ID {ItemId}", id);
-                return StatusCode(500, "An error occurred while retrieving the item");
+                _logger.LogError(ex, "Error retrieving item {ItemId}", id);
+                return StatusCode(500, new { message = "Failed to retrieve item", error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateItem([FromBody] CreateItemDto request)
+        {
+            try
+            {
+                var item = await _itemService.CreateItemAsync(request);
+                return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating item");
+                return BadRequest(new { message = "Failed to create item", error = ex.Message });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateItem(Guid id, [FromBody] UpdateItemDto request)
+        {
+            try
+            {
+                var item = await _itemService.UpdateItemAsync(id, request);
+                if (item == null)
+                {
+                    return NotFound();
+                }
+                return Ok(item);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating item {ItemId}", id);
+                return BadRequest(new { message = "Failed to update item", error = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteItem(Guid id)
+        {
+            try
+            {
+                var success = await _itemService.DeleteItemAsync(id);
+                if (!success)
+                {
+                    return NotFound();
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting item {ItemId}", id);
+                return StatusCode(500, new { message = "Failed to delete item", error = ex.Message });
+            }
+        }
+
+        [HttpPost("{id}/adjust-stock")]
+        public async Task<IActionResult> AdjustStock(Guid id, [FromBody] StockAdjustmentDto request)
+        {
+            try
+            {
+                var result = await _itemService.AdjustStockAsync(id, request);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adjusting stock for item {ItemId}", id);
+                return BadRequest(new { message = "Failed to adjust stock", error = ex.Message });
+            }
+        }
+
+        [HttpGet("{id}/stock-movements")]
+        public async Task<IActionResult> GetStockMovements(Guid id, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate)
+        {
+            try
+            {
+                var movements = await _itemService.GetStockMovementsAsync(id, fromDate, toDate);
+                return Ok(movements);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving stock movements for item {ItemId}", id);
+                return StatusCode(500, new { message = "Failed to retrieve stock movements", error = ex.Message });
+            }
+        }
+
+        [HttpGet("low-stock")]
+        public async Task<IActionResult> GetLowStockItems([FromQuery] int threshold = 10)
+        {
+            try
+            {
+                var items = await _itemService.GetLowStockItemsAsync(threshold);
+                return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving low stock items");
+                return StatusCode(500, new { message = "Failed to retrieve low stock items", error = ex.Message });
+            }
+        }
+
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetCategories()
+        {
+            try
+            {
+                var categories = await _itemService.GetCategoriesAsync();
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving categories");
+                return StatusCode(500, new { message = "Failed to retrieve categories", error = ex.Message });
             }
         }
 
@@ -138,161 +216,6 @@ namespace TossErp.Inventory.API.Controllers
             {
                 _logger.LogError(ex, "Error retrieving item with barcode {Barcode}", barcode);
                 return StatusCode(500, "An error occurred while retrieving the item");
-            }
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<ItemDto>> CreateItem([FromBody] CreateItemDto createItemDto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                // Check if item code already exists
-                if (await _itemRepository.ItemCodeExistsAsync(createItemDto.ItemCode))
-                {
-                    return BadRequest($"Item code '{createItemDto.ItemCode}' already exists");
-                }
-
-                // Check if barcode already exists
-                if (!string.IsNullOrEmpty(createItemDto.Barcode) && 
-                    await _itemRepository.BarcodeExistsAsync(createItemDto.Barcode))
-                {
-                    return BadRequest($"Barcode '{createItemDto.Barcode}' already exists");
-                }
-
-                // Check if SKU already exists
-                if (!string.IsNullOrEmpty(createItemDto.SKU) && 
-                    await _itemRepository.SKUExistsAsync(createItemDto.SKU))
-                {
-                    return BadRequest($"SKU '{createItemDto.SKU}' already exists");
-                }
-
-                var item = new Item(
-                    createItemDto.ItemCode,
-                    createItemDto.Name,
-                    createItemDto.Description,
-                    createItemDto.Barcode,
-                    createItemDto.SKU,
-                    createItemDto.ItemType,
-                    createItemDto.IsStockable,
-                    createItemDto.StandardCost,
-                    createItemDto.SellingPrice,
-                    createItemDto.UnitOfMeasure,
-                    createItemDto.MinimumStockLevel,
-                    createItemDto.MaximumStockLevel,
-                    createItemDto.ReorderPoint,
-                    createItemDto.ReorderQuantity,
-                    createItemDto.CategoryId,
-                    createItemDto.BrandId,
-                    createItemDto.SupplierId
-                );
-
-                await _itemRepository.AddAsync(item);
-                await _unitOfWork.SaveChangesAsync();
-
-                _logger.LogInformation("Created item with ID {ItemId}", item.Id);
-
-                return CreatedAtAction(nameof(GetItem), new { id = item.Id }, MapToDto(item));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating item");
-                return StatusCode(500, "An error occurred while creating the item");
-            }
-        }
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult<ItemDto>> UpdateItem(Guid id, [FromBody] UpdateItemDto updateItemDto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var item = await _itemRepository.GetByIdAsync(id);
-                if (item == null)
-                {
-                    return NotFound($"Item with ID {id} not found");
-                }
-
-                // Check if barcode already exists (if changed)
-                if (!string.IsNullOrEmpty(updateItemDto.Barcode) && 
-                    updateItemDto.Barcode != item.Barcode &&
-                    await _itemRepository.BarcodeExistsAsync(updateItemDto.Barcode))
-                {
-                    return BadRequest($"Barcode '{updateItemDto.Barcode}' already exists");
-                }
-
-                // Check if SKU already exists (if changed)
-                if (!string.IsNullOrEmpty(updateItemDto.SKU) && 
-                    updateItemDto.SKU != item.SKU &&
-                    await _itemRepository.SKUExistsAsync(updateItemDto.SKU))
-                {
-                    return BadRequest($"SKU '{updateItemDto.SKU}' already exists");
-                }
-
-                item.UpdateDetails(
-                    updateItemDto.Name,
-                    updateItemDto.Description,
-                    updateItemDto.Barcode,
-                    updateItemDto.SKU,
-                    updateItemDto.ItemType,
-                    updateItemDto.IsStockable,
-                    updateItemDto.StandardCost,
-                    updateItemDto.SellingPrice,
-                    updateItemDto.UnitOfMeasure,
-                    updateItemDto.MinimumStockLevel,
-                    updateItemDto.MaximumStockLevel,
-                    updateItemDto.ReorderPoint,
-                    updateItemDto.ReorderQuantity,
-                    updateItemDto.CategoryId,
-                    updateItemDto.BrandId,
-                    updateItemDto.SupplierId
-                );
-
-                _itemRepository.Update(item);
-                await _unitOfWork.SaveChangesAsync();
-
-                _logger.LogInformation("Updated item with ID {ItemId}", id);
-
-                return Ok(MapToDto(item));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating item with ID {ItemId}", id);
-                return StatusCode(500, "An error occurred while updating the item");
-            }
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteItem(Guid id)
-        {
-            try
-            {
-                var item = await _itemRepository.GetByIdAsync(id);
-                if (item == null)
-                {
-                    return NotFound($"Item with ID {id} not found");
-                }
-
-                item.Deactivate();
-                _itemRepository.Update(item);
-                await _unitOfWork.SaveChangesAsync();
-
-                _logger.LogInformation("Deactivated item with ID {ItemId}", id);
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting item with ID {ItemId}", id);
-                return StatusCode(500, "An error occurred while deleting the item");
             }
         }
 

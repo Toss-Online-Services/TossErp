@@ -12,5 +12,6 @@ namespace TossErp.Shared.DTOs
         public string[] Roles { get; set; } = Array.Empty<string>();
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
+        public DateTime? LastModifiedAt { get; set; }
     }
 } 

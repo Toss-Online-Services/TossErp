@@ -1,6 +1,6 @@
 @page "/items"
 @using TossErp.Shared.DTOs
-@using TossErp.Shared.DTOs.Enums
+@using TossErp.Shared.Enums
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 
@@ -69,7 +69,7 @@
                 <MudTd DataLabel="Stock">
                     @if (context.IsStockable)
                     {
-                        <MudText>@(context.MinimumStockLevel?.ToString() ?? "0")</MudText>
+                        <MudText>@context.MinimumStockLevel.ToString()</MudText>
                     }
                     else
                     {
@@ -239,16 +239,16 @@
                 @if (viewingItem.IsStockable)
                 {
                     <MudItem xs="12" sm="6">
-                        <MudText><strong>Minimum Stock:</strong> @(viewingItem.MinimumStockLevel?.ToString() ?? "N/A")</MudText>
+                        <MudText><strong>Minimum Stock:</strong> @viewingItem.MinimumStockLevel.ToString()</MudText>
                     </MudItem>
                     <MudItem xs="12" sm="6">
-                        <MudText><strong>Maximum Stock:</strong> @(viewingItem.MaximumStockLevel?.ToString() ?? "N/A")</MudText>
+                        <MudText><strong>Maximum Stock:</strong> @viewingItem.MaximumStockLevel.ToString()</MudText>
                     </MudItem>
                     <MudItem xs="12" sm="6">
-                        <MudText><strong>Reorder Point:</strong> @(viewingItem.ReorderPoint?.ToString() ?? "N/A")</MudText>
+                        <MudText><strong>Reorder Point:</strong> @viewingItem.ReorderPoint.ToString()</MudText>
                     </MudItem>
                     <MudItem xs="12" sm="6">
-                        <MudText><strong>Reorder Quantity:</strong> @(viewingItem.ReorderQuantity?.ToString() ?? "N/A")</MudText>
+                        <MudText><strong>Reorder Quantity:</strong> @viewingItem.ReorderQuantity.ToString()</MudText>
                     </MudItem>
                 }
                 <MudItem xs="12">

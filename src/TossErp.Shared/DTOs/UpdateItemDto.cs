@@ -2,9 +2,8 @@ using TossErp.Shared.Enums;
 
 namespace TossErp.Shared.DTOs
 {
-    public class CreateItemDto
+    public class UpdateItemDto
     {
-        public string ItemCode { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public string? Barcode { get; set; }

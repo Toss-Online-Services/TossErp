@@ -1,12 +1,18 @@
 @inherits LayoutComponentBase
+@using TossErp.WebApp.Services
+@inject NavigationManager Navigation
+@inject ILocalStorageService LocalStorage
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" @onclick="(e) => DrawerToggle()" />
         <MudText Typo="Typo.h6" Class="ml-3">TOSS ERP</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="Color.Inherit" />
-        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" />
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" @onclick="Logout" />
     </MudAppBar>
     
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -26,5 +32,12 @@
     private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    private async Task Logout()
+    {
+        await LocalStorage.RemoveItemAsync("authToken");
+        await LocalStorage.RemoveItemAsync("user");
+        Navigation.NavigateTo("/login");
     }
 } 

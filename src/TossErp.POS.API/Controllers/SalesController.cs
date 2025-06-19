@@ -4,22 +4,28 @@ using TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 using TossErp.POS.Domain.Enums;
 using TossErp.POS.Infrastructure.Repositories;
 using TossErp.Domain.SeedWork;
+using TossErp.Shared.DTOs;
+using TossErp.POS.API.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TossErp.POS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class SalesController : ControllerBase
     {
         private readonly ISaleRepository _saleRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<SalesController> _logger;
+        private readonly ISalesService _salesService;
 
-        public SalesController(ISaleRepository saleRepository, IUnitOfWork unitOfWork, ILogger<SalesController> logger)
+        public SalesController(ISaleRepository saleRepository, IUnitOfWork unitOfWork, ILogger<SalesController> logger, ISalesService salesService)
         {
             _saleRepository = saleRepository ?? throw new ArgumentNullException(nameof(saleRepository));
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _salesService = salesService;
         }
 
         [HttpGet]
@@ -393,6 +399,51 @@ namespace TossErp.POS.API.Controllers
             {
                 _logger.LogError(ex, "Error generating daily sales report for {Date}", date);
                 return StatusCode(500, "An error occurred while generating the report");
+            }
+        }
+
+        [HttpPost("create-sale")]
+        public async Task<IActionResult> CreateSale([FromBody] CreateSaleDto request)
+        {
+            try
+            {
+                var sale = await _salesService.CreateSaleAsync(request);
+                return CreatedAtAction(nameof(GetSale), new { id = sale.Id }, sale);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating sale");
+                return BadRequest(new { message = "Failed to create sale", error = ex.Message });
+            }
+        }
+
+        [HttpGet("daily-summary")]
+        public async Task<IActionResult> GetDailySummary([FromQuery] DateTime date)
+        {
+            try
+            {
+                var summary = await _salesService.GetDailySummaryAsync(date);
+                return Ok(summary);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving daily summary for {Date}", date);
+                return StatusCode(500, new { message = "Failed to retrieve daily summary", error = ex.Message });
+            }
+        }
+
+        [HttpGet("reports/sales")]
+        public async Task<IActionResult> GetSalesReport([FromQuery] DateTime fromDate, [FromQuery] DateTime toDate)
+        {
+            try
+            {
+                var report = await _salesService.GetSalesReportAsync(fromDate, toDate);
+                return Ok(report);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating sales report");
+                return StatusCode(500, new { message = "Failed to generate sales report", error = ex.Message });
             }
         }
 
