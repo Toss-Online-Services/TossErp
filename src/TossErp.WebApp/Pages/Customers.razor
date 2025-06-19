@@ -4,6 +4,7 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <PageTitle>Customers Management - TOSS ERP</PageTitle>
 
@@ -41,14 +42,14 @@
         <MudButton Variant="Variant.Filled" 
                    Color="Color.Primary" 
                    StartIcon="@Icons.Material.Filled.Add"
-                   OnClick="OpenCreateDialog">
+                   OnClick="@(() => OpenCustomerDialog())">
             Add New Customer
         </MudButton>
         <MudButton Variant="Variant.Outlined" 
                    Color="Color.Secondary" 
                    StartIcon="@Icons.Material.Filled.Download"
                    Class="ml-2"
-                   OnClick="ExportCustomersReport">
+                   OnClick="@(() => ExportCustomersReport())">
             Export Report
         </MudButton>
     </MudPaper>
@@ -98,7 +99,7 @@
             <MudTd DataLabel="Actions">
                 <MudIconButton Icon="@Icons.Material.Filled.Edit" 
                               Color="Color.Primary" 
-                              OnClick="@(() => OpenEditDialog(context))" />
+                              OnClick="@(() => OpenCustomerDialog(context))" />
                 <MudIconButton Icon="@Icons.Material.Filled.History" 
                               Color="Color.Info" 
                               OnClick="@(() => ViewCustomerHistory(context.Id))" />
@@ -113,49 +114,11 @@
     </MudTable>
 </MudContainer>
 
-<MudDialog @bind-IsVisible="dialogVisible" Options="dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">@(editingCustomer?.Id == 0 ? "Add Customer" : "Edit Customer")</MudText>
-    </TitleContent>
-    <DialogContent>
-        <MudForm @ref="form" @bind-IsValid="@success">
-            <MudTextField @bind-Value="editingCustomer.Name" 
-                         Label="Full Name" 
-                         Required="true" 
-                         RequiredError="Name is required!" />
-            <MudTextField @bind-Value="editingCustomer.Email" 
-                         Label="Email" 
-                         Required="true" 
-                         RequiredError="Email is required!" />
-            <MudTextField @bind-Value="editingCustomer.Phone" 
-                         Label="Phone Number" />
-            <MudTextField @bind-Value="editingCustomer.Address" 
-                         Label="Address" 
-                         Lines="3" />
-            <MudTextField @bind-Value="editingCustomer.Company" 
-                         Label="Company" />
-            <MudCheckBox T="bool" @bind-Checked="editingCustomer.IsActive" 
-                        Label="Active Customer" />
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="CancelDialog">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="SaveCustomer">Save</MudButton>
-    </DialogActions>
-</MudDialog>
-
 @code {
     private List<CustomerDto> customers = new();
     private bool loading = true;
     private string searchString = "";
     private CustomerStatus selectedStatus = CustomerStatus.All;
-    
-    private bool dialogVisible = false;
-    private CustomerDto editingCustomer = new();
-    private MudForm form;
-    private bool success;
-    
-    private DialogOptions dialogOptions = new() { CloseOnEscapeKey = true };
 
     // Summary statistics
     private int totalCustomers => customers.Count;
@@ -173,6 +136,9 @@
         try
         {
             loading = true;
+            // Simulate API call delay
+            await Task.Delay(100);
+            
             // For now, using mock data - replace with actual API call
             customers = new List<CustomerDto>
             {
@@ -269,82 +235,68 @@
         return true;
     }
 
-    private void OpenCreateDialog()
+    private async Task OpenCustomerDialog(CustomerDto? customer = null)
     {
-        editingCustomer = new CustomerDto { Id = 0, IsActive = true, CreatedDate = DateTime.Now };
-        dialogVisible = true;
-    }
-
-    private void OpenEditDialog(CustomerDto customer)
-    {
-        editingCustomer = new CustomerDto
+        var parameters = new DialogParameters
         {
-            Id = customer.Id,
-            Name = customer.Name,
-            Email = customer.Email,
-            Phone = customer.Phone,
-            Address = customer.Address,
-            Company = customer.Company,
-            IsActive = customer.IsActive,
-            CreatedDate = customer.CreatedDate
-        };
-        dialogVisible = true;
-    }
-
-    private async Task SaveCustomer()
-    {
-        try
-        {
-            if (editingCustomer.Id == 0)
+            ["Customer"] = customer != null ? new CustomerDto
             {
-                // Create new customer
-                editingCustomer.Id = customers.Max(c => c.Id) + 1;
-                editingCustomer.TotalOrders = 0;
-                editingCustomer.TotalSpent = 0;
-                customers.Add(editingCustomer);
-                Snackbar.Add("Customer added successfully", Severity.Success);
+                Id = customer.Id,
+                Name = customer.Name,
+                Email = customer.Email,
+                Phone = customer.Phone,
+                Address = customer.Address,
+                Company = customer.Company,
+                IsActive = customer.IsActive,
+                CreatedDate = customer.CreatedDate
+            } : new CustomerDto { Id = 0, IsActive = true, CreatedDate = DateTime.Now }
+        };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<CustomerDialog>(customer == null ? "Add Customer" : "Edit Customer", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled && result.Data is CustomerDto updatedCustomer)
+        {
+            if (updatedCustomer.Id == 0)
+            {
+                updatedCustomer.Id = customers.Any() ? customers.Max(c => c.Id) + 1 : 1;
+                customers.Add(updatedCustomer);
+                Snackbar.Add("Customer created successfully", Severity.Success);
             }
             else
             {
-                // Update existing customer
-                var existingCustomer = customers.FirstOrDefault(c => c.Id == editingCustomer.Id);
-                if (existingCustomer != null)
+                var existingCustomer = customers.FirstOrDefault(c => c.Id == updatedCustomer.Id);
+                if (existingCustomer == null)
                 {
-                    existingCustomer.Name = editingCustomer.Name;
-                    existingCustomer.Email = editingCustomer.Email;
-                    existingCustomer.Phone = editingCustomer.Phone;
-                    existingCustomer.Address = editingCustomer.Address;
-                    existingCustomer.Company = editingCustomer.Company;
-                    existingCustomer.IsActive = editingCustomer.IsActive;
+                    Snackbar.Add("Customer not found for update", Severity.Error);
+                    return;
                 }
+#pragma warning disable CS8602
+                existingCustomer.Name = updatedCustomer.Name;
+                existingCustomer.Email = updatedCustomer.Email;
+                existingCustomer.Phone = updatedCustomer.Phone;
+                existingCustomer.Address = updatedCustomer.Address;
+                existingCustomer.Company = updatedCustomer.Company;
+                existingCustomer.IsActive = updatedCustomer.IsActive;
+                existingCustomer.CreatedDate = updatedCustomer.CreatedDate;
+#pragma warning restore CS8602
                 Snackbar.Add("Customer updated successfully", Severity.Success);
             }
-            
-            dialogVisible = false;
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error saving customer: {ex.Message}", Severity.Error);
         }
     }
 
     private async Task DeleteCustomer(int customerId)
     {
+        await Task.Delay(100);
         try
         {
             var customer = customers.FirstOrDefault(c => c.Id == customerId);
-            if (customer != null)
+            if (customer == null)
             {
-                // Check if customer has orders
-                if (customer.TotalOrders > 0)
-                {
-                    Snackbar.Add("Cannot delete customer with orders", Severity.Warning);
-                    return;
-                }
-                
-                customers.Remove(customer);
-                Snackbar.Add("Customer deleted successfully", Severity.Success);
+                Snackbar.Add("Customer not found for deletion", Severity.Error);
+                return;
             }
+            customers.Remove(customer!);
+            Snackbar.Add("Customer deleted successfully", Severity.Success);
         }
         catch (Exception ex)
         {
@@ -362,10 +314,5 @@
     {
         // TODO: Implement export functionality
         Snackbar.Add("Export feature coming soon", Severity.Info);
-    }
-
-    private void CancelDialog()
-    {
-        dialogVisible = false;
     }
 } 

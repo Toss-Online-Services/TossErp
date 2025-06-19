@@ -4,6 +4,9 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+#pragma warning disable CS8602
 
 <PageTitle>Roles Management - TOSS ERP</PageTitle>
 
@@ -14,7 +17,7 @@
         <MudButton Variant="Variant.Filled" 
                    Color="Color.Primary" 
                    StartIcon="@Icons.Material.Filled.Add"
-                   OnClick="OpenCreateDialog">
+                   OnClick="@(() => OpenRoleDialog())">
             Create New Role
         </MudButton>
     </MudPaper>
@@ -35,21 +38,30 @@
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd DataLabel="Description">@context.Description</MudTd>
-            <MudTd DataLabel="Permissions">
-                <MudChip T="string" Color="Color.Primary" Size="Size.Small" Class="ma-1">
-                    @context.Permissions.Count permissions
-                </MudChip>
-            </MudTd>
-            <MudTd DataLabel="Actions">
-                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
-                              Color="Color.Primary" 
-                              OnClick="@(() => OpenEditDialog(context))" />
-                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
-                              Color="Color.Error" 
-                              OnClick="@(() => DeleteRole(context.Id))" />
-            </MudTd>
+#pragma warning disable CS8602
+            @if (context == null)
+            {
+                <MudTd colspan="4"></MudTd>
+            }
+            else
+            {
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+                <MudTd DataLabel="Permissions">
+                    <MudChip T="string" Color="Color.Primary" Size="Size.Small" Class="ma-1">
+                        @context.Permissions.Count permissions
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                  Color="Color.Primary" 
+                                  OnClick="@(() => OpenRoleDialog(context))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                  Color="Color.Error" 
+                                  OnClick="@(() => DeleteRole(context.Id))" />
+                </MudTd>
+            }
+#pragma warning restore CS8602
         </RowTemplate>
         <PagerContent>
             <MudTablePager />
@@ -57,65 +69,10 @@
     </MudTable>
 </MudContainer>
 
-<MudDialog @bind-IsVisible="dialogVisible" Options="dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">@(editingRole?.Id == 0 ? "Create Role" : "Edit Role")</MudText>
-    </TitleContent>
-    <DialogContent>
-        <MudForm @ref="form" @bind-IsValid="@success">
-            <MudTextField @bind-Value="editingRole.Name" 
-                         Label="Role Name" 
-                         Required="true" 
-                         RequiredError="Role name is required!" />
-            <MudTextField @bind-Value="editingRole.Description" 
-                         Label="Description" 
-                         Lines="3" />
-            <MudSelect T="string" @bind-Value="selectedPermission" 
-                      Label="Add Permission" 
-                      HelperText="Select a permission to add">
-                @foreach (var permission in availablePermissions)
-                {
-                    <MudSelectItem Value="@permission">@permission</MudSelectItem>
-                }
-            </MudSelect>
-            <MudButton OnClick="AddPermission" 
-                      Variant="Variant.Outlined" 
-                      Color="Color.Primary" 
-                      Class="mt-2">
-                Add Permission
-            </MudButton>
-            
-            <MudDivider Class="my-4" />
-            
-            <MudText Typo="Typo.subtitle1" Class="mb-2">Current Permissions</MudText>
-            @foreach (var permission in editingRole.Permissions)
-            {
-                <MudChip T="string" Color="Color.Primary" 
-                         OnClose="@(() => RemovePermission(permission))" 
-                         Class="ma-1">
-                    @permission
-                </MudChip>
-            }
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="CancelDialog">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="SaveRole">Save</MudButton>
-    </DialogActions>
-</MudDialog>
-
 @code {
     private List<RoleDto> roles = new();
     private bool loading = true;
     private string searchString = "";
-    
-    private bool dialogVisible = false;
-    private RoleDto editingRole = new();
-    private string selectedPermission = "";
-    private MudForm form;
-    private bool success;
-    
-    private DialogOptions dialogOptions = new() { CloseOnEscapeKey = true };
     
     private List<string> availablePermissions = new()
     {
@@ -138,6 +95,9 @@
         try
         {
             loading = true;
+            // Simulate API call delay
+            await Task.Delay(100);
+            
             // For now, using mock data - replace with actual API call
             roles = new List<RoleDto>
             {
@@ -166,89 +126,64 @@
                role.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
     }
 
-    private void OpenCreateDialog()
+    private async Task OpenRoleDialog(RoleDto? role = null)
     {
-        editingRole = new RoleDto { Id = 0, Permissions = new List<string>() };
-        dialogVisible = true;
-    }
-
-    private void OpenEditDialog(RoleDto role)
-    {
-        editingRole = new RoleDto
+        await Task.Delay(100);
+        var parameters = new DialogParameters
         {
-            Id = role.Id,
-            Name = role.Name,
-            Description = role.Description,
-            Permissions = new List<string>(role.Permissions)
-        };
-        dialogVisible = true;
-    }
-
-    private void AddPermission()
-    {
-        if (!string.IsNullOrEmpty(selectedPermission) && !editingRole.Permissions.Contains(selectedPermission))
-        {
-            editingRole.Permissions.Add(selectedPermission);
-            selectedPermission = "";
-        }
-    }
-
-    private void RemovePermission(string permission)
-    {
-        editingRole.Permissions.Remove(permission);
-    }
-
-    private async Task SaveRole()
-    {
-        try
-        {
-            if (editingRole.Id == 0)
+            ["Role"] = role != null ? new RoleDto
             {
-                // Create new role
-                editingRole.Id = roles.Max(r => r.Id) + 1;
-                roles.Add(editingRole);
+                Id = role.Id,
+                Name = role.Name,
+                Description = role.Description,
+                Permissions = new List<string>(role.Permissions)
+            } : new RoleDto { Id = 0, Permissions = new List<string>() },
+            ["AvailablePermissions"] = availablePermissions
+        };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<RoleDialog>(role == null ? "Create Role" : "Edit Role", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled && result.Data is RoleDto updatedRole)
+        {
+            if (updatedRole.Id == 0)
+            {
+                updatedRole.Id = roles.Any() ? roles.Max(r => r.Id) + 1 : 1;
+                roles.Add(updatedRole);
                 Snackbar.Add("Role created successfully", Severity.Success);
             }
             else
             {
-                // Update existing role
-                var existingRole = roles.FirstOrDefault(r => r.Id == editingRole.Id);
-                if (existingRole != null)
+                var existingRole = roles.FirstOrDefault(r => r.Id == updatedRole.Id);
+                if (existingRole == null)
                 {
-                    existingRole.Name = editingRole.Name;
-                    existingRole.Description = editingRole.Description;
-                    existingRole.Permissions = editingRole.Permissions;
+                    Snackbar.Add("Role not found for update", Severity.Error);
+                    return;
                 }
+                existingRole!.Name = updatedRole.Name;
+                existingRole!.Description = updatedRole.Description;
+                existingRole!.Permissions = updatedRole.Permissions;
                 Snackbar.Add("Role updated successfully", Severity.Success);
             }
-            
-            dialogVisible = false;
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error saving role: {ex.Message}", Severity.Error);
         }
     }
 
     private async Task DeleteRole(int roleId)
     {
+        await Task.Delay(100);
         try
         {
             var role = roles.FirstOrDefault(r => r.Id == roleId);
-            if (role != null)
+            if (role == null)
             {
-                roles.Remove(role);
-                Snackbar.Add("Role deleted successfully", Severity.Success);
+                Snackbar.Add("Role not found for deletion", Severity.Error);
+                return;
             }
+            roles.Remove(role!);
+            Snackbar.Add("Role deleted successfully", Severity.Success);
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Error deleting role: {ex.Message}", Severity.Error);
         }
     }
-
-    private void CancelDialog()
-    {
-        dialogVisible = false;
-    }
-} 
+}

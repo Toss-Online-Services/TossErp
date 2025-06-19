@@ -1,5 +1,6 @@
 @page "/company"
 @using TossErp.Shared.DTOs
+@using TossErp.Shared.Enums
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 
@@ -110,7 +111,7 @@
 </MudContainer>
 
 @code {
-    private MudForm form;
+    private MudForm form = default!;
     private bool success;
     private CompanySettingsDto company = new()
     {
@@ -124,7 +125,7 @@
         ZipCode = "10001",
         Country = "USA",
         TaxNumber = "TAX123456789",
-        Currency = "USD",
+        Currency = CurrencyCode.USD,
         LogoUrl = "/images/logo.png"
     };
 
@@ -159,6 +160,6 @@
 
     private void ResetForm()
     {
-        form.Reset();
+        form.ResetValidation();
     }
 } 

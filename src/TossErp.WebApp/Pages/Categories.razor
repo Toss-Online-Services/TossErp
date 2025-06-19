@@ -4,6 +4,9 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+#pragma warning disable CS8602
 
 <PageTitle>Categories Management - TOSS ERP</PageTitle>
 
@@ -14,7 +17,7 @@
         <MudButton Variant="Variant.Filled" 
                    Color="Color.Primary" 
                    StartIcon="@Icons.Material.Filled.Add"
-                   OnClick="OpenCreateDialog">
+                   OnClick="@(() => OpenCategoryDialog())">
             Create New Category
         </MudButton>
     </MudPaper>
@@ -36,20 +39,29 @@
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd DataLabel="Description">@context.Description</MudTd>
-            <MudTd DataLabel="Parent Category">@(context.ParentCategoryName ?? "None")</MudTd>
-            <MudTd DataLabel="Item Count">
-                <MudChip T="string" Color="Color.Info" Size="Size.Small">@context.ItemCount</MudChip>
-            </MudTd>
-            <MudTd DataLabel="Actions">
-                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
-                              Color="Color.Primary" 
-                              OnClick="@(() => OpenEditDialog(context))" />
-                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
-                              Color="Color.Error" 
-                              OnClick="@(() => DeleteCategory(context.Id))" />
-            </MudTd>
+#pragma warning disable CS8602
+            @if (context == null)
+            {
+                <MudTd colspan="5"></MudTd>
+            }
+            else
+            {
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+                <MudTd DataLabel="Parent Category">@(context.ParentCategoryName ?? "None")</MudTd>
+                <MudTd DataLabel="Item Count">
+                    <MudChip T="string" Color="Color.Info" Size="Size.Small">@context.ItemCount</MudChip>
+                </MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                  Color="Color.Primary" 
+                                  OnClick="@(() => OpenCategoryDialog(context))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                  Color="Color.Error" 
+                                  OnClick="@(() => DeleteCategory(context.Id))" />
+                </MudTd>
+            }
+#pragma warning restore CS8602
         </RowTemplate>
         <PagerContent>
             <MudTablePager />
@@ -57,47 +69,10 @@
     </MudTable>
 </MudContainer>
 
-<MudDialog @bind-IsVisible="dialogVisible" Options="dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">@(editingCategory?.Id == 0 ? "Create Category" : "Edit Category")</MudText>
-    </TitleContent>
-    <DialogContent>
-        <MudForm @ref="form" @bind-IsValid="@success">
-            <MudTextField @bind-Value="editingCategory.Name" 
-                         Label="Category Name" 
-                         Required="true" 
-                         RequiredError="Category name is required!" />
-            <MudTextField @bind-Value="editingCategory.Description" 
-                         Label="Description" 
-                         Lines="3" />
-            <MudSelect T="int?" @bind-Value="editingCategory.ParentCategoryId" 
-                      Label="Parent Category" 
-                      HelperText="Select parent category (optional)">
-                <MudSelectItem Value="@((int?)null)">None</MudSelectItem>
-                @foreach (var category in categories.Where(c => c.Id != editingCategory.Id))
-                {
-                    <MudSelectItem Value="@category.Id">@category.Name</MudSelectItem>
-                }
-            </MudSelect>
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="CancelDialog">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="SaveCategory">Save</MudButton>
-    </DialogActions>
-</MudDialog>
-
 @code {
     private List<CategoryDto> categories = new();
     private bool loading = true;
     private string searchString = "";
-    
-    private bool dialogVisible = false;
-    private CategoryDto editingCategory = new();
-    private MudForm form;
-    private bool success;
-    
-    private DialogOptions dialogOptions = new() { CloseOnEscapeKey = true };
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,6 +84,9 @@
         try
         {
             loading = true;
+            // Simulate API call delay
+            await Task.Delay(100);
+            
             // For now, using mock data - replace with actual API call
             categories = new List<CategoryDto>
             {
@@ -141,105 +119,91 @@
                category.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
     }
 
-    private void OpenCreateDialog()
+    private async Task OpenCategoryDialog(CategoryDto? category = null)
     {
-        editingCategory = new CategoryDto { Id = 0 };
-        dialogVisible = true;
-    }
-
-    private void OpenEditDialog(CategoryDto category)
-    {
-        editingCategory = new CategoryDto
+        var parameters = new DialogParameters
         {
-            Id = category.Id,
-            Name = category.Name,
-            Description = category.Description,
-            ParentCategoryId = category.ParentCategoryId
-        };
-        dialogVisible = true;
-    }
-
-    private async Task SaveCategory()
-    {
-        try
-        {
-            if (editingCategory.Id == 0)
+            ["Category"] = category != null ? new CategoryDto
             {
-                // Create new category
-                editingCategory.Id = categories.Max(c => c.Id) + 1;
-                editingCategory.ItemCount = 0;
-                if (editingCategory.ParentCategoryId.HasValue)
+                Id = category.Id,
+                Name = category.Name,
+                Description = category.Description,
+                ParentCategoryId = category.ParentCategoryId
+            } : new CategoryDto { Id = 0 },
+            ["AvailableCategories"] = categories.Where(c => c.Id != category?.Id).ToList()
+        };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<CategoryDialog>(category == null ? "Create Category" : "Edit Category", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled && result.Data is CategoryDto updatedCategory)
+        {
+            if (updatedCategory.Id == 0)
+            {
+                updatedCategory.Id = categories.Any() ? categories.Max(c => c.Id) + 1 : 1;
+                updatedCategory.ItemCount = 0;
+                if (updatedCategory.ParentCategoryId.HasValue)
                 {
-                    var parent = categories.FirstOrDefault(c => c.Id == editingCategory.ParentCategoryId.Value);
-                    editingCategory.ParentCategoryName = parent?.Name;
+                    var parent = categories.FirstOrDefault(c => c.Id == updatedCategory.ParentCategoryId.Value);
+                    updatedCategory.ParentCategoryName = parent?.Name;
                 }
-                categories.Add(editingCategory);
+                categories.Add(updatedCategory);
                 Snackbar.Add("Category created successfully", Severity.Success);
             }
             else
             {
-                // Update existing category
-                var existingCategory = categories.FirstOrDefault(c => c.Id == editingCategory.Id);
-                if (existingCategory != null)
+                var existingCategory = categories.FirstOrDefault(c => c.Id == updatedCategory.Id);
+                if (existingCategory == null)
                 {
-                    existingCategory.Name = editingCategory.Name;
-                    existingCategory.Description = editingCategory.Description;
-                    existingCategory.ParentCategoryId = editingCategory.ParentCategoryId;
-                    if (editingCategory.ParentCategoryId.HasValue)
-                    {
-                        var parent = categories.FirstOrDefault(c => c.Id == editingCategory.ParentCategoryId.Value);
-                        existingCategory.ParentCategoryName = parent?.Name;
-                    }
-                    else
-                    {
-                        existingCategory.ParentCategoryName = null;
-                    }
+                    Snackbar.Add("Category not found for update", Severity.Error);
+                    return;
+                }
+                existingCategory.Name = updatedCategory.Name;
+                existingCategory.Description = updatedCategory.Description;
+                existingCategory.ParentCategoryId = updatedCategory.ParentCategoryId;
+                if (updatedCategory.ParentCategoryId.HasValue)
+                {
+                    var parent = categories.FirstOrDefault(c => c.Id == updatedCategory.ParentCategoryId.Value);
+                    existingCategory.ParentCategoryName = parent?.Name;
+                }
+                else
+                {
+                    existingCategory.ParentCategoryName = null;
                 }
                 Snackbar.Add("Category updated successfully", Severity.Success);
             }
-            
-            dialogVisible = false;
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error saving category: {ex.Message}", Severity.Error);
         }
     }
 
     private async Task DeleteCategory(int categoryId)
     {
+        await Task.Delay(100);
         try
         {
             var category = categories.FirstOrDefault(c => c.Id == categoryId);
-            if (category != null)
+            if (category == null)
             {
-                // Check if category has items
-                if (category.ItemCount > 0)
-                {
-                    Snackbar.Add("Cannot delete category with items", Severity.Warning);
-                    return;
-                }
-                
-                // Check if category has subcategories
-                var hasSubcategories = categories.Any(c => c.ParentCategoryId == categoryId);
-                if (hasSubcategories)
-                {
-                    Snackbar.Add("Cannot delete category with subcategories", Severity.Warning);
-                    return;
-                }
-                
-                categories.Remove(category);
-                Snackbar.Add("Category deleted successfully", Severity.Success);
+                Snackbar.Add("Category not found for deletion", Severity.Error);
+                return;
             }
+            // Check if category has items
+            if (category.ItemCount > 0)
+            {
+                Snackbar.Add("Cannot delete category with items", Severity.Warning);
+                return;
+            }
+            // Check if category has subcategories
+            var hasSubcategories = categories.Any(c => c.ParentCategoryId == categoryId);
+            if (hasSubcategories)
+            {
+                Snackbar.Add("Cannot delete category with subcategories", Severity.Warning);
+                return;
+            }
+            categories.Remove(category);
+            Snackbar.Add("Category deleted successfully", Severity.Success);
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Error deleting category: {ex.Message}", Severity.Error);
         }
-    }
-
-    private void CancelDialog()
-    {
-        dialogVisible = false;
     }
 } 

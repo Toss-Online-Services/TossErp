@@ -17,7 +17,7 @@
         <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" />
     </MudAppBar>
     
-    <MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer Open="@_drawerOpen" OpenChanged="@DrawerOpenChanged" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
     </MudDrawer>
     
@@ -34,6 +34,11 @@
     private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    private void DrawerOpenChanged(bool value)
+    {
+        _drawerOpen = value;
     }
 
     private async Task Logout()

@@ -1,0 +1,23 @@
+@using MudBlazor
+@using TossErp.Shared.DTOs
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public CustomerDto Customer { get; set; } = new();
+    private MudForm form = default!;
+    private bool success = false;
+
+    private void Cancel() => MudDialog.Cancel();
+    private async Task Save()
+    {
+        await form.Validate();
+        if (success)
+            MudDialog.Close(DialogResult.Ok(Customer));
+    }
+}
+
+<div>
+    <p>Customer Dialog - Temporarily disabled</p>
+    <button @onclick="Cancel">Cancel</button>
+    <button @onclick="Save">Save</button>
+</div> 

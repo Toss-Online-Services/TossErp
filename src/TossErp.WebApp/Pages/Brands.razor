@@ -4,6 +4,7 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <PageTitle>Brands Management - TOSS ERP</PageTitle>
 
@@ -14,13 +15,12 @@
         <MudButton Variant="Variant.Filled" 
                    Color="Color.Primary" 
                    StartIcon="@Icons.Material.Filled.Add"
-                   OnClick="OpenCreateDialog">
+                   OnClick="@(() => OpenBrandDialog())">
             Create New Brand
         </MudButton>
     </MudPaper>
 
-    <MudTable Items="@brands" Dense="true" Hover="true" Loading="@loading" 
-               Filter="new Func<BrandDto,bool>(FilterFunc)">
+    <MudTable T="BrandDto" Items="@brands" Dense="true" Hover="true" Striped="true" Loading="@loading" LoadingProgressColor="Color.Info">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Brands</MudText>
             <MudSpacer />
@@ -37,26 +37,33 @@
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd DataLabel="Description">@context.Description</MudTd>
-            <MudTd DataLabel="Website">
-                @if (!string.IsNullOrEmpty(context.Website))
-                {
-                    <MudLink Href="@context.Website" Target="_blank">@context.Website</MudLink>
-                }
-            </MudTd>
-            <MudTd DataLabel="Contact">@context.ContactInfo</MudTd>
-            <MudTd DataLabel="Item Count">
-                <MudChip T="string" Color="Color.Info" Size="Size.Small">@context.ItemCount</MudChip>
-            </MudTd>
-            <MudTd DataLabel="Actions">
-                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
-                              Color="Color.Primary" 
-                              OnClick="@(() => OpenEditDialog(context))" />
-                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
-                              Color="Color.Error" 
-                              OnClick="@(() => DeleteBrand(context.Id))" />
-            </MudTd>
+            @if (context == null)
+            {
+                <MudTd colspan="6"></MudTd>
+            }
+            else
+            {
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+                <MudTd DataLabel="Website">
+                    @if (!string.IsNullOrEmpty(context.Website))
+                    {
+                        <MudLink Href="@context.Website" Target="_blank">@context.Website</MudLink>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Contact">@context.ContactInfo</MudTd>
+                <MudTd DataLabel="Item Count">
+                    <MudChip T="string" Color="Color.Info" Size="Size.Small">@context.ItemCount</MudChip>
+                </MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                  Color="Color.Primary" 
+                                  OnClick="@(() => OpenBrandDialog(context))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                  Color="Color.Error" 
+                                  OnClick="@(() => DeleteBrand(context.Id))" />
+                </MudTd>
+            }
         </RowTemplate>
         <PagerContent>
             <MudTablePager />
@@ -64,43 +71,11 @@
     </MudTable>
 </MudContainer>
 
-<MudDialog @bind-IsVisible="dialogVisible" Options="dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">@(editingBrand?.Id == 0 ? "Create Brand" : "Edit Brand")</MudText>
-    </TitleContent>
-    <DialogContent>
-        <MudForm @ref="form" @bind-IsValid="@success">
-            <MudTextField @bind-Value="editingBrand.Name" 
-                         Label="Brand Name" 
-                         Required="true" 
-                         RequiredError="Brand name is required!" />
-            <MudTextField @bind-Value="editingBrand.Description" 
-                         Label="Description" 
-                         Lines="3" />
-            <MudTextField @bind-Value="editingBrand.Website" 
-                         Label="Website URL" />
-            <MudTextField @bind-Value="editingBrand.ContactInfo" 
-                         Label="Contact Information" />
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="CancelDialog">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="SaveBrand">Save</MudButton>
-    </DialogActions>
-</MudDialog>
-
 @code {
     private List<BrandDto> brands = new();
     private bool loading = true;
     private string searchString = "";
     
-    private bool dialogVisible = false;
-    private BrandDto editingBrand = new();
-    private MudForm form;
-    private bool success;
-    
-    private DialogOptions dialogOptions = new() { CloseOnEscapeKey = true };
-
     protected override async Task OnInitializedAsync()
     {
         await LoadBrands();
@@ -111,6 +86,9 @@
         try
         {
             loading = true;
+            // Simulate API call delay
+            await Task.Delay(100);
+            
             // For now, using mock data - replace with actual API call
             brands = new List<BrandDto>
             {
@@ -139,90 +117,76 @@
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
         
-        return brand.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
-               brand.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
-               brand.ContactInfo.Contains(searchString, StringComparison.OrdinalIgnoreCase);
+        return (brand.Name?.Contains(searchString, StringComparison.OrdinalIgnoreCase) == true) ||
+               (brand.Description?.Contains(searchString, StringComparison.OrdinalIgnoreCase) == true) ||
+               (brand.ContactInfo?.Contains(searchString, StringComparison.OrdinalIgnoreCase) == true);
     }
 
-    private void OpenCreateDialog()
+    private async Task OpenBrandDialog(BrandDto? brand = null)
     {
-        editingBrand = new BrandDto { Id = 0 };
-        dialogVisible = true;
-    }
-
-    private void OpenEditDialog(BrandDto brand)
-    {
-        editingBrand = new BrandDto
+        var parameters = new DialogParameters
         {
-            Id = brand.Id,
-            Name = brand.Name,
-            Description = brand.Description,
-            Website = brand.Website,
-            ContactInfo = brand.ContactInfo
-        };
-        dialogVisible = true;
-    }
-
-    private async Task SaveBrand()
-    {
-        try
-        {
-            if (editingBrand.Id == 0)
+            ["Brand"] = brand != null ? new BrandDto
             {
-                // Create new brand
-                editingBrand.Id = brands.Max(b => b.Id) + 1;
-                editingBrand.ItemCount = 0;
-                brands.Add(editingBrand);
+                Id = brand.Id,
+                Name = brand.Name,
+                Description = brand.Description,
+                Website = brand.Website,
+                ContactInfo = brand.ContactInfo
+            } : new BrandDto { Id = 0 }
+        };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<BrandDialog>(brand == null ? "Create Brand" : "Edit Brand", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled && result.Data is BrandDto updatedBrand)
+        {
+            if (updatedBrand.Id == 0)
+            {
+                updatedBrand.Id = brands.Any() ? brands.Max(b => b.Id) + 1 : 1;
+                updatedBrand.ItemCount = 0;
+                brands.Add(updatedBrand);
                 Snackbar.Add("Brand created successfully", Severity.Success);
             }
             else
             {
-                // Update existing brand
-                var existingBrand = brands.FirstOrDefault(b => b.Id == editingBrand.Id);
-                if (existingBrand != null)
+                var existingBrand = brands.FirstOrDefault(b => b.Id == updatedBrand.Id);
+                if (existingBrand == null)
                 {
-                    existingBrand.Name = editingBrand.Name;
-                    existingBrand.Description = editingBrand.Description;
-                    existingBrand.Website = editingBrand.Website;
-                    existingBrand.ContactInfo = editingBrand.ContactInfo;
+                    Snackbar.Add("Brand not found for update", Severity.Error);
+                    return;
                 }
+                existingBrand.Name = updatedBrand.Name;
+                existingBrand.Description = updatedBrand.Description;
+                existingBrand.Website = updatedBrand.Website;
+                existingBrand.ContactInfo = updatedBrand.ContactInfo;
                 Snackbar.Add("Brand updated successfully", Severity.Success);
             }
-            
-            dialogVisible = false;
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error saving brand: {ex.Message}", Severity.Error);
         }
     }
 
     private async Task DeleteBrand(int brandId)
     {
+        await Task.Delay(100);
         try
         {
             var brand = brands.FirstOrDefault(b => b.Id == brandId);
-            if (brand != null)
+            if (brand == null)
             {
-                // Check if brand has items
-                if (brand.ItemCount > 0)
-                {
-                    Snackbar.Add("Cannot delete brand with items", Severity.Warning);
-                    return;
-                }
-                
-                brands.Remove(brand);
-                Snackbar.Add("Brand deleted successfully", Severity.Success);
+                Snackbar.Add("Brand not found for deletion", Severity.Error);
+                return;
             }
+            // Check if brand has items
+            if (brand.ItemCount > 0)
+            {
+                Snackbar.Add("Cannot delete brand with items", Severity.Warning);
+                return;
+            }
+            brands.Remove(brand);
+            Snackbar.Add("Brand deleted successfully", Severity.Success);
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Error deleting brand: {ex.Message}", Severity.Error);
         }
     }
-
-    private void CancelDialog()
-    {
-        dialogVisible = false;
-    }
-} 
+}

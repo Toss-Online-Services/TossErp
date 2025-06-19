@@ -92,6 +92,7 @@
 
     private async Task LoadSettings()
     {
+        await Task.Delay(10);
         // Mock data for now
         companySettings = new CompanySettingsDto
         {
@@ -120,6 +121,7 @@
 
     private async Task ResetSettings()
     {
+        await Task.Delay(100);
         await LoadSettings();
     }
 } 

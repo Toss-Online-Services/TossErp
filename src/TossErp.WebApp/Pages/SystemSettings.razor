@@ -83,10 +83,10 @@
                         </MudItem>
                         <MudItem xs="12" sm="6">
                             <MudTextField T="string" @bind-Value="systemSettings.SmtpPassword" 
-                                          Label="SMTP Password" Password="true" />
+                                          Label="SMTP Password" InputType="InputType.Password" />
                         </MudItem>
                         <MudItem xs="12" sm="6">
-                            <MudCheckBox T="bool" @bind-Checked="systemSettings.EnableSsl" 
+                            <MudCheckBox T="bool" @bind-Value="systemSettings.EnableSsl" 
                                          Label="Enable SSL" />
                         </MudItem>
                     </MudGrid>
@@ -112,7 +112,7 @@
                             </MudSelect>
                         </MudItem>
                         <MudItem xs="12" sm="6">
-                            <MudCheckBox T="bool" @bind-Checked="systemSettings.AutoBackup" 
+                            <MudCheckBox T="bool" @bind-Value="systemSettings.AutoBackup" 
                                          Label="Enable Auto Backup" />
                         </MudItem>
                         <MudItem xs="12" sm="6">
@@ -133,19 +133,19 @@
                                           Label="Minimum Password Length" />
                         </MudItem>
                         <MudItem xs="12" sm="6">
-                            <MudCheckBox T="bool" @bind-Checked="systemSettings.RequireUppercase" 
+                            <MudCheckBox T="bool" @bind-Value="systemSettings.RequireUppercase" 
                                          Label="Require Uppercase" />
                         </MudItem>
                         <MudItem xs="12" sm="6">
-                            <MudCheckBox T="bool" @bind-Checked="systemSettings.RequireLowercase" 
+                            <MudCheckBox T="bool" @bind-Value="systemSettings.RequireLowercase" 
                                          Label="Require Lowercase" />
                         </MudItem>
                         <MudItem xs="12" sm="6">
-                            <MudCheckBox T="bool" @bind-Checked="systemSettings.RequireNumbers" 
+                            <MudCheckBox T="bool" @bind-Value="systemSettings.RequireNumbers" 
                                          Label="Require Numbers" />
                         </MudItem>
                         <MudItem xs="12" sm="6">
-                            <MudCheckBox T="bool" @bind-Checked="systemSettings.RequireSpecialChars" 
+                            <MudCheckBox T="bool" @bind-Value="systemSettings.RequireSpecialChars" 
                                          Label="Require Special Characters" />
                         </MudItem>
                         <MudItem xs="12" sm="6">
@@ -179,6 +179,9 @@
 
     private async Task LoadSettings()
     {
+        // Simulate API call delay
+        await Task.Delay(100);
+        
         // Mock data for now
         systemSettings = new SystemSettingsDto
         {
@@ -207,8 +210,7 @@
 
     private async Task SaveSettings()
     {
-        // Mock save operation
-        // In a real app, this would save to the database
+        // Simulate API call delay
         await Task.Delay(1000); // Simulate API call
     }
 

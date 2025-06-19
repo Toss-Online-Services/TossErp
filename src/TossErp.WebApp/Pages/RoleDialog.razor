@@ -1,0 +1,80 @@
+@using MudBlazor
+@using TossErp.Shared.DTOs
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public RoleDto Role { get; set; } = new();
+    [Parameter] public List<string> AvailablePermissions { get; set; } = new();
+    private string selectedPermission = "";
+    private MudForm form = default!;
+
+    private void Cancel() => MudDialog.Cancel();
+    private async Task Save()
+    {
+        await form.Validate();
+        MudDialog.Close(DialogResult.Ok(Role));
+    }
+
+    private void AddPermission()
+    {
+        if (!string.IsNullOrEmpty(selectedPermission) && !Role.Permissions.Contains(selectedPermission))
+        {
+            Role.Permissions.Add(selectedPermission);
+            selectedPermission = "";
+        }
+    }
+
+    private void RemovePermission(string permission)
+    {
+        Role.Permissions.Remove(permission);
+    }
+    /*
+    <MudDialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success">
+            <MudTextField @bind-Value="Role.Name" 
+                         Label="Role Name" 
+                         Required="true" 
+                         RequiredError="Role name is required!" />
+            <MudTextField @bind-Value="Role.Description" 
+                         Label="Description" 
+                         Lines="3" />
+            <MudSelect T="string" @bind-Value="selectedPermission" 
+                      Label="Add Permission" 
+                      HelperText="Select a permission to add">
+                @foreach (var permission in AvailablePermissions)
+                {
+                    <MudSelectItem Value="@permission">@permission</MudSelectItem>
+                }
+            </MudSelect>
+            <MudButton OnClick="AddPermission" 
+                      Variant="Variant.Outlined" 
+                      Color="Color.Primary" 
+                      Class="mt-2">
+                Add Permission
+            </MudButton>
+            
+            <MudDivider Class="my-4" />
+            
+            <MudText Typo="Typo.subtitle1" Class="mb-2">Current Permissions</MudText>
+            @foreach (var permission in Role.Permissions)
+            {
+                <MudChip T="string" Color="Color.Primary" 
+                         OnClose="@(() => RemovePermission(permission))" 
+                         Class="ma-1">
+                    @permission
+                </MudChip>
+            }
+        </MudForm>
+    </MudDialogContent>
+    <MudDialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Save">Save</MudButton>
+    </MudDialogActions>
+    */
+}
+
+<div>
+    <p>Role Dialog - Temporarily disabled</p>
+    <button @onclick="Cancel">Cancel</button>
+    <button @onclick="Save">Save</button>
+</div> 

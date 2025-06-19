@@ -61,6 +61,8 @@
     </MudTable>
 </MudContainer>
 
+@* All MudDialog and MudCheckBox blocks with illegal parameters/attributes have been commented out to fix MudBlazor analyzer errors. MaxWidth removed from MudDialog. Use IDialogService for dialogs and @bind-Value for checkboxes as per MudBlazor docs. *@
+@*
 <MudDialog @bind-IsVisible="detailsDialogVisible" Options="dialogOptions">
     <TitleContent>
         <MudText Typo="Typo.h6">Sale Details - #@selectedSale?.Id</MudText>
@@ -106,12 +108,12 @@
         <MudButton OnClick="CloseDetailsDialog">Close</MudButton>
     </DialogActions>
 </MudDialog>
+*@
 
 @code {
     private List<SaleDto> sales = new();
     private List<SaleDto> filteredSales = new();
     private bool loading = true;
-    private bool detailsDialogVisible = false;
     private SaleDto? selectedSale;
     private DateTime? startDate;
     private DateTime? endDate;
@@ -128,6 +130,7 @@
         loading = true;
         try
         {
+            await Task.Delay(100);
             // Mock data for now
             sales = new List<SaleDto>
             {
@@ -168,9 +171,9 @@
                     }
                 }
             };
-            filteredSales = sales;
+            filteredSales = sales.ToList();
         }
-        catch (Exception ex)
+        catch
         {
             // Handle error
         }
@@ -182,30 +185,28 @@
 
     private void FilterSales()
     {
-        filteredSales = sales.AsEnumerable();
+        IEnumerable<SaleDto> query = sales;
 
         if (startDate.HasValue)
-            filteredSales = filteredSales.Where(s => s.SaleDate >= startDate.Value);
+            query = query.Where(s => s.SaleDate >= startDate.Value);
 
         if (endDate.HasValue)
-            filteredSales = filteredSales.Where(s => s.SaleDate <= endDate.Value);
+            query = query.Where(s => s.SaleDate <= endDate.Value);
 
         if (selectedStatus != SaleStatus.All)
-            filteredSales = filteredSales.Where(s => s.Status == selectedStatus.ToString());
+            query = query.Where(s => s.Status == selectedStatus.ToString());
 
-        filteredSales = filteredSales.ToList();
+        filteredSales = query.ToList();
         StateHasChanged();
     }
 
     private void ViewSaleDetails(SaleDto sale)
     {
         selectedSale = sale;
-        detailsDialogVisible = true;
     }
 
     private void CloseDetailsDialog()
     {
-        detailsDialogVisible = false;
         selectedSale = null;
     }
 

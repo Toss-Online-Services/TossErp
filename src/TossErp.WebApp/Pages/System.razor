@@ -91,20 +91,20 @@
                         </MudItem>
                         
                         <MudItem xs="12" md="6">
-                            <MudCheckBox T="bool" @bind-Checked="systemSettings.RequireTwoFactor" 
+                            <MudCheckBox T="bool" @bind-Value="systemSettings.RequireTwoFactor" 
                                         Label="Require Two-Factor Authentication" />
                         </MudItem>
                         <MudItem xs="12" md="6">
-                            <MudCheckBox T="bool" @bind-Checked="systemSettings.EnableAuditLog" 
+                            <MudCheckBox T="bool" @bind-Value="systemSettings.EnableAuditLog" 
                                         Label="Enable Audit Logging" />
                         </MudItem>
                         
                         <MudItem xs="12" md="6">
-                            <MudCheckBox T="bool" @bind-Checked="systemSettings.ForceHTTPS" 
+                            <MudCheckBox T="bool" @bind-Value="systemSettings.ForceHTTPS" 
                                         Label="Force HTTPS" />
                         </MudItem>
                         <MudItem xs="12" md="6">
-                            <MudCheckBox T="bool" @bind-Checked="systemSettings.EnableCSRFProtection" 
+                            <MudCheckBox T="bool" @bind-Value="systemSettings.EnableCSRFProtection" 
                                         Label="Enable CSRF Protection" />
                         </MudItem>
                     </MudGrid>
@@ -147,7 +147,7 @@
                         </MudItem>
                         
                         <MudItem xs="12" md="6">
-                            <MudCheckBox T="bool" @bind-Checked="systemSettings.EnableSSL" 
+                            <MudCheckBox T="bool" @bind-Value="systemSettings.EnableSSL" 
                                         Label="Enable SSL/TLS" />
                         </MudItem>
                         <MudItem xs="12" md="6">
@@ -168,7 +168,7 @@
                 <MudForm @ref="backupForm" @bind-IsValid="@backupSuccess">
                     <MudGrid>
                         <MudItem xs="12" md="6">
-                            <MudCheckBox T="bool" @bind-Checked="systemSettings.EnableAutoBackup" 
+                            <MudCheckBox T="bool" @bind-Value="systemSettings.EnableAutoBackup" 
                                         Label="Enable Automatic Backup" />
                         </MudItem>
                         <MudItem xs="12" md="6">
@@ -226,7 +226,10 @@
 
 @code {
     private SystemSettingsDto systemSettings = new();
-    private MudForm generalForm, securityForm, emailForm, backupForm;
+    private MudForm generalForm = new();
+    private MudForm securityForm = new();
+    private MudForm emailForm = new();
+    private MudForm backupForm = new();
     private bool generalSuccess, securitySuccess, emailSuccess, backupSuccess;
 
     protected override async Task OnInitializedAsync()
@@ -236,6 +239,7 @@
 
     private async Task LoadSystemSettings()
     {
+        await Task.Delay(10);
         try
         {
             // For now, using mock data - replace with actual API call
@@ -285,6 +289,7 @@
     {
         try
         {
+            await Task.Delay(100);
             // TODO: Implement API call to save settings
             Snackbar.Add("System settings saved successfully", Severity.Success);
         }
@@ -296,24 +301,28 @@
 
     private async Task ResetAllSettings()
     {
+        await Task.Delay(100);
         await LoadSystemSettings();
         Snackbar.Add("Settings reset to original values", Severity.Info);
     }
 
-    private void TestEmailConnection()
+    private async Task TestEmailConnection()
     {
+        await Task.Delay(100);
         // TODO: Implement email connection test
         Snackbar.Add("Email connection test feature coming soon", Severity.Info);
     }
 
-    private void CreateBackup()
+    private async Task CreateBackup()
     {
+        await Task.Delay(100);
         // TODO: Implement backup creation
         Snackbar.Add("Backup creation feature coming soon", Severity.Info);
     }
 
-    private void RestoreBackup()
+    private async Task RestoreBackup()
     {
+        await Task.Delay(100);
         // TODO: Implement backup restoration
         Snackbar.Add("Backup restoration feature coming soon", Severity.Info);
     }

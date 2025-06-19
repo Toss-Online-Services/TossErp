@@ -1,9 +1,4 @@
 @page "/login"
-@using TossErp.Shared.DTOs
-@using TossErp.WebApp.Services
-@using System.Text.Json
-@using System.Text
-@using System.Net.Http.Headers
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
@@ -81,7 +76,7 @@
         try
         {
             var json = JsonSerializer.Serialize(loginRequest);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var content = new StringContent(json, new MediaTypeHeaderValue("application/json"));
             var response = await Http.PostAsync("https://localhost:5001/api/auth/login", content);
             
             if (response.IsSuccessStatusCode)

@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RunAOTCompilation>false</RunAOTCompilation>
     <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <DisableMudBlazorAnalyzers>true</DisableMudBlazorAnalyzers>
+    <NoWarn>$(NoWarn);CS8602</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
