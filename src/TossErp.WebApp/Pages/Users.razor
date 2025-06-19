@@ -1,0 +1,297 @@
+@page "/users"
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+<PageTitle>TOSS ERP - Users Management</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <MudText Typo="Typo.h4" Class="mb-4">Users Management</MudText>
+    
+    <!-- Toolbar -->
+    <MudPaper Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="searchString" 
+                             Label="Search Users" 
+                             Variant="Variant.Outlined" 
+                             Adornment="Adornment.Start" 
+                             AdornmentIcon="@Icons.Material.Filled.Search"
+                             IconSize="Size.Medium" />
+            </MudItem>
+            <MudItem xs="12" sm="6" Class="d-flex justify-end">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Filled.Add"
+                           OnClick="OpenCreateDialog">
+                    Add User
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+    
+    <!-- Users Table -->
+    <MudPaper>
+        <MudTable Items="@FilteredUsers" 
+                   Dense="true" 
+                   Hover="true" 
+                   Bordered="true" 
+                   Striped="true"
+                   Loading="@loading"
+                   Filter="new Func<UserDto,bool>(FilterFunc)">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Users</MudText>
+                <MudSpacer />
+                <MudTextField @bind-Value="searchString" 
+                             Placeholder="Search" 
+                             Adornment="Adornment.Start" 
+                             AdornmentIcon="@Icons.Material.Filled.Search" 
+                             IconSize="Size.Medium" 
+                             Class="mt-0" />
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Username</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Roles</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Name">@context.FullName</MudTd>
+                <MudTd DataLabel="Username">@context.UserName</MudTd>
+                <MudTd DataLabel="Email">@context.Email</MudTd>
+                <MudTd DataLabel="Roles">
+                    @foreach (var role in context.Roles)
+                    {
+                        <MudChip Color="Color.Primary" Size="Size.Small" Class="ma-1">@role</MudChip>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Status">
+                    <MudChip Color="@(context.IsActive ? Color.Success : Color.Error)" 
+                             Size="Size.Small">
+                        @(context.IsActive ? "Active" : "Inactive")
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                   Color="Color.Primary" 
+                                   Size="Size.Small"
+                                   OnClick="@(() => OpenEditDialog(context))" />
+                    <MudIconButton Icon="@(context.IsActive ? Icons.Material.Filled.Block : Icons.Material.Filled.CheckCircle)" 
+                                   Color="@(context.IsActive ? Color.Warning : Color.Success)" 
+                                   Size="Size.Small"
+                                   OnClick="@(() => ToggleUserStatus(context))" />
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudPaper>
+</MudContainer>
+
+<!-- Create/Edit Dialog -->
+<MudDialog @bind-IsVisible="dialogVisible" Options="dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@(editingUser == null ? "Create User" : "Edit User")</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success">
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="userForm.FirstName" 
+                                 Label="First Name" 
+                                 Required="true" 
+                                 RequiredError="First name is required!" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="userForm.LastName" 
+                                 Label="Last Name" 
+                                 Required="true" 
+                                 RequiredError="Last name is required!" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="userForm.UserName" 
+                                 Label="Username" 
+                                 Required="true" 
+                                 RequiredError="Username is required!"
+                                 Disabled="@(editingUser != null)" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="userForm.Email" 
+                                 Label="Email" 
+                                 Required="true" 
+                                 RequiredError="Email is required!"
+                                 InputType="InputType.Email"
+                                 Disabled="@(editingUser != null)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="userForm.PhoneNumber" 
+                                 Label="Phone Number" 
+                                 InputType="InputType.Tel" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudSelect @bind-Value="selectedRoles" 
+                               Label="Roles" 
+                               MultiSelection="true"
+                               AnchorOrigin="Origin.BottomCenter"
+                               TransformOrigin="Origin.TopCenter">
+                        @foreach (var role in availableRoles)
+                        {
+                            <MudSelectItem Value="@role">@role</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="!success">Submit</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<UserDto> users = new();
+    private List<UserDto> FilteredUsers => users.Where(u => 
+        string.IsNullOrEmpty(searchString) || 
+        u.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+        u.UserName.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+        u.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+    
+    private string searchString = "";
+    private bool loading = true;
+    private bool dialogVisible = false;
+    private bool success;
+    private UserDto? editingUser = null;
+    private MudForm form;
+    
+    private CreateUserDto userForm = new();
+    private List<string> selectedRoles = new();
+    private List<string> availableRoles = new() { "Admin", "Manager", "Cashier", "Inventory", "Viewer" };
+    
+    private DialogOptions dialogOptions = new() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        try
+        {
+            loading = true;
+            // TODO: Replace with actual API call
+            // users = await Http.GetFromJsonAsync<List<UserDto>>("api/users");
+            
+            // Mock data for demonstration
+            users = new List<UserDto>
+            {
+                new() { Id = Guid.NewGuid(), UserName = "admin", Email = "admin@toss.com", FirstName = "Admin", LastName = "User", IsActive = true, Roles = new() { "Admin" } },
+                new() { Id = Guid.NewGuid(), UserName = "manager", Email = "manager@toss.com", FirstName = "John", LastName = "Manager", IsActive = true, Roles = new() { "Manager" } },
+                new() { Id = Guid.NewGuid(), UserName = "cashier1", Email = "cashier1@toss.com", FirstName = "Jane", LastName = "Cashier", IsActive = true, Roles = new() { "Cashier" } }
+            };
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading users: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void OpenCreateDialog()
+    {
+        editingUser = null;
+        userForm = new CreateUserDto();
+        selectedRoles = new();
+        dialogVisible = true;
+    }
+
+    private void OpenEditDialog(UserDto user)
+    {
+        editingUser = user;
+        userForm = new CreateUserDto
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            UserName = user.UserName,
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
+            Roles = user.Roles
+        };
+        selectedRoles = user.Roles.ToList();
+        dialogVisible = true;
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            userForm.Roles = selectedRoles;
+            
+            if (editingUser == null)
+            {
+                // TODO: Create user API call
+                // await Http.PostAsJsonAsync("api/users", userForm);
+                Snackbar.Add("User created successfully!", Severity.Success);
+            }
+            else
+            {
+                // TODO: Update user API call
+                // await Http.PutAsJsonAsync($"api/users/{editingUser.Id}", userForm);
+                Snackbar.Add("User updated successfully!", Severity.Success);
+            }
+            
+            dialogVisible = false;
+            await LoadUsers();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving user: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void Cancel()
+    {
+        dialogVisible = false;
+    }
+
+    private async Task ToggleUserStatus(UserDto user)
+    {
+        try
+        {
+            if (user.IsActive)
+            {
+                // TODO: Deactivate user API call
+                // await Http.DeleteAsync($"api/users/{user.Id}");
+                Snackbar.Add("User deactivated successfully!", Severity.Success);
+            }
+            else
+            {
+                // TODO: Activate user API call
+                // await Http.PostAsync($"api/users/{user.Id}/activate", null);
+                Snackbar.Add("User activated successfully!", Severity.Success);
+            }
+            
+            await LoadUsers();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error updating user status: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private bool FilterFunc(UserDto user)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        
+        return user.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+               user.UserName.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+               user.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase);
+    }
+} 

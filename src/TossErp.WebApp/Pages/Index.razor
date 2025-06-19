@@ -1,0 +1,134 @@
+@page "/"
+
+<PageTitle>TOSS ERP - Dashboard</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <MudText Typo="Typo.h4" Class="mb-4">Dashboard</MudText>
+    
+    <!-- Key Metrics -->
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Style="background: linear-gradient(45deg, #2196F3 30%, #21CBF3 90%);">
+                <MudText Typo="Typo.h6" Color="Color.White">Total Sales Today</MudText>
+                <MudText Typo="Typo.h4" Color="Color.White">$12,450</MudText>
+                <MudText Typo="Typo.body2" Color="Color.White">+15% from yesterday</MudText>
+            </MudPaper>
+        </MudItem>
+        
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Style="background: linear-gradient(45deg, #4CAF50 30%, #81C784 90%);">
+                <MudText Typo="Typo.h6" Color="Color.White">Orders Today</MudText>
+                <MudText Typo="Typo.h4" Color="Color.White">45</MudText>
+                <MudText Typo="Typo.body2" Color="Color.White">+8% from yesterday</MudText>
+            </MudPaper>
+        </MudItem>
+        
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Style="background: linear-gradient(45deg, #FF9800 30%, #FFB74D 90%);">
+                <MudText Typo="Typo.h6" Color="Color.White">Low Stock Items</MudText>
+                <MudText Typo="Typo.h4" Color="Color.White">12</MudText>
+                <MudText Typo="Typo.body2" Color="Color.White">Need reorder</MudText>
+            </MudPaper>
+        </MudItem>
+        
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Style="background: linear-gradient(45deg, #9C27B0 30%, #BA68C8 90%);">
+                <MudText Typo="Typo.h6" Color="Color.White">Active Users</MudText>
+                <MudText Typo="Typo.h4" Color="Color.White">8</MudText>
+                <MudText Typo="Typo.body2" Color="Color.White">Currently online</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+    
+    <!-- Quick Actions -->
+    <MudPaper Class="pa-4 mt-4">
+        <MudText Typo="Typo.h6" Class="mb-3">Quick Actions</MudText>
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="3">
+                <MudButton Variant="Variant.Outlined" 
+                           Color="Color.Primary" 
+                           FullWidth="true" 
+                           StartIcon="@Icons.Material.Filled.ShoppingCart"
+                           Href="pos">
+                    New Sale
+                </MudButton>
+            </MudItem>
+            
+            <MudItem xs="12" sm="6" md="3">
+                <MudButton Variant="Variant.Outlined" 
+                           Color="Color.Secondary" 
+                           FullWidth="true" 
+                           StartIcon="@Icons.Material.Filled.Inventory2"
+                           Href="items">
+                    Add Item
+                </MudButton>
+            </MudItem>
+            
+            <MudItem xs="12" sm="6" md="3">
+                <MudButton Variant="Variant.Outlined" 
+                           Color="Color.Tertiary" 
+                           FullWidth="true" 
+                           StartIcon="@Icons.Material.Filled.Person"
+                           Href="users">
+                    Add User
+                </MudButton>
+            </MudItem>
+            
+            <MudItem xs="12" sm="6" md="3">
+                <MudButton Variant="Variant.Outlined" 
+                           Color="Color.Info" 
+                           FullWidth="true" 
+                           StartIcon="@Icons.Material.Filled.Assessment"
+                           Href="sales-reports">
+                    View Reports
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+    
+    <!-- Recent Activity -->
+    <MudPaper Class="pa-4 mt-4">
+        <MudText Typo="Typo.h6" Class="mb-3">Recent Activity</MudText>
+        <MudList>
+            <MudListItem>
+                <MudListItemIcon>
+                    <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Success" />
+                </MudListItemIcon>
+                <MudListItemContent>
+                    <MudText Typo="Typo.body1">New sale completed - $125.00</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">2 minutes ago</MudText>
+                </MudListItemContent>
+            </MudListItem>
+            
+            <MudListItem>
+                <MudListItemIcon>
+                    <MudIcon Icon="@Icons.Material.Filled.Inventory2" Color="Color.Warning" />
+                </MudListItemIcon>
+                <MudListItemContent>
+                    <MudText Typo="Typo.body1">Low stock alert for "Laptop Dell XPS 13"</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">15 minutes ago</MudText>
+                </MudListItemContent>
+            </MudListItem>
+            
+            <MudListItem>
+                <MudListItemIcon>
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Info" />
+                </MudListItemIcon>
+                <MudListItemContent>
+                    <MudText Typo="Typo.body1">New user registered - John Doe</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">1 hour ago</MudText>
+                </MudListItemContent>
+            </MudListItem>
+            
+            <MudListItem>
+                <MudListItemIcon>
+                    <MudIcon Icon="@Icons.Material.Filled.Receipt" Color="Color.Primary" />
+                </MudListItemIcon>
+                <MudListItemContent>
+                    <MudText Typo="Typo.body1">Daily sales report generated</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">2 hours ago</MudText>
+                </MudListItemContent>
+            </MudListItem>
+        </MudList>
+    </MudPaper>
+</MudContainer> 
