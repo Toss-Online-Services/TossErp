@@ -8,11 +8,16 @@ namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate
     {
         public Guid ItemId { get; private set; }
         public string ItemName { get; private set; } = string.Empty;
+        public string ItemCode { get; private set; } = string.Empty;
         public decimal Quantity { get; private set; }
         public decimal UnitPrice { get; private set; }
         public decimal? DiscountPercent { get; private set; }
         public decimal DiscountAmount { get; private set; }
         public decimal TotalPrice { get; private set; }
+
+        // Alias properties for API compatibility
+        public decimal? DiscountPercentage => DiscountPercent;
+        public decimal TotalAmount => TotalPrice;
 
         protected SaleItem() { }
 
@@ -20,6 +25,18 @@ namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate
         {
             ItemId = itemId;
             ItemName = itemName ?? throw new ArgumentNullException(nameof(itemName));
+            ItemCode = string.Empty; // Will be set when item details are loaded
+            Quantity = quantity;
+            UnitPrice = unitPrice;
+            DiscountPercent = discountPercent;
+            CalculateTotals();
+        }
+
+        public SaleItem(Guid itemId, string itemName, string itemCode, decimal quantity, decimal unitPrice, decimal? discountPercent = null)
+        {
+            ItemId = itemId;
+            ItemName = itemName ?? throw new ArgumentNullException(nameof(itemName));
+            ItemCode = itemCode ?? throw new ArgumentNullException(nameof(itemCode));
             Quantity = quantity;
             UnitPrice = unitPrice;
             DiscountPercent = discountPercent;

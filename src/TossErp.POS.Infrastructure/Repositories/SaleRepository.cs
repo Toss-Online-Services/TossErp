@@ -15,14 +15,41 @@ namespace TossErp.POS.Infrastructure.Repositories
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public IUnitOfWork UnitOfWork => _context;
-
-        public async Task<Sale?> GetByIdAsync(Guid id)
+        public async Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Sales
                 .Include(s => s.SaleItems)
                 .Include(s => s.Payments)
-                .FirstOrDefaultAsync(s => s.Id == id);
+                .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+        }
+
+        public async Task<IReadOnlyList<Sale>> ListAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.Sales
+                .Include(s => s.SaleItems)
+                .Include(s => s.Payments)
+                .OrderByDescending(s => s.SaleDate)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task AddAsync(Sale entity, CancellationToken cancellationToken = default)
+        {
+            await _context.Sales.AddAsync(entity, cancellationToken);
+        }
+
+        public void Update(Sale entity)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+
+        public void Remove(Sale entity)
+        {
+            _context.Sales.Remove(entity);
+        }
+
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<Sale?> GetBySaleNumberAsync(string saleNumber)
@@ -103,21 +130,6 @@ namespace TossErp.POS.Infrastructure.Repositories
                 .Include(s => s.Payments)
                 .OrderByDescending(s => s.SaleDate)
                 .ToListAsync();
-        }
-
-        public async Task AddAsync(Sale sale)
-        {
-            await _context.Sales.AddAsync(sale);
-        }
-
-        public void Update(Sale sale)
-        {
-            _context.Entry(sale).State = EntityState.Modified;
-        }
-
-        public void Delete(Sale sale)
-        {
-            _context.Sales.Remove(sale);
         }
     }
 } 

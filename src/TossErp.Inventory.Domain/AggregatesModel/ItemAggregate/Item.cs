@@ -41,32 +41,86 @@ namespace TossErp.Inventory.Domain.AggregatesModel.ItemAggregate
             PriceHistory = new List<ItemPriceHistory>();
         }
 
-        public Item(string itemCode, string name, ItemType itemType, bool isStockable = true)
+        public Item(
+            string itemCode,
+            string name,
+            string? description,
+            string? barcode,
+            string? sku,
+            ItemType itemType,
+            bool isStockable,
+            decimal standardCost,
+            decimal sellingPrice,
+            string? unitOfMeasure,
+            decimal? minimumStockLevel,
+            decimal? maximumStockLevel,
+            decimal? reorderPoint,
+            decimal? reorderQuantity,
+            Guid? categoryId,
+            Guid? brandId,
+            Guid? supplierId)
         {
             ItemCode = itemCode ?? throw new ArgumentNullException(nameof(itemCode));
             Name = name ?? throw new ArgumentNullException(nameof(name));
+            Description = description;
+            Barcode = barcode;
+            SKU = sku;
             ItemType = itemType;
             IsActive = true;
             IsStockable = isStockable;
             IsSerialized = false;
             IsBatched = false;
-            StandardCost = 0;
-            SellingPrice = 0;
+            StandardCost = standardCost;
+            SellingPrice = sellingPrice;
+            UnitOfMeasure = unitOfMeasure;
+            MinimumStockLevel = minimumStockLevel;
+            MaximumStockLevel = maximumStockLevel;
+            ReorderPoint = reorderPoint;
+            ReorderQuantity = reorderQuantity;
+            CategoryId = categoryId;
+            BrandId = brandId;
+            SupplierId = supplierId;
             CreatedAt = DateTime.UtcNow;
             Variants = new List<ItemVariant>();
             PriceHistory = new List<ItemPriceHistory>();
-
             AddDomainEvent(new ItemCreatedDomainEvent(this));
         }
 
-        public void UpdateBasicInfo(string name, string? description, string? barcode, string? sku)
+        public void UpdateDetails(
+            string name,
+            string? description,
+            string? barcode,
+            string? sku,
+            ItemType itemType,
+            bool isStockable,
+            decimal standardCost,
+            decimal sellingPrice,
+            string? unitOfMeasure,
+            decimal? minimumStockLevel,
+            decimal? maximumStockLevel,
+            decimal? reorderPoint,
+            decimal? reorderQuantity,
+            Guid? categoryId,
+            Guid? brandId,
+            Guid? supplierId)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Description = description;
             Barcode = barcode;
             SKU = sku;
+            ItemType = itemType;
+            IsStockable = isStockable;
+            StandardCost = standardCost;
+            SellingPrice = sellingPrice;
+            UnitOfMeasure = unitOfMeasure;
+            MinimumStockLevel = minimumStockLevel;
+            MaximumStockLevel = maximumStockLevel;
+            ReorderPoint = reorderPoint;
+            ReorderQuantity = reorderQuantity;
+            CategoryId = categoryId;
+            BrandId = brandId;
+            SupplierId = supplierId;
             LastModifiedAt = DateTime.UtcNow;
-
             AddDomainEvent(new ItemUpdatedDomainEvent(this));
         }
 

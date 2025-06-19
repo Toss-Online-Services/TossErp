@@ -3,6 +3,7 @@ using TossErp.Inventory.API.DTOs;
 using TossErp.Inventory.Domain.AggregatesModel.ItemAggregate;
 using TossErp.Inventory.Domain.Enums;
 using TossErp.Inventory.Infrastructure.Repositories;
+using TossErp.Domain.SeedWork;
 
 namespace TossErp.Inventory.API.Controllers
 {
@@ -11,11 +12,13 @@ namespace TossErp.Inventory.API.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly IItemRepository _itemRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<ItemsController> _logger;
 
-        public ItemsController(IItemRepository itemRepository, ILogger<ItemsController> logger)
+        public ItemsController(IItemRepository itemRepository, IUnitOfWork unitOfWork, ILogger<ItemsController> logger)
         {
             _itemRepository = itemRepository ?? throw new ArgumentNullException(nameof(itemRepository));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -189,7 +192,7 @@ namespace TossErp.Inventory.API.Controllers
                 );
 
                 await _itemRepository.AddAsync(item);
-                await _itemRepository.UnitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Created item with ID {ItemId}", item.Id);
 
@@ -239,6 +242,8 @@ namespace TossErp.Inventory.API.Controllers
                     updateItemDto.Description,
                     updateItemDto.Barcode,
                     updateItemDto.SKU,
+                    updateItemDto.ItemType,
+                    updateItemDto.IsStockable,
                     updateItemDto.StandardCost,
                     updateItemDto.SellingPrice,
                     updateItemDto.UnitOfMeasure,
@@ -252,7 +257,7 @@ namespace TossErp.Inventory.API.Controllers
                 );
 
                 _itemRepository.Update(item);
-                await _itemRepository.UnitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Updated item with ID {ItemId}", id);
 
@@ -278,7 +283,7 @@ namespace TossErp.Inventory.API.Controllers
 
                 item.Deactivate();
                 _itemRepository.Update(item);
-                await _itemRepository.UnitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Deactivated item with ID {ItemId}", id);
 
@@ -304,7 +309,7 @@ namespace TossErp.Inventory.API.Controllers
 
                 item.Activate();
                 _itemRepository.Update(item);
-                await _itemRepository.UnitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Activated item with ID {ItemId}", id);
 
@@ -330,7 +335,7 @@ namespace TossErp.Inventory.API.Controllers
 
                 item.AddVariant(variantName);
                 _itemRepository.Update(item);
-                await _itemRepository.UnitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Added variant {VariantName} to item with ID {ItemId}", variantName, id);
 
@@ -356,7 +361,7 @@ namespace TossErp.Inventory.API.Controllers
 
                 item.RemoveVariant(variantId);
                 _itemRepository.Update(item);
-                await _itemRepository.UnitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Removed variant {VariantId} from item with ID {ItemId}", variantId, id);
 

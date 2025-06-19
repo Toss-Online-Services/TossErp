@@ -14,4 +14,9 @@
     <PackageReference Include="System.Net.Http.Json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TossErp.Inventory.API\TossErp.Inventory.API.csproj" />
+    <ProjectReference Include="..\TossErp.Identity.API\TossErp.Identity.API.csproj" />
+  </ItemGroup>
+
 </Project> 

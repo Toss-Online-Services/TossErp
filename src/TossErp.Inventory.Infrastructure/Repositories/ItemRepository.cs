@@ -15,14 +15,40 @@ namespace TossErp.Inventory.Infrastructure.Repositories
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public IUnitOfWork UnitOfWork => _context;
-
-        public async Task<Item?> GetByIdAsync(Guid id)
+        public async Task<Item?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Items
                 .Include(i => i.Variants)
                 .Include(i => i.PriceHistory)
-                .FirstOrDefaultAsync(i => i.Id == id);
+                .FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
+        }
+
+        public async Task<IReadOnlyList<Item>> ListAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.Items
+                .Include(i => i.Variants)
+                .Include(i => i.PriceHistory)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task AddAsync(Item entity, CancellationToken cancellationToken = default)
+        {
+            await _context.Items.AddAsync(entity, cancellationToken);
+        }
+
+        public void Update(Item entity)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+
+        public void Remove(Item entity)
+        {
+            _context.Items.Remove(entity);
+        }
+
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<Item?> GetByItemCodeAsync(string itemCode)
@@ -124,21 +150,6 @@ namespace TossErp.Inventory.Infrastructure.Repositories
                 .Include(i => i.Variants)
                 .Include(i => i.PriceHistory)
                 .ToListAsync();
-        }
-
-        public async Task AddAsync(Item item)
-        {
-            await _context.Items.AddAsync(item);
-        }
-
-        public void Update(Item item)
-        {
-            _context.Entry(item).State = EntityState.Modified;
-        }
-
-        public void Delete(Item item)
-        {
-            _context.Items.Remove(item);
         }
     }
 } 

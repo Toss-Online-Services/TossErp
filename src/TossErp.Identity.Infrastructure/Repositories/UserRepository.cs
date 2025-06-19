@@ -14,13 +14,38 @@ namespace TossErp.Identity.Infrastructure.Repositories
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public IUnitOfWork UnitOfWork => _context;
-
-        public async Task<User?> GetByIdAsync(Guid id)
+        public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Users
                 .Include(u => u.UserRoles)
-                .FirstOrDefaultAsync(u => u.Id == id);
+                .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+        }
+
+        public async Task<IReadOnlyList<User>> ListAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.Users
+                .Include(u => u.UserRoles)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task AddAsync(User entity, CancellationToken cancellationToken = default)
+        {
+            await _context.Users.AddAsync(entity, cancellationToken);
+        }
+
+        public void Update(User entity)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+
+        public void Remove(User entity)
+        {
+            _context.Users.Remove(entity);
+        }
+
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<User?> GetByUserNameAsync(string userName)
@@ -60,21 +85,6 @@ namespace TossErp.Identity.Infrastructure.Repositories
             return await _context.Users
                 .Include(u => u.UserRoles)
                 .ToListAsync();
-        }
-
-        public async Task AddAsync(User user)
-        {
-            await _context.Users.AddAsync(user);
-        }
-
-        public void Update(User user)
-        {
-            _context.Entry(user).State = EntityState.Modified;
-        }
-
-        public void Delete(User user)
-        {
-            _context.Users.Remove(user);
         }
     }
 } 

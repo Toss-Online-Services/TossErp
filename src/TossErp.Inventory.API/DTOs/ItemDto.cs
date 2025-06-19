@@ -64,6 +64,10 @@ namespace TossErp.Inventory.API.DTOs
         [StringLength(100)]
         public string? SKU { get; set; }
 
+        public ItemType ItemType { get; set; }
+
+        public bool IsStockable { get; set; } = true;
+
         public decimal StandardCost { get; set; }
 
         public decimal SellingPrice { get; set; }

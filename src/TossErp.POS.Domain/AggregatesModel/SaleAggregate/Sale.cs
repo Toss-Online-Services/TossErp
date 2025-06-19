@@ -178,6 +178,22 @@ namespace TossErp.POS.Domain.AggregatesModel.SaleAggregate
             AddDomainEvent(new SalePaymentAddedDomainEvent(this, payment));
         }
 
+        public void UpdateNotes(string? notes)
+        {
+            Notes = notes;
+            AddDomainEvent(new SaleUpdatedDomainEvent(this));
+        }
+
+        public void ClearItems()
+        {
+            if (Status != SaleStatus.Draft)
+                throw new TossErpDomainException("Cannot clear items from a sale that is not in draft status.");
+
+            SaleItems.Clear();
+            RecalculateTotals();
+            AddDomainEvent(new SaleItemsClearedDomainEvent(this));
+        }
+
         private void RecalculateTotals()
         {
             SubTotal = SaleItems.Sum(si => si.TotalPrice);

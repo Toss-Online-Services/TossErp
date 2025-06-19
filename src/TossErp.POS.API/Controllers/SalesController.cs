@@ -3,6 +3,7 @@ using TossErp.POS.API.DTOs;
 using TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 using TossErp.POS.Domain.Enums;
 using TossErp.POS.Infrastructure.Repositories;
+using TossErp.Domain.SeedWork;
 
 namespace TossErp.POS.API.Controllers
 {
@@ -11,11 +12,13 @@ namespace TossErp.POS.API.Controllers
     public class SalesController : ControllerBase
     {
         private readonly ISaleRepository _saleRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<SalesController> _logger;
 
-        public SalesController(ISaleRepository saleRepository, ILogger<SalesController> logger)
+        public SalesController(ISaleRepository saleRepository, IUnitOfWork unitOfWork, ILogger<SalesController> logger)
         {
             _saleRepository = saleRepository ?? throw new ArgumentNullException(nameof(saleRepository));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -142,6 +145,7 @@ namespace TossErp.POS.API.Controllers
                 }
 
                 var sale = new Sale(
+                    Guid.NewGuid().ToString("N")[..8].ToUpper(), // Generate sale number
                     createSaleDto.CustomerId,
                     createSaleDto.CashierId,
                     createSaleDto.SaleType
@@ -152,10 +156,10 @@ namespace TossErp.POS.API.Controllers
                 {
                     sale.AddItem(
                         itemDto.ItemId,
+                        itemDto.ItemName ?? "Unknown Item", // Add item name
                         itemDto.Quantity,
                         itemDto.UnitPrice,
-                        itemDto.DiscountAmount ?? 0,
-                        itemDto.DiscountPercentage ?? 0
+                        itemDto.DiscountPercentage
                     );
                 }
 
@@ -166,7 +170,7 @@ namespace TossErp.POS.API.Controllers
                 }
 
                 await _saleRepository.AddAsync(sale);
-                await _saleRepository.UnitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Created sale with ID {SaleId}", sale.Id);
 
@@ -207,10 +211,10 @@ namespace TossErp.POS.API.Controllers
                 {
                     sale.AddItem(
                         itemDto.ItemId,
+                        itemDto.ItemName ?? "Unknown Item", // Add item name
                         itemDto.Quantity,
                         itemDto.UnitPrice,
-                        itemDto.DiscountAmount ?? 0,
-                        itemDto.DiscountPercentage ?? 0
+                        itemDto.DiscountPercentage
                     );
                 }
 
@@ -221,7 +225,7 @@ namespace TossErp.POS.API.Controllers
                 }
 
                 _saleRepository.Update(sale);
-                await _saleRepository.UnitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Updated sale with ID {SaleId}", id);
 
@@ -262,7 +266,7 @@ namespace TossErp.POS.API.Controllers
                 );
 
                 _saleRepository.Update(sale);
-                await _saleRepository.UnitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Completed sale with ID {SaleId}", id);
 
@@ -299,7 +303,7 @@ namespace TossErp.POS.API.Controllers
                 sale.Cancel(cancelSaleDto.CancellationReason);
 
                 _saleRepository.Update(sale);
-                await _saleRepository.UnitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Cancelled sale with ID {SaleId}", id);
 
@@ -424,7 +428,7 @@ namespace TossErp.POS.API.Controllers
                     Quantity = si.Quantity,
                     UnitPrice = si.UnitPrice,
                     DiscountAmount = si.DiscountAmount,
-                    DiscountPercentage = si.DiscountPercentage,
+                    DiscountPercentage = si.DiscountPercentage ?? 0,
                     TotalAmount = si.TotalAmount
                 }).ToList(),
                 Payments = sale.Payments.Select(sp => new SalePaymentDto

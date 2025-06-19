@@ -32,6 +32,9 @@ namespace TossErp.POS.API.DTOs
         [Required]
         public Guid ItemId { get; set; }
 
+        [StringLength(200)]
+        public string? ItemName { get; set; }
+
         [Required]
         public decimal Quantity { get; set; }
 

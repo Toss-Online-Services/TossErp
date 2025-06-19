@@ -7,6 +7,7 @@ namespace TossErp.POS.Infrastructure.Repositories
     public interface ISaleRepository : IRepository<Sale>
     {
         Task<Sale?> GetBySaleNumberAsync(string saleNumber);
+        Task<IEnumerable<Sale>> GetAllAsync();
         Task<IEnumerable<Sale>> GetSalesByCustomerAsync(Guid customerId);
         Task<IEnumerable<Sale>> GetSalesByCashierAsync(Guid cashierId);
         Task<IEnumerable<Sale>> GetSalesByStatusAsync(SaleStatus status);
