@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TossErp.Identity.Domain\TossErp.Identity.Domain.csproj" />
     <ProjectReference Include="..\TossErp.Identity.Infrastructure\TossErp.Identity.Infrastructure.csproj" />
+    <ProjectReference Include="..\TossErp.Shared\TossErp.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

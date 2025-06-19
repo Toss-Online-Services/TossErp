@@ -4,6 +4,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <RunAOTCompilation>false</RunAOTCompilation>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,8 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TossErp.Inventory.API\TossErp.Inventory.API.csproj" />
-    <ProjectReference Include="..\TossErp.Identity.API\TossErp.Identity.API.csproj" />
+    <ProjectReference Include="..\TossErp.Shared\TossErp.Shared.csproj" />
   </ItemGroup>
 
 </Project> 

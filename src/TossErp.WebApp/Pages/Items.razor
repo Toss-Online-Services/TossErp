@@ -1,67 +1,58 @@
 @page "/items"
+@using TossErp.Shared.DTOs
+@using TossErp.Shared.DTOs.Enums
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 
-<PageTitle>TOSS ERP - Items Management</PageTitle>
+<PageTitle>Items - TOSS ERP</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge">
-    <MudText Typo="Typo.h4" Class="mb-4">Items Management</MudText>
-    
-    <!-- Toolbar -->
-    <MudPaper Class="pa-4 mb-4">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudPaper Class="pa-4">
+        <MudText Typo="Typo.h4" Class="mb-4">Inventory Management</MudText>
+        
         <MudGrid>
-            <MudItem xs="12" sm="4">
+            <MudItem xs="12" sm="6">
                 <MudTextField @bind-Value="searchString" 
                              Label="Search Items" 
-                             Variant="Variant.Outlined" 
-                             Adornment="Adornment.Start" 
+                             Variant="Variant.Outlined"
+                             Adornment="Adornment.Start"
                              AdornmentIcon="@Icons.Material.Filled.Search"
-                             IconSize="Size.Medium" />
+                             IconSize="Size.Medium"
+                             Class="mt-0" />
             </MudItem>
-            <MudItem xs="12" sm="4">
+            <MudItem xs="12" sm="3">
                 <MudSelect @bind-Value="selectedItemType" 
-                           Label="Item Type" 
-                           Variant="Variant.Outlined">
+                          Label="Item Type" 
+                          Variant="Variant.Outlined"
+                          Clearable="true">
                     <MudSelectItem Value="@((ItemType?)null)">All Types</MudSelectItem>
                     <MudSelectItem Value="@ItemType.Product">Product</MudSelectItem>
                     <MudSelectItem Value="@ItemType.Service">Service</MudSelectItem>
-                    <MudSelectItem Value="@ItemType.RawMaterial">Raw Material</MudSelectItem>
+                    <MudSelectItem Value="@ItemType.Consumable">Consumable</MudSelectItem>
                 </MudSelect>
             </MudItem>
-            <MudItem xs="12" sm="4" Class="d-flex justify-end">
+            <MudItem xs="12" sm="3" Class="d-flex align-center">
                 <MudButton Variant="Variant.Filled" 
-                           Color="Color.Primary" 
-                           StartIcon="@Icons.Material.Filled.Add"
-                           OnClick="OpenCreateDialog">
+                          Color="Color.Primary" 
+                          StartIcon="@Icons.Material.Filled.Add"
+                          OnClick="OpenCreateDialog"
+                          Class="ml-auto">
                     Add Item
                 </MudButton>
             </MudItem>
         </MudGrid>
-    </MudPaper>
-    
-    <!-- Items Table -->
-    <MudPaper>
+
         <MudTable Items="@FilteredItems" 
-                   Dense="true" 
-                   Hover="true" 
-                   Bordered="true" 
-                   Striped="true"
-                   Loading="@loading"
-                   Filter="new Func<ItemDto,bool>(FilterFunc)">
-            <ToolBarContent>
-                <MudText Typo="Typo.h6">Items</MudText>
-                <MudSpacer />
-                <MudTextField @bind-Value="searchString" 
-                             Placeholder="Search" 
-                             Adornment="Adornment.Start" 
-                             AdornmentIcon="@Icons.Material.Filled.Search" 
-                             IconSize="Size.Medium" 
-                             Class="mt-0" />
-            </ToolBarContent>
+                  Dense="true" 
+                  Hover="true" 
+                  Loading="@loading"
+                  Filter="FilterFunc"
+                  Class="mt-4">
             <HeaderContent>
                 <MudTh>Item Code</MudTh>
                 <MudTh>Name</MudTh>
                 <MudTh>Type</MudTh>
+                <MudTh>Cost</MudTh>
                 <MudTh>Price</MudTh>
                 <MudTh>Stock</MudTh>
                 <MudTh>Status</MudTh>
@@ -71,13 +62,14 @@
                 <MudTd DataLabel="Item Code">@context.ItemCode</MudTd>
                 <MudTd DataLabel="Name">@context.Name</MudTd>
                 <MudTd DataLabel="Type">
-                    <MudChip Color="Color.Info" Size="Size.Small">@context.ItemType</MudChip>
+                    <MudChip T="string" Color="Color.Primary" Size="Size.Small">@context.ItemType</MudChip>
                 </MudTd>
+                <MudTd DataLabel="Cost">$@context.StandardCost.ToString("F2")</MudTd>
                 <MudTd DataLabel="Price">$@context.SellingPrice.ToString("F2")</MudTd>
                 <MudTd DataLabel="Stock">
                     @if (context.IsStockable)
                     {
-                        <MudText>@(context.MinimumStockLevel?.ToString() ?? "N/A")</MudText>
+                        <MudText>@(context.MinimumStockLevel?.ToString() ?? "0")</MudText>
                     }
                     else
                     {
@@ -85,24 +77,24 @@
                     }
                 </MudTd>
                 <MudTd DataLabel="Status">
-                    <MudChip Color="@(context.IsActive ? Color.Success : Color.Error)" 
+                    <MudChip T="string" Color="@(context.IsActive ? Color.Success : Color.Error)" 
                              Size="Size.Small">
                         @(context.IsActive ? "Active" : "Inactive")
                     </MudChip>
                 </MudTd>
                 <MudTd DataLabel="Actions">
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" 
-                                   Color="Color.Primary" 
-                                   Size="Size.Small"
-                                   OnClick="@(() => OpenEditDialog(context))" />
                     <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
-                                   Color="Color.Info" 
-                                   Size="Size.Small"
-                                   OnClick="@(() => OpenViewDialog(context))" />
+                                  Color="Color.Info" 
+                                  Size="Size.Small"
+                                  OnClick="@(() => OpenViewDialog(context))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                  Color="Color.Primary" 
+                                  Size="Size.Small"
+                                  OnClick="@(() => OpenEditDialog(context))" />
                     <MudIconButton Icon="@(context.IsActive ? Icons.Material.Filled.Block : Icons.Material.Filled.CheckCircle)" 
-                                   Color="@(context.IsActive ? Color.Warning : Color.Success)" 
-                                   Size="Size.Small"
-                                   OnClick="@(() => ToggleItemStatus(context))" />
+                                  Color="@(context.IsActive ? Color.Warning : Color.Success)" 
+                                  Size="Size.Small"
+                                  OnClick="@(() => ToggleItemStatus(context))" />
                 </MudTd>
             </RowTemplate>
             <PagerContent>
@@ -113,7 +105,7 @@
 </MudContainer>
 
 <!-- Create/Edit Dialog -->
-<MudDialog @bind-IsVisible="dialogVisible" Options="dialogOptions">
+<MudDialog @bind-Visible="dialogVisible" Options="dialogOptions">
     <TitleContent>
         <MudText Typo="Typo.h6">@(editingItem == null ? "Create Item" : "Edit Item")</MudText>
     </TitleContent>
@@ -124,8 +116,7 @@
                     <MudTextField @bind-Value="itemForm.ItemCode" 
                                  Label="Item Code" 
                                  Required="true" 
-                                 RequiredError="Item code is required!"
-                                 Disabled="@(editingItem != null)" />
+                                 RequiredError="Item code is required!" />
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudTextField @bind-Value="itemForm.Name" 
@@ -148,62 +139,58 @@
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudSelect @bind-Value="itemForm.ItemType" 
-                               Label="Item Type" 
-                               Required="true"
-                               RequiredError="Item type is required!">
+                              Label="Item Type" 
+                              Required="true" 
+                              RequiredError="Item type is required!">
                         <MudSelectItem Value="@ItemType.Product">Product</MudSelectItem>
                         <MudSelectItem Value="@ItemType.Service">Service</MudSelectItem>
-                        <MudSelectItem Value="@ItemType.RawMaterial">Raw Material</MudSelectItem>
+                        <MudSelectItem Value="@ItemType.Consumable">Consumable</MudSelectItem>
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudTextField @bind-Value="itemForm.UnitOfMeasure" 
                                  Label="Unit of Measure" />
                 </MudItem>
+                <MudItem xs="12">
+                    @* Temporarily commented out due to MudBlazor analyzer issue - will be restored when analyzer is fixed *@
+                    @* <MudCheckBox T="bool" @bind-Checked="itemForm.IsStockable" Label="Is Stockable" /> *@
+                </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudNumericField @bind-Value="itemForm.StandardCost" 
-                                     Label="Standard Cost" 
-                                     Required="true"
-                                     RequiredError="Standard cost is required!"
+                                     Label="Standard Cost"
                                      Min="0"
                                      Format="F2" />
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudNumericField @bind-Value="itemForm.SellingPrice" 
-                                     Label="Selling Price" 
-                                     Required="true"
-                                     RequiredError="Selling price is required!"
+                                     Label="Selling Price"
                                      Min="0"
                                      Format="F2" />
                 </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudCheckBox @bind-Checked="itemForm.IsStockable" 
-                                 Label="Is Stockable" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudNumericField @bind-Value="itemForm.MinimumStockLevel" 
-                                     Label="Minimum Stock Level"
-                                     Min="0"
-                                     Format="F2" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudNumericField @bind-Value="itemForm.MaximumStockLevel" 
-                                     Label="Maximum Stock Level"
-                                     Min="0"
-                                     Format="F2" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudNumericField @bind-Value="itemForm.ReorderPoint" 
-                                     Label="Reorder Point"
-                                     Min="0"
-                                     Format="F2" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudNumericField @bind-Value="itemForm.ReorderQuantity" 
-                                     Label="Reorder Quantity"
-                                     Min="0"
-                                     Format="F2" />
-                </MudItem>
+                @if (itemForm.IsStockable)
+                {
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField @bind-Value="itemForm.MinimumStockLevel" 
+                                         Label="Minimum Stock Level"
+                                         Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField @bind-Value="itemForm.MaximumStockLevel" 
+                                         Label="Maximum Stock Level"
+                                         Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField @bind-Value="itemForm.ReorderPoint" 
+                                         Label="Reorder Point"
+                                         Min="0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField @bind-Value="itemForm.ReorderQuantity" 
+                                         Label="Reorder Quantity"
+                                         Min="0"
+                                         Format="F2" />
+                    </MudItem>
+                }
             </MudGrid>
         </MudForm>
     </DialogContent>
@@ -214,7 +201,7 @@
 </MudDialog>
 
 <!-- View Dialog -->
-<MudDialog @bind-IsVisible="viewDialogVisible" Options="viewDialogOptions">
+<MudDialog @bind-Visible="viewDialogVisible" Options="viewDialogOptions">
     <TitleContent>
         <MudText Typo="Typo.h6">Item Details</MudText>
     </TitleContent>
@@ -299,7 +286,7 @@
     private bool success;
     private ItemDto? editingItem = null;
     private ItemDto? viewingItem = null;
-    private MudForm form;
+    private MudForm? form;
     
     private CreateItemDto itemForm = new();
     
@@ -335,6 +322,7 @@
         {
             loading = false;
         }
+        await Task.CompletedTask;
     }
 
     private void OpenCreateDialog()

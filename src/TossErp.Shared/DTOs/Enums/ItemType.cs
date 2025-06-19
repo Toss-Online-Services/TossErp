@@ -1,4 +1,4 @@
-namespace TossErp.Inventory.Domain.Enums
+namespace TossErp.Shared.DTOs.Enums
 {
     public enum ItemType
     {

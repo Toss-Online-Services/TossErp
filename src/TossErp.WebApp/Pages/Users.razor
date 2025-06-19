@@ -1,53 +1,42 @@
 @page "/users"
+@using TossErp.Shared.DTOs
+@using TossErp.Shared.DTOs.Enums
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 
-<PageTitle>TOSS ERP - Users Management</PageTitle>
+<PageTitle>Users - TOSS ERP</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge">
-    <MudText Typo="Typo.h4" Class="mb-4">Users Management</MudText>
-    
-    <!-- Toolbar -->
-    <MudPaper Class="pa-4 mb-4">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudPaper Class="pa-4">
+        <MudText Typo="Typo.h4" Class="mb-4">User Management</MudText>
+        
         <MudGrid>
-            <MudItem xs="12" sm="6">
+            <MudItem xs="12" sm="8">
                 <MudTextField @bind-Value="searchString" 
                              Label="Search Users" 
-                             Variant="Variant.Outlined" 
-                             Adornment="Adornment.Start" 
+                             Variant="Variant.Outlined"
+                             Adornment="Adornment.Start"
                              AdornmentIcon="@Icons.Material.Filled.Search"
-                             IconSize="Size.Medium" />
+                             IconSize="Size.Medium"
+                             Class="mt-0" />
             </MudItem>
-            <MudItem xs="12" sm="6" Class="d-flex justify-end">
+            <MudItem xs="12" sm="4" Class="d-flex align-center">
                 <MudButton Variant="Variant.Filled" 
-                           Color="Color.Primary" 
-                           StartIcon="@Icons.Material.Filled.Add"
-                           OnClick="OpenCreateDialog">
+                          Color="Color.Primary" 
+                          StartIcon="@Icons.Material.Filled.Add"
+                          OnClick="OpenCreateDialog"
+                          Class="ml-auto">
                     Add User
                 </MudButton>
             </MudItem>
         </MudGrid>
-    </MudPaper>
-    
-    <!-- Users Table -->
-    <MudPaper>
+
         <MudTable Items="@FilteredUsers" 
-                   Dense="true" 
-                   Hover="true" 
-                   Bordered="true" 
-                   Striped="true"
-                   Loading="@loading"
-                   Filter="new Func<UserDto,bool>(FilterFunc)">
-            <ToolBarContent>
-                <MudText Typo="Typo.h6">Users</MudText>
-                <MudSpacer />
-                <MudTextField @bind-Value="searchString" 
-                             Placeholder="Search" 
-                             Adornment="Adornment.Start" 
-                             AdornmentIcon="@Icons.Material.Filled.Search" 
-                             IconSize="Size.Medium" 
-                             Class="mt-0" />
-            </ToolBarContent>
+                  Dense="true" 
+                  Hover="true" 
+                  Loading="@loading"
+                  Filter="FilterFunc"
+                  Class="mt-4">
             <HeaderContent>
                 <MudTh>Name</MudTh>
                 <MudTh>Username</MudTh>
@@ -57,30 +46,30 @@
                 <MudTh>Actions</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Name">@context.FullName</MudTd>
+                <MudTd DataLabel="Name">@($"{context.FirstName} {context.LastName}")</MudTd>
                 <MudTd DataLabel="Username">@context.UserName</MudTd>
                 <MudTd DataLabel="Email">@context.Email</MudTd>
                 <MudTd DataLabel="Roles">
                     @foreach (var role in context.Roles)
                     {
-                        <MudChip Color="Color.Primary" Size="Size.Small" Class="ma-1">@role</MudChip>
+                        <MudChip T="string" Color="Color.Primary" Size="Size.Small" Class="ma-1">@role</MudChip>
                     }
                 </MudTd>
                 <MudTd DataLabel="Status">
-                    <MudChip Color="@(context.IsActive ? Color.Success : Color.Error)" 
+                    <MudChip T="string" Color="@(context.IsActive ? Color.Success : Color.Error)" 
                              Size="Size.Small">
                         @(context.IsActive ? "Active" : "Inactive")
                     </MudChip>
                 </MudTd>
                 <MudTd DataLabel="Actions">
                     <MudIconButton Icon="@Icons.Material.Filled.Edit" 
-                                   Color="Color.Primary" 
-                                   Size="Size.Small"
-                                   OnClick="@(() => OpenEditDialog(context))" />
+                                  Color="Color.Primary" 
+                                  Size="Size.Small"
+                                  OnClick="@(() => OpenEditDialog(context))" />
                     <MudIconButton Icon="@(context.IsActive ? Icons.Material.Filled.Block : Icons.Material.Filled.CheckCircle)" 
-                                   Color="@(context.IsActive ? Color.Warning : Color.Success)" 
-                                   Size="Size.Small"
-                                   OnClick="@(() => ToggleUserStatus(context))" />
+                                  Color="@(context.IsActive ? Color.Warning : Color.Success)" 
+                                  Size="Size.Small"
+                                  OnClick="@(() => ToggleUserStatus(context))" />
                 </MudTd>
             </RowTemplate>
             <PagerContent>
@@ -90,8 +79,7 @@
     </MudPaper>
 </MudContainer>
 
-<!-- Create/Edit Dialog -->
-<MudDialog @bind-IsVisible="dialogVisible" Options="dialogOptions">
+<MudDialog @bind-Visible="dialogVisible" Options="dialogOptions">
     <TitleContent>
         <MudText Typo="Typo.h6">@(editingUser == null ? "Create User" : "Edit User")</MudText>
     </TitleContent>
@@ -128,8 +116,18 @@
                 <MudItem xs="12">
                     <MudTextField @bind-Value="userForm.PhoneNumber" 
                                  Label="Phone Number" 
-                                 InputType="InputType.Tel" />
+                                 InputType="InputType.Text" />
                 </MudItem>
+                @if (editingUser == null)
+                {
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="userForm.Password" 
+                                     Label="Password" 
+                                     Required="true" 
+                                     RequiredError="Password is required!"
+                                     InputType="InputType.Password" />
+                    </MudItem>
+                }
                 <MudItem xs="12">
                     <MudSelect @bind-Value="selectedRoles" 
                                Label="Roles" 
@@ -155,7 +153,7 @@
     private List<UserDto> users = new();
     private List<UserDto> FilteredUsers => users.Where(u => 
         string.IsNullOrEmpty(searchString) || 
-        u.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+        ($"{u.FirstName} {u.LastName}").Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
         u.UserName.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
         u.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
     
@@ -164,7 +162,7 @@
     private bool dialogVisible = false;
     private bool success;
     private UserDto? editingUser = null;
-    private MudForm form;
+    private MudForm? form;
     
     private CreateUserDto userForm = new();
     private List<string> selectedRoles = new();
@@ -188,9 +186,9 @@
             // Mock data for demonstration
             users = new List<UserDto>
             {
-                new() { Id = Guid.NewGuid(), UserName = "admin", Email = "admin@toss.com", FirstName = "Admin", LastName = "User", IsActive = true, Roles = new() { "Admin" } },
-                new() { Id = Guid.NewGuid(), UserName = "manager", Email = "manager@toss.com", FirstName = "John", LastName = "Manager", IsActive = true, Roles = new() { "Manager" } },
-                new() { Id = Guid.NewGuid(), UserName = "cashier1", Email = "cashier1@toss.com", FirstName = "Jane", LastName = "Cashier", IsActive = true, Roles = new() { "Cashier" } }
+                new() { Id = Guid.NewGuid(), UserName = "admin", Email = "admin@toss.com", FirstName = "Admin", LastName = "User", IsActive = true, Roles = new string[] { "Admin" } },
+                new() { Id = Guid.NewGuid(), UserName = "manager", Email = "manager@toss.com", FirstName = "John", LastName = "Manager", IsActive = true, Roles = new string[] { "Manager" } },
+                new() { Id = Guid.NewGuid(), UserName = "cashier1", Email = "cashier1@toss.com", FirstName = "Jane", LastName = "Cashier", IsActive = true, Roles = new string[] { "Cashier" } }
             };
         }
         catch (Exception ex)
@@ -201,13 +199,14 @@
         {
             loading = false;
         }
+        await Task.CompletedTask;
     }
 
     private void OpenCreateDialog()
     {
         editingUser = null;
         userForm = new CreateUserDto();
-        selectedRoles = new();
+        selectedRoles = new List<string>();
         dialogVisible = true;
     }
 
@@ -223,7 +222,7 @@
             PhoneNumber = user.PhoneNumber,
             Roles = user.Roles
         };
-        selectedRoles = user.Roles.ToList();
+        selectedRoles = new List<string>(user.Roles);
         dialogVisible = true;
     }
 
@@ -231,7 +230,7 @@
     {
         try
         {
-            userForm.Roles = selectedRoles;
+            userForm.Roles = selectedRoles.ToArray();
             
             if (editingUser == null)
             {
@@ -290,7 +289,7 @@
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
         
-        return user.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+        return ($"{user.FirstName} {user.LastName}").Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
                user.UserName.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
                user.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase);
     }
