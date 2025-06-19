@@ -1,0 +1,219 @@
+@page "/system-settings"
+@using TossErp.Shared.DTOs
+@inject HttpClient Http
+
+<PageTitle>System Settings</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">System Settings</MudText>
+    
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true">
+        <MudTabPanel Text="General">
+            <MudCard>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="string" @bind-Value="systemSettings.SystemName" 
+                                          Label="System Name" Required="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="string" @bind-Value="systemSettings.Version" 
+                                          Label="System Version" ReadOnly="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudSelect T="Theme" @bind-Value="systemSettings.Theme" 
+                                       Label="Theme" 
+                                       HelperText="Select the application theme">
+                                <MudSelectItem Value="@Theme.Light">Light</MudSelectItem>
+                                <MudSelectItem Value="@Theme.Dark">Dark</MudSelectItem>
+                                <MudSelectItem Value="@Theme.Auto">Auto</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudSelect T="int" @bind-Value="systemSettings.SessionTimeout" 
+                                       Label="Session Timeout (minutes)">
+                                <MudSelectItem Value="15">15 minutes</MudSelectItem>
+                                <MudSelectItem Value="30">30 minutes</MudSelectItem>
+                                <MudSelectItem Value="60">1 hour</MudSelectItem>
+                                <MudSelectItem Value="120">2 hours</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudSelect T="LanguageCode" @bind-Value="systemSettings.Language" 
+                                       Label="Language" 
+                                       HelperText="Select the application language">
+                                <MudSelectItem Value="@LanguageCode.en_US">English (US)</MudSelectItem>
+                                <MudSelectItem Value="@LanguageCode.en_GB">English (UK)</MudSelectItem>
+                                <MudSelectItem Value="@LanguageCode.es_ES">Spanish</MudSelectItem>
+                                <MudSelectItem Value="@LanguageCode.fr_FR">French</MudSelectItem>
+                                <MudSelectItem Value="@LanguageCode.de_DE">German</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudSelect T="AppTimeZone" @bind-Value="systemSettings.TimeZone" 
+                                      Label="Time Zone" 
+                                      HelperText="Select the application time zone">
+                                <MudSelectItem Value="@AppTimeZone.UTC">UTC</MudSelectItem>
+                                <MudSelectItem Value="@AppTimeZone.America_New_York">Eastern Time</MudSelectItem>
+                                <MudSelectItem Value="@AppTimeZone.America_Chicago">Central Time</MudSelectItem>
+                                <MudSelectItem Value="@AppTimeZone.America_Denver">Mountain Time</MudSelectItem>
+                                <MudSelectItem Value="@AppTimeZone.America_Los_Angeles">Pacific Time</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Email">
+            <MudCard>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="string" @bind-Value="systemSettings.SmtpServer" 
+                                          Label="SMTP Server" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="int" @bind-Value="systemSettings.SmtpPort" 
+                                          Label="SMTP Port" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="string" @bind-Value="systemSettings.SmtpUsername" 
+                                          Label="SMTP Username" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="string" @bind-Value="systemSettings.SmtpPassword" 
+                                          Label="SMTP Password" Password="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudCheckBox T="bool" @bind-Checked="systemSettings.EnableSsl" 
+                                         Label="Enable SSL" />
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Backup">
+            <MudCard>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="string" @bind-Value="systemSettings.BackupPath" 
+                                          Label="Backup Path" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudSelect T="BackupFrequency" @bind-Value="systemSettings.BackupFrequency" 
+                                       Label="Backup Frequency" 
+                                       HelperText="Select how often to perform backups">
+                                <MudSelectItem Value="@BackupFrequency.Daily">Daily</MudSelectItem>
+                                <MudSelectItem Value="@BackupFrequency.Weekly">Weekly</MudSelectItem>
+                                <MudSelectItem Value="@BackupFrequency.Monthly">Monthly</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudCheckBox T="bool" @bind-Checked="systemSettings.AutoBackup" 
+                                         Label="Enable Auto Backup" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="int" @bind-Value="systemSettings.BackupRetentionDays" 
+                                          Label="Retention Days" />
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Security">
+            <MudCard>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="int" @bind-Value="systemSettings.PasswordMinLength" 
+                                          Label="Minimum Password Length" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudCheckBox T="bool" @bind-Checked="systemSettings.RequireUppercase" 
+                                         Label="Require Uppercase" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudCheckBox T="bool" @bind-Checked="systemSettings.RequireLowercase" 
+                                         Label="Require Lowercase" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudCheckBox T="bool" @bind-Checked="systemSettings.RequireNumbers" 
+                                         Label="Require Numbers" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudCheckBox T="bool" @bind-Checked="systemSettings.RequireSpecialChars" 
+                                         Label="Require Special Characters" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField T="int" @bind-Value="systemSettings.MaxLoginAttempts" 
+                                          Label="Max Login Attempts" />
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudTabPanel>
+    </MudTabs>
+    
+    <MudCardActions Class="mt-4">
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" 
+                   OnClick="SaveSettings">
+            Save Settings
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="ResetSettings">
+            Reset
+        </MudButton>
+    </MudCardActions>
+</MudContainer>
+
+@code {
+    private SystemSettingsDto systemSettings = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSettings();
+    }
+
+    private async Task LoadSettings()
+    {
+        // Mock data for now
+        systemSettings = new SystemSettingsDto
+        {
+            SystemName = "TOSS ERP System",
+            Version = "1.0.0",
+            Theme = Theme.Light,
+            SessionTimeout = 30,
+            SmtpServer = "smtp.gmail.com",
+            SmtpPort = 587,
+            SmtpUsername = "noreply@toss-erp.com",
+            SmtpPassword = "",
+            EnableSsl = true,
+            BackupPath = "C:\\Backups",
+            BackupFrequency = BackupFrequency.Daily,
+            AutoBackup = true,
+            BackupRetentionDays = 30,
+            PasswordMinLength = 8,
+            RequireUppercase = true,
+            RequireLowercase = true,
+            RequireNumbers = true,
+            RequireSpecialChars = true,
+            MaxLoginAttempts = 5,
+            Language = LanguageCode.en_US
+        };
+    }
+
+    private async Task SaveSettings()
+    {
+        // Mock save operation
+        // In a real app, this would save to the database
+        await Task.Delay(1000); // Simulate API call
+    }
+
+    private async Task ResetSettings()
+    {
+        await LoadSettings();
+    }
+} 

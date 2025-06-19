@@ -1,7 +1,11 @@
 @page "/login"
 @using TossErp.Shared.DTOs
 @using TossErp.WebApp.Services
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
 @inject HttpClient Http
+@inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 @inject ILocalStorageService LocalStorage
 
@@ -76,25 +80,29 @@
 
         try
         {
-            var response = await Http.PostAsJsonAsync("https://localhost:5001/api/auth/login", loginRequest);
+            var json = JsonSerializer.Serialize(loginRequest);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await Http.PostAsync("https://localhost:5001/api/auth/login", content);
             
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<LoginResponse>(responseContent);
                 if (result?.Token != null)
                 {
                     await LocalStorage.SetItemAsync("authToken", result.Token);
                     await LocalStorage.SetItemAsync("user", result.User);
                     
                     // Set default authorization header for future requests
-                    Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", result.Token);
+                    Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.Token);
                     
                     Navigation.NavigateTo("/dashboard");
                 }
             }
             else
             {
-                var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+                var errorContent = await response.Content.ReadAsStringAsync();
+                var error = JsonSerializer.Deserialize<ErrorResponse>(errorContent);
                 errorMessage = error?.Message ?? "Login failed. Please check your credentials.";
             }
         }

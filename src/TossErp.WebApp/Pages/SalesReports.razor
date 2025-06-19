@@ -1,0 +1,102 @@
+@page "/sales-reports"
+@using TossErp.Shared.DTOs
+@inject HttpClient Http
+
+<PageTitle>Sales Reports</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Sales Reports</MudText>
+    
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="3">
+            <MudTextField T="DateTime?" @bind-Value="startDate" 
+                          Label="Start Date" Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudTextField T="DateTime?" @bind-Value="endDate" 
+                          Label="End Date" Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudSelect T="ReportType" @bind-Value="selectedReportType" 
+                       Label="Report Type" 
+                       HelperText="Select the type of report">
+                <MudSelectItem Value="@ReportType.Daily">Daily</MudSelectItem>
+                <MudSelectItem Value="@ReportType.Weekly">Weekly</MudSelectItem>
+                <MudSelectItem Value="@ReportType.Monthly">Monthly</MudSelectItem>
+                <MudSelectItem Value="@ReportType.Product">Product</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" 
+                       OnClick="GenerateReport" Class="mt-4">
+                Generate Report
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+    @if (reportData != null)
+    {
+        <MudCard Class="mt-4">
+            <MudCardContent>
+                <MudText Typo="Typo.h5" Class="mb-3">Report Summary</MudText>
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudText><strong>Total Sales:</strong> @reportData.TotalSales.ToString("C")</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudText><strong>Total Orders:</strong> @reportData.TotalOrders</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudText><strong>Average Order Value:</strong> @reportData.AverageOrderValue.ToString("C")</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudText><strong>Top Product:</strong> @reportData.TopProduct</MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+
+        <MudTable T="SalesReportItemDto" Items="@reportData.Items" Dense="true" Hover="true" 
+                  Striped="true" Class="mt-4">
+            <HeaderContent>
+                <MudTh>Period/Product</MudTh>
+                <MudTh>Sales Amount</MudTh>
+                <MudTh>Orders</MudTh>
+                <MudTh>Quantity Sold</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Period/Product">@context.PeriodOrProduct</MudTd>
+                <MudTd DataLabel="Sales Amount">@context.SalesAmount.ToString("C")</MudTd>
+                <MudTd DataLabel="Orders">@context.Orders</MudTd>
+                <MudTd DataLabel="Quantity Sold">@context.QuantitySold</MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+</MudContainer>
+
+@code {
+    private DateTime? startDate = DateTime.Now.AddDays(-30);
+    private DateTime? endDate = DateTime.Now;
+    private ReportType selectedReportType = ReportType.Daily;
+    private SalesReportDto? reportData;
+
+    private async Task GenerateReport()
+    {
+        // Mock report generation
+        reportData = new SalesReportDto
+        {
+            TotalSales = 15499.96m,
+            TotalOrders = 25,
+            AverageOrderValue = 619.99m,
+            TopProduct = "iPhone 15",
+            Items = new List<SalesReportItemDto>
+            {
+                new() { PeriodOrProduct = "2024-01-15", SalesAmount = 1299.99m, Orders = 1, QuantitySold = 1 },
+                new() { PeriodOrProduct = "2024-01-16", SalesAmount = 2499.98m, Orders = 1, QuantitySold = 1 },
+                new() { PeriodOrProduct = "2024-01-17", SalesAmount = 899.99m, Orders = 1, QuantitySold = 1 },
+                new() { PeriodOrProduct = "2024-01-18", SalesAmount = 3799.97m, Orders = 3, QuantitySold = 3 },
+                new() { PeriodOrProduct = "2024-01-19", SalesAmount = 6999.03m, Orders = 19, QuantitySold = 19 }
+            }
+        };
+    }
+} 

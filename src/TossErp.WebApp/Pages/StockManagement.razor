@@ -1,0 +1,203 @@
+@page "/stock-management"
+@using TossErp.Shared.DTOs
+@inject HttpClient Http
+
+<PageTitle>Stock Management</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Stock Management</MudText>
+    
+    <MudButton Color="Color.Primary" Variant="Variant.Filled" 
+               StartIcon="@Icons.Material.Filled.Add" 
+               OnClick="OpenAddDialog" Class="mb-4">
+        Add Stock Movement
+    </MudButton>
+
+    <MudTable T="StockMovementDto" Items="@stockMovements" Dense="true" Hover="true" 
+              Striped="true" Loading="@loading" LoadingProgressColor="Color.Info">
+        <HeaderContent>
+            <MudTh>Item</MudTh>
+            <MudTh>Type</MudTh>
+            <MudTh>Quantity</MudTh>
+            <MudTh>Warehouse</MudTh>
+            <MudTh>Date</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Item">@context.ItemName</MudTd>
+            <MudTd DataLabel="Type">@context.MovementType</MudTd>
+            <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
+            <MudTd DataLabel="Warehouse">@context.WarehouseName</MudTd>
+            <MudTd DataLabel="Date">@context.MovementDate.ToShortDateString()</MudTd>
+            <MudTd DataLabel="Actions">
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                              Color="Color.Primary" 
+                              OnClick="@(() => OpenEditDialog(context))" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                              Color="Color.Error" 
+                              OnClick="@(() => DeleteMovement(context.Id))" />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudContainer>
+
+<MudDialog @bind-IsVisible="dialogVisible" Options="dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@(editingMovement?.Id == 0 ? "Add Stock Movement" : "Edit Stock Movement")</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudSelect T="int" @bind-Value="editingMovement.ItemId" 
+                   Label="Item" Required="true">
+            @foreach (var item in items)
+            {
+                <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect T="StockMovementType" @bind-Value="editingMovement.MovementType" 
+                   Label="Movement Type" Required="true" HelperText="Select the type of movement">
+            <MudSelectItem Value="@StockMovementType.In">In</MudSelectItem>
+            <MudSelectItem Value="@StockMovementType.Out">Out</MudSelectItem>
+            <MudSelectItem Value="@StockMovementType.Transfer">Transfer</MudSelectItem>
+        </MudSelect>
+        <MudNumericField T="int" @bind-Value="editingMovement.Quantity" 
+                         Label="Quantity" Required="true" Min="1" />
+        <MudSelect T="int" @bind-Value="editingMovement.WarehouseId" 
+                   Label="Warehouse" Required="true">
+            @foreach (var warehouse in warehouses)
+            {
+                <MudSelectItem Value="@warehouse.Id">@warehouse.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudTextField T="string" @bind-Value="editingMovement.Reference" 
+                      Label="Reference Number" />
+        <MudTextField T="string" @bind-Value="editingMovement.Notes" 
+                      Label="Notes" Lines="3" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseDialog">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="SaveMovement">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<StockMovementDto> stockMovements = new();
+    private List<ItemDto> items = new();
+    private List<WarehouseDto> warehouses = new();
+    private bool loading = true;
+    private bool dialogVisible = false;
+    private StockMovementDto editingMovement = new();
+    private DialogOptions dialogOptions = new() { CloseOnEscapeKey = true };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        loading = true;
+        try
+        {
+            // Mock data for now
+            items = new List<ItemDto>
+            {
+                new() { Id = 1, Name = "iPhone 15", Sku = "IPH15-001" },
+                new() { Id = 2, Name = "Samsung Galaxy S24", Sku = "SAMS24-001" },
+                new() { Id = 3, Name = "MacBook Pro", Sku = "MBP-001" }
+            };
+
+            warehouses = new List<WarehouseDto>
+            {
+                new() { Id = 1, Name = "Main Warehouse", Location = "New York" },
+                new() { Id = 2, Name = "Secondary Warehouse", Location = "Los Angeles" }
+            };
+
+            stockMovements = new List<StockMovementDto>
+            {
+                new() { Id = 1, ItemId = 1, ItemName = "iPhone 15", MovementType = StockMovementType.In, Quantity = 50, WarehouseId = 1, WarehouseName = "Main Warehouse", MovementDate = DateTime.Now.AddDays(-5) },
+                new() { Id = 2, ItemId = 2, ItemName = "Samsung Galaxy S24", MovementType = StockMovementType.Out, Quantity = 10, WarehouseId = 1, WarehouseName = "Main Warehouse", MovementDate = DateTime.Now.AddDays(-3) },
+                new() { Id = 3, ItemId = 3, ItemName = "MacBook Pro", MovementType = StockMovementType.In, Quantity = 25, WarehouseId = 2, WarehouseName = "Secondary Warehouse", MovementDate = DateTime.Now.AddDays(-1) }
+            };
+        }
+        catch (Exception ex)
+        {
+            // Handle error
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void OpenAddDialog()
+    {
+        editingMovement = new StockMovementDto
+        {
+            MovementDate = DateTime.Now
+        };
+        dialogVisible = true;
+    }
+
+    private void OpenEditDialog(StockMovementDto movement)
+    {
+        editingMovement = new StockMovementDto
+        {
+            Id = movement.Id,
+            ItemId = movement.ItemId,
+            MovementType = movement.MovementType,
+            Quantity = movement.Quantity,
+            WarehouseId = movement.WarehouseId,
+            Reference = movement.Reference,
+            Notes = movement.Notes,
+            MovementDate = movement.MovementDate
+        };
+        dialogVisible = true;
+    }
+
+    private void CloseDialog()
+    {
+        dialogVisible = false;
+        editingMovement = new StockMovementDto();
+    }
+
+    private async Task SaveMovement()
+    {
+        // Mock save operation
+        if (editingMovement.Id == 0)
+        {
+            editingMovement.Id = stockMovements.Count + 1;
+            editingMovement.ItemName = items.FirstOrDefault(i => i.Id == editingMovement.ItemId)?.Name ?? "";
+            editingMovement.WarehouseName = warehouses.FirstOrDefault(w => w.Id == editingMovement.WarehouseId)?.Name ?? "";
+            stockMovements.Add(editingMovement);
+        }
+        else
+        {
+            var existing = stockMovements.FirstOrDefault(m => m.Id == editingMovement.Id);
+            if (existing != null)
+            {
+                existing.ItemId = editingMovement.ItemId;
+                existing.ItemName = items.FirstOrDefault(i => i.Id == editingMovement.ItemId)?.Name ?? "";
+                existing.MovementType = editingMovement.MovementType;
+                existing.Quantity = editingMovement.Quantity;
+                existing.WarehouseId = editingMovement.WarehouseId;
+                existing.WarehouseName = warehouses.FirstOrDefault(w => w.Id == editingMovement.WarehouseId)?.Name ?? "";
+                existing.Reference = editingMovement.Reference;
+                existing.Notes = editingMovement.Notes;
+                existing.MovementDate = editingMovement.MovementDate;
+            }
+        }
+        
+        CloseDialog();
+        StateHasChanged();
+    }
+
+    private async Task DeleteMovement(int id)
+    {
+        var movement = stockMovements.FirstOrDefault(m => m.Id == id);
+        if (movement != null)
+        {
+            stockMovements.Remove(movement);
+            StateHasChanged();
+        }
+    }
+} 

@@ -1,0 +1,115 @@
+@page "/inventory-reports"
+@using TossErp.Shared.DTOs
+@inject HttpClient Http
+
+<PageTitle>Inventory Reports</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Inventory Reports</MudText>
+    
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="3">
+            <MudSelect T="InventoryReportType" @bind-Value="selectedReportType" 
+                      Label="Report Type" 
+                      HelperText="Select the type of report">
+                <MudSelectItem Value="@InventoryReportType.StockLevels">Stock Levels</MudSelectItem>
+                <MudSelectItem Value="@InventoryReportType.LowStock">Low Stock</MudSelectItem>
+                <MudSelectItem Value="@InventoryReportType.Movements">Movements</MudSelectItem>
+                <MudSelectItem Value="@InventoryReportType.Valuation">Valuation</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudSelect T="int?" @bind-Value="selectedWarehouse" 
+                       Label="Warehouse" Variant="Variant.Outlined">
+                <MudSelectItem Value="@((int?)null)">All Warehouses</MudSelectItem>
+                <MudSelectItem Value="1">Main Warehouse</MudSelectItem>
+                <MudSelectItem Value="2">Secondary Warehouse</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudSelect T="int?" @bind-Value="selectedCategory" 
+                       Label="Category" Variant="Variant.Outlined">
+                <MudSelectItem Value="@((int?)null)">All Categories</MudSelectItem>
+                <MudSelectItem Value="1">Electronics</MudSelectItem>
+                <MudSelectItem Value="2">Clothing</MudSelectItem>
+                <MudSelectItem Value="3">Books</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" 
+                       OnClick="GenerateReport" Class="mt-4">
+                Generate Report
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+    @if (reportData != null)
+    {
+        <MudCard Class="mt-4">
+            <MudCardContent>
+                <MudText Typo="Typo.h5" Class="mb-3">Report Summary</MudText>
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudText><strong>Total Items:</strong> @reportData.TotalItems</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudText><strong>Total Value:</strong> @reportData.TotalValue.ToString("C")</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudText><strong>Low Stock Items:</strong> @reportData.LowStockItems</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudText><strong>Out of Stock:</strong> @reportData.OutOfStockItems</MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+
+        <MudTable T="InventoryReportItemDto" Items="@reportData.Items" Dense="true" Hover="true" 
+                  Striped="true" Class="mt-4">
+            <HeaderContent>
+                <MudTh>Item</MudTh>
+                <MudTh>Category</MudTh>
+                <MudTh>Warehouse</MudTh>
+                <MudTh>Stock Level</MudTh>
+                <MudTh>Unit Cost</MudTh>
+                <MudTh>Total Value</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Item">@context.ItemName</MudTd>
+                <MudTd DataLabel="Category">@context.Category</MudTd>
+                <MudTd DataLabel="Warehouse">@context.Warehouse</MudTd>
+                <MudTd DataLabel="Stock Level">@context.StockLevel</MudTd>
+                <MudTd DataLabel="Unit Cost">@context.UnitCost.ToString("C")</MudTd>
+                <MudTd DataLabel="Total Value">@context.TotalValue.ToString("C")</MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+</MudContainer>
+
+@code {
+    private InventoryReportType selectedReportType;
+    private int? selectedWarehouse;
+    private int? selectedCategory;
+    private InventoryReportDto? reportData;
+
+    private async Task GenerateReport()
+    {
+        // Mock report generation
+        reportData = new InventoryReportDto
+        {
+            TotalItems = 15,
+            TotalValue = 125000.00m,
+            LowStockItems = 3,
+            OutOfStockItems = 1,
+            Items = new List<InventoryReportItemDto>
+            {
+                new() { ItemName = "iPhone 15", Category = "Electronics", Warehouse = "Main Warehouse", StockLevel = 45, UnitCost = 800.00m, TotalValue = 36000.00m },
+                new() { ItemName = "Samsung Galaxy S24", Category = "Electronics", Warehouse = "Main Warehouse", StockLevel = 32, UnitCost = 600.00m, TotalValue = 19200.00m },
+                new() { ItemName = "MacBook Pro", Category = "Electronics", Warehouse = "Secondary Warehouse", StockLevel = 18, UnitCost = 2000.00m, TotalValue = 36000.00m },
+                new() { ItemName = "Nike Shoes", Category = "Clothing", Warehouse = "Main Warehouse", StockLevel = 5, UnitCost = 80.00m, TotalValue = 400.00m },
+                new() { ItemName = "Programming Book", Category = "Books", Warehouse = "Main Warehouse", StockLevel = 0, UnitCost = 50.00m, TotalValue = 0.00m }
+            }
+        };
+    }
+} 

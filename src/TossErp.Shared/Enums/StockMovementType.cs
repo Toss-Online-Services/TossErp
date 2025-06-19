@@ -4,6 +4,7 @@ namespace TossErp.Shared.Enums
     {
         In,
         Out,
+        Transfer,
         Adjustment
     }
 } 

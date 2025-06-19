@@ -1,0 +1,217 @@
+@page "/sales-history"
+@using TossErp.Shared.DTOs
+@inject HttpClient Http
+
+<PageTitle>Sales History</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Sales History</MudText>
+    
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="3">
+            <MudTextField T="DateTime?" @bind-Value="startDate" 
+                          Label="Start Date" Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudTextField T="DateTime?" @bind-Value="endDate" 
+                          Label="End Date" Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudSelect T="SaleStatus" @bind-Value="selectedStatus" 
+                       Label="Filter by Status" 
+                       HelperText="Select a status to filter">
+                <MudSelectItem Value="@SaleStatus.Pending">Pending</MudSelectItem>
+                <MudSelectItem Value="@SaleStatus.Completed">Completed</MudSelectItem>
+                <MudSelectItem Value="@SaleStatus.Cancelled">Cancelled</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" 
+                       OnClick="FilterSales" Class="mt-4">
+                Filter
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+    <MudTable T="SaleDto" Items="@filteredSales" Dense="true" Hover="true" 
+              Striped="true" Loading="@loading" LoadingProgressColor="Color.Info">
+        <HeaderContent>
+            <MudTh>Sale ID</MudTh>
+            <MudTh>Customer</MudTh>
+            <MudTh>Total Amount</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Date</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Sale ID">@context.Id</MudTd>
+            <MudTd DataLabel="Customer">@context.CustomerName</MudTd>
+            <MudTd DataLabel="Total Amount">@context.TotalAmount.ToString("C")</MudTd>
+            <MudTd DataLabel="Status">@context.Status</MudTd>
+            <MudTd DataLabel="Date">@context.SaleDate.ToShortDateString()</MudTd>
+            <MudTd DataLabel="Actions">
+                <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                              Color="Color.Info" 
+                              OnClick="@(() => ViewSaleDetails(context))" />
+                <MudIconButton Icon="@Icons.Material.Filled.Print" 
+                              Color="Color.Secondary" 
+                              OnClick="@(() => PrintInvoice(context))" />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudContainer>
+
+<MudDialog @bind-IsVisible="detailsDialogVisible" Options="dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Sale Details - #@selectedSale?.Id</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (selectedSale != null)
+        {
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudText><strong>Customer:</strong> @selectedSale.CustomerName</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText><strong>Date:</strong> @selectedSale.SaleDate.ToShortDateString()</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText><strong>Status:</strong> @selectedSale.Status</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText><strong>Total:</strong> @selectedSale.TotalAmount.ToString("C")</MudText>
+                </MudItem>
+            </MudGrid>
+            
+            <MudDivider Class="my-4" />
+            
+            <MudText Typo="Typo.h6" Class="mb-3">Items</MudText>
+            <MudTable T="SaleItemDto" Items="@selectedSale.Items" Dense="true">
+                <HeaderContent>
+                    <MudTh>Item</MudTh>
+                    <MudTh>Quantity</MudTh>
+                    <MudTh>Price</MudTh>
+                    <MudTh>Total</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Item">@context.ItemName</MudTd>
+                    <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
+                    <MudTd DataLabel="Price">@context.UnitPrice.ToString("C")</MudTd>
+                    <MudTd DataLabel="Total">@((context.Quantity * context.UnitPrice).ToString("C"))</MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseDetailsDialog">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<SaleDto> sales = new();
+    private List<SaleDto> filteredSales = new();
+    private bool loading = true;
+    private bool detailsDialogVisible = false;
+    private SaleDto? selectedSale;
+    private DateTime? startDate;
+    private DateTime? endDate;
+    private SaleStatus selectedStatus = SaleStatus.All;
+    private DialogOptions dialogOptions = new() { CloseOnEscapeKey = true };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSales();
+    }
+
+    private async Task LoadSales()
+    {
+        loading = true;
+        try
+        {
+            // Mock data for now
+            sales = new List<SaleDto>
+            {
+                new() 
+                { 
+                    Id = 1, 
+                    CustomerName = "John Doe", 
+                    TotalAmount = 1299.99m, 
+                    Status = "Completed", 
+                    SaleDate = DateTime.Now.AddDays(-5),
+                    Items = new List<SaleItemDto>
+                    {
+                        new() { ItemName = "iPhone 15", Quantity = 1, UnitPrice = 1299.99m }
+                    }
+                },
+                new() 
+                { 
+                    Id = 2, 
+                    CustomerName = "Jane Smith", 
+                    TotalAmount = 2499.98m, 
+                    Status = "Completed", 
+                    SaleDate = DateTime.Now.AddDays(-3),
+                    Items = new List<SaleItemDto>
+                    {
+                        new() { ItemName = "MacBook Pro", Quantity = 1, UnitPrice = 2499.98m }
+                    }
+                },
+                new() 
+                { 
+                    Id = 3, 
+                    CustomerName = "Bob Johnson", 
+                    TotalAmount = 899.99m, 
+                    Status = "Pending", 
+                    SaleDate = DateTime.Now.AddDays(-1),
+                    Items = new List<SaleItemDto>
+                    {
+                        new() { ItemName = "Samsung Galaxy S24", Quantity = 1, UnitPrice = 899.99m }
+                    }
+                }
+            };
+            filteredSales = sales;
+        }
+        catch (Exception ex)
+        {
+            // Handle error
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void FilterSales()
+    {
+        filteredSales = sales.AsEnumerable();
+
+        if (startDate.HasValue)
+            filteredSales = filteredSales.Where(s => s.SaleDate >= startDate.Value);
+
+        if (endDate.HasValue)
+            filteredSales = filteredSales.Where(s => s.SaleDate <= endDate.Value);
+
+        if (selectedStatus != SaleStatus.All)
+            filteredSales = filteredSales.Where(s => s.Status == selectedStatus.ToString());
+
+        filteredSales = filteredSales.ToList();
+        StateHasChanged();
+    }
+
+    private void ViewSaleDetails(SaleDto sale)
+    {
+        selectedSale = sale;
+        detailsDialogVisible = true;
+    }
+
+    private void CloseDetailsDialog()
+    {
+        detailsDialogVisible = false;
+        selectedSale = null;
+    }
+
+    private void PrintInvoice(SaleDto sale)
+    {
+        // Mock print functionality
+        // In a real app, this would generate and print an invoice
+    }
+} 

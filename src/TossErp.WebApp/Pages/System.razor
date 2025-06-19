@@ -1,0 +1,320 @@
+@page "/system"
+@using TossErp.Shared.DTOs
+@using TossErp.Shared.Enums
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>System Settings - TOSS ERP</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">System Settings</MudText>
+    
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="General">
+            <MudPaper Class="pa-4">
+                <MudText Typo="Typo.h6" Class="mb-3">General Settings</MudText>
+                <MudForm @ref="generalForm" @bind-IsValid="@generalSuccess">
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="systemSettings.SiteName" 
+                                         Label="Site Name" 
+                                         Required="true" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="systemSettings.SiteUrl" 
+                                         Label="Site URL" 
+                                         Required="true" />
+                        </MudItem>
+                        
+                        <MudItem xs="12" md="6">
+                            <MudSelect T="LanguageCode" @bind-Value="systemSettings.Language" 
+                                      Label="Language" 
+                                      HelperText="Select the application language">
+                                <MudSelectItem Value="@LanguageCode.en_US">English (US)</MudSelectItem>
+                                <MudSelectItem Value="@LanguageCode.en_GB">English (UK)</MudSelectItem>
+                                <MudSelectItem Value="@LanguageCode.es_ES">Spanish</MudSelectItem>
+                                <MudSelectItem Value="@LanguageCode.fr_FR">French</MudSelectItem>
+                                <MudSelectItem Value="@LanguageCode.de_DE">German</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudSelect T="AppTimeZone" @bind-Value="systemSettings.TimeZone" 
+                                      Label="Time Zone" 
+                                      HelperText="Select the application time zone">
+                                <MudSelectItem Value="@AppTimeZone.UTC">UTC</MudSelectItem>
+                                <MudSelectItem Value="@AppTimeZone.America_New_York">Eastern Time</MudSelectItem>
+                                <MudSelectItem Value="@AppTimeZone.America_Chicago">Central Time</MudSelectItem>
+                                <MudSelectItem Value="@AppTimeZone.America_Denver">Mountain Time</MudSelectItem>
+                                <MudSelectItem Value="@AppTimeZone.America_Los_Angeles">Pacific Time</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="systemSettings.DateFormat" 
+                                         Label="Date Format" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="systemSettings.TimeFormat" 
+                                         Label="Time Format" />
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            </MudPaper>
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Security">
+            <MudPaper Class="pa-4">
+                <MudText Typo="Typo.h6" Class="mb-3">Security Settings</MudText>
+                <MudForm @ref="securityForm" @bind-IsValid="@securitySuccess">
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudNumericField @bind-Value="systemSettings.PasswordMinLength" 
+                                            Label="Minimum Password Length" 
+                                            Min="6" Max="20" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudNumericField @bind-Value="systemSettings.PasswordExpiryDays" 
+                                            Label="Password Expiry (Days)" 
+                                            Min="0" Max="365" />
+                        </MudItem>
+                        
+                        <MudItem xs="12" md="6">
+                            <MudNumericField @bind-Value="systemSettings.SessionTimeoutMinutes" 
+                                            Label="Session Timeout (Minutes)" 
+                                            Min="15" Max="480" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudNumericField @bind-Value="systemSettings.MaxLoginAttempts" 
+                                            Label="Max Login Attempts" 
+                                            Min="3" Max="10" />
+                        </MudItem>
+                        
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox T="bool" @bind-Checked="systemSettings.RequireTwoFactor" 
+                                        Label="Require Two-Factor Authentication" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox T="bool" @bind-Checked="systemSettings.EnableAuditLog" 
+                                        Label="Enable Audit Logging" />
+                        </MudItem>
+                        
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox T="bool" @bind-Checked="systemSettings.ForceHTTPS" 
+                                        Label="Force HTTPS" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox T="bool" @bind-Checked="systemSettings.EnableCSRFProtection" 
+                                        Label="Enable CSRF Protection" />
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            </MudPaper>
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Email">
+            <MudPaper Class="pa-4">
+                <MudText Typo="Typo.h6" Class="mb-3">Email Settings</MudText>
+                <MudForm @ref="emailForm" @bind-IsValid="@emailSuccess">
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="systemSettings.SmtpServer" 
+                                         Label="SMTP Server" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudNumericField @bind-Value="systemSettings.SmtpPort" 
+                                            Label="SMTP Port" 
+                                            Min="1" Max="65535" />
+                        </MudItem>
+                        
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="systemSettings.SmtpUsername" 
+                                         Label="SMTP Username" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="systemSettings.SmtpPassword" 
+                                         Label="SMTP Password" 
+                                         InputType="InputType.Password" />
+                        </MudItem>
+                        
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="systemSettings.FromEmail" 
+                                         Label="From Email Address" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="systemSettings.FromName" 
+                                         Label="From Name" />
+                        </MudItem>
+                        
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox T="bool" @bind-Checked="systemSettings.EnableSSL" 
+                                        Label="Enable SSL/TLS" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudButton Variant="Variant.Outlined" 
+                                       Color="Color.Primary" 
+                                       OnClick="TestEmailConnection">
+                                Test Connection
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            </MudPaper>
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Backup">
+            <MudPaper Class="pa-4">
+                <MudText Typo="Typo.h6" Class="mb-3">Backup Settings</MudText>
+                <MudForm @ref="backupForm" @bind-IsValid="@backupSuccess">
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox T="bool" @bind-Checked="systemSettings.EnableAutoBackup" 
+                                        Label="Enable Automatic Backup" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudSelect T="BackupFrequency" @bind-Value="systemSettings.BackupFrequency" 
+                                      Label="Backup Frequency">
+                                <MudSelectItem Value="@BackupFrequency.Daily">Daily</MudSelectItem>
+                                <MudSelectItem Value="@BackupFrequency.Weekly">Weekly</MudSelectItem>
+                                <MudSelectItem Value="@BackupFrequency.Monthly">Monthly</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="systemSettings.BackupPath" 
+                                         Label="Backup Path" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudNumericField @bind-Value="systemSettings.BackupRetentionDays" 
+                                            Label="Retention Period (Days)" 
+                                            Min="1" Max="365" />
+                        </MudItem>
+                        
+                        <MudItem xs="12">
+                            <MudButton Variant="Variant.Filled" 
+                                       Color="Color.Primary" 
+                                       OnClick="CreateBackup">
+                                Create Manual Backup
+                            </MudButton>
+                            <MudButton Variant="Variant.Outlined" 
+                                       Color="Color.Secondary" 
+                                       OnClick="RestoreBackup"
+                                       Class="ml-2">
+                                Restore from Backup
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            </MudPaper>
+        </MudTabPanel>
+    </MudTabs>
+    
+    <MudDivider Class="my-4" />
+    
+    <MudButton Variant="Variant.Filled" 
+               Color="Color.Primary" 
+               OnClick="SaveAllSettings">
+        Save All Settings
+    </MudButton>
+    <MudButton Variant="Variant.Outlined" 
+               Color="Color.Secondary" 
+               OnClick="ResetAllSettings"
+               Class="ml-2">
+        Reset All
+    </MudButton>
+</MudContainer>
+
+@code {
+    private SystemSettingsDto systemSettings = new();
+    private MudForm generalForm, securityForm, emailForm, backupForm;
+    private bool generalSuccess, securitySuccess, emailSuccess, backupSuccess;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSystemSettings();
+    }
+
+    private async Task LoadSystemSettings()
+    {
+        try
+        {
+            // For now, using mock data - replace with actual API call
+            systemSettings = new SystemSettingsDto
+            {
+                // General
+                SiteName = "TOSS ERP",
+                SiteUrl = "https://localhost:5007",
+                Language = LanguageCode.en_US,
+                TimeZone = AppTimeZone.America_New_York,
+                DateFormat = "MM/dd/yyyy",
+                TimeFormat = "HH:mm:ss",
+                
+                // Security
+                PasswordMinLength = 8,
+                PasswordExpiryDays = 90,
+                SessionTimeoutMinutes = 30,
+                MaxLoginAttempts = 5,
+                RequireTwoFactor = false,
+                EnableAuditLog = true,
+                ForceHTTPS = true,
+                EnableCSRFProtection = true,
+                
+                // Email
+                SmtpServer = "smtp.gmail.com",
+                SmtpPort = 587,
+                SmtpUsername = "noreply@toss-erp.com",
+                SmtpPassword = "",
+                FromEmail = "noreply@toss-erp.com",
+                FromName = "TOSS ERP System",
+                EnableSSL = true,
+                
+                // Backup
+                EnableAutoBackup = true,
+                BackupFrequency = BackupFrequency.Daily,
+                BackupPath = "/backups",
+                BackupRetentionDays = 30
+            };
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading system settings: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task SaveAllSettings()
+    {
+        try
+        {
+            // TODO: Implement API call to save settings
+            Snackbar.Add("System settings saved successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving settings: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task ResetAllSettings()
+    {
+        await LoadSystemSettings();
+        Snackbar.Add("Settings reset to original values", Severity.Info);
+    }
+
+    private void TestEmailConnection()
+    {
+        // TODO: Implement email connection test
+        Snackbar.Add("Email connection test feature coming soon", Severity.Info);
+    }
+
+    private void CreateBackup()
+    {
+        // TODO: Implement backup creation
+        Snackbar.Add("Backup creation feature coming soon", Severity.Info);
+    }
+
+    private void RestoreBackup()
+    {
+        // TODO: Implement backup restoration
+        Snackbar.Add("Backup restoration feature coming soon", Severity.Info);
+    }
+} 

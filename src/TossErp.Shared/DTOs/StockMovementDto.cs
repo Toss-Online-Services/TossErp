@@ -16,5 +16,7 @@ namespace TossErp.Shared.DTOs
         public Guid? WarehouseId { get; set; }
         public string? WarehouseName { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime MovementDate { get; set; }
+        public string? Notes { get; set; }
     }
 } 

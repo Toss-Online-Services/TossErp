@@ -1,0 +1,371 @@
+@page "/customers"
+@using TossErp.Shared.DTOs
+@using TossErp.Shared.Enums
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Customers Management - TOSS ERP</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Customers Management</MudText>
+    
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4 text-center">
+                <MudText Typo="Typo.h4" Color="Color.Primary">@totalCustomers</MudText>
+                <MudText Typo="Typo.body2">Total Customers</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4 text-center">
+                <MudText Typo="Typo.h4" Color="Color.Success">@activeCustomers</MudText>
+                <MudText Typo="Typo.body2">Active Customers</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4 text-center">
+                <MudText Typo="Typo.h4" Color="Color.Info">@newCustomersThisMonth</MudText>
+                <MudText Typo="Typo.body2">New This Month</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4 text-center">
+                <MudText Typo="Typo.h4" Color="Color.Warning">@averageCustomerValue.ToString("C")</MudText>
+                <MudText Typo="Typo.body2">Avg. Customer Value</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <MudPaper Class="pa-4 mt-4">
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Primary" 
+                   StartIcon="@Icons.Material.Filled.Add"
+                   OnClick="OpenCreateDialog">
+            Add New Customer
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" 
+                   Color="Color.Secondary" 
+                   StartIcon="@Icons.Material.Filled.Download"
+                   Class="ml-2"
+                   OnClick="ExportCustomersReport">
+            Export Report
+        </MudButton>
+    </MudPaper>
+
+    <MudTable T="CustomerDto" Items="@customers" Dense="true" Hover="true" Loading="@loading" 
+               Filter="new Func<CustomerDto,bool>(FilterFunc)">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Customers</MudText>
+            <MudSpacer />
+            <MudSelect T="CustomerStatus" @bind-Value="selectedStatus" 
+                      Label="Filter by Status" 
+                      HelperText="Select a status to filter">
+                <MudSelectItem Value="@CustomerStatus.Active">Active</MudSelectItem>
+                <MudSelectItem Value="@CustomerStatus.Inactive">Inactive</MudSelectItem>
+            </MudSelect>
+            <MudTextField @bind-Value="searchString" Placeholder="Search" 
+                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" 
+                         IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Email</MudTh>
+            <MudTh>Phone</MudTh>
+            <MudTh>Total Orders</MudTh>
+            <MudTh>Total Spent</MudTh>
+            <MudTh>Last Order</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+            <MudTd DataLabel="Phone">@context.Phone</MudTd>
+            <MudTd DataLabel="Total Orders">@context.TotalOrders</MudTd>
+            <MudTd DataLabel="Total Spent">@context.TotalSpent.ToString("C")</MudTd>
+            <MudTd DataLabel="Last Order">@(context.LastOrderDate?.ToString("MM/dd/yyyy") ?? "Never")</MudTd>
+            <MudTd DataLabel="Status">
+                @if (context.IsActive)
+                {
+                    <MudChip T="string" Color="Color.Success" Size="Size.Small">Active</MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Color="Color.Error" Size="Size.Small">Inactive</MudChip>
+                }
+            </MudTd>
+            <MudTd DataLabel="Actions">
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                              Color="Color.Primary" 
+                              OnClick="@(() => OpenEditDialog(context))" />
+                <MudIconButton Icon="@Icons.Material.Filled.History" 
+                              Color="Color.Info" 
+                              OnClick="@(() => ViewCustomerHistory(context.Id))" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                              Color="Color.Error" 
+                              OnClick="@(() => DeleteCustomer(context.Id))" />
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
+
+<MudDialog @bind-IsVisible="dialogVisible" Options="dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@(editingCustomer?.Id == 0 ? "Add Customer" : "Edit Customer")</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success">
+            <MudTextField @bind-Value="editingCustomer.Name" 
+                         Label="Full Name" 
+                         Required="true" 
+                         RequiredError="Name is required!" />
+            <MudTextField @bind-Value="editingCustomer.Email" 
+                         Label="Email" 
+                         Required="true" 
+                         RequiredError="Email is required!" />
+            <MudTextField @bind-Value="editingCustomer.Phone" 
+                         Label="Phone Number" />
+            <MudTextField @bind-Value="editingCustomer.Address" 
+                         Label="Address" 
+                         Lines="3" />
+            <MudTextField @bind-Value="editingCustomer.Company" 
+                         Label="Company" />
+            <MudCheckBox T="bool" @bind-Checked="editingCustomer.IsActive" 
+                        Label="Active Customer" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CancelDialog">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="SaveCustomer">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<CustomerDto> customers = new();
+    private bool loading = true;
+    private string searchString = "";
+    private CustomerStatus selectedStatus = CustomerStatus.All;
+    
+    private bool dialogVisible = false;
+    private CustomerDto editingCustomer = new();
+    private MudForm form;
+    private bool success;
+    
+    private DialogOptions dialogOptions = new() { CloseOnEscapeKey = true };
+
+    // Summary statistics
+    private int totalCustomers => customers.Count;
+    private int activeCustomers => customers.Count(c => c.IsActive);
+    private int newCustomersThisMonth => customers.Count(c => c.CreatedDate?.Month == DateTime.Now.Month);
+    private decimal averageCustomerValue => totalCustomers > 0 ? customers.Sum(c => c.TotalSpent) / totalCustomers : 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCustomers();
+    }
+
+    private async Task LoadCustomers()
+    {
+        try
+        {
+            loading = true;
+            // For now, using mock data - replace with actual API call
+            customers = new List<CustomerDto>
+            {
+                new() { 
+                    Id = 1, 
+                    Name = "John Doe", 
+                    Email = "john.doe@email.com", 
+                    Phone = "+1-555-0123", 
+                    Address = "123 Main St, New York, NY", 
+                    Company = "Tech Corp", 
+                    TotalOrders = 15, 
+                    TotalSpent = 2499.99m, 
+                    LastOrderDate = DateTime.Now.AddDays(-5), 
+                    CreatedDate = DateTime.Now.AddMonths(-3), 
+                    IsActive = true 
+                },
+                new() { 
+                    Id = 2, 
+                    Name = "Jane Smith", 
+                    Email = "jane.smith@email.com", 
+                    Phone = "+1-555-0456", 
+                    Address = "456 Oak Ave, Los Angeles, CA", 
+                    Company = "Design Studio", 
+                    TotalOrders = 8, 
+                    TotalSpent = 1299.99m, 
+                    LastOrderDate = DateTime.Now.AddDays(-12), 
+                    CreatedDate = DateTime.Now.AddMonths(-2), 
+                    IsActive = true 
+                },
+                new() { 
+                    Id = 3, 
+                    Name = "Mike Johnson", 
+                    Email = "mike.johnson@email.com", 
+                    Phone = "+1-555-0789", 
+                    Address = "789 Pine Rd, Chicago, IL", 
+                    Company = "Marketing Inc", 
+                    TotalOrders = 3, 
+                    TotalSpent = 599.99m, 
+                    LastOrderDate = DateTime.Now.AddDays(-30), 
+                    CreatedDate = DateTime.Now.AddMonths(-1), 
+                    IsActive = false 
+                },
+                new() { 
+                    Id = 4, 
+                    Name = "Sarah Wilson", 
+                    Email = "sarah.wilson@email.com", 
+                    Phone = "+1-555-0321", 
+                    Address = "321 Elm St, Miami, FL", 
+                    Company = "Consulting LLC", 
+                    TotalOrders = 22, 
+                    TotalSpent = 3999.99m, 
+                    LastOrderDate = DateTime.Now.AddDays(-2), 
+                    CreatedDate = DateTime.Now.AddMonths(-6), 
+                    IsActive = true 
+                },
+                new() { 
+                    Id = 5, 
+                    Name = "David Brown", 
+                    Email = "david.brown@email.com", 
+                    Phone = "+1-555-0654", 
+                    Address = "654 Maple Dr, Seattle, WA", 
+                    Company = "Startup Co", 
+                    TotalOrders = 5, 
+                    TotalSpent = 899.99m, 
+                    LastOrderDate = DateTime.Now.AddDays(-15), 
+                    CreatedDate = DateTime.Now.AddDays(-20), 
+                    IsActive = true 
+                }
+            };
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading customers: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private bool FilterFunc(CustomerDto customer)
+    {
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            if (!customer.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase) &&
+                !customer.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase) &&
+                !customer.Phone.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return false;
+        }
+        
+        if (selectedStatus != CustomerStatus.All && customer.IsActive != (selectedStatus == CustomerStatus.Active))
+            return false;
+        
+        return true;
+    }
+
+    private void OpenCreateDialog()
+    {
+        editingCustomer = new CustomerDto { Id = 0, IsActive = true, CreatedDate = DateTime.Now };
+        dialogVisible = true;
+    }
+
+    private void OpenEditDialog(CustomerDto customer)
+    {
+        editingCustomer = new CustomerDto
+        {
+            Id = customer.Id,
+            Name = customer.Name,
+            Email = customer.Email,
+            Phone = customer.Phone,
+            Address = customer.Address,
+            Company = customer.Company,
+            IsActive = customer.IsActive,
+            CreatedDate = customer.CreatedDate
+        };
+        dialogVisible = true;
+    }
+
+    private async Task SaveCustomer()
+    {
+        try
+        {
+            if (editingCustomer.Id == 0)
+            {
+                // Create new customer
+                editingCustomer.Id = customers.Max(c => c.Id) + 1;
+                editingCustomer.TotalOrders = 0;
+                editingCustomer.TotalSpent = 0;
+                customers.Add(editingCustomer);
+                Snackbar.Add("Customer added successfully", Severity.Success);
+            }
+            else
+            {
+                // Update existing customer
+                var existingCustomer = customers.FirstOrDefault(c => c.Id == editingCustomer.Id);
+                if (existingCustomer != null)
+                {
+                    existingCustomer.Name = editingCustomer.Name;
+                    existingCustomer.Email = editingCustomer.Email;
+                    existingCustomer.Phone = editingCustomer.Phone;
+                    existingCustomer.Address = editingCustomer.Address;
+                    existingCustomer.Company = editingCustomer.Company;
+                    existingCustomer.IsActive = editingCustomer.IsActive;
+                }
+                Snackbar.Add("Customer updated successfully", Severity.Success);
+            }
+            
+            dialogVisible = false;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving customer: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task DeleteCustomer(int customerId)
+    {
+        try
+        {
+            var customer = customers.FirstOrDefault(c => c.Id == customerId);
+            if (customer != null)
+            {
+                // Check if customer has orders
+                if (customer.TotalOrders > 0)
+                {
+                    Snackbar.Add("Cannot delete customer with orders", Severity.Warning);
+                    return;
+                }
+                
+                customers.Remove(customer);
+                Snackbar.Add("Customer deleted successfully", Severity.Success);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error deleting customer: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void ViewCustomerHistory(int customerId)
+    {
+        // TODO: Implement customer history view
+        Snackbar.Add("Customer history feature coming soon", Severity.Info);
+    }
+
+    private void ExportCustomersReport()
+    {
+        // TODO: Implement export functionality
+        Snackbar.Add("Export feature coming soon", Severity.Info);
+    }
+
+    private void CancelDialog()
+    {
+        dialogVisible = false;
+    }
+} 

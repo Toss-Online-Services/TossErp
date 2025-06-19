@@ -1,0 +1,286 @@
+@page "/stock"
+@using TossErp.Shared.DTOs
+@using TossErp.Shared.Enums
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Stock Management - TOSS ERP</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Stock Management</MudText>
+    
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4 text-center">
+                <MudText Typo="Typo.h4" Color="Color.Primary">@totalItems</MudText>
+                <MudText Typo="Typo.body2">Total Items</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4 text-center">
+                <MudText Typo="Typo.h4" Color="Color.Warning">@lowStockItems</MudText>
+                <MudText Typo="Typo.body2">Low Stock Items</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4 text-center">
+                <MudText Typo="Typo.h4" Color="Color.Error">@outOfStockItems</MudText>
+                <MudText Typo="Typo.body2">Out of Stock</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4 text-center">
+                <MudText Typo="Typo.h4" Color="Color.Success">@totalValue.ToString("C")</MudText>
+                <MudText Typo="Typo.body2">Total Value</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <MudPaper Class="pa-4 mt-4">
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Primary" 
+                   StartIcon="@Icons.Material.Filled.Add"
+                   OnClick="OpenStockAdjustmentDialog">
+            Stock Adjustment
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" 
+                   Color="Color.Secondary" 
+                   StartIcon="@Icons.Material.Filled.Download"
+                   Class="ml-2"
+                   OnClick="ExportStockReport">
+            Export Report
+        </MudButton>
+    </MudPaper>
+
+    <MudTable Items="@stockItems" Dense="true" Hover="true" Loading="@loading" 
+               Filter="new Func<StockItemDto,bool>(FilterFunc)">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Stock Items</MudText>
+            <MudSpacer />
+            <MudSelect T="string" @bind-Value="selectedCategory" Label="Category" Class="mr-2">
+                <MudSelectItem Value="@((string)null)">All Categories</MudSelectItem>
+                @foreach (var category in categories)
+                {
+                    <MudSelectItem Value="@category">@category</MudSelectItem>
+                }
+            </MudSelect>
+            <MudTextField @bind-Value="searchString" Placeholder="Search" 
+                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" 
+                         IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Item</MudTh>
+            <MudTh>Category</MudTh>
+            <MudTh>Current Stock</MudTh>
+            <MudTh>Min Stock</MudTh>
+            <MudTh>Unit Price</MudTh>
+            <MudTh>Total Value</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Item">@context.ItemName</MudTd>
+            <MudTd DataLabel="Category">@context.Category</MudTd>
+            <MudTd DataLabel="Current Stock">@context.CurrentStock</MudTd>
+            <MudTd DataLabel="Min Stock">@context.MinStockLevel</MudTd>
+            <MudTd DataLabel="Unit Price">@context.UnitPrice.ToString("C")</MudTd>
+            <MudTd DataLabel="Total Value">@((context.CurrentStock * context.UnitPrice).ToString("C"))</MudTd>
+            <MudTd DataLabel="Status">
+                @if (context.CurrentStock == 0)
+                {
+                    <MudChip T="string" Color="Color.Error" Size="Size.Small">Out of Stock</MudChip>
+                }
+                else if (context.CurrentStock <= context.MinStockLevel)
+                {
+                    <MudChip T="string" Color="Color.Warning" Size="Size.Small">Low Stock</MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Color="Color.Success" Size="Size.Small">In Stock</MudChip>
+                }
+            </MudTd>
+            <MudTd DataLabel="Actions">
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                              Color="Color.Primary" 
+                              OnClick="@(() => OpenStockAdjustmentDialog(context))" />
+                <MudIconButton Icon="@Icons.Material.Filled.History" 
+                              Color="Color.Info" 
+                              OnClick="@(() => ViewStockHistory(context.Id))" />
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
+
+<MudDialog @bind-IsVisible="adjustmentDialogVisible" Options="dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Stock Adjustment</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success">
+            <MudSelect T="StockAdjustmentType" @bind-Value="adjustmentType" 
+                      Label="Adjustment Type" 
+                      Required="true">
+                <MudSelectItem Value="@StockAdjustmentType.In">Stock In</MudSelectItem>
+                <MudSelectItem Value="@StockAdjustmentType.Out">Stock Out</MudSelectItem>
+                <MudSelectItem Value="@StockAdjustmentType.Adjustment">Adjustment</MudSelectItem>
+            </MudSelect>
+            <MudNumericField @bind-Value="adjustmentQuantity" 
+                            Label="Quantity" 
+                            Required="true" 
+                            Min="1" />
+            <MudTextField @bind-Value="adjustmentReason" 
+                         Label="Reason" 
+                         Required="true" 
+                         Lines="3" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CancelAdjustmentDialog">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="SaveStockAdjustment">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<StockItemDto> stockItems = new();
+    private List<string> categories = new();
+    private bool loading = true;
+    private string searchString = "";
+    private string selectedCategory = null;
+    
+    private bool adjustmentDialogVisible = false;
+    private StockItemDto selectedStockItem = new();
+    private StockAdjustmentType adjustmentType = StockAdjustmentType.In;
+    private int adjustmentQuantity = 1;
+    private string adjustmentReason = "";
+    private MudForm form;
+    private bool success;
+    
+    private DialogOptions dialogOptions = new() { CloseOnEscapeKey = true };
+
+    // Summary statistics
+    private int totalItems => stockItems.Count;
+    private int lowStockItems => stockItems.Count(s => s.CurrentStock > 0 && s.CurrentStock <= s.MinStockLevel);
+    private int outOfStockItems => stockItems.Count(s => s.CurrentStock == 0);
+    private decimal totalValue => stockItems.Sum(s => s.CurrentStock * s.UnitPrice);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStockData();
+    }
+
+    private async Task LoadStockData()
+    {
+        try
+        {
+            loading = true;
+            // For now, using mock data - replace with actual API call
+            stockItems = new List<StockItemDto>
+            {
+                new() { Id = 1, ItemName = "iPhone 15 Pro", Category = "Electronics", CurrentStock = 25, MinStockLevel = 10, UnitPrice = 999.99m },
+                new() { Id = 2, ItemName = "Samsung Galaxy S24", Category = "Electronics", CurrentStock = 15, MinStockLevel = 8, UnitPrice = 899.99m },
+                new() { Id = 3, ItemName = "Nike Air Max", Category = "Footwear", CurrentStock = 8, MinStockLevel = 15, UnitPrice = 129.99m },
+                new() { Id = 4, ItemName = "Adidas Ultraboost", Category = "Footwear", CurrentStock = 0, MinStockLevel = 12, UnitPrice = 179.99m },
+                new() { Id = 5, ItemName = "MacBook Pro 16", Category = "Electronics", CurrentStock = 5, MinStockLevel = 5, UnitPrice = 2499.99m },
+                new() { Id = 6, ItemName = "Dell XPS 13", Category = "Electronics", CurrentStock = 12, MinStockLevel = 8, UnitPrice = 1299.99m },
+                new() { Id = 7, ItemName = "Sony WH-1000XM5", Category = "Electronics", CurrentStock = 20, MinStockLevel = 10, UnitPrice = 349.99m },
+                new() { Id = 8, ItemName = "KitchenAid Mixer", Category = "Home & Garden", CurrentStock = 3, MinStockLevel = 5, UnitPrice = 399.99m }
+            };
+            
+            categories = stockItems.Select(s => s.Category).Distinct().ToList();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading stock data: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private bool FilterFunc(StockItemDto item)
+    {
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            if (!item.ItemName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return false;
+        }
+        
+        if (!string.IsNullOrEmpty(selectedCategory) && item.Category != selectedCategory)
+            return false;
+        
+        return true;
+    }
+
+    private void OpenStockAdjustmentDialog(StockItemDto stockItem)
+    {
+        selectedStockItem = stockItem;
+        adjustmentType = StockAdjustmentType.In;
+        adjustmentQuantity = 1;
+        adjustmentReason = "";
+        adjustmentDialogVisible = true;
+    }
+
+    private async Task SaveStockAdjustment()
+    {
+        try
+        {
+            // Apply stock adjustment
+            switch (adjustmentType)
+            {
+                case StockAdjustmentType.In:
+                    selectedStockItem.CurrentStock += adjustmentQuantity;
+                    break;
+                case StockAdjustmentType.Out:
+                    if (selectedStockItem.CurrentStock >= adjustmentQuantity)
+                    {
+                        selectedStockItem.CurrentStock -= adjustmentQuantity;
+                    }
+                    else
+                    {
+                        Snackbar.Add("Insufficient stock for this adjustment", Severity.Error);
+                        return;
+                    }
+                    break;
+                case StockAdjustmentType.Adjustment:
+                    selectedStockItem.CurrentStock = adjustmentQuantity;
+                    break;
+            }
+            
+            Snackbar.Add("Stock adjustment saved successfully", Severity.Success);
+            adjustmentDialogVisible = false;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving stock adjustment: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void ViewStockHistory(int itemId)
+    {
+        // TODO: Implement stock history view
+        Snackbar.Add("Stock history feature coming soon", Severity.Info);
+    }
+
+    private void ExportStockReport()
+    {
+        // TODO: Implement export functionality
+        Snackbar.Add("Export feature coming soon", Severity.Info);
+    }
+
+    private void CancelAdjustmentDialog()
+    {
+        adjustmentDialogVisible = false;
+    }
+}
+
+public enum StockAdjustmentType
+{
+    In,
+    Out,
+    Adjustment
+} 
