@@ -1,1 +1,183 @@
- 
+@page "/dashboard"
+@using System.Globalization
+
+<MudText Typo="Typo.h4" Class="mb-4">Dashboard</MudText>
+
+<MudGrid>
+    <!-- Analytics Cards -->
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Elevation="2" Class="pa-4">
+            <div class="d-flex justify-space-between align-center mb-4">
+                <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Primary" Size="Size.Large" />
+                <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
+            </div>
+            <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Total Sales</MudText>
+            <MudText Typo="Typo.h5">R 281,450</MudText>
+            <MudText Typo="Typo.caption" Color="Color.Success">+55% from last week</MudText>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Elevation="2" Class="pa-4">
+            <div class="d-flex justify-space-between align-center mb-4">
+                <MudIcon Icon="@Icons.Material.Filled.People" Color="Color.Secondary" Size="Size.Large" />
+                <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
+            </div>
+            <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Active Users</MudText>
+            <MudText Typo="Typo.h5">2,300</MudText>
+            <MudText Typo="Typo.caption" Color="Color.Success">+2% from last month</MudText>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Elevation="2" Class="pa-4">
+            <div class="d-flex justify-space-between align-center mb-4">
+                <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Color="Color.Success" Size="Size.Large" />
+                <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
+            </div>
+            <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Revenue</MudText>
+            <MudText Typo="Typo.h5">R 34,000</MudText>
+            <MudText Typo="Typo.caption" Color="Color.Success">+1% from yesterday</MudText>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Elevation="2" Class="pa-4">
+            <div class="d-flex justify-space-between align-center mb-4">
+                <MudIcon Icon="@Icons.Material.Filled.Favorite" Color="Color.Error" Size="Size.Large" />
+                <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
+            </div>
+            <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Followers</MudText>
+            <MudText Typo="Typo.h5">91</MudText>
+            <MudText Typo="Typo.caption" Color="Color.Success">Just updated</MudText>
+        </MudPaper>
+    </MudItem>
+
+    <!-- Sales by Province -->
+    <MudItem xs="12" md="6">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Typo="Typo.h6" Class="mb-4">Sales by Province</MudText>
+            <MudSimpleTable Dense="true" Hover="true" FixedHeader="true">
+                <thead>
+                    <tr>
+                        <th>Province</th>
+                        <th>Sales</th>
+                        <th>Value</th>
+                        <th>Bounce Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var province in _provinces)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Class="mr-2" Size="Size.Small" />
+                                    @province.Name
+                                </div>
+                            </td>
+                            <td>@province.Sales.ToString("N0")</td>
+                            <td>R @province.Value.ToString("N0")</td>
+                            <td>
+                                <MudChip Color="@(province.BounceRate < 30 ? Color.Success : Color.Warning)" 
+                                        Size="Size.Small">
+                                    @province.BounceRate.ToString("N1")%
+                                </MudChip>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        </MudPaper>
+    </MudItem>
+
+    <!-- Charts -->
+    <MudItem xs="12" md="6">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Typo="Typo.h6" Class="mb-4">Daily Sales</MudText>
+            <MudChart ChartType="ChartType.Line" ChartSeries="@_dailySalesSeries" XAxisLabels="@_dailySalesLabels" 
+                     Width="100%" Height="300px"/>
+        </MudPaper>
+    </MudItem>
+
+    <!-- Recent Transactions -->
+    <MudItem xs="12">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Typo="Typo.h6" Class="mb-4">Recent Transactions</MudText>
+            <MudTable Items="@_recentTransactions" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>Reference</MudTh>
+                    <MudTh>Customer</MudTh>
+                    <MudTh>Date</MudTh>
+                    <MudTh>Amount</MudTh>
+                    <MudTh>Status</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Reference</MudTd>
+                    <MudTd>@context.Customer</MudTd>
+                    <MudTd>@context.Date.ToString("dd MMM yyyy")</MudTd>
+                    <MudTd>R @context.Amount.ToString("N2")</MudTd>
+                    <MudTd>
+                        <MudChip Color="@context.StatusColor" Size="Size.Small">
+                            @context.Status
+                        </MudChip>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private class Province
+    {
+        public string Name { get; set; }
+        public int Sales { get; set; }
+        public decimal Value { get; set; }
+        public double BounceRate { get; set; }
+    }
+
+    private class Transaction
+    {
+        public string Reference { get; set; }
+        public string Customer { get; set; }
+        public DateTime Date { get; set; }
+        public decimal Amount { get; set; }
+        public string Status { get; set; }
+        public Color StatusColor => Status switch
+        {
+            "Completed" => Color.Success,
+            "Pending" => Color.Warning,
+            "Failed" => Color.Error,
+            _ => Color.Default
+        };
+    }
+
+    private List<Province> _provinces = new()
+    {
+        new() { Name = "Gauteng", Sales = 2500, Value = 230900, BounceRate = 29.9 },
+        new() { Name = "Western Cape", Sales = 1900, Value = 140000, BounceRate = 40.22 },
+        new() { Name = "KwaZulu-Natal", Sales = 1400, Value = 190700, BounceRate = 23.44 },
+        new() { Name = "Eastern Cape", Sales = 562, Value = 143960, BounceRate = 32.14 }
+    };
+
+    private List<ChartSeries> _dailySalesSeries = new()
+    {
+        new ChartSeries 
+        { 
+            Name = "Daily Sales", 
+            Data = new double[] { 50, 75, 100, 120, 90, 160, 150, 140, 190, 220, 200, 180 }
+        }
+    };
+
+    private string[] _dailySalesLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+    private List<Transaction> _recentTransactions = new()
+    {
+        new() { Reference = "INV-001", Customer = "John Smith", Date = DateTime.Today.AddDays(-1), Amount = 1299.99m, Status = "Completed" },
+        new() { Reference = "INV-002", Customer = "Sarah Johnson", Date = DateTime.Today.AddDays(-1), Amount = 849.50m, Status = "Pending" },
+        new() { Reference = "INV-003", Customer = "Michael Brown", Date = DateTime.Today.AddDays(-2), Amount = 2499.99m, Status = "Completed" },
+        new() { Reference = "INV-004", Customer = "Emily Davis", Date = DateTime.Today.AddDays(-2), Amount = 149.99m, Status = "Failed" },
+        new() { Reference = "INV-005", Customer = "David Wilson", Date = DateTime.Today.AddDays(-3), Amount = 999.99m, Status = "Completed" }
+    };
+} 

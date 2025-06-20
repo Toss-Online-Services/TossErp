@@ -1,1 +1,0 @@
-$files = @("Pages/Suppliers.razor", "Pages/Stock.razor", "Pages/SalesHistory.razor", "Pages/Sales.razor"); foreach($file in $files) { $content = Get-Content $file -Raw; $content = $content -replace "(?s)<MudDialog.*?@bind-IsVisible.*?>.*?</MudDialog>", "@* Dialog temporarily commented out *@"; Set-Content $file -Value $content -NoNewline }

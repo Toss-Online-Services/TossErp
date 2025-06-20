@@ -1,1 +1,0 @@
-$content = Get-Content "Pages/StockManagement.razor" -Raw; $content = $content -replace "(?s)<MudDialog Options=`"dialogOptions`">.*?</MudDialog>", "@* Dialog temporarily commented out *@"; Set-Content "Pages/StockManagement.razor" -Value $content -NoNewline

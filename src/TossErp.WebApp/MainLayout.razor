@@ -3,21 +3,76 @@
 @using TossErp.WebApp.Shared
 @inject NavigationManager Navigation
 @inject ILocalStorageService LocalStorage
+@inject ISnackbar Snackbar
 
-<MudThemeProvider />
+<MudThemeProvider @bind-IsDarkMode="_isDarkMode" Theme="_theme"/>
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h6" Class="ml-3">TOSS ERP</MudText>
+        <MudImage Src="_content/TossErp.WebApp/images/logo.png" Height="40" Alt="TOSS ERP" Class="ml-3 mr-4" />
+        <MudText Typo="Typo.h6">TOSS ERP</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="Color.Inherit" />
-        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" />
+        
+        <MudTooltip Text="Toggle Dark Mode">
+            <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)" 
+                          Color="Color.Inherit" OnClick="@((e) => _isDarkMode = !_isDarkMode)" />
+        </MudTooltip>
+        
+        <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true">
+            <ActivatorContent>
+                <MudBadge Content="4" Color="Color.Error" Overlap="true" Class="mx-3">
+                    <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="Color.Inherit" />
+                </MudBadge>
+            </ActivatorContent>
+            <ChildContent>
+                <MudText Class="px-4 py-2"><b>Notifications</b></MudText>
+                <MudDivider />
+                <MudMenuItem>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.Inventory" Class="mr-2" />
+                        <div>
+                            <MudText>Low stock alert: Item XYZ</MudText>
+                            <MudText Typo="Typo.caption">2 minutes ago</MudText>
+                        </div>
+                    </div>
+                </MudMenuItem>
+                <MudMenuItem>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Class="mr-2" />
+                        <div>
+                            <MudText>New sale completed</MudText>
+                            <MudText Typo="Typo.caption">10 minutes ago</MudText>
+                        </div>
+                    </div>
+                </MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+
+        <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true">
+            <ActivatorContent>
+                <MudAvatar Color="Color.Secondary">JD</MudAvatar>
+            </ActivatorContent>
+            <ChildContent>
+                <MudCard Elevation="0" Square="true" Class="pa-4" Style="min-width: 200px;">
+                    <MudText>John Doe</MudText>
+                    <MudText Typo="Typo.caption">Administrator</MudText>
+                </MudCard>
+                <MudDivider />
+                <MudMenuItem Icon="@Icons.Material.Filled.Person">Profile</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Settings">Settings</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Translate" OnClick="@ToggleLanguage">
+                    @(_currentLanguage == "en" ? "Switch to Afrikaans" : "Switch to English")
+                </MudMenuItem>
+                <MudDivider />
+                <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="Logout">Logout</MudMenuItem>
+            </ChildContent>
+        </MudMenu>
     </MudAppBar>
     
-    <MudDrawer Open="@_drawerOpen" OpenChanged="@DrawerOpenChanged" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Variant="@DrawerVariant.Mini">
         <NavMenu />
     </MudDrawer>
     
@@ -30,15 +85,37 @@
 
 @code {
     private bool _drawerOpen = true;
+    private bool _isDarkMode;
+    private string _currentLanguage = "en";
+    
+    private MudTheme _theme = new MudTheme()
+    {
+        Palette = new PaletteLight()
+        {
+            Primary = "#1976D2",
+            Secondary = "#FF4081",
+            AppbarBackground = "#1976D2",
+            Background = "#F5F5F5",
+            DrawerBackground = "#FFF",
+            DrawerText = "rgba(0,0,0,0.7)",
+            Success = "#4CAF50"
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#2196F3",
+            Secondary = "#FF4081",
+            AppbarBackground = "#1E1E1E",
+            Background = "#121212",
+            DrawerBackground = "#1E1E1E",
+            DrawerText = "rgba(255,255,255,0.7)",
+            Surface = "#1E1E1E",
+            Success = "#4CAF50"
+        }
+    };
 
     private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
-    }
-
-    private void DrawerOpenChanged(bool value)
-    {
-        _drawerOpen = value;
     }
 
     private async Task Logout()
@@ -46,5 +123,11 @@
         await LocalStorage.RemoveItemAsync("authToken");
         await LocalStorage.RemoveItemAsync("user");
         Navigation.NavigateTo("/login");
+    }
+    
+    private void ToggleLanguage()
+    {
+        _currentLanguage = _currentLanguage == "en" ? "af" : "en";
+        Snackbar.Add($"Language switched to {(_currentLanguage == "en" ? "English" : "Afrikaans")}", Severity.Success);
     }
 } 

@@ -1,22 +1,29 @@
 @using MudBlazor
 
-<MudNavMenu>
-    <MudText Typo="Typo.h6" Class="pa-4">Modules</MudText>
+<MudNavMenu Class="mud-width-full">
+    <div class="d-flex flex-column align-center py-6">
+        <MudAvatar Color="Color.Primary" Style="height: 80px; width: 80px;">
+            <MudImage Src="_content/TossErp.WebApp/images/logo.png" Alt="TOSS ERP" />
+        </MudAvatar>
+        <MudText Typo="Typo.subtitle1" Class="mt-4">TOSS ERP</MudText>
+        <MudText Typo="Typo.caption" Color="Color.Primary">Version 1.0</MudText>
+    </div>
+
+    <MudDivider Class="mb-4"/>
+    
+    <MudText Typo="Typo.overline" Class="ml-4 mb-4">CORE</MudText>
     
     <MudNavLink Href="/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">
         Dashboard
     </MudNavLink>
     
-    <MudNavGroup Title="Identity Management" Icon="@Icons.Material.Filled.People" Expanded="true">
-        <MudNavLink Href="/users" Icon="@Icons.Material.Filled.Person">
-            Users
-        </MudNavLink>
-        <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.Security">
-            Roles
-        </MudNavLink>
-    </MudNavGroup>
+    <MudNavLink Href="/pos" Icon="@Icons.Material.Filled.ShoppingCart">
+        Point of Sale
+    </MudNavLink>
+
+    <MudText Typo="Typo.overline" Class="ml-4 my-4">MANAGEMENT</MudText>
     
-    <MudNavGroup Title="Inventory Management" Icon="@Icons.Material.Filled.Inventory" Expanded="true">
+    <MudNavGroup Title="Inventory" Icon="@Icons.Material.Filled.Inventory" Expanded="true">
         <MudNavLink Href="/items" Icon="@Icons.Material.Filled.Inventory2">
             Items
         </MudNavLink>
@@ -26,44 +33,67 @@
         <MudNavLink Href="/brands" Icon="@Icons.Material.Filled.BrandingWatermark">
             Brands
         </MudNavLink>
-        <MudNavLink Href="/suppliers" Icon="@Icons.Material.Filled.LocalShipping">
-            Suppliers
-        </MudNavLink>
         <MudNavLink Href="/stock" Icon="@Icons.Material.Filled.Store">
-            Stock Management
+            Stock Levels
         </MudNavLink>
     </MudNavGroup>
     
-    <MudNavGroup Title="Point of Sale" Icon="@Icons.Material.Filled.PointOfSale" Expanded="true">
-        <MudNavLink Href="/pos" Icon="@Icons.Material.Filled.ShoppingCart">
-            POS Terminal
-        </MudNavLink>
+    <MudNavGroup Title="Sales" Icon="@Icons.Material.Filled.PointOfSale" Expanded="false">
         <MudNavLink Href="/sales" Icon="@Icons.Material.Filled.Receipt">
             Sales History
         </MudNavLink>
         <MudNavLink Href="/customers" Icon="@Icons.Material.Filled.PeopleAlt">
             Customers
         </MudNavLink>
+        <MudNavLink Href="/suppliers" Icon="@Icons.Material.Filled.LocalShipping">
+            Suppliers
+        </MudNavLink>
     </MudNavGroup>
+
+    <MudText Typo="Typo.overline" Class="ml-4 my-4">INSIGHTS</MudText>
     
-    <MudNavGroup Title="Reports" Icon="@Icons.Material.Filled.Assessment" Expanded="true">
+    <MudNavGroup Title="Reports" Icon="@Icons.Material.Filled.Assessment" Expanded="false">
         <MudNavLink Href="/sales-reports" Icon="@Icons.Material.Filled.BarChart">
-            Sales Reports
+            Sales Analytics
         </MudNavLink>
         <MudNavLink Href="/inventory-reports" Icon="@Icons.Material.Filled.PieChart">
-            Inventory Reports
+            Inventory Analysis
         </MudNavLink>
         <MudNavLink Href="/financial-reports" Icon="@Icons.Material.Filled.AccountBalance">
             Financial Reports
         </MudNavLink>
     </MudNavGroup>
+
+    <MudText Typo="Typo.overline" Class="ml-4 my-4">SYSTEM</MudText>
     
-    <MudNavGroup Title="Settings" Icon="@Icons.Material.Filled.Settings" Expanded="true">
+    <MudNavGroup Title="Administration" Icon="@Icons.Material.Filled.AdminPanelSettings" Expanded="false">
+        <MudNavLink Href="/users" Icon="@Icons.Material.Filled.Person">
+            Users
+        </MudNavLink>
+        <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.Security">
+            Roles
+        </MudNavLink>
+    </MudNavGroup>
+    
+    <MudNavGroup Title="Settings" Icon="@Icons.Material.Filled.Settings" Expanded="false">
         <MudNavLink Href="/company" Icon="@Icons.Material.Filled.Business">
-            Company Settings
+            Company Profile
         </MudNavLink>
         <MudNavLink Href="/system" Icon="@Icons.Material.Filled.Computer">
             System Settings
         </MudNavLink>
+        <MudNavLink Icon="@Icons.Material.Filled.Translate">
+            Language Settings
+        </MudNavLink>
     </MudNavGroup>
+
+    <MudDivider Class="my-4"/>
+    
+    <MudNavLink Href="https://docs.tosserp.com" Target="_blank" Icon="@Icons.Material.Filled.Book">
+        Documentation
+    </MudNavLink>
+    
+    <MudNavLink Href="https://support.tosserp.com" Target="_blank" Icon="@Icons.Material.Filled.SupportAgent">
+        Support
+    </MudNavLink>
 </MudNavMenu> 

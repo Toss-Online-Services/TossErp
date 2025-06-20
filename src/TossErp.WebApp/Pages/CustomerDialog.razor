@@ -1,23 +1,215 @@
+@using System.Globalization
 @using MudBlazor
 @using TossErp.Shared.DTOs
 
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: auto">
+            <MudForm @ref="_form" @bind-IsValid="@_isValid">
+                <MudGrid>
+                    <!-- Personal Information -->
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Class="mb-4">Personal Information</MudText>
+                    </MudItem>
+                    
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="_customer.FirstName" Label="First Name"
+                                    Required="true" RequiredError="First name is required" />
+                    </MudItem>
+                    
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="_customer.LastName" Label="Last Name"
+                                    Required="true" RequiredError="Last name is required" />
+                    </MudItem>
+                    
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="_customer.Email" Label="Email"
+                                    Required="true" RequiredError="Email is required"
+                                    Validation="@(new EmailAddressAttribute() {ErrorMessage = "Invalid email address"})" />
+                    </MudItem>
+                    
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="_customer.Phone" Label="Phone"
+                                    Required="true" RequiredError="Phone number is required" />
+                    </MudItem>
+                    
+                    <MudItem xs="12" md="6">
+                        <MudDatePicker @bind-Date="_customer.DateOfBirth" Label="Date of Birth"
+                                     Required="true" RequiredError="Date of birth is required" />
+                    </MudItem>
+                    
+                    <MudItem xs="12" md="6">
+                        <MudSelect T="string" @bind-Value="_customer.Language" Label="Preferred Language">
+                            <MudSelectItem Value="@("en")">English</MudSelectItem>
+                            <MudSelectItem Value="@("af")">Afrikaans</MudSelectItem>
+                            <MudSelectItem Value="@("zu")">Zulu</MudSelectItem>
+                            <MudSelectItem Value="@("xh")">Xhosa</MudSelectItem>
+                            <MudSelectItem Value="@("st")">Sotho</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+
+                    <!-- Address Information -->
+                    <MudItem xs="12">
+                        <MudExpansionPanels>
+                            <MudExpansionPanel Text="Address Information">
+                                <MudGrid>
+                                    <MudItem xs="12">
+                                        <MudTextField @bind-Value="_customer.StreetAddress" 
+                                                    Label="Street Address" />
+                                    </MudItem>
+                                    
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField @bind-Value="_customer.City" Label="City" />
+                                    </MudItem>
+                                    
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField @bind-Value="_customer.Province" Label="Province" />
+                                    </MudItem>
+                                    
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField @bind-Value="_customer.PostalCode" 
+                                                    Label="Postal Code" />
+                                    </MudItem>
+                                </MudGrid>
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                    </MudItem>
+
+                    <!-- Marketing Preferences -->
+                    <MudItem xs="12">
+                        <MudExpansionPanels>
+                            <MudExpansionPanel Text="Marketing Preferences">
+                                <MudGrid>
+                                    <MudItem xs="12">
+                                        <MudCheckBox @bind-Checked="_customer.EmailSubscribed"
+                                                   Label="Subscribe to email newsletters" />
+                                    </MudItem>
+                                    
+                                    <MudItem xs="12">
+                                        <MudCheckBox @bind-Checked="_customer.SmsSubscribed"
+                                                   Label="Subscribe to SMS notifications" />
+                                    </MudItem>
+                                    
+                                    <MudItem xs="12">
+                                        <MudSelect T="string[]" @bind-Value="_customer.Interests" 
+                                                 Label="Interests" MultiSelection="true">
+                                            <MudSelectItem Value="@("electronics")">Electronics</MudSelectItem>
+                                            <MudSelectItem Value="@("clothing")">Clothing</MudSelectItem>
+                                            <MudSelectItem Value="@("food")">Food & Beverages</MudSelectItem>
+                                            <MudSelectItem Value="@("home")">Home & Garden</MudSelectItem>
+                                            <MudSelectItem Value="@("sports")">Sports & Outdoors</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                    </MudItem>
+
+                    <!-- Loyalty Program -->
+                    <MudItem xs="12">
+                        <MudExpansionPanels>
+                            <MudExpansionPanel Text="Loyalty Program">
+                                <MudGrid>
+                                    <MudItem xs="12" md="6">
+                                        <MudSelect T="string" @bind-Value="_customer.LoyaltyTier" 
+                                                 Label="Loyalty Tier">
+                                            <MudSelectItem Value="@("none")">None</MudSelectItem>
+                                            <MudSelectItem Value="@("silver")">Silver</MudSelectItem>
+                                            <MudSelectItem Value="@("gold")">Gold</MudSelectItem>
+                                            <MudSelectItem Value="@("platinum")">Platinum</MudSelectItem>
+                                            <MudSelectItem Value="@("diamond")">Diamond</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+                                    
+                                    <MudItem xs="12" md="6">
+                                        <MudNumericField @bind-Value="_customer.LoyaltyPoints" 
+                                                       Label="Loyalty Points"
+                                                       Min="0" />
+                                    </MudItem>
+                                    
+                                    <MudItem xs="12">
+                                        <MudTextField @bind-Value="_customer.LoyaltyCardNumber" 
+                                                    Label="Loyalty Card Number" />
+                                    </MudItem>
+                                </MudGrid>
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                    </MudItem>
+
+                    <!-- Notes -->
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_customer.Notes" Label="Notes"
+                                    Lines="3" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudContainer>
+    </DialogContent>
+    
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" 
+                  OnClick="Submit" Disabled="!_isValid">
+            @(_customer.Id == 0 ? "Add Customer" : "Save Changes")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
-    [Parameter] public CustomerDto Customer { get; set; } = new();
-    private MudForm form = default!;
-    private bool success = false;
-
-    private void Cancel() => MudDialog.Cancel();
-    private async Task Save()
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public Customer Customer { get; set; }
+    
+    private MudForm _form;
+    private bool _isValid;
+    private CustomerDetails _customer = new();
+    
+    protected override void OnInitialized()
     {
-        await form.Validate();
-        if (success)
-            MudDialog.Close(DialogResult.Ok(Customer));
+        if (Customer != null)
+        {
+            _customer = new CustomerDetails
+            {
+                Id = 1, // In a real app, this would be the actual customer ID
+                FirstName = Customer.Name.Split(' ')[0],
+                LastName = Customer.Name.Split(' ')[1],
+                Email = Customer.Email,
+                Phone = Customer.Phone,
+                LoyaltyTier = Customer.LoyaltyTier.ToLower()
+            };
+        }
     }
-}
-
-<div>
-    <p>Customer Dialog - Temporarily disabled</p>
-    <button @onclick="Cancel">Cancel</button>
-    <button @onclick="Save">Save</button>
-</div> 
+    
+    private void Cancel() => MudDialog.Cancel();
+    
+    private async Task Submit()
+    {
+        await _form.Validate();
+        
+        if (_isValid)
+        {
+            MudDialog.Close(DialogResult.Ok(_customer));
+        }
+    }
+    
+    private class CustomerDetails
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string Language { get; set; } = "en";
+        public string StreetAddress { get; set; }
+        public string City { get; set; }
+        public string Province { get; set; }
+        public string PostalCode { get; set; }
+        public bool EmailSubscribed { get; set; }
+        public bool SmsSubscribed { get; set; }
+        public string[] Interests { get; set; }
+        public string LoyaltyTier { get; set; } = "none";
+        public int LoyaltyPoints { get; set; }
+        public string LoyaltyCardNumber { get; set; }
+        public string Notes { get; set; }
+    }
+} 

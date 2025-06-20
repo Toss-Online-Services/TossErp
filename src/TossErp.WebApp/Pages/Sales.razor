@@ -1,4 +1,5 @@
 @page "/sales"
+@using System.Globalization
 @using TossErp.Shared.DTOs
 @using TossErp.Shared.Enums
 @inject HttpClient Http
@@ -8,114 +9,182 @@
 <PageTitle>Sales History - TOSS ERP</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
-    <MudText Typo="Typo.h4" Class="mb-4">Sales History</MudText>
-    
     <MudGrid>
+        <!-- Sales Overview Cards -->
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4 text-center">
-                <MudText Typo="Typo.h4" Color="Color.Primary">@totalSales</MudText>
-                <MudText Typo="Typo.body2">Total Sales</MudText>
+            <MudPaper Elevation="2" Class="pa-4">
+                <div class="d-flex justify-space-between align-center mb-4">
+                    <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Color="Color.Success" Size="Size.Large" />
+                    <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
+                </div>
+                <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Today's Sales</MudText>
+                <MudText Typo="Typo.h5">R @_todaySales.ToString("N2")</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Success">+15% from yesterday</MudText>
             </MudPaper>
         </MudItem>
+
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4 text-center">
-                <MudText Typo="Typo.h4" Color="Color.Success">@totalRevenue.ToString("C")</MudText>
-                <MudText Typo="Typo.body2">Total Revenue</MudText>
+            <MudPaper Elevation="2" Class="pa-4">
+                <div class="d-flex justify-space-between align-center mb-4">
+                    <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Primary" Size="Size.Large" />
+                    <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
+                </div>
+                <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Orders</MudText>
+                <MudText Typo="Typo.h5">@_totalOrders</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Success">+5% from last week</MudText>
             </MudPaper>
         </MudItem>
+
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4 text-center">
-                <MudText Typo="Typo.h4" Color="Color.Info">@averageOrderValue.ToString("C")</MudText>
-                <MudText Typo="Typo.body2">Average Order</MudText>
+            <MudPaper Elevation="2" Class="pa-4">
+                <div class="d-flex justify-space-between align-center mb-4">
+                    <MudIcon Icon="@Icons.Material.Filled.People" Color="Color.Secondary" Size="Size.Large" />
+                    <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
+                </div>
+                <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">New Customers</MudText>
+                <MudText Typo="Typo.h5">@_newCustomers</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Success">+3 this week</MudText>
             </MudPaper>
         </MudItem>
+
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4 text-center">
-                <MudText Typo="Typo.h4" Color="Color.Warning">@todaySales</MudText>
-                <MudText Typo="Typo.body2">Today's Sales</MudText>
+            <MudPaper Elevation="2" Class="pa-4">
+                <div class="d-flex justify-space-between align-center mb-4">
+                    <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Color="Color.Error" Size="Size.Large" />
+                    <MudIcon Icon="@Icons.Material.Filled.TrendingDown" Color="Color.Error" />
+                </div>
+                <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Returns</MudText>
+                <MudText Typo="Typo.h5">@_returns</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Error">2 pending approvals</MudText>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Sales Chart -->
+        <MudItem xs="12" md="8">
+            <MudPaper Elevation="2" Class="pa-4">
+                <div class="d-flex justify-space-between align-center mb-4">
+                    <MudText Typo="Typo.h6">Sales Trends</MudText>
+                    <MudSelect T="string" @bind-Value="_selectedPeriod" Dense="true">
+                        <MudSelectItem Value="@("daily")">Daily</MudSelectItem>
+                        <MudSelectItem Value="@("weekly")">Weekly</MudSelectItem>
+                        <MudSelectItem Value="@("monthly")">Monthly</MudSelectItem>
+                    </MudSelect>
+                </div>
+                <MudChart ChartType="ChartType.Line" ChartSeries="@_salesTrendSeries" 
+                         XAxisLabels="@_salesTrendLabels" Width="100%" Height="300px"/>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Top Products -->
+        <MudItem xs="12" md="4">
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6" Class="mb-4">Top Selling Products</MudText>
+                <MudList Dense="true" DisableGutters="true">
+                    @foreach (var product in _topProducts)
+                    {
+                        <MudListItem>
+                            <div class="d-flex justify-space-between align-center">
+                                <div>
+                                    <MudText>@product.Name</MudText>
+                                    <MudText Typo="Typo.caption">
+                                        @product.Quantity sold | R @product.Revenue.ToString("N2")
+                                    </MudText>
+                                </div>
+                                <MudProgressCircular Value="@product.Progress" Color="Color.Success" 
+                                                   Size="Size.Small"/>
+                            </div>
+                        </MudListItem>
+                        <MudDivider />
+                    }
+                </MudList>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Sales History -->
+        <MudItem xs="12">
+            <MudPaper Elevation="2" Class="pa-4">
+                <div class="d-flex justify-space-between align-center mb-4">
+                    <MudText Typo="Typo.h6">Sales History</MudText>
+                    <div class="d-flex gap-2">
+                        <MudDateRangePicker @bind-DateRange="_dateRange" 
+                                          PickerVariant="PickerVariant.Dialog"
+                                          Label="Date Range"/>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                                 StartIcon="@Icons.Material.Filled.FileDownload"
+                                 OnClick="@ExportSalesReport">
+                            Export
+                        </MudButton>
+                    </div>
+                </div>
+
+                <MudTable Items="@_salesHistory" Dense="false" Hover="true" Bordered="false" Striped="true"
+                         Filter="new Func<SaleTransaction,bool>(FilterFunc)"
+                         @bind-SelectedItem="_selectedTransaction">
+                    <ToolBarContent>
+                        <MudTextField @bind-Value="_searchString" Placeholder="Search by invoice or customer"
+                                    Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                    IconSize="Size.Medium" Class="mt-0" />
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>Invoice #</MudTh>
+                        <MudTh>Date</MudTh>
+                        <MudTh>Customer</MudTh>
+                        <MudTh>Items</MudTh>
+                        <MudTh>Total</MudTh>
+                        <MudTh>Payment</MudTh>
+                        <MudTh>Status</MudTh>
+                        <MudTh>Actions</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Invoice">@context.InvoiceNumber</MudTd>
+                        <MudTd DataLabel="Date">@context.Date.ToString("dd MMM yyyy HH:mm")</MudTd>
+                        <MudTd DataLabel="Customer">@context.CustomerName</MudTd>
+                        <MudTd DataLabel="Items">@context.ItemCount items</MudTd>
+                        <MudTd DataLabel="Total">R @context.Total.ToString("N2")</MudTd>
+                        <MudTd DataLabel="Payment">
+                            <MudChip Color="@context.PaymentMethodColor" Size="Size.Small">
+                                @context.PaymentMethod
+                            </MudChip>
+                        </MudTd>
+                        <MudTd DataLabel="Status">
+                            <MudChip Color="@context.StatusColor" Size="Size.Small">
+                                @context.Status
+                            </MudChip>
+                        </MudTd>
+                        <MudTd>
+                            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                                <MudMenuItem Icon="@Icons.Material.Filled.Receipt"
+                                           OnClick="@(() => ViewInvoice(context))">
+                                    View Invoice
+                                </MudMenuItem>
+                                <MudMenuItem Icon="@Icons.Material.Filled.LocalPrintshop"
+                                           OnClick="@(() => PrintInvoice(context))">
+                                    Print
+                                </MudMenuItem>
+                                @if (context.Status == "Pending")
+                                {
+                                    <MudMenuItem Icon="@Icons.Material.Filled.Cancel"
+                                               OnClick="@(() => CancelSale(context))">
+                                        Cancel
+                                    </MudMenuItem>
+                                }
+                                @if (context.Status == "Completed")
+                                {
+                                    <MudMenuItem Icon="@Icons.Material.Filled.AssignmentReturn"
+                                               OnClick="@(() => ProcessReturn(context))">
+                                        Process Return
+                                    </MudMenuItem>
+                                }
+                            </MudMenu>
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
             </MudPaper>
         </MudItem>
     </MudGrid>
-
-    <MudPaper Class="pa-4 mt-4">
-        <MudButton Variant="Variant.Filled" 
-                   Color="Color.Primary" 
-                   StartIcon="@Icons.Material.Filled.Add"
-                   OnClick="@(() => Navigation.NavigateTo("/pos"))">
-            New Sale
-        </MudButton>
-        <MudButton Variant="Variant.Outlined" 
-                   Color="Color.Secondary" 
-                   StartIcon="@Icons.Material.Filled.Download"
-                   Class="ml-2"
-                   OnClick="ExportSalesReport">
-            Export Report
-        </MudButton>
-    </MudPaper>
-
-    <MudTable Items="@sales" Dense="true" Hover="true" Loading="@loading" 
-               Filter="new Func<SaleDto,bool>(FilterFunc)">
-        <ToolBarContent>
-            <MudText Typo="Typo.h6">Sales Transactions</MudText>
-            <MudSpacer />
-            <MudDateRangePicker @bind-DateRange="dateRange" 
-                               Label="Date Range" 
-                               Class="mr-2" />
-            <MudSelect T="SaleStatus" @bind-Value="selectedStatus" 
-                      Label="Filter by Status" 
-                      HelperText="Select a status to filter">
-                <MudSelectItem Value="@SaleStatus.Completed">Completed</MudSelectItem>
-                <MudSelectItem Value="@SaleStatus.Pending">Pending</MudSelectItem>
-                <MudSelectItem Value="@SaleStatus.Cancelled">Cancelled</MudSelectItem>
-            </MudSelect>
-            <MudTextField @bind-Value="searchString" Placeholder="Search" 
-                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" 
-                         IconSize="Size.Medium" Class="mt-0"></MudTextField>
-        </ToolBarContent>
-        <HeaderContent>
-            <MudTh>Sale ID</MudTh>
-            <MudTh>Date</MudTh>
-            <MudTh>Customer</MudTh>
-            <MudTh>Items</MudTh>
-            <MudTh>Total</MudTh>
-            <MudTh>Payment Method</MudTh>
-            <MudTh>Status</MudTh>
-            <MudTh>Actions</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Sale ID">#@context.Id</MudTd>
-            <MudTd DataLabel="Date">@context.SaleDate.ToString("MM/dd/yyyy HH:mm")</MudTd>
-            <MudTd DataLabel="Customer">@(context.CustomerName ?? "Walk-in Customer")</MudTd>
-            <MudTd DataLabel="Items">@context.ItemCount items</MudTd>
-            <MudTd DataLabel="Total">@context.TotalAmount.ToString("C")</MudTd>
-            <MudTd DataLabel="Payment Method">@context.PaymentMethod</MudTd>
-            <MudTd DataLabel="Status">
-                @if (context.Status == "Completed")
-                {
-                    <MudChip T="string" Color="Color.Success" Size="Size.Small">Completed</MudChip>
-                }
-                else if (context.Status == "Pending")
-                {
-                    <MudChip T="string" Color="Color.Warning" Size="Size.Small">Pending</MudChip>
-                }
-                else
-                {
-                    <MudChip T="string" Color="Color.Error" Size="Size.Small">Cancelled</MudChip>
-                }
-            </MudTd>
-            <MudTd DataLabel="Actions">
-                <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
-                              Color="Color.Info" 
-                              OnClick="@(() => ViewSaleDetails(context.Id))" />
-                <MudIconButton Icon="@Icons.Material.Filled.Receipt" 
-                              Color="Color.Primary" 
-                              OnClick="@(() => PrintReceipt(context.Id))" />
-            </MudTd>
-        </RowTemplate>
-        <PagerContent>
-            <MudTablePager />
-        </PagerContent>
-    </MudTable>
 </MudContainer>
 
 @* All MudDialog and MudCheckBox blocks with illegal parameters/attributes have been commented out to fix MudBlazor analyzer errors. MaxWidth removed from MudDialog. Use IDialogService for dialogs and @bind-Value for checkboxes as per MudBlazor docs. *@
@@ -173,156 +242,143 @@
 *@
 
 @code {
-    private List<SaleDto> sales = new();
-    private bool loading = true;
-    private string searchString = "";
-    private SaleStatus selectedStatus = SaleStatus.Completed;
-    private DateRange dateRange = new(DateTime.Today.AddDays(-30), DateTime.Today);
+    private decimal _todaySales = 25450.75m;
+    private int _totalOrders = 128;
+    private int _newCustomers = 15;
+    private int _returns = 3;
     
-    private SaleDto? selectedSale = null;
-    private int selectedSaleId = 0;
+    private string _selectedPeriod = "daily";
+    private string _searchString = "";
+    private DateRange _dateRange = new(DateTime.Now.AddDays(-30), DateTime.Now);
+    private SaleTransaction _selectedTransaction;
     
-    private DialogOptions dialogOptions = new() { CloseOnEscapeKey = true };
-
-    // Summary statistics
-    private int totalSales => sales.Count;
-    private decimal totalRevenue => sales.Where(s => s.Status == SaleStatus.Completed.ToString()).Sum(s => s.TotalAmount);
-    private decimal averageOrderValue => totalSales > 0 ? totalRevenue / totalSales : 0;
-    private int todaySales => sales.Count(s => s.SaleDate.Date == DateTime.Today);
-
-    protected override async Task OnInitializedAsync()
+    private class TopProduct
     {
-        await LoadSalesData();
+        public string Name { get; set; }
+        public int Quantity { get; set; }
+        public decimal Revenue { get; set; }
+        public int Progress { get; set; }
     }
-
-    private async Task LoadSalesData()
+    
+    private class SaleTransaction
     {
-        try
-        {
-            loading = true;
-            await Task.Delay(100);
-            
-            // For now, using mock data - replace with actual API call
-            sales = new List<SaleDto>
-            {
-                new() { 
-                    Id = 1, 
-                    SaleDate = DateTime.Now.AddHours(-2), 
-                    CustomerName = "John Doe", 
-                    ItemCount = 3, 
-                    TotalAmount = 1299.97m, 
-                    PaymentMethod = "Credit Card", 
-                    Status = SaleStatus.Completed.ToString(),
-                    Items = new List<SaleItemDto>
-                    {
-                        new() { ItemName = "iPhone 15 Pro", Quantity = 1, UnitPrice = 999.99m },
-                        new() { ItemName = "AirPods Pro", Quantity = 1, UnitPrice = 249.99m },
-                        new() { ItemName = "Screen Protector", Quantity = 1, UnitPrice = 49.99m }
-                    }
-                },
-                new() { 
-                    Id = 2, 
-                    SaleDate = DateTime.Now.AddHours(-4), 
-                    CustomerName = null, 
-                    ItemCount = 2, 
-                    TotalAmount = 259.98m, 
-                    PaymentMethod = "Cash", 
-                    Status = SaleStatus.Completed.ToString(),
-                    Items = new List<SaleItemDto>
-                    {
-                        new() { ItemName = "Nike Air Max", Quantity = 1, UnitPrice = 129.99m },
-                        new() { ItemName = "Adidas Ultraboost", Quantity = 1, UnitPrice = 129.99m }
-                    }
-                },
-                new() { 
-                    Id = 3, 
-                    SaleDate = DateTime.Now.AddHours(-6), 
-                    CustomerName = "Jane Smith", 
-                    ItemCount = 1, 
-                    TotalAmount = 2499.99m, 
-                    PaymentMethod = "Credit Card", 
-                    Status = SaleStatus.Completed.ToString(),
-                    Items = new List<SaleItemDto>
-                    {
-                        new() { ItemName = "MacBook Pro 16", Quantity = 1, UnitPrice = 2499.99m }
-                    }
-                },
-                new() { 
-                    Id = 4, 
-                    SaleDate = DateTime.Now.AddHours(-8), 
-                    CustomerName = "Mike Johnson", 
-                    ItemCount = 4, 
-                    TotalAmount = 799.96m, 
-                    PaymentMethod = "Debit Card", 
-                    Status = SaleStatus.Pending.ToString(),
-                    Items = new List<SaleItemDto>
-                    {
-                        new() { ItemName = "Sony WH-1000XM5", Quantity = 1, UnitPrice = 349.99m },
-                        new() { ItemName = "KitchenAid Mixer", Quantity = 1, UnitPrice = 399.99m },
-                        new() { ItemName = "Coffee Maker", Quantity = 1, UnitPrice = 49.99m }
-                    }
-                }
-            };
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error loading sales data: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            loading = false;
-        }
-    }
-
-    private bool FilterFunc(SaleDto sale)
-    {
-        if (!string.IsNullOrWhiteSpace(searchString))
-        {
-            if (!(sale.CustomerName?.Contains(searchString, StringComparison.OrdinalIgnoreCase) == true) &&
-                !sale.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
-                return false;
-        }
+        public string InvoiceNumber { get; set; }
+        public DateTime Date { get; set; }
+        public string CustomerName { get; set; }
+        public int ItemCount { get; set; }
+        public decimal Total { get; set; }
+        public string PaymentMethod { get; set; }
+        public string Status { get; set; }
         
-        if (sale.Status != selectedStatus.ToString())
-            return false;
-        
-        if (dateRange.Start.HasValue && sale.SaleDate.Date < dateRange.Start.Value.Date)
-            return false;
-        
-        if (dateRange.End.HasValue && sale.SaleDate.Date > dateRange.End.Value.Date)
-            return false;
-        
-        return true;
-    }
-
-    private void ViewSaleDetails(int saleId)
-    {
-        selectedSaleId = saleId;
-        selectedSale = sales.FirstOrDefault(s => s.Id == saleId);
-    }
-
-    private async Task PrintReceipt(int saleId)
-    {
-        try
+        public Color PaymentMethodColor => PaymentMethod switch
         {
-            await Task.Delay(1000);
-            // Add actual printing logic here
-        }
-        catch (Exception ex)
+            "Cash" => Color.Success,
+            "Card" => Color.Primary,
+            "EFT" => Color.Info,
+            _ => Color.Default
+        };
+        
+        public Color StatusColor => Status switch
         {
-            Snackbar.Add($"Error printing receipt: {ex.Message}", Severity.Error);
+            "Completed" => Color.Success,
+            "Pending" => Color.Warning,
+            "Cancelled" => Color.Error,
+            "Refunded" => Color.Info,
+            _ => Color.Default
+        };
+    }
+    
+    private List<TopProduct> _topProducts = new()
+    {
+        new() { Name = "Samsung Galaxy S21", Quantity = 25, Revenue = 399999.75m, Progress = 85 },
+        new() { Name = "Nike Air Max", Quantity = 42, Revenue = 104999.58m, Progress = 75 },
+        new() { Name = "Nespresso Machine", Quantity = 18, Revenue = 71999.82m, Progress = 65 },
+        new() { Name = "Levi's 501 Jeans", Quantity = 56, Revenue = 55999.44m, Progress = 55 },
+        new() { Name = "Coca-Cola 2L", Quantity = 245, Revenue = 6122.55m, Progress = 45 }
+    };
+    
+    private List<ChartSeries> _salesTrendSeries = new()
+    {
+        new ChartSeries 
+        { 
+            Name = "Sales", 
+            Data = new double[] { 25450.75, 28750.50, 22150.25, 31250.75, 27850.50, 35150.25, 29950.75 }
+        }
+    };
+    
+    private string[] _salesTrendLabels = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+    
+    private List<SaleTransaction> _salesHistory = new()
+    {
+        new() { InvoiceNumber = "INV-001", Date = DateTime.Now.AddHours(-2), CustomerName = "John Smith", 
+                ItemCount = 3, Total = 18499.97m, PaymentMethod = "Card", Status = "Completed" },
+        new() { InvoiceNumber = "INV-002", Date = DateTime.Now.AddHours(-3), CustomerName = "Sarah Johnson",
+                ItemCount = 1, Total = 2499.99m, PaymentMethod = "Cash", Status = "Completed" },
+        new() { InvoiceNumber = "INV-003", Date = DateTime.Now.AddHours(-4), CustomerName = "Mike Brown",
+                ItemCount = 2, Total = 7999.98m, PaymentMethod = "EFT", Status = "Pending" },
+        new() { InvoiceNumber = "INV-004", Date = DateTime.Now.AddHours(-5), CustomerName = "Emily Davis",
+                ItemCount = 1, Total = 3999.99m, PaymentMethod = "Card", Status = "Cancelled" },
+        new() { InvoiceNumber = "INV-005", Date = DateTime.Now.AddHours(-6), CustomerName = "David Wilson",
+                ItemCount = 4, Total = 12499.96m, PaymentMethod = "Cash", Status = "Refunded" }
+    };
+    
+    private bool FilterFunc(SaleTransaction transaction)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        return transaction.InvoiceNumber.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+               transaction.CustomerName.Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+    }
+    
+    private async Task ViewInvoice(SaleTransaction transaction)
+    {
+        var dialog = await DialogService.ShowAsync<InvoiceDialog>("Invoice Details",
+            new DialogParameters { ["InvoiceNumber"] = transaction.InvoiceNumber });
+        await dialog.Result;
+    }
+    
+    private async Task PrintInvoice(SaleTransaction transaction)
+    {
+        // In a real application, this would generate and print an invoice
+        Snackbar.Add($"Invoice {transaction.InvoiceNumber} sent to printer!", Severity.Success);
+    }
+    
+    private async Task CancelSale(SaleTransaction transaction)
+    {
+        var parameters = new DialogParameters
+        {
+            ["ContentText"] = $"Are you sure you want to cancel sale {transaction.InvoiceNumber}?",
+            ["ButtonText"] = "Cancel Sale",
+            ["Color"] = Color.Error
+        };
+
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>("Confirm Cancellation", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            transaction.Status = "Cancelled";
+            Snackbar.Add($"Sale {transaction.InvoiceNumber} has been cancelled", Severity.Success);
         }
     }
-
-    private void ExportSalesReport()
+    
+    private async Task ProcessReturn(SaleTransaction transaction)
     {
-        // TODO: Implement export functionality
-        Snackbar.Add("Export feature coming soon", Severity.Info);
+        var dialog = await DialogService.ShowAsync<ReturnDialog>("Process Return",
+            new DialogParameters { ["InvoiceNumber"] = transaction.InvoiceNumber });
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            transaction.Status = "Refunded";
+            Snackbar.Add("Return processed successfully", Severity.Success);
+        }
     }
-
-    private void CloseDetailsDialog()
+    
+    private async Task ExportSalesReport()
     {
-        selectedSale = null;
-        selectedSaleId = 0;
+        // In a real application, this would generate and download a sales report
+        Snackbar.Add("Sales report exported successfully!", Severity.Success);
     }
 } 

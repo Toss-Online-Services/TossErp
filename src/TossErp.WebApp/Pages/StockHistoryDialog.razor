@@ -1,0 +1,136 @@
+@using System.Globalization
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: auto">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6" Class="mb-4">Stock Movement History</MudText>
+                    
+                    <MudPaper Class="pa-4 mb-4">
+                        <MudGrid>
+                            <MudItem xs="6" md="3">
+                                <MudText Typo="Typo.subtitle2">SKU</MudText>
+                                <MudText>@Sku</MudText>
+                            </MudItem>
+                            <MudItem xs="6" md="3">
+                                <MudText Typo="Typo.subtitle2">Current Stock</MudText>
+                                <MudText>@_currentStock</MudText>
+                            </MudItem>
+                            <MudItem xs="6" md="3">
+                                <MudText Typo="Typo.subtitle2">Total In</MudText>
+                                <MudText Color="Color.Success">+@_totalIn</MudText>
+                            </MudItem>
+                            <MudItem xs="6" md="3">
+                                <MudText Typo="Typo.subtitle2">Total Out</MudText>
+                                <MudText Color="Color.Error">-@_totalOut</MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+
+                    <MudTable Items="@_stockMovements" Dense="true" Hover="true" Bordered="false" Striped="true">
+                        <HeaderContent>
+                            <MudTh>Date</MudTh>
+                            <MudTh>Type</MudTh>
+                            <MudTh>Quantity</MudTh>
+                            <MudTh>Reference</MudTh>
+                            <MudTh>User</MudTh>
+                            <MudTh>Notes</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Date">
+                                @context.Date.ToString("dd MMM yyyy HH:mm")
+                            </MudTd>
+                            <MudTd DataLabel="Type">
+                                <MudChip Color="@context.TypeColor" Size="Size.Small">
+                                    @context.Type
+                                </MudChip>
+                            </MudTd>
+                            <MudTd DataLabel="Quantity">
+                                <MudText Color="@(context.Quantity > 0 ? Color.Success : Color.Error)">
+                                    @(context.Quantity > 0 ? "+" : "")@context.Quantity
+                                </MudText>
+                            </MudTd>
+                            <MudTd DataLabel="Reference">@context.Reference</MudTd>
+                            <MudTd DataLabel="User">@context.User</MudTd>
+                            <MudTd DataLabel="Notes">@context.Notes</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudExpansionPanels>
+                        <MudExpansionPanel Text="Stock Level Chart">
+                            <MudChart ChartType="ChartType.Line" ChartSeries="@_stockLevelSeries" 
+                                     XAxisLabels="@_stockLevelLabels" Width="100%" Height="300px"/>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </DialogContent>
+    
+    <DialogActions>
+        <MudButton OnClick="Cancel">Close</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" 
+                  StartIcon="@Icons.Material.Filled.FileDownload"
+                  OnClick="ExportHistory">
+            Export
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string Sku { get; set; }
+    
+    private int _currentStock = 125;
+    private int _totalIn = 250;
+    private int _totalOut = 125;
+    
+    private class StockMovement
+    {
+        public DateTime Date { get; set; }
+        public string Type { get; set; }
+        public int Quantity { get; set; }
+        public string Reference { get; set; }
+        public string User { get; set; }
+        public string Notes { get; set; }
+        public Color TypeColor => Type switch
+        {
+            "Purchase" => Color.Success,
+            "Sale" => Color.Error,
+            "Adjustment" => Color.Warning,
+            "Return" => Color.Info,
+            _ => Color.Default
+        };
+    }
+    
+    private List<StockMovement> _stockMovements = new()
+    {
+        new() { Date = DateTime.Now.AddDays(-1), Type = "Purchase", Quantity = 50, Reference = "PO-001", User = "John Doe", Notes = "Regular stock order" },
+        new() { Date = DateTime.Now.AddDays(-2), Type = "Sale", Quantity = -5, Reference = "SO-001", User = "Jane Smith", Notes = "Online sale" },
+        new() { Date = DateTime.Now.AddDays(-3), Type = "Adjustment", Quantity = -2, Reference = "ADJ-001", User = "Mike Johnson", Notes = "Damaged items" },
+        new() { Date = DateTime.Now.AddDays(-4), Type = "Return", Quantity = 1, Reference = "RET-001", User = "Sarah Wilson", Notes = "Customer return" },
+        new() { Date = DateTime.Now.AddDays(-5), Type = "Sale", Quantity = -10, Reference = "SO-002", User = "Jane Smith", Notes = "Bulk order" }
+    };
+    
+    private List<ChartSeries> _stockLevelSeries = new()
+    {
+        new ChartSeries 
+        { 
+            Name = "Stock Level", 
+            Data = new double[] { 100, 95, 85, 92, 88, 95, 91, 85, 87, 89, 92, 95 }
+        }
+    };
+    
+    private string[] _stockLevelLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+    
+    private void Cancel() => MudDialog.Cancel();
+    
+    private async Task ExportHistory()
+    {
+        // In a real application, this would generate and download a report
+        Snackbar.Add("Stock history report exported successfully!", Severity.Success);
+    }
+} 

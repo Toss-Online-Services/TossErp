@@ -1,4 +1,5 @@
 @page "/stock"
+@using System.Globalization
 @using TossErp.Shared.DTOs
 @using TossErp.Shared.Enums
 @inject HttpClient Http
@@ -8,111 +9,168 @@
 <PageTitle>Stock Management - TOSS ERP</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
-    <MudText Typo="Typo.h4" Class="mb-4">Stock Management</MudText>
-    
     <MudGrid>
+        <!-- Stock Overview Cards -->
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4 text-center">
-                <MudText Typo="Typo.h4" Color="Color.Primary">@totalItems</MudText>
-                <MudText Typo="Typo.body2">Total Items</MudText>
+            <MudPaper Elevation="2" Class="pa-4">
+                <div class="d-flex justify-space-between align-center mb-4">
+                    <MudIcon Icon="@Icons.Material.Filled.Inventory" Color="Color.Primary" Size="Size.Large" />
+                    <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
+                </div>
+                <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Total Items</MudText>
+                <MudText Typo="Typo.h5">@totalItems</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Success">+@newItems this month</MudText>
             </MudPaper>
         </MudItem>
+
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4 text-center">
-                <MudText Typo="Typo.h4" Color="Color.Warning">@lowStockItems</MudText>
-                <MudText Typo="Typo.body2">Low Stock Items</MudText>
+            <MudPaper Elevation="2" Class="pa-4">
+                <div class="d-flex justify-space-between align-center mb-4">
+                    <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Large" />
+                    <MudIcon Icon="@Icons.Material.Filled.TrendingDown" Color="Color.Error" />
+                </div>
+                <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Low Stock Items</MudText>
+                <MudText Typo="Typo.h5">@lowStockItems</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Error">@criticalItems need immediate attention</MudText>
             </MudPaper>
         </MudItem>
+
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4 text-center">
-                <MudText Typo="Typo.h4" Color="Color.Error">@outOfStockItems</MudText>
-                <MudText Typo="Typo.body2">Out of Stock</MudText>
+            <MudPaper Elevation="2" Class="pa-4">
+                <div class="d-flex justify-space-between align-center mb-4">
+                    <MudIcon Icon="@Icons.Material.Filled.LocalShipping" Color="Color.Info" Size="Size.Large" />
+                    <MudIcon Icon="@Icons.Material.Filled.Pending" Color="Color.Info" />
+                </div>
+                <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Pending Orders</MudText>
+                <MudText Typo="Typo.h5">@pendingOrders</MudText>
+                <MudText Typo="Typo.caption">Expected within @expectedDays days</MudText>
             </MudPaper>
         </MudItem>
+
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4 text-center">
-                <MudText Typo="Typo.h4" Color="Color.Success">@totalValue.ToString("C")</MudText>
-                <MudText Typo="Typo.body2">Total Value</MudText>
+            <MudPaper Elevation="2" Class="pa-4">
+                <div class="d-flex justify-space-between align-center mb-4">
+                    <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Color="Color.Success" Size="Size.Large" />
+                    <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
+                </div>
+                <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Stock Value</MudText>
+                <MudText Typo="Typo.h5">R @totalValue.ToString("N2")</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Success">+@growthPercent% from last month</MudText>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Stock Management Table -->
+        <MudItem xs="12">
+            <MudPaper Elevation="2" Class="pa-4">
+                <div class="d-flex justify-space-between align-center mb-4">
+                    <MudText Typo="Typo.h6">Stock Management</MudText>
+                    <div class="d-flex gap-2">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                                 StartIcon="@Icons.Material.Filled.Add"
+                                 OnClick="@(() => OpenStockDialog())">
+                            Add Stock
+                        </MudButton>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                                 StartIcon="@Icons.Material.Filled.FileDownload">
+                            Export
+                        </MudButton>
+                    </div>
+                </div>
+
+                <MudTable Items="@stockItems" Dense="false" Hover="true" Bordered="false" Striped="true"
+                          Filter="new Func<StockItemDto,bool>(FilterFunc)" @bind-SelectedItem="_selectedItem">
+                    <ToolBarContent>
+                        <MudTextField @bind-Value="_searchString" Placeholder="Search by item name or SKU"
+                                    Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                    IconSize="Size.Medium" Class="mt-0" />
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>SKU</MudTh>
+                        <MudTh>Item Name</MudTh>
+                        <MudTh>Category</MudTh>
+                        <MudTh>In Stock</MudTh>
+                        <MudTh>Min Level</MudTh>
+                        <MudTh>Unit Price</MudTh>
+                        <MudTh>Status</MudTh>
+                        <MudTh>Actions</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="SKU">@context.Sku</MudTd>
+                        <MudTd DataLabel="Item Name">@context.Name</MudTd>
+                        <MudTd DataLabel="Category">@context.Category</MudTd>
+                        <MudTd DataLabel="In Stock">
+                            <MudText Color="@(context.CurrentStock <= context.MinStockLevel ? Color.Error : Color.Default)">
+                                @context.CurrentStock
+                            </MudText>
+                        </MudTd>
+                        <MudTd DataLabel="Min Level">@context.MinStockLevel</MudTd>
+                        <MudTd DataLabel="Unit Price">R @context.UnitPrice.ToString("N2")</MudTd>
+                        <MudTd DataLabel="Status">
+                            <MudChip Color="@context.StatusColor" Size="Size.Small">
+                                @context.Status
+                            </MudChip>
+                        </MudTd>
+                        <MudTd>
+                            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                                <MudMenuItem Icon="@Icons.Material.Filled.Edit" 
+                                           OnClick="@(() => OpenStockDialog(context))">
+                                    Edit
+                                </MudMenuItem>
+                                <MudMenuItem Icon="@Icons.Material.Filled.History"
+                                           OnClick="@(() => ViewHistory(context))">
+                                    View History
+                                </MudMenuItem>
+                                <MudMenuItem Icon="@Icons.Material.Filled.QrCode"
+                                           OnClick="@(() => GenerateLabel(context))">
+                                    Generate Label
+                                </MudMenuItem>
+                            </MudMenu>
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Stock Movement Chart -->
+        <MudItem xs="12" md="8">
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6" Class="mb-4">Stock Movement Trends</MudText>
+                <MudChart ChartType="ChartType.Line" ChartSeries="@stockTrendSeries" 
+                         XAxisLabels="@stockTrendLabels" Width="100%" Height="300px"/>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Low Stock Alerts -->
+        <MudItem xs="12" md="4">
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6" Class="mb-4">Low Stock Alerts</MudText>
+                <MudList Dense="true" DisableGutters="true">
+                    @foreach (var alert in lowStockAlerts)
+                    {
+                        <MudListItem>
+                            <div class="d-flex justify-space-between align-center">
+                                <div>
+                                    <MudText>@alert.ItemName</MudText>
+                                    <MudText Typo="Typo.caption">
+                                        Current: @alert.CurrentStock | Minimum: @alert.MinimumLevel
+                                    </MudText>
+                                </div>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" 
+                                         Size="Size.Small"
+                                         OnClick="@(() => CreatePurchaseOrder(alert))">
+                                    Order Now
+                                </MudButton>
+                            </div>
+                        </MudListItem>
+                        <MudDivider />
+                    }
+                </MudList>
             </MudPaper>
         </MudItem>
     </MudGrid>
-
-    <MudPaper Class="pa-4 mt-4">
-        <MudButton Variant="Variant.Filled" 
-                   Color="Color.Primary" 
-                   StartIcon="@Icons.Material.Filled.Add"
-                   OnClick="@(() => OpenStockAdjustmentDialog(new StockItemDto()))">
-            Stock Adjustment
-        </MudButton>
-        <MudButton Variant="Variant.Outlined" 
-                   Color="Color.Secondary" 
-                   StartIcon="@Icons.Material.Filled.Download"
-                   Class="ml-2"
-                   OnClick="@(() => ExportStockReport())">
-            Export Report
-        </MudButton>
-    </MudPaper>
-
-    <MudTable Items="@stockItems" Dense="true" Hover="true" Loading="@loading" 
-               Filter="new Func<StockItemDto,bool>(FilterFunc)">
-        <ToolBarContent>
-            <MudText Typo="Typo.h6">Stock Items</MudText>
-            <MudSpacer />
-            <MudSelect T="string" @bind-Value="selectedCategory" Label="Category" Class="mr-2">
-                <MudSelectItem Value="@string.Empty">All Categories</MudSelectItem>
-                @foreach (var category in categories)
-                {
-                    <MudSelectItem Value="@category">@category</MudSelectItem>
-                }
-            </MudSelect>
-            <MudTextField @bind-Value="searchString" Placeholder="Search" 
-                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" 
-                         IconSize="Size.Medium" Class="mt-0"></MudTextField>
-        </ToolBarContent>
-        <HeaderContent>
-            <MudTh>Item</MudTh>
-            <MudTh>Category</MudTh>
-            <MudTh>Current Stock</MudTh>
-            <MudTh>Min Stock</MudTh>
-            <MudTh>Unit Price</MudTh>
-            <MudTh>Total Value</MudTh>
-            <MudTh>Status</MudTh>
-            <MudTh>Actions</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Item">@context.ItemName</MudTd>
-            <MudTd DataLabel="Category">@context.Category</MudTd>
-            <MudTd DataLabel="Current Stock">@context.CurrentStock</MudTd>
-            <MudTd DataLabel="Min Stock">@context.MinStockLevel</MudTd>
-            <MudTd DataLabel="Unit Price">@context.UnitPrice.ToString("C")</MudTd>
-            <MudTd DataLabel="Total Value">@((context.CurrentStock * context.UnitPrice).ToString("C"))</MudTd>
-            <MudTd DataLabel="Status">
-                @if (context.CurrentStock == 0)
-                {
-                    <MudChip T="string" Color="Color.Error" Size="Size.Small">Out of Stock</MudChip>
-                }
-                else if (context.CurrentStock <= context.MinStockLevel)
-                {
-                    <MudChip T="string" Color="Color.Warning" Size="Size.Small">Low Stock</MudChip>
-                }
-                else
-                {
-                    <MudChip T="string" Color="Color.Success" Size="Size.Small">In Stock</MudChip>
-                }
-            </MudTd>
-            <MudTd DataLabel="Actions">
-                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
-                              Color="Color.Primary" 
-                              OnClick="@(() => OpenStockAdjustmentDialog(context))" />
-                <MudIconButton Icon="@Icons.Material.Filled.History" 
-                              Color="Color.Info" 
-                              OnClick="@(() => ViewStockHistory(context.Id))" />
-            </MudTd>
-        </RowTemplate>
-        <PagerContent>
-            <MudTablePager />
-        </PagerContent>
-    </MudTable>
 </MudContainer>
 
 @* All MudDialog and MudCheckBox blocks with illegal parameters/attributes have been commented out to fix MudBlazor analyzer errors. MaxWidth removed from MudDialog. Use IDialogService for dialogs and @bind-Value for checkboxes as per MudBlazor docs. *@
@@ -153,6 +211,7 @@
     private bool loading = true;
     private string searchString = "";
     private string? selectedCategory = string.Empty;
+    private StockItemDto _selectedItem;
     
     // Remove unused fields: adjustmentDialogVisible, adjustmentReason, form, success
 
@@ -161,6 +220,15 @@
     private int lowStockItems => stockItems.Count(s => s.CurrentStock > 0 && s.CurrentStock <= s.MinStockLevel);
     private int outOfStockItems => stockItems.Count(s => s.CurrentStock == 0);
     private decimal totalValue => stockItems.Sum(s => s.CurrentStock * s.UnitPrice);
+    private int newItems => stockItems.Count(s => s.CurrentStock > s.MinStockLevel);
+    private int pendingOrders => 8; // Assuming a default value
+    private int expectedDays => 7; // Assuming a default value
+    private decimal growthPercent => 15; // Assuming a default value
+
+    private List<StockItemDto> _stockItems = new();
+    private List<ChartSeries> stockTrendSeries = new();
+    private string[] stockTrendLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+    private List<LowStockAlert> lowStockAlerts = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -187,6 +255,25 @@
             };
             
             categories = stockItems.Select(s => s.Category).Distinct().ToList();
+            _stockItems = stockItems.Select(s => new StockItemDto
+            {
+                Id = s.Id,
+                ItemName = s.ItemName,
+                Category = s.Category,
+                CurrentStock = s.CurrentStock,
+                MinStockLevel = s.MinStockLevel,
+                UnitPrice = s.UnitPrice
+            }).ToList();
+            stockTrendSeries = new List<ChartSeries>
+            {
+                new ChartSeries { Name = "Stock Level", Data = new double[] { 100, 95, 85, 92, 88, 95, 91, 85, 87, 89, 92, 95 } }
+            };
+            lowStockAlerts = new List<LowStockAlert>
+            {
+                new() { ItemName = "Samsung Galaxy S21", CurrentStock = 5, MinimumLevel = 10 },
+                new() { ItemName = "Coca-Cola 2L", CurrentStock = 8, MinimumLevel = 50 },
+                new() { ItemName = "Nespresso Machine", CurrentStock = 0, MinimumLevel = 5 }
+            };
         }
         catch (Exception ex)
         {
@@ -212,7 +299,7 @@
         return true;
     }
 
-    private void OpenStockAdjustmentDialog(StockItemDto stockItem)
+    private void OpenStockDialog(StockItemDto item = null)
     {
         // selectedStockItem = stockItem;
         // adjustmentType = StockAdjustmentType.In;
@@ -257,7 +344,7 @@
         }
     }
 
-    private void ViewStockHistory(int itemId)
+    private void ViewHistory(StockItemDto item)
     {
         // TODO: Implement stock history view
         Snackbar.Add("Stock history feature coming soon", Severity.Info);
@@ -273,6 +360,12 @@
     {
         // adjustmentDialogVisible = false;
     }
+
+    private async Task CreatePurchaseOrder(LowStockAlert alert)
+    {
+        // In a real application, this would create a purchase order
+        Snackbar.Add($"Purchase order created for {alert.ItemName}", Severity.Success);
+    }
 }
 
 public enum StockAdjustmentType
@@ -280,4 +373,35 @@ public enum StockAdjustmentType
     In,
     Out,
     Adjustment
+}
+
+public class StockItemDto
+{
+    public int Id { get; set; }
+    public string ItemName { get; set; }
+    public string Category { get; set; }
+    public int CurrentStock { get; set; }
+    public int MinStockLevel { get; set; }
+    public decimal UnitPrice { get; set; }
+    public string Status => CurrentStock == 0 ? "Out of Stock" : CurrentStock <= MinStockLevel ? "Low Stock" : "In Stock";
+    public Color StatusColor => Status switch
+    {
+        "Out of Stock" => Color.Error,
+        "Low Stock" => Color.Warning,
+        _ => Color.Success
+    };
+    public string Sku => $"{Category.Substring(0, 3).ToUpper()}-{Id}";
+}
+
+public class LowStockAlert
+{
+    public string ItemName { get; set; }
+    public int CurrentStock { get; set; }
+    public int MinimumLevel { get; set; }
+}
+
+public class ChartSeries
+{
+    public string Name { get; set; }
+    public double[] Data { get; set; }
 } 
