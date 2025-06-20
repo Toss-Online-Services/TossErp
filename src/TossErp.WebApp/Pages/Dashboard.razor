@@ -1,6 +1,4 @@
 @page "/dashboard"
-@using System.Globalization
-
 <MudText Typo="Typo.h4" Class="mb-4">Dashboard</MudText>
 
 <MudGrid>
@@ -79,7 +77,7 @@
                             <td>@province.Sales.ToString("N0")</td>
                             <td>R @province.Value.ToString("N0")</td>
                             <td>
-                                <MudChip Color="@(province.BounceRate < 30 ? Color.Success : Color.Warning)" 
+                                <MudChip T="string" Color="@(province.BounceRate < 30 ? Color.Success : Color.Warning)" 
                                         Size="Size.Small">
                                     @province.BounceRate.ToString("N1")%
                                 </MudChip>
@@ -118,7 +116,7 @@
                     <MudTd>@context.Date.ToString("dd MMM yyyy")</MudTd>
                     <MudTd>R @context.Amount.ToString("N2")</MudTd>
                     <MudTd>
-                        <MudChip Color="@context.StatusColor" Size="Size.Small">
+                        <MudChip T="string" Color="@context.StatusColor" Size="Size.Small">
                             @context.Status
                         </MudChip>
                     </MudTd>

@@ -1,4 +1,3 @@
-@using System.Globalization
 @using MudBlazor
 @using TossErp.Shared.DTOs
 
@@ -81,13 +80,13 @@
                             <MudExpansionPanel Text="Marketing Preferences">
                                 <MudGrid>
                                     <MudItem xs="12">
-                                        <MudCheckBox @bind-Checked="_customer.EmailSubscribed"
-                                                   Label="Subscribe to email newsletters" />
+                                        <MudCheckBox T="bool" @bind-Checked="_customer.EmailSubscribed"
+                                                   Label="Subscribe to email newsletters" T="bool" />
                                     </MudItem>
                                     
                                     <MudItem xs="12">
-                                        <MudCheckBox @bind-Checked="_customer.SmsSubscribed"
-                                                   Label="Subscribe to SMS notifications" />
+                                        <MudCheckBox T="bool" @bind-Checked="_customer.SmsSubscribed"
+                                                   Label="Subscribe to SMS notifications" T="bool" />
                                     </MudItem>
                                     
                                     <MudItem xs="12">
@@ -165,7 +164,7 @@
     
     protected override void OnInitialized()
     {
-        if (Customer != null)
+        if (Customer != null!)
         {
             _customer = new CustomerDetails
             {

@@ -1,5 +1,3 @@
-@using System.Globalization
-
 <MudDialog>
     <DialogContent>
         <MudContainer Style="max-height: 500px; overflow-y: auto">
@@ -73,12 +71,12 @@
                             <MudTd DataLabel="Items">@context.ItemCount items</MudTd>
                             <MudTd DataLabel="Total">R @context.Total.ToString("N2")</MudTd>
                             <MudTd DataLabel="Payment">
-                                <MudChip Color="@context.PaymentMethodColor" Size="Size.Small">
+                                <MudChip T="string" Color="@context.PaymentMethodColor" Size="Size.Small">
                                     @context.PaymentMethod
                                 </MudChip>
                             </MudTd>
                             <MudTd DataLabel="Status">
-                                <MudChip Color="@context.StatusColor" Size="Size.Small">
+                                <MudChip T="string" Color="@context.StatusColor" Size="Size.Small">
                                     @context.Status
                                 </MudChip>
                             </MudTd>

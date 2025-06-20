@@ -82,7 +82,7 @@
 
 <MudDialog @bind-Visible="dialogVisible" Options="dialogOptions">
     <TitleContent>
-        <MudText Typo="Typo.h6">@(editingUser == null ? "Create User" : "Edit User")</MudText>
+        <MudText Typo="Typo.h6">@(editingUser == null! ? "Create User" : "Edit User")</MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@success">
@@ -104,7 +104,7 @@
                                  Label="Username" 
                                  Required="true" 
                                  RequiredError="Username is required!"
-                                 Disabled="@(editingUser != null)" />
+                                 Disabled="@(editingUser != null!)" />
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudTextField @bind-Value="userForm.Email" 
@@ -112,14 +112,14 @@
                                  Required="true" 
                                  RequiredError="Email is required!"
                                  InputType="InputType.Email"
-                                 Disabled="@(editingUser != null)" />
+                                 Disabled="@(editingUser != null!)" />
                 </MudItem>
                 <MudItem xs="12">
                     <MudTextField @bind-Value="userForm.PhoneNumber" 
                                  Label="Phone Number" 
                                  InputType="InputType.Text" />
                 </MudItem>
-                @if (editingUser == null)
+                @if (editingUser == null!)
                 {
                     <MudItem xs="12">
                         <MudTextField @bind-Value="userForm.Password" 
@@ -162,7 +162,7 @@
     private bool loading = true;
     private bool dialogVisible = false;
     private bool success;
-    private UserDto? editingUser = null;
+    private UserDto? editingUser = null!;
     private MudForm? form;
     
     private CreateUserDto userForm = new();
@@ -205,7 +205,7 @@
 
     private void OpenCreateDialog()
     {
-        editingUser = null;
+        editingUser = null!;
         userForm = new CreateUserDto();
         selectedRoles = new List<string>();
         dialogVisible = true;
@@ -233,7 +233,7 @@
         {
             userForm.Roles = selectedRoles.ToArray();
             
-            if (editingUser == null)
+            if (editingUser == null!)
             {
                 // TODO: Create user API call
                 // await Http.PostAsJsonAsync("api/users", userForm);

@@ -83,7 +83,7 @@
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<LoginResponse>(responseContent);
-                if (result?.Token != null)
+                if (result?.Token != null!)
                 {
                     await LocalStorage.SetItemAsync("authToken", result.Token);
                     await LocalStorage.SetItemAsync("user", result.User);

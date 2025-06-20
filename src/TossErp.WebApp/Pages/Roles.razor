@@ -39,7 +39,7 @@
         </HeaderContent>
         <RowTemplate>
 #pragma warning disable CS8602
-            @if (context == null)
+            @if (context == null!)
             {
                 <MudTd colspan="4"></MudTd>
             }
@@ -126,12 +126,12 @@
                role.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
     }
 
-    private async Task OpenRoleDialog(RoleDto? role = null)
+    private async Task OpenRoleDialog(RoleDto? role = null!)
     {
         await Task.Delay(100);
         var parameters = new DialogParameters
         {
-            ["Role"] = role != null ? new RoleDto
+            ["Role"] = role != null! ? new RoleDto
             {
                 Id = role.Id,
                 Name = role.Name,
@@ -141,7 +141,7 @@
             ["AvailablePermissions"] = availablePermissions
         };
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        var dialog = DialogService.Show<RoleDialog>(role == null ? "Create Role" : "Edit Role", parameters, options);
+        var dialog = DialogService.Show<RoleDialog>(role == null! ? "Create Role" : "Edit Role", parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled && result.Data is RoleDto updatedRole)
         {
@@ -154,7 +154,7 @@
             else
             {
                 var existingRole = roles.FirstOrDefault(r => r.Id == updatedRole.Id);
-                if (existingRole == null)
+                if (existingRole == null!)
                 {
                     Snackbar.Add("Role not found for update", Severity.Error);
                     return;
@@ -173,7 +173,7 @@
         try
         {
             var role = roles.FirstOrDefault(r => r.Id == roleId);
-            if (role == null)
+            if (role == null!)
             {
                 Snackbar.Add("Role not found for deletion", Severity.Error);
                 return;

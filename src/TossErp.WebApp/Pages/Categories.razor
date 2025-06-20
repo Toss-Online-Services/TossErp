@@ -40,7 +40,7 @@
         </HeaderContent>
         <RowTemplate>
 #pragma warning disable CS8602
-            @if (context == null)
+            @if (context == null!)
             {
                 <MudTd colspan="5"></MudTd>
             }
@@ -90,13 +90,13 @@
             // For now, using mock data - replace with actual API call
             categories = new List<CategoryDto>
             {
-                new() { Id = 1, Name = "Electronics", Description = "Electronic devices and accessories", ParentCategoryId = null, ItemCount = 25 },
+                new() { Id = 1, Name = "Electronics", Description = "Electronic devices and accessories", ParentCategoryId = null!, ItemCount = 25 },
                 new() { Id = 2, Name = "Computers", Description = "Desktop and laptop computers", ParentCategoryId = 1, ParentCategoryName = "Electronics", ItemCount = 12 },
                 new() { Id = 3, Name = "Mobile Phones", Description = "Smartphones and mobile accessories", ParentCategoryId = 1, ParentCategoryName = "Electronics", ItemCount = 8 },
-                new() { Id = 4, Name = "Clothing", Description = "Apparel and fashion items", ParentCategoryId = null, ItemCount = 45 },
+                new() { Id = 4, Name = "Clothing", Description = "Apparel and fashion items", ParentCategoryId = null!, ItemCount = 45 },
                 new() { Id = 5, Name = "Men's Clothing", Description = "Men's apparel", ParentCategoryId = 4, ParentCategoryName = "Clothing", ItemCount = 20 },
                 new() { Id = 6, Name = "Women's Clothing", Description = "Women's apparel", ParentCategoryId = 4, ParentCategoryName = "Clothing", ItemCount = 25 },
-                new() { Id = 7, Name = "Home & Garden", Description = "Home improvement and garden supplies", ParentCategoryId = null, ItemCount = 30 },
+                new() { Id = 7, Name = "Home & Garden", Description = "Home improvement and garden supplies", ParentCategoryId = null!, ItemCount = 30 },
                 new() { Id = 8, Name = "Kitchen", Description = "Kitchen appliances and utensils", ParentCategoryId = 7, ParentCategoryName = "Home & Garden", ItemCount = 15 }
             };
         }
@@ -119,11 +119,11 @@
                category.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
     }
 
-    private async Task OpenCategoryDialog(CategoryDto? category = null)
+    private async Task OpenCategoryDialog(CategoryDto? category = null!)
     {
         var parameters = new DialogParameters
         {
-            ["Category"] = category != null ? new CategoryDto
+            ["Category"] = category != null! ? new CategoryDto
             {
                 Id = category.Id,
                 Name = category.Name,
@@ -133,7 +133,7 @@
             ["AvailableCategories"] = categories.Where(c => c.Id != category?.Id).ToList()
         };
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        var dialog = DialogService.Show<CategoryDialog>(category == null ? "Create Category" : "Edit Category", parameters, options);
+        var dialog = DialogService.Show<CategoryDialog>(category == null! ? "Create Category" : "Edit Category", parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled && result.Data is CategoryDto updatedCategory)
         {
@@ -152,7 +152,7 @@
             else
             {
                 var existingCategory = categories.FirstOrDefault(c => c.Id == updatedCategory.Id);
-                if (existingCategory == null)
+                if (existingCategory == null!)
                 {
                     Snackbar.Add("Category not found for update", Severity.Error);
                     return;
@@ -167,7 +167,7 @@
                 }
                 else
                 {
-                    existingCategory.ParentCategoryName = null;
+                    existingCategory.ParentCategoryName = null!;
                 }
                 Snackbar.Add("Category updated successfully", Severity.Success);
             }
@@ -180,7 +180,7 @@
         try
         {
             var category = categories.FirstOrDefault(c => c.Id == categoryId);
-            if (category == null)
+            if (category == null!)
             {
                 Snackbar.Add("Category not found for deletion", Severity.Error);
                 return;

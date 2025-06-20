@@ -5,6 +5,7 @@ global using System.Text.Json;
 global using System.Net.Http;
 global using System.Net.Http.Headers;
 global using System.Net.Http.Json;
+global using System.Globalization;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Web;
 global using MudBlazor;

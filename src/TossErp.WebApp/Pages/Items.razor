@@ -107,7 +107,7 @@
 <!-- Create/Edit Dialog -->
 <MudDialog @bind-Visible="dialogVisible" Options="dialogOptions">
     <TitleContent>
-        <MudText Typo="Typo.h6">@(editingItem == null ? "Create Item" : "Edit Item")</MudText>
+        <MudText Typo="Typo.h6">@(editingItem == null! ? "Create Item" : "Edit Item")</MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@success">
@@ -206,7 +206,7 @@
         <MudText Typo="Typo.h6">Item Details</MudText>
     </TitleContent>
     <DialogContent>
-        @if (viewingItem != null)
+        @if (viewingItem != null!)
         {
             <MudGrid>
                 <MudItem xs="12" sm="6">
@@ -279,13 +279,13 @@
         (!selectedItemType.HasValue || i.ItemType == selectedItemType.Value)).ToList();
     
     private string searchString = "";
-    private ItemType? selectedItemType = null;
+    private ItemType? selectedItemType = null!;
     private bool loading = true;
     private bool dialogVisible = false;
     private bool viewDialogVisible = false;
     private bool success;
-    private ItemDto? editingItem = null;
-    private ItemDto? viewingItem = null;
+    private ItemDto? editingItem = null!;
+    private ItemDto? viewingItem = null!;
     private MudForm? form;
     
     private CreateItemDto itemForm = new();
@@ -327,7 +327,7 @@
 
     private void OpenCreateDialog()
     {
-        editingItem = null;
+        editingItem = null!;
         itemForm = new CreateItemDto();
         dialogVisible = true;
     }
@@ -365,7 +365,7 @@
     {
         try
         {
-            if (editingItem == null)
+            if (editingItem == null!)
             {
                 // TODO: Create item API call
                 // await Http.PostAsJsonAsync("api/items", itemForm);
@@ -395,7 +395,7 @@
     private void CloseViewDialog()
     {
         viewDialogVisible = false;
-        viewingItem = null;
+        viewingItem = null!;
     }
 
     private async Task ToggleItemStatus(ItemDto item)

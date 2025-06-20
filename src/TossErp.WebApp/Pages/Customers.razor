@@ -1,5 +1,4 @@
 @page "/customers"
-@using System.Globalization
 @using TossErp.Shared.DTOs
 @using TossErp.Shared.Enums
 @inject HttpClient Http
@@ -103,12 +102,12 @@
                         <MudTd DataLabel="Email">@context.Email</MudTd>
                         <MudTd DataLabel="Phone">@context.Phone</MudTd>
                         <MudTd DataLabel="Loyalty">
-                            <MudChip Color="@context.LoyaltyColor" Size="Size.Small">
+                            <MudChip T="string" Color="@context.LoyaltyColor" Size="Size.Small">
                                 @context.LoyaltyTier
                             </MudChip>
                         </MudTd>
                         <MudTd DataLabel="Status">
-                            <MudChip Color="@context.StatusColor" Size="Size.Small">
+                            <MudChip T="string" Color="@context.StatusColor" Size="Size.Small">
                                 @context.Status
                             </MudChip>
                         </MudTd>
@@ -164,10 +163,10 @@
         <MudItem xs="12" md="4">
             <MudPaper Elevation="2" Class="pa-4">
                 <MudText Typo="Typo.h6" Class="mb-4">Top Customers</MudText>
-                <MudList Dense="true" DisableGutters="true">
+                <MudList T="string" Dense="true" DisableGutters="true">
                     @foreach (var customer in _topCustomers)
                     {
-                        <MudListItem>
+                        <MudListItem T="string">
                             <div class="d-flex justify-space-between align-center">
                                 <div>
                                     <MudText>@customer.Name</MudText>
@@ -175,7 +174,7 @@
                                         @customer.TotalOrders orders | R @customer.TotalSpent.ToString("N2")
                                     </MudText>
                                 </div>
-                                <MudChip Color="@customer.LoyaltyColor" Size="Size.Small">
+                                <MudChip T="string" Color="@customer.LoyaltyColor" Size="Size.Small">
                                     @customer.LoyaltyTier
                                 </MudChip>
                             </div>
@@ -273,14 +272,14 @@
                customer.Phone.Contains(_searchString, StringComparison.OrdinalIgnoreCase);
     }
     
-    private async Task OpenCustomerDialog(Customer customer = null)
+    private async Task OpenCustomerDialog(Customer customer = null!)
     {
         var parameters = new DialogParameters();
-        if (customer != null)
+        if (customer != null!)
             parameters.Add("Customer", customer);
 
         var dialog = await DialogService.ShowAsync<CustomerDialog>(
-            customer == null ? "Add Customer" : "Edit Customer",
+            customer == null! ? "Add Customer" : "Edit Customer",
             parameters);
         var result = await dialog.Result;
 

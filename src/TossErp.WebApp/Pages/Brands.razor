@@ -37,7 +37,7 @@
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
-            @if (context == null)
+            @if (context == null!)
             {
                 <MudTd colspan="6"></MudTd>
             }
@@ -122,11 +122,11 @@
                (brand.ContactInfo?.Contains(searchString, StringComparison.OrdinalIgnoreCase) == true);
     }
 
-    private async Task OpenBrandDialog(BrandDto? brand = null)
+    private async Task OpenBrandDialog(BrandDto? brand = null!)
     {
         var parameters = new DialogParameters
         {
-            ["Brand"] = brand != null ? new BrandDto
+            ["Brand"] = brand != null! ? new BrandDto
             {
                 Id = brand.Id,
                 Name = brand.Name,
@@ -136,7 +136,7 @@
             } : new BrandDto { Id = 0 }
         };
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        var dialog = DialogService.Show<BrandDialog>(brand == null ? "Create Brand" : "Edit Brand", parameters, options);
+        var dialog = DialogService.Show<BrandDialog>(brand == null! ? "Create Brand" : "Edit Brand", parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled && result.Data is BrandDto updatedBrand)
         {
@@ -150,7 +150,7 @@
             else
             {
                 var existingBrand = brands.FirstOrDefault(b => b.Id == updatedBrand.Id);
-                if (existingBrand == null)
+                if (existingBrand == null!)
                 {
                     Snackbar.Add("Brand not found for update", Severity.Error);
                     return;
@@ -170,7 +170,7 @@
         try
         {
             var brand = brands.FirstOrDefault(b => b.Id == brandId);
-            if (brand == null)
+            if (brand == null!)
             {
                 Snackbar.Add("Brand not found for deletion", Severity.Error);
                 return;

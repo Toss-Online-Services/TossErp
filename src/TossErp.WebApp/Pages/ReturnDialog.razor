@@ -1,5 +1,3 @@
-@using System.Globalization
-
 <MudDialog>
     <DialogContent>
         <MudContainer Style="max-height: 500px; overflow-y: auto">
@@ -17,7 +15,7 @@
                             @foreach (var item in _items)
                             {
                                 <div class="d-flex align-center mb-4">
-                                    <MudCheckBox @bind-Checked="@item.IsSelected" Color="Color.Primary" />
+                                    <MudCheckBox T="bool" @bind-Checked="@item.IsSelected" Color="Color.Primary" T="bool" />
                                     <div class="ml-3 flex-grow-1">
                                         <MudText>@item.Name</MudText>
                                         <MudText Typo="Typo.caption">

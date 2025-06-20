@@ -1,5 +1,3 @@
-@using System.Globalization
-
 <MudDialog>
     <DialogContent>
         <MudContainer Style="max-height: 500px; overflow-y: auto">
@@ -42,7 +40,7 @@
                                 @context.Date.ToString("dd MMM yyyy HH:mm")
                             </MudTd>
                             <MudTd DataLabel="Type">
-                                <MudChip Color="@context.TypeColor" Size="Size.Small">
+                                <MudChip T="string" Color="@context.TypeColor" Size="Size.Small">
                                     @context.Type
                                 </MudChip>
                             </MudTd>

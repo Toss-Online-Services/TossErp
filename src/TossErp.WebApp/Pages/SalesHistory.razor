@@ -68,7 +68,7 @@
         <MudText Typo="Typo.h6">Sale Details - #@selectedSale?.Id</MudText>
     </TitleContent>
     <DialogContent>
-        @if (selectedSale != null)
+        @if (selectedSale != null!)
         {
             <MudGrid>
                 <MudItem xs="12" sm="6">
@@ -207,7 +207,7 @@
 
     private void CloseDetailsDialog()
     {
-        selectedSale = null;
+        selectedSale = null!;
     }
 
     private void PrintInvoice(SaleDto sale)
