@@ -15,7 +15,7 @@
                             @foreach (var item in _items)
                             {
                                 <div class="d-flex align-center mb-4">
-                                    <MudCheckBox T="bool" @bind-Checked="@item.IsSelected" Color="Color.Primary" T="bool" />
+                                    <MudCheckBox T="bool" @bind-Value="@item.IsSelected" Color="Color.Primary" />
                                     <div class="ml-3 flex-grow-1">
                                         <MudText>@item.Name</MudText>
                                         <MudText Typo="Typo.caption">
@@ -139,25 +139,25 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public string InvoiceNumber { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public string InvoiceNumber { get; set; } = "";
     
-    private MudForm _form;
+    private MudForm _form = default!;
     private bool _isValid;
     
-    private string _returnReason;
-    private string _otherReason;
-    private string _condition;
-    private string _notes;
-    private string _refundMethod;
-    private string _bankName;
-    private string _accountNumber;
-    private string _accountHolder;
-    private string _branchCode;
+    private string _returnReason = "";
+    private string _otherReason = "";
+    private string _condition = "";
+    private string _notes = "";
+    private string _refundMethod = "";
+    private string _bankName = "";
+    private string _accountNumber = "";
+    private string _accountHolder = "";
+    private string _branchCode = "";
     
     private class ReturnItem
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public bool IsSelected { get; set; }

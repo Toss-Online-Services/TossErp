@@ -1,3 +1,6 @@
+@using MudBlazor
+@inject ISnackbar Snackbar
+
 <MudDialog>
     <DialogContent>
         <MudContainer Style="max-height: 500px; overflow-y: auto">
@@ -79,8 +82,8 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public string Sku { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public string Sku { get; set; } = string.Empty;
     
     private int _currentStock = 125;
     private int _totalIn = 250;
@@ -89,11 +92,11 @@
     private class StockMovement
     {
         public DateTime Date { get; set; }
-        public string Type { get; set; }
+        public string Type { get; set; } = string.Empty;
         public int Quantity { get; set; }
-        public string Reference { get; set; }
-        public string User { get; set; }
-        public string Notes { get; set; }
+        public string Reference { get; set; } = string.Empty;
+        public string User { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
         public Color TypeColor => Type switch
         {
             "Purchase" => Color.Success,
@@ -126,9 +129,9 @@
     
     private void Cancel() => MudDialog.Cancel();
     
-    private async Task ExportHistory()
+    private void ExportHistory()
     {
-        // In a real application, this would generate and download a report
-        Snackbar.Add("Stock history report exported successfully!", Severity.Success);
+        // In a real application, this would generate and download a stock history report
+        Snackbar.Add("Stock history report exported successfully!");
     }
 } 

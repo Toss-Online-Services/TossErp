@@ -129,7 +129,7 @@
 @code {
     private class Province
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public int Sales { get; set; }
         public decimal Value { get; set; }
         public double BounceRate { get; set; }
@@ -137,11 +137,11 @@
 
     private class Transaction
     {
-        public string Reference { get; set; }
-        public string Customer { get; set; }
+        public string Reference { get; set; } = string.Empty;
+        public string Customer { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public decimal Amount { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public Color StatusColor => Status switch
         {
             "Completed" => Color.Success,

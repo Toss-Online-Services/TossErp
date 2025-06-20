@@ -12,4 +12,8 @@ public class CartItemDto
     public string? ImageUrl { get; set; }
     public bool IsAvailable { get; set; } = true;
     public int AvailableStock { get; set; }
+    
+    // Additional properties for compatibility
+    public string Product => Name;
+    public decimal Total => TotalPrice;
 } 

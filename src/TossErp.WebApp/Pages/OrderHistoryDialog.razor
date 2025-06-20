@@ -1,3 +1,6 @@
+@using MudBlazor
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 <MudDialog>
     <DialogContent>
         <MudContainer Style="max-height: 500px; overflow-y: auto">
@@ -129,11 +132,11 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public string CustomerId { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public string CustomerId { get; set; } = string.Empty;
     
-    private string _searchString = "";
-    private Order _selectedOrder;
+    private string _searchString = string.Empty;
+    private Order _selectedOrder = new();
     
     private class OrderStats
     {
@@ -146,12 +149,12 @@
     
     private class Order
     {
-        public string OrderNumber { get; set; }
+        public string OrderNumber { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public int ItemCount { get; set; }
         public decimal Total { get; set; }
-        public string PaymentMethod { get; set; }
-        public string Status { get; set; }
+        public string PaymentMethod { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         
         public Color PaymentMethodColor => PaymentMethod switch
         {
@@ -223,10 +226,10 @@
         await dialog.Result;
     }
     
-    private async Task PrintInvoice(Order order)
+    private void PrintInvoice(Order order)
     {
         // In a real application, this would print the invoice
-        Snackbar.Add($"Invoice {order.OrderNumber} sent to printer!", Severity.Success);
+        Snackbar.Add($"Invoice {order.OrderNumber} sent to printer!");
     }
     
     private async Task ProcessReturn(Order order)
@@ -237,14 +240,13 @@
 
         if (!result.Canceled)
         {
-            order.Status = "Refunded";
-            Snackbar.Add("Return processed successfully", Severity.Success);
+            Snackbar.Add("Return processed successfully");
         }
     }
     
-    private async Task ExportHistory()
+    private void ExportHistory()
     {
         // In a real application, this would generate and download an order history report
-        Snackbar.Add("Order history exported successfully!", Severity.Success);
+        Snackbar.Add("Order history exported successfully!");
     }
 } 

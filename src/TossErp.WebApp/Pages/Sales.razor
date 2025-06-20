@@ -1,10 +1,10 @@
 @page "/sales"
-@using System.Globalization
 @using TossErp.Shared.DTOs
 @using TossErp.Shared.Enums
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <PageTitle>Sales History - TOSS ERP</PageTitle>
 
@@ -79,10 +79,10 @@
         <MudItem xs="12" md="4">
             <MudPaper Elevation="2" Class="pa-4">
                 <MudText Typo="Typo.h6" Class="mb-4">Top Selling Products</MudText>
-                <MudList Dense="true" DisableGutters="true">
+                <MudList Dense="true" T="string">
                     @foreach (var product in _topProducts)
                     {
-                        <MudListItem>
+                        <MudListItem T="string">
                             <div class="d-flex justify-space-between align-center">
                                 <div>
                                     <MudText>@product.Name</MudText>
@@ -142,12 +142,12 @@
                         <MudTd DataLabel="Items">@context.ItemCount items</MudTd>
                         <MudTd DataLabel="Total">R @context.Total.ToString("N2")</MudTd>
                         <MudTd DataLabel="Payment">
-                            <MudChip Color="@context.PaymentMethodColor" Size="Size.Small">
+                            <MudChip T="string" Color="@context.PaymentMethodColor" Size="Size.Small">
                                 @context.PaymentMethod
                             </MudChip>
                         </MudTd>
                         <MudTd DataLabel="Status">
-                            <MudChip Color="@context.StatusColor" Size="Size.Small">
+                            <MudChip T="string" Color="@context.StatusColor" Size="Size.Small">
                                 @context.Status
                             </MudChip>
                         </MudTd>
@@ -250,11 +250,11 @@
     private string _selectedPeriod = "daily";
     private string _searchString = "";
     private DateRange _dateRange = new(DateTime.Now.AddDays(-30), DateTime.Now);
-    private SaleTransaction _selectedTransaction;
+    private SaleTransaction _selectedTransaction = new();
     
     private class TopProduct
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public int Quantity { get; set; }
         public decimal Revenue { get; set; }
         public int Progress { get; set; }
@@ -262,13 +262,15 @@
     
     private class SaleTransaction
     {
-        public string InvoiceNumber { get; set; }
+        public string Name { get; set; } = string.Empty;
         public DateTime Date { get; set; }
-        public string CustomerName { get; set; }
+        public decimal Amount { get; set; }
+        public string InvoiceNumber { get; set; } = string.Empty;
+        public string CustomerName { get; set; } = string.Empty;
+        public string PaymentMethod { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public int ItemCount { get; set; }
         public decimal Total { get; set; }
-        public string PaymentMethod { get; set; }
-        public string Status { get; set; }
         
         public Color PaymentMethodColor => PaymentMethod switch
         {
@@ -338,7 +340,7 @@
         await dialog.Result;
     }
     
-    private async Task PrintInvoice(SaleTransaction transaction)
+    private void PrintInvoice(SaleTransaction transaction)
     {
         // In a real application, this would generate and print an invoice
         Snackbar.Add($"Invoice {transaction.InvoiceNumber} sent to printer!", Severity.Success);
@@ -376,7 +378,7 @@
         }
     }
     
-    private async Task ExportSalesReport()
+    private void ExportSalesReport()
     {
         // In a real application, this would generate and download a sales report
         Snackbar.Add("Sales report exported successfully!", Severity.Success);

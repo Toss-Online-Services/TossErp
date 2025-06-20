@@ -1,4 +1,5 @@
-@using System.Globalization
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <MudDialog>
     <DialogContent>
@@ -12,7 +13,7 @@
                                 <MudText Typo="Typo.h6">@_loyaltyDetails.CustomerName</MudText>
                                 <MudText Typo="Typo.caption">Member since @_loyaltyDetails.MemberSince.ToString("MMMM yyyy")</MudText>
                             </div>
-                            <MudChip Color="@_loyaltyDetails.TierColor" Size="Size.Large">
+                            <MudChip T="string" Color="@_loyaltyDetails.TierColor" Size="Size.Large">
                                 @_loyaltyDetails.Tier
                             </MudChip>
                         </div>
@@ -116,10 +117,10 @@
                 <!-- Tier Benefits -->
                 <MudItem xs="12">
                     <MudText Typo="Typo.h6" Class="mb-4">Your Benefits</MudText>
-                    <MudList Dense="true">
+                    <MudList T="string" Dense="true">
                         @foreach (var benefit in _tierBenefits)
                         {
-                            <MudListItem Icon="@benefit.Icon">
+                            <MudListItem T="string" Icon="@benefit.Icon">
                                 <div class="d-flex justify-space-between align-center">
                                     <div>
                                         <MudText>@benefit.Name</MudText>
@@ -151,20 +152,20 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public string CustomerId { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public string CustomerId { get; set; } = string.Empty;
     
     private class LoyaltyDetails
     {
-        public string CustomerName { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
         public DateTime MemberSince { get; set; }
-        public string Tier { get; set; }
+        public string Tier { get; set; } = string.Empty;
         public int AvailablePoints { get; set; }
         public int PointsEarnedThisMonth { get; set; }
         public int PointsUsed { get; set; }
         public int PointsUsedThisMonth { get; set; }
         public int PointsToNextTier { get; set; }
-        public string NextTier { get; set; }
+        public string NextTier { get; set; } = string.Empty;
         
         public Color TierColor => Tier switch
         {
@@ -179,25 +180,25 @@
     private class PointsTransaction
     {
         public DateTime Date { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         public int Points { get; set; }
         public int Balance { get; set; }
     }
     
     private class Reward
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public int Points { get; set; }
-        public string Icon { get; set; }
+        public string Icon { get; set; } = string.Empty;
         public Color Color { get; set; }
     }
     
     private class TierBenefit
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Icon { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Icon { get; set; } = string.Empty;
         public bool IsActive { get; set; }
     }
     
@@ -271,14 +272,13 @@
                 Points = -reward.Points,
                 Balance = _loyaltyDetails.AvailablePoints
             });
-            
-            Snackbar.Add($"{reward.Name} redeemed successfully!", Severity.Success);
+            Snackbar.Add($"{reward.Name} redeemed successfully!");
         }
     }
     
-    private async Task DownloadStatement()
+    private void DownloadStatement()
     {
         // In a real application, this would generate and download a loyalty statement
-        Snackbar.Add("Loyalty statement downloaded successfully!", Severity.Success);
+        Snackbar.Add("Loyalty statement downloaded successfully!");
     }
 } 

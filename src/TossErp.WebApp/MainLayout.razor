@@ -21,7 +21,7 @@
                           Color="Color.Inherit" OnClick="@((e) => _isDarkMode = !_isDarkMode)" />
         </MudTooltip>
         
-        <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true">
+        <MudMenu Dense="true">
             <ActivatorContent>
                 <MudBadge Content="4" Color="Color.Error" Overlap="true" Class="mx-3">
                     <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="Color.Inherit" />
@@ -51,7 +51,7 @@
             </ChildContent>
         </MudMenu>
 
-        <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true">
+        <MudMenu Dense="true">
             <ActivatorContent>
                 <MudAvatar Color="Color.Secondary">JD</MudAvatar>
             </ActivatorContent>
@@ -88,30 +88,7 @@
     private bool _isDarkMode;
     private string _currentLanguage = "en";
     
-    private MudTheme _theme = new MudTheme()
-    {
-        Palette = new PaletteLight()
-        {
-            Primary = "#1976D2",
-            Secondary = "#FF4081",
-            AppbarBackground = "#1976D2",
-            Background = "#F5F5F5",
-            DrawerBackground = "#FFF",
-            DrawerText = "rgba(0,0,0,0.7)",
-            Success = "#4CAF50"
-        },
-        PaletteDark = new PaletteDark()
-        {
-            Primary = "#2196F3",
-            Secondary = "#FF4081",
-            AppbarBackground = "#1E1E1E",
-            Background = "#121212",
-            DrawerBackground = "#1E1E1E",
-            DrawerText = "rgba(255,255,255,0.7)",
-            Surface = "#1E1E1E",
-            Success = "#4CAF50"
-        }
-    };
+    private MudTheme _theme = new();
 
     private void DrawerToggle()
     {

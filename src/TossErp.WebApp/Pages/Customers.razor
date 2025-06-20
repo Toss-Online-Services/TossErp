@@ -163,7 +163,7 @@
         <MudItem xs="12" md="4">
             <MudPaper Elevation="2" Class="pa-4">
                 <MudText Typo="Typo.h6" Class="mb-4">Top Customers</MudText>
-                <MudList T="string" Dense="true" DisableGutters="true">
+                <MudList T="string" Dense="true">
                     @foreach (var customer in _topCustomers)
                     {
                         <MudListItem T="string">
@@ -189,7 +189,7 @@
 
 @code {
     private string _searchString = "";
-    private Customer _selectedCustomer;
+    private Customer _selectedCustomer = new();
     
     private int _totalCustomers = 1250;
     private int _newCustomers = 45;
@@ -201,12 +201,12 @@
     
     private class Customer
     {
-        public string CustomerId { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public string LoyaltyTier { get; set; }
-        public string Status { get; set; }
+        public string CustomerId { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string LoyaltyTier { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public int TotalOrders { get; set; }
         public decimal TotalSpent { get; set; }
         
@@ -324,13 +324,13 @@
         }
     }
     
-    private async Task ActivateCustomer(Customer customer)
+    private void ActivateCustomer(Customer customer)
     {
         customer.Status = "Active";
         Snackbar.Add($"{customer.Name} has been activated", Severity.Success);
     }
     
-    private async Task ExportCustomers()
+    private void ExportCustomers()
     {
         // In a real application, this would generate and download a customer report
         Snackbar.Add("Customer list exported successfully!", Severity.Success);

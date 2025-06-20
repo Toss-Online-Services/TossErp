@@ -1,3 +1,5 @@
+@inject ISnackbar Snackbar
+
 <MudDialog>
     <DialogContent>
         <MudContainer Style="max-height: 500px; overflow-y: auto">
@@ -133,13 +135,13 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public string InvoiceNumber { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public string InvoiceNumber { get; set; } = string.Empty;
     
     private class InvoiceItem
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
     }
@@ -147,19 +149,19 @@
     private class Invoice
     {
         public DateTime Date { get; set; }
-        public string CustomerName { get; set; }
-        public string CustomerAddress { get; set; }
-        public string CustomerEmail { get; set; }
-        public string CustomerPhone { get; set; }
-        public string PaymentMethod { get; set; }
-        public string PaymentReference { get; set; }
-        public string Status { get; set; }
-        public List<InvoiceItem> Items { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
+        public string CustomerAddress { get; set; } = string.Empty;
+        public string CustomerEmail { get; set; } = string.Empty;
+        public string CustomerPhone { get; set; } = string.Empty;
+        public string PaymentMethod { get; set; } = string.Empty;
+        public string PaymentReference { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public List<InvoiceItem> Items { get; set; } = new();
         public decimal Subtotal { get; set; }
         public decimal Vat { get; set; }
         public decimal Discount { get; set; }
         public decimal Total { get; set; }
-        public string Notes { get; set; }
+        public string Notes { get; set; } = string.Empty;
         
         public Color StatusColor => Status switch
         {
@@ -199,13 +201,13 @@
     
     private void Cancel() => MudDialog.Cancel();
     
-    private async Task Print()
+    private void Print()
     {
         // In a real application, this would print the invoice
         Snackbar.Add($"Invoice {InvoiceNumber} sent to printer!", Severity.Success);
     }
     
-    private async Task DownloadPdf()
+    private void DownloadPdf()
     {
         // In a real application, this would generate and download a PDF
         Snackbar.Add($"Invoice {InvoiceNumber} downloaded as PDF!", Severity.Success);

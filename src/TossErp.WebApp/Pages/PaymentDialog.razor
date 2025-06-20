@@ -1,5 +1,3 @@
-@using System.Globalization
-
 <MudDialog>
     <DialogContent>
         <MudContainer Style="max-height: 500px; overflow-y: auto">
@@ -60,18 +58,18 @@
 
                 <MudItem xs="12" Class="mt-4">
                     <MudPaper Elevation="0" Class="pa-4 mud-background-gray rounded-lg">
-                        <MudList Dense="true">
+                        <MudList Dense="true" T="CartItemDto">
                             @foreach (var item in Items)
                             {
-                                <MudListItem>
+                                <MudListItem T="CartItemDto">
                                     <div class="d-flex justify-space-between">
-                                        <MudText>@($"{item.Product.Name} x {item.Quantity}")</MudText>
+                                        <MudText>@($"{item.Product} x {item.Quantity}")</MudText>
                                         <MudText>R @item.Total.ToString("N2")</MudText>
                                     </div>
                                 </MudListItem>
                             }
                             <MudDivider Class="my-2"/>
-                            <MudListItem>
+                            <MudListItem T="CartItemDto">
                                 <div class="d-flex justify-space-between">
                                     <MudText Typo="Typo.subtitle1">Total</MudText>
                                     <MudText Typo="Typo.subtitle1">R @Total.ToString("N2")</MudText>
@@ -93,16 +91,16 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
     
     [Parameter] public decimal Total { get; set; }
-    [Parameter] public IEnumerable<CartItem> Items { get; set; }
+    [Parameter] public IEnumerable<CartItemDto> Items { get; set; } = new List<CartItemDto>();
     
     private decimal _cashAmount;
-    private string _cardNumber;
-    private string _expiryDate;
-    private string _cvv;
-    private string _proofOfPayment;
+    private string _cardNumber = "";
+    private string _expiryDate = "";
+    private string _cvv = "";
+    private string _proofOfPayment = "";
     
     private void Cancel() => MudDialog.Cancel();
     
