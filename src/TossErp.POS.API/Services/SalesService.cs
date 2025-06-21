@@ -39,8 +39,8 @@ namespace TossErp.POS.API.Services
                 DiscountAmount = 0,
                 TaxAmount = 120.00m,
                 TotalAmount = 1320.00m,
-                PaymentMethod = PaymentMethod.CreditCard,
-                Status = SaleStatus.Completed,
+                PaymentMethod = PaymentMethod.CreditCard.ToString(),
+                Status = SaleStatus.Completed.ToString(),
                 CreatedAt = DateTime.UtcNow.AddDays(-1),
                 CompletedAt = DateTime.UtcNow.AddDays(-1)
             };
@@ -76,8 +76,8 @@ namespace TossErp.POS.API.Services
                 DiscountAmount = 5.00m,
                 TaxAmount = 8.50m,
                 TotalAmount = 93.50m,
-                PaymentMethod = PaymentMethod.Cash,
-                Status = SaleStatus.Completed,
+                PaymentMethod = PaymentMethod.Cash.ToString(),
+                Status = SaleStatus.Completed.ToString(),
                 CreatedAt = DateTime.UtcNow.AddHours(-2),
                 CompletedAt = DateTime.UtcNow.AddHours(-2)
             };
@@ -118,13 +118,12 @@ namespace TossErp.POS.API.Services
                 DiscountAmount = totalDiscount,
                 TaxAmount = taxAmount,
                 TotalAmount = totalAmount,
-                PaymentMethod = request.PaymentMethod.HasValue ? request.PaymentMethod.Value : PaymentMethod.Cash,
-                Status = SaleStatus.Pending,
+                PaymentMethod = request.PaymentMethod ?? PaymentMethod.Cash.ToString(),
+                Status = SaleStatus.Pending.ToString(),
                 SaleType = request.SaleType,
                 Notes = request.Notes,
-                SaleDate = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Payments = new List<SalePaymentDto>()
+                Payments = new List<PaymentDto>()
             };
 
             _sales.Add(sale);
@@ -166,12 +165,12 @@ namespace TossErp.POS.API.Services
             await Task.CompletedTask;
             
             var sale = _sales.FirstOrDefault(s => s.Id == id);
-            if (sale == null || sale.Status != SaleStatus.Pending)
+            if (sale == null || sale.Status != SaleStatus.Pending.ToString())
             {
                 return null;
             }
 
-            sale.Status = SaleStatus.Completed;
+            sale.Status = SaleStatus.Completed.ToString();
             sale.PaymentMethod = request.PaymentMethod;
             sale.AmountPaid = request.AmountPaid;
             sale.ReferenceNumber = request.ReferenceNumber;
@@ -186,12 +185,12 @@ namespace TossErp.POS.API.Services
             await Task.CompletedTask;
             
             var sale = _sales.FirstOrDefault(s => s.Id == id);
-            if (sale == null || sale.Status == SaleStatus.Cancelled)
+            if (sale == null || sale.Status == SaleStatus.Cancelled.ToString())
             {
                 return null;
             }
 
-            sale.Status = SaleStatus.Cancelled;
+            sale.Status = SaleStatus.Cancelled.ToString();
             sale.CancellationReason = request.CancellationReason;
             sale.CancelledAt = DateTime.UtcNow;
 
@@ -203,17 +202,17 @@ namespace TossErp.POS.API.Services
         {
             await Task.CompletedTask;
             
-            var dailySales = _sales.Where(s => s.CreatedAt.Date == date.Date && s.Status == SaleStatus.Completed).ToList();
+            var dailySales = _sales.Where(s => s.CreatedAt.Date == date.Date && s.Status == SaleStatus.Completed.ToString()).ToList();
             
             return new DailySummaryDto
             {
                 Date = date,
                 TotalTransactions = dailySales.Count,
                 TotalSales = dailySales.Sum(s => s.TotalAmount),
-                CashSales = dailySales.Where(s => s.PaymentMethod == PaymentMethod.Cash).Sum(s => s.TotalAmount),
-                CardSales = dailySales.Where(s => s.PaymentMethod == PaymentMethod.CreditCard).Sum(s => s.TotalAmount),
-                MobileMoneySales = dailySales.Where(s => s.PaymentMethod == PaymentMethod.MobilePayment).Sum(s => s.TotalAmount),
-                OtherPaymentSales = dailySales.Where(s => s.PaymentMethod != PaymentMethod.Cash && s.PaymentMethod != PaymentMethod.CreditCard && s.PaymentMethod != PaymentMethod.MobilePayment).Sum(s => s.TotalAmount),
+                CashSales = dailySales.Where(s => s.PaymentMethod == PaymentMethod.Cash.ToString()).Sum(s => s.TotalAmount),
+                CardSales = dailySales.Where(s => s.PaymentMethod == PaymentMethod.CreditCard.ToString()).Sum(s => s.TotalAmount),
+                MobileMoneySales = dailySales.Where(s => s.PaymentMethod == PaymentMethod.MobilePayment.ToString()).Sum(s => s.TotalAmount),
+                OtherPaymentSales = dailySales.Where(s => s.PaymentMethod != PaymentMethod.Cash.ToString() && s.PaymentMethod != PaymentMethod.CreditCard.ToString() && s.PaymentMethod != PaymentMethod.MobilePayment.ToString()).Sum(s => s.TotalAmount),
                 AverageTransactionValue = dailySales.Any() ? dailySales.Average(s => s.TotalAmount) : 0,
                 ItemsSold = dailySales.Sum(s => s.Items.Sum(item => item.Quantity)),
                 TotalDiscounts = dailySales.Sum(s => s.DiscountAmount),
@@ -225,7 +224,7 @@ namespace TossErp.POS.API.Services
         {
             await Task.CompletedTask;
             
-            var periodSales = _sales.Where(s => s.CreatedAt.Date >= fromDate.Date && s.CreatedAt.Date <= toDate.Date && s.Status == SaleStatus.Completed).ToList();
+            var periodSales = _sales.Where(s => s.CreatedAt.Date >= fromDate.Date && s.CreatedAt.Date <= toDate.Date && s.Status == SaleStatus.Completed.ToString()).ToList();
             
             return new SalesReportDto
             {
@@ -248,10 +247,10 @@ namespace TossErp.POS.API.Services
                     .Take(10)
                     .ToList(),
                 TopSellingCategories = new List<SalesReportItemDto>(), // Would be populated from category data
-                CashSales = periodSales.Where(s => s.PaymentMethod == PaymentMethod.Cash).Sum(s => s.TotalAmount),
-                CardSales = periodSales.Where(s => s.PaymentMethod == PaymentMethod.CreditCard).Sum(s => s.TotalAmount),
-                MobileMoneySales = periodSales.Where(s => s.PaymentMethod == PaymentMethod.MobilePayment).Sum(s => s.TotalAmount),
-                OtherPaymentSales = periodSales.Where(s => s.PaymentMethod != PaymentMethod.Cash && s.PaymentMethod != PaymentMethod.CreditCard && s.PaymentMethod != PaymentMethod.MobilePayment).Sum(s => s.TotalAmount)
+                CashSales = periodSales.Where(s => s.PaymentMethod == PaymentMethod.Cash.ToString()).Sum(s => s.TotalAmount),
+                CardSales = periodSales.Where(s => s.PaymentMethod == PaymentMethod.CreditCard.ToString()).Sum(s => s.TotalAmount),
+                MobileMoneySales = periodSales.Where(s => s.PaymentMethod == PaymentMethod.MobilePayment.ToString()).Sum(s => s.TotalAmount),
+                OtherPaymentSales = periodSales.Where(s => s.PaymentMethod != PaymentMethod.Cash.ToString() && s.PaymentMethod != PaymentMethod.CreditCard.ToString() && s.PaymentMethod != PaymentMethod.MobilePayment.ToString()).Sum(s => s.TotalAmount)
             };
         }
 

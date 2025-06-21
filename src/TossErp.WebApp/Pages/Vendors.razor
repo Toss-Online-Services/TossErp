@@ -1,5 +1,5 @@
 @page "/vendors"
-@using TossErp.Application.DTOs
+@using TossErp.WebApp.DTOs
 @using TossErp.Application.Services
 @inject IVendorService VendorService
 @inject ISnackbar Snackbar
@@ -29,59 +29,68 @@
 
     <!-- Vendor Cards -->
     <MudGrid>
-        @foreach (var vendor in _filteredVendors)
+        @if (_isLoading)
         {
-            <MudItem xs="12" sm="6" md="4" lg="3">
-                <MudCard Elevation="2" Class="ma-2">
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">@vendor.Name</MudText>
-                            <MudText Typo="Typo.body2" Color="Color.Secondary">@vendor.BusinessType</MudText>
-                        </CardHeaderContent>
-                        <CardHeaderActions>
-                            <MudChip T="object" Color="Color.Primary" Size="Size.Small">
-                                4.5 ★
-                            </MudChip>
-                        </CardHeaderActions>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudStack Spacing="2">
-                            <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" Color="Color.Secondary" />
-                                <MudText Typo="Typo.body2">@vendor.City, @vendor.Province</MudText>
-                            </MudStack>
-                            <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" Color="Color.Secondary" />
-                                <MudText Typo="Typo.body2">@vendor.PhoneNumber</MudText>
-                            </MudStack>
-                            <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
-                                <MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" Color="Color.Secondary" />
-                                <MudText Typo="Typo.body2">@vendor.Email</MudText>
-                            </MudStack>
-                            <MudDivider />
-                            <MudText Typo="Typo.body2" Color="Color.Secondary">
-                                @vendor.BusinessType
-                            </MudText>
-                        </MudStack>
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton Variant="Variant.Text" 
-                                  Color="Color.Primary" 
-                                  OnClick="@(() => ViewVendorDetails(vendor))">
-                            View Details
-                        </MudButton>
-                        <MudButton Variant="Variant.Text" 
-                                  Color="Color.Secondary" 
-                                  OnClick="@(() => RequestQuote(vendor))">
-                            Request Quote
-                        </MudButton>
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" 
-                                     Size="Size.Small" 
-                                     Color="Color.Primary"
-                                     OnClick="@(() => EditVendor(vendor))" />
-                    </MudCardActions>
-                </MudCard>
+            <MudItem xs="12">
+                <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
             </MudItem>
+        }
+        else
+        {
+            @foreach (var vendor in _filteredVendors)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <MudCard Elevation="2" Class="ma-2">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@vendor.Name</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">@vendor.BusinessType</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudChip T="object" Color="Color.Primary" Size="Size.Small">
+                                    4.5 ★
+                                </MudChip>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudStack Spacing="2">
+                                <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" Color="Color.Secondary" />
+                                    <MudText Typo="Typo.body2">@vendor.City, @vendor.Province</MudText>
+                                </MudStack>
+                                <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" Color="Color.Secondary" />
+                                    <MudText Typo="Typo.body2">@vendor.PhoneNumber</MudText>
+                                </MudStack>
+                                <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" Color="Color.Secondary" />
+                                    <MudText Typo="Typo.body2">@vendor.Email</MudText>
+                                </MudStack>
+                                <MudDivider />
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                    @vendor.BusinessType
+                                </MudText>
+                            </MudStack>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Text" 
+                                      Color="Color.Primary" 
+                                      OnClick="@(() => ViewVendorDetails(vendor))">
+                                View Details
+                            </MudButton>
+                            <MudButton Variant="Variant.Text" 
+                                      Color="Color.Secondary" 
+                                      OnClick="@(() => RequestQuote(vendor))">
+                                Request Quote
+                            </MudButton>
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                         Size="Size.Small" 
+                                         Color="Color.Primary"
+                                         OnClick="@(() => EditVendor(vendor))" />
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
         }
     </MudGrid>
 
@@ -254,7 +263,18 @@
         _isLoading = true;
         try
         {
-            _vendors = (await VendorService.GetAllAsync()).ToList();
+            var applicationVendors = await VendorService.GetAllAsync();
+            _vendors = applicationVendors.Select(v => new TossErp.WebApp.DTOs.VendorDto
+            {
+                Id = v.Id,
+                Name = v.Name,
+                BusinessType = v.BusinessType,
+                City = v.City,
+                Province = v.Province,
+                PhoneNumber = v.PhoneNumber,
+                Email = v.Email,
+                BusinessId = v.BusinessId
+            }).ToList();
             FilterVendors();
         }
         catch (Exception)
@@ -312,7 +332,7 @@
         {
             if (_editingVendor.Id != Guid.Empty)
             {
-                var updateDto = new CreateVendorDto
+                var updateDto = new TossErp.Application.DTOs.CreateVendorDto
                 {
                     Name = _editingVendor.Name,
                     BusinessType = _editingVendor.BusinessType,
@@ -327,7 +347,7 @@
             }
             else
             {
-                var createDto = new CreateVendorDto
+                var createDto = new TossErp.Application.DTOs.CreateVendorDto
                 {
                     Name = _editingVendor.Name,
                     BusinessType = _editingVendor.BusinessType,
@@ -356,6 +376,7 @@
         try
         {
             // TODO: Implement quote request logic
+            await Task.Delay(100); // Simulate async operation
             Snackbar.Add($"Quote request sent to {vendor.Name}", Severity.Success);
         }
         catch (Exception)

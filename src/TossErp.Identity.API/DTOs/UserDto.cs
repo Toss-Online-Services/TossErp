@@ -2,6 +2,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TossErp.Identity.API.DTOs
 {
+    public class LoginRequest
+    {
+        [Required]
+        public string UserName { get; set; } = string.Empty;
+
+        [Required]
+        public string Password { get; set; } = string.Empty;
+    }
+
     public class CreateUserDto
     {
         [Required]
@@ -23,6 +32,10 @@ namespace TossErp.Identity.API.DTOs
 
         [StringLength(20)]
         public string? PhoneNumber { get; set; }
+
+        [Required]
+        [StringLength(100, MinimumLength = 6)]
+        public string Password { get; set; } = string.Empty;
 
         public List<string> Roles { get; set; } = new();
     }

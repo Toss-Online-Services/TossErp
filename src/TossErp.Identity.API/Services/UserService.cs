@@ -1,4 +1,4 @@
-using TossErp.Shared.DTOs;
+using TossErp.Identity.API.DTOs;
 using TossErp.Identity.API.Models;
 using Microsoft.AspNetCore.Identity;
 

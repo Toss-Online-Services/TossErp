@@ -1,5 +1,5 @@
 @page "/users"
-@using TossErp.Shared.DTOs
+@using TossErp.WebApp.DTOs
 @using TossErp.Shared.Enums
 @using MudBlazor
 @inject HttpClient Http
@@ -187,9 +187,9 @@
             // Mock data for demonstration
             users = new List<UserDto>
             {
-                new() { Id = Guid.NewGuid(), UserName = "admin", Email = "admin@toss.com", FirstName = "Admin", LastName = "User", IsActive = true, Roles = new string[] { "Admin" } },
-                new() { Id = Guid.NewGuid(), UserName = "manager", Email = "manager@toss.com", FirstName = "John", LastName = "Manager", IsActive = true, Roles = new string[] { "Manager" } },
-                new() { Id = Guid.NewGuid(), UserName = "cashier1", Email = "cashier1@toss.com", FirstName = "Jane", LastName = "Cashier", IsActive = true, Roles = new string[] { "Cashier" } }
+                new() { Id = Guid.NewGuid(), UserName = "admin", Email = "admin@toss.com", FirstName = "Admin", LastName = "User", IsActive = true, Roles = new List<string> { "Admin" } },
+                new() { Id = Guid.NewGuid(), UserName = "manager", Email = "manager@toss.com", FirstName = "John", LastName = "Manager", IsActive = true, Roles = new List<string> { "Manager" } },
+                new() { Id = Guid.NewGuid(), UserName = "cashier1", Email = "cashier1@toss.com", FirstName = "Jane", LastName = "Cashier", IsActive = true, Roles = new List<string> { "Cashier" } }
             };
         }
         catch (Exception ex)
@@ -221,9 +221,9 @@
             UserName = user.UserName,
             Email = user.Email,
             PhoneNumber = user.PhoneNumber,
-            Roles = user.Roles
+            Roles = user.Roles.ToList()
         };
-        selectedRoles = new List<string>(user.Roles);
+        selectedRoles = user.Roles.ToList();
         dialogVisible = true;
     }
 
@@ -231,7 +231,7 @@
     {
         try
         {
-            userForm.Roles = selectedRoles.ToArray();
+            userForm.Roles = selectedRoles;
             
             if (editingUser == null!)
             {

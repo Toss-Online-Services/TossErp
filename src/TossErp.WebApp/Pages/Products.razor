@@ -1,5 +1,5 @@
 @page "/products"
-@using TossErp.Application.DTOs
+@using TossErp.WebApp.DTOs
 @using TossErp.Application.Services
 @inject IProductService ProductService
 @inject ISnackbar Snackbar
@@ -44,22 +44,32 @@
                 <PropertyColumn Property="x => x.StockQuantity" Title="Stock" />
                 <PropertyColumn Property="x => x.Category" Title="Category" />
                 <PropertyColumn Property="x => x.SKU" Title="SKU" />
-                <TemplateColumn Title="Status" Context="item">
-                    <MudChip Color="@(item.StockQuantity > 0 ? Color.Success : Color.Error)" Size="Size.Small">
-                        @(item.StockQuantity > 0 ? "In Stock" : "Out of Stock")
-                    </MudChip>
+                <TemplateColumn Title="Status">
+                    <CellTemplate>
+                        @{
+                            var product = context.Item;
+                        }
+                        <MudChip Color="@(product.StockQuantity > 0 ? Color.Success : Color.Error)" Size="Size.Small">
+                            @(product.StockQuantity > 0 ? "In Stock" : "Out of Stock")
+                        </MudChip>
+                    </CellTemplate>
                 </TemplateColumn>
-                <TemplateColumn Title="Actions" Context="item">
-                    <MudStack Row="true" Spacing="1">
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" 
-                                     Size="Size.Small" 
-                                     Color="Color.Primary"
-                                     OnClick="@(() => EditProduct(item))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" 
-                                     Size="Size.Small" 
-                                     Color="Color.Error"
-                                     OnClick="@(() => DeleteProduct(item))" />
-                    </MudStack>
+                <TemplateColumn Title="Actions">
+                    <CellTemplate>
+                        @{
+                            var product = context.Item;
+                        }
+                        <MudStack Row="true" Spacing="1">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                         Size="Size.Small" 
+                                         Color="Color.Primary"
+                                         OnClick="@(() => EditProduct(product))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                         Size="Size.Small" 
+                                         Color="Color.Error"
+                                         OnClick="@(() => DeleteProduct(product))" />
+                        </MudStack>
+                    </CellTemplate>
                 </TemplateColumn>
             </Columns>
         </MudDataGrid>
@@ -100,7 +110,7 @@
                                     Required="true"
                                     Variant="Variant.Outlined"
                                     Min="0"
-                                    Step="0.01" />
+                                    Step="0.01m" />
                 </MudItem>
                 <MudItem xs="12" md="6">
                     <MudNumericField T="decimal" @bind-Value="_editingProduct.CostPrice" 
@@ -108,7 +118,7 @@
                                     Required="true"
                                     Variant="Variant.Outlined"
                                     Min="0"
-                                    Step="0.01" />
+                                    Step="0.01m" />
                 </MudItem>
                 <MudItem xs="12" md="6">
                     <MudNumericField T="int" @bind-Value="_editingProduct.StockQuantity" 
@@ -192,7 +202,25 @@
         _isLoading = true;
         try
         {
-            _products = (await ProductService.GetAllAsync()).ToList();
+            var applicationProducts = await ProductService.GetAllAsync();
+            _products = applicationProducts.Select(p => new TossErp.WebApp.DTOs.ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                CostPrice = p.CostPrice,
+                StockQuantity = p.StockQuantity,
+                Category = p.Category,
+                SKU = p.SKU,
+                MinimumStockLevel = p.MinimumStockLevel,
+                Unit = p.Unit,
+                BusinessId = p.BusinessId,
+                VendorId = p.VendorId,
+                IsActive = p.IsActive,
+                CreatedAt = p.CreatedAt,
+                UpdatedAt = p.UpdatedAt
+            }).ToList();
             FilterProducts();
         }
         catch (Exception)
@@ -257,7 +285,7 @@
 
         try
         {
-            var createDto = new CreateProductDto
+            var createDto = new TossErp.Application.DTOs.CreateProductDto
             {
                 Name = _editingProduct.Name,
                 Description = _editingProduct.Description,

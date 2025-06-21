@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using TossErp.Shared.DTOs;
+using TossErp.Identity.API.DTOs;
 using TossErp.Identity.API.Services;
 using TossErp.Identity.API.Models;
 using Microsoft.AspNetCore.Authorization;

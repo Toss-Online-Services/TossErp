@@ -1,4 +1,5 @@
 @page "/login"
+@using TossErp.WebApp.DTOs
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
@@ -76,7 +77,8 @@
         try
         {
             var json = JsonSerializer.Serialize(loginRequest);
-            var content = new StringContent(json, new MediaTypeHeaderValue("application/json"));
+            var content = new StringContent(json);
+            content.Headers.ContentType = new global::System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
             var response = await Http.PostAsync("https://localhost:5001/api/auth/login", content);
             
             if (response.IsSuccessStatusCode)
@@ -89,7 +91,7 @@
                     await LocalStorage.SetItemAsync("user", result.User);
                     
                     // Set default authorization header for future requests
-                    Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.Token);
+                    Http.DefaultRequestHeaders.Authorization = new global::System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", result.Token);
                     
                     Navigation.NavigateTo("/dashboard");
                 }

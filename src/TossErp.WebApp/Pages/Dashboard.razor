@@ -1,5 +1,5 @@
-@page "/"
-@using TossErp.Application.DTOs
+@page "/dashboard"
+@using TossErp.WebApp.DTOs
 @using TossErp.Application.Services
 @* @inject IProductService ProductService *@
 @* @inject ISaleService SaleService *@
@@ -273,15 +273,63 @@
 
             _recentSales = new List<SaleDto>
             {
-                new SaleDto(Guid.NewGuid(), "SALE-001", Guid.NewGuid(), null, 150.00m, 22.50m, 0m, 172.50m, "Cash", "completed", "completed", DateTime.Now.AddHours(-1), null, null, false, null, new List<SaleItemDto>(), new List<PaymentTransactionDto>()),
-                new SaleDto(Guid.NewGuid(), "SALE-002", Guid.NewGuid(), null, 200.00m, 30.00m, 0m, 230.00m, "Card", "completed", "completed", DateTime.Now.AddHours(-2), null, null, false, null, new List<SaleItemDto>(), new List<PaymentTransactionDto>()),
-                new SaleDto(Guid.NewGuid(), "SALE-003", Guid.NewGuid(), null, 175.00m, 26.25m, 0m, 201.25m, "Cash", "completed", "completed", DateTime.Now.AddHours(-3), null, null, false, null, new List<SaleItemDto>(), new List<PaymentTransactionDto>())
+                new SaleDto
+                {
+                    Id = Guid.NewGuid(),
+                    SaleNumber = "SALE-001",
+                    CustomerId = Guid.NewGuid(),
+                    Subtotal = 150.00m,
+                    Tax = 22.50m,
+                    Discount = 0m,
+                    TotalAmount = 172.50m,
+                    PaymentMethod = "Cash",
+                    Status = "completed",
+                    SaleStatus = "completed",
+                    SaleDate = DateTime.Now.AddHours(-1),
+                    IsRefunded = false,
+                    Items = new List<SaleItemDto>(),
+                    Payments = new List<PaymentTransactionDto>()
+                },
+                new SaleDto
+                {
+                    Id = Guid.NewGuid(),
+                    SaleNumber = "SALE-002",
+                    CustomerId = Guid.NewGuid(),
+                    Subtotal = 200.00m,
+                    Tax = 30.00m,
+                    Discount = 0m,
+                    TotalAmount = 230.00m,
+                    PaymentMethod = "Card",
+                    Status = "completed",
+                    SaleStatus = "completed",
+                    SaleDate = DateTime.Now.AddHours(-2),
+                    IsRefunded = false,
+                    Items = new List<SaleItemDto>(),
+                    Payments = new List<PaymentTransactionDto>()
+                },
+                new SaleDto
+                {
+                    Id = Guid.NewGuid(),
+                    SaleNumber = "SALE-003",
+                    CustomerId = Guid.NewGuid(),
+                    Subtotal = 175.00m,
+                    Tax = 26.25m,
+                    Discount = 0m,
+                    TotalAmount = 201.25m,
+                    PaymentMethod = "Cash",
+                    Status = "completed",
+                    SaleStatus = "completed",
+                    SaleDate = DateTime.Now.AddHours(-3),
+                    IsRefunded = false,
+                    Items = new List<SaleItemDto>(),
+                    Payments = new List<PaymentTransactionDto>()
+                }
             };
 
             _activeGroupPurchases = new List<GroupPurchaseDto>
             {
-                new GroupPurchaseDto { Id = Guid.NewGuid(), GroupNumber = "GP-001", BusinessId = Guid.NewGuid(), ProductId = Guid.NewGuid(), ProductName = "Group A", UnitPrice = 100m, GroupPrice = 80m, MinimumQuantity = 5, TargetQuantity = 10, CurrentQuantity = 5, Status = "Active", ExpiryDate = DateTime.Now.AddDays(7), CreatedAt = DateTime.Now, CreatedBy = Guid.NewGuid(), MemberCount = 5, CurrentAmount = 400m, TargetAmount = 800m, EndDate = DateTime.Now.AddDays(7) },
-                new GroupPurchaseDto { Id = Guid.NewGuid(), GroupNumber = "GP-002", BusinessId = Guid.NewGuid(), ProductId = Guid.NewGuid(), ProductName = "Group B", UnitPrice = 150m, GroupPrice = 120m, MinimumQuantity = 3, TargetQuantity = 8, CurrentQuantity = 3, Status = "Active", ExpiryDate = DateTime.Now.AddDays(3), CreatedAt = DateTime.Now, CreatedBy = Guid.NewGuid(), MemberCount = 3, CurrentAmount = 360m, TargetAmount = 960m, EndDate = DateTime.Now.AddDays(3) }
+                new GroupPurchaseDto { Id = Guid.NewGuid(), Name = "Group A", GroupNumber = "GP-001", BusinessId = Guid.NewGuid(), ProductId = Guid.NewGuid(), ProductName = "Product A", UnitPrice = 100m, GroupPrice = 80m, MinimumQuantity = 5, TargetQuantity = 10, CurrentQuantity = 5, Status = "Active", ExpiryDate = DateTime.Now.AddDays(7), CreatedAt = DateTime.Now, CreatedBy = Guid.NewGuid().ToString(), MemberCount = 5, CurrentAmount = 400m, TargetAmount = 800m, EndDate = DateTime.Now.AddDays(7) },
+                new GroupPurchaseDto { Id = Guid.NewGuid(), Name = "Group B", GroupNumber = "GP-002", BusinessId = Guid.NewGuid(), ProductId = Guid.NewGuid(), ProductName = "Product B", UnitPrice = 150m, GroupPrice = 120m, MinimumQuantity = 3, TargetQuantity = 8, CurrentQuantity = 3, Status = "Active", ExpiryDate = DateTime.Now.AddDays(3), CreatedAt = DateTime.Now, CreatedBy = Guid.NewGuid().ToString(), MemberCount = 3, CurrentAmount = 360m, TargetAmount = 960m, EndDate = DateTime.Now.AddDays(3) }
             };
 
             await Task.CompletedTask;

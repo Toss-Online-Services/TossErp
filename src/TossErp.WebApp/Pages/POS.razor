@@ -1,5 +1,5 @@
 @page "/pos"
-@using TossErp.Application.DTOs
+@using TossErp.WebApp.DTOs
 @using TossErp.Application.Services
 @inject IProductService ProductService
 @inject ISaleService SaleService
@@ -16,11 +16,11 @@
                     <MudText Typo="Typo.h5">Point of Sale</MudText>
                     <MudSpacer />
                     <MudTextField @bind-Value="_searchTerm" 
-                                 Label="Search Products..." 
+                                 Label="Search Products" 
                                  Variant="Variant.Outlined" 
                                  Adornment="Adornment.Start" 
                                  AdornmentIcon="@Icons.Material.Filled.Search"
-                                 OnKeyPress="@HandleSearchKeyPress"
+                                 Immediate="true"
                                  Class="flex-grow-1" />
                 </MudStack>
 
@@ -29,24 +29,13 @@
                     @foreach (var product in _filteredProducts)
                     {
                         <MudItem xs="12" sm="6" md="4" lg="3">
-                            <MudCard Elevation="2" Class="ma-2" Style="cursor: pointer;" OnClick="@(() => AddToCart(product))">
-                                <MudCardContent>
-                                    <MudStack AlignItems="AlignItems.Center" Spacing="2">
-                                        <MudAvatar Size="Size.Large" Color="Color.Primary">
-                                            <MudIcon Icon="@Icons.Material.Filled.Category" Size="Size.Large" />
-                                        </MudAvatar>
-                                        <MudText Typo="Typo.h6" Class="text-center">@product.Name</MudText>
-                                        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-center">
-                                            @product.Description
-                                        </MudText>
-                                        <MudText Typo="Typo.h6" Color="Color.Primary">
-                                            @product.Price.ToString("C")
-                                        </MudText>
-                                        <MudChip T="object" Color="@(product.StockQuantity > 0 ? Color.Success : Color.Error)" Size="Size.Small">
-                                            @(product.StockQuantity > 0 ? $"In Stock: {product.StockQuantity}" : "Out of Stock")
-                                        </MudChip>
-                                    </MudStack>
-                                </MudCardContent>
+                            <MudCard Class="pa-4 cursor-pointer" Style="min-height: 120px;" OnClick="@(() => AddToCart(product))">
+                                <MudStack>
+                                    <MudText Typo="Typo.h6">@product.Name</MudText>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">@product.Description</MudText>
+                                    <MudText Typo="Typo.h5" Color="Color.Primary">@product.Price.ToString("C")</MudText>
+                                    <MudText Typo="Typo.caption">Stock: @product.StockQuantity</MudText>
+                                </MudStack>
                             </MudCard>
                         </MudItem>
                     }
@@ -131,10 +120,10 @@
                     <!-- Payment Options -->
                     <MudStack Spacing="2" Class="mb-4">
                         <MudText Typo="Typo.subtitle2">Payment Method:</MudText>
-                        <MudRadioGroup T="PaymentMethod" @bind-SelectedOption="_selectedPaymentMethod">
-                            <MudRadio T="PaymentMethod" Option="@PaymentMethod.Cash" Color="Color.Primary">Cash</MudRadio>
-                            <MudRadio T="PaymentMethod" Option="@PaymentMethod.Card" Color="Color.Primary">Card</MudRadio>
-                            <MudRadio T="PaymentMethod" Option="@PaymentMethod.MobileMoney" Color="Color.Primary">Mobile Money</MudRadio>
+                        <MudRadioGroup T="PaymentMethod" @bind-SelectedValue="_selectedPaymentMethod" Label="Payment Method">
+                            <MudRadio T="PaymentMethod" Value="@PaymentMethod.Cash">Cash</MudRadio>
+                            <MudRadio T="PaymentMethod" Value="@PaymentMethod.Card">Card</MudRadio>
+                            <MudRadio T="PaymentMethod" Value="@PaymentMethod.MobileMoney">Mobile Money</MudRadio>
                         </MudRadioGroup>
                     </MudStack>
 
@@ -182,10 +171,28 @@
     {
         try
         {
-            _products = await ProductService.GetAllProductsAsync();
+            var applicationProducts = await ProductService.GetAllAsync();
+            _products = applicationProducts.Select(p => new TossErp.WebApp.DTOs.ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                CostPrice = p.CostPrice,
+                StockQuantity = p.StockQuantity,
+                Category = p.Category,
+                SKU = p.SKU,
+                MinimumStockLevel = p.MinimumStockLevel,
+                Unit = p.Unit,
+                BusinessId = p.BusinessId,
+                VendorId = p.VendorId ?? Guid.Empty,
+                IsActive = p.IsActive,
+                CreatedAt = p.CreatedAt,
+                UpdatedAt = p.UpdatedAt ?? DateTime.Now
+            }).ToList();
             _filteredProducts = _products;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error loading products", Severity.Error);
         }
@@ -284,28 +291,25 @@
 
         try
         {
-            var saleDto = new CreateSaleDto
-            {
-                Items = _cartItems.Select(item => new SaleItemDto
-                {
-                    ProductId = item.Product.Id,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.Product.Price
-                }).ToList(),
-                PaymentMethod = _selectedPaymentMethod,
-                Total = _total
-            };
+            var saleDto = new TossErp.Application.DTOs.CreateSaleDto(
+                BusinessId: Guid.NewGuid(), // TODO: Get from current user context
+                CustomerId: null, // TODO: Get from customer selection
+                PaymentMethod: _selectedPaymentMethod.ToString(),
+                CreatedBy: Guid.NewGuid(), // TODO: Get from current user context
+                Notes: null,
+                IsOffline: false
+            );
 
-            var result = await SaleService.CreateSaleAsync(saleDto);
+            var result = await SaleService.CreateAsync(saleDto);
             
             if (result != null)
             {
-                Snackbar.Add($"Sale completed successfully! Sale #: {result.Id}", Severity.Success);
+                Snackbar.Add($"Sale completed successfully! Sale #: {result.SaleNumber}", Severity.Success);
                 ClearCart();
                 await LoadProducts(); // Refresh stock levels
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error processing sale", Severity.Error);
         }

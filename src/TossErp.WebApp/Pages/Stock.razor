@@ -1,5 +1,5 @@
 @page "/stock"
-@using TossErp.Application.DTOs
+@using TossErp.WebApp.DTOs
 @using TossErp.Application.Services
 @inject IProductService ProductService
 @inject ISnackbar Snackbar
@@ -101,29 +101,44 @@
                 <PropertyColumn Property="x => x.StockQuantity" Title="Current Stock" />
                 <PropertyColumn Property="x => x.MinimumStockLevel" Title="Reorder Level" />
                 <PropertyColumn Property="x => x.Price" Title="Unit Price" Format="C" />
-                <TemplateColumn Title="Stock Value" Context="item">
-                    <MudText Typo="Typo.body2">@((item.StockQuantity * item.Price).ToString("C"))</MudText>
+                <TemplateColumn Title="Stock Value">
+                    <CellTemplate>
+                        @{
+                            var product = context.Item;
+                        }
+                        <MudText Typo="Typo.body2">@((product.StockQuantity * product.Price).ToString("C"))</MudText>
+                    </CellTemplate>
                 </TemplateColumn>
-                <TemplateColumn Title="Status" Context="item">
-                    <MudChip Color="@GetStockStatusColor(item)" Size="Size.Small">
-                        @GetStockStatusText(item)
-                    </MudChip>
+                <TemplateColumn Title="Status">
+                    <CellTemplate>
+                        @{
+                            var product = context.Item;
+                        }
+                        <MudChip Color="@GetStockStatusColor(product)" Size="Size.Small">
+                            @GetStockStatusText(product)
+                        </MudChip>
+                    </CellTemplate>
                 </TemplateColumn>
-                <TemplateColumn Title="Actions" Context="item">
-                    <MudStack Row="true" Spacing="1">
-                        <MudIconButton Icon="@Icons.Material.Filled.Add" 
-                                     Size="Size.Small" 
-                                     Color="Color.Success"
-                                     OnClick="@(() => AdjustStock(item, true))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Remove" 
-                                     Size="Size.Small" 
-                                     Color="Color.Warning"
-                                     OnClick="@(() => AdjustStock(item, false))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.History" 
-                                     Size="Size.Small" 
-                                     Color="Color.Info"
-                                     OnClick="@(() => ViewStockHistory(item))" />
-                    </MudStack>
+                <TemplateColumn Title="Actions">
+                    <CellTemplate>
+                        @{
+                            var product = context.Item;
+                        }
+                        <MudStack Row="true" Spacing="1">
+                            <MudIconButton Icon="@Icons.Material.Filled.Add" 
+                                         Size="Size.Small" 
+                                         Color="Color.Success"
+                                         OnClick="@(() => AdjustStock(product, true))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Remove" 
+                                         Size="Size.Small" 
+                                         Color="Color.Warning"
+                                         OnClick="@(() => AdjustStock(product, false))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.History" 
+                                         Size="Size.Small" 
+                                         Color="Color.Info"
+                                         OnClick="@(() => ViewStockHistory(product))" />
+                        </MudStack>
+                    </CellTemplate>
                 </TemplateColumn>
             </Columns>
         </MudDataGrid>
@@ -258,7 +273,25 @@
         _isLoading = true;
         try
         {
-            _products = (await ProductService.GetAllAsync()).ToList();
+            var applicationProducts = await ProductService.GetAllAsync();
+            _products = applicationProducts.Select(p => new TossErp.WebApp.DTOs.ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                CostPrice = p.CostPrice,
+                StockQuantity = p.StockQuantity,
+                Category = p.Category,
+                SKU = p.SKU,
+                MinimumStockLevel = p.MinimumStockLevel,
+                Unit = p.Unit,
+                BusinessId = p.BusinessId,
+                VendorId = p.VendorId ?? Guid.Empty,
+                IsActive = p.IsActive,
+                CreatedAt = p.CreatedAt,
+                UpdatedAt = p.UpdatedAt ?? DateTime.Now
+            }).ToList();
             FilterProducts();
         }
         catch (Exception)
@@ -305,7 +338,7 @@
             var adjustment = new StockAdjustmentDto
             {
                 ProductId = _selectedProduct.Id,
-                Type = _adjustmentType,
+                Type = _adjustmentType.ToString(),
                 Quantity = _adjustmentQuantity,
                 Reason = _adjustmentReason
             };
@@ -321,7 +354,7 @@
         }
     }
 
-    private async Task ViewStockHistory(ProductDto product)
+    private void ViewStockHistory(ProductDto product)
     {
         _selectedProduct = product;
         try

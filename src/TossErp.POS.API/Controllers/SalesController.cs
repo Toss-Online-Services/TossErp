@@ -38,20 +38,32 @@ namespace TossErp.POS.API.Controllers
         {
             try
             {
-                var sales = await _salesService.GetSalesAsync(startDate, endDate, status, page, pageSize);
+                var sales = await _salesService.GetSalesAsync(startDate, endDate, page, pageSize);
+                var saleListDtos = sales.Select(s => new SaleListDto
+                {
+                    Id = (int)s.Id.GetHashCode(), // Convert Guid to int hash
+                    SaleNumber = s.SaleNumber,
+                    SaleDate = s.CreatedAt,
+                    TotalAmount = s.TotalAmount,
+                    Status = s.Status,
+                    CustomerName = s.CustomerName,
+                    PaymentMethod = s.PaymentMethod,
+                    ItemCount = s.Items.Count
+                }).ToList();
+                
                 return Ok(new CommonResponseDto<List<SaleListDto>>
                 {
                     Success = true,
-                    Data = sales,
+                    Data = saleListDtos,
                     Message = "Sales retrieved successfully"
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest(new CommonResponseDto<List<SaleListDto>>
                 {
                     Success = false,
-                    Message = $"Error retrieving sales: {ex.Message}"
+                    Message = "Error retrieving sales"
                 });
             }
         }
@@ -97,7 +109,7 @@ namespace TossErp.POS.API.Controllers
         }
 
         [HttpPost("create-sale")]
-        public async Task<IActionResult> CreateSale([FromBody] CreateSaleDto request)
+        public async Task<IActionResult> CreateSale([FromBody] TossErp.POS.API.DTOs.CreateSaleDto request)
         {
             try
             {

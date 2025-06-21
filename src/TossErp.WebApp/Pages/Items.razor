@@ -1,5 +1,5 @@
 @page "/items"
-@using TossErp.Shared.DTOs
+@using TossErp.WebApp.DTOs
 @using TossErp.Shared.Enums
 @inject HttpClient Http
 @inject ISnackbar Snackbar
@@ -25,10 +25,9 @@
                           Label="Item Type" 
                           Variant="Variant.Outlined"
                           Clearable="true">
-                    <MudSelectItem Value="@((ItemType?)null)">All Types</MudSelectItem>
-                    <MudSelectItem Value="@ItemType.Product">Product</MudSelectItem>
-                    <MudSelectItem Value="@ItemType.Service">Service</MudSelectItem>
-                    <MudSelectItem Value="@ItemType.Consumable">Consumable</MudSelectItem>
+                    <MudSelectItem Value="@TossErp.Inventory.Domain.Enums.ItemType.Product.ToString()">Product</MudSelectItem>
+                    <MudSelectItem Value="@TossErp.Inventory.Domain.Enums.ItemType.Service.ToString()">Service</MudSelectItem>
+                    <MudSelectItem Value="@TossErp.Inventory.Domain.Enums.ItemType.RawMaterial.ToString()">Raw Material</MudSelectItem>
                 </MudSelect>
             </MudItem>
             <MudItem xs="12" sm="3" Class="d-flex align-center">
@@ -142,9 +141,9 @@
                               Label="Item Type" 
                               Required="true" 
                               RequiredError="Item type is required!">
-                        <MudSelectItem Value="@ItemType.Product">Product</MudSelectItem>
-                        <MudSelectItem Value="@ItemType.Service">Service</MudSelectItem>
-                        <MudSelectItem Value="@ItemType.Consumable">Consumable</MudSelectItem>
+                        <MudSelectItem Value="@TossErp.Inventory.Domain.Enums.ItemType.Product.ToString()">Product</MudSelectItem>
+                        <MudSelectItem Value="@TossErp.Inventory.Domain.Enums.ItemType.Service.ToString()">Service</MudSelectItem>
+                        <MudSelectItem Value="@TossErp.Inventory.Domain.Enums.ItemType.RawMaterial.ToString()">Raw Material</MudSelectItem>
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="12" sm="6">
@@ -276,10 +275,10 @@
          i.ItemCode.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
          (i.Barcode?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
          (i.SKU?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false)) &&
-        (!selectedItemType.HasValue || i.ItemType == selectedItemType.Value)).ToList();
+        (!selectedItemType.HasValue || i.ItemType.ToString() == selectedItemType.Value.ToString())).ToList();
     
     private string searchString = "";
-    private ItemType? selectedItemType = null!;
+    private TossErp.Inventory.Domain.Enums.ItemType? selectedItemType = null!;
     private bool loading = true;
     private bool dialogVisible = false;
     private bool viewDialogVisible = false;
@@ -309,9 +308,9 @@
             // Mock data for demonstration
             items = new List<ItemDto>
             {
-                new() { Id = Guid.NewGuid(), ItemCode = "LAP001", Name = "Laptop Dell XPS 13", ItemType = ItemType.Product, IsActive = true, IsStockable = true, StandardCost = 800, SellingPrice = 1200, MinimumStockLevel = 5, MaximumStockLevel = 50, ReorderPoint = 10, ReorderQuantity = 20 },
-                new() { Id = Guid.NewGuid(), ItemCode = "MOUSE001", Name = "Wireless Mouse", ItemType = ItemType.Product, IsActive = true, IsStockable = true, StandardCost = 15, SellingPrice = 25, MinimumStockLevel = 20, MaximumStockLevel = 200, ReorderPoint = 30, ReorderQuantity = 50 },
-                new() { Id = Guid.NewGuid(), ItemCode = "SVC001", Name = "Computer Repair Service", ItemType = ItemType.Service, IsActive = true, IsStockable = false, StandardCost = 0, SellingPrice = 75 }
+                new() { Id = Guid.NewGuid(), ItemCode = "LAP001", Name = "Laptop Dell XPS 13", ItemType = TossErp.Inventory.Domain.Enums.ItemType.Product.ToString(), IsActive = true, IsStockable = true, StandardCost = 800, SellingPrice = 1200, MinimumStockLevel = 5, MaximumStockLevel = 50, ReorderPoint = 10, ReorderQuantity = 20 },
+                new() { Id = Guid.NewGuid(), ItemCode = "MOUSE001", Name = "Wireless Mouse", ItemType = TossErp.Inventory.Domain.Enums.ItemType.Product.ToString(), IsActive = true, IsStockable = true, StandardCost = 15, SellingPrice = 25, MinimumStockLevel = 20, MaximumStockLevel = 200, ReorderPoint = 30, ReorderQuantity = 50 },
+                new() { Id = Guid.NewGuid(), ItemCode = "SVC001", Name = "Computer Repair Service", ItemType = TossErp.Inventory.Domain.Enums.ItemType.Service.ToString(), IsActive = true, IsStockable = false, StandardCost = 0, SellingPrice = 75 }
             };
         }
         catch (Exception ex)

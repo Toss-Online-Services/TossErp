@@ -1,5 +1,5 @@
 @page "/financial-reports"
-@using TossErp.Shared.DTOs
+@using TossErp.WebApp.DTOs
 @inject HttpClient Http
 
 <PageTitle>Financial Reports</PageTitle>
@@ -89,14 +89,14 @@
             TotalRevenue = 15499.96m,
             TotalExpenses = 12499.97m,
             NetProfit = 2999.99m,
-            ProfitMargin = 0.194,
+            ProfitMargin = 0.194m,
             Items = new List<FinancialReportItemDto>
             {
-                new() { Category = "Product Sales", Amount = 15499.96m, Percentage = 1.0, Type = "Revenue" },
-                new() { Category = "Cost of Goods", Amount = 9299.98m, Percentage = 0.6, Type = "Expense" },
-                new() { Category = "Operating Expenses", Amount = 2000.00m, Percentage = 0.129, Type = "Expense" },
-                new() { Category = "Marketing", Amount = 800.00m, Percentage = 0.052, Type = "Expense" },
-                new() { Category = "Administrative", Amount = 400.00m, Percentage = 0.026, Type = "Expense" }
+                new() { Category = "Product Sales", Amount = 15499.96m, Percentage = 1.0m, Type = "Revenue" },
+                new() { Category = "Cost of Goods", Amount = 9299.98m, Percentage = 0.6m, Type = "Expense" },
+                new() { Category = "Operating Expenses", Amount = 2000.00m, Percentage = 0.129m, Type = "Expense" },
+                new() { Category = "Marketing", Amount = 800.00m, Percentage = 0.052m, Type = "Expense" },
+                new() { Category = "Administrative", Amount = 400.00m, Percentage = 0.026m, Type = "Expense" }
             }
         };
     }

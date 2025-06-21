@@ -1,5 +1,5 @@
 @page "/sales"
-@using TossErp.Application.DTOs
+@using TossErp.WebApp.DTOs
 @using TossErp.Application.Services
 @inject ISaleService SaleService
 @inject NavigationManager Navigation
@@ -98,30 +98,40 @@
                 <PropertyColumn Property="x => x.TotalAmount" Title="Total" Format="C" />
                 <PropertyColumn Property="x => x.PaymentMethod" Title="Payment Method" />
                 <PropertyColumn Property="x => x.Items.Count" Title="Items" />
-                <TemplateColumn Title="Status" Context="sale">
-                    <MudChip T="object" Color="@GetStatusColor(sale.SaleStatus)" Size="Size.Small">
-                        @sale.SaleStatus
-                    </MudChip>
+                <TemplateColumn Title="Status">
+                    <CellTemplate>
+                        @{
+                            var sale = context.Item;
+                        }
+                        <MudChip T="object" Color="@GetStatusColor(sale.SaleStatus)" Size="Size.Small">
+                            @sale.SaleStatus
+                        </MudChip>
+                    </CellTemplate>
                 </TemplateColumn>
-                <TemplateColumn Title="Actions" Context="sale">
-                    <MudStack Row="true" Spacing="1">
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" 
-                                     Size="Size.Small" 
-                                     Color="Color.Primary"
-                                     OnClick="@(() => EditSale(sale))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" 
-                                     Size="Size.Small" 
-                                     Color="Color.Error"
-                                     OnClick="@(() => DeleteSale(sale))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Receipt" 
-                                     Size="Size.Small" 
-                                     Color="Color.Secondary"
-                                     OnClick="@(() => ViewSaleDetails(sale))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Print" 
-                                     Size="Size.Small" 
-                                     Color="Color.Info"
-                                     OnClick="@(() => PrintReceipt(sale))" />
-                    </MudStack>
+                <TemplateColumn Title="Actions">
+                    <CellTemplate>
+                        @{
+                            var sale = context.Item;
+                        }
+                        <MudStack Row="true" Spacing="1">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                         Size="Size.Small" 
+                                         Color="Color.Primary"
+                                         OnClick="@(() => EditSale(sale))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                         Size="Size.Small" 
+                                         Color="Color.Error"
+                                         OnClick="@(() => DeleteSale(sale))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Receipt" 
+                                         Size="Size.Small" 
+                                         Color="Color.Secondary"
+                                         OnClick="@(() => ViewSaleDetails(sale))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Print" 
+                                         Size="Size.Small" 
+                                         Color="Color.Info"
+                                         OnClick="@(() => PrintReceipt(sale))" />
+                        </MudStack>
+                    </CellTemplate>
                 </TemplateColumn>
             </Columns>
         </MudDataGrid>
@@ -238,7 +248,57 @@
         _isLoading = true;
         try
         {
-            _sales = (await SaleService.GetAllAsync()).ToList();
+            var applicationSales = await SaleService.GetAllAsync();
+            _sales = applicationSales.Select(s => new TossErp.WebApp.DTOs.SaleDto
+            {
+                Id = s.Id,
+                SaleNumber = s.SaleNumber,
+                CustomerId = s.CustomerId ?? Guid.Empty,
+                CustomerName = string.Empty,
+                CashierId = Guid.Empty,
+                CashierName = string.Empty,
+                Items = s.Items.Select(i => new TossErp.WebApp.DTOs.SaleItemDto
+                {
+                    Id = i.Id,
+                    SaleId = i.SaleId,
+                    ProductId = i.ProductId,
+                    ProductName = i.ProductName,
+                    Quantity = i.Quantity,
+                    UnitPrice = i.UnitPrice,
+                    Total = i.TotalPrice
+                }).ToList(),
+                Subtotal = s.SubTotal,
+                SubTotal = s.SubTotal,
+                TaxAmount = s.TaxAmount,
+                Tax = s.TaxAmount,
+                DiscountAmount = s.DiscountAmount,
+                Discount = s.DiscountAmount,
+                TotalAmount = s.TotalAmount,
+                PaymentMethod = s.PaymentMethod,
+                PaymentStatus = s.PaymentStatus,
+                Status = s.SaleStatus,
+                SaleStatus = s.SaleStatus,
+                CreatedAt = s.SaleDate,
+                SaleDate = s.SaleDate,
+                CompletedAt = null,
+                CancelledAt = null,
+                CancellationReason = null,
+                Notes = s.Notes,
+                Payments = s.Payments.Select(p => new TossErp.WebApp.DTOs.PaymentTransactionDto
+                {
+                    Id = p.Id,
+                    SaleId = p.SaleId,
+                    Amount = p.Amount,
+                    PaymentMethod = p.PaymentMethod,
+                    ReferenceNumber = p.TransactionId,
+                    TransactionDate = p.CreatedAt,
+                    Status = p.Status
+                }).ToList(),
+                AmountPaid = s.Payments.Sum(p => p.Amount),
+                ReferenceNumber = string.Empty,
+                BusinessId = s.BusinessId,
+                IsRefunded = false
+            }).ToList();
             // TODO: Apply date range filter when implemented in service
         }
         catch (Exception)
@@ -257,7 +317,7 @@
         _showDialog = true;
     }
 
-    private async Task PrintReceipt(SaleDto? sale)
+    private void PrintReceipt(SaleDto? sale)
     {
         if (sale == null) return;
 
@@ -272,7 +332,7 @@
         }
     }
 
-    private async Task ExportSales()
+    private void ExportSales()
     {
         try
         {
@@ -285,7 +345,7 @@
         }
     }
 
-    private async Task EditSale(SaleDto sale)
+    private void EditSale(SaleDto sale)
     {
         try
         {
@@ -298,7 +358,7 @@
         }
     }
 
-    private async Task DeleteSale(SaleDto sale)
+    private void DeleteSale(SaleDto sale)
     {
         try
         {

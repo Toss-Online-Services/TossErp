@@ -7,7 +7,7 @@
     <RunAOTCompilation>false</RunAOTCompilation>
     <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
     <DisableMudBlazorAnalyzers>true</DisableMudBlazorAnalyzers>
-    <NoWarn>$(NoWarn);CS8602</NoWarn>
+    <NoWarn>$(NoWarn);CS8602;MUD0001;MUD0002</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

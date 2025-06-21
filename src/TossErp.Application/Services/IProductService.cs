@@ -15,4 +15,18 @@ public interface IProductService
     Task<int> GetLowStockItemsCountAsync(Guid businessId);
     Task<IEnumerable<TopProductDto>> GetTopSellingProductsAsync(int count);
     Task UpdateStockAsync(Guid id, int quantity, string movementType, string reason = "");
+    
+    // Additional methods for backward compatibility
+    Task<ProductDto?> GetByBarcodeAsync(string barcode, Guid businessId);
+    Task<IEnumerable<ProductDto>> GetLowStockProductsAsync(Guid businessId);
+    Task<IEnumerable<ProductDto>> GetByCategoryAsync(string category, Guid businessId);
+    Task<IEnumerable<ProductDto>> SearchAsync(string searchTerm, Guid businessId);
+    Task<ProductDto> UpdateAsync(Guid id, UpdateProductDto updateDto);
+    Task UpdateStockAsync(Guid id, UpdateStockDto updateStockDto);
+    Task SetMinimumStockLevelAsync(Guid id, int minimumLevel);
+    Task DeactivateAsync(Guid id);
+    Task ActivateAsync(Guid id);
+    Task<bool> ExistsAsync(Guid id);
+    Task<bool> BarcodeExistsAsync(string barcode, Guid businessId);
+    Task<IEnumerable<ProductDto>> GetByBusinessIdAsync(Guid businessId);
 } 

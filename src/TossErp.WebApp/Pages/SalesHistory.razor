@@ -1,5 +1,5 @@
 @page "/sales-history"
-@using TossErp.Shared.DTOs
+@using TossErp.WebApp.DTOs
 @inject HttpClient Http
 
 <PageTitle>Sales History</PageTitle>
@@ -17,12 +17,12 @@
                           Label="End Date" Variant="Variant.Outlined" />
         </MudItem>
         <MudItem xs="12" sm="6" md="3">
-            <MudSelect T="SaleStatus" @bind-Value="selectedStatus" 
+            <MudSelect T="TossErp.WebApp.DTOs.SaleStatus" @bind-Value="selectedStatus" 
                        Label="Filter by Status" 
                        HelperText="Select a status to filter">
-                <MudSelectItem Value="@SaleStatus.Pending">Pending</MudSelectItem>
-                <MudSelectItem Value="@SaleStatus.Completed">Completed</MudSelectItem>
-                <MudSelectItem Value="@SaleStatus.Cancelled">Cancelled</MudSelectItem>
+                <MudSelectItem Value="@TossErp.WebApp.DTOs.SaleStatus.Pending">Pending</MudSelectItem>
+                <MudSelectItem Value="@TossErp.WebApp.DTOs.SaleStatus.Completed">Completed</MudSelectItem>
+                <MudSelectItem Value="@TossErp.WebApp.DTOs.SaleStatus.Cancelled">Cancelled</MudSelectItem>
             </MudSelect>
         </MudItem>
         <MudItem xs="12" sm="6" md="3">
@@ -33,7 +33,7 @@
         </MudItem>
     </MudGrid>
 
-    <MudTable T="TossErp.Application.DTOs.SaleDto" Items="@filteredSales" Dense="true" Hover="true" 
+    <MudTable T="TossErp.WebApp.DTOs.SaleDto" Items="@filteredSales" Dense="true" Hover="true" 
               Striped="true" Loading="@loading" LoadingProgressColor="Color.Info">
         <HeaderContent>
             <MudTh>Sale ID</MudTh>
@@ -45,7 +45,7 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Sale ID">@context.SaleNumber</MudTd>
-            <MudTd DataLabel="Customer">@(context.CustomerId?.ToString() ?? "Walk-in Customer")</MudTd>
+            <MudTd DataLabel="Customer">@(context.CustomerId.ToString() ?? "Walk-in Customer")</MudTd>
             <MudTd DataLabel="Total Amount">@context.TotalAmount.ToString("C")</MudTd>
             <MudTd DataLabel="Status">@context.SaleStatus</MudTd>
             <MudTd DataLabel="Date">@context.SaleDate.ToShortDateString()</MudTd>
@@ -111,13 +111,13 @@
 *@
 
 @code {
-    private List<TossErp.Application.DTOs.SaleDto> sales = new();
-    private List<TossErp.Application.DTOs.SaleDto> filteredSales = new();
+    private List<TossErp.WebApp.DTOs.SaleDto> sales = new();
+    private List<TossErp.WebApp.DTOs.SaleDto> filteredSales = new();
     private bool loading = true;
-    private TossErp.Application.DTOs.SaleDto? selectedSale;
+    private TossErp.WebApp.DTOs.SaleDto? selectedSale;
     private DateTime? startDate;
     private DateTime? endDate;
-    private SaleStatus selectedStatus = SaleStatus.All;
+    private TossErp.WebApp.DTOs.SaleStatus selectedStatus = TossErp.WebApp.DTOs.SaleStatus.Pending;
     private DialogOptions dialogOptions = new() { CloseOnEscapeKey = true };
 
     protected override async Task OnInitializedAsync()
@@ -132,23 +132,62 @@
         {
             await Task.Delay(100);
             // Mock data for now
-            sales = new List<TossErp.Application.DTOs.SaleDto>
+            sales = new List<TossErp.WebApp.DTOs.SaleDto>
             {
-                new TossErp.Application.DTOs.SaleDto(
-                    Guid.NewGuid(), "SALE-001", Guid.NewGuid(), Guid.NewGuid(), 
-                    1299.99m, 194.99m, 0m, 1494.98m, "Card", "completed", "completed", 
-                    DateTime.Now.AddDays(-5), Guid.NewGuid(), null, false, null, 
-                    new List<TossErp.Application.DTOs.SaleItemDto>(), new List<TossErp.Application.DTOs.PaymentTransactionDto>()),
-                new TossErp.Application.DTOs.SaleDto(
-                    Guid.NewGuid(), "SALE-002", Guid.NewGuid(), Guid.NewGuid(), 
-                    2499.98m, 374.99m, 0m, 2874.97m, "Cash", "completed", "completed", 
-                    DateTime.Now.AddDays(-3), Guid.NewGuid(), null, false, null, 
-                    new List<TossErp.Application.DTOs.SaleItemDto>(), new List<TossErp.Application.DTOs.PaymentTransactionDto>()),
-                new TossErp.Application.DTOs.SaleDto(
-                    Guid.NewGuid(), "SALE-003", Guid.NewGuid(), Guid.NewGuid(), 
-                    899.99m, 134.99m, 0m, 1034.98m, "MobileMoney", "pending", "pending", 
-                    DateTime.Now.AddDays(-1), Guid.NewGuid(), null, false, null, 
-                    new List<TossErp.Application.DTOs.SaleItemDto>(), new List<TossErp.Application.DTOs.PaymentTransactionDto>())
+                new TossErp.WebApp.DTOs.SaleDto
+                {
+                    Id = Guid.NewGuid(),
+                    SaleNumber = "SALE-001",
+                    CustomerId = Guid.NewGuid(),
+                    BusinessId = Guid.NewGuid(),
+                    Subtotal = 1299.99m,
+                    Tax = 194.99m,
+                    Discount = 0m,
+                    TotalAmount = 1494.98m,
+                    PaymentMethod = "Card",
+                    Status = TossErp.WebApp.DTOs.SaleStatus.Completed.ToString(),
+                    SaleDate = DateTime.Now.AddDays(-5),
+                    CashierId = Guid.NewGuid(),
+                    IsRefunded = false,
+                    Items = new List<TossErp.WebApp.DTOs.SaleItemDto>(),
+                    Payments = new List<TossErp.WebApp.DTOs.PaymentTransactionDto>()
+                },
+                new TossErp.WebApp.DTOs.SaleDto
+                {
+                    Id = Guid.NewGuid(),
+                    SaleNumber = "SALE-002",
+                    CustomerId = Guid.NewGuid(),
+                    BusinessId = Guid.NewGuid(),
+                    Subtotal = 2499.98m,
+                    Tax = 374.99m,
+                    Discount = 0m,
+                    TotalAmount = 2874.97m,
+                    PaymentMethod = "Cash",
+                    Status = TossErp.WebApp.DTOs.SaleStatus.Completed.ToString(),
+                    SaleDate = DateTime.Now.AddDays(-3),
+                    CashierId = Guid.NewGuid(),
+                    IsRefunded = false,
+                    Items = new List<TossErp.WebApp.DTOs.SaleItemDto>(),
+                    Payments = new List<TossErp.WebApp.DTOs.PaymentTransactionDto>()
+                },
+                new TossErp.WebApp.DTOs.SaleDto
+                {
+                    Id = Guid.NewGuid(),
+                    SaleNumber = "SALE-003",
+                    CustomerId = Guid.NewGuid(),
+                    BusinessId = Guid.NewGuid(),
+                    Subtotal = 899.99m,
+                    Tax = 134.99m,
+                    Discount = 0m,
+                    TotalAmount = 1034.98m,
+                    PaymentMethod = "MobileMoney",
+                    Status = TossErp.WebApp.DTOs.SaleStatus.Pending.ToString(),
+                    SaleDate = DateTime.Now.AddDays(-1),
+                    CashierId = Guid.NewGuid(),
+                    IsRefunded = false,
+                    Items = new List<TossErp.WebApp.DTOs.SaleItemDto>(),
+                    Payments = new List<TossErp.WebApp.DTOs.PaymentTransactionDto>()
+                }
             };
             filteredSales = sales.ToList();
         }
@@ -164,7 +203,7 @@
 
     private void FilterSales()
     {
-        IEnumerable<TossErp.Application.DTOs.SaleDto> query = sales;
+        IEnumerable<TossErp.WebApp.DTOs.SaleDto> query = sales;
 
         if (startDate.HasValue)
             query = query.Where(s => s.SaleDate >= startDate.Value);
@@ -172,14 +211,14 @@
         if (endDate.HasValue)
             query = query.Where(s => s.SaleDate <= endDate.Value);
 
-        if (selectedStatus != SaleStatus.All)
+        if (selectedStatus != TossErp.WebApp.DTOs.SaleStatus.Pending)
             query = query.Where(s => s.SaleStatus == selectedStatus.ToString());
 
         filteredSales = query.ToList();
         StateHasChanged();
     }
 
-    private void ViewSaleDetails(TossErp.Application.DTOs.SaleDto sale)
+    private void ViewSaleDetails(TossErp.WebApp.DTOs.SaleDto sale)
     {
         selectedSale = sale;
     }
@@ -189,7 +228,7 @@
         selectedSale = null!;
     }
 
-    private void PrintInvoice(TossErp.Application.DTOs.SaleDto sale)
+    private void PrintInvoice(TossErp.WebApp.DTOs.SaleDto sale)
     {
         // Mock print functionality
         // In a real app, this would generate and print an invoice

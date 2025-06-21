@@ -25,7 +25,7 @@ namespace TossErp.API.Controllers
         /// <param name="request">The stokvel creation request</param>
         /// <returns>The created stokvel details</returns>
         [HttpPost]
-        public async Task<ActionResult<StokvelResponse>> CreateStokvel([FromBody] CreateStokvelRequest request)
+        public async Task<ActionResult<StokvelResponseDTO>> CreateStokvel([FromBody] CreateStokvelRequestDTO request)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while creating the stokvel." });
             }
@@ -48,7 +48,7 @@ namespace TossErp.API.Controllers
         /// <param name="id">The stokvel ID</param>
         /// <returns>The stokvel details</returns>
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<StokvelResponse>> GetStokvel(Guid id)
+        public async Task<ActionResult<StokvelResponseDTO>> GetStokvel(Guid id)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace TossErp.API.Controllers
 
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while retrieving the stokvel." });
             }
@@ -70,7 +70,7 @@ namespace TossErp.API.Controllers
         /// <param name="request">The stokvel update request</param>
         /// <returns>The updated stokvel details</returns>
         [HttpPut]
-        public async Task<ActionResult<StokvelResponse>> UpdateStokvel([FromBody] UpdateStokvelRequest request)
+        public async Task<ActionResult<StokvelResponseDTO>> UpdateStokvel([FromBody] UpdateStokvelRequestDTO request)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while updating the stokvel." });
             }
@@ -93,7 +93,7 @@ namespace TossErp.API.Controllers
         /// <param name="id">The stokvel ID</param>
         /// <returns>The activated stokvel details</returns>
         [HttpPost("{id:guid}/activate")]
-        public async Task<ActionResult<StokvelResponse>> ActivateStokvel(Guid id)
+        public async Task<ActionResult<StokvelResponseDTO>> ActivateStokvel(Guid id)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while activating the stokvel." });
             }
@@ -116,7 +116,7 @@ namespace TossErp.API.Controllers
         /// <param name="id">The stokvel ID</param>
         /// <returns>The deactivated stokvel details</returns>
         [HttpPost("{id:guid}/deactivate")]
-        public async Task<ActionResult<StokvelResponse>> DeactivateStokvel(Guid id)
+        public async Task<ActionResult<StokvelResponseDTO>> DeactivateStokvel(Guid id)
         {
             try
             {
@@ -127,7 +127,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while deactivating the stokvel." });
             }
@@ -139,14 +139,14 @@ namespace TossErp.API.Controllers
         /// <param name="filter">The filter criteria</param>
         /// <returns>The list of stokvels</returns>
         [HttpGet]
-        public async Task<ActionResult<StokvelListResponse>> GetStokvels([FromQuery] StokvelFilterRequest filter)
+        public async Task<ActionResult<IEnumerable<StokvelResponseDTO>>> GetStokvels([FromQuery] StokvelFilterRequest filter)
         {
             try
             {
-                var result = await _stokvelService.GetStokvelsAsync(filter);
+                var result = await _stokvelService.GetAllStokvelsAsync();
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while retrieving the stokvels." });
             }
@@ -158,18 +158,18 @@ namespace TossErp.API.Controllers
         /// <param name="request">The member addition request</param>
         /// <returns>The added member details</returns>
         [HttpPost("members")]
-        public async Task<ActionResult<StokvelMemberResponse>> AddMember([FromBody] AddStokvelMemberRequest request)
+        public async Task<ActionResult<StokvelMemberResponseDTO>> AddMember([FromBody] AddStokvelMemberRequestDTO request)
         {
             try
             {
-                var result = await _stokvelService.AddMemberAsync(request);
+                var result = await _stokvelService.AddMemberAsync(request.StokvelId, request);
                 return Ok(result);
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while adding the member." });
             }
@@ -188,14 +188,14 @@ namespace TossErp.API.Controllers
         {
             try
             {
-                await _stokvelService.RemoveMemberAsync(stokvelId, memberId, exitDate, reason);
+                await _stokvelService.RemoveMemberAsync(stokvelId, memberId);
                 return NoContent();
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while removing the member." });
             }
@@ -207,18 +207,18 @@ namespace TossErp.API.Controllers
         /// <param name="request">The contribution request</param>
         /// <returns>The recorded contribution details</returns>
         [HttpPost("contributions")]
-        public async Task<ActionResult<StokvelContributionResponse>> RecordContribution([FromBody] RecordContributionRequest request)
+        public async Task<ActionResult<StokvelContributionResponseDTO>> RecordContribution([FromBody] RecordContributionRequestDTO request)
         {
             try
             {
-                var result = await _stokvelService.RecordContributionAsync(request);
+                var result = await _stokvelService.RecordContributionAsync(request.StokvelId, request);
                 return Ok(result);
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while recording the contribution." });
             }
@@ -230,18 +230,18 @@ namespace TossErp.API.Controllers
         /// <param name="request">The payout request</param>
         /// <returns>The processed payout details</returns>
         [HttpPost("payouts")]
-        public async Task<ActionResult<StokvelPayoutResponse>> ProcessPayout([FromBody] ProcessPayoutRequest request)
+        public async Task<ActionResult<StokvelPayoutResponseDTO>> ProcessPayout([FromBody] ProcessPayoutRequestDTO request)
         {
             try
             {
-                var result = await _stokvelService.ProcessPayoutAsync(request);
+                var result = await _stokvelService.ProcessPayoutAsync(request.StokvelId, request);
                 return Ok(result);
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while processing the payout." });
             }
@@ -257,7 +257,7 @@ namespace TossErp.API.Controllers
         /// <param name="agenda">The meeting agenda</param>
         /// <returns>The scheduled meeting details</returns>
         [HttpPost("{stokvelId:guid}/meetings")]
-        public async Task<ActionResult<StokvelMeetingResponse>> ScheduleMeeting(
+        public async Task<ActionResult<StokvelMeetingResponseDTO>> ScheduleMeeting(
             Guid stokvelId,
             [FromQuery] string meetingTitle,
             [FromQuery] DateTime meetingDate,
@@ -266,14 +266,22 @@ namespace TossErp.API.Controllers
         {
             try
             {
-                var result = await _stokvelService.ScheduleMeetingAsync(stokvelId, meetingTitle, meetingDate, location, agenda);
+                var request = new ScheduleStokvelMeetingRequestDTO
+                {
+                    StokvelId = stokvelId,
+                    MeetingTitle = meetingTitle,
+                    MeetingDate = meetingDate,
+                    Location = location,
+                    Agenda = agenda
+                };
+                var result = await _stokvelService.ScheduleMeetingAsync(stokvelId, request);
                 return Ok(result);
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while scheduling the meeting." });
             }
@@ -292,7 +300,7 @@ namespace TossErp.API.Controllers
                 var result = await _stokvelService.GetTotalContributionsAsync(stokvelId);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while getting the total contributions." });
             }
@@ -311,7 +319,7 @@ namespace TossErp.API.Controllers
                 var result = await _stokvelService.GetTotalPayoutsAsync(stokvelId);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while getting the total payouts." });
             }
@@ -330,7 +338,7 @@ namespace TossErp.API.Controllers
                 var result = await _stokvelService.GetCurrentBalanceAsync(stokvelId);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while getting the current balance." });
             }
@@ -350,7 +358,7 @@ namespace TossErp.API.Controllers
                 var result = await _stokvelService.GetMemberContributionTotalAsync(stokvelId, memberId);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while getting the member contribution total." });
             }
@@ -370,7 +378,7 @@ namespace TossErp.API.Controllers
                 var result = await _stokvelService.GetMemberPayoutTotalAsync(stokvelId, memberId);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while getting the member payout total." });
             }
@@ -390,7 +398,7 @@ namespace TossErp.API.Controllers
                 var result = await _stokvelService.GetMemberBalanceAsync(stokvelId, memberId);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while getting the member balance." });
             }
@@ -409,9 +417,9 @@ namespace TossErp.API.Controllers
                 var result = await _stokvelService.GetActiveMemberCountAsync(stokvelId);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { error = "An error occurred while getting the member count." });
+                return StatusCode(500, new { error = "An error occurred while getting the active member count." });
             }
         }
 
@@ -429,7 +437,7 @@ namespace TossErp.API.Controllers
                 var result = await _stokvelService.HasMinimumMembersAsync(stokvelId, minimumMembers);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while checking minimum members." });
             }
@@ -448,33 +456,33 @@ namespace TossErp.API.Controllers
                 var result = await _stokvelService.IsFullAsync(stokvelId);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { error = "An error occurred while checking if the stokvel is full." });
+                return StatusCode(500, new { error = "An error occurred while checking if stokvel is full." });
             }
         }
 
         /// <summary>
-        /// Gets members in rotation order for a stokvel
+        /// Gets members in rotation order
         /// </summary>
         /// <param name="stokvelId">The stokvel ID</param>
         /// <returns>The members in rotation order</returns>
         [HttpGet("{stokvelId:guid}/members/rotation")]
-        public async Task<ActionResult<List<StokvelMemberResponse>>> GetMembersInRotationOrder(Guid stokvelId)
+        public async Task<ActionResult<List<StokvelMemberResponseDTO>>> GetMembersInRotationOrder(Guid stokvelId)
         {
             try
             {
                 var result = await _stokvelService.GetMembersInRotationOrderAsync(stokvelId);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while getting members in rotation order." });
             }
         }
 
         /// <summary>
-        /// Gets detailed balance information for a member
+        /// Gets a member's detailed balance information
         /// </summary>
         /// <param name="stokvelId">The stokvel ID</param>
         /// <param name="memberId">The member ID</param>
@@ -487,9 +495,9 @@ namespace TossErp.API.Controllers
                 var result = await _stokvelService.GetMemberBalanceDetailsAsync(stokvelId, memberId);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { error = "An error occurred while getting the member balance details." });
+                return StatusCode(500, new { error = "An error occurred while getting member balance details." });
             }
         }
     }

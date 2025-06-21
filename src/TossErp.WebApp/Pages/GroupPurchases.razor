@@ -1,5 +1,5 @@
 @page "/group-purchases"
-@using TossErp.Application.DTOs
+@using TossErp.WebApp.DTOs
 @using TossErp.Application.Services
 @using TossErp.Shared.Enums
 @inject IGroupPurchaseService GroupPurchaseService
@@ -111,14 +111,20 @@
                 <PropertyColumn Property="x => x.MemberCount" Title="Members" />
                 <PropertyColumn Property="x => x.EndDate" Title="Completed Date" Format="MMM dd, yyyy" />
                 <TemplateColumn Title="Status">
-                    <CellTemplate Context="group">
+                    <CellTemplate>
+                        @{
+                            var group = context.Item;
+                        }
                         <MudChip T="object" Color="@GetStatusColor(group.Status)" Size="Size.Small">
                             @group.Status
                         </MudChip>
                     </CellTemplate>
                 </TemplateColumn>
                 <TemplateColumn Title="Actions">
-                    <CellTemplate Context="group">
+                    <CellTemplate>
+                        @{
+                            var group = context.Item;
+                        }
                         <MudButton Variant="Variant.Text" 
                                   Color="Color.Primary" 
                                   Size="Size.Small"
@@ -158,7 +164,7 @@
                                     Required="true"
                                     Variant="Variant.Outlined"
                                     Min="0"
-                                    Step="0.01" />
+                                    Step="0.01m" />
                 </MudItem>
                 <MudItem xs="12" md="6">
                     <MudNumericField T="decimal" @bind-Value="_newGroup.GroupPrice" 
@@ -166,7 +172,7 @@
                                     Required="true"
                                     Variant="Variant.Outlined"
                                     Min="0"
-                                    Step="0.01" />
+                                    Step="0.01m" />
                 </MudItem>
                 <MudItem xs="12" md="6">
                     <MudNumericField T="int" @bind-Value="_newGroup.MinimumQuantity" 
@@ -185,11 +191,11 @@
                                     Step="1" />
                 </MudItem>
                 <MudItem xs="12">
-                    <MudDatePicker @bind-Date="_newGroup.ExpiryDate" 
+                    <MudDatePicker Date="_newGroup.ExpiryDate" 
+                                  DateChanged="@((date) => _newGroup.ExpiryDate = date ?? DateTime.Today)"
                                   Label="Expiry Date" 
                                   Required="true"
-                                  Variant="Variant.Outlined"
-                                  MinDate="@DateTime.Today" />
+                                  Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12">
                     <MudTextField @bind-Value="_newGroup.DeliveryLocation" 
@@ -286,8 +292,31 @@
         try
         {
             var allGroups = await GroupPurchaseService.GetAllAsync();
-            _activeGroups = allGroups.Where(g => g.Status == "Active" || g.Status == "Open").ToList();
-            _completedGroups = allGroups.Where(g => g.Status == "Completed" || g.Status == "Cancelled").ToList();
+            var webAppGroups = allGroups.Select(g => new TossErp.WebApp.DTOs.GroupPurchaseDto
+            {
+                Id = g.Id,
+                Name = g.Name ?? string.Empty,
+                Description = g.Description ?? string.Empty,
+                ProductName = g.ProductName ?? string.Empty,
+                UnitPrice = g.UnitPrice,
+                GroupPrice = g.GroupPrice,
+                MinimumQuantity = g.MinimumQuantity,
+                TargetQuantity = g.TargetQuantity,
+                CurrentQuantity = g.CurrentQuantity,
+                TargetAmount = g.TargetAmount,
+                CurrentAmount = g.CurrentAmount,
+                MemberCount = g.MemberCount,
+                Status = g.Status ?? string.Empty,
+                CreatedAt = g.CreatedAt,
+                ExpiryDate = g.ExpiryDate,
+                EndDate = g.EndDate,
+                DeliveryLocation = g.DeliveryLocation ?? string.Empty,
+                BusinessId = g.BusinessId,
+                CreatedBy = g.CreatedBy.ToString()
+            }).ToList();
+            
+            _activeGroups = webAppGroups.Where(g => g.Status == "Active" || g.Status == "Open").ToList();
+            _completedGroups = webAppGroups.Where(g => g.Status == "Completed" || g.Status == "Cancelled").ToList();
         }
         catch (Exception)
         {
@@ -301,9 +330,22 @@
 
         try
         {
-            _newGroup.BusinessId = Guid.NewGuid(); // TODO: Get from current user context
-            _newGroup.CreatedBy = Guid.NewGuid(); // TODO: Get from current user context
-            await GroupPurchaseService.CreateAsync(_newGroup);
+            var createDto = new TossErp.Application.DTOs.CreateGroupPurchaseDto
+            {
+                BusinessId = Guid.NewGuid(), // TODO: Get from current user context
+                ProductId = Guid.NewGuid(), // TODO: Get from product selection
+                ProductName = _newGroup.ProductName,
+                UnitPrice = _newGroup.UnitPrice,
+                GroupPrice = _newGroup.GroupPrice,
+                MinimumQuantity = _newGroup.MinimumQuantity,
+                TargetQuantity = _newGroup.TargetQuantity,
+                ExpiryDate = _newGroup.ExpiryDate,
+                CreatedBy = Guid.NewGuid(), // TODO: Get from current user context
+                Description = _newGroup.Description,
+                DeliveryLocation = _newGroup.DeliveryLocation
+            };
+            
+            await GroupPurchaseService.CreateAsync(createDto);
             Snackbar.Add("Group created successfully", Severity.Success);
             _showCreateDialog = false;
             _newGroup = new CreateGroupPurchaseDto();
@@ -349,6 +391,6 @@
     private double GetProgressPercentage(GroupPurchaseDto group)
     {
         if (group.TargetAmount <= 0) return 0;
-        return Math.Min((double)(group.CurrentAmount / group.TargetAmount * 100), 100);
+        return Math.Min((double)(group.CurrentAmount / group.TargetAmount * 100m), 100);
     }
 } 

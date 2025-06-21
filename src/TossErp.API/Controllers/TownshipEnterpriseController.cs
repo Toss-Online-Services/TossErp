@@ -36,7 +36,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while creating the township enterprise." });
             }
@@ -58,7 +58,7 @@ namespace TossErp.API.Controllers
 
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while retrieving the township enterprise." });
             }
@@ -81,7 +81,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while updating the township enterprise." });
             }
@@ -104,7 +104,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while registering the township enterprise." });
             }
@@ -127,7 +127,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while activating the township enterprise." });
             }
@@ -150,7 +150,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while deactivating the township enterprise." });
             }
@@ -169,7 +169,7 @@ namespace TossErp.API.Controllers
                 var result = await _townshipEnterpriseService.GetTownshipEnterprisesAsync(filter);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while retrieving the township enterprises." });
             }
@@ -205,7 +205,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while adding the license." });
             }
@@ -241,7 +241,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while adding the document." });
             }
@@ -275,7 +275,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while adding the contact." });
             }
@@ -299,7 +299,7 @@ namespace TossErp.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while removing the contact." });
             }
@@ -319,7 +319,7 @@ namespace TossErp.API.Controllers
                 var result = await _townshipEnterpriseService.HasValidLicenseAsync(enterpriseId, licenseType);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while checking the license validity." });
             }
@@ -339,7 +339,7 @@ namespace TossErp.API.Controllers
                 var result = await _townshipEnterpriseService.IsInTownshipAsync(enterpriseId, townshipName);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while checking the township location." });
             }
@@ -359,7 +359,7 @@ namespace TossErp.API.Controllers
                 var result = await _townshipEnterpriseService.IsInProvinceAsync(enterpriseId, provinceName);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { error = "An error occurred while checking the province location." });
             }

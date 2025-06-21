@@ -63,9 +63,9 @@
             <MudButton Variant="Variant.Filled" 
                       Color="Color.Primary" 
                       OnClick="@SendMessage"
-                      Disabled="@string.IsNullOrWhiteSpace(_userInput)">
+                      Disabled="@(string.IsNullOrWhiteSpace(_userInput) || _isLoading)">
                 <MudIcon Icon="@Icons.Material.Filled.Send" Class="mr-1" />
-                Send
+                @(_isLoading ? "Sending..." : "Send")
             </MudButton>
         </MudStack>
     </MudPaper>

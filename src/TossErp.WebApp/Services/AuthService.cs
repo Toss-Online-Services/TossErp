@@ -1,4 +1,4 @@
-using TossErp.Shared.DTOs;
+using TossErp.WebApp.DTOs;
 using Microsoft.JSInterop;
 
 namespace TossErp.WebApp.Services

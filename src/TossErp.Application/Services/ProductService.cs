@@ -39,6 +39,12 @@ public class ProductService : IProductService
         return products.Select(MapToDto);
     }
 
+    public async Task<IEnumerable<ProductDto>> GetByBusinessIdAsync(Guid businessId)
+    {
+        var products = await _productRepository.GetByBusinessIdAsync(businessId);
+        return products.Select(MapToDto);
+    }
+
     public Task<IEnumerable<ProductDto>> SearchAsync(string searchTerm)
     {
         // This method needs a businessId parameter, but we'll return empty for now
