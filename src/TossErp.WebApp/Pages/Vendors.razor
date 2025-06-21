@@ -1,0 +1,385 @@
+@page "/vendors"
+@using TossErp.Application.DTOs
+@using TossErp.Application.Services
+@inject IVendorService VendorService
+@inject ISnackbar Snackbar
+
+<PageTitle>TOSS ERP III - Vendor Directory</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
+    <!-- Header -->
+    <MudPaper Class="pa-4 mb-4" Elevation="1">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3">
+            <MudText Typo="Typo.h4">Vendor Directory</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchTerm" 
+                         Label="Search Vendors..." 
+                         Variant="Variant.Outlined" 
+                         Adornment="Adornment.Start" 
+                         AdornmentIcon="@Icons.Material.Filled.Search"
+                         Class="flex-grow-1" />
+            <MudButton Variant="Variant.Filled" 
+                      Color="Color.Primary" 
+                      OnClick="@(() => _showAddDialog = true)"
+                      StartIcon="@Icons.Material.Filled.Add">
+                Add Vendor
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+
+    <!-- Vendor Cards -->
+    <MudGrid>
+        @foreach (var vendor in _filteredVendors)
+        {
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudCard Elevation="2" Class="ma-2">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@vendor.Name</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@vendor.Category</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudChip Color="@GetRatingColor(vendor.Rating)" Size="Size.Small">
+                                @vendor.Rating ★
+                            </MudChip>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudStack Spacing="2">
+                            <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" Color="Color.Secondary" />
+                                <MudText Typo="Typo.body2">@vendor.Location</MudText>
+                            </MudStack>
+                            <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" Color="Color.Secondary" />
+                                <MudText Typo="Typo.body2">@vendor.Phone</MudText>
+                            </MudStack>
+                            <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                <MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" Color="Color.Secondary" />
+                                <MudText Typo="Typo.body2">@vendor.Email</MudText>
+                            </MudStack>
+                            <MudDivider />
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                @vendor.Description
+                            </MudText>
+                        </MudStack>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" 
+                                  Color="Color.Primary" 
+                                  OnClick="@(() => ViewVendorDetails(vendor))">
+                            View Details
+                        </MudButton>
+                        <MudButton Variant="Variant.Text" 
+                                  Color="Color.Secondary" 
+                                  OnClick="@(() => RequestQuote(vendor))">
+                            Request Quote
+                        </MudButton>
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                     Size="Size.Small" 
+                                     Color="Color.Primary"
+                                     OnClick="@(() => EditVendor(vendor))" />
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+
+    @if (!_filteredVendors.Any())
+    {
+        <MudPaper Class="pa-8 text-center" Elevation="0">
+            <MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Large" Color="Color.Secondary" />
+            <MudText Typo="Typo.h6" Color="Color.Secondary" Class="mt-2">No vendors found</MudText>
+        </MudPaper>
+    }
+</MudContainer>
+
+<!-- Add/Edit Vendor Dialog -->
+<MudDialog @bind-IsVisible="_showAddDialog" Options="new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true }">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            @(_editingVendor?.Id > 0 ? "Edit Vendor" : "Add New Vendor")
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_form" @bind-IsValid="_isValid">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_editingVendor.Name" 
+                                 Label="Vendor Name" 
+                                 Required="true"
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_editingVendor.Category" 
+                                 Label="Category" 
+                                 Required="true"
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_editingVendor.Description" 
+                                 Label="Description" 
+                                 Lines="3"
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_editingVendor.Location" 
+                                 Label="Location" 
+                                 Required="true"
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_editingVendor.Phone" 
+                                 Label="Phone" 
+                                 Required="true"
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_editingVendor.Email" 
+                                 Label="Email" 
+                                 Required="true"
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudNumericField @bind-Value="_editingVendor.Rating" 
+                                    Label="Rating" 
+                                    Variant="Variant.Outlined"
+                                    Min="0"
+                                    Max="5"
+                                    Step="0.1" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_editingVendor.Website" 
+                                 Label="Website" 
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showAddDialog = false)">Cancel</MudButton>
+        <MudButton Color="Color.Primary" 
+                  Variant="Variant.Filled" 
+                  OnClick="@SaveVendor"
+                  Disabled="@(!_isValid)">
+            @(_editingVendor?.Id > 0 ? "Update" : "Save")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+<!-- Vendor Details Dialog -->
+<MudDialog @bind-IsVisible="_showDetailsDialog" Options="new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true }">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Vendor Details - @_selectedVendor?.Name</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_selectedVendor != null)
+        {
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudStack Spacing="3">
+                        <MudText Typo="Typo.subtitle1">Contact Information</MudText>
+                        <MudStack Spacing="2">
+                            <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                <MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Small" Color="Color.Primary" />
+                                <MudStack>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">Company</MudText>
+                                    <MudText Typo="Typo.body1">@_selectedVendor.Name</MudText>
+                                </MudStack>
+                            </MudStack>
+                            <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" Color="Color.Primary" />
+                                <MudStack>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">Location</MudText>
+                                    <MudText Typo="Typo.body1">@_selectedVendor.Location</MudText>
+                                </MudStack>
+                            </MudStack>
+                            <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" Color="Color.Primary" />
+                                <MudStack>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">Phone</MudText>
+                                    <MudText Typo="Typo.body1">@_selectedVendor.Phone</MudText>
+                                </MudStack>
+                            </MudStack>
+                            <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                <MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" Color="Color.Primary" />
+                                <MudStack>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">Email</MudText>
+                                    <MudText Typo="Typo.body1">@_selectedVendor.Email</MudText>
+                                </MudStack>
+                            </MudStack>
+                            @if (!string.IsNullOrEmpty(_selectedVendor.Website))
+                            {
+                                <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Language" Size="Size.Small" Color="Color.Primary" />
+                                    <MudStack>
+                                        <MudText Typo="Typo.body2" Color="Color.Secondary">Website</MudText>
+                                        <MudLink Href="@_selectedVendor.Website" Target="_blank">@_selectedVendor.Website</MudLink>
+                                    </MudStack>
+                                </MudStack>
+                            }
+                        </MudStack>
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudStack Spacing="3">
+                        <MudText Typo="Typo.subtitle1">Business Information</MudText>
+                        <MudStack Spacing="2">
+                            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.body2">Category:</MudText>
+                                <MudChip Color="Color.Primary" Size="Size.Small">@_selectedVendor.Category</MudChip>
+                            </MudStack>
+                            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.body2">Rating:</MudText>
+                                <MudChip Color="@GetRatingColor(_selectedVendor.Rating)" Size="Size.Small">
+                                    @_selectedVendor.Rating ★
+                                </MudChip>
+                            </MudStack>
+                        </MudStack>
+                        
+                        <MudDivider />
+                        
+                        <MudText Typo="Typo.subtitle2">Description</MudText>
+                        <MudText Typo="Typo.body1">@_selectedVendor.Description</MudText>
+                    </MudStack>
+                </MudItem>
+            </MudGrid>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showDetailsDialog = false)">Close</MudButton>
+        <MudButton Color="Color.Primary" 
+                  Variant="Variant.Filled" 
+                  OnClick="@(() => RequestQuote(_selectedVendor))">
+            Request Quote
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private string _searchTerm = string.Empty;
+    private List<VendorDto> _vendors = new();
+    private List<VendorDto> _filteredVendors = new();
+    private bool _showAddDialog = false;
+    private bool _showDetailsDialog = false;
+    private bool _isValid = false;
+    private MudForm _form = new();
+    private VendorDto _editingVendor = new();
+    private VendorDto? _selectedVendor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadVendors();
+    }
+
+    protected override void OnParametersSet()
+    {
+        FilterVendors();
+    }
+
+    private async Task LoadVendors()
+    {
+        try
+        {
+            _vendors = await VendorService.GetAllVendorsAsync();
+            FilterVendors();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error loading vendors", Severity.Error);
+        }
+    }
+
+    private void FilterVendors()
+    {
+        if (string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            _filteredVendors = _vendors;
+        }
+        else
+        {
+            _filteredVendors = _vendors.Where(v => 
+                v.Name.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                v.Category.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                v.Location.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                v.Description.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase)
+            ).ToList();
+        }
+    }
+
+    private void EditVendor(VendorDto vendor)
+    {
+        _editingVendor = new VendorDto
+        {
+            Id = vendor.Id,
+            Name = vendor.Name,
+            Category = vendor.Category,
+            Description = vendor.Description,
+            Location = vendor.Location,
+            Phone = vendor.Phone,
+            Email = vendor.Email,
+            Website = vendor.Website,
+            Rating = vendor.Rating
+        };
+        _showAddDialog = true;
+    }
+
+    private void ViewVendorDetails(VendorDto vendor)
+    {
+        _selectedVendor = vendor;
+        _showDetailsDialog = true;
+    }
+
+    private async Task SaveVendor()
+    {
+        if (!_isValid) return;
+
+        try
+        {
+            if (_editingVendor.Id > 0)
+            {
+                await VendorService.UpdateVendorAsync(_editingVendor);
+                Snackbar.Add("Vendor updated successfully", Severity.Success);
+            }
+            else
+            {
+                await VendorService.CreateVendorAsync(_editingVendor);
+                Snackbar.Add("Vendor created successfully", Severity.Success);
+            }
+
+            _showAddDialog = false;
+            _editingVendor = new VendorDto();
+            await LoadVendors();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error saving vendor", Severity.Error);
+        }
+    }
+
+    private async Task RequestQuote(VendorDto? vendor)
+    {
+        if (vendor == null) return;
+
+        try
+        {
+            // TODO: Implement quote request logic
+            Snackbar.Add($"Quote request sent to {vendor.Name}", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error sending quote request", Severity.Error);
+        }
+    }
+
+    private Color GetRatingColor(double rating)
+    {
+        return rating switch
+        {
+            >= 4.5 => Color.Success,
+            >= 3.5 => Color.Warning,
+            >= 2.5 => Color.Info,
+            _ => Color.Error
+        };
+    }
+} 

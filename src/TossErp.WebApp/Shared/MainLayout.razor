@@ -1,25 +1,85 @@
 @inherits LayoutComponentBase
-@using TossErp.WebApp.Services
 @inject NavigationManager Navigation
-@inject ILocalStorageService LocalStorage
+@inject IJSRuntime JSRuntime
 
-<MudThemeProvider />
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
+    <!-- App Bar -->
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h6" Class="ml-3">TOSS ERP</MudText>
+        <MudText Typo="Typo.h6" Class="ml-3">TOSS ERP III</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="Color.Inherit" />
-        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" />
+        
+        <!-- AI Co-Pilot Button -->
+        <MudIconButton Icon="@Icons.Material.Filled.SmartToy" Color="Color.Primary" OnClick="@OpenCopilotDialog" Title="AI Co-Pilot" />
+        
+        <!-- Notifications -->
+        <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="Color.Inherit" OnClick="@OpenNotifications" />
+        
+        <!-- User Menu -->
+        <MudMenu Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Direction="Direction.Bottom" OffsetY="true">
+            <MudMenuItem OnClick="@(() => Navigation.NavigateTo("/profile"))">Profile</MudMenuItem>
+            <MudMenuItem OnClick="@(() => Navigation.NavigateTo("/settings"))">Settings</MudMenuItem>
+            <MudDivider />
+            <MudMenuItem OnClick="@Logout">Logout</MudMenuItem>
+        </MudMenu>
     </MudAppBar>
-    
-    <MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu />
+
+    <!-- Navigation Drawer -->
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <MudNavMenu>
+            <!-- Dashboard -->
+            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">
+                Dashboard
+            </MudNavLink>
+            
+            <!-- POS & Sales -->
+            <MudNavGroup Title="POS & Sales" Icon="@Icons.Material.Filled.PointOfSale" Expanded="true">
+                <MudNavLink Href="pos" Icon="@Icons.Material.Filled.ShoppingCart">Point of Sale</MudNavLink>
+                <MudNavLink Href="sales" Icon="@Icons.Material.Filled.Receipt">Sales History</MudNavLink>
+                <MudNavLink Href="customers" Icon="@Icons.Material.Filled.People">Customers</MudNavLink>
+            </MudNavGroup>
+            
+            <!-- Inventory -->
+            <MudNavGroup Title="Inventory" Icon="@Icons.Material.Filled.Inventory" Expanded="true">
+                <MudNavLink Href="products" Icon="@Icons.Material.Filled.Category">Products</MudNavLink>
+                <MudNavLink Href="stock" Icon="@Icons.Material.Filled.Inventory2">Stock Management</MudNavLink>
+                <MudNavLink Href="categories" Icon="@Icons.Material.Filled.Category">Categories</MudNavLink>
+            </MudNavGroup>
+            
+            <!-- Group Purchasing -->
+            <MudNavGroup Title="Group Purchasing" Icon="@Icons.Material.Filled.GroupWork" Expanded="true">
+                <MudNavLink Href="group-purchases" Icon="@Icons.Material.Filled.ShoppingBasket">Active Groups</MudNavLink>
+                <MudNavLink Href="create-group" Icon="@Icons.Material.Filled.AddShoppingCart">Create Group</MudNavLink>
+                <MudNavLink Href="group-history" Icon="@Icons.Material.Filled.History">Group History</MudNavLink>
+            </MudNavGroup>
+            
+            <!-- Vendors -->
+            <MudNavGroup Title="Vendors" Icon="@Icons.Material.Filled.Business" Expanded="true">
+                <MudNavLink Href="vendors" Icon="@Icons.Material.Filled.Store">Vendor Directory</MudNavLink>
+                <MudNavLink Href="quotes" Icon="@Icons.Material.Filled.RequestQuote">Quote Requests</MudNavLink>
+            </MudNavGroup>
+            
+            <!-- Reports -->
+            <MudNavGroup Title="Reports" Icon="@Icons.Material.Filled.Assessment" Expanded="true">
+                <MudNavLink Href="sales-report" Icon="@Icons.Material.Filled.TrendingUp">Sales Report</MudNavLink>
+                <MudNavLink Href="inventory-report" Icon="@Icons.Material.Filled.Inventory">Inventory Report</MudNavLink>
+                <MudNavLink Href="group-report" Icon="@Icons.Material.Filled.GroupWork">Group Report</MudNavLink>
+            </MudNavGroup>
+            
+            <!-- Settings -->
+            <MudNavGroup Title="Settings" Icon="@Icons.Material.Filled.Settings" Expanded="true">
+                <MudNavLink Href="business-settings" Icon="@Icons.Material.Filled.Business">Business Settings</MudNavLink>
+                <MudNavLink Href="users" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
+                <MudNavLink Href="backup" Icon="@Icons.Material.Filled.Backup">Backup & Restore</MudNavLink>
+            </MudNavGroup>
+        </MudNavMenu>
     </MudDrawer>
-    
+
+    <!-- Main Content -->
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4">
             @Body
@@ -27,18 +87,42 @@
     </MudMainContent>
 </MudLayout>
 
+<!-- AI Co-Pilot Dialog -->
+<MudDialog @bind-IsVisible="_copilotDialogVisible" Options="new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true }">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.SmartToy" Class="mr-2" />
+            AI Co-Pilot
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <CopilotChat />
+    </DialogContent>
+</MudDialog>
+
 @code {
     private bool _drawerOpen = true;
+    private bool _isDarkMode = false;
+    private bool _copilotDialogVisible = false;
 
     private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
     }
 
-    private async Task Logout()
+    private void OpenCopilotDialog()
     {
-        await LocalStorage.RemoveItemAsync("authToken");
-        await LocalStorage.RemoveItemAsync("user");
+        _copilotDialogVisible = true;
+    }
+
+    private void OpenNotifications()
+    {
+        // TODO: Implement notifications
+    }
+
+    private void Logout()
+    {
+        // TODO: Implement logout
         Navigation.NavigateTo("/login");
     }
 } 

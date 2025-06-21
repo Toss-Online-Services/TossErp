@@ -1,0 +1,152 @@
+@using TossErp.Application.Services
+@inject ICoPilotService CoPilotService
+@inject ISnackbar Snackbar
+
+<MudContainer Style="height: 400px; display: flex; flex-direction: column;">
+    <!-- Chat Messages -->
+    <MudPaper Class="flex-grow-1 mb-3" Style="overflow-y: auto; max-height: 300px;">
+        <MudList Dense="true">
+            @foreach (var message in _messages)
+            {
+                <MudListItem>
+                    <MudCard Elevation="1" Class="mb-2">
+                        <MudCardContent>
+                            <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                <MudAvatar Size="Size.Small" Color="@(message.IsUser ? Color.Primary : Color.Secondary)">
+                                    <MudIcon Icon="@(message.IsUser ? Icons.Material.Filled.Person : Icons.Material.Filled.SmartToy)" />
+                                </MudAvatar>
+                                <MudStack Class="flex-grow-1">
+                                    <MudText Typo="Typo.body2" Color="@(message.IsUser ? Color.Primary : Color.Default)">
+                                        @(message.IsUser ? "You" : "AI Co-Pilot")
+                                    </MudText>
+                                    <MudText Typo="Typo.body1">@message.Content</MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                        @message.Timestamp.ToString("HH:mm")
+                                    </MudText>
+                                </MudStack>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudListItem>
+            }
+        </MudList>
+    </MudPaper>
+
+    <!-- Quick Actions -->
+    <MudPaper Class="mb-3" Elevation="0">
+        <MudText Typo="Typo.subtitle2" Class="mb-2">Quick Actions:</MudText>
+        <MudStack Row="true" Spacing="2" Wrap="true">
+            <MudChip Color="Color.Primary" OnClick="@(() => SendQuickMessage("sales insights"))">
+                Sales Insights
+            </MudChip>
+            <MudChip Color="Color.Secondary" OnClick="@(() => SendQuickMessage("inventory alert"))">
+                Inventory Alert
+            </MudChip>
+            <MudChip Color="Color.Tertiary" OnClick="@(() => SendQuickMessage("group purchase suggestion"))">
+                Group Purchase
+            </MudChip>
+            <MudChip Color="Color.Info" OnClick="@(() => SendQuickMessage("promotion idea"))">
+                Promotion Idea
+            </MudChip>
+        </MudStack>
+    </MudPaper>
+
+    <!-- Input Area -->
+    <MudPaper Elevation="1" Class="pa-3">
+        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End">
+            <MudTextField @bind-Value="_userInput" 
+                         Label="Ask your AI Co-Pilot..." 
+                         Variant="Variant.Outlined" 
+                         Class="flex-grow-1"
+                         Lines="2"
+                         OnKeyPress="@HandleKeyPress" />
+            <MudButton Variant="Variant.Filled" 
+                      Color="Color.Primary" 
+                      OnClick="@SendMessage"
+                      Disabled="@string.IsNullOrWhiteSpace(_userInput)">
+                <MudIcon Icon="@Icons.Material.Filled.Send" Class="mr-1" />
+                Send
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private string _userInput = string.Empty;
+    private List<ChatMessage> _messages = new();
+    private bool _isLoading = false;
+
+    protected override void OnInitialized()
+    {
+        // Add welcome message
+        _messages.Add(new ChatMessage
+        {
+            Content = "Hello! I'm your AI Co-Pilot. I can help you with sales insights, inventory management, group purchasing suggestions, and business recommendations. How can I assist you today?",
+            IsUser = false,
+            Timestamp = DateTime.Now
+        });
+    }
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(_userInput)) return;
+
+        var userMessage = new ChatMessage
+        {
+            Content = _userInput,
+            IsUser = true,
+            Timestamp = DateTime.Now
+        };
+
+        _messages.Add(userMessage);
+        var userInput = _userInput;
+        _userInput = string.Empty;
+        _isLoading = true;
+
+        StateHasChanged();
+
+        try
+        {
+            var response = await CoPilotService.GetResponseAsync(userInput);
+            
+            var aiMessage = new ChatMessage
+            {
+                Content = response,
+                IsUser = false,
+                Timestamp = DateTime.Now
+            };
+
+            _messages.Add(aiMessage);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error communicating with AI Co-Pilot", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SendQuickMessage(string message)
+    {
+        _userInput = message;
+        await SendMessage();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            await SendMessage();
+        }
+    }
+
+    private class ChatMessage
+    {
+        public string Content { get; set; } = string.Empty;
+        public bool IsUser { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+} 

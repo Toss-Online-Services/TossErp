@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TossErp.Shared\TossErp.Shared.csproj" />
+    <ProjectReference Include="..\TossErp.Application\TossErp.Application.csproj" />
   </ItemGroup>
 
 </Project> 

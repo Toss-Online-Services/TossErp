@@ -1,386 +1,289 @@
 @page "/sales"
-@using TossErp.Shared.DTOs
-@using TossErp.Shared.Enums
-@inject HttpClient Http
+@using TossErp.Application.DTOs
+@* @inject ISaleService SaleService *@
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
-@inject IDialogService DialogService
 
-<PageTitle>Sales History - TOSS ERP</PageTitle>
+<PageTitle>TOSS ERP III - Sales History</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
-    <MudGrid>
-        <!-- Sales Overview Cards -->
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
+    <!-- Header -->
+    <MudPaper Class="pa-4 mb-4" Elevation="1">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3">
+            <MudText Typo="Typo.h4">Sales History</MudText>
+            <MudSpacer />
+            <MudDateRangePicker @bind-DateRange="_dateRange" 
+                               Label="Filter by Date Range" 
+                               Variant="Variant.Outlined" />
+            <MudButton Variant="Variant.Filled" 
+                      Color="Color.Primary" 
+                      OnClick="@ExportSales"
+                      StartIcon="@Icons.Material.Filled.Download">
+                Export
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+
+    <!-- Sales Summary Cards -->
+    <MudGrid Class="mb-4">
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Elevation="2" Class="pa-4">
-                <div class="d-flex justify-space-between align-center mb-4">
-                    <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Color="Color.Success" Size="Size.Large" />
-                    <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
-                </div>
-                <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Today's Sales</MudText>
-                <MudText Typo="Typo.h5">R @_todaySales.ToString("N2")</MudText>
-                <MudText Typo="Typo.caption" Color="Color.Success">+15% from yesterday</MudText>
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudAvatar Color="Color.Success" Size="Size.Small">
+                        <MudIcon Icon="@Icons.Material.Filled.TrendingUp" />
+                    </MudAvatar>
+                    <MudStack Class="flex-grow-1">
+                        <MudText Typo="Typo.h6">@_totalSales.ToString("C")</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Total Sales</MudText>
+                    </MudStack>
+                </MudStack>
             </MudPaper>
         </MudItem>
-
+        
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Elevation="2" Class="pa-4">
-                <div class="d-flex justify-space-between align-center mb-4">
-                    <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Primary" Size="Size.Large" />
-                    <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
-                </div>
-                <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Orders</MudText>
-                <MudText Typo="Typo.h5">@_totalOrders</MudText>
-                <MudText Typo="Typo.caption" Color="Color.Success">+5% from last week</MudText>
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudAvatar Color="Color.Info" Size="Size.Small">
+                        <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" />
+                    </MudAvatar>
+                    <MudStack Class="flex-grow-1">
+                        <MudText Typo="Typo.h6">@_totalOrders</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Total Orders</MudText>
+                    </MudStack>
+                </MudStack>
             </MudPaper>
         </MudItem>
-
+        
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Elevation="2" Class="pa-4">
-                <div class="d-flex justify-space-between align-center mb-4">
-                    <MudIcon Icon="@Icons.Material.Filled.People" Color="Color.Secondary" Size="Size.Large" />
-                    <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
-                </div>
-                <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">New Customers</MudText>
-                <MudText Typo="Typo.h5">@_newCustomers</MudText>
-                <MudText Typo="Typo.caption" Color="Color.Success">+3 this week</MudText>
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudAvatar Color="Color.Warning" Size="Size.Small">
+                        <MudIcon Icon="@Icons.Material.Filled.Average" />
+                    </MudAvatar>
+                    <MudStack Class="flex-grow-1">
+                        <MudText Typo="Typo.h6">@_averageOrderValue.ToString("C")</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Average Order</MudText>
+                    </MudStack>
+                </MudStack>
             </MudPaper>
         </MudItem>
-
+        
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Elevation="2" Class="pa-4">
-                <div class="d-flex justify-space-between align-center mb-4">
-                    <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Color="Color.Error" Size="Size.Large" />
-                    <MudIcon Icon="@Icons.Material.Filled.TrendingDown" Color="Color.Error" />
-                </div>
-                <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Returns</MudText>
-                <MudText Typo="Typo.h5">@_returns</MudText>
-                <MudText Typo="Typo.caption" Color="Color.Error">2 pending approvals</MudText>
-            </MudPaper>
-        </MudItem>
-
-        <!-- Sales Chart -->
-        <MudItem xs="12" md="8">
-            <MudPaper Elevation="2" Class="pa-4">
-                <div class="d-flex justify-space-between align-center mb-4">
-                    <MudText Typo="Typo.h6">Sales Trends</MudText>
-                    <MudSelect T="string" @bind-Value="_selectedPeriod" Dense="true">
-                        <MudSelectItem Value="@("daily")">Daily</MudSelectItem>
-                        <MudSelectItem Value="@("weekly")">Weekly</MudSelectItem>
-                        <MudSelectItem Value="@("monthly")">Monthly</MudSelectItem>
-                    </MudSelect>
-                </div>
-                <MudChart ChartType="ChartType.Line" ChartSeries="@_salesTrendSeries" 
-                         XAxisLabels="@_salesTrendLabels" Width="100%" Height="300px"/>
-            </MudPaper>
-        </MudItem>
-
-        <!-- Top Products -->
-        <MudItem xs="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4">
-                <MudText Typo="Typo.h6" Class="mb-4">Top Selling Products</MudText>
-                <MudList Dense="true" T="string">
-                    @foreach (var product in _topProducts)
-                    {
-                        <MudListItem T="string">
-                            <div class="d-flex justify-space-between align-center">
-                                <div>
-                                    <MudText>@product.Name</MudText>
-                                    <MudText Typo="Typo.caption">
-                                        @product.Quantity sold | R @product.Revenue.ToString("N2")
-                                    </MudText>
-                                </div>
-                                <MudProgressCircular Value="@product.Progress" Color="Color.Success" 
-                                                   Size="Size.Small"/>
-                            </div>
-                        </MudListItem>
-                        <MudDivider />
-                    }
-                </MudList>
-            </MudPaper>
-        </MudItem>
-
-        <!-- Sales History -->
-        <MudItem xs="12">
-            <MudPaper Elevation="2" Class="pa-4">
-                <div class="d-flex justify-space-between align-center mb-4">
-                    <MudText Typo="Typo.h6">Sales History</MudText>
-                    <div class="d-flex gap-2">
-                        <MudDateRangePicker @bind-DateRange="_dateRange" 
-                                          PickerVariant="PickerVariant.Dialog"
-                                          Label="Date Range"/>
-                        <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                                 StartIcon="@Icons.Material.Filled.FileDownload"
-                                 OnClick="@ExportSalesReport">
-                            Export
-                        </MudButton>
-                    </div>
-                </div>
-
-                <MudTable Items="@_salesHistory" Dense="false" Hover="true" Bordered="false" Striped="true"
-                         Filter="new Func<SaleTransaction,bool>(FilterFunc)"
-                         @bind-SelectedItem="_selectedTransaction">
-                    <ToolBarContent>
-                        <MudTextField @bind-Value="_searchString" Placeholder="Search by invoice or customer"
-                                    Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
-                                    IconSize="Size.Medium" Class="mt-0" />
-                    </ToolBarContent>
-                    <HeaderContent>
-                        <MudTh>Invoice #</MudTh>
-                        <MudTh>Date</MudTh>
-                        <MudTh>Customer</MudTh>
-                        <MudTh>Items</MudTh>
-                        <MudTh>Total</MudTh>
-                        <MudTh>Payment</MudTh>
-                        <MudTh>Status</MudTh>
-                        <MudTh>Actions</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="Invoice">@context.InvoiceNumber</MudTd>
-                        <MudTd DataLabel="Date">@context.Date.ToString("dd MMM yyyy HH:mm")</MudTd>
-                        <MudTd DataLabel="Customer">@context.CustomerName</MudTd>
-                        <MudTd DataLabel="Items">@context.ItemCount items</MudTd>
-                        <MudTd DataLabel="Total">R @context.Total.ToString("N2")</MudTd>
-                        <MudTd DataLabel="Payment">
-                            <MudChip T="string" Color="@context.PaymentMethodColor" Size="Size.Small">
-                                @context.PaymentMethod
-                            </MudChip>
-                        </MudTd>
-                        <MudTd DataLabel="Status">
-                            <MudChip T="string" Color="@context.StatusColor" Size="Size.Small">
-                                @context.Status
-                            </MudChip>
-                        </MudTd>
-                        <MudTd>
-                            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
-                                <MudMenuItem Icon="@Icons.Material.Filled.Receipt"
-                                           OnClick="@(() => ViewInvoice(context))">
-                                    View Invoice
-                                </MudMenuItem>
-                                <MudMenuItem Icon="@Icons.Material.Filled.LocalPrintshop"
-                                           OnClick="@(() => PrintInvoice(context))">
-                                    Print
-                                </MudMenuItem>
-                                @if (context.Status == "Pending")
-                                {
-                                    <MudMenuItem Icon="@Icons.Material.Filled.Cancel"
-                                               OnClick="@(() => CancelSale(context))">
-                                        Cancel
-                                    </MudMenuItem>
-                                }
-                                @if (context.Status == "Completed")
-                                {
-                                    <MudMenuItem Icon="@Icons.Material.Filled.AssignmentReturn"
-                                               OnClick="@(() => ProcessReturn(context))">
-                                        Process Return
-                                    </MudMenuItem>
-                                }
-                            </MudMenu>
-                        </MudTd>
-                    </RowTemplate>
-                    <PagerContent>
-                        <MudTablePager />
-                    </PagerContent>
-                </MudTable>
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudAvatar Color="Color.Tertiary" Size="Size.Small">
+                        <MudIcon Icon="@Icons.Material.Filled.People" />
+                    </MudAvatar>
+                    <MudStack Class="flex-grow-1">
+                        <MudText Typo="Typo.h6">@_uniqueCustomers</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Unique Customers</MudText>
+                    </MudStack>
+                </MudStack>
             </MudPaper>
         </MudItem>
     </MudGrid>
+
+    <!-- Sales Data Grid -->
+    <MudPaper Class="pa-4" Elevation="1">
+        <MudDataGrid T="SaleDto" Items="@_sales" 
+                     Dense="true" Hover="true" Striped="true"
+                     Filterable="true" SortMode="SortMode.Multiple"
+                     Loading="@_isLoading"
+                     FixedHeader="true"
+                     Height="600px">
+            <Columns>
+                <PropertyColumn Property="x => x.Id" Title="Sale #" />
+                <PropertyColumn Property="x => x.CreatedAt" Title="Date" Format="MMM dd, yyyy HH:mm" />
+                <PropertyColumn Property="x => x.Total" Title="Total" Format="C" />
+                <PropertyColumn Property="x => x.PaymentMethod" Title="Payment Method" />
+                <PropertyColumn Property="x => x.ItemCount" Title="Items" />
+                <TemplateColumn Title="Status">
+                    <MudChip Color="@GetStatusColor(context.Status)" Size="Size.Small">
+                        @context.Status
+                    </MudChip>
+                </TemplateColumn>
+                <TemplateColumn Title="Actions">
+                    <MudStack Row="true" Spacing="1">
+                        <MudIconButton Icon="@Icons.Material.Filled.Receipt" 
+                                     Size="Size.Small" 
+                                     Color="Color.Primary"
+                                     OnClick="@(() => ViewSaleDetails(context))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Print" 
+                                     Size="Size.Small" 
+                                     Color="Color.Secondary"
+                                     OnClick="@(() => PrintReceipt(context))" />
+                    </MudStack>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+    </MudPaper>
 </MudContainer>
 
-@* All MudDialog and MudCheckBox blocks with illegal parameters/attributes have been commented out to fix MudBlazor analyzer errors. MaxWidth removed from MudDialog. Use IDialogService for dialogs and @bind-Value for checkboxes as per MudBlazor docs. *@
-@*
-<MudDialog @bind-IsVisible="detailsDialogVisible" Options="dialogOptions" MaxWidth="MaxWidth.Medium">
+<!-- Sale Details Dialog -->
+<MudDialog @bind-IsVisible="_showDetailsDialog" Options="new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true }">
     <TitleContent>
-        <MudText Typo="Typo.h6">Sale Details #@selectedSaleId</MudText>
+        <MudText Typo="Typo.h6">Sale Details - #@_selectedSale?.Id</MudText>
     </TitleContent>
     <DialogContent>
-        @if (selectedSale != null)
+        @if (_selectedSale != null)
         {
             <MudGrid>
-                <MudItem xs="12">
-                    <MudText Typo="Typo.subtitle1" Class="mb-2">Sale Information</MudText>
-                    <MudDivider Class="mb-2" />
-                    <MudText><strong>Date:</strong> @selectedSale.SaleDate.ToString("MM/dd/yyyy HH:mm")</MudText>
-                    <MudText><strong>Customer:</strong> @(selectedSale.CustomerName ?? "Walk-in Customer")</MudText>
-                    <MudText><strong>Payment Method:</strong> @selectedSale.PaymentMethod</MudText>
-                    <MudText><strong>Status:</strong> @selectedSale.Status</MudText>
+                <MudItem xs="12" md="6">
+                    <MudStack Spacing="3">
+                        <MudText Typo="Typo.subtitle1">Sale Information</MudText>
+                        <MudStack Spacing="2">
+                            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.body2">Sale ID:</MudText>
+                                <MudText Typo="Typo.body1">#@_selectedSale.Id</MudText>
+                            </MudStack>
+                            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.body2">Date:</MudText>
+                                <MudText Typo="Typo.body1">@_selectedSale.CreatedAt.ToString("MMM dd, yyyy HH:mm")</MudText>
+                            </MudStack>
+                            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.body2">Payment Method:</MudText>
+                                <MudText Typo="Typo.body1">@_selectedSale.PaymentMethod</MudText>
+                            </MudStack>
+                            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.body2">Status:</MudText>
+                                <MudChip Color="@GetStatusColor(_selectedSale.Status)" Size="Size.Small">
+                                    @_selectedSale.Status
+                                </MudChip>
+                            </MudStack>
+                        </MudStack>
+                    </MudStack>
                 </MudItem>
-                
-                <MudItem xs="12">
-                    <MudText Typo="Typo.subtitle1" Class="mb-2 mt-4">Items</MudText>
-                    <MudDivider Class="mb-2" />
-                    <MudTable Items="@selectedSale.Items" Dense="true" Hover="false">
-                        <HeaderContent>
-                            <MudTh>Item</MudTh>
-                            <MudTh>Qty</MudTh>
-                            <MudTh>Price</MudTh>
-                            <MudTh>Total</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd>@context.ItemName</MudTd>
-                            <MudTd>@context.Quantity</MudTd>
-                            <MudTd>@context.UnitPrice.ToString("C")</MudTd>
-                            <MudTd>@((context.Quantity * context.UnitPrice).ToString("C"))</MudTd>
-                        </RowTemplate>
-                    </MudTable>
-                </MudItem>
-                
-                <MudItem xs="12">
-                    <MudDivider Class="my-2" />
-                    <MudText Typo="Typo.h6" Class="text-right">
-                        <strong>Total: @selectedSale.TotalAmount.ToString("C")</strong>
-                    </MudText>
+                <MudItem xs="12" md="6">
+                    <MudStack Spacing="3">
+                        <MudText Typo="Typo.subtitle1">Items</MudText>
+                        <MudList Dense="true">
+                            @foreach (var item in _selectedSale.Items)
+                            {
+                                <MudListItem>
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudStack Class="flex-grow-1">
+                                            <MudText Typo="Typo.body2">@item.ProductName</MudText>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                                @item.Quantity x @item.UnitPrice.ToString("C")
+                                            </MudText>
+                                        </MudStack>
+                                        <MudText Typo="Typo.body2" Color="Color.Primary">
+                                            @((item.Quantity * item.UnitPrice).ToString("C"))
+                                        </MudText>
+                                    </MudStack>
+                                </MudListItem>
+                            }
+                        </MudList>
+                        
+                        <MudDivider />
+                        
+                        <MudStack Spacing="2">
+                            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.body1">Subtotal:</MudText>
+                                <MudText Typo="Typo.body1">@_selectedSale.Subtotal.ToString("C")</MudText>
+                            </MudStack>
+                            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.body1">Tax:</MudText>
+                                <MudText Typo="Typo.body1">@_selectedSale.Tax.ToString("C")</MudText>
+                            </MudStack>
+                            <MudDivider />
+                            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.h6">Total:</MudText>
+                                <MudText Typo="Typo.h6" Color="Color.Primary">@_selectedSale.Total.ToString("C")</MudText>
+                            </MudStack>
+                        </MudStack>
+                    </MudStack>
                 </MudItem>
             </MudGrid>
         }
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="CloseDetailsDialog">Close</MudButton>
-        <MudButton Color="Color.Primary" OnClick="@(() => PrintReceipt(selectedSaleId))">Print Receipt</MudButton>
+        <MudButton OnClick="@(() => _showDetailsDialog = false)">Close</MudButton>
+        <MudButton Color="Color.Primary" 
+                  Variant="Variant.Filled" 
+                  OnClick="@(() => PrintReceipt(_selectedSale))">
+            Print Receipt
+        </MudButton>
     </DialogActions>
 </MudDialog>
-*@
 
 @code {
-    private decimal _todaySales = 25450.75m;
-    private int _totalOrders = 128;
-    private int _newCustomers = 15;
-    private int _returns = 3;
-    
-    private string _selectedPeriod = "daily";
-    private string _searchString = "";
-    private DateRange _dateRange = new(DateTime.Now.AddDays(-30), DateTime.Now);
-    private SaleTransaction _selectedTransaction = new();
-    
-    private class TopProduct
+    private List<SaleDto> _sales = new();
+    private bool _isLoading = false;
+    private bool _showDetailsDialog = false;
+    private SaleDto? _selectedSale;
+    private DateRange _dateRange = new(DateTime.Today.AddDays(-30), DateTime.Today);
+
+    private decimal _totalSales => _sales.Sum(s => s.Total);
+    private int _totalOrders => _sales.Count;
+    private decimal _averageOrderValue => _totalOrders > 0 ? _totalSales / _totalOrders : 0;
+    private int _uniqueCustomers => _sales.Select(s => s.CustomerId).Distinct().Count();
+
+    protected override async Task OnInitializedAsync()
     {
-        public string Name { get; set; } = string.Empty;
-        public int Quantity { get; set; }
-        public decimal Revenue { get; set; }
-        public int Progress { get; set; }
+        await LoadSales();
     }
-    
-    private class SaleTransaction
+
+    private async Task LoadSales()
     {
-        public string Name { get; set; } = string.Empty;
-        public DateTime Date { get; set; }
-        public decimal Amount { get; set; }
-        public string InvoiceNumber { get; set; } = string.Empty;
-        public string CustomerName { get; set; } = string.Empty;
-        public string PaymentMethod { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
-        public int ItemCount { get; set; }
-        public decimal Total { get; set; }
-        
-        public Color PaymentMethodColor => PaymentMethod switch
+        _isLoading = true;
+        try
         {
-            "Cash" => Color.Success,
-            "Card" => Color.Primary,
-            "EFT" => Color.Info,
+            _sales = await SaleService.GetAllSalesAsync();
+            // TODO: Apply date range filter when implemented in service
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error loading sales", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void ViewSaleDetails(SaleDto sale)
+    {
+        _selectedSale = sale;
+        _showDetailsDialog = true;
+    }
+
+    private async Task PrintReceipt(SaleDto? sale)
+    {
+        if (sale == null) return;
+
+        try
+        {
+            // TODO: Implement receipt printing logic
+            Snackbar.Add("Receipt printed successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error printing receipt", Severity.Error);
+        }
+    }
+
+    private async Task ExportSales()
+    {
+        try
+        {
+            // TODO: Implement export logic
+            Snackbar.Add("Sales exported successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error exporting sales", Severity.Error);
+        }
+    }
+
+    private Color GetStatusColor(SaleStatus status)
+    {
+        return status switch
+        {
+            SaleStatus.Completed => Color.Success,
+            SaleStatus.Pending => Color.Warning,
+            SaleStatus.Cancelled => Color.Error,
             _ => Color.Default
         };
-        
-        public Color StatusColor => Status switch
-        {
-            "Completed" => Color.Success,
-            "Pending" => Color.Warning,
-            "Cancelled" => Color.Error,
-            "Refunded" => Color.Info,
-            _ => Color.Default
-        };
-    }
-    
-    private List<TopProduct> _topProducts = new()
-    {
-        new() { Name = "Samsung Galaxy S21", Quantity = 25, Revenue = 399999.75m, Progress = 85 },
-        new() { Name = "Nike Air Max", Quantity = 42, Revenue = 104999.58m, Progress = 75 },
-        new() { Name = "Nespresso Machine", Quantity = 18, Revenue = 71999.82m, Progress = 65 },
-        new() { Name = "Levi's 501 Jeans", Quantity = 56, Revenue = 55999.44m, Progress = 55 },
-        new() { Name = "Coca-Cola 2L", Quantity = 245, Revenue = 6122.55m, Progress = 45 }
-    };
-    
-    private List<ChartSeries> _salesTrendSeries = new()
-    {
-        new ChartSeries 
-        { 
-            Name = "Sales", 
-            Data = new double[] { 25450.75, 28750.50, 22150.25, 31250.75, 27850.50, 35150.25, 29950.75 }
-        }
-    };
-    
-    private string[] _salesTrendLabels = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
-    
-    private List<SaleTransaction> _salesHistory = new()
-    {
-        new() { InvoiceNumber = "INV-001", Date = DateTime.Now.AddHours(-2), CustomerName = "John Smith", 
-                ItemCount = 3, Total = 18499.97m, PaymentMethod = "Card", Status = "Completed" },
-        new() { InvoiceNumber = "INV-002", Date = DateTime.Now.AddHours(-3), CustomerName = "Sarah Johnson",
-                ItemCount = 1, Total = 2499.99m, PaymentMethod = "Cash", Status = "Completed" },
-        new() { InvoiceNumber = "INV-003", Date = DateTime.Now.AddHours(-4), CustomerName = "Mike Brown",
-                ItemCount = 2, Total = 7999.98m, PaymentMethod = "EFT", Status = "Pending" },
-        new() { InvoiceNumber = "INV-004", Date = DateTime.Now.AddHours(-5), CustomerName = "Emily Davis",
-                ItemCount = 1, Total = 3999.99m, PaymentMethod = "Card", Status = "Cancelled" },
-        new() { InvoiceNumber = "INV-005", Date = DateTime.Now.AddHours(-6), CustomerName = "David Wilson",
-                ItemCount = 4, Total = 12499.96m, PaymentMethod = "Cash", Status = "Refunded" }
-    };
-    
-    private bool FilterFunc(SaleTransaction transaction)
-    {
-        if (string.IsNullOrWhiteSpace(_searchString))
-            return true;
-
-        return transaction.InvoiceNumber.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
-               transaction.CustomerName.Contains(_searchString, StringComparison.OrdinalIgnoreCase);
-    }
-    
-    private async Task ViewInvoice(SaleTransaction transaction)
-    {
-        var dialog = await DialogService.ShowAsync<InvoiceDialog>("Invoice Details",
-            new DialogParameters { ["InvoiceNumber"] = transaction.InvoiceNumber });
-        await dialog.Result;
-    }
-    
-    private void PrintInvoice(SaleTransaction transaction)
-    {
-        // In a real application, this would generate and print an invoice
-        Snackbar.Add($"Invoice {transaction.InvoiceNumber} sent to printer!", Severity.Success);
-    }
-    
-    private async Task CancelSale(SaleTransaction transaction)
-    {
-        var parameters = new DialogParameters
-        {
-            ["ContentText"] = $"Are you sure you want to cancel sale {transaction.InvoiceNumber}?",
-            ["ButtonText"] = "Cancel Sale",
-            ["Color"] = Color.Error
-        };
-
-        var dialog = await DialogService.ShowAsync<ConfirmDialog>("Confirm Cancellation", parameters);
-        var result = await dialog.Result;
-
-        if (!result.Canceled)
-        {
-            transaction.Status = "Cancelled";
-            Snackbar.Add($"Sale {transaction.InvoiceNumber} has been cancelled", Severity.Success);
-        }
-    }
-    
-    private async Task ProcessReturn(SaleTransaction transaction)
-    {
-        var dialog = await DialogService.ShowAsync<ReturnDialog>("Process Return",
-            new DialogParameters { ["InvoiceNumber"] = transaction.InvoiceNumber });
-        var result = await dialog.Result;
-
-        if (!result.Canceled)
-        {
-            transaction.Status = "Refunded";
-            Snackbar.Add("Return processed successfully", Severity.Success);
-        }
-    }
-    
-    private void ExportSalesReport()
-    {
-        // In a real application, this would generate and download a sales report
-        Snackbar.Add("Sales report exported successfully!", Severity.Success);
     }
 } 

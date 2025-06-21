@@ -1,181 +1,292 @@
-@page "/dashboard"
-<MudText Typo="Typo.h4" Class="mb-4">Dashboard</MudText>
+@page "/"
+@using TossErp.Application.DTOs
+@using TossErp.Application.Services
+@* @inject IProductService ProductService *@
+@* @inject ISaleService SaleService *@
+@* @inject IGroupPurchaseService GroupPurchaseService *@
+@inject NavigationManager Navigation
 
-<MudGrid>
-    <!-- Analytics Cards -->
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper Elevation="2" Class="pa-4">
-            <div class="d-flex justify-space-between align-center mb-4">
-                <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Primary" Size="Size.Large" />
-                <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
-            </div>
-            <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Total Sales</MudText>
-            <MudText Typo="Typo.h5">R 281,450</MudText>
-            <MudText Typo="Typo.caption" Color="Color.Success">+55% from last week</MudText>
-        </MudPaper>
-    </MudItem>
+<PageTitle>TOSS ERP III - Dashboard</PageTitle>
 
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper Elevation="2" Class="pa-4">
-            <div class="d-flex justify-space-between align-center mb-4">
-                <MudIcon Icon="@Icons.Material.Filled.People" Color="Color.Secondary" Size="Size.Large" />
-                <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
-            </div>
-            <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Active Users</MudText>
-            <MudText Typo="Typo.h5">2,300</MudText>
-            <MudText Typo="Typo.caption" Color="Color.Success">+2% from last month</MudText>
-        </MudPaper>
-    </MudItem>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <!-- Welcome Section -->
+    <MudPaper Class="pa-4 mb-4" Elevation="1">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3">
+            <MudAvatar Size="Size.Large" Color="Color.Primary">
+                <MudIcon Icon="@Icons.Material.Filled.Store" Size="Size.Large" />
+            </MudAvatar>
+            <MudStack>
+                <MudText Typo="Typo.h4" Color="Color.Primary">Welcome to TOSS ERP III</MudText>
+                <MudText Typo="Typo.body1" Color="Color.Secondary">
+                    Your cooperative economy platform for township and rural SMMEs
+                </MudText>
+            </MudStack>
+            <MudSpacer />
+            <MudButton Variant="Variant.Filled" 
+                      Color="Color.Primary" 
+                      OnClick="@(() => Navigation.NavigateTo("/pos"))"
+                      StartIcon="@Icons.Material.Filled.PointOfSale">
+                Start POS Sale
+            </MudButton>
+        </MudStack>
+    </MudPaper>
 
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper Elevation="2" Class="pa-4">
-            <div class="d-flex justify-space-between align-center mb-4">
-                <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Color="Color.Success" Size="Size.Large" />
-                <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
-            </div>
-            <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Revenue</MudText>
-            <MudText Typo="Typo.h5">R 34,000</MudText>
-            <MudText Typo="Typo.caption" Color="Color.Success">+1% from yesterday</MudText>
-        </MudPaper>
-    </MudItem>
+    <!-- Key Metrics Cards -->
+    <MudGrid Class="mb-4">
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudAvatar Color="Color.Success" Size="Size.Small">
+                        <MudIcon Icon="@Icons.Material.Filled.TrendingUp" />
+                    </MudAvatar>
+                    <MudStack Class="flex-grow-1">
+                        <MudText Typo="Typo.h6">@_todaySales.ToString("C")</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Today's Sales</MudText>
+                    </MudStack>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudAvatar Color="Color.Info" Size="Size.Small">
+                        <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" />
+                    </MudAvatar>
+                    <MudStack Class="flex-grow-1">
+                        <MudText Typo="Typo.h6">@_todayOrders</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Today's Orders</MudText>
+                    </MudStack>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudAvatar Color="Color.Warning" Size="Size.Small">
+                        <MudIcon Icon="@Icons.Material.Filled.Inventory" />
+                    </MudAvatar>
+                    <MudStack Class="flex-grow-1">
+                        <MudText Typo="Typo.h6">@_lowStockItems</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Low Stock Items</MudText>
+                    </MudStack>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudAvatar Color="Color.Tertiary" Size="Size.Small">
+                        <MudIcon Icon="@Icons.Material.Filled.GroupWork" />
+                    </MudAvatar>
+                    <MudStack Class="flex-grow-1">
+                        <MudText Typo="Typo.h6">@_activeGroupsCount</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Active Groups</MudText>
+                    </MudStack>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
 
-    <MudItem xs="12" sm="6" md="3">
-        <MudPaper Elevation="2" Class="pa-4">
-            <div class="d-flex justify-space-between align-center mb-4">
-                <MudIcon Icon="@Icons.Material.Filled.Favorite" Color="Color.Error" Size="Size.Large" />
-                <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" />
-            </div>
-            <MudText Typo="Typo.subtitle1" Class="mb-n1 text-secondary">Followers</MudText>
-            <MudText Typo="Typo.h5">91</MudText>
-            <MudText Typo="Typo.caption" Color="Color.Success">Just updated</MudText>
-        </MudPaper>
-    </MudItem>
-
-    <!-- Sales by Province -->
-    <MudItem xs="12" md="6">
-        <MudPaper Elevation="2" Class="pa-4">
-            <MudText Typo="Typo.h6" Class="mb-4">Sales by Province</MudText>
-            <MudSimpleTable Dense="true" Hover="true" FixedHeader="true">
-                <thead>
-                    <tr>
-                        <th>Province</th>
-                        <th>Sales</th>
-                        <th>Value</th>
-                        <th>Bounce Rate</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var province in _provinces)
+    <!-- Charts and Analytics -->
+    <MudGrid Class="mb-4">
+        <!-- Sales Chart -->
+        <MudItem xs="12" md="8">
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudText Typo="Typo.h6" Class="mb-3">Sales Trend (Last 7 Days)</MudText>
+                <MudChart ChartType="ChartType.Line" ChartSeries="@_salesData" XAxisLabels="@_dateLabels" Width="100%" Height="300px" />
+            </MudPaper>
+        </MudItem>
+        
+        <!-- Top Products -->
+        <MudItem xs="12" md="4">
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudText Typo="Typo.h6" Class="mb-3">Top Selling Products</MudText>
+                <MudList Dense="true">
+                    @foreach (var product in _topProducts)
                     {
-                        <tr>
-                            <td>
-                                <div class="d-flex align-center">
-                                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Class="mr-2" Size="Size.Small" />
-                                    @province.Name
-                                </div>
-                            </td>
-                            <td>@province.Sales.ToString("N0")</td>
-                            <td>R @province.Value.ToString("N0")</td>
-                            <td>
-                                <MudChip T="string" Color="@(province.BounceRate < 30 ? Color.Success : Color.Warning)" 
-                                        Size="Size.Small">
-                                    @province.BounceRate.ToString("N1")%
-                                </MudChip>
-                            </td>
-                        </tr>
+                        <MudListItem>
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                <MudAvatar Size="Size.Small" Color="Color.Primary">
+                                    <MudIcon Icon="@Icons.Material.Filled.Category" />
+                                </MudAvatar>
+                                <MudStack Class="flex-grow-1">
+                                    <MudText Typo="Typo.body2">@product.Name</MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                        @product.QuantitySold sold
+                                    </MudText>
+                                </MudStack>
+                            </MudStack>
+                        </MudListItem>
                     }
-                </tbody>
-            </MudSimpleTable>
-        </MudPaper>
-    </MudItem>
+                </MudList>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
 
-    <!-- Charts -->
-    <MudItem xs="12" md="6">
-        <MudPaper Elevation="2" Class="pa-4">
-            <MudText Typo="Typo.h6" Class="mb-4">Daily Sales</MudText>
-            <MudChart ChartType="ChartType.Line" ChartSeries="@_dailySalesSeries" XAxisLabels="@_dailySalesLabels" 
-                     Width="100%" Height="300px"/>
-        </MudPaper>
-    </MudItem>
+    <!-- Quick Actions -->
+    <MudGrid Class="mb-4">
+        <MudItem xs="12">
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudText Typo="Typo.h6" Class="mb-3">Quick Actions</MudText>
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudCard Elevation="2" Class="ma-2" Style="cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/pos"))">
+                            <MudCardContent>
+                                <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.PointOfSale" Size="Size.Large" Color="Color.Primary" />
+                                    <MudText Typo="Typo.h6">Point of Sale</MudText>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">Process sales transactions</MudText>
+                                </MudStack>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                    
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudCard Elevation="2" Class="ma-2" Style="cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/products"))">
+                            <MudCardContent>
+                                <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Inventory" Size="Size.Large" Color="Color.Secondary" />
+                                    <MudText Typo="Typo.h6">Manage Inventory</MudText>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">Add/edit products</MudText>
+                                </MudStack>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                    
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudCard Elevation="2" Class="ma-2" Style="cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/create-group"))">
+                            <MudCardContent>
+                                <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.GroupWork" Size="Size.Large" Color="Color.Tertiary" />
+                                    <MudText Typo="Typo.h6">Create Group</MudText>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">Start group purchase</MudText>
+                                </MudStack>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                    
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudCard Elevation="2" Class="ma-2" Style="cursor: pointer;" OnClick="@(() => Navigation.NavigateTo("/vendors"))">
+                            <MudCardContent>
+                                <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Large" Color="Color.Info" />
+                                    <MudText Typo="Typo.h6">Vendor Directory</MudText>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">Browse suppliers</MudText>
+                                </MudStack>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
 
-    <!-- Recent Transactions -->
-    <MudItem xs="12">
-        <MudPaper Elevation="2" Class="pa-4">
-            <MudText Typo="Typo.h6" Class="mb-4">Recent Transactions</MudText>
-            <MudTable Items="@_recentTransactions" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm">
-                <HeaderContent>
-                    <MudTh>Reference</MudTh>
-                    <MudTh>Customer</MudTh>
-                    <MudTh>Date</MudTh>
-                    <MudTh>Amount</MudTh>
-                    <MudTh>Status</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd>@context.Reference</MudTd>
-                    <MudTd>@context.Customer</MudTd>
-                    <MudTd>@context.Date.ToString("dd MMM yyyy")</MudTd>
-                    <MudTd>R @context.Amount.ToString("N2")</MudTd>
-                    <MudTd>
-                        <MudChip T="string" Color="@context.StatusColor" Size="Size.Small">
-                            @context.Status
-                        </MudChip>
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+    <!-- Recent Activity -->
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudText Typo="Typo.h6" Class="mb-3">Recent Sales</MudText>
+                <MudList Dense="true">
+                    @foreach (var sale in _recentSales)
+                    {
+                        <MudListItem>
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                <MudAvatar Size="Size.Small" Color="Color.Success">
+                                    <MudIcon Icon="@Icons.Material.Filled.Receipt" />
+                                </MudAvatar>
+                                <MudStack Class="flex-grow-1">
+                                    <MudText Typo="Typo.body2">Sale #@sale.SaleNumber</MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                        @sale.TotalAmount.ToString("C") - @sale.SaleDate.ToString("MMM dd, HH:mm")
+                                    </MudText>
+                                </MudStack>
+                            </MudStack>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudPaper>
+        </MudItem>
+        
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudText Typo="Typo.h6" Class="mb-3">Active Group Purchases</MudText>
+                <MudList Dense="true">
+                    @foreach (var group in _activeGroupPurchases)
+                    {
+                        <MudListItem>
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                <MudAvatar Size="Size.Small" Color="Color.Tertiary">
+                                    <MudIcon Icon="@Icons.Material.Filled.GroupWork" />
+                                </MudAvatar>
+                                <MudStack Class="flex-grow-1">
+                                    <MudText Typo="Typo.body2">@group.Name</MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                        @group.MemberCount members - Ends @group.EndDate.ToString("MMM dd")
+                                    </MudText>
+                                </MudStack>
+                            </MudStack>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
 
 @code {
-    private class Province
+    private decimal _todaySales = 1250.50m;
+    private int _todayOrders = 8;
+    private int _lowStockItems = 3;
+    private int _activeGroupsCount = 2;
+    
+    private List<ChartSeries> _salesData = new();
+    private string[] _dateLabels = new string[7];
+    private List<TopProductDto> _topProducts = new();
+    private List<SaleDto> _recentSales = new();
+    private List<GroupPurchaseDto> _activeGroupPurchases = new();
+
+    protected override async Task OnInitializedAsync()
     {
-        public string Name { get; set; } = string.Empty;
-        public int Sales { get; set; }
-        public decimal Value { get; set; }
-        public double BounceRate { get; set; }
+        await LoadDashboardData();
     }
 
-    private class Transaction
+    private async Task LoadDashboardData()
     {
-        public string Reference { get; set; } = string.Empty;
-        public string Customer { get; set; } = string.Empty;
-        public DateTime Date { get; set; }
-        public decimal Amount { get; set; }
-        public string Status { get; set; } = string.Empty;
-        public Color StatusColor => Status switch
+        try
         {
-            "Completed" => Color.Success,
-            "Pending" => Color.Warning,
-            "Failed" => Color.Error,
-            _ => Color.Default
-        };
-    }
+            // Mock data for now
+            _salesData = new List<ChartSeries>
+            {
+                new ChartSeries { Name = "Sales", Data = new double[] { 1200, 1350, 1100, 1400, 1250, 1600, 1450 } }
+            };
+            _dateLabels = new string[] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
-    private List<Province> _provinces = new()
-    {
-        new() { Name = "Gauteng", Sales = 2500, Value = 230900, BounceRate = 29.9 },
-        new() { Name = "Western Cape", Sales = 1900, Value = 140000, BounceRate = 40.22 },
-        new() { Name = "KwaZulu-Natal", Sales = 1400, Value = 190700, BounceRate = 23.44 },
-        new() { Name = "Eastern Cape", Sales = 562, Value = 143960, BounceRate = 32.14 }
-    };
+            _topProducts = new List<TopProductDto>
+            {
+                new TopProductDto { Id = Guid.NewGuid(), Name = "Product A", QuantitySold = 25, TotalRevenue = 500.00m },
+                new TopProductDto { Id = Guid.NewGuid(), Name = "Product B", QuantitySold = 20, TotalRevenue = 400.00m },
+                new TopProductDto { Id = Guid.NewGuid(), Name = "Product C", QuantitySold = 15, TotalRevenue = 300.00m }
+            };
 
-    private List<ChartSeries> _dailySalesSeries = new()
-    {
-        new ChartSeries 
-        { 
-            Name = "Daily Sales", 
-            Data = new double[] { 50, 75, 100, 120, 90, 160, 150, 140, 190, 220, 200, 180 }
+            _recentSales = new List<SaleDto>
+            {
+                new SaleDto(Guid.NewGuid(), "SALE-001", Guid.NewGuid(), null, 150.00m, 22.50m, 0m, 172.50m, "Cash", "completed", "completed", DateTime.Now.AddHours(-1), null, null, false, null, new List<SaleItemDto>(), new List<PaymentTransactionDto>()),
+                new SaleDto(Guid.NewGuid(), "SALE-002", Guid.NewGuid(), null, 200.00m, 30.00m, 0m, 230.00m, "Card", "completed", "completed", DateTime.Now.AddHours(-2), null, null, false, null, new List<SaleItemDto>(), new List<PaymentTransactionDto>()),
+                new SaleDto(Guid.NewGuid(), "SALE-003", Guid.NewGuid(), null, 175.00m, 26.25m, 0m, 201.25m, "Cash", "completed", "completed", DateTime.Now.AddHours(-3), null, null, false, null, new List<SaleItemDto>(), new List<PaymentTransactionDto>())
+            };
+
+            _activeGroupPurchases = new List<GroupPurchaseDto>
+            {
+                new GroupPurchaseDto { Id = Guid.NewGuid(), GroupNumber = "GP-001", BusinessId = Guid.NewGuid(), ProductId = Guid.NewGuid(), ProductName = "Group A", UnitPrice = 100m, GroupPrice = 80m, MinimumQuantity = 5, TargetQuantity = 10, CurrentQuantity = 5, Status = "Active", ExpiryDate = DateTime.Now.AddDays(7), CreatedAt = DateTime.Now, CreatedBy = Guid.NewGuid(), MemberCount = 5, CurrentAmount = 400m, TargetAmount = 800m, EndDate = DateTime.Now.AddDays(7) },
+                new GroupPurchaseDto { Id = Guid.NewGuid(), GroupNumber = "GP-002", BusinessId = Guid.NewGuid(), ProductId = Guid.NewGuid(), ProductName = "Group B", UnitPrice = 150m, GroupPrice = 120m, MinimumQuantity = 3, TargetQuantity = 8, CurrentQuantity = 3, Status = "Active", ExpiryDate = DateTime.Now.AddDays(3), CreatedAt = DateTime.Now, CreatedBy = Guid.NewGuid(), MemberCount = 3, CurrentAmount = 360m, TargetAmount = 960m, EndDate = DateTime.Now.AddDays(3) }
+            };
         }
-    };
-
-    private string[] _dailySalesLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-
-    private List<Transaction> _recentTransactions = new()
-    {
-        new() { Reference = "INV-001", Customer = "John Smith", Date = DateTime.Today.AddDays(-1), Amount = 1299.99m, Status = "Completed" },
-        new() { Reference = "INV-002", Customer = "Sarah Johnson", Date = DateTime.Today.AddDays(-1), Amount = 849.50m, Status = "Pending" },
-        new() { Reference = "INV-003", Customer = "Michael Brown", Date = DateTime.Today.AddDays(-2), Amount = 2499.99m, Status = "Completed" },
-        new() { Reference = "INV-004", Customer = "Emily Davis", Date = DateTime.Today.AddDays(-2), Amount = 149.99m, Status = "Failed" },
-        new() { Reference = "INV-005", Customer = "David Wilson", Date = DateTime.Today.AddDays(-3), Amount = 999.99m, Status = "Completed" }
-    };
+        catch (Exception ex)
+        {
+            // Handle error
+        }
+    }
 } 

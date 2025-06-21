@@ -9,9 +9,11 @@
   <ItemGroup>
     <ProjectReference Include="..\TossErp.POS.Domain\TossErp.POS.Domain.csproj" />
     <ProjectReference Include="..\TossErp.POS.Infrastructure\TossErp.POS.Infrastructure.csproj" />
+    <ProjectReference Include="..\TossErp.Shared\TossErp.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />

@@ -135,57 +135,18 @@ namespace TossErp.POS.API.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<ActionResult<SaleDto>> CreateSale([FromBody] CreateSaleDto createSaleDto)
+        [HttpPost("create-sale")]
+        public async Task<IActionResult> CreateSale([FromBody] CreateSaleDto request)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                if (!createSaleDto.Items.Any())
-                {
-                    return BadRequest("Sale must have at least one item");
-                }
-
-                var sale = new Sale(
-                    Guid.NewGuid().ToString("N")[..8].ToUpper(), // Generate sale number
-                    createSaleDto.CustomerId,
-                    createSaleDto.CashierId,
-                    createSaleDto.SaleType
-                );
-
-                // Add items to sale
-                foreach (var itemDto in createSaleDto.Items)
-                {
-                    sale.AddItem(
-                        itemDto.ItemId,
-                        itemDto.ItemName ?? "Unknown Item", // Add item name
-                        itemDto.Quantity,
-                        itemDto.UnitPrice,
-                        itemDto.DiscountPercentage
-                    );
-                }
-
-                // Set notes if provided
-                if (!string.IsNullOrEmpty(createSaleDto.Notes))
-                {
-                    sale.UpdateNotes(createSaleDto.Notes);
-                }
-
-                await _saleRepository.AddAsync(sale);
-                await _unitOfWork.SaveChangesAsync();
-
-                _logger.LogInformation("Created sale with ID {SaleId}", sale.Id);
-
-                return CreatedAtAction(nameof(GetSale), new { id = sale.Id }, MapToDto(sale));
+                var sale = await _salesService.CreateSaleAsync(request);
+                return CreatedAtAction(nameof(GetSale), new { id = sale.Id }, sale);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating sale");
-                return StatusCode(500, "An error occurred while creating the sale");
+                return BadRequest(new { message = "Failed to create sale", error = ex.Message });
             }
         }
 
@@ -399,21 +360,6 @@ namespace TossErp.POS.API.Controllers
             {
                 _logger.LogError(ex, "Error generating daily sales report for {Date}", date);
                 return StatusCode(500, "An error occurred while generating the report");
-            }
-        }
-
-        [HttpPost("create-sale")]
-        public async Task<IActionResult> CreateSale([FromBody] CreateSaleDto request)
-        {
-            try
-            {
-                var sale = await _salesService.CreateSaleAsync(request);
-                return CreatedAtAction(nameof(GetSale), new { id = sale.Id }, sale);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating sale");
-                return BadRequest(new { message = "Failed to create sale", error = ex.Message });
             }
         }
 

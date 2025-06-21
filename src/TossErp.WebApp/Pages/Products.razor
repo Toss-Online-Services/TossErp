@@ -1,0 +1,280 @@
+@page "/products"
+@using TossErp.Application.DTOs
+@* @inject IProductService ProductService *@
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>TOSS ERP III - Products Management</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
+    <!-- Header -->
+    <MudPaper Class="pa-4 mb-4" Elevation="1">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3">
+            <MudText Typo="Typo.h4">Products Management</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchTerm" 
+                         Label="Search Products..." 
+                         Variant="Variant.Outlined" 
+                         Adornment="Adornment.Start" 
+                         AdornmentIcon="@Icons.Material.Filled.Search"
+                         Class="flex-grow-1" />
+            <MudButton Variant="Variant.Filled" 
+                      Color="Color.Primary" 
+                      OnClick="@(() => _showAddDialog = true)"
+                      StartIcon="@Icons.Material.Filled.Add">
+                Add Product
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+
+    <!-- Products Data Grid -->
+    <MudPaper Class="pa-4" Elevation="1">
+        <MudDataGrid T="ProductDto" Items="@_filteredProducts" 
+                     Dense="true" Hover="true" Striped="true"
+                     Filterable="true" SortMode="SortMode.Multiple"
+                     Loading="@_isLoading">
+            <Columns>
+                <PropertyColumn Property="x => x.Name" Title="Product Name" />
+                <PropertyColumn Property="x => x.Description" Title="Description" />
+                <PropertyColumn Property="x => x.Price" Title="Price" Format="C" />
+                <PropertyColumn Property="x => x.StockQuantity" Title="Stock" />
+                <PropertyColumn Property="x => x.Category" Title="Category" />
+                <PropertyColumn Property="x => x.Sku" Title="SKU" />
+                <TemplateColumn Title="Status">
+                    <MudChip Color="@(context.StockQuantity > 0 ? Color.Success : Color.Error)" Size="Size.Small">
+                        @(context.StockQuantity > 0 ? "In Stock" : "Out of Stock")
+                    </MudChip>
+                </TemplateColumn>
+                <TemplateColumn Title="Actions">
+                    <MudStack Row="true" Spacing="1">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                     Size="Size.Small" 
+                                     Color="Color.Primary"
+                                     OnClick="@(() => EditProduct(context))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                     Size="Size.Small" 
+                                     Color="Color.Error"
+                                     OnClick="@(() => DeleteProduct(context))" />
+                    </MudStack>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+    </MudPaper>
+</MudContainer>
+
+<!-- Add/Edit Product Dialog -->
+<MudDialog @bind-IsVisible="_showAddDialog" Options="new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true }">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            @(_editingProduct?.Id > 0 ? "Edit Product" : "Add New Product")
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_form" @bind-IsValid="_isValid">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_editingProduct.Name" 
+                                 Label="Product Name" 
+                                 Required="true"
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_editingProduct.Sku" 
+                                 Label="SKU" 
+                                 Required="true"
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_editingProduct.Description" 
+                                 Label="Description" 
+                                 Lines="3"
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudNumericField @bind-Value="_editingProduct.Price" 
+                                    Label="Price" 
+                                    Required="true"
+                                    Variant="Variant.Outlined"
+                                    Min="0"
+                                    Step="0.01" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudNumericField @bind-Value="_editingProduct.StockQuantity" 
+                                    Label="Stock Quantity" 
+                                    Required="true"
+                                    Variant="Variant.Outlined"
+                                    Min="0" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_editingProduct.Category" 
+                                 Label="Category" 
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudNumericField @bind-Value="_editingProduct.ReorderLevel" 
+                                    Label="Reorder Level" 
+                                    Variant="Variant.Outlined"
+                                    Min="0" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_editingProduct.Supplier" 
+                                 Label="Supplier" 
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showAddDialog = false)">Cancel</MudButton>
+        <MudButton Color="Color.Primary" 
+                  Variant="Variant.Filled" 
+                  OnClick="@SaveProduct"
+                  Disabled="@(!_isValid)">
+            @(_editingProduct?.Id > 0 ? "Update" : "Save")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+<!-- Delete Confirmation Dialog -->
+<MudDialog @bind-IsVisible="_showDeleteDialog" Options="new DialogOptions { MaxWidth = MaxWidth.Small }">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Confirm Delete</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>Are you sure you want to delete "@_productToDelete?.Name"?</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showDeleteDialog = false)">Cancel</MudButton>
+        <MudButton Color="Color.Error" 
+                  Variant="Variant.Filled" 
+                  OnClick="@ConfirmDelete">
+            Delete
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private string _searchTerm = string.Empty;
+    private List<ProductDto> _products = new();
+    private List<ProductDto> _filteredProducts = new();
+    private bool _isLoading = false;
+    private bool _showAddDialog = false;
+    private bool _showDeleteDialog = false;
+    private bool _isValid = false;
+    private MudForm _form = new();
+    private ProductDto _editingProduct = new();
+    private ProductDto? _productToDelete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProducts();
+    }
+
+    protected override void OnParametersSet()
+    {
+        FilterProducts();
+    }
+
+    private async Task LoadProducts()
+    {
+        _isLoading = true;
+        try
+        {
+            _products = await ProductService.GetAllProductsAsync();
+            FilterProducts();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error loading products", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void FilterProducts()
+    {
+        if (string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            _filteredProducts = _products;
+        }
+        else
+        {
+            _filteredProducts = _products.Where(p => 
+                p.Name.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                p.Description.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                p.Sku.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                p.Category.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase)
+            ).ToList();
+        }
+    }
+
+    private void EditProduct(ProductDto product)
+    {
+        _editingProduct = new ProductDto
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            StockQuantity = product.StockQuantity,
+            Category = product.Category,
+            Sku = product.Sku,
+            ReorderLevel = product.ReorderLevel,
+            Supplier = product.Supplier
+        };
+        _showAddDialog = true;
+    }
+
+    private void DeleteProduct(ProductDto product)
+    {
+        _productToDelete = product;
+        _showDeleteDialog = true;
+    }
+
+    private async Task SaveProduct()
+    {
+        if (!_isValid) return;
+
+        try
+        {
+            if (_editingProduct.Id > 0)
+            {
+                await ProductService.UpdateProductAsync(_editingProduct);
+                Snackbar.Add("Product updated successfully", Severity.Success);
+            }
+            else
+            {
+                await ProductService.CreateProductAsync(_editingProduct);
+                Snackbar.Add("Product created successfully", Severity.Success);
+            }
+
+            _showAddDialog = false;
+            _editingProduct = new ProductDto();
+            await LoadProducts();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error saving product", Severity.Error);
+        }
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (_productToDelete == null) return;
+
+        try
+        {
+            await ProductService.DeleteProductAsync(_productToDelete.Id);
+            Snackbar.Add("Product deleted successfully", Severity.Success);
+            _showDeleteDialog = false;
+            _productToDelete = null;
+            await LoadProducts();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error deleting product", Severity.Error);
+        }
+    }
+} 

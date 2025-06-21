@@ -1,218 +1,326 @@
 @page "/pos"
-@using TossErp.Shared.DTOs
-@using TossErp.Shared.Enums
-@inject HttpClient Http
-@inject NavigationManager Navigation
+@using TossErp.Application.DTOs
+@using TossErp.Application.Services
+@inject IProductService ProductService
+@inject ISaleService SaleService
+@inject ISnackbar Snackbar
 
-<PageTitle>Point of Sale - TOSS ERP</PageTitle>
+<PageTitle>TOSS ERP III - Point of Sale</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-4">
     <MudGrid>
-        <!-- Left Side - Item Selection -->
+        <!-- Product Selection Area -->
         <MudItem xs="12" md="8">
-            <MudPaper Class="pa-4">
-                <MudText Typo="Typo.h5" Class="mb-4">Item Selection</MudText>
-                
-                <!-- Search Bar -->
-                <MudTextField @bind-Value="searchTerm"
-                              Label="Search Items"
-                              Variant="Variant.Outlined"
-                              Adornment="Adornment.Start"
-                              AdornmentIcon="@Icons.Material.Filled.Search"
-                              Class="mb-4"
-                              @onkeypress="OnSearchKeyPress" />
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3" Class="mb-4">
+                    <MudText Typo="Typo.h5">Point of Sale</MudText>
+                    <MudSpacer />
+                    <MudTextField @bind-Value="_searchTerm" 
+                                 Label="Search Products..." 
+                                 Variant="Variant.Outlined" 
+                                 Adornment="Adornment.Start" 
+                                 AdornmentIcon="@Icons.Material.Filled.Search"
+                                 OnKeyPress="@HandleSearchKeyPress"
+                                 Class="flex-grow-1" />
+                </MudStack>
 
-                <!-- Items Grid -->
-                @if (items?.Any() == true)
+                <!-- Product Grid -->
+                <MudGrid>
+                    @foreach (var product in _filteredProducts)
+                    {
+                        <MudItem xs="12" sm="6" md="4" lg="3">
+                            <MudCard Elevation="2" Class="ma-2" Style="cursor: pointer;" OnClick="@(() => AddToCart(product))">
+                                <MudCardContent>
+                                    <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudAvatar Size="Size.Large" Color="Color.Primary">
+                                            <MudIcon Icon="@Icons.Material.Filled.Category" Size="Size.Large" />
+                                        </MudAvatar>
+                                        <MudText Typo="Typo.h6" Class="text-center">@product.Name</MudText>
+                                        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-center">
+                                            @product.Description
+                                        </MudText>
+                                        <MudText Typo="Typo.h6" Color="Color.Primary">
+                                            @product.Price.ToString("C")
+                                        </MudText>
+                                        <MudChip Color="@(product.StockQuantity > 0 ? Color.Success : Color.Error)" Size="Size.Small">
+                                            @(product.StockQuantity > 0 ? $"In Stock: {product.StockQuantity}" : "Out of Stock")
+                                        </MudChip>
+                                    </MudStack>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+
+                @if (!_filteredProducts.Any())
                 {
-                    <MudGrid>
-                        @foreach (var item in items)
-                        {
-                            <MudItem xs="12" sm="6" md="4">
-                                <MudCard>
-                                    <MudCardContent>
-                                        <MudText Typo="Typo.h6">@item.Name</MudText>
-                                        <MudText Typo="Typo.body2" Color="Color.Secondary">@item.ItemCode</MudText>
-                                        <MudText Typo="Typo.h6" Color="Color.Primary">$@item.SellingPrice.ToString("N2")</MudText>
-                                        <MudText Typo="Typo.caption">Stock: @item.CurrentStock</MudText>
-                                    </MudCardContent>
-                                </MudCard>
-                            </MudItem>
-                        }
-                    </MudGrid>
-                }
-                else
-                {
-                    <MudText Typo="Typo.body1" Class="text-center pa-4">No items found</MudText>
+                    <MudPaper Class="pa-8 text-center" Elevation="0">
+                        <MudIcon Icon="@Icons.Material.Filled.Search" Size="Size.Large" Color="Color.Secondary" />
+                        <MudText Typo="Typo.h6" Color="Color.Secondary" Class="mt-2">No products found</MudText>
+                    </MudPaper>
                 }
             </MudPaper>
         </MudItem>
 
-        <!-- Right Side - Cart -->
+        <!-- Shopping Cart -->
         <MudItem xs="12" md="4">
-            <MudPaper Class="pa-4" Style="height: 80vh; overflow-y: auto;">
+            <MudPaper Class="pa-4" Elevation="1" Style="height: 100%;">
                 <MudText Typo="Typo.h5" Class="mb-4">Shopping Cart</MudText>
-                
-                <MudText Typo="Typo.body1" Class="text-center pa-4">Cart functionality temporarily disabled due to build error. Please restore after fixing analyzer/nullability issues.</MudText>
+
+                @if (!_cartItems.Any())
+                {
+                    <MudPaper Class="pa-8 text-center" Elevation="0">
+                        <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Large" Color="Color.Secondary" />
+                        <MudText Typo="Typo.h6" Color="Color.Secondary" Class="mt-2">Cart is empty</MudText>
+                    </MudPaper>
+                }
+                else
+                {
+                    <!-- Cart Items -->
+                    <MudList Dense="true" Class="mb-4" Style="max-height: 400px; overflow-y: auto;">
+                        @foreach (var item in _cartItems)
+                        {
+                            <MudListItem>
+                                <MudCard Elevation="1" Class="mb-2">
+                                    <MudCardContent>
+                                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                            <MudStack Class="flex-grow-1">
+                                                <MudText Typo="Typo.body2">@item.Product.Name</MudText>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                                    @item.Product.Price.ToString("C") each
+                                                </MudText>
+                                            </MudStack>
+                                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                                <MudIconButton Icon="@Icons.Material.Filled.Remove" 
+                                                             Size="Size.Small" 
+                                                             OnClick="@(() => DecreaseQuantity(item))" />
+                                                <MudText Typo="Typo.body1" Class="mx-2">@item.Quantity</MudText>
+                                                <MudIconButton Icon="@Icons.Material.Filled.Add" 
+                                                             Size="Size.Small" 
+                                                             OnClick="@(() => IncreaseQuantity(item))" />
+                                                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                                             Size="Size.Small" 
+                                                             Color="Color.Error"
+                                                             OnClick="@(() => RemoveFromCart(item))" />
+                                            </MudStack>
+                                        </MudStack>
+                                    </MudCardContent>
+                                </MudCard>
+                            </MudListItem>
+                        }
+                    </MudList>
+
+                    <!-- Cart Summary -->
+                    <MudDivider Class="mb-4" />
+                    <MudStack Spacing="2" Class="mb-4">
+                        <MudStack Row="true" Justify="Justify.SpaceBetween">
+                            <MudText Typo="Typo.body1">Subtotal:</MudText>
+                            <MudText Typo="Typo.body1">@_subtotal.ToString("C")</MudText>
+                        </MudStack>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween">
+                            <MudText Typo="Typo.body1">Tax (15%):</MudText>
+                            <MudText Typo="Typo.body1">@_tax.ToString("C")</MudText>
+                        </MudStack>
+                        <MudDivider />
+                        <MudStack Row="true" Justify="Justify.SpaceBetween">
+                            <MudText Typo="Typo.h6">Total:</MudText>
+                            <MudText Typo="Typo.h6" Color="Color.Primary">@_total.ToString("C")</MudText>
+                        </MudStack>
+                    </MudStack>
+
+                    <!-- Payment Options -->
+                    <MudStack Spacing="2" Class="mb-4">
+                        <MudText Typo="Typo.subtitle2">Payment Method:</MudText>
+                        <MudRadioGroup @bind-SelectedOption="_selectedPaymentMethod">
+                            <MudRadio Option="@PaymentMethod.Cash" Color="Color.Primary">Cash</MudRadio>
+                            <MudRadio Option="@PaymentMethod.Card" Color="Color.Primary">Card</MudRadio>
+                            <MudRadio Option="@PaymentMethod.MobileMoney" Color="Color.Primary">Mobile Money</MudRadio>
+                        </MudRadioGroup>
+                    </MudStack>
+
+                    <!-- Action Buttons -->
+                    <MudStack Spacing="2">
+                        <MudButton Variant="Variant.Filled" 
+                                  Color="Color.Primary" 
+                                  FullWidth="true"
+                                  OnClick="@ProcessSale"
+                                  Disabled="@(!_cartItems.Any())">
+                            <MudIcon Icon="@Icons.Material.Filled.Payment" Class="mr-2" />
+                            Complete Sale
+                        </MudButton>
+                        <MudButton Variant="Variant.Outlined" 
+                                  Color="Color.Secondary" 
+                                  FullWidth="true"
+                                  OnClick="@ClearCart">
+                            <MudIcon Icon="@Icons.Material.Filled.Clear" Class="mr-2" />
+                            Clear Cart
+                        </MudButton>
+                    </MudStack>
+                }
             </MudPaper>
         </MudItem>
     </MudGrid>
 </MudContainer>
 
 @code {
-    private string searchTerm = string.Empty;
-    private List<ItemDto>? items;
-    // private List<CartItemDto> CartItemDtos_DISABLED = new List<CartItemDto>();
+    private string _searchTerm = string.Empty;
+    private List<ProductDto> _products = new();
+    private List<ProductDto> _filteredProducts = new();
+    private List<CartItem> _cartItems = new();
+    private PaymentMethod _selectedPaymentMethod = PaymentMethod.Cash;
+
+    private decimal _subtotal => _cartItems.Sum(item => item.Product.Price * item.Quantity);
+    private decimal _tax => _subtotal * 0.15m;
+    private decimal _total => _subtotal + _tax;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadItems();
+        await LoadProducts();
     }
 
-    private async Task LoadItems()
+    private async Task LoadProducts()
     {
         try
         {
-            items = await Http.GetFromJsonAsync<List<ItemDto>>("https://localhost:5002/api/items");
+            _products = await ProductService.GetAllProductsAsync();
+            _filteredProducts = _products;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading items: {ex.Message}");
+            Snackbar.Add("Error loading products", Severity.Error);
         }
     }
 
-    private async Task SearchItems()
-    {
-        try
-        {
-            var url = string.IsNullOrWhiteSpace(searchTerm) 
-                ? "https://localhost:5002/api/items"
-                : $"https://localhost:5002/api/items?searchTerm={Uri.EscapeDataString(searchTerm)}";
-            
-            items = await Http.GetFromJsonAsync<List<ItemDto>>(url);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error searching items: {ex.Message}");
-        }
-    }
-
-    private async Task OnSearchKeyPress(KeyboardEventArgs e)
+    private void HandleSearchKeyPress(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
         {
-            await SearchItems();
+            FilterProducts();
         }
     }
 
-    // private void AddItemToCart(ItemDto item)
-    // {
-    //     var existingItem = CartItemDtos_DISABLED.FirstOrDefault(c => c.ItemId == item.Id);
-    //     
-    //     if (existingItem != null!)
-    //     {
-    //         existingItem.Quantity++;
-    //         existingItem.TotalAmount = existingItem.UnitPrice * existingItem.Quantity;
-    //     }
-    //     else
-    //     {
-    //         CartItemDtos_DISABLED.Add(new CartItemDto
-    //         {
-    //             ItemId = item.Id,
-    //             ItemName = item.Name,
-    //             UnitPrice = item.SellingPrice,
-    //             Quantity = 1,
-    //             TotalAmount = item.SellingPrice
-    //         });
-    //     }
-    //
-    //     RecalculateTotals();
-    // }
+    private void FilterProducts()
+    {
+        if (string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            _filteredProducts = _products;
+        }
+        else
+        {
+            _filteredProducts = _products.Where(p => 
+                p.Name.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                p.Description.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase)
+            ).ToList();
+        }
+    }
 
-    // private void RemoveFromCart(CartItemDto item)
-    // {
-    //     CartItemDtos_DISABLED.Remove(item);
-    //     RecalculateTotals();
-    // }
+    private void AddToCart(ProductDto product)
+    {
+        if (product.StockQuantity <= 0)
+        {
+            Snackbar.Add("Product is out of stock", Severity.Warning);
+            return;
+        }
 
-    // private void RecalculateTotals()
-    // {
-    //     subtotal = CartItemDtos_DISABLED.Sum(item => item.TotalAmount);
-    //     taxAmount = subtotal * 0.10m; // 10% tax
-    //     totalAmount = subtotal + taxAmount;
-    // }
+        var existingItem = _cartItems.FirstOrDefault(item => item.Product.Id == product.Id);
+        if (existingItem != null)
+        {
+            if (existingItem.Quantity < product.StockQuantity)
+            {
+                existingItem.Quantity++;
+            }
+            else
+            {
+                Snackbar.Add("Cannot add more items - stock limit reached", Severity.Warning);
+            }
+        }
+        else
+        {
+            _cartItems.Add(new CartItem { Product = product, Quantity = 1 });
+        }
+    }
 
-    // private async Task CompleteSale()
-    // {
-    //     if (!CartItemDtos_DISABLED.Any()) return;
-    //
-    //     isProcessing = true;
-    //
-    //     try
-    //     {
-    //         var saleRequest = new CreateSaleDto
-    //         {
-    //             CustomerId = Guid.NewGuid(), // In a real app, you'd select a customer
-    //             Items = CartItemDtos_DISABLED.Select(item => new SaleItemDto
-    //             {
-    //                 ItemId = item.ItemId,
-    //                 Quantity = item.Quantity,
-    //                 UnitPrice = item.UnitPrice,
-    //                 DiscountAmount = 0
-    //             }).ToList(),
-    //             PaymentMethod = selectedPaymentMethod,
-    //             DiscountAmount = 0,
-    //             TaxAmount = taxAmount,
-    //             Notes = "Sale completed via POS"
-    //         };
-    //
-    //         var response = await Http.PostAsJsonAsync("https://localhost:5005/api/sales/create-sale", saleRequest);
-    //         
-    //         if (response.IsSuccessStatusCode)
-    //         {
-    //             var sale = await response.Content.ReadFromJsonAsync<SaleDto>();
-    //             
-    //             // Complete the sale
-    //             var completeRequest = new CompleteSaleDto
-    //             {
-    //                 PaymentMethod = selectedPaymentMethod,
-    //                 AmountPaid = totalAmount,
-    //                 TransactionReference = $"POS-{DateTime.Now:yyyyMMddHHmmss}",
-    //                 Notes = "Payment completed"
-    //             };
-    //
-    //             await Http.PostAsJsonAsync($"https://localhost:5005/api/sales/{sale.Id}/complete", completeRequest);
-    //             
-    //             // Clear cart and show success
-    //             CartItemDtos_DISABLED.Clear();
-    //             RecalculateTotals();
-    //             
-    //             // Navigate to receipt or dashboard
-    //             Navigation.NavigateTo("/dashboard");
-    //         }
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Console.WriteLine($"Error completing sale: {ex.Message}");
-    //     }
-    //     finally
-    //     {
-    //         isProcessing = false;
-    //     }
-    // }
+    private void IncreaseQuantity(CartItem item)
+    {
+        if (item.Quantity < item.Product.StockQuantity)
+        {
+            item.Quantity++;
+        }
+        else
+        {
+            Snackbar.Add("Cannot add more items - stock limit reached", Severity.Warning);
+        }
+    }
 
-    // private decimal subtotal = 0;
-    // private decimal taxAmount = 0;
-    // private decimal totalAmount = 0;
+    private void DecreaseQuantity(CartItem item)
+    {
+        if (item.Quantity > 1)
+        {
+            item.Quantity--;
+        }
+        else
+        {
+            RemoveFromCart(item);
+        }
+    }
 
-    // private bool HasCartItemDtos => CartItemDtos_DISABLED.Any();
+    private void RemoveFromCart(CartItem item)
+    {
+        _cartItems.Remove(item);
+    }
 
-    // private class CartItemDto
-    // {
-    //     public Guid ItemId { get; set; }
-    //     public string ItemName { get; set; } = string.Empty;
-    //     public decimal UnitPrice { get; set; }
-    //     public int Quantity { get; set; }
-    //     public decimal TotalAmount { get; set; }
-    // }
+    private void ClearCart()
+    {
+        _cartItems.Clear();
+    }
+
+    private async Task ProcessSale()
+    {
+        if (!_cartItems.Any())
+        {
+            Snackbar.Add("Cart is empty", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            var saleDto = new CreateSaleDto
+            {
+                Items = _cartItems.Select(item => new SaleItemDto
+                {
+                    ProductId = item.Product.Id,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.Product.Price
+                }).ToList(),
+                PaymentMethod = _selectedPaymentMethod,
+                Total = _total
+            };
+
+            var result = await SaleService.CreateSaleAsync(saleDto);
+            
+            if (result != null)
+            {
+                Snackbar.Add($"Sale completed successfully! Sale #: {result.Id}", Severity.Success);
+                ClearCart();
+                await LoadProducts(); // Refresh stock levels
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error processing sale", Severity.Error);
+        }
+    }
+
+    private class CartItem
+    {
+        public ProductDto Product { get; set; } = new();
+        public int Quantity { get; set; }
+    }
+
+    private enum PaymentMethod
+    {
+        Cash,
+        Card,
+        MobileMoney
+    }
 } 
