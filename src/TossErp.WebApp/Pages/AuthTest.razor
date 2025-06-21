@@ -1,0 +1,108 @@
+@page "/auth-test"
+@using TossErp.WebApp.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IAuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ISnackbar Snackbar
+
+<PageTitle>Authentication Test - TossErp</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-16">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h4">Authentication Test</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        
+        <MudCardContent>
+            <AuthorizeView>
+                <Authorized>
+                    <MudAlert Severity="Severity.Success" Class="mb-4">
+                        <MudText Typo="Typo.h6">✅ Authenticated!</MudText>
+                        <MudText Typo="Typo.body2">
+                            User: @context.User.Identity?.Name<br/>
+                            Email: @context.User.FindFirst("email")?.Value<br/>
+                            Role: @context.User.FindFirst("role")?.Value
+                        </MudText>
+                    </MudAlert>
+                    
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Error" 
+                               OnClick="Logout"
+                               Class="mt-4">
+                        Logout
+                    </MudButton>
+                </Authorized>
+                <NotAuthorized>
+                    <MudAlert Severity="Severity.Warning" Class="mb-4">
+                        <MudText Typo="Typo.h6">⚠️ Not Authenticated</MudText>
+                        <MudText Typo="Typo.body2">Please login to access the application.</MudText>
+                    </MudAlert>
+                    
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Primary" 
+                               Href="/login"
+                               Class="mt-4">
+                        Go to Login
+                    </MudButton>
+                </NotAuthorized>
+            </AuthorizeView>
+            
+            <MudDivider Class="my-4" />
+            
+            <MudText Typo="Typo.h6" Class="mb-3">Test Authentication Status</MudText>
+            <MudButton Variant="Variant.Outlined" 
+                       Color="Color.Info" 
+                       OnClick="CheckAuthStatus"
+                       Class="mr-2">
+                Check Auth Status
+            </MudButton>
+            
+            @if (!string.IsNullOrEmpty(authStatus))
+            {
+                <MudAlert Severity="Severity.Info" Class="mt-4">
+                    @authStatus
+                </MudAlert>
+            }
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private string authStatus = string.Empty;
+
+    private async Task CheckAuthStatus()
+    {
+        try
+        {
+            var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+            var token = await AuthService.GetTokenAsync();
+            var user = await AuthService.GetCurrentUserAsync();
+            
+            authStatus = $"IsAuthenticated: {isAuthenticated}\n" +
+                        $"HasToken: {!string.IsNullOrEmpty(token)}\n" +
+                        $"User: {user?.UserName ?? "None"}";
+        }
+        catch (Exception ex)
+        {
+            authStatus = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task Logout()
+    {
+        try
+        {
+            var customAuthStateProvider = (CustomAuthStateProvider)AuthStateProvider;
+            await customAuthStateProvider.MarkUserAsLoggedOutAsync();
+            
+            Snackbar.Add("Logged out successfully", Severity.Info);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error during logout", Severity.Error);
+            Console.WriteLine($"Logout error: {ex.Message}");
+        }
+    }
+} 

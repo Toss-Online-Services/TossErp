@@ -39,7 +39,8 @@ namespace TossErp.Identity.API.Configuration
             return new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile()
+                new IdentityResources.Profile(),
+                new IdentityResources.Email()
             };
         }
 
@@ -161,6 +162,32 @@ namespace TossErp.Identity.API.Configuration
                     {
                         "webhooks"
                     }
+                },
+                new Client
+                {
+                    ClientId = "toss_erp_client",
+                    ClientName = "TossErp Blazor WebAssembly Client",
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    ClientSecrets = new List<Secret>
+                    {
+                        new Secret("secret".Sha256())
+                    },
+                    RequireConsent = false,
+                    AllowedScopes = new List<string>
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "pos",
+                        "inventory",
+                        "crm",
+                        "ordering",
+                        "webhooks"
+                    },
+                    AllowOfflineAccess = true,
+                    AlwaysIncludeUserClaimsInIdToken = true,
+                    AccessTokenLifetime = 60*60*2, // 2 hours
+                    IdentityTokenLifetime= 60*60*2 // 2 hours
                 }
             };
         }

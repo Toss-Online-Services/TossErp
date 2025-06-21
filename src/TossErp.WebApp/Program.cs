@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.AspNetCore.Components.Authorization;
 using TossErp.WebApp;
 using TossErp.WebApp.Services;
 using MudBlazor.Services;
@@ -13,10 +14,13 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 // Add MudBlazor
 builder.Services.AddMudServices();
 
-// Add Authentication Service
+// Add Authentication Services
 builder.Services.AddScoped<IAuthService, AuthService>();
-
-// Add Local Storage Service
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddScoped<AuthenticatedHttpClient>();
+
+// Add Authorization
+builder.Services.AddAuthorizationCore();
 
 await builder.Build().RunAsync(); 

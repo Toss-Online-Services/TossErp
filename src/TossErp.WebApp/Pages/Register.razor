@@ -1,38 +1,60 @@
-@page "/login"
+@page "/register"
 @using TossErp.WebApp.Services
 @using Microsoft.AspNetCore.Components.Authorization
-@using TossErp.WebApp.DTOs
 @inject IAuthService AuthService
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
-<PageTitle>Login - TossErp</PageTitle>
+<PageTitle>Register - TossErp</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
     <MudCard>
         <MudCardHeader>
             <CardHeaderContent>
-                <MudText Typo="Typo.h4" Class="text-center">Login to TossErp</MudText>
-                <MudText Typo="Typo.body2" Class="text-center mt-2">Enter your credentials to access your account</MudText>
+                <MudText Typo="Typo.h4" Class="text-center">Create Account</MudText>
+                <MudText Typo="Typo.body2" Class="text-center mt-2">Join TossErp and start managing your business</MudText>
             </CardHeaderContent>
         </MudCardHeader>
         
         <MudCardContent>
-            <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+            <EditForm Model="@registerModel" OnValidSubmit="HandleRegister">
                 <DataAnnotationsValidator />
                 
-                <MudTextField @bind-Value="loginModel.Username"
+                <MudTextField @bind-Value="registerModel.FullName"
+                             Label="Full Name"
+                             Required="true"
+                             RequiredError="Full name is required"
+                             Variant="Variant.Outlined"
+                             Class="mb-4" />
+                
+                <MudTextField @bind-Value="registerModel.Username"
                              Label="Username"
                              Required="true"
                              RequiredError="Username is required"
                              Variant="Variant.Outlined"
                              Class="mb-4" />
                 
-                <MudTextField @bind-Value="loginModel.Password"
+                <MudTextField @bind-Value="registerModel.Email"
+                             Label="Email"
+                             Required="true"
+                             RequiredError="Email is required"
+                             Variant="Variant.Outlined"
+                             InputType="InputType.Email"
+                             Class="mb-4" />
+                
+                <MudTextField @bind-Value="registerModel.Password"
                              Label="Password"
                              Required="true"
                              RequiredError="Password is required"
+                             Variant="Variant.Outlined"
+                             InputType="InputType.Password"
+                             Class="mb-4" />
+                
+                <MudTextField @bind-Value="registerModel.ConfirmPassword"
+                             Label="Confirm Password"
+                             Required="true"
+                             RequiredError="Please confirm your password"
                              Variant="Variant.Outlined"
                              InputType="InputType.Password"
                              Class="mb-4" />
@@ -46,11 +68,11 @@
                     @if (isLoading)
                     {
                         <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
-                        <span>Logging in...</span>
+                        <span>Creating account...</span>
                     }
                     else
                     {
-                        <span>Login</span>
+                        <span>Create Account</span>
                     }
                 </MudButton>
             </EditForm>
@@ -65,15 +87,15 @@
         
         <MudCardActions Class="justify-center">
             <MudText Typo="Typo.body2">
-                Don't have an account? 
-                <MudLink Href="/register" Color="Color.Primary">Register here</MudLink>
+                Already have an account? 
+                <MudLink Href="/login" Color="Color.Primary">Login here</MudLink>
             </MudText>
         </MudCardActions>
     </MudCard>
 </MudContainer>
 
 @code {
-    private LoginModel loginModel = new();
+    private RegisterModel registerModel = new();
     private bool isLoading = false;
     private string errorMessage = string.Empty;
 
@@ -87,39 +109,39 @@
         }
     }
 
-    private async Task HandleLogin()
+    private async Task HandleRegister()
     {
+        if (registerModel.Password != registerModel.ConfirmPassword)
+        {
+            errorMessage = "Passwords do not match.";
+            return;
+        }
+
         isLoading = true;
         errorMessage = string.Empty;
         
         try
         {
-            var success = await AuthService.LoginAsync(loginModel.Username, loginModel.Password);
+            var success = await AuthService.RegisterAsync(
+                registerModel.Username, 
+                registerModel.Email, 
+                registerModel.Password, 
+                registerModel.FullName);
             
             if (success)
             {
-                // Update authentication state
-                var customAuthStateProvider = (CustomAuthStateProvider)AuthStateProvider;
-                var user = await AuthService.GetCurrentUserAsync();
-                var token = await AuthService.GetTokenAsync();
-                
-                if (user != null && !string.IsNullOrEmpty(token))
-                {
-                    await customAuthStateProvider.MarkUserAsAuthenticatedAsync(token, user);
-                }
-                
-                Snackbar.Add("Login successful!", Severity.Success);
-                NavigationManager.NavigateTo("/");
+                Snackbar.Add("Account created successfully! Please login.", Severity.Success);
+                NavigationManager.NavigateTo("/login");
             }
             else
             {
-                errorMessage = "Invalid username or password. Please try again.";
+                errorMessage = "Failed to create account. Please try again.";
             }
         }
         catch (Exception ex)
         {
-            errorMessage = "An error occurred during login. Please try again.";
-            Console.WriteLine($"Login error: {ex.Message}");
+            errorMessage = "An error occurred during registration. Please try again.";
+            Console.WriteLine($"Registration error: {ex.Message}");
         }
         finally
         {
@@ -127,9 +149,12 @@
         }
     }
 
-    public class LoginModel
+    public class RegisterModel
     {
+        public string FullName { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public string ConfirmPassword { get; set; } = string.Empty;
     }
 } 
