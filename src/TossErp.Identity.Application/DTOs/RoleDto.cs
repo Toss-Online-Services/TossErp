@@ -1,4 +1,4 @@
-namespace TossErp.Shared.DTOs;
+namespace TossErp.Identity.Application.DTOs;
 
 public class RoleDto
 {

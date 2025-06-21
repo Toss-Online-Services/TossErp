@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TossErp.Inventory.Domain.AggregatesModel.ItemAggregate;
-using TossErp.Shared.Enums;
+using TossErp.Inventory.Domain.Enums;
 using TossErp.Inventory.Infrastructure.Repositories;
 using TossErp.Domain.SeedWork;
 using TossErp.Inventory.API.DTOs;
@@ -323,13 +323,14 @@ namespace TossErp.Inventory.API.Controllers
                 Description = item.Description,
                 Barcode = item.Barcode,
                 SKU = item.SKU,
-                ItemType = (TossErp.Shared.Enums.ItemType)item.ItemType,
+                ItemType = (TossErp.Inventory.Domain.Enums.ItemType)item.ItemType,
                 IsActive = item.IsActive,
                 IsStockable = item.IsStockable,
                 IsSerialized = item.IsSerialized,
                 IsBatched = item.IsBatched,
                 StandardCost = item.StandardCost,
                 SellingPrice = item.SellingPrice,
+                CurrentPrice = item.SellingPrice,
                 UnitOfMeasure = item.UnitOfMeasure,
                 MinimumStockLevel = item.MinimumStockLevel,
                 MaximumStockLevel = item.MaximumStockLevel,
@@ -354,8 +355,7 @@ namespace TossErp.Inventory.API.Controllers
                     Price = ph.Price,
                     EffectiveDate = ph.EffectiveDate,
                     Reason = ph.Reason
-                }).ToList(),
-                CurrentPrice = item.SellingPrice
+                }).ToList()
             };
         }
     }

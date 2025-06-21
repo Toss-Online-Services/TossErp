@@ -1,4 +1,8 @@
-@using TossErp.Shared.DTOs
+@using TossErp.Inventory.Application.DTOs
+@using TossErp.POS.Application.DTOs
+@using TossErp.Identity.Application.DTOs
+@using TossErp.Inventory.Domain.Enums
+@using TossErp.POS.Domain.Enums
 @using TossErp.Shared.Enums
 @using TossErp.WebApp.Shared
 @using MudBlazor
@@ -9,7 +13,18 @@
 
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized>
+                @if (!context.User.Identity?.IsAuthenticated ?? true)
+                {
+                    <RedirectToLogin />
+                }
+                else
+                {
+                    <p>You are not authorized to access this resource.</p>
+                }
+            </NotAuthorized>
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>

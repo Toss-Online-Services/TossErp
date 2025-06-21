@@ -1,10 +1,11 @@
-namespace TossErp.POS.Domain.Enums
+namespace TossErp.POS.Domain.Enums;
+
+public enum SaleStatus
 {
-    public enum SaleStatus
-    {
-        Draft = 1,
-        Completed = 2,
-        Cancelled = 3,
-        Refunded = 4
-    }
+    All,
+    Draft,
+    Pending,
+    Completed,
+    Cancelled,
+    Refunded
 } 

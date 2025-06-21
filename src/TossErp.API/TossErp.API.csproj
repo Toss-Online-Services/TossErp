@@ -17,8 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../TossErp.Application/TossErp.Application.csproj" />
-    <ProjectReference Include="../TossErp.Infrastructure/TossErp.Infrastructure.csproj" />
+    <ProjectReference Include="..\TossErp.Copilot.Application\TossErp.Copilot.Application.csproj" />
+    <ProjectReference Include="..\TossErp.Application\TossErp.Application.csproj" />
+    <ProjectReference Include="..\TossErp.Domain\TossErp.Domain.csproj" />
+    <ProjectReference Include="..\TossErp.Infrastructure\TossErp.Infrastructure.csproj" />
+    <ProjectReference Include="..\TossErp.Shared\TossErp.Shared.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
 using TossErp.Inventory.API.DTOs;
-using TossErp.Shared.Enums;
+using TossErp.Inventory.Domain.Enums;
 
 namespace TossErp.Inventory.API.Services
 {
@@ -42,6 +42,7 @@ namespace TossErp.Inventory.API.Services
                     IsStockable = true,
                     StandardCost = 800.00m,
                     SellingPrice = 1200.00m,
+                    CurrentPrice = 1200.00m,
                     UnitOfMeasure = "Piece",
                     CurrentStock = 25,
                     MinimumStockLevel = 5,
@@ -65,6 +66,7 @@ namespace TossErp.Inventory.API.Services
                     IsStockable = true,
                     StandardCost = 15.00m,
                     SellingPrice = 25.00m,
+                    CurrentPrice = 25.00m,
                     UnitOfMeasure = "Piece",
                     CurrentStock = 8,
                     MinimumStockLevel = 10,
@@ -88,6 +90,7 @@ namespace TossErp.Inventory.API.Services
                     IsStockable = true,
                     StandardCost = 8.00m,
                     SellingPrice = 15.00m,
+                    CurrentPrice = 15.00m,
                     UnitOfMeasure = "Piece",
                     CurrentStock = 150,
                     MinimumStockLevel = 20,
@@ -143,6 +146,7 @@ namespace TossErp.Inventory.API.Services
                 IsBatched = request.IsBatched,
                 StandardCost = request.StandardCost,
                 SellingPrice = request.SellingPrice,
+                CurrentPrice = request.SellingPrice,
                 UnitOfMeasure = request.UnitOfMeasure,
                 CurrentStock = 0,
                 MinimumStockLevel = request.MinimumStockLevel,
@@ -181,6 +185,7 @@ namespace TossErp.Inventory.API.Services
             item.IsBatched = request.IsBatched;
             item.StandardCost = request.StandardCost;
             item.SellingPrice = request.SellingPrice;
+            item.CurrentPrice = request.SellingPrice;
             item.UnitOfMeasure = request.UnitOfMeasure;
             item.MinimumStockLevel = request.MinimumStockLevel;
             item.MaximumStockLevel = request.MaximumStockLevel;
@@ -208,7 +213,6 @@ namespace TossErp.Inventory.API.Services
 
             item.IsActive = false;
             item.LastModifiedAt = DateTime.UtcNow;
-
             _logger.LogInformation("Deleted item: {ItemCode}", item.ItemCode);
             return Task.FromResult(true);
         }
@@ -222,40 +226,41 @@ namespace TossErp.Inventory.API.Services
             }
 
             var previousStock = item.CurrentStock;
-            var newStock = request.MovementType == StockMovementType.In ? 
-                previousStock + request.Quantity : 
-                previousStock - request.Quantity;
+            var quantity = (int)request.Quantity;
 
-            if (newStock < 0)
+            switch (request.AdjustmentType)
             {
-                throw new InvalidOperationException("Stock cannot be negative");
+                case StockMovementType.In:
+                    item.CurrentStock += quantity;
+                    break;
+                case StockMovementType.Out:
+                    item.CurrentStock -= quantity;
+                    break;
+                case StockMovementType.Adjustment:
+                    item.CurrentStock = quantity;
+                    break;
             }
 
-            item.CurrentStock = newStock;
-            item.LastModifiedAt = DateTime.UtcNow;
-
-            // Record stock movement
+            // Create stock movement record
             var movement = new StockMovementDto
             {
                 Id = Guid.NewGuid(),
                 ItemId = item.Id,
                 ItemName = item.Name,
+                MovementType = request.AdjustmentType,
                 Quantity = request.Quantity,
-                MovementType = request.MovementType,
-                Reason = request.Reason,
-                PreviousStock = previousStock,
-                NewStock = newStock,
+                UnitCost = request.UnitCost,
                 Reference = request.Reference,
-                WarehouseId = request.WarehouseId,
+                Notes = request.Reason,
                 MovementDate = DateTime.UtcNow,
-                CreatedAt = DateTime.UtcNow,
-                CreatedBy = "System" // TODO: Get from current user context
+                CreatedBy = Guid.Empty // TODO: Get from current user context
             };
 
             _stockMovements.Add(movement);
+            item.LastModifiedAt = DateTime.UtcNow;
 
             _logger.LogInformation("Adjusted stock for item {ItemCode}: {PreviousStock} -> {NewStock}", 
-                item.ItemCode, previousStock, newStock);
+                item.ItemCode, previousStock, item.CurrentStock);
 
             return Task.FromResult<ItemDto?>(item);
         }
@@ -266,20 +271,24 @@ namespace TossErp.Inventory.API.Services
 
             if (fromDate.HasValue)
             {
-                query = query.Where(m => m.CreatedAt >= fromDate.Value);
+                query = query.Where(m => m.MovementDate >= fromDate.Value);
             }
 
             if (toDate.HasValue)
             {
-                query = query.Where(m => m.CreatedAt <= toDate.Value);
+                query = query.Where(m => m.MovementDate <= toDate.Value);
             }
 
-            return Task.FromResult(query.OrderByDescending(m => m.CreatedAt).ToList());
+            return Task.FromResult(query
+                .OrderByDescending(m => m.MovementDate)
+                .ToList());
         }
 
         public Task<List<ItemDto>> GetLowStockItemsAsync(int threshold)
         {
-            return Task.FromResult(_items.Where(i => i.IsActive && i.CurrentStock <= threshold).ToList());
+            return Task.FromResult(_items
+                .Where(i => i.IsActive && i.CurrentStock <= threshold)
+                .ToList());
         }
 
         public Task<List<CategoryDto>> GetCategoriesAsync()

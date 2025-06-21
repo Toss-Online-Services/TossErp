@@ -5,8 +5,8 @@ using TossErp.POS.Infrastructure.Repositories;
 using TossErp.Domain.SeedWork;
 using TossErp.POS.API.Services;
 using Microsoft.AspNetCore.Authorization;
-using TossErp.POS.API.DTOs;
-using TossErp.Shared.Enums;
+using TossErp.POS.Application.DTOs;
+using TossErp.Shared.DTOs;
 
 namespace TossErp.POS.API.Controllers
 {
@@ -29,69 +29,30 @@ namespace TossErp.POS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<SaleListDto>> GetSales(
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10,
-            [FromQuery] TossErp.Shared.Enums.SaleStatus? status = null,
-            [FromQuery] Guid? customerId = null,
-            [FromQuery] Guid? cashierId = null,
+        public async Task<ActionResult<CommonResponseDto<List<SaleListDto>>>> GetSales(
             [FromQuery] DateTime? startDate = null,
-            [FromQuery] DateTime? endDate = null)
+            [FromQuery] DateTime? endDate = null,
+            [FromQuery] SaleStatus? status = null,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
             try
             {
-                var sales = await _saleRepository.GetAllAsync();
-
-                // Apply filters
-                if (status.HasValue)
+                var sales = await _salesService.GetSalesAsync(startDate, endDate, status, page, pageSize);
+                return Ok(new CommonResponseDto<List<SaleListDto>>
                 {
-                    sales = sales.Where(s => s.Status == (TossErp.POS.Domain.Enums.SaleStatus)status.Value);
-                }
-
-                if (customerId.HasValue)
-                {
-                    sales = sales.Where(s => s.CustomerId == customerId.Value);
-                }
-
-                if (cashierId.HasValue)
-                {
-                    sales = sales.Where(s => s.CashierId == cashierId.Value);
-                }
-
-                if (startDate.HasValue)
-                {
-                    sales = sales.Where(s => s.SaleDate >= startDate.Value);
-                }
-
-                if (endDate.HasValue)
-                {
-                    sales = sales.Where(s => s.SaleDate <= endDate.Value);
-                }
-
-                var totalCount = sales.Count();
-                var totalSalesAmount = sales.Where(s => s.Status == TossErp.POS.Domain.Enums.SaleStatus.Completed).Sum(s => s.TotalAmount);
-
-                var pagedSales = sales
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .Select(MapToDto)
-                    .ToList();
-
-                var result = new SaleListDto
-                {
-                    Sales = pagedSales,
-                    TotalCount = totalCount,
-                    PageNumber = pageNumber,
-                    PageSize = pageSize,
-                    TotalSalesAmount = totalSalesAmount
-                };
-
-                return Ok(result);
+                    Success = true,
+                    Data = sales,
+                    Message = "Sales retrieved successfully"
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving sales");
-                return StatusCode(500, "An error occurred while retrieving sales");
+                return BadRequest(new CommonResponseDto<List<SaleListDto>>
+                {
+                    Success = false,
+                    Message = $"Error retrieving sales: {ex.Message}"
+                });
             }
         }
 
@@ -166,7 +127,7 @@ namespace TossErp.POS.API.Controllers
                     return NotFound($"Sale with ID {id} not found");
                 }
 
-                if (sale.Status != TossErp.POS.Domain.Enums.SaleStatus.Draft)
+                if (sale.Status != SaleStatus.Draft)
                 {
                     return BadRequest("Only draft sales can be updated");
                 }
@@ -181,14 +142,14 @@ namespace TossErp.POS.API.Controllers
                         itemDto.ItemName ?? "Unknown Item", // Add item name
                         itemDto.Quantity,
                         itemDto.UnitPrice,
-                        itemDto.DiscountPercentage
+                        itemDto.DiscountAmount
                     );
                 }
 
                 // Update notes if provided
-                if (!string.IsNullOrEmpty(updateSaleDto.Notes))
+                if (!string.IsNullOrEmpty(updateSaleDto.CustomerName))
                 {
-                    sale.UpdateNotes(updateSaleDto.Notes);
+                    sale.UpdateNotes(updateSaleDto.CustomerName);
                 }
 
                 _saleRepository.Update(sale);
@@ -221,15 +182,15 @@ namespace TossErp.POS.API.Controllers
                     return NotFound($"Sale with ID {id} not found");
                 }
 
-                if (sale.Status != TossErp.POS.Domain.Enums.SaleStatus.Draft)
+                if (sale.Status != SaleStatus.Draft)
                 {
                     return BadRequest("Only draft sales can be completed");
                 }
 
                 sale.Complete(
-                    (TossErp.POS.Domain.Enums.PaymentMethod)completeSaleDto.PaymentMethod,
+                    (PaymentMethod)Enum.Parse(typeof(PaymentMethod), completeSaleDto.PaymentMethod),
                     completeSaleDto.AmountPaid,
-                    completeSaleDto.ReferenceNumber
+                    completeSaleDto.ReceiptEmail ?? ""
                 );
 
                 _saleRepository.Update(sale);
@@ -262,12 +223,12 @@ namespace TossErp.POS.API.Controllers
                     return NotFound($"Sale with ID {id} not found");
                 }
 
-                if (sale.Status == TossErp.POS.Domain.Enums.SaleStatus.Cancelled)
+                if (sale.Status != SaleStatus.Draft)
                 {
-                    return BadRequest("Sale is already cancelled");
+                    return BadRequest("Only draft sales can be cancelled");
                 }
 
-                sale.Cancel(cancelSaleDto.CancellationReason);
+                sale.Cancel(cancelSaleDto.Reason);
 
                 _saleRepository.Update(sale);
                 await _unitOfWork.SaveChangesAsync();
@@ -288,10 +249,8 @@ namespace TossErp.POS.API.Controllers
         {
             try
             {
-                var sales = await _saleRepository.GetSalesByCustomerAsync(customerId);
-                var saleDtos = sales.Select(MapToDto).ToList();
-
-                return Ok(saleDtos);
+                var sales = await _saleRepository.GetByCustomerIdAsync(customerId);
+                return Ok(sales.Select(MapToDto).ToList());
             }
             catch (Exception ex)
             {
@@ -305,10 +264,8 @@ namespace TossErp.POS.API.Controllers
         {
             try
             {
-                var sales = await _saleRepository.GetSalesByCashierAsync(cashierId);
-                var saleDtos = sales.Select(MapToDto).ToList();
-
-                return Ok(saleDtos);
+                var sales = await _saleRepository.GetByCashierIdAsync(cashierId);
+                return Ok(sales.Select(MapToDto).ToList());
             }
             catch (Exception ex)
             {
@@ -323,9 +280,7 @@ namespace TossErp.POS.API.Controllers
             try
             {
                 var sales = await _saleRepository.GetCompletedSalesAsync();
-                var saleDtos = sales.Select(MapToDto).ToList();
-
-                return Ok(saleDtos);
+                return Ok(sales.Select(MapToDto).ToList());
             }
             catch (Exception ex)
             {
@@ -339,27 +294,24 @@ namespace TossErp.POS.API.Controllers
         {
             try
             {
-                var startDate = date.Date;
-                var endDate = startDate.AddDays(1).AddSeconds(-1);
+                var sales = await _saleRepository.GetSalesByDateAsync(date);
+                var totalSales = sales.Count;
+                var totalRevenue = sales.Where(s => s.Status == SaleStatus.Completed).Sum(s => s.TotalAmount);
+                var totalItems = sales.Sum(s => s.Items.Count);
 
-                var sales = await _saleRepository.GetSalesByDateRangeAsync(startDate, endDate);
-                var completedSales = sales.Where(s => s.Status == TossErp.POS.Domain.Enums.SaleStatus.Completed).ToList();
-
-                var report = new
+                return Ok(new
                 {
-                    Date = date.Date,
-                    TotalSales = completedSales.Count,
-                    TotalAmount = completedSales.Sum(s => s.TotalAmount),
-                    AverageTicketValue = completedSales.Any() ? completedSales.Average(s => s.TotalAmount) : 0,
-                    Sales = completedSales.Select(MapToDto).ToList()
-                };
-
-                return Ok(report);
+                    Date = date,
+                    TotalSales = totalSales,
+                    TotalRevenue = totalRevenue,
+                    TotalItems = totalItems,
+                    Sales = sales.Select(MapToDto).ToList()
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error generating daily sales report for {Date}", date);
-                return StatusCode(500, "An error occurred while generating the report");
+                _logger.LogError(ex, "Error retrieving daily sales report for date {Date}", date);
+                return StatusCode(500, "An error occurred while retrieving the daily sales report");
             }
         }
 
@@ -368,13 +320,23 @@ namespace TossErp.POS.API.Controllers
         {
             try
             {
-                var summary = await _salesService.GetDailySummaryAsync(date);
+                var sales = await _saleRepository.GetSalesByDateAsync(date);
+                var summary = new DailySummaryDto
+                {
+                    Date = date,
+                    TotalSales = sales.Count,
+                    TotalRevenue = sales.Where(s => s.Status == SaleStatus.Completed).Sum(s => s.TotalAmount),
+                    TotalTax = sales.Sum(s => s.TaxAmount),
+                    TotalDiscount = sales.Sum(s => s.DiscountAmount),
+                    ItemsSold = sales.Sum(s => s.Items.Count)
+                };
+
                 return Ok(summary);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving daily summary for {Date}", date);
-                return StatusCode(500, new { message = "Failed to retrieve daily summary", error = ex.Message });
+                _logger.LogError(ex, "Error retrieving daily summary for date {Date}", date);
+                return StatusCode(500, "An error occurred while retrieving the daily summary");
             }
         }
 
@@ -383,13 +345,24 @@ namespace TossErp.POS.API.Controllers
         {
             try
             {
-                var report = await _salesService.GetSalesReportAsync(fromDate, toDate);
+                var sales = await _saleRepository.GetSalesByDateRangeAsync(fromDate, toDate);
+                var report = new SalesReportDto
+                {
+                    StartDate = fromDate,
+                    EndDate = toDate,
+                    TotalSales = sales.Count,
+                    TotalRevenue = sales.Where(s => s.Status == SaleStatus.Completed).Sum(s => s.TotalAmount),
+                    TotalTax = sales.Sum(s => s.TaxAmount),
+                    TotalDiscount = sales.Sum(s => s.DiscountAmount),
+                    ItemsSold = sales.Sum(s => s.Items.Count)
+                };
+
                 return Ok(report);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error generating sales report");
-                return StatusCode(500, new { message = "Failed to generate sales report", error = ex.Message });
+                _logger.LogError(ex, "Error retrieving sales report from {FromDate} to {ToDate}", fromDate, toDate);
+                return StatusCode(500, "An error occurred while retrieving the sales report");
             }
         }
 
@@ -399,45 +372,27 @@ namespace TossErp.POS.API.Controllers
             {
                 Id = sale.Id,
                 SaleNumber = sale.SaleNumber,
-                CustomerId = sale.CustomerId,
-                CashierId = sale.CashierId,
-                Status = (TossErp.Shared.Enums.SaleStatus)sale.Status,
-                SaleType = (TossErp.Shared.Enums.SaleType)sale.SaleType,
-                SubTotal = sale.SubTotal,
+                SaleDate = sale.SaleDate,
+                TotalAmount = sale.TotalAmount,
                 TaxAmount = sale.TaxAmount,
                 DiscountAmount = sale.DiscountAmount,
-                TotalAmount = sale.TotalAmount,
-                AmountPaid = sale.AmountPaid,
-                ChangeAmount = sale.ChangeAmount,
-                PaymentMethod = (TossErp.Shared.Enums.PaymentMethod)sale.PaymentMethod,
-                ReferenceNumber = sale.ReferenceNumber,
-                Notes = sale.Notes,
-                SaleDate = sale.SaleDate,
-                CompletedAt = sale.CompletedAt,
-                CancelledAt = sale.CancelledAt,
-                CancellationReason = sale.CancellationReason,
-                Items = sale.SaleItems.Select(si => new SaleItemDto
+                FinalAmount = sale.FinalAmount,
+                Status = sale.Status.ToString(),
+                CustomerName = sale.CustomerName,
+                CustomerPhone = sale.CustomerPhone,
+                PaymentMethod = sale.PaymentMethod.ToString(),
+                Items = sale.Items.Select(item => new SaleItemDto
                 {
-                    Id = si.Id,
-                    ItemId = si.ItemId,
-                    ItemName = si.ItemName,
-                    ItemCode = si.ItemCode,
-                    Quantity = (int)si.Quantity,
-                    UnitPrice = si.UnitPrice,
-                    DiscountAmount = si.DiscountAmount,
-                    DiscountPercentage = si.DiscountPercentage ?? 0,
-                    TotalAmount = si.TotalAmount
-                }).ToList(),
-                Payments = sale.Payments.Select(sp => new SalePaymentDto
-                {
-                    Id = sp.Id,
-                    PaymentMethod = (TossErp.Shared.Enums.PaymentMethod)sp.PaymentMethod,
-                    Amount = sp.Amount,
-                    ReferenceNumber = sp.ReferenceNumber,
-                    PaymentDate = sp.PaymentDate
-                }).ToList(),
-                CustomerName = "Customer Name", // TODO: Get from customer service
-                CashierName = "Cashier Name"    // TODO: Get from user service
+                    Id = item.Id,
+                    SaleId = item.SaleId,
+                    ItemId = item.ItemId,
+                    ItemName = item.ItemName,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.UnitPrice,
+                    TotalPrice = item.TotalPrice,
+                    DiscountAmount = item.DiscountAmount,
+                    FinalPrice = item.FinalPrice
+                }).ToList()
             };
         }
     }

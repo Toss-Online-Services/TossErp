@@ -22,6 +22,10 @@
   <ItemGroup>
     <ProjectReference Include="..\TossErp.Shared\TossErp.Shared.csproj" />
     <ProjectReference Include="..\TossErp.Application\TossErp.Application.csproj" />
+    <ProjectReference Include="..\TossErp.Inventory.Application\TossErp.Inventory.Application.csproj" />
+    <ProjectReference Include="..\TossErp.POS.Application\TossErp.POS.Application.csproj" />
+    <ProjectReference Include="..\TossErp.Identity.Application\TossErp.Identity.Application.csproj" />
+    <ProjectReference Include="..\TossErp.Copilot.Domain\TossErp.Copilot.Domain.csproj" />
   </ItemGroup>
 
 </Project> 

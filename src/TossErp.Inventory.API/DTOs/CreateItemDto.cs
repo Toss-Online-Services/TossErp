@@ -1,4 +1,4 @@
-using TossErp.Shared.Enums;
+using TossErp.Inventory.Domain.Enums;
 
 namespace TossErp.Inventory.API.DTOs
 {

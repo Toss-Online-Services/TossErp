@@ -1,4 +1,4 @@
-namespace TossErp.Shared.DTOs;
+namespace TossErp.Inventory.Application.DTOs;
 
 public class StockItemDto
 {

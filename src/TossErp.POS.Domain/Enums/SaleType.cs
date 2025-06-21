@@ -1,10 +1,9 @@
-namespace TossErp.POS.Domain.Enums
+namespace TossErp.POS.Domain.Enums;
+
+public enum SaleType
 {
-    public enum SaleType
-    {
-        Retail = 1,
-        Wholesale = 2,
-        Online = 3,
-        Phone = 4
-    }
+    Retail = 0,
+    Wholesale = 1,
+    Online = 2,
+    Phone = 3
 } 

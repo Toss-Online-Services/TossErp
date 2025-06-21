@@ -1,14 +1,15 @@
-using TossErp.Shared.Enums;
+using TossErp.Inventory.Domain.Enums;
 
 namespace TossErp.Inventory.API.DTOs
 {
     public class StockAdjustmentDto
     {
-        public int Quantity { get; set; }
-        public StockMovementType MovementType { get; set; }
-        public string Reason { get; set; } = string.Empty;
-        public string? Notes { get; set; }
+        public Guid ItemId { get; set; }
+        public StockMovementType AdjustmentType { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal? UnitCost { get; set; }
+        public string? Reason { get; set; }
         public string? Reference { get; set; }
-        public Guid? WarehouseId { get; set; }
+        public string? Notes { get; set; }
     }
 } 

@@ -7,6 +7,8 @@ using TossErp.Application.Services;
 using TossErp.Domain.SeedWork;
 using TossErp.Infrastructure.Data;
 using TossErp.Infrastructure.Repositories;
+using TossErp.Copilot.Domain;
+using TossErp.Copilot.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -104,6 +106,7 @@ builder.Services.AddScoped<IStokvelRepository, StokvelRepository>();
 builder.Services.AddScoped<ITownshipEnterpriseService, TownshipEnterpriseService>();
 builder.Services.AddScoped<ICooperativeService, CooperativeService>();
 builder.Services.AddScoped<IStokvelService, StokvelService>();
+builder.Services.AddScoped<ICopilotService, CopilotService>();
 
 // Register Unit of Work
 builder.Services.AddScoped<IUnitOfWork>(provider => 

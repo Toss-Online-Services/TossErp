@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TossErp.POS.Domain\TossErp.POS.Domain.csproj" />
+    <ProjectReference Include="..\TossErp.POS.Application\TossErp.POS.Application.csproj" />
     <ProjectReference Include="..\TossErp.POS.Infrastructure\TossErp.POS.Infrastructure.csproj" />
     <ProjectReference Include="..\TossErp.Shared\TossErp.Shared.csproj" />
   </ItemGroup>

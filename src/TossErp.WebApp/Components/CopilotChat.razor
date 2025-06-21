@@ -1,4 +1,4 @@
-@using TossErp.Application.Services
+@using TossErp.Copilot.Domain
 @inject ICopilotService CopilotService
 @inject ISnackbar Snackbar
 
@@ -107,7 +107,7 @@
 
         try
         {
-            var response = await CopilotService.ProcessQueryAsync(userInput, Guid.Empty);
+            var response = await CopilotService.GetCopilotResponseAsync(userInput);
             
             var aiMessage = new ChatMessage
             {
