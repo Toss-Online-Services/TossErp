@@ -1,71 +1,28 @@
 using TossErp.Shared.DTOs;
 using TossErp.Identity.API.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace TossErp.Identity.API.Services
 {
     public class UserService : IUserService
     {
-        private readonly List<ApplicationUser> _users = new();
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<UserService> _logger;
 
-        public UserService(ILogger<UserService> logger)
+        public UserService(UserManager<ApplicationUser> userManager, ILogger<UserService> logger)
         {
+            _userManager = userManager;
             _logger = logger;
-            InitializeDefaultUsers();
-        }
-
-        private void InitializeDefaultUsers()
-        {
-            _users.AddRange(new[]
-            {
-                new ApplicationUser
-                {
-                    Id = Guid.NewGuid(),
-                    UserName = "admin",
-                    Email = "admin@toss.com",
-                    FirstName = "Admin",
-                    LastName = "User",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
-                    IsActive = true,
-                    Roles = new[] { "Admin" },
-                    CreatedAt = DateTime.UtcNow
-                },
-                new ApplicationUser
-                {
-                    Id = Guid.NewGuid(),
-                    UserName = "manager",
-                    Email = "manager@toss.com",
-                    FirstName = "John",
-                    LastName = "Manager",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("manager123"),
-                    IsActive = true,
-                    Roles = new[] { "Manager" },
-                    CreatedAt = DateTime.UtcNow
-                },
-                new ApplicationUser
-                {
-                    Id = Guid.NewGuid(),
-                    UserName = "cashier1",
-                    Email = "cashier1@toss.com",
-                    FirstName = "Jane",
-                    LastName = "Cashier",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("cashier123"),
-                    IsActive = true,
-                    Roles = new[] { "Cashier" },
-                    CreatedAt = DateTime.UtcNow
-                }
-            });
         }
 
         public async Task<UserDto?> ValidateUserAsync(string userName, string password)
         {
-            var user = _users.FirstOrDefault(u => u.UserName == userName && u.IsActive);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, password))
             {
                 return null;
             }
 
-            user.LastLoginAt = DateTime.UtcNow;
             return MapToDto(user);
         }
 
@@ -73,48 +30,55 @@ namespace TossErp.Identity.API.Services
         {
             var user = new ApplicationUser
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.NewGuid().ToString(),
                 UserName = request.UserName,
                 Email = request.Email,
-                FirstName = request.FirstName,
+                Name = request.FirstName,
                 LastName = request.LastName,
                 PhoneNumber = request.PhoneNumber,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-                Roles = request.Roles,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow
+                EmailConfirmed = true
             };
 
-            _users.Add(user);
+            var result = await _userManager.CreateAsync(user, request.Password);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException($"Failed to create user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+
             _logger.LogInformation("Created new user: {UserName}", user.UserName);
             return MapToDto(user);
         }
 
-        public async Task<List<UserDto>> GetAllUsersAsync()
+        public Task<List<UserDto>> GetAllUsersAsync()
         {
-            return _users.Select(MapToDto).ToList();
+            var users = _userManager.Users.ToList();
+            return Task.FromResult(users.Select(MapToDto).ToList());
         }
 
         public async Task<UserDto?> GetUserByIdAsync(Guid id)
         {
-            var user = _users.FirstOrDefault(u => u.Id == id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
             return user != null ? MapToDto(user) : null;
         }
 
         public async Task<UserDto?> UpdateUserAsync(Guid id, CreateUserDto request)
         {
-            var user = _users.FirstOrDefault(u => u.Id == id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
                 return null;
             }
 
-            user.FirstName = request.FirstName;
+            user.Name = request.FirstName;
             user.LastName = request.LastName;
             user.Email = request.Email;
             user.PhoneNumber = request.PhoneNumber;
-            user.Roles = request.Roles;
-            user.LastModifiedAt = DateTime.UtcNow;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException($"Failed to update user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
 
             _logger.LogInformation("Updated user: {UserName}", user.UserName);
             return MapToDto(user);
@@ -122,28 +86,39 @@ namespace TossErp.Identity.API.Services
 
         public async Task<bool> DeleteUserAsync(Guid id)
         {
-            var user = _users.FirstOrDefault(u => u.Id == id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
                 return false;
             }
 
-            user.IsActive = false;
-            user.LastModifiedAt = DateTime.UtcNow;
-            _logger.LogInformation("Deactivated user: {UserName}", user.UserName);
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException($"Failed to delete user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+
+            _logger.LogInformation("Deleted user: {UserName}", user.UserName);
             return true;
         }
 
         public async Task<UserDto?> ActivateUserAsync(Guid id)
         {
-            var user = _users.FirstOrDefault(u => u.Id == id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
                 return null;
             }
 
-            user.IsActive = true;
-            user.LastModifiedAt = DateTime.UtcNow;
+            user.LockoutEnabled = false;
+            user.LockoutEnd = null;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException($"Failed to activate user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+
             _logger.LogInformation("Activated user: {UserName}", user.UserName);
             return MapToDto(user);
         }
@@ -152,16 +127,16 @@ namespace TossErp.Identity.API.Services
         {
             return new UserDto
             {
-                Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
-                FirstName = user.FirstName,
+                Id = Guid.Parse(user.Id),
+                UserName = user.UserName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                FirstName = user.Name,
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
-                IsActive = user.IsActive,
-                Roles = user.Roles,
-                CreatedAt = user.CreatedAt,
-                LastLoginAt = user.LastLoginAt
+                IsActive = !user.LockoutEnabled,
+                Roles = new string[0], // TODO: Get roles from UserManager
+                CreatedAt = DateTime.UtcNow, // TODO: Add CreatedAt to ApplicationUser if needed
+                LastLoginAt = null // TODO: Add LastLoginAt to ApplicationUser if needed
             };
         }
     }

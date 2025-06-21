@@ -1,4 +1,4 @@
-using TossErp.Shared.DTOs;
+using TossErp.Inventory.API.DTOs;
 using TossErp.Shared.Enums;
 
 namespace TossErp.Inventory.API.Services
@@ -102,7 +102,7 @@ namespace TossErp.Inventory.API.Services
             });
         }
 
-        public async Task<List<ItemDto>> GetItemsAsync(string? searchTerm, int page, int pageSize)
+        public Task<List<ItemDto>> GetItemsAsync(string? searchTerm, int page, int pageSize)
         {
             var query = _items.Where(i => i.IsActive);
 
@@ -116,18 +116,18 @@ namespace TossErp.Inventory.API.Services
                     i.SKU?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true);
             }
 
-            return query
+            return Task.FromResult(query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToList());
         }
 
-        public async Task<ItemDto?> GetItemByIdAsync(Guid id)
+        public Task<ItemDto?> GetItemByIdAsync(Guid id)
         {
-            return _items.FirstOrDefault(i => i.Id == id && i.IsActive);
+            return Task.FromResult(_items.FirstOrDefault(i => i.Id == id && i.IsActive));
         }
 
-        public async Task<ItemDto> CreateItemAsync(CreateItemDto request)
+        public Task<ItemDto> CreateItemAsync(CreateItemDto request)
         {
             var item = new ItemDto
             {
@@ -139,6 +139,8 @@ namespace TossErp.Inventory.API.Services
                 SKU = request.SKU,
                 ItemType = request.ItemType,
                 IsStockable = request.IsStockable,
+                IsSerialized = request.IsSerialized,
+                IsBatched = request.IsBatched,
                 StandardCost = request.StandardCost,
                 SellingPrice = request.SellingPrice,
                 UnitOfMeasure = request.UnitOfMeasure,
@@ -158,15 +160,15 @@ namespace TossErp.Inventory.API.Services
 
             _items.Add(item);
             _logger.LogInformation("Created new item: {ItemCode}", item.ItemCode);
-            return item;
+            return Task.FromResult(item);
         }
 
-        public async Task<ItemDto?> UpdateItemAsync(Guid id, UpdateItemDto request)
+        public Task<ItemDto?> UpdateItemAsync(Guid id, UpdateItemDto request)
         {
             var item = _items.FirstOrDefault(i => i.Id == id && i.IsActive);
             if (item == null)
             {
-                return null;
+                return Task.FromResult<ItemDto?>(null);
             }
 
             item.Name = request.Name;
@@ -175,6 +177,8 @@ namespace TossErp.Inventory.API.Services
             item.SKU = request.SKU;
             item.ItemType = request.ItemType;
             item.IsStockable = request.IsStockable;
+            item.IsSerialized = request.IsSerialized;
+            item.IsBatched = request.IsBatched;
             item.StandardCost = request.StandardCost;
             item.SellingPrice = request.SellingPrice;
             item.UnitOfMeasure = request.UnitOfMeasure;
@@ -187,79 +191,76 @@ namespace TossErp.Inventory.API.Services
                 _categories.FirstOrDefault(c => c.Id == request.CategoryId)?.Name : null;
             item.BrandId = request.BrandId;
             item.SupplierId = request.SupplierId;
+            item.IsActive = request.IsActive;
             item.LastModifiedAt = DateTime.UtcNow;
 
             _logger.LogInformation("Updated item: {ItemCode}", item.ItemCode);
-            return item;
+            return Task.FromResult<ItemDto?>(item);
         }
 
-        public async Task<bool> DeleteItemAsync(Guid id)
+        public Task<bool> DeleteItemAsync(Guid id)
         {
             var item = _items.FirstOrDefault(i => i.Id == id && i.IsActive);
             if (item == null)
             {
-                return false;
+                return Task.FromResult(false);
             }
 
             item.IsActive = false;
             item.LastModifiedAt = DateTime.UtcNow;
+
             _logger.LogInformation("Deleted item: {ItemCode}", item.ItemCode);
-            return true;
+            return Task.FromResult(true);
         }
 
-        public async Task<ItemDto?> AdjustStockAsync(Guid id, StockAdjustmentDto request)
+        public Task<ItemDto?> AdjustStockAsync(Guid id, StockAdjustmentDto request)
         {
             var item = _items.FirstOrDefault(i => i.Id == id && i.IsActive);
             if (item == null)
             {
-                return null;
+                return Task.FromResult<ItemDto?>(null);
             }
 
-            var oldStock = item.CurrentStock;
-            
-            switch (request.MovementType)
+            var previousStock = item.CurrentStock;
+            var newStock = request.MovementType == StockMovementType.In ? 
+                previousStock + request.Quantity : 
+                previousStock - request.Quantity;
+
+            if (newStock < 0)
             {
-                case StockMovementType.In:
-                    item.CurrentStock += request.Quantity;
-                    break;
-                case StockMovementType.Out:
-                    if (item.CurrentStock < request.Quantity)
-                    {
-                        throw new InvalidOperationException("Insufficient stock for adjustment");
-                    }
-                    item.CurrentStock -= request.Quantity;
-                    break;
-                case StockMovementType.Adjustment:
-                    item.CurrentStock = request.Quantity;
-                    break;
+                throw new InvalidOperationException("Stock cannot be negative");
             }
+
+            item.CurrentStock = newStock;
+            item.LastModifiedAt = DateTime.UtcNow;
 
             // Record stock movement
             var movement = new StockMovementDto
             {
                 Id = Guid.NewGuid(),
-                ItemId = id,
+                ItemId = item.Id,
                 ItemName = item.Name,
                 Quantity = request.Quantity,
                 MovementType = request.MovementType,
-                PreviousStock = oldStock,
-                NewStock = item.CurrentStock,
                 Reason = request.Reason,
+                PreviousStock = previousStock,
+                NewStock = newStock,
                 Reference = request.Reference,
                 WarehouseId = request.WarehouseId,
-                CreatedAt = DateTime.UtcNow
+                MovementDate = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "System" // TODO: Get from current user context
             };
 
             _stockMovements.Add(movement);
-            item.LastModifiedAt = DateTime.UtcNow;
 
-            _logger.LogInformation("Stock adjusted for item {ItemCode}: {OldStock} -> {NewStock}", 
-                item.ItemCode, oldStock, item.CurrentStock);
+            _logger.LogInformation("Adjusted stock for item {ItemCode}: {PreviousStock} -> {NewStock}", 
+                item.ItemCode, previousStock, newStock);
 
-            return item;
+            return Task.FromResult<ItemDto?>(item);
         }
 
-        public async Task<List<StockMovementDto>> GetStockMovementsAsync(Guid id, DateTime? fromDate, DateTime? toDate)
+        public Task<List<StockMovementDto>> GetStockMovementsAsync(Guid id, DateTime? fromDate, DateTime? toDate)
         {
             var query = _stockMovements.Where(m => m.ItemId == id);
 
@@ -273,20 +274,17 @@ namespace TossErp.Inventory.API.Services
                 query = query.Where(m => m.CreatedAt <= toDate.Value);
             }
 
-            return query.OrderByDescending(m => m.CreatedAt).ToList();
+            return Task.FromResult(query.OrderByDescending(m => m.CreatedAt).ToList());
         }
 
-        public async Task<List<ItemDto>> GetLowStockItemsAsync(int threshold)
+        public Task<List<ItemDto>> GetLowStockItemsAsync(int threshold)
         {
-            return _items
-                .Where(i => i.IsActive && i.IsStockable && i.CurrentStock <= threshold)
-                .OrderBy(i => i.CurrentStock)
-                .ToList();
+            return Task.FromResult(_items.Where(i => i.IsActive && i.CurrentStock <= threshold).ToList());
         }
 
-        public async Task<List<CategoryDto>> GetCategoriesAsync()
+        public Task<List<CategoryDto>> GetCategoriesAsync()
         {
-            return _categories.ToList();
+            return Task.FromResult(_categories.ToList());
         }
     }
 } 

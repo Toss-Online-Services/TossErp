@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using TossErp.Inventory.Domain.AggregatesModel.ItemAggregate;
-using TossErp.Inventory.Domain.Enums;
+using TossErp.Shared.Enums;
 using TossErp.Inventory.Infrastructure.Repositories;
 using TossErp.Domain.SeedWork;
-using TossErp.Shared.DTOs;
+using TossErp.Inventory.API.DTOs;
 using TossErp.Inventory.API.Services;
 using Microsoft.AspNetCore.Authorization;
 
@@ -323,7 +323,7 @@ namespace TossErp.Inventory.API.Controllers
                 Description = item.Description,
                 Barcode = item.Barcode,
                 SKU = item.SKU,
-                ItemType = item.ItemType,
+                ItemType = (TossErp.Shared.Enums.ItemType)item.ItemType,
                 IsActive = item.IsActive,
                 IsStockable = item.IsStockable,
                 IsSerialized = item.IsSerialized,

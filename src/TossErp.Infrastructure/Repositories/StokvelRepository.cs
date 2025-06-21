@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TossErp.Domain.AggregatesModel.StokvelAggregate;
@@ -21,30 +22,59 @@ namespace TossErp.Infrastructure.Repositories
 
         public IUnitOfWork UnitOfWork => _context;
 
+        // IRepository<T> implementations
+        public async Task<Stokvel?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Stokvels
+                .Include(s => s.Members)
+                .Include(s => s.Contributions)
+                .Include(s => s.Payouts)
+                .Include(s => s.Meetings)
+                .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+        }
+
+        public async Task<IReadOnlyList<Stokvel>> ListAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.Stokvels
+                .Include(s => s.Members)
+                .Include(s => s.Contributions)
+                .Include(s => s.Payouts)
+                .Include(s => s.Meetings)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task AddAsync(Stokvel entity, CancellationToken cancellationToken = default)
+        {
+            await _context.Stokvels.AddAsync(entity, cancellationToken);
+        }
+
+        public void Update(Stokvel entity)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+
+        public void Remove(Stokvel entity)
+        {
+            _context.Stokvels.Remove(entity);
+        }
+
+        // IStokvelRepository implementations
         public async Task<Stokvel> AddAsync(Stokvel stokvel)
         {
             var entry = await _context.Stokvels.AddAsync(stokvel);
             return entry.Entity;
         }
 
+        // Legacy method for backward compatibility
         public async Task<Stokvel> GetByIdAsync(Guid id)
         {
-            return await _context.Stokvels
-                .Include(s => s.Members)
-                .Include(s => s.Contributions)
-                .Include(s => s.Payouts)
-                .Include(s => s.Meetings)
-                .FirstOrDefaultAsync(s => s.Id == id);
+            var result = await GetByIdAsync(id, CancellationToken.None);
+            return result ?? throw new InvalidOperationException($"Stokvel with ID {id} not found.");
         }
 
         public async Task<IEnumerable<Stokvel>> GetAllAsync()
         {
-            return await _context.Stokvels
-                .Include(s => s.Members)
-                .Include(s => s.Contributions)
-                .Include(s => s.Payouts)
-                .Include(s => s.Meetings)
-                .ToListAsync();
+            return await ListAsync();
         }
 
         public async Task<IEnumerable<Stokvel>> GetByStokvelTypeAsync(StokvelType stokvelType)
@@ -98,23 +128,37 @@ namespace TossErp.Infrastructure.Repositories
                 .Include(s => s.Contributions)
                 .Include(s => s.Payouts)
                 .Include(s => s.Meetings)
-                .Where(s => s.StokvelName.Contains(searchTerm) || 
+                .Where(s => s.Name.Contains(searchTerm) || 
                            s.Description.Contains(searchTerm))
                 .ToListAsync();
         }
 
         public async Task<decimal> GetTotalContributionsAsync(Guid stokvelId)
         {
-            return await _context.StokvelContributions
-                .Where(c => c.StokvelId == stokvelId && c.IsConfirmed)
-                .SumAsync(c => c.Amount);
+            var stokvel = await _context.Stokvels
+                .Include(s => s.Contributions)
+                .FirstOrDefaultAsync(s => s.Id == stokvelId);
+
+            if (stokvel == null)
+                return 0;
+
+            return stokvel.Contributions
+                .Where(c => c.IsConfirmed)
+                .Sum(c => c.Amount);
         }
 
         public async Task<decimal> GetTotalPayoutsAsync(Guid stokvelId)
         {
-            return await _context.StokvelPayouts
-                .Where(p => p.StokvelId == stokvelId && p.IsProcessed)
-                .SumAsync(p => p.Amount);
+            var stokvel = await _context.Stokvels
+                .Include(s => s.Payouts)
+                .FirstOrDefaultAsync(s => s.Id == stokvelId);
+
+            if (stokvel == null)
+                return 0;
+
+            return stokvel.Payouts
+                .Where(p => p.IsProcessed)
+                .Sum(p => p.Amount);
         }
 
         public async Task<decimal> GetCurrentBalanceAsync(Guid stokvelId)
@@ -126,16 +170,30 @@ namespace TossErp.Infrastructure.Repositories
 
         public async Task<decimal> GetMemberContributionTotalAsync(Guid stokvelId, Guid memberId)
         {
-            return await _context.StokvelContributions
-                .Where(c => c.StokvelId == stokvelId && c.MemberId == memberId && c.IsConfirmed)
-                .SumAsync(c => c.Amount);
+            var stokvel = await _context.Stokvels
+                .Include(s => s.Contributions)
+                .FirstOrDefaultAsync(s => s.Id == stokvelId);
+
+            if (stokvel == null)
+                return 0;
+
+            return stokvel.Contributions
+                .Where(c => c.MemberId == memberId && c.IsConfirmed)
+                .Sum(c => c.Amount);
         }
 
         public async Task<decimal> GetMemberPayoutTotalAsync(Guid stokvelId, Guid memberId)
         {
-            return await _context.StokvelPayouts
-                .Where(p => p.StokvelId == stokvelId && p.MemberId == memberId && p.IsProcessed)
-                .SumAsync(p => p.Amount);
+            var stokvel = await _context.Stokvels
+                .Include(s => s.Payouts)
+                .FirstOrDefaultAsync(s => s.Id == stokvelId);
+
+            if (stokvel == null)
+                return 0;
+
+            return stokvel.Payouts
+                .Where(p => p.MemberId == memberId && p.IsProcessed)
+                .Sum(p => p.Amount);
         }
 
         public async Task<decimal> GetMemberBalanceAsync(Guid stokvelId, Guid memberId)
@@ -147,8 +205,14 @@ namespace TossErp.Infrastructure.Repositories
 
         public async Task<int> GetActiveMemberCountAsync(Guid stokvelId)
         {
-            return await _context.StokvelMembers
-                .CountAsync(m => m.StokvelId == stokvelId && m.IsActive);
+            var stokvel = await _context.Stokvels
+                .Include(s => s.Members)
+                .FirstOrDefaultAsync(s => s.Id == stokvelId);
+
+            if (stokvel == null)
+                return 0;
+
+            return stokvel.Members.Count(m => m.IsActive);
         }
 
         public async Task<bool> HasMinimumMembersAsync(Guid stokvelId, int minimumMembers = 5)
@@ -166,15 +230,22 @@ namespace TossErp.Infrastructure.Repositories
                 return false;
 
             var activeMemberCount = await GetActiveMemberCountAsync(stokvelId);
-            return activeMemberCount >= stokvel.ContributionSettings.MemberLimit;
+            return activeMemberCount >= stokvel.MaxMembers;
         }
 
         public async Task<IEnumerable<StokvelMember>> GetMembersInRotationOrderAsync(Guid stokvelId)
         {
-            return await _context.StokvelMembers
-                .Where(m => m.StokvelId == stokvelId && m.IsActive)
+            var stokvel = await _context.Stokvels
+                .Include(s => s.Members)
+                .FirstOrDefaultAsync(s => s.Id == stokvelId);
+
+            if (stokvel == null)
+                return new List<StokvelMember>();
+
+            return stokvel.Members
+                .Where(m => m.IsActive)
                 .OrderBy(m => m.JoinDate)
-                .ToListAsync();
+                .ToList();
         }
 
         public async Task<int> GetCountByStokvelTypeAsync(StokvelType stokvelType)
@@ -195,9 +266,10 @@ namespace TossErp.Infrastructure.Repositories
                 .CountAsync(s => s.IsActive);
         }
 
-        public void Update(Stokvel stokvel)
+        public async Task UpdateAsync(Stokvel stokvel)
         {
-            _context.Entry(stokvel).State = EntityState.Modified;
+            Update(stokvel);
+            await Task.CompletedTask;
         }
 
         public void Delete(Stokvel stokvel)
@@ -212,15 +284,15 @@ namespace TossErp.Infrastructure.Repositories
 
         public async Task<bool> ExistsByNameAsync(string stokvelName)
         {
-            return await _context.Stokvels.AnyAsync(s => s.StokvelName == stokvelName);
+            return await _context.Stokvels.AnyAsync(s => s.Name == stokvelName);
         }
 
         public async Task<IEnumerable<string>> GetContributionFrequenciesAsync()
         {
             return await _context.Stokvels
                 .Select(s => s.ContributionSettings.Frequency)
-                .Where(f => !string.IsNullOrEmpty(f))
                 .Distinct()
+                .Where(f => !string.IsNullOrEmpty(f))
                 .ToListAsync();
         }
     }

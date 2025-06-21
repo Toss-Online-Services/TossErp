@@ -27,19 +27,19 @@ namespace TossErp.Infrastructure.Data
         public DbSet<StokvelMeeting> StokvelMeetings { get; set; }
 
         public DbSet<TownshipEnterprise> TownshipEnterprises { get; set; }
-        public DbSet<TownshipEnterpriseMember> TownshipEnterpriseMembers { get; set; }
-        public DbSet<TownshipEnterpriseDocument> TownshipEnterpriseDocuments { get; set; }
-        public DbSet<TownshipEnterpriseMeeting> TownshipEnterpriseMeetings { get; set; }
+        public DbSet<BusinessContact> BusinessContacts { get; set; }
+        public DbSet<BusinessDocument> BusinessDocuments { get; set; }
+        public DbSet<BusinessLicense> BusinessLicenses { get; set; }
 
         public DbSet<GroupPurchase> GroupPurchases { get; set; }
         public DbSet<GroupPurchaseMember> GroupPurchaseMembers { get; set; }
-        public DbSet<GroupPurchaseItem> GroupPurchaseItems { get; set; }
 
         public DbSet<Sale> Sales { get; set; }
         public DbSet<SaleItem> SaleItems { get; set; }
 
         public DbSet<Product> Products { get; set; }
-        public DbSet<StockHistory> StockHistories { get; set; }
+        public DbSet<StockMovement> StockMovements { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

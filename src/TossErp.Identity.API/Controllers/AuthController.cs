@@ -3,6 +3,7 @@ using TossErp.Shared.DTOs;
 using TossErp.Identity.API.Services;
 using TossErp.Identity.API.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace TossErp.Identity.API.Controllers
 {
@@ -12,11 +13,13 @@ namespace TossErp.Identity.API.Controllers
     {
         private readonly JwtService _jwtService;
         private readonly IUserService _userService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthController(JwtService jwtService, IUserService userService)
+        public AuthController(JwtService jwtService, IUserService userService, UserManager<ApplicationUser> userManager)
         {
             _jwtService = jwtService;
             _userService = userService;
+            _userManager = userManager;
         }
 
         [HttpPost("login")]
@@ -24,14 +27,21 @@ namespace TossErp.Identity.API.Controllers
         {
             try
             {
-                var user = await _userService.ValidateUserAsync(request.UserName, request.Password);
-                if (user == null)
+                var userDto = await _userService.ValidateUserAsync(request.UserName, request.Password);
+                if (userDto == null)
                 {
                     return Unauthorized(new { message = "Invalid username or password" });
                 }
 
-                var token = _jwtService.GenerateToken(user);
-                return Ok(new { token, user });
+                // Get the ApplicationUser for JWT token generation
+                var applicationUser = await _userManager.FindByNameAsync(request.UserName);
+                if (applicationUser == null)
+                {
+                    return Unauthorized(new { message = "User not found" });
+                }
+
+                var token = _jwtService.GenerateToken(applicationUser);
+                return Ok(new { token, user = userDto });
             }
             catch (Exception ex)
             {

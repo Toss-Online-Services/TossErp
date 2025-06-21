@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TossErp.Domain.AggregatesModel.TownshipEnterpriseAggregate;
+using TossErp.Domain.Enums;
 using TossErp.Domain.SeedWork;
 using TossErp.Infrastructure.Data;
 
@@ -26,32 +28,63 @@ namespace TossErp.Infrastructure.Repositories
             return entry.Entity;
         }
 
-        public async Task<TownshipEnterprise> GetByIdAsync(Guid id)
+        public async Task<TownshipEnterprise?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.TownshipEnterprises
                 .Include(e => e.Licenses)
                 .Include(e => e.Documents)
                 .Include(e => e.Contacts)
-                .FirstOrDefaultAsync(e => e.Id == id);
+                .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+        }
+
+        public async Task<IReadOnlyList<TownshipEnterprise>> ListAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.TownshipEnterprises
+                .Include(e => e.Licenses)
+                .Include(e => e.Documents)
+                .Include(e => e.Contacts)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task AddAsync(TownshipEnterprise entity, CancellationToken cancellationToken = default)
+        {
+            await _context.TownshipEnterprises.AddAsync(entity, cancellationToken);
+        }
+
+        public void Update(TownshipEnterprise entity)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+
+        public void Remove(TownshipEnterprise entity)
+        {
+            _context.TownshipEnterprises.Remove(entity);
+        }
+
+        // Legacy method for backward compatibility
+        public async Task<TownshipEnterprise> GetByIdAsync(Guid id)
+        {
+            var result = await GetByIdAsync(id, CancellationToken.None);
+            return result ?? throw new InvalidOperationException($"TownshipEnterprise with ID {id} not found.");
         }
 
         public async Task<IEnumerable<TownshipEnterprise>> GetAllAsync()
         {
-            return await _context.TownshipEnterprises
-                .Include(e => e.Licenses)
-                .Include(e => e.Documents)
-                .Include(e => e.Contacts)
-                .ToListAsync();
+            return await ListAsync();
         }
 
-        public async Task<IEnumerable<TownshipEnterprise>> GetByBusinessTypeAsync(BusinessType businessType)
+        public async Task<IEnumerable<TownshipEnterprise>> GetByBusinessTypeAsync(string businessType)
         {
-            return await _context.TownshipEnterprises
-                .Include(e => e.Licenses)
-                .Include(e => e.Documents)
-                .Include(e => e.Contacts)
-                .Where(e => e.BusinessType == businessType)
-                .ToListAsync();
+            if (Enum.TryParse<BusinessType>(businessType, out var businessTypeEnum))
+            {
+                return await _context.TownshipEnterprises
+                    .Include(e => e.Licenses)
+                    .Include(e => e.Documents)
+                    .Include(e => e.Contacts)
+                    .Where(e => e.BusinessType == businessTypeEnum)
+                    .ToListAsync();
+            }
+            return new List<TownshipEnterprise>();
         }
 
         public async Task<IEnumerable<TownshipEnterprise>> GetByTownshipAsync(string township)
@@ -60,7 +93,7 @@ namespace TossErp.Infrastructure.Repositories
                 .Include(e => e.Licenses)
                 .Include(e => e.Documents)
                 .Include(e => e.Contacts)
-                .Where(e => e.Address.Township == township)
+                .Where(e => e.Address != null && e.Address.Township == township)
                 .ToListAsync();
         }
 
@@ -70,7 +103,7 @@ namespace TossErp.Infrastructure.Repositories
                 .Include(e => e.Licenses)
                 .Include(e => e.Documents)
                 .Include(e => e.Contacts)
-                .Where(e => e.Address.Province == province)
+                .Where(e => e.Address != null && e.Address.Province == province)
                 .ToListAsync();
         }
 
@@ -94,7 +127,7 @@ namespace TossErp.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<TownshipEnterprise>> GetByOwnerAsync(Guid ownerId)
+        public async Task<IEnumerable<TownshipEnterprise>> GetByOwnerIdAsync(Guid ownerId)
         {
             return await _context.TownshipEnterprises
                 .Include(e => e.Licenses)
@@ -111,8 +144,8 @@ namespace TossErp.Infrastructure.Repositories
                 .Include(e => e.Documents)
                 .Include(e => e.Contacts)
                 .Where(e => e.BusinessName.Contains(searchTerm) || 
-                           e.TradingName.Contains(searchTerm) ||
-                           e.BusinessDescription.Contains(searchTerm))
+                           (e.TradingName != null && e.TradingName.Contains(searchTerm)) ||
+                           (e.BusinessDescription != null && e.BusinessDescription.Contains(searchTerm)))
                 .ToListAsync();
         }
 
@@ -150,22 +183,26 @@ namespace TossErp.Infrastructure.Repositories
             return enterprise.IsInProvince(provinceName);
         }
 
-        public async Task<int> GetCountByBusinessTypeAsync(BusinessType businessType)
+        public async Task<int> GetCountByBusinessTypeAsync(string businessType)
         {
-            return await _context.TownshipEnterprises
-                .CountAsync(e => e.BusinessType == businessType);
+            if (Enum.TryParse<BusinessType>(businessType, out var businessTypeEnum))
+            {
+                return await _context.TownshipEnterprises
+                    .CountAsync(e => e.BusinessType == businessTypeEnum);
+            }
+            return 0;
         }
 
         public async Task<int> GetCountByTownshipAsync(string township)
         {
             return await _context.TownshipEnterprises
-                .CountAsync(e => e.Address.Township == township);
+                .CountAsync(e => e.Address != null && e.Address.Township == township);
         }
 
         public async Task<int> GetCountByProvinceAsync(string province)
         {
             return await _context.TownshipEnterprises
-                .CountAsync(e => e.Address.Province == province);
+                .CountAsync(e => e.Address != null && e.Address.Province == province);
         }
 
         public async Task<int> GetRegisteredCountAsync()
@@ -180,14 +217,10 @@ namespace TossErp.Infrastructure.Repositories
                 .CountAsync(e => e.IsActive);
         }
 
-        public void Update(TownshipEnterprise townshipEnterprise)
+        public async Task UpdateAsync(TownshipEnterprise enterprise)
         {
-            _context.Entry(townshipEnterprise).State = EntityState.Modified;
-        }
-
-        public void Delete(TownshipEnterprise townshipEnterprise)
-        {
-            _context.TownshipEnterprises.Remove(townshipEnterprise);
+            Update(enterprise);
+            await Task.CompletedTask;
         }
 
         public async Task<bool> ExistsAsync(Guid id)
@@ -200,21 +233,28 @@ namespace TossErp.Infrastructure.Repositories
             return await _context.TownshipEnterprises.AnyAsync(e => e.BusinessName == businessName);
         }
 
+        public async Task<bool> ExistsByRegistrationNumberAsync(string registrationNumber)
+        {
+            return await _context.TownshipEnterprises.AnyAsync(e => e.RegistrationNumber == registrationNumber);
+        }
+
         public async Task<IEnumerable<string>> GetTownshipsAsync()
         {
             return await _context.TownshipEnterprises
+                .Where(e => e.Address != null)
                 .Select(e => e.Address.Township)
-                .Where(t => !string.IsNullOrEmpty(t))
                 .Distinct()
+                .Where(t => !string.IsNullOrEmpty(t))
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<string>> GetProvincesAsync()
         {
             return await _context.TownshipEnterprises
+                .Where(e => e.Address != null)
                 .Select(e => e.Address.Province)
-                .Where(p => !string.IsNullOrEmpty(p))
                 .Distinct()
+                .Where(p => !string.IsNullOrEmpty(p))
                 .ToListAsync();
         }
     }

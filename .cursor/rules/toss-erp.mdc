@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # TOSS ERP Platform – Full Technical and Functional Documentation
 

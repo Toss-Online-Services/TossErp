@@ -1,4 +1,4 @@
-using TossErp.Shared.DTOs;
+using TossErp.POS.API.DTOs;
 
 namespace TossErp.POS.API.Services
 {

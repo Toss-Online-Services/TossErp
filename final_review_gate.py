@@ -41,7 +41,7 @@ if __name__ == "__main__":
                 active_session = False
                 break
             elif user_input: # If there's any input other than an empty line
-                # This is the critical line the AI will \"listen\" for.
+                # This is the critical line the AI will "listen" for.
                 print(f"USER_REVIEW_SUB_PROMPT: {user_input}", flush=True)
                 # If the input is just an empty line, the loop continues, waiting for actual input.
 

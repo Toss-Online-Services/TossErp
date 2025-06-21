@@ -1,125 +1,163 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TossErp.Application.DTOs;
 using TossErp.Application.Services;
 
-namespace TossErp.API.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class CopilotController : ControllerBase
+namespace TossErp.API.Controllers
 {
-    private readonly ICopilotService _copilotService;
-    private readonly ILogger<CopilotController> _logger;
-
-    public CopilotController(ICopilotService copilotService, ILogger<CopilotController> logger)
+    /// <summary>
+    /// AI Copilot controller for business intelligence and decision support
+    /// </summary>
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class CopilotController : ControllerBase
     {
-        _copilotService = copilotService;
-        _logger = logger;
-    }
+        private readonly ICopilotService _copilotService;
+        private readonly ILogger<CopilotController> _logger;
 
-    [HttpPost("query")]
-    public async Task<ActionResult<CopilotResponseDto>> ProcessQuery([FromBody] CopilotQueryDto queryDto)
-    {
-        try
+        public CopilotController(ICopilotService copilotService, ILogger<CopilotController> logger)
         {
-            var response = await _copilotService.ProcessQueryAsync(
-                queryDto.Query, 
-                queryDto.BusinessId, 
-                queryDto.UserId);
+            _copilotService = copilotService ?? throw new ArgumentNullException(nameof(copilotService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
 
-            var copilotResponse = new CopilotResponseDto
+        /// <summary>
+        /// Process a natural language query and get AI-powered response
+        /// </summary>
+        [HttpPost("query")]
+        public async Task<ActionResult<CopilotResponseDto>> ProcessQuery([FromBody] CopilotQueryDto query)
+        {
+            try
             {
-                Response = response,
-                Type = "text",
-                Actions = new List<string>(),
-                Suggestions = new List<string>(),
-                RequiresAction = false
-            };
+                _logger.LogInformation("Processing Copilot query for business {BusinessId}", query.BusinessId);
+                
+                var response = await _copilotService.ProcessQueryAsync(query);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing Copilot query for business {BusinessId}", query.BusinessId);
+                return StatusCode(500, new { message = "Failed to process query", error = ex.Message });
+            }
+        }
 
-            return Ok(copilotResponse);
-        }
-        catch (Exception ex)
+        /// <summary>
+        /// Get business insights and recommendations
+        /// </summary>
+        [HttpGet("insights/{businessId}")]
+        public async Task<ActionResult<CopilotResponseDto>> GetBusinessInsights(Guid businessId)
         {
-            _logger.LogError(ex, "Error processing copilot query for business {BusinessId}", queryDto.BusinessId);
-            return StatusCode(500, "An error occurred while processing your query");
+            try
+            {
+                _logger.LogInformation("Getting business insights for business {BusinessId}", businessId);
+                
+                var response = await _copilotService.GetBusinessInsightsAsync(businessId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting business insights for business {BusinessId}", businessId);
+                return StatusCode(500, new { message = "Failed to get business insights", error = ex.Message });
+            }
         }
-    }
 
-    [HttpGet("sales-insights")]
-    public async Task<ActionResult<string>> GetSalesInsights(
-        [FromQuery] Guid businessId,
-        [FromQuery] DateTime fromDate,
-        [FromQuery] DateTime toDate)
-    {
-        try
+        /// <summary>
+        /// Get inventory management recommendations
+        /// </summary>
+        [HttpGet("inventory/{businessId}")]
+        public async Task<ActionResult<CopilotResponseDto>> GetInventoryRecommendations(Guid businessId)
         {
-            var insights = await _copilotService.GetSalesInsightsAsync(businessId, fromDate, toDate);
-            return Ok(insights);
+            try
+            {
+                _logger.LogInformation("Getting inventory recommendations for business {BusinessId}", businessId);
+                
+                var response = await _copilotService.GetInventoryRecommendationsAsync(businessId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting inventory recommendations for business {BusinessId}", businessId);
+                return StatusCode(500, new { message = "Failed to get inventory recommendations", error = ex.Message });
+            }
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting sales insights for business {BusinessId}", businessId);
-            return StatusCode(500, "An error occurred while retrieving sales insights");
-        }
-    }
 
-    [HttpGet("inventory-alerts")]
-    public async Task<ActionResult<string>> GetInventoryAlerts([FromQuery] Guid businessId)
-    {
-        try
+        /// <summary>
+        /// Get sales insights and trends for a date range
+        /// </summary>
+        [HttpGet("sales/{businessId}")]
+        public async Task<ActionResult<CopilotResponseDto>> GetSalesInsights(
+            Guid businessId,
+            [FromQuery] DateTime fromDate,
+            [FromQuery] DateTime toDate)
         {
-            var alerts = await _copilotService.GetInventoryAlertsAsync(businessId);
-            return Ok(alerts);
+            try
+            {
+                _logger.LogInformation("Getting sales insights for business {BusinessId} from {FromDate} to {ToDate}", 
+                    businessId, fromDate, toDate);
+                
+                var response = await _copilotService.GetSalesInsightsAsync(businessId, fromDate, toDate);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting sales insights for business {BusinessId}", businessId);
+                return StatusCode(500, new { message = "Failed to get sales insights", error = ex.Message });
+            }
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting inventory alerts for business {BusinessId}", businessId);
-            return StatusCode(500, "An error occurred while retrieving inventory alerts");
-        }
-    }
 
-    [HttpGet("group-purchase-suggestions")]
-    public async Task<ActionResult<string>> GetGroupPurchaseSuggestions([FromQuery] Guid businessId)
-    {
-        try
+        /// <summary>
+        /// Get financial management recommendations
+        /// </summary>
+        [HttpGet("financial/{businessId}")]
+        public async Task<ActionResult<CopilotResponseDto>> GetFinancialRecommendations(Guid businessId)
         {
-            var suggestions = await _copilotService.GetGroupPurchaseSuggestionsAsync(businessId);
-            return Ok(suggestions);
+            try
+            {
+                _logger.LogInformation("Getting financial recommendations for business {BusinessId}", businessId);
+                
+                var response = await _copilotService.GetFinancialRecommendationsAsync(businessId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting financial recommendations for business {BusinessId}", businessId);
+                return StatusCode(500, new { message = "Failed to get financial recommendations", error = ex.Message });
+            }
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting group purchase suggestions for business {BusinessId}", businessId);
-            return StatusCode(500, "An error occurred while retrieving group purchase suggestions");
-        }
-    }
 
-    [HttpGet("promotion-suggestions")]
-    public async Task<ActionResult<string>> GetPromotionSuggestions([FromQuery] Guid businessId)
-    {
-        try
+        /// <summary>
+        /// Get a quick business health check
+        /// </summary>
+        [HttpGet("health-check/{businessId}")]
+        public async Task<ActionResult<object>> GetBusinessHealthCheck(Guid businessId)
         {
-            var suggestions = await _copilotService.GetPromotionSuggestionsAsync(businessId);
-            return Ok(suggestions);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting promotion suggestions for business {BusinessId}", businessId);
-            return StatusCode(500, "An error occurred while retrieving promotion suggestions");
-        }
-    }
-
-    [HttpGet("business-recommendations")]
-    public async Task<ActionResult<string>> GetBusinessRecommendations([FromQuery] Guid businessId)
-    {
-        try
-        {
-            var recommendations = await _copilotService.GetBusinessRecommendationsAsync(businessId);
-            return Ok(recommendations);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting business recommendations for business {BusinessId}", businessId);
-            return StatusCode(500, "An error occurred while retrieving business recommendations");
+            try
+            {
+                _logger.LogInformation("Getting business health check for business {BusinessId}", businessId);
+                
+                var insights = await _copilotService.GetBusinessInsightsAsync(businessId);
+                var inventory = await _copilotService.GetInventoryRecommendationsAsync(businessId);
+                var financial = await _copilotService.GetFinancialRecommendationsAsync(businessId);
+                
+                var healthCheck = new
+                {
+                    BusinessId = businessId,
+                    Timestamp = DateTime.UtcNow,
+                    OverallHealth = "Good", // This could be calculated based on various metrics
+                    Insights = insights,
+                    InventoryRecommendations = inventory,
+                    FinancialRecommendations = financial,
+                    PriorityActions = insights.Actions.Take(3).ToList()
+                };
+                
+                return Ok(healthCheck);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting business health check for business {BusinessId}", businessId);
+                return StatusCode(500, new { message = "Failed to get business health check", error = ex.Message });
+            }
         }
     }
 } 

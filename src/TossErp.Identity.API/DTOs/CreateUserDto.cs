@@ -1,4 +1,4 @@
-namespace TossErp.Shared.DTOs
+namespace TossErp.Identity.API.DTOs
 {
     public class CreateUserDto
     {

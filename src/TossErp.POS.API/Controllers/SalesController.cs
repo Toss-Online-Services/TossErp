@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
-using TossErp.POS.API.DTOs;
 using TossErp.POS.Domain.AggregatesModel.SaleAggregate;
 using TossErp.POS.Domain.Enums;
 using TossErp.POS.Infrastructure.Repositories;
 using TossErp.Domain.SeedWork;
-using TossErp.Shared.DTOs;
 using TossErp.POS.API.Services;
 using Microsoft.AspNetCore.Authorization;
+using TossErp.POS.API.DTOs;
+using TossErp.Shared.Enums;
 
 namespace TossErp.POS.API.Controllers
 {
@@ -32,7 +32,7 @@ namespace TossErp.POS.API.Controllers
         public async Task<ActionResult<SaleListDto>> GetSales(
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10,
-            [FromQuery] SaleStatus? status = null,
+            [FromQuery] TossErp.Shared.Enums.SaleStatus? status = null,
             [FromQuery] Guid? customerId = null,
             [FromQuery] Guid? cashierId = null,
             [FromQuery] DateTime? startDate = null,
@@ -45,7 +45,7 @@ namespace TossErp.POS.API.Controllers
                 // Apply filters
                 if (status.HasValue)
                 {
-                    sales = sales.Where(s => s.Status == status.Value);
+                    sales = sales.Where(s => s.Status == (TossErp.POS.Domain.Enums.SaleStatus)status.Value);
                 }
 
                 if (customerId.HasValue)
@@ -69,7 +69,7 @@ namespace TossErp.POS.API.Controllers
                 }
 
                 var totalCount = sales.Count();
-                var totalSalesAmount = sales.Where(s => s.Status == SaleStatus.Completed).Sum(s => s.TotalAmount);
+                var totalSalesAmount = sales.Where(s => s.Status == TossErp.POS.Domain.Enums.SaleStatus.Completed).Sum(s => s.TotalAmount);
 
                 var pagedSales = sales
                     .Skip((pageNumber - 1) * pageSize)
@@ -166,7 +166,7 @@ namespace TossErp.POS.API.Controllers
                     return NotFound($"Sale with ID {id} not found");
                 }
 
-                if (sale.Status != SaleStatus.Draft)
+                if (sale.Status != TossErp.POS.Domain.Enums.SaleStatus.Draft)
                 {
                     return BadRequest("Only draft sales can be updated");
                 }
@@ -221,13 +221,13 @@ namespace TossErp.POS.API.Controllers
                     return NotFound($"Sale with ID {id} not found");
                 }
 
-                if (sale.Status != SaleStatus.Draft)
+                if (sale.Status != TossErp.POS.Domain.Enums.SaleStatus.Draft)
                 {
                     return BadRequest("Only draft sales can be completed");
                 }
 
                 sale.Complete(
-                    completeSaleDto.PaymentMethod,
+                    (TossErp.POS.Domain.Enums.PaymentMethod)completeSaleDto.PaymentMethod,
                     completeSaleDto.AmountPaid,
                     completeSaleDto.ReferenceNumber
                 );
@@ -262,7 +262,7 @@ namespace TossErp.POS.API.Controllers
                     return NotFound($"Sale with ID {id} not found");
                 }
 
-                if (sale.Status == SaleStatus.Cancelled)
+                if (sale.Status == TossErp.POS.Domain.Enums.SaleStatus.Cancelled)
                 {
                     return BadRequest("Sale is already cancelled");
                 }
@@ -343,7 +343,7 @@ namespace TossErp.POS.API.Controllers
                 var endDate = startDate.AddDays(1).AddSeconds(-1);
 
                 var sales = await _saleRepository.GetSalesByDateRangeAsync(startDate, endDate);
-                var completedSales = sales.Where(s => s.Status == SaleStatus.Completed).ToList();
+                var completedSales = sales.Where(s => s.Status == TossErp.POS.Domain.Enums.SaleStatus.Completed).ToList();
 
                 var report = new
                 {
@@ -401,15 +401,15 @@ namespace TossErp.POS.API.Controllers
                 SaleNumber = sale.SaleNumber,
                 CustomerId = sale.CustomerId,
                 CashierId = sale.CashierId,
-                Status = sale.Status,
-                SaleType = sale.SaleType,
+                Status = (TossErp.Shared.Enums.SaleStatus)sale.Status,
+                SaleType = (TossErp.Shared.Enums.SaleType)sale.SaleType,
                 SubTotal = sale.SubTotal,
                 TaxAmount = sale.TaxAmount,
                 DiscountAmount = sale.DiscountAmount,
                 TotalAmount = sale.TotalAmount,
                 AmountPaid = sale.AmountPaid,
                 ChangeAmount = sale.ChangeAmount,
-                PaymentMethod = sale.PaymentMethod,
+                PaymentMethod = (TossErp.Shared.Enums.PaymentMethod)sale.PaymentMethod,
                 ReferenceNumber = sale.ReferenceNumber,
                 Notes = sale.Notes,
                 SaleDate = sale.SaleDate,
@@ -422,7 +422,7 @@ namespace TossErp.POS.API.Controllers
                     ItemId = si.ItemId,
                     ItemName = si.ItemName,
                     ItemCode = si.ItemCode,
-                    Quantity = si.Quantity,
+                    Quantity = (int)si.Quantity,
                     UnitPrice = si.UnitPrice,
                     DiscountAmount = si.DiscountAmount,
                     DiscountPercentage = si.DiscountPercentage ?? 0,
@@ -431,7 +431,7 @@ namespace TossErp.POS.API.Controllers
                 Payments = sale.Payments.Select(sp => new SalePaymentDto
                 {
                     Id = sp.Id,
-                    PaymentMethod = sp.PaymentMethod,
+                    PaymentMethod = (TossErp.Shared.Enums.PaymentMethod)sp.PaymentMethod,
                     Amount = sp.Amount,
                     ReferenceNumber = sp.ReferenceNumber,
                     PaymentDate = sp.PaymentDate

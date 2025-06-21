@@ -1,13 +1,37 @@
-namespace TossErp.Application.Services;
+using TossErp.Application.DTOs;
 
-public interface ICopilotService
+namespace TossErp.Application.Services
 {
-    Task<string> ProcessQueryAsync(string query, Guid businessId, Guid? userId = null);
-    Task<string> GetSalesInsightsAsync(Guid businessId, DateTime fromDate, DateTime toDate);
-    Task<string> GetInventoryAlertsAsync(Guid businessId);
-    Task<string> GetGroupPurchaseSuggestionsAsync(Guid businessId);
-    Task<string> GetPromotionSuggestionsAsync(Guid businessId);
-    Task<string> GetBusinessRecommendationsAsync(Guid businessId);
+    /// <summary>
+    /// AI Copilot service interface for business intelligence and decision support
+    /// </summary>
+    public interface ICopilotService
+    {
+        /// <summary>
+        /// Process a natural language query and provide intelligent response
+        /// </summary>
+        Task<CopilotResponseDto> ProcessQueryAsync(CopilotQueryDto query, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get business insights and recommendations
+        /// </summary>
+        Task<CopilotResponseDto> GetBusinessInsightsAsync(Guid businessId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get inventory recommendations
+        /// </summary>
+        Task<CopilotResponseDto> GetInventoryRecommendationsAsync(Guid businessId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get sales insights and trends
+        /// </summary>
+        Task<CopilotResponseDto> GetSalesInsightsAsync(Guid businessId, DateTime fromDate, DateTime toDate, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get financial recommendations
+        /// </summary>
+        Task<CopilotResponseDto> GetFinancialRecommendationsAsync(Guid businessId, CancellationToken cancellationToken = default);
+    }
 }
 
 public class CopilotQuery

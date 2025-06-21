@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using TossErp.POS.Domain.Enums;
+using TossErp.Shared.Enums;
 
 namespace TossErp.POS.API.DTOs
 {
@@ -79,25 +79,27 @@ namespace TossErp.POS.API.DTOs
         public string SaleNumber { get; set; } = string.Empty;
         public Guid CustomerId { get; set; }
         public Guid CashierId { get; set; }
-        public SaleStatus Status { get; set; }
-        public SaleType SaleType { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
+        public string CashierName { get; set; } = string.Empty;
+        public DateTime SaleDate { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
+        public DateTime? CancelledAt { get; set; }
         public decimal SubTotal { get; set; }
         public decimal TaxAmount { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal AmountPaid { get; set; }
         public decimal ChangeAmount { get; set; }
-        public PaymentMethod? PaymentMethod { get; set; }
+        public PaymentMethod PaymentMethod { get; set; }
+        public SaleStatus Status { get; set; }
+        public SaleType SaleType { get; set; }
+        public string? TransactionReference { get; set; }
         public string? ReferenceNumber { get; set; }
         public string? Notes { get; set; }
-        public DateTime SaleDate { get; set; }
-        public DateTime? CompletedAt { get; set; }
-        public DateTime? CancelledAt { get; set; }
         public string? CancellationReason { get; set; }
         public List<SaleItemDto> Items { get; set; } = new();
         public List<SalePaymentDto> Payments { get; set; } = new();
-        public string CustomerName { get; set; } = string.Empty;
-        public string CashierName { get; set; } = string.Empty;
     }
 
     public class SaleItemDto
@@ -106,7 +108,7 @@ namespace TossErp.POS.API.DTOs
         public Guid ItemId { get; set; }
         public string ItemName { get; set; } = string.Empty;
         public string ItemCode { get; set; } = string.Empty;
-        public decimal Quantity { get; set; }
+        public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal DiscountPercentage { get; set; }
