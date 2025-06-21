@@ -1,0 +1,127 @@
+<div class="reports-container">
+  <!-- Report Controls -->
+  <mat-card class="controls-card">
+    <mat-card-header>
+      <mat-card-title>Generate Reports</mat-card-title>
+      <mat-card-subtitle>Select report type and period</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="controls">
+        <mat-form-field appearance="outline">
+          <mat-label>Report Type</mat-label>
+          <mat-select [(ngModel)]="selectedReport">
+            <mat-option *ngFor="let report of reportTypes" [value]="report.value">
+              <mat-icon>{{report.icon}}</mat-icon>
+              {{report.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Time Period</mat-label>
+          <mat-select [(ngModel)]="selectedPeriod">
+            <mat-option *ngFor="let period of periods" [value]="period.value">
+              {{period.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="generateReport()">
+          <mat-icon>assessment</mat-icon>
+          Generate Report
+        </button>
+
+        <button mat-stroked-button color="accent" (click)="exportReport()">
+          <mat-icon>download</mat-icon>
+          Export
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Report Content -->
+  <div class="report-content">
+    <!-- Revenue Chart -->
+    <mat-card class="chart-card" *ngIf="selectedReport === 'revenue'">
+      <mat-card-header>
+        <mat-card-title>Revenue Overview</mat-card-title>
+        <mat-card-subtitle>Monthly revenue trends</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <ngx-charts-line-chart
+          [results]="revenueData"
+          [scheme]="revenueChartScheme"
+          [xAxis]="true"
+          [yAxis]="true"
+          [legend]="false"
+          [showXAxisLabel]="true"
+          [showYAxisLabel]="true"
+          xAxisLabel="Month"
+          yAxisLabel="Revenue ($)">
+        </ngx-charts-line-chart>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Customer Chart -->
+    <mat-card class="chart-card" *ngIf="selectedReport === 'customers'">
+      <mat-card-header>
+        <mat-card-title>Customer Distribution</mat-card-title>
+        <mat-card-subtitle>Customer segments breakdown</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <ngx-charts-pie-chart
+          [results]="customerData"
+          [scheme]="customerChartScheme"
+          [legend]="true"
+          [labels]="true">
+        </ngx-charts-pie-chart>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Sales Chart -->
+    <mat-card class="chart-card" *ngIf="selectedReport === 'sales'">
+      <mat-card-header>
+        <mat-card-title>Sales Performance</mat-card-title>
+        <mat-card-subtitle>Sales metrics and trends</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <ngx-charts-bar-vertical
+          [results]="revenueData"
+          [scheme]="revenueChartScheme"
+          [xAxis]="true"
+          [yAxis]="true"
+          [legend]="false"
+          [showXAxisLabel]="true"
+          [showYAxisLabel]="true"
+          xAxisLabel="Month"
+          yAxisLabel="Sales ($)">
+        </ngx-charts-bar-vertical>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Inventory Chart -->
+    <mat-card class="chart-card" *ngIf="selectedReport === 'inventory'">
+      <mat-card-header>
+        <mat-card-title>Inventory Status</mat-card-title>
+        <mat-card-subtitle>Stock levels and turnover</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="inventory-summary">
+          <div class="summary-item">
+            <div class="summary-value">1,234</div>
+            <div class="summary-label">Total Items</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-value">89</div>
+            <div class="summary-label">Low Stock</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-value">12</div>
+            <div class="summary-label">Out of Stock</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

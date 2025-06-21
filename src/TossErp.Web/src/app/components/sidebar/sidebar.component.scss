@@ -1,0 +1,28 @@
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #fff;
+  background: rgba(255,255,255,0.04);
+  margin-bottom: 16px;
+}
+mat-nav-list {
+  padding: 0;
+}
+a.mat-list-item {
+  color: #fff;
+  font-weight: 500;
+  border-radius: 8px;
+  margin: 4px 8px;
+  &.active-link {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+  }
+  mat-icon {
+    margin-right: 16px;
+  }
+}

@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-header',
@@ -15,5 +16,5 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
-
+  @Input() drawer?: MatSidenav;
 }

@@ -17,5 +17,11 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
-
+  navLinks = [
+    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
+    { label: 'Users', icon: 'people', route: '/users' },
+    { label: 'Sales', icon: 'bar_chart', route: '/sales' },
+    { label: 'Reports', icon: 'assessment', route: '/reports' },
+    { label: 'Settings', icon: 'settings', route: '/settings' }
+  ];
 }

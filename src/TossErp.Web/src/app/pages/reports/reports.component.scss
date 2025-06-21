@@ -1,0 +1,80 @@
+.reports-container {
+  padding: 16px;
+}
+
+.controls-card {
+  margin-bottom: 24px;
+
+  mat-card-content {
+    padding: 16px;
+  }
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    min-width: 200px;
+  }
+
+  button {
+    min-width: 120px;
+  }
+}
+
+.report-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.chart-card {
+  mat-card-content {
+    padding: 16px;
+    height: 400px;
+  }
+}
+
+.inventory-summary {
+  display: flex;
+  gap: 32px;
+  justify-content: space-around;
+  padding: 24px;
+
+  .summary-item {
+    text-align: center;
+
+    .summary-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #49a3f1;
+      margin-bottom: 8px;
+    }
+
+    .summary-label {
+      font-size: 1rem;
+      color: #7b809a;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+
+    mat-form-field {
+      min-width: auto;
+    }
+  }
+
+  .inventory-summary {
+    flex-direction: column;
+    gap: 16px;
+  }
+}

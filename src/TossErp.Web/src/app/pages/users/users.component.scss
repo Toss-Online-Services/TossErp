@@ -1,0 +1,64 @@
+.search-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+
+  .search-field {
+    flex: 1;
+    max-width: 400px;
+  }
+}
+
+.users-table {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.role-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+
+  &.role-admin {
+    background-color: #ff9800;
+    color: white;
+  }
+
+  &.role-manager {
+    background-color: #2196f3;
+    color: white;
+  }
+
+  &.role-user {
+    background-color: #4caf50;
+    color: white;
+  }
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  &.status-active {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+  }
+
+  &.status-inactive {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+}
+
+mat-card {
+  margin: 16px;
+}
+
+mat-card-header {
+  margin-bottom: 16px;
+}
