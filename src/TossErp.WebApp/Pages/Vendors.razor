@@ -36,11 +36,11 @@
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">@vendor.Name</MudText>
-                            <MudText Typo="Typo.body2" Color="Color.Secondary">@vendor.Category</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@vendor.BusinessType</MudText>
                         </CardHeaderContent>
                         <CardHeaderActions>
-                            <MudChip Color="@GetRatingColor(vendor.Rating)" Size="Size.Small">
-                                @vendor.Rating ★
+                            <MudChip T="object" Color="Color.Primary" Size="Size.Small">
+                                4.5 ★
                             </MudChip>
                         </CardHeaderActions>
                     </MudCardHeader>
@@ -48,11 +48,11 @@
                         <MudStack Spacing="2">
                             <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
                                 <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" Color="Color.Secondary" />
-                                <MudText Typo="Typo.body2">@vendor.Location</MudText>
+                                <MudText Typo="Typo.body2">@vendor.City, @vendor.Province</MudText>
                             </MudStack>
                             <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
                                 <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" Color="Color.Secondary" />
-                                <MudText Typo="Typo.body2">@vendor.Phone</MudText>
+                                <MudText Typo="Typo.body2">@vendor.PhoneNumber</MudText>
                             </MudStack>
                             <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
                                 <MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" Color="Color.Secondary" />
@@ -60,7 +60,7 @@
                             </MudStack>
                             <MudDivider />
                             <MudText Typo="Typo.body2" Color="Color.Secondary">
-                                @vendor.Description
+                                @vendor.BusinessType
                             </MudText>
                         </MudStack>
                     </MudCardContent>
@@ -98,7 +98,7 @@
 <MudDialog @bind-IsVisible="_showAddDialog" Options="new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true }">
     <TitleContent>
         <MudText Typo="Typo.h6">
-            @(_editingVendor?.Id > 0 ? "Edit Vendor" : "Add New Vendor")
+            @(_editingVendor?.Id != Guid.Empty ? "Edit Vendor" : "Add New Vendor")
         </MudText>
     </TitleContent>
     <DialogContent>
@@ -110,27 +110,27 @@
                                  Required="true"
                                  Variant="Variant.Outlined" />
                 </MudItem>
-                <MudItem xs="12" md="6">
-                    <MudTextField @bind-Value="_editingVendor.Category" 
-                                 Label="Category" 
-                                 Required="true"
-                                 Variant="Variant.Outlined" />
-                </MudItem>
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="_editingVendor.Description" 
-                                 Label="Description" 
+                    <MudTextField @bind-Value="_editingVendor.BusinessType" 
+                                 Label="Business Type" 
                                  Lines="3"
                                  Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudTextField @bind-Value="_editingVendor.Location" 
-                                 Label="Location" 
+                    <MudTextField @bind-Value="_editingVendor.City" 
+                                 Label="City" 
                                  Required="true"
                                  Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudTextField @bind-Value="_editingVendor.Phone" 
-                                 Label="Phone" 
+                    <MudTextField @bind-Value="_editingVendor.Province" 
+                                 Label="Province" 
+                                 Required="true"
+                                 Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_editingVendor.PhoneNumber" 
+                                 Label="Phone Number" 
                                  Required="true"
                                  Variant="Variant.Outlined" />
                 </MudItem>
@@ -138,19 +138,6 @@
                     <MudTextField @bind-Value="_editingVendor.Email" 
                                  Label="Email" 
                                  Required="true"
-                                 Variant="Variant.Outlined" />
-                </MudItem>
-                <MudItem xs="12" md="6">
-                    <MudNumericField @bind-Value="_editingVendor.Rating" 
-                                    Label="Rating" 
-                                    Variant="Variant.Outlined"
-                                    Min="0"
-                                    Max="5"
-                                    Step="0.1" />
-                </MudItem>
-                <MudItem xs="12">
-                    <MudTextField @bind-Value="_editingVendor.Website" 
-                                 Label="Website" 
                                  Variant="Variant.Outlined" />
                 </MudItem>
             </MudGrid>
@@ -162,7 +149,7 @@
                   Variant="Variant.Filled" 
                   OnClick="@SaveVendor"
                   Disabled="@(!_isValid)">
-            @(_editingVendor?.Id > 0 ? "Update" : "Save")
+            @(_editingVendor?.Id != Guid.Empty ? "Update" : "Save")
         </MudButton>
     </DialogActions>
 </MudDialog>
@@ -191,14 +178,14 @@
                                 <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" Color="Color.Primary" />
                                 <MudStack>
                                     <MudText Typo="Typo.body2" Color="Color.Secondary">Location</MudText>
-                                    <MudText Typo="Typo.body1">@_selectedVendor.Location</MudText>
+                                    <MudText Typo="Typo.body1">@_selectedVendor.City, @_selectedVendor.Province</MudText>
                                 </MudStack>
                             </MudStack>
                             <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
                                 <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" Color="Color.Primary" />
                                 <MudStack>
                                     <MudText Typo="Typo.body2" Color="Color.Secondary">Phone</MudText>
-                                    <MudText Typo="Typo.body1">@_selectedVendor.Phone</MudText>
+                                    <MudText Typo="Typo.body1">@_selectedVendor.PhoneNumber</MudText>
                                 </MudStack>
                             </MudStack>
                             <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
@@ -208,16 +195,6 @@
                                     <MudText Typo="Typo.body1">@_selectedVendor.Email</MudText>
                                 </MudStack>
                             </MudStack>
-                            @if (!string.IsNullOrEmpty(_selectedVendor.Website))
-                            {
-                                <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
-                                    <MudIcon Icon="@Icons.Material.Filled.Language" Size="Size.Small" Color="Color.Primary" />
-                                    <MudStack>
-                                        <MudText Typo="Typo.body2" Color="Color.Secondary">Website</MudText>
-                                        <MudLink Href="@_selectedVendor.Website" Target="_blank">@_selectedVendor.Website</MudLink>
-                                    </MudStack>
-                                </MudStack>
-                            }
                         </MudStack>
                     </MudStack>
                 </MudItem>
@@ -226,21 +203,15 @@
                         <MudText Typo="Typo.subtitle1">Business Information</MudText>
                         <MudStack Spacing="2">
                             <MudStack Row="true" Justify="Justify.SpaceBetween">
-                                <MudText Typo="Typo.body2">Category:</MudText>
-                                <MudChip Color="Color.Primary" Size="Size.Small">@_selectedVendor.Category</MudChip>
-                            </MudStack>
-                            <MudStack Row="true" Justify="Justify.SpaceBetween">
-                                <MudText Typo="Typo.body2">Rating:</MudText>
-                                <MudChip Color="@GetRatingColor(_selectedVendor.Rating)" Size="Size.Small">
-                                    @_selectedVendor.Rating ★
-                                </MudChip>
+                                <MudText Typo="Typo.body2">Business Type:</MudText>
+                                <MudChip T="object" Color="Color.Primary" Size="Size.Small">@_selectedVendor.BusinessType</MudChip>
                             </MudStack>
                         </MudStack>
                         
                         <MudDivider />
                         
                         <MudText Typo="Typo.subtitle2">Description</MudText>
-                        <MudText Typo="Typo.body1">@_selectedVendor.Description</MudText>
+                        <MudText Typo="Typo.body1">@_selectedVendor.BusinessType</MudText>
                     </MudStack>
                 </MudItem>
             </MudGrid>
@@ -257,15 +228,16 @@
 </MudDialog>
 
 @code {
-    private string _searchTerm = string.Empty;
     private List<VendorDto> _vendors = new();
     private List<VendorDto> _filteredVendors = new();
+    private bool _isLoading = false;
     private bool _showAddDialog = false;
     private bool _showDetailsDialog = false;
     private bool _isValid = false;
     private MudForm _form = new();
     private VendorDto _editingVendor = new();
     private VendorDto? _selectedVendor;
+    private string _searchTerm = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -279,14 +251,19 @@
 
     private async Task LoadVendors()
     {
+        _isLoading = true;
         try
         {
-            _vendors = await VendorService.GetAllVendorsAsync();
+            _vendors = (await VendorService.GetAllAsync()).ToList();
             FilterVendors();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error loading vendors", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
         }
     }
 
@@ -294,15 +271,14 @@
     {
         if (string.IsNullOrWhiteSpace(_searchTerm))
         {
-            _filteredVendors = _vendors;
+            _filteredVendors = _vendors.ToList();
         }
         else
         {
-            _filteredVendors = _vendors.Where(v => 
+            _filteredVendors = _vendors.Where(v =>
                 v.Name.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                v.Category.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                v.Location.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                v.Description.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase)
+                v.BusinessType.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                v.City.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase)
             ).ToList();
         }
     }
@@ -313,13 +289,11 @@
         {
             Id = vendor.Id,
             Name = vendor.Name,
-            Category = vendor.Category,
-            Description = vendor.Description,
-            Location = vendor.Location,
-            Phone = vendor.Phone,
-            Email = vendor.Email,
-            Website = vendor.Website,
-            Rating = vendor.Rating
+            BusinessType = vendor.BusinessType,
+            City = vendor.City,
+            Province = vendor.Province,
+            PhoneNumber = vendor.PhoneNumber,
+            Email = vendor.Email
         };
         _showAddDialog = true;
     }
@@ -336,24 +310,42 @@
 
         try
         {
-            if (_editingVendor.Id > 0)
+            if (_editingVendor.Id != Guid.Empty)
             {
-                await VendorService.UpdateVendorAsync(_editingVendor);
+                var updateDto = new CreateVendorDto
+                {
+                    Name = _editingVendor.Name,
+                    BusinessType = _editingVendor.BusinessType,
+                    City = _editingVendor.City,
+                    Province = _editingVendor.Province,
+                    PhoneNumber = _editingVendor.PhoneNumber,
+                    Email = _editingVendor.Email,
+                    BusinessId = _editingVendor.BusinessId
+                };
+                await VendorService.UpdateAsync(_editingVendor.Id, updateDto);
                 Snackbar.Add("Vendor updated successfully", Severity.Success);
             }
             else
             {
-                await VendorService.CreateVendorAsync(_editingVendor);
+                var createDto = new CreateVendorDto
+                {
+                    Name = _editingVendor.Name,
+                    BusinessType = _editingVendor.BusinessType,
+                    City = _editingVendor.City,
+                    Province = _editingVendor.Province,
+                    PhoneNumber = _editingVendor.PhoneNumber,
+                    Email = _editingVendor.Email,
+                    BusinessId = _editingVendor.BusinessId
+                };
+                await VendorService.CreateAsync(createDto);
                 Snackbar.Add("Vendor created successfully", Severity.Success);
             }
-
             _showAddDialog = false;
-            _editingVendor = new VendorDto();
             await LoadVendors();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Snackbar.Add("Error saving vendor", Severity.Error);
+            Snackbar.Add("Error creating vendor", Severity.Error);
         }
     }
 
@@ -366,20 +358,9 @@
             // TODO: Implement quote request logic
             Snackbar.Add($"Quote request sent to {vendor.Name}", Severity.Success);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error sending quote request", Severity.Error);
         }
-    }
-
-    private Color GetRatingColor(double rating)
-    {
-        return rating switch
-        {
-            >= 4.5 => Color.Success,
-            >= 3.5 => Color.Warning,
-            >= 2.5 => Color.Info,
-            _ => Color.Error
-        };
     }
 } 

@@ -1,6 +1,8 @@
 @page "/group-purchases"
 @using TossErp.Application.DTOs
-@* @inject IGroupPurchaseService GroupPurchaseService *@
+@using TossErp.Application.Services
+@using TossErp.Shared.Enums
+@inject IGroupPurchaseService GroupPurchaseService
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 
@@ -28,14 +30,14 @@
             @foreach (var group in _activeGroups)
             {
                 <MudItem xs="12" md="6" lg="4">
-                    <MudCard Elevation="2" Class="ma-2">
+                    <MudCard Elevation="2" Class="h-100">
                         <MudCardHeader>
                             <CardHeaderContent>
                                 <MudText Typo="Typo.h6">@group.Name</MudText>
                                 <MudText Typo="Typo.body2" Color="Color.Secondary">@group.Description</MudText>
                             </CardHeaderContent>
                             <CardHeaderActions>
-                                <MudChip Color="@GetStatusColor(group.Status)" Size="Size.Small">
+                                <MudChip T="object" Color="@GetStatusColor(group.Status)" Size="Size.Small">
                                     @group.Status
                                 </MudChip>
                             </CardHeaderActions>
@@ -72,7 +74,7 @@
                                       OnClick="@(() => ViewGroupDetails(group))">
                                 View Details
                             </MudButton>
-                            @if (group.Status == GroupPurchaseStatus.Active)
+                            @if (group.Status == "Active")
                             {
                                 <MudButton Variant="Variant.Text" 
                                           Color="Color.Secondary" 
@@ -109,17 +111,21 @@
                 <PropertyColumn Property="x => x.MemberCount" Title="Members" />
                 <PropertyColumn Property="x => x.EndDate" Title="Completed Date" Format="MMM dd, yyyy" />
                 <TemplateColumn Title="Status">
-                    <MudChip Color="@GetStatusColor(context.Status)" Size="Size.Small">
-                        @context.Status
-                    </MudChip>
+                    <CellTemplate Context="group">
+                        <MudChip T="object" Color="@GetStatusColor(group.Status)" Size="Size.Small">
+                            @group.Status
+                        </MudChip>
+                    </CellTemplate>
                 </TemplateColumn>
                 <TemplateColumn Title="Actions">
-                    <MudButton Variant="Variant.Text" 
-                              Color="Color.Primary" 
-                              Size="Size.Small"
-                              OnClick="@(() => ViewGroupDetails(context))">
-                        View Details
-                    </MudButton>
+                    <CellTemplate Context="group">
+                        <MudButton Variant="Variant.Text" 
+                                  Color="Color.Primary" 
+                                  Size="Size.Small"
+                                  OnClick="@(() => ViewGroupDetails(group))">
+                            View Details
+                        </MudButton>
+                    </CellTemplate>
                 </TemplateColumn>
             </Columns>
         </MudDataGrid>
@@ -135,8 +141,8 @@
         <MudForm @ref="_form" @bind-IsValid="_isValid">
             <MudGrid>
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="_newGroup.Name" 
-                                 Label="Group Name" 
+                    <MudTextField @bind-Value="_newGroup.ProductName" 
+                                 Label="Product Name" 
                                  Required="true"
                                  Variant="Variant.Outlined" />
                 </MudItem>
@@ -147,23 +153,47 @@
                                  Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudNumericField @bind-Value="_newGroup.TargetAmount" 
-                                    Label="Target Amount" 
+                    <MudNumericField T="decimal" @bind-Value="_newGroup.UnitPrice" 
+                                    Label="Unit Price" 
                                     Required="true"
                                     Variant="Variant.Outlined"
                                     Min="0"
                                     Step="0.01" />
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudDatePicker @bind-Date="_newGroup.EndDate" 
-                                  Label="End Date" 
+                    <MudNumericField T="decimal" @bind-Value="_newGroup.GroupPrice" 
+                                    Label="Group Price" 
+                                    Required="true"
+                                    Variant="Variant.Outlined"
+                                    Min="0"
+                                    Step="0.01" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudNumericField T="int" @bind-Value="_newGroup.MinimumQuantity" 
+                                    Label="Minimum Quantity" 
+                                    Required="true"
+                                    Variant="Variant.Outlined"
+                                    Min="1"
+                                    Step="1" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudNumericField T="int" @bind-Value="_newGroup.TargetQuantity" 
+                                    Label="Target Quantity" 
+                                    Required="true"
+                                    Variant="Variant.Outlined"
+                                    Min="1"
+                                    Step="1" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudDatePicker @bind-Date="_newGroup.ExpiryDate" 
+                                  Label="Expiry Date" 
                                   Required="true"
                                   Variant="Variant.Outlined"
                                   MinDate="@DateTime.Today" />
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="_newGroup.ProductDetails" 
-                                 Label="Product Details" 
+                    <MudTextField @bind-Value="_newGroup.DeliveryLocation" 
+                                 Label="Delivery Location" 
                                  Lines="2"
                                  Variant="Variant.Outlined" />
                 </MudItem>
@@ -255,11 +285,11 @@
     {
         try
         {
-            var allGroups = await GroupPurchaseService.GetAllGroupsAsync();
-            _activeGroups = allGroups.Where(g => g.Status == GroupPurchaseStatus.Active).ToList();
-            _completedGroups = allGroups.Where(g => g.Status == GroupPurchaseStatus.Completed || g.Status == GroupPurchaseStatus.Cancelled).ToList();
+            var allGroups = await GroupPurchaseService.GetAllAsync();
+            _activeGroups = allGroups.Where(g => g.Status == "Active" || g.Status == "Open").ToList();
+            _completedGroups = allGroups.Where(g => g.Status == "Completed" || g.Status == "Cancelled").ToList();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error loading groups", Severity.Error);
         }
@@ -271,13 +301,15 @@
 
         try
         {
-            await GroupPurchaseService.CreateGroupAsync(_newGroup);
+            _newGroup.BusinessId = Guid.NewGuid(); // TODO: Get from current user context
+            _newGroup.CreatedBy = Guid.NewGuid(); // TODO: Get from current user context
+            await GroupPurchaseService.CreateAsync(_newGroup);
             Snackbar.Add("Group created successfully", Severity.Success);
             _showCreateDialog = false;
             _newGroup = new CreateGroupPurchaseDto();
             await LoadGroups();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error creating group", Severity.Error);
         }
@@ -297,19 +329,19 @@
             Snackbar.Add("Joined group successfully", Severity.Success);
             await LoadGroups();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error joining group", Severity.Error);
         }
     }
 
-    private Color GetStatusColor(GroupPurchaseStatus status)
+    private Color GetStatusColor(string status)
     {
         return status switch
         {
-            GroupPurchaseStatus.Active => Color.Primary,
-            GroupPurchaseStatus.Completed => Color.Success,
-            GroupPurchaseStatus.Cancelled => Color.Error,
+            "Active" => Color.Primary,
+            "Completed" => Color.Success,
+            "Cancelled" => Color.Error,
             _ => Color.Default
         };
     }

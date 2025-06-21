@@ -1,23 +1,17 @@
 @page "/products"
 @using TossErp.Application.DTOs
-@* @inject IProductService ProductService *@
-@inject NavigationManager Navigation
+@using TossErp.Application.Services
+@inject IProductService ProductService
 @inject ISnackbar Snackbar
 
-<PageTitle>TOSS ERP III - Products Management</PageTitle>
+<PageTitle>TOSS ERP III - Products</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
     <!-- Header -->
     <MudPaper Class="pa-4 mb-4" Elevation="1">
         <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3">
-            <MudText Typo="Typo.h4">Products Management</MudText>
+            <MudText Typo="Typo.h4">Products</MudText>
             <MudSpacer />
-            <MudTextField @bind-Value="_searchTerm" 
-                         Label="Search Products..." 
-                         Variant="Variant.Outlined" 
-                         Adornment="Adornment.Start" 
-                         AdornmentIcon="@Icons.Material.Filled.Search"
-                         Class="flex-grow-1" />
             <MudButton Variant="Variant.Filled" 
                       Color="Color.Primary" 
                       OnClick="@(() => _showAddDialog = true)"
@@ -27,7 +21,17 @@
         </MudStack>
     </MudPaper>
 
-    <!-- Products Data Grid -->
+    <!-- Search and Filters -->
+    <MudPaper Class="pa-4 mb-4" Elevation="1">
+        <MudTextField @bind-Value="_searchTerm" 
+                     Label="Search Products..." 
+                     Variant="Variant.Outlined" 
+                     Adornment="Adornment.Start" 
+                     AdornmentIcon="@Icons.Material.Filled.Search"
+                     Class="flex-grow-1" />
+    </MudPaper>
+
+    <!-- Products Grid -->
     <MudPaper Class="pa-4" Elevation="1">
         <MudDataGrid T="ProductDto" Items="@_filteredProducts" 
                      Dense="true" Hover="true" Striped="true"
@@ -39,22 +43,22 @@
                 <PropertyColumn Property="x => x.Price" Title="Price" Format="C" />
                 <PropertyColumn Property="x => x.StockQuantity" Title="Stock" />
                 <PropertyColumn Property="x => x.Category" Title="Category" />
-                <PropertyColumn Property="x => x.Sku" Title="SKU" />
-                <TemplateColumn Title="Status">
-                    <MudChip Color="@(context.StockQuantity > 0 ? Color.Success : Color.Error)" Size="Size.Small">
-                        @(context.StockQuantity > 0 ? "In Stock" : "Out of Stock")
+                <PropertyColumn Property="x => x.SKU" Title="SKU" />
+                <TemplateColumn Title="Status" Context="item">
+                    <MudChip Color="@(item.StockQuantity > 0 ? Color.Success : Color.Error)" Size="Size.Small">
+                        @(item.StockQuantity > 0 ? "In Stock" : "Out of Stock")
                     </MudChip>
                 </TemplateColumn>
-                <TemplateColumn Title="Actions">
+                <TemplateColumn Title="Actions" Context="item">
                     <MudStack Row="true" Spacing="1">
                         <MudIconButton Icon="@Icons.Material.Filled.Edit" 
                                      Size="Size.Small" 
                                      Color="Color.Primary"
-                                     OnClick="@(() => EditProduct(context))" />
+                                     OnClick="@(() => EditProduct(item))" />
                         <MudIconButton Icon="@Icons.Material.Filled.Delete" 
                                      Size="Size.Small" 
                                      Color="Color.Error"
-                                     OnClick="@(() => DeleteProduct(context))" />
+                                     OnClick="@(() => DeleteProduct(item))" />
                     </MudStack>
                 </TemplateColumn>
             </Columns>
@@ -66,7 +70,7 @@
 <MudDialog @bind-IsVisible="_showAddDialog" Options="new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true }">
     <TitleContent>
         <MudText Typo="Typo.h6">
-            @(_editingProduct?.Id > 0 ? "Edit Product" : "Add New Product")
+            @(_editingProduct?.Id != Guid.Empty ? "Edit Product" : "Add New Product")
         </MudText>
     </TitleContent>
     <DialogContent>
@@ -79,7 +83,7 @@
                                  Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudTextField @bind-Value="_editingProduct.Sku" 
+                    <MudTextField @bind-Value="_editingProduct.SKU" 
                                  Label="SKU" 
                                  Required="true"
                                  Variant="Variant.Outlined" />
@@ -91,7 +95,7 @@
                                  Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudNumericField @bind-Value="_editingProduct.Price" 
+                    <MudNumericField T="decimal" @bind-Value="_editingProduct.Price" 
                                     Label="Price" 
                                     Required="true"
                                     Variant="Variant.Outlined"
@@ -99,7 +103,15 @@
                                     Step="0.01" />
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudNumericField @bind-Value="_editingProduct.StockQuantity" 
+                    <MudNumericField T="decimal" @bind-Value="_editingProduct.CostPrice" 
+                                    Label="Cost Price" 
+                                    Required="true"
+                                    Variant="Variant.Outlined"
+                                    Min="0"
+                                    Step="0.01" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudNumericField T="int" @bind-Value="_editingProduct.StockQuantity" 
                                     Label="Stock Quantity" 
                                     Required="true"
                                     Variant="Variant.Outlined"
@@ -111,14 +123,14 @@
                                  Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudNumericField @bind-Value="_editingProduct.ReorderLevel" 
-                                    Label="Reorder Level" 
+                    <MudNumericField T="int" @bind-Value="_editingProduct.MinimumStockLevel" 
+                                    Label="Minimum Stock Level" 
                                     Variant="Variant.Outlined"
                                     Min="0" />
                 </MudItem>
-                <MudItem xs="12">
-                    <MudTextField @bind-Value="_editingProduct.Supplier" 
-                                 Label="Supplier" 
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_editingProduct.Unit" 
+                                 Label="Unit" 
                                  Variant="Variant.Outlined" />
                 </MudItem>
             </MudGrid>
@@ -130,7 +142,7 @@
                   Variant="Variant.Filled" 
                   OnClick="@SaveProduct"
                   Disabled="@(!_isValid)">
-            @(_editingProduct?.Id > 0 ? "Update" : "Save")
+            @(_editingProduct?.Id != Guid.Empty ? "Update" : "Save")
         </MudButton>
     </DialogActions>
 </MudDialog>
@@ -180,10 +192,10 @@
         _isLoading = true;
         try
         {
-            _products = await ProductService.GetAllProductsAsync();
+            _products = (await ProductService.GetAllAsync()).ToList();
             FilterProducts();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error loading products", Severity.Error);
         }
@@ -203,8 +215,8 @@
         {
             _filteredProducts = _products.Where(p => 
                 p.Name.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                p.Description.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                p.Sku.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                (p.Description?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                p.SKU.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 p.Category.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase)
             ).ToList();
         }
@@ -218,11 +230,17 @@
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
+            CostPrice = product.CostPrice,
             StockQuantity = product.StockQuantity,
             Category = product.Category,
-            Sku = product.Sku,
-            ReorderLevel = product.ReorderLevel,
-            Supplier = product.Supplier
+            SKU = product.SKU,
+            MinimumStockLevel = product.MinimumStockLevel,
+            Unit = product.Unit,
+            BusinessId = product.BusinessId,
+            VendorId = product.VendorId,
+            IsActive = product.IsActive,
+            CreatedAt = product.CreatedAt,
+            UpdatedAt = product.UpdatedAt
         };
         _showAddDialog = true;
     }
@@ -239,22 +257,37 @@
 
         try
         {
-            if (_editingProduct.Id > 0)
+            var createDto = new CreateProductDto
             {
-                await ProductService.UpdateProductAsync(_editingProduct);
-                Snackbar.Add("Product updated successfully", Severity.Success);
+                Name = _editingProduct.Name,
+                Description = _editingProduct.Description,
+                Price = _editingProduct.Price,
+                CostPrice = _editingProduct.CostPrice,
+                StockQuantity = _editingProduct.StockQuantity,
+                Category = _editingProduct.Category,
+                SKU = _editingProduct.SKU,
+                MinimumStockLevel = _editingProduct.MinimumStockLevel,
+                Unit = _editingProduct.Unit,
+                BusinessId = _editingProduct.BusinessId,
+                VendorId = _editingProduct.VendorId
+            };
+
+            if (_editingProduct.Id == Guid.Empty)
+            {
+                await ProductService.CreateAsync(createDto);
+                Snackbar.Add("Product created successfully", Severity.Success);
             }
             else
             {
-                await ProductService.CreateProductAsync(_editingProduct);
-                Snackbar.Add("Product created successfully", Severity.Success);
+                await ProductService.UpdateAsync(_editingProduct.Id, createDto);
+                Snackbar.Add("Product updated successfully", Severity.Success);
             }
 
             _showAddDialog = false;
             _editingProduct = new ProductDto();
             await LoadProducts();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error saving product", Severity.Error);
         }
@@ -266,13 +299,13 @@
 
         try
         {
-            await ProductService.DeleteProductAsync(_productToDelete.Id);
+            await ProductService.DeleteAsync(_productToDelete.Id);
             Snackbar.Add("Product deleted successfully", Severity.Success);
             _showDeleteDialog = false;
             _productToDelete = null;
             await LoadProducts();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error deleting product", Severity.Error);
         }

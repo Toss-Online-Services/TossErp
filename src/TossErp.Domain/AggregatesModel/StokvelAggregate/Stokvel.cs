@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using TossErp.Domain.SeedWork;
@@ -12,7 +12,7 @@ namespace TossErp.Domain.AggregatesModel.StokvelAggregate
     {
         public string Name { get; private set; } = string.Empty;
         public StokvelType StokvelType { get; private set; }
-        public string? Description { get; private set; }
+        public string Description { get; private set; } = string.Empty;
         public ContributionSettings ContributionSettings { get; private set; }
         public PayoutSettings PayoutSettings { get; private set; }
         public MeetingSettings MeetingSettings { get; private set; }
@@ -40,7 +40,7 @@ namespace TossErp.Domain.AggregatesModel.StokvelAggregate
 
         public Stokvel(
             string name,
-            string? description,
+            string description,
             StokvelType stokvelType,
             ContributionSettings contributionSettings,
             PayoutSettings payoutSettings,

@@ -42,7 +42,7 @@
                                         <MudText Typo="Typo.h6" Color="Color.Primary">
                                             @product.Price.ToString("C")
                                         </MudText>
-                                        <MudChip Color="@(product.StockQuantity > 0 ? Color.Success : Color.Error)" Size="Size.Small">
+                                        <MudChip T="object" Color="@(product.StockQuantity > 0 ? Color.Success : Color.Error)" Size="Size.Small">
                                             @(product.StockQuantity > 0 ? $"In Stock: {product.StockQuantity}" : "Out of Stock")
                                         </MudChip>
                                     </MudStack>
@@ -77,10 +77,10 @@
                 else
                 {
                     <!-- Cart Items -->
-                    <MudList Dense="true" Class="mb-4" Style="max-height: 400px; overflow-y: auto;">
+                    <MudList T="object" Dense="true" Class="mb-4" Style="max-height: 400px; overflow-y: auto;">
                         @foreach (var item in _cartItems)
                         {
-                            <MudListItem>
+                            <MudListItem T="object">
                                 <MudCard Elevation="1" Class="mb-2">
                                     <MudCardContent>
                                         <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
@@ -131,10 +131,10 @@
                     <!-- Payment Options -->
                     <MudStack Spacing="2" Class="mb-4">
                         <MudText Typo="Typo.subtitle2">Payment Method:</MudText>
-                        <MudRadioGroup @bind-SelectedOption="_selectedPaymentMethod">
-                            <MudRadio Option="@PaymentMethod.Cash" Color="Color.Primary">Cash</MudRadio>
-                            <MudRadio Option="@PaymentMethod.Card" Color="Color.Primary">Card</MudRadio>
-                            <MudRadio Option="@PaymentMethod.MobileMoney" Color="Color.Primary">Mobile Money</MudRadio>
+                        <MudRadioGroup T="PaymentMethod" @bind-SelectedOption="_selectedPaymentMethod">
+                            <MudRadio T="PaymentMethod" Option="@PaymentMethod.Cash" Color="Color.Primary">Cash</MudRadio>
+                            <MudRadio T="PaymentMethod" Option="@PaymentMethod.Card" Color="Color.Primary">Card</MudRadio>
+                            <MudRadio T="PaymentMethod" Option="@PaymentMethod.MobileMoney" Color="Color.Primary">Mobile Money</MudRadio>
                         </MudRadioGroup>
                     </MudStack>
 

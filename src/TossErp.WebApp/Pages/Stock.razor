@@ -96,33 +96,33 @@
                      Height="600px">
             <Columns>
                 <PropertyColumn Property="x => x.Name" Title="Product Name" />
-                <PropertyColumn Property="x => x.Sku" Title="SKU" />
+                <PropertyColumn Property="x => x.SKU" Title="SKU" />
                 <PropertyColumn Property="x => x.Category" Title="Category" />
                 <PropertyColumn Property="x => x.StockQuantity" Title="Current Stock" />
-                <PropertyColumn Property="x => x.ReorderLevel" Title="Reorder Level" />
+                <PropertyColumn Property="x => x.MinimumStockLevel" Title="Reorder Level" />
                 <PropertyColumn Property="x => x.Price" Title="Unit Price" Format="C" />
-                <TemplateColumn Title="Stock Value">
-                    <MudText Typo="Typo.body2">@((context.StockQuantity * context.Price).ToString("C"))</MudText>
+                <TemplateColumn Title="Stock Value" Context="item">
+                    <MudText Typo="Typo.body2">@((item.StockQuantity * item.Price).ToString("C"))</MudText>
                 </TemplateColumn>
-                <TemplateColumn Title="Status">
-                    <MudChip Color="@GetStockStatusColor(context)" Size="Size.Small">
-                        @GetStockStatusText(context)
+                <TemplateColumn Title="Status" Context="item">
+                    <MudChip Color="@GetStockStatusColor(item)" Size="Size.Small">
+                        @GetStockStatusText(item)
                     </MudChip>
                 </TemplateColumn>
-                <TemplateColumn Title="Actions">
+                <TemplateColumn Title="Actions" Context="item">
                     <MudStack Row="true" Spacing="1">
                         <MudIconButton Icon="@Icons.Material.Filled.Add" 
                                      Size="Size.Small" 
                                      Color="Color.Success"
-                                     OnClick="@(() => AdjustStock(context, true))" />
+                                     OnClick="@(() => AdjustStock(item, true))" />
                         <MudIconButton Icon="@Icons.Material.Filled.Remove" 
                                      Size="Size.Small" 
                                      Color="Color.Warning"
-                                     OnClick="@(() => AdjustStock(context, false))" />
+                                     OnClick="@(() => AdjustStock(item, false))" />
                         <MudIconButton Icon="@Icons.Material.Filled.History" 
                                      Size="Size.Small" 
                                      Color="Color.Info"
-                                     OnClick="@(() => ViewStockHistory(context))" />
+                                     OnClick="@(() => ViewStockHistory(item))" />
                     </MudStack>
                 </TemplateColumn>
             </Columns>
@@ -145,7 +145,7 @@
                               Variant="Variant.Outlined">
                         @foreach (var product in _products)
                         {
-                            <MudSelectItem Value="@product">@product.Name (@product.Sku)</MudSelectItem>
+                            <MudSelectItem Value="@product">@product.Name (@product.SKU)</MudSelectItem>
                         }
                     </MudSelect>
                 </MudItem>
@@ -160,7 +160,7 @@
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudNumericField @bind-Value="_adjustmentQuantity" 
+                    <MudNumericField T="int" @bind-Value="_adjustmentQuantity" 
                                     Label="Quantity" 
                                     Required="true"
                                     Variant="Variant.Outlined"
@@ -177,7 +177,7 @@
                     <MudItem xs="12">
                         <MudAlert Severity="Severity.Info">
                             Current Stock: @_selectedProduct.StockQuantity | 
-                            Reorder Level: @_selectedProduct.ReorderLevel
+                            Reorder Level: @_selectedProduct.MinimumStockLevel
                         </MudAlert>
                     </MudItem>
                 }
@@ -239,7 +239,7 @@
     private string _adjustmentReason = string.Empty;
 
     private int _totalProducts => _products.Count;
-    private int _lowStockItems => _products.Count(p => p.StockQuantity > 0 && p.StockQuantity <= p.ReorderLevel);
+    private int _lowStockItems => _products.Count(p => p.StockQuantity > 0 && p.StockQuantity <= p.MinimumStockLevel);
     private int _outOfStockItems => _products.Count(p => p.StockQuantity <= 0);
     private decimal _totalValue => _products.Sum(p => p.StockQuantity * p.Price);
 
@@ -258,10 +258,10 @@
         _isLoading = true;
         try
         {
-            _products = await ProductService.GetAllProductsAsync();
+            _products = (await ProductService.GetAllAsync()).ToList();
             FilterProducts();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error loading products", Severity.Error);
         }
@@ -281,7 +281,7 @@
         {
             _filteredProducts = _products.Where(p => 
                 p.Name.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                p.Sku.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                p.SKU.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 p.Category.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase)
             ).ToList();
         }
@@ -310,12 +310,12 @@
                 Reason = _adjustmentReason
             };
 
-            await ProductService.AdjustStockAsync(adjustment);
+            await ProductService.UpdateStockAsync(_selectedProduct.Id, _adjustmentQuantity, _adjustmentType.ToString(), _adjustmentReason);
             Snackbar.Add("Stock adjusted successfully", Severity.Success);
             _showAdjustDialog = false;
             await LoadProducts();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error adjusting stock", Severity.Error);
         }
@@ -330,7 +330,7 @@
             _stockHistory = new List<StockHistoryDto>(); // Placeholder
             _showHistoryDialog = true;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error loading stock history", Severity.Error);
         }
@@ -339,14 +339,14 @@
     private Color GetStockStatusColor(ProductDto product)
     {
         if (product.StockQuantity <= 0) return Color.Error;
-        if (product.StockQuantity <= product.ReorderLevel) return Color.Warning;
+        if (product.StockQuantity <= product.MinimumStockLevel) return Color.Warning;
         return Color.Success;
     }
 
     private string GetStockStatusText(ProductDto product)
     {
         if (product.StockQuantity <= 0) return "Out of Stock";
-        if (product.StockQuantity <= product.ReorderLevel) return "Low Stock";
+        if (product.StockQuantity <= product.MinimumStockLevel) return "Low Stock";
         return "In Stock";
     }
 

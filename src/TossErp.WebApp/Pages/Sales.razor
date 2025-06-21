@@ -1,6 +1,7 @@
 @page "/sales"
 @using TossErp.Application.DTOs
-@* @inject ISaleService SaleService *@
+@using TossErp.Application.Services
+@inject ISaleService SaleService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 
@@ -58,7 +59,7 @@
             <MudPaper Class="pa-4" Elevation="1">
                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
                     <MudAvatar Color="Color.Warning" Size="Size.Small">
-                        <MudIcon Icon="@Icons.Material.Filled.Average" />
+                        <MudIcon Icon="@Icons.Material.Filled.TrendingUp" />
                     </MudAvatar>
                     <MudStack Class="flex-grow-1">
                         <MudText Typo="Typo.h6">@_averageOrderValue.ToString("C")</MudText>
@@ -93,25 +94,33 @@
                      Height="600px">
             <Columns>
                 <PropertyColumn Property="x => x.Id" Title="Sale #" />
-                <PropertyColumn Property="x => x.CreatedAt" Title="Date" Format="MMM dd, yyyy HH:mm" />
-                <PropertyColumn Property="x => x.Total" Title="Total" Format="C" />
+                <PropertyColumn Property="x => x.SaleDate" Title="Date" Format="MMM dd, yyyy HH:mm" />
+                <PropertyColumn Property="x => x.TotalAmount" Title="Total" Format="C" />
                 <PropertyColumn Property="x => x.PaymentMethod" Title="Payment Method" />
-                <PropertyColumn Property="x => x.ItemCount" Title="Items" />
-                <TemplateColumn Title="Status">
-                    <MudChip Color="@GetStatusColor(context.Status)" Size="Size.Small">
-                        @context.Status
+                <PropertyColumn Property="x => x.Items.Count" Title="Items" />
+                <TemplateColumn Title="Status" Context="sale">
+                    <MudChip T="object" Color="@GetStatusColor(sale.SaleStatus)" Size="Size.Small">
+                        @sale.SaleStatus
                     </MudChip>
                 </TemplateColumn>
-                <TemplateColumn Title="Actions">
+                <TemplateColumn Title="Actions" Context="sale">
                     <MudStack Row="true" Spacing="1">
-                        <MudIconButton Icon="@Icons.Material.Filled.Receipt" 
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" 
                                      Size="Size.Small" 
                                      Color="Color.Primary"
-                                     OnClick="@(() => ViewSaleDetails(context))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Print" 
+                                     OnClick="@(() => EditSale(sale))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                     Size="Size.Small" 
+                                     Color="Color.Error"
+                                     OnClick="@(() => DeleteSale(sale))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Receipt" 
                                      Size="Size.Small" 
                                      Color="Color.Secondary"
-                                     OnClick="@(() => PrintReceipt(context))" />
+                                     OnClick="@(() => ViewSaleDetails(sale))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Print" 
+                                     Size="Size.Small" 
+                                     Color="Color.Info"
+                                     OnClick="@(() => PrintReceipt(sale))" />
                     </MudStack>
                 </TemplateColumn>
             </Columns>
@@ -120,7 +129,7 @@
 </MudContainer>
 
 <!-- Sale Details Dialog -->
-<MudDialog @bind-IsVisible="_showDetailsDialog" Options="new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true }">
+<MudDialog @bind-IsVisible="_showDialog" Options="new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true }">
     <TitleContent>
         <MudText Typo="Typo.h6">Sale Details - #@_selectedSale?.Id</MudText>
     </TitleContent>
@@ -138,7 +147,7 @@
                             </MudStack>
                             <MudStack Row="true" Justify="Justify.SpaceBetween">
                                 <MudText Typo="Typo.body2">Date:</MudText>
-                                <MudText Typo="Typo.body1">@_selectedSale.CreatedAt.ToString("MMM dd, yyyy HH:mm")</MudText>
+                                <MudText Typo="Typo.body1">@_selectedSale.SaleDate.ToString("MMM dd, yyyy HH:mm")</MudText>
                             </MudStack>
                             <MudStack Row="true" Justify="Justify.SpaceBetween">
                                 <MudText Typo="Typo.body2">Payment Method:</MudText>
@@ -146,8 +155,8 @@
                             </MudStack>
                             <MudStack Row="true" Justify="Justify.SpaceBetween">
                                 <MudText Typo="Typo.body2">Status:</MudText>
-                                <MudChip Color="@GetStatusColor(_selectedSale.Status)" Size="Size.Small">
-                                    @_selectedSale.Status
+                                <MudChip T="object" Color="@GetStatusColor(_selectedSale.SaleStatus)" Size="Size.Small">
+                                    @_selectedSale.SaleStatus
                                 </MudChip>
                             </MudStack>
                         </MudStack>
@@ -156,10 +165,10 @@
                 <MudItem xs="12" md="6">
                     <MudStack Spacing="3">
                         <MudText Typo="Typo.subtitle1">Items</MudText>
-                        <MudList Dense="true">
+                        <MudList T="object" Dense="true">
                             @foreach (var item in _selectedSale.Items)
                             {
-                                <MudListItem>
+                                <MudListItem T="object">
                                     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
                                         <MudStack Class="flex-grow-1">
                                             <MudText Typo="Typo.body2">@item.ProductName</MudText>
@@ -180,16 +189,16 @@
                         <MudStack Spacing="2">
                             <MudStack Row="true" Justify="Justify.SpaceBetween">
                                 <MudText Typo="Typo.body1">Subtotal:</MudText>
-                                <MudText Typo="Typo.body1">@_selectedSale.Subtotal.ToString("C")</MudText>
+                                <MudText Typo="Typo.body1">@_selectedSale.SubTotal.ToString("C")</MudText>
                             </MudStack>
                             <MudStack Row="true" Justify="Justify.SpaceBetween">
                                 <MudText Typo="Typo.body1">Tax:</MudText>
-                                <MudText Typo="Typo.body1">@_selectedSale.Tax.ToString("C")</MudText>
+                                <MudText Typo="Typo.body1">@_selectedSale.TaxAmount.ToString("C")</MudText>
                             </MudStack>
                             <MudDivider />
                             <MudStack Row="true" Justify="Justify.SpaceBetween">
                                 <MudText Typo="Typo.h6">Total:</MudText>
-                                <MudText Typo="Typo.h6" Color="Color.Primary">@_selectedSale.Total.ToString("C")</MudText>
+                                <MudText Typo="Typo.h6" Color="Color.Primary">@_selectedSale.TotalAmount.ToString("C")</MudText>
                             </MudStack>
                         </MudStack>
                     </MudStack>
@@ -198,7 +207,7 @@
         }
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="@(() => _showDetailsDialog = false)">Close</MudButton>
+        <MudButton OnClick="@(() => _showDialog = false)">Close</MudButton>
         <MudButton Color="Color.Primary" 
                   Variant="Variant.Filled" 
                   OnClick="@(() => PrintReceipt(_selectedSale))">
@@ -210,11 +219,11 @@
 @code {
     private List<SaleDto> _sales = new();
     private bool _isLoading = false;
-    private bool _showDetailsDialog = false;
+    private bool _showDialog = false;
     private SaleDto? _selectedSale;
     private DateRange _dateRange = new(DateTime.Today.AddDays(-30), DateTime.Today);
 
-    private decimal _totalSales => _sales.Sum(s => s.Total);
+    private decimal _totalSales => _sales.Sum(s => s.TotalAmount);
     private int _totalOrders => _sales.Count;
     private decimal _averageOrderValue => _totalOrders > 0 ? _totalSales / _totalOrders : 0;
     private int _uniqueCustomers => _sales.Select(s => s.CustomerId).Distinct().Count();
@@ -229,10 +238,10 @@
         _isLoading = true;
         try
         {
-            _sales = await SaleService.GetAllSalesAsync();
+            _sales = (await SaleService.GetAllAsync()).ToList();
             // TODO: Apply date range filter when implemented in service
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error loading sales", Severity.Error);
         }
@@ -245,7 +254,7 @@
     private void ViewSaleDetails(SaleDto sale)
     {
         _selectedSale = sale;
-        _showDetailsDialog = true;
+        _showDialog = true;
     }
 
     private async Task PrintReceipt(SaleDto? sale)
@@ -257,7 +266,7 @@
             // TODO: Implement receipt printing logic
             Snackbar.Add("Receipt printed successfully", Severity.Success);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error printing receipt", Severity.Error);
         }
@@ -270,19 +279,45 @@
             // TODO: Implement export logic
             Snackbar.Add("Sales exported successfully", Severity.Success);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error exporting sales", Severity.Error);
         }
     }
 
-    private Color GetStatusColor(SaleStatus status)
+    private async Task EditSale(SaleDto sale)
     {
-        return status switch
+        try
         {
-            SaleStatus.Completed => Color.Success,
-            SaleStatus.Pending => Color.Warning,
-            SaleStatus.Cancelled => Color.Error,
+            // TODO: Implement edit logic
+            Snackbar.Add($"Editing sale {sale.SaleNumber}", Severity.Info);
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Error editing sale", Severity.Error);
+        }
+    }
+
+    private async Task DeleteSale(SaleDto sale)
+    {
+        try
+        {
+            // TODO: Implement delete logic
+            Snackbar.Add($"Deleting sale {sale.SaleNumber}", Severity.Warning);
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Error deleting sale", Severity.Error);
+        }
+    }
+
+    private Color GetStatusColor(string status)
+    {
+        return status.ToLower() switch
+        {
+            "completed" => Color.Success,
+            "pending" => Color.Warning,
+            "cancelled" => Color.Error,
             _ => Color.Default
         };
     }

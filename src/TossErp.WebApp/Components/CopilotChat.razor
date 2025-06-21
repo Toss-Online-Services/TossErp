@@ -1,14 +1,14 @@
 @using TossErp.Application.Services
-@inject ICoPilotService CoPilotService
+@inject ICopilotService CopilotService
 @inject ISnackbar Snackbar
 
 <MudContainer Style="height: 400px; display: flex; flex-direction: column;">
     <!-- Chat Messages -->
     <MudPaper Class="flex-grow-1 mb-3" Style="overflow-y: auto; max-height: 300px;">
-        <MudList Dense="true">
+        <MudList T="object" Dense="true">
             @foreach (var message in _messages)
             {
-                <MudListItem>
+                <MudListItem T="object">
                     <MudCard Elevation="1" Class="mb-2">
                         <MudCardContent>
                             <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
@@ -35,17 +35,17 @@
     <!-- Quick Actions -->
     <MudPaper Class="mb-3" Elevation="0">
         <MudText Typo="Typo.subtitle2" Class="mb-2">Quick Actions:</MudText>
-        <MudStack Row="true" Spacing="2" Wrap="true">
-            <MudChip Color="Color.Primary" OnClick="@(() => SendQuickMessage("sales insights"))">
+        <MudStack Row="true" Spacing="2">
+            <MudChip T="object" Color="Color.Primary" OnClick="@(() => SendQuickMessage("sales insights"))">
                 Sales Insights
             </MudChip>
-            <MudChip Color="Color.Secondary" OnClick="@(() => SendQuickMessage("inventory alert"))">
+            <MudChip T="object" Color="Color.Secondary" OnClick="@(() => SendQuickMessage("inventory alert"))">
                 Inventory Alert
             </MudChip>
-            <MudChip Color="Color.Tertiary" OnClick="@(() => SendQuickMessage("group purchase suggestion"))">
+            <MudChip T="object" Color="Color.Tertiary" OnClick="@(() => SendQuickMessage("group purchase suggestion"))">
                 Group Purchase
             </MudChip>
-            <MudChip Color="Color.Info" OnClick="@(() => SendQuickMessage("promotion idea"))">
+            <MudChip T="object" Color="Color.Info" OnClick="@(() => SendQuickMessage("promotion idea"))">
                 Promotion Idea
             </MudChip>
         </MudStack>
@@ -59,7 +59,7 @@
                          Variant="Variant.Outlined" 
                          Class="flex-grow-1"
                          Lines="2"
-                         OnKeyPress="@HandleKeyPress" />
+                         OnKeyPress="HandleKeyPress" />
             <MudButton Variant="Variant.Filled" 
                       Color="Color.Primary" 
                       OnClick="@SendMessage"
@@ -107,7 +107,7 @@
 
         try
         {
-            var response = await CoPilotService.GetResponseAsync(userInput);
+            var response = await CopilotService.ProcessQueryAsync(userInput, Guid.Empty);
             
             var aiMessage = new ChatMessage
             {
@@ -118,7 +118,7 @@
 
             _messages.Add(aiMessage);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Snackbar.Add("Error communicating with AI Co-Pilot", Severity.Error);
         }

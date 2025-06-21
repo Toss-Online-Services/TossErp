@@ -343,9 +343,7 @@ namespace TossErp.Application.Services
             if (stokvel == null)
                 throw new InvalidOperationException($"Stokvel with ID '{stokvelId}' not found");
 
-            decimal? temp = stokvel.GetTotalContributions();
-            decimal total = temp ?? 0m;
-            return total;
+            return stokvel.GetTotalContributions();
         }
 
         public async Task<decimal> GetTotalPayoutsAsync(Guid stokvelId)

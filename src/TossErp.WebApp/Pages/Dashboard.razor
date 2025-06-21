@@ -104,10 +104,10 @@
         <MudItem xs="12" md="4">
             <MudPaper Class="pa-4" Elevation="1">
                 <MudText Typo="Typo.h6" Class="mb-3">Top Selling Products</MudText>
-                <MudList Dense="true">
+                <MudList T="object" Dense="true">
                     @foreach (var product in _topProducts)
                     {
-                        <MudListItem>
+                        <MudListItem T="object">
                             <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
                                 <MudAvatar Size="Size.Small" Color="Color.Primary">
                                     <MudIcon Icon="@Icons.Material.Filled.Category" />
@@ -189,10 +189,10 @@
         <MudItem xs="12" md="6">
             <MudPaper Class="pa-4" Elevation="1">
                 <MudText Typo="Typo.h6" Class="mb-3">Recent Sales</MudText>
-                <MudList Dense="true">
+                <MudList T="object" Dense="true">
                     @foreach (var sale in _recentSales)
                     {
-                        <MudListItem>
+                        <MudListItem T="object">
                             <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
                                 <MudAvatar Size="Size.Small" Color="Color.Success">
                                     <MudIcon Icon="@Icons.Material.Filled.Receipt" />
@@ -213,10 +213,10 @@
         <MudItem xs="12" md="6">
             <MudPaper Class="pa-4" Elevation="1">
                 <MudText Typo="Typo.h6" Class="mb-3">Active Group Purchases</MudText>
-                <MudList Dense="true">
+                <MudList T="object" Dense="true">
                     @foreach (var group in _activeGroupPurchases)
                     {
-                        <MudListItem>
+                        <MudListItem T="object">
                             <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
                                 <MudAvatar Size="Size.Small" Color="Color.Tertiary">
                                     <MudIcon Icon="@Icons.Material.Filled.GroupWork" />
@@ -283,8 +283,10 @@
                 new GroupPurchaseDto { Id = Guid.NewGuid(), GroupNumber = "GP-001", BusinessId = Guid.NewGuid(), ProductId = Guid.NewGuid(), ProductName = "Group A", UnitPrice = 100m, GroupPrice = 80m, MinimumQuantity = 5, TargetQuantity = 10, CurrentQuantity = 5, Status = "Active", ExpiryDate = DateTime.Now.AddDays(7), CreatedAt = DateTime.Now, CreatedBy = Guid.NewGuid(), MemberCount = 5, CurrentAmount = 400m, TargetAmount = 800m, EndDate = DateTime.Now.AddDays(7) },
                 new GroupPurchaseDto { Id = Guid.NewGuid(), GroupNumber = "GP-002", BusinessId = Guid.NewGuid(), ProductId = Guid.NewGuid(), ProductName = "Group B", UnitPrice = 150m, GroupPrice = 120m, MinimumQuantity = 3, TargetQuantity = 8, CurrentQuantity = 3, Status = "Active", ExpiryDate = DateTime.Now.AddDays(3), CreatedAt = DateTime.Now, CreatedBy = Guid.NewGuid(), MemberCount = 3, CurrentAmount = 360m, TargetAmount = 960m, EndDate = DateTime.Now.AddDays(3) }
             };
+
+            await Task.CompletedTask;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Handle error
         }
