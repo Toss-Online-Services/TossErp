@@ -1,0 +1,630 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TossErp.Stock.API</name>
+    </assembly>
+    <members>
+        <member name="T:TossErp.Stock.API.Endpoints.AIAgents">
+            <summary>
+            AI Agents endpoint group for AI-powered recommendations and collaborative economy features
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.AIAgents.GetInventoryRecommendations(System.Threading.CancellationToken)">
+            <summary>
+            Get comprehensive AI recommendations for inventory management
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.AIAgents.GetItemRecommendations(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Get AI recommendations for a specific item
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.AIAgents.GetCooperativeEconomyInsights(System.Threading.CancellationToken)">
+            <summary>
+            Get collaborative economy insights and recommendations
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.AIAgents.GetGroupPurchaseOpportunities(System.Threading.CancellationToken)">
+            <summary>
+            Get group purchase opportunities
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.AIAgents.CreateGroupPurchaseOrder(TossErp.Stock.API.Endpoints.CreateGroupPurchaseOrderRequest,System.Threading.CancellationToken)">
+            <summary>
+            Create a group purchase order
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.AIAgents.ExecuteGroupPurchaseOrder(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Execute a group purchase order
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.AIAgents.GetGroupPurchaseAnalytics(System.Threading.CancellationToken)">
+            <summary>
+            Get group purchase analytics
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.AIAgents.GetGroupPurchaseTiming(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Get timing recommendations for group purchases
+            </summary>
+        </member>
+        <member name="T:TossErp.Stock.API.Endpoints.CreateGroupPurchaseOrderRequest">
+            <summary>
+            Request model for creating group purchase orders
+            </summary>
+        </member>
+        <member name="T:TossErp.Stock.API.Endpoints.Batches">
+            <summary>
+            Batches endpoint group for managing batch tracking and expiry
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatches(MediatR.ISender,TossErp.Stock.Application.Batches.Queries.GetBatches.GetBatchesQuery)">
+            <summary>
+            Get all batches with optional filtering and pagination
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatch(MediatR.ISender,System.Guid)">
+            <summary>
+            Get a specific batch by ID
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.CreateBatch(MediatR.ISender,TossErp.Stock.Application.Batches.Commands.CreateBatch.CreateBatchCommand)">
+            <summary>
+            Create a new batch
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.UpdateBatch(MediatR.ISender,System.Guid,TossErp.Stock.Application.Batches.Commands.UpdateBatch.UpdateBatchCommand)">
+            <summary>
+            Update an existing batch
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.DeleteBatch(MediatR.ISender,System.Guid)">
+            <summary>
+            Delete a batch
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByItem(MediatR.ISender,System.Guid)">
+            <summary>
+            Get batches by item
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByWarehouse(MediatR.ISender,System.Guid)">
+            <summary>
+            Get batches by warehouse
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByBin(MediatR.ISender,System.Guid)">
+            <summary>
+            Get batches by bin
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesBySupplier(MediatR.ISender,System.Guid)">
+            <summary>
+            Get batches by supplier
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByExpiryDate(MediatR.ISender,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Get batches by expiry date
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetExpiringBatches(MediatR.ISender,System.Int32)">
+            <summary>
+            Get expiring batches
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetExpiredBatches(MediatR.ISender)">
+            <summary>
+            Get expired batches
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByManufactureDate(MediatR.ISender,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Get batches by manufacture date
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByReceiptDate(MediatR.ISender,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Get batches by receipt date
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByStatus(MediatR.ISender,System.String)">
+            <summary>
+            Get batches by status
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByQuality(MediatR.ISender,System.String)">
+            <summary>
+            Get batches by quality
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByCost(MediatR.ISender,System.Nullable{System.Decimal},System.Nullable{System.Decimal})">
+            <summary>
+            Get batches by cost
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByValue(MediatR.ISender,System.Nullable{System.Decimal},System.Nullable{System.Decimal})">
+            <summary>
+            Get batches by value
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByQuantity(MediatR.ISender,System.Nullable{System.Decimal},System.Nullable{System.Decimal})">
+            <summary>
+            Get batches by quantity
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByLocation(MediatR.ISender,System.String)">
+            <summary>
+            Get batches by location
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByMovement(MediatR.ISender,System.String)">
+            <summary>
+            Get batches by movement
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByHistory(MediatR.ISender,System.Guid)">
+            <summary>
+            Get batches by history
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByAnalytics(MediatR.ISender,System.String)">
+            <summary>
+            Get batches by analytics
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Batches.GetBatchesByReport(MediatR.ISender,System.String)">
+            <summary>
+            Get batches by report
+            </summary>
+        </member>
+        <member name="T:TossErp.Stock.API.Endpoints.Items">
+            <summary>
+            Items endpoint group for managing inventory items/products
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Items.GetItems(MediatR.ISender,TossErp.Stock.Application.Items.Queries.GetItems.GetItemsQuery)">
+            <summary>
+            Get all items with optional filtering and pagination
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Items.GetItem(MediatR.ISender,System.Guid)">
+            <summary>
+            Get a specific item by ID
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Items.CreateItem(MediatR.ISender,TossErp.Stock.Application.Items.Commands.CreateItem.CreateItemCommand)">
+            <summary>
+            Create a new item
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Items.UpdateItem(MediatR.ISender,System.Guid,TossErp.Stock.Application.Items.Commands.UpdateItem.UpdateItemCommand)">
+            <summary>
+            Update an existing item
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Items.DeleteItem(MediatR.ISender,System.Guid)">
+            <summary>
+            Delete an item
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Items.GetLowStockItems(MediatR.ISender,TossErp.Stock.Application.Items.Queries.GetItems.GetItemsQuery)">
+            <summary>
+            Get items with low stock (below reorder level)
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Items.GetOutOfStockItems(MediatR.ISender,TossErp.Stock.Application.Items.Queries.GetItems.GetItemsQuery)">
+            <summary>
+            Get out of stock items
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Items.GetStockItems(MediatR.ISender,TossErp.Stock.Application.Items.Queries.GetItems.GetItemsQuery)">
+            <summary>
+            Get stock items only (exclude services)
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Items.GetItemStockHistory(MediatR.ISender,System.Guid)">
+            <summary>
+            Get stock history for a specific item
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Items.GetItemBySku(MediatR.ISender,System.String)">
+            <summary>
+            Get item by SKU
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Items.GetItemByBarcode(MediatR.ISender,System.String)">
+            <summary>
+            Get item by barcode
+            </summary>
+        </member>
+        <member name="T:TossErp.Stock.API.Endpoints.SerialNumbers">
+            <summary>
+            Serial Numbers endpoint group for managing serial number tracking and traceability
+            </summary>
+        </member>
+        <member name="T:TossErp.Stock.API.Endpoints.StockEntries">
+            <summary>
+            StockEntries endpoint group for managing stock movements and adjustments
+            Supports township and rural enterprises including spaza shops, car washes, 
+            hair salons, daycares, plumbers, electricians, and agricultural operations
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntries(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get all stock entries with optional filtering and pagination
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntry(MediatR.ISender,System.Guid)">
+            <summary>
+            Get a specific stock entry by ID
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.CreateStockEntry(MediatR.ISender,TossErp.Stock.Application.StockEntries.Commands.CreateStockEntry.CreateStockEntryCommand)">
+            <summary>
+            Create a new stock entry
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.UpdateStockEntry(MediatR.ISender,System.Guid,TossErp.Stock.Application.StockEntries.Commands.UpdateStockEntry.UpdateStockEntryCommand)">
+            <summary>
+            Update an existing stock entry
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.DeleteStockEntry(MediatR.ISender,System.Guid)">
+            <summary>
+            Delete a stock entry
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.SubmitStockEntry(MediatR.ISender,System.Guid)">
+            <summary>
+            Submit a stock entry
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.ReverseStockEntry(MediatR.ISender,System.Guid)">
+            <summary>
+            Reverse a stock entry
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.ApproveStockEntry(MediatR.ISender,System.Guid)">
+            <summary>
+            Approve a stock entry
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.RejectStockEntry(MediatR.ISender,System.Guid)">
+            <summary>
+            Reject a stock entry
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetReceipts(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get stock receipts
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetIssues(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get stock issues
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetAdjustments(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get stock adjustments
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetTransfers(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get stock transfers
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetReturns(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get stock returns
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetDamages(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get stock damages
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetExpiries(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get stock expiries
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetThefts(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get stock thefts
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetSpazaStockMovements(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get spaza shop stock movements
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetSalonStockMovements(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get hair salon stock movements
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetCarWashStockMovements(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get car wash stock movements
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetDaycareStockMovements(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get daycare stock movements
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetPlumberStockMovements(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get plumber stock movements
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetElectricianStockMovements(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get electrician stock movements
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetAgriculturalStockMovements(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get agricultural stock movements
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetManufacturingStockMovements(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get manufacturing stock movements
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntriesByWarehouse(MediatR.ISender,System.Guid)">
+            <summary>
+            Get stock entries by warehouse
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntriesByBin(MediatR.ISender,System.Guid)">
+            <summary>
+            Get stock entries by bin
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntriesByItem(MediatR.ISender,System.Guid)">
+            <summary>
+            Get stock entries by item
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntriesByBatch(MediatR.ISender,System.Guid)">
+            <summary>
+            Get stock entries by batch
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntriesBySerial(MediatR.ISender,System.String)">
+            <summary>
+            Get stock entries by serial number
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntriesByDateRange(MediatR.ISender,System.DateTime,System.DateTime)">
+            <summary>
+            Get stock entries by date range
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetTodayStockMovements(MediatR.ISender)">
+            <summary>
+            Get today's stock movements
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetThisWeekStockMovements(MediatR.ISender)">
+            <summary>
+            Get this week's stock movements
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetThisMonthStockMovements(MediatR.ISender)">
+            <summary>
+            Get this month's stock movements
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockMovementsByPeriod(MediatR.ISender,System.String)">
+            <summary>
+            Get stock movements by period
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntriesByCostCenter(MediatR.ISender,System.Guid)">
+            <summary>
+            Get stock entries by cost center
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntriesByProject(MediatR.ISender,System.Guid)">
+            <summary>
+            Get stock entries by project
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntriesByCustomer(MediatR.ISender,System.Guid)">
+            <summary>
+            Get stock entries by customer
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntriesBySupplier(MediatR.ISender,System.Guid)">
+            <summary>
+            Get stock entries by supplier
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntriesByInvoice(MediatR.ISender,System.String)">
+            <summary>
+            Get stock entries by invoice
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.CreateBulkStockEntry(MediatR.ISender,System.Collections.Generic.List{TossErp.Stock.Application.StockEntries.Commands.CreateStockEntry.CreateStockEntryCommand})">
+            <summary>
+            Create bulk stock entries
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.ImportStockEntries(MediatR.ISender,System.Object)">
+            <summary>
+            Import stock entries
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.ExportStockEntries(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Export stock entries
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.ValidateStockEntries(MediatR.ISender,System.Collections.Generic.List{System.Object})">
+            <summary>
+            Validate stock entries
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockReconciliation(MediatR.ISender,System.Guid)">
+            <summary>
+            Get stock reconciliation
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.PerformStockTake(MediatR.ISender,System.Object)">
+            <summary>
+            Perform stock take
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockTakeDifferences(MediatR.ISender,System.Guid)">
+            <summary>
+            Get stock take differences
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.AdjustStockTake(MediatR.ISender,System.Object)">
+            <summary>
+            Adjust stock take
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.SyncOfflineStockEntries(MediatR.ISender,System.Collections.Generic.List{System.Object})">
+            <summary>
+            Sync offline stock entries
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetPendingSyncEntries(MediatR.ISender)">
+            <summary>
+            Get pending sync entries
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.MarkEntryAsSynced(MediatR.ISender,System.Guid)">
+            <summary>
+            Mark entry as synced
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockEntriesSummary(MediatR.ISender,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.String,System.String)">
+            <summary>
+            Get stock entries summary
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockMovementTrends(MediatR.ISender,System.String)">
+            <summary>
+            Get stock movement trends
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockMovementReport(MediatR.ISender,TossErp.Stock.Application.StockEntries.Queries.GetStockEntries.GetStockEntriesQuery)">
+            <summary>
+            Get stock movement report
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.StockEntries.GetStockMovementAnalytics(MediatR.ISender,System.String)">
+            <summary>
+            Get stock movement analytics
+            </summary>
+        </member>
+        <member name="T:TossErp.Stock.API.Endpoints.StockLedger">
+            <summary>
+            Stock Ledger endpoint group for managing stock ledger entries and audit trail
+            </summary>
+        </member>
+        <member name="T:TossErp.Stock.API.Endpoints.Warehouses">
+            <summary>
+            Warehouses endpoint group for managing warehouse operations
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouses(MediatR.ISender,TossErp.Stock.Application.Warehouses.Queries.GetWarehouses.GetWarehousesQuery)">
+            <summary>
+            Get all warehouses with optional filtering and pagination
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouse(MediatR.ISender,System.Guid)">
+            <summary>
+            Get a specific warehouse by ID
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.CreateWarehouse(MediatR.ISender,TossErp.Stock.Application.Warehouses.Commands.CreateWarehouse.CreateWarehouseCommand)">
+            <summary>
+            Create a new warehouse
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.UpdateWarehouse(MediatR.ISender,System.Guid,TossErp.Stock.Application.Warehouses.Commands.UpdateWarehouse.UpdateWarehouseCommand)">
+            <summary>
+            Update an existing warehouse
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.DeleteWarehouse(MediatR.ISender,System.Guid)">
+            <summary>
+            Delete a warehouse
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByCode(MediatR.ISender,System.String)">
+            <summary>
+            Get warehouse by code
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByName(MediatR.ISender,System.String)">
+            <summary>
+            Get warehouse by name
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByLocation(MediatR.ISender,System.String)">
+            <summary>
+            Get warehouse by location
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByType(MediatR.ISender,System.String)">
+            <summary>
+            Get warehouse by type
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByStatus(MediatR.ISender,System.String)">
+            <summary>
+            Get warehouse by status
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByCapacity(MediatR.ISender,System.Nullable{System.Decimal},System.Nullable{System.Decimal})">
+            <summary>
+            Get warehouse by capacity
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByUtilization(MediatR.ISender,System.Nullable{System.Decimal},System.Nullable{System.Decimal})">
+            <summary>
+            Get warehouse by utilization
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByValue(MediatR.ISender,System.Nullable{System.Decimal},System.Nullable{System.Decimal})">
+            <summary>
+            Get warehouse by value
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByItems(MediatR.ISender,System.Guid)">
+            <summary>
+            Get warehouse by items
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByBins(MediatR.ISender,System.Guid)">
+            <summary>
+            Get warehouse by bins
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByMovements(MediatR.ISender,System.Guid)">
+            <summary>
+            Get warehouse by movements
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByAnalytics(MediatR.ISender,System.Guid)">
+            <summary>
+            Get warehouse analytics
+            </summary>
+        </member>
+        <member name="M:TossErp.Stock.API.Endpoints.Warehouses.GetWarehouseByReport(MediatR.ISender,System.Nullable{System.Guid},System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Get warehouse report
+            </summary>
+        </member>
+    </members>
+</doc>

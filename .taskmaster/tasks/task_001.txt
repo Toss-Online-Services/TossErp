@@ -1,0 +1,31 @@
+# Task ID: 1
+# Title: Project Foundation Setup
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Set up the complete project foundation with proper architecture and development environment
+# Details:
+Initialize the complete TOSS ERP III project with proper folder structure, development environment, and basic configuration. This includes setting up the solution structure, configuring development tools, and establishing the initial project skeleton following Clean Architecture patterns.
+
+# Test Strategy:
+Verify that the solution builds successfully and all projects are properly referenced
+
+# Subtasks:
+## 1. Backend Solution Structure [pending]
+### Dependencies: None
+### Description: Set up the .NET Core backend solution with Clean Architecture layers
+### Details:
+Create the complete backend solution structure with proper project references: TossErp.Api, TossErp.Application, TossErp.Domain, TossErp.Infrastructure. Configure project dependencies and basic build setup.
+
+## 2. Mobile App Foundation [pending]
+### Dependencies: None
+### Description: Set up Flutter mobile app with proper project structure
+### Details:
+Create Flutter project structure with proper folder organization: lib/app, lib/core, lib/data, lib/presentation, lib/domain. Configure basic dependencies and project settings.
+
+## 3. Development Environment [pending]
+### Dependencies: 1.1, 1.2
+### Description: Configure development tools and environment settings
+### Details:
+Set up development environment including IDE configuration, code formatting rules, linting, and basic CI/CD pipeline. Configure proper .gitignore files and development scripts.
+
