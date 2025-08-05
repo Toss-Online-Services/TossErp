@@ -5,7 +5,7 @@
         "id": 1,
         "title": "Project Foundation Setup",
         "description": "Set up the complete project foundation with proper architecture and development environment",
-        "status": "pending",
+        "status": "in-progress",
         "priority": "high",
         "dependencies": [],
         "details": "Initialize the complete TOSS ERP III project with proper folder structure, development environment, and basic configuration. This includes setting up the solution structure, configuring development tools, and establishing the initial project skeleton following Clean Architecture patterns.",
@@ -758,7 +758,7 @@
     ],
     "metadata": {
       "created": "2025-08-05T20:48:45.195Z",
-      "updated": "2025-08-05T20:48:45.196Z",
+      "updated": "2025-08-05T20:52:58.304Z",
       "description": "Tasks for master context"
     }
   }
