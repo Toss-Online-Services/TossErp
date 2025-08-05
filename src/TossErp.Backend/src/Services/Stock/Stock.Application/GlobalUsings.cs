@@ -1,0 +1,11 @@
+﻿global using Ardalis.GuardClauses;
+global using AutoMapper;
+global using AutoMapper.QueryableExtensions;
+global using FluentValidation;
+global using MediatR;
+global using TossErp.Stock.Domain.Common;
+global using TossErp.Stock.Domain.Entities;
+global using TossErp.Stock.Domain.Exceptions;
+global using TossErp.Stock.Domain.Aggregates.ItemAggregate;
+global using TossErp.Stock.Domain.Aggregates.WarehouseAggregate;
+global using TossErp.Stock.Domain.Aggregates.StockEntryAggregate;

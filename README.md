@@ -1,142 +1,163 @@
-# eShop Reference Application - "AdventureWorks"
+# TOSS ERP III - Inventory Management System
 
-A reference .NET application implementing an e-commerce website using a services-based architecture using [.NET Aspire](https://learn.microsoft.com/dotnet/aspire/).
+## Overview
+TOSS ERP III is a **third-generation ERP platform** designed for township and rural micro-enterprises in South Africa. This MVP focuses exclusively on the **Stock/Inventory Management module** with a **front-end first approach**.
 
-![eShop Reference Application architecture diagram](img/eshop_architecture.png)
+## 🎯 Problem Statement
+Informal micro-enterprises operate with thin margins and inefficient inventory processes due to lack of digital tools and collective bargaining power. TOSS provides an intuitive, mobile-first inventory management system that enables real-time stock tracking, automated reordering, and collaborative purchasing.
 
-![eShop homepage screenshot](img/eshop_homepage.png)
+## 🏗️ Architecture
 
-## Getting Started
+### Frontend (Priority 1)
+- **Flutter Mobile App:** Offline-first architecture with local SQLite database
+- **Nuxt.js Web Portal:** Dashboard and detailed reports (Phase 2)
 
-This version of eShop is based on .NET 9. 
+### Backend (.NET Core)
+- **Clean Architecture:** Domain, Application, Infrastructure, API layers
+- **Microservices:** Following eShopOnContainers patterns
+- **Database:** PostgreSQL with Entity Framework Core
+- **Authentication:** JWT tokens
+- **Event Bus:** RabbitMQ for integration events
 
-Previous eShop versions:
-* [.NET 8](https://github.com/dotnet/eShop/tree/release/8.0)
+## 📁 Project Structure
+```
+TossErp/
+├── .taskmaster/           # Task management
+├── src/
+│   ├── TossErp.Mobile/   # Flutter mobile app
+│   └── TossErp.Backend/  # .NET Core backend
+│       ├── TossErp.Api/           # Web API
+│       ├── TossErp.Application/   # Application layer
+│       ├── TossErp.Domain/        # Domain layer
+│       └── TossErp.Infrastructure/ # Infrastructure layer
+└── docs/                 # Documentation
+```
+
+## 🚀 Features (MVP)
+
+### Stock Management
+- ✅ Stock item CRUD operations
+- ✅ Real-time stock level tracking
+- ✅ Stock movement history
+- ✅ Category management
+- ✅ Barcode scanning support
+
+### Smart Alerts
+- ✅ Low-stock notifications
+- ✅ Reorder point alerts
+- ✅ Margin tracking
+- ✅ Stock level indicators
+
+### Offline Capabilities
+- ✅ Local SQLite database
+- ✅ Offline-first design
+- ✅ Sync when online
+- ✅ Conflict resolution
+
+### Collaborative Features
+- ✅ Group purchasing
+- ✅ Supplier matching
+- ✅ Cost sharing
+- ✅ Progress tracking
+
+## 🛠️ Technology Stack
+
+### Frontend
+- **Flutter:** Mobile app framework
+- **Dart:** Programming language
+- **Provider:** State management
+- **sqflite:** Local database
+- **Dio:** HTTP client
+
+### Backend
+- **.NET 8:** Framework
+- **Entity Framework Core:** ORM
+- **PostgreSQL:** Database
+- **JWT:** Authentication
+- **Swagger:** API documentation
+
+### Infrastructure
+- **Docker:** Containerization
+- **Kubernetes:** Orchestration
+- **RabbitMQ:** Message broker
+- **Redis:** Caching
+
+## 📋 Development Roadmap
+
+### Phase 1: Frontend MVP (Weeks 1-4)
+- [ ] Flutter project setup
+- [ ] Basic UI framework
+- [ ] Stock item management
+- [ ] Local database integration
+
+### Phase 2: Backend Integration (Weeks 5-8)
+- [ ] .NET Core API
+- [ ] Database integration
+- [ ] Authentication
+- [ ] Real-time sync
+
+### Phase 3: Advanced Features (Weeks 9-12)
+- [ ] Barcode scanning
+- [ ] Collaborative purchasing
+- [ ] Reports and analytics
+- [ ] Pilot testing
+
+### Phase 4: Production Ready (Weeks 13-16)
+- [ ] Performance optimization
+- [ ] Security hardening
+- [ ] Documentation
+- [ ] Production deployment
+
+## 🎯 Target Users
+- **Sindi, Spaza Owner:** Quick stock updates and group buys
+- **Thabo, Township Tailor:** Material tracking and forecasting
+- **Mary, Home Baker:** Ingredient management and bulk purchasing
+
+## 📊 Success Metrics
+- User engagement (daily active users)
+- Inventory accuracy (reduction in stockouts)
+- Cost savings (average reduction in inventory costs)
+- User satisfaction (app ratings and feedback)
+
+## 🚀 Getting Started
 
 ### Prerequisites
+- .NET 8 SDK
+- Flutter SDK (for mobile development)
+- PostgreSQL
+- Docker (optional)
 
-- Clone the eShop repository: https://github.com/dotnet/eshop
-- [Install & start Docker Desktop](https://docs.docker.com/engine/install/)
-
-#### Windows with Visual Studio
-- Install [Visual Studio 2022 version 17.10 or newer](https://visualstudio.microsoft.com/vs/).
-  - Select the following workloads:
-    - `ASP.NET and web development` workload.
-    - `.NET Aspire SDK` component in `Individual components`.
-    - Optional: `.NET Multi-platform App UI development` to run client apps
-
-Or
-
-- Run the following commands in a Powershell & Terminal running as `Administrator` to automatically configure your environment with the required tools to build and run this application. (Note: A restart is required and included in the script below.)
-
-```powershell
-install-Module -Name Microsoft.WinGet.Configuration -AllowPrerelease -AcceptLicense -Force
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-get-WinGetConfiguration -file .\.configurations\vside.dsc.yaml | Invoke-WinGetConfiguration -AcceptConfigurationAgreements
+### Backend Setup
+```bash
+cd src/TossErp.Backend
+dotnet restore
+dotnet build
+dotnet run --project src/TossErp.Api
 ```
 
-Or
-
-- From Dev Home go to `Machine Configuration -> Clone repositories`. Enter the URL for this repository. In the confirmation screen look for the section `Configuration File Detected` and click `Run File`.
-
-#### Mac, Linux, & Windows without Visual Studio
-- Install the latest [.NET 9 SDK](https://dot.net/download?cid=eshop)
-
-Or
-
-- Run the following commands in a Powershell & Terminal running as `Administrator` to automatically configuration your environment with the required tools to build and run this application. (Note: A restart is required after running the script below.)
-
-##### Install Visual Studio Code and related extensions
-```powershell
-install-Module -Name Microsoft.WinGet.Configuration -AllowPrerelease -AcceptLicense  -Force
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-get-WinGetConfiguration -file .\.configurations\vscode.dsc.yaml | Invoke-WinGetConfiguration -AcceptConfigurationAgreements
+### Mobile App Setup
+```bash
+cd src/TossErp.Mobile
+flutter pub get
+flutter run
 ```
 
-> Note: These commands may require `sudo`
+## 📚 Documentation
+- [PRD](./.taskmaster/docs/prd.text) - Product Requirements Document
+- [API Documentation](./docs/api.md) - API endpoints and usage
+- [Architecture Guide](./docs/architecture.md) - System architecture details
 
-- Optional: Install [Visual Studio Code with C# Dev Kit](https://code.visualstudio.com/docs/csharp/get-started)
-- Optional: Install [.NET MAUI Workload](https://learn.microsoft.com/dotnet/maui/get-started/installation?tabs=visual-studio-code)
+## 🤝 Contributing
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
 
-> Note: When running on Mac with Apple Silicon (M series processor), Rosetta 2 for grpc-tools. 
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### Running the solution
-
-> [!WARNING]
-> Remember to ensure that Docker is started
-
-* (Windows only) Run the application from Visual Studio:
- - Open the `eShop.Web.slnf` file in Visual Studio
- - Ensure that `eShop.AppHost.csproj` is your startup project
- - Hit Ctrl-F5 to launch Aspire
-
-* Or run the application from your terminal:
-```powershell
-dotnet run --project src/eShop.AppHost/eShop.AppHost.csproj
-```
-then look for lines like this in the console output in order to find the URL to open the Aspire dashboard:
-```sh
-Login to the dashboard at: http://localhost:19888/login?t=uniquelogincodeforyou
-```
-
-> You may need to install ASP.NET Core HTTPS development certificates first, and then close all browser tabs. Learn more at https://aka.ms/aspnet/https-trust-dev-cert
-
-### Azure Open AI
-
-When using Azure OpenAI, inside *eShop.AppHost/appsettings.json*, add the following section:
-
-```json
-  "ConnectionStrings": {
-    "OpenAi": "Endpoint=xxx;Key=xxx;"
-  }
-```
-
-Replace the values with your own. Then, in the eShop.AppHost *Program.cs*, set this value to **true**
-
-```csharp
-bool useOpenAI = false;
-```
-
-Here's additional guidance on the [.NET Aspire OpenAI component](https://learn.microsoft.com/dotnet/aspire/azureai/azureai-openai-component?tabs=dotnet-cli). 
-
-### Use Azure Developer CLI
-
-You can use the [Azure Developer CLI](https://aka.ms/azd) to run this project on Azure with only a few commands. Follow the next instructions:
-
-- Install the latest or update to the latest [Azure Developer CLI (azd)](https://aka.ms/azure-dev/install).
-- Log in `azd` (if you haven't done it before) to your Azure account:
-```sh
-azd auth login
-```
-- Initialize `azd` from the root of the repo.
-```sh
-azd init
-```
-- During init:
-  - Select `Use code in the current directory`. Azd will automatically detect the .NET Aspire project.
-  - Confirm `.NET (Aspire)` and continue.
-  - Select which services to expose to the Internet (exposing `webapp` is enough to test the sample).
-  - Finalize the initialization by giving a name to your environment.
-
-- Create Azure resources and deploy the sample by running:
-```sh
-azd up
-```
-Notes:
-  - The operation takes a few minutes the first time it is ever run for an environment.
-  - At the end of the process, `azd` will display the `url` for the webapp. Follow that link to test the sample.
-  - You can run `azd up` after saving changes to the sample to re-deploy and update the sample.
-  - Report any issues to [azure-dev](https://github.com/Azure/azure-dev/issues) repo.
-  - [FAQ and troubleshoot](https://learn.microsoft.com/azure/developer/azure-developer-cli/troubleshoot?tabs=Browser) for azd.
-
-## Contributing
-
-For more information on contributing to this repo, read [the contribution documentation](./CONTRIBUTING.md) and [the Code of Conduct](CODE-OF-CONDUCT.md).
-
-### Sample data
-
-The sample catalog data is defined in [catalog.json](https://github.com/dotnet/eShop/blob/main/src/Catalog.API/Setup/catalog.json). Those product names, descriptions, and brand names are fictional and were generated using [GPT-35-Turbo](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/chatgpt), and the corresponding [product images](https://github.com/dotnet/eShop/tree/main/src/Catalog.API/Pics) were generated using [DALL·E 3](https://openai.com/dall-e-3).
-
-## eShop on Azure
-
-For a version of this app configured for deployment on Azure, please view [the eShop on Azure](https://github.com/Azure-Samples/eShopOnAzure) repo.
+## 🙏 Acknowledgments
+- Inspired by [ERPNext](https://frappe.io/erpnext) modules
+- Architecture patterns from [eShopOnContainers](https://github.com/dotnet/eShop)
+- Best practices from [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) 

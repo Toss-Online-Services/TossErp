@@ -1,0 +1,43 @@
+# Task ID: 2
+# Title: Domain Layer Implementation
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Implement the core domain entities and business logic for the Stock module
+# Details:
+Create the domain layer with all necessary entities, value objects, and business logic for stock management. This includes StockItem, StockMovement, Category, and related domain services following DDD principles.
+
+# Test Strategy:
+Write comprehensive unit tests for all domain entities and business logic
+
+# Subtasks:
+## 1. Stock Item Entity [pending]
+### Dependencies: None
+### Description: Create the StockItem domain entity with all required properties and business logic
+### Details:
+Implement StockItem entity with properties: Id, Name, Description, Category, UnitOfMeasure, CostPrice, SellingPrice, CurrentStock, MinimumStock, ReorderPoint, Barcode, SupplierName, IsActive, CreatedAt, UpdatedAt. Include business methods for stock updates, low stock checks, and margin calculations.
+
+## 2. Stock Movement Entity [pending]
+### Dependencies: 2.1
+### Description: Create the StockMovement entity to track all inventory changes
+### Details:
+Implement StockMovement entity with MovementType enum (Purchase, Sale, Adjustment, Transfer, Return), properties for quantity, unit price, total value, reference, notes, and timestamps. Include business logic for movement validation.
+
+## 3. Category Entity [pending]
+### Dependencies: None
+### Description: Create the Category entity for organizing stock items
+### Details:
+Implement Category entity with properties: Id, Name, Description, Color, IsActive, CreatedAt, UpdatedAt. Include navigation properties and basic business logic.
+
+## 4. Domain Services [pending]
+### Dependencies: 2.1, 2.2, 2.3
+### Description: Create domain services for complex business logic
+### Details:
+Implement domain services for stock calculations, reorder point logic, margin calculations, and inventory valuation. Follow DDD principles and keep business logic in domain layer.
+
+## 5. Domain Events [pending]
+### Dependencies: 2.1, 2.2
+### Description: Create domain events for significant state changes
+### Details:
+Implement domain events for StockItemCreated, StockItemUpdated, StockMovementRecorded, LowStockAlert, ReorderPointReached. These events will be used for integration with other modules.
+

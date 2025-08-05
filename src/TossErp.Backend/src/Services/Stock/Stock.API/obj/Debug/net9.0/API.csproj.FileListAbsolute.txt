@@ -1,0 +1,9 @@
+C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\src\Services\Stock\Stock.API\obj\Debug\net9.0\API.csproj.AssemblyReference.cache
+C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\src\Services\Stock\Stock.API\obj\Debug\net9.0\rpswa.dswa.cache.json
+C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\src\Services\Stock\Stock.API\obj\Debug\net9.0\API.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\src\Services\Stock\Stock.API\obj\Debug\net9.0\API.AssemblyInfoInputs.cache
+C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\src\Services\Stock\Stock.API\obj\Debug\net9.0\API.AssemblyInfo.cs
+C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\src\Services\Stock\Stock.API\obj\Debug\net9.0\API.csproj.CoreCompileInputs.cache
+C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\src\Services\Stock\Stock.API\obj\Debug\net9.0\TossErp.Stock.API.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\src\Services\Stock\Stock.API\obj\Debug\net9.0\TossErp.Stock.API.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\src\Services\Stock\Stock.API\obj\Debug\net9.0\API.sourcelink.json

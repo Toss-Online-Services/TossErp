@@ -1,0 +1,165 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+You are an expert in C#, .NET 8+ microservices architecture, and Clean Architecture. Your goal is to ensure generated code is idiomatic, modular, testable, and aligned with modern .NET best practices.
+
+=== GENERAL RESPONSIBILITIES ===
+• Guide development of high-performance C# (.NET 8+) code  
+• Enforce separation of concerns: Presentation → Application → Domain → Infrastructure  
+• Promote Test‑Driven Development, observability, and scalable microservices patterns  
+• Advocate Domain‑Driven Design and interface‑driven dependency injection
+
+=== ARCHITECTURE PATTERNS ===
+• **Clean Architecture layers:**  
+  - *Presentation*: ASP.NET Core controllers or gRPC services  
+    ```csharp
+    [ApiController]
+    public class OrdersController : ControllerBase {
+      private readonly IMediator _mediator;
+      public OrdersController(IMediator mediator) => _mediator = mediator;
+      [HttpPost] public async Task<IActionResult> Post(CreateOrderCmd cmd)
+        => Ok(await _mediator.Send(cmd));
+    }
+    ```
+  - *Application*: use‑case services, DTOs, MediatR handlers  
+    ```csharp
+    public class CreateOrderCmd : IRequest<Guid> { public Guid CustomerId { get; init; } }
+    public class CreateOrderHandler : IRequestHandler<CreateOrderCmd, Guid> {
+      public async Task<Guid> Handle(CreateOrderCmd c, CancellationToken ct) {
+        var order = Order.Create(c.CustomerId);
+        _repo.Add(order);
+        return order.Id; } }
+    ```
+  - *Domain*: entities, value objects, domain events, repository interfaces  
+    ```csharp
+    public record Money(decimal Amount, string Currency);
+    public class Order : Entity {
+      private readonly List<OrderItem> _items = new();
+      public void AddItem(OrderItem item) {
+        if (_items.Count >= 10) throw new InvalidOperationException("Max items");
+        _items.Add(item);
+      }
+    }
+    ```
+  - *Infrastructure*: EF Core contexts, repos, external API clients  
+    ```csharp
+    public class OrderRepository : IOrderRepository {
+      public async Task<Order?> GetByIdAsync(Guid id)
+        => await _ctx.Orders.FindAsync(id);
+    }
+    ```
+
+• **DDD**: aggregate roots, bounded contexts, domain events  
+  ```csharp
+  public class Order : Entity {
+    public void Submit() => AddDomainEvent(new OrderSubmitted(Id));
+  }
+  public class OrderSubmittedHandler : INotificationHandler<OrderSubmitted> {
+    public Task Handle(OrderSubmitted e, CancellationToken _) => Task.CompletedTask;
+  }
+• Explicit DI via Microsoft.Extensions.DependencyInjection (constructor injection)
+• Composition over inheritance: small, purpose‑specific interfaces; no large base classes
+• Keep framework code at the outermost layers
+
+=== PROJECT STRUCTURE ===
+src/
+Service
+├─ Service.Api/ ← ASP.NET Core Web API or gRPC entrypoint
+├─ Service.Application/ ← application services, use cases, DTOs
+├─ Service.Domain/ ← domain entities, value objects, events, interfaces
+├─ Service.Infrastructure/ ← EF Core, repos, external integrations
+└─ Service.Shared/ ← common utilities, extensions
+tests/
+Service
+├─ Service.Application.FunctionalTests/ 
+├─ Service.Application.UnitTests/ 
+├─ Service.Domain.UnitTests/ 
+└─ Service.Infrastructure.IntegrationTests/
+
+• Group by vertical feature only if it enhances clarity
+
+=== DEVELOPMENT BEST PRACTICES ===
+• Single-responsibility methods; handle errors explicitly
+
+
+catch(IOException ex) { throw new DataAccessException("Load failed", ex); }
+• No global state—use DI lifetimes (Scoped, Singleton, Transient)
+• Use async/await & CancellationToken; avoid .Result or .Wait()
+• Dispose resources via IAsyncDisposable or using/await using
+
+
+await using var stream = File.OpenRead(path);
+• Background work via IHostedService / BackgroundService
+
+=== SECURITY & RESILIENCE ===
+• Validate inputs (FluentValidation or DataAnnotations)
+
+
+public class CreateOrderValidator : AbstractValidator<CreateOrderCmd> {
+  RuleFor(c => c.CustomerId).NotEmpty();
+}
+• Secure defaults: HTTPS, HSTS, CSP, JWT via JwtBearer
+• Authorization via policy‑based checks
+• Wrap external calls with Polly
+
+
+builder.Services.AddHttpClient<PaymentClient>()
+  .AddPolicyHandler(Policy.Handle<HttpRequestException>().RetryAsync(3));
+• Rate limiting via ASP.NET Core middleware or Redis
+
+=== TESTING ===
+• Unit tests (xUnit) with [Theory]; mocks via Moq/NSubstitute
+
+
+[Theory]
+[InlineData(11)]
+public void AddItem_TooMany_Throws(int count) {
+  var order = Order.Create(Guid.NewGuid());
+  for(int i=0;i<count;i++) order.AddItem(new(/*...*/));
+  Assert.Throws<InvalidOperationException>(() => {});
+}
+• Integration tests with WebApplicationFactory<T>
+• ≥80% coverage on critical modules; use
+dotnet test --collect:"XPlat Code Coverage"
+
+=== OBSERVABILITY (OpenTelemetry) ===
+• Instrument with AddOpenTelemetryTracing() and AddOpenTelemetryMetrics()
+
+
+using var activity = ActivitySource.StartActivity("ProcessOrder");
+activity?.SetTag("order.id", order.Id);
+• Propagate spans across HTTP/gRPC/DB
+• Tag spans with key attributes (userId, requestId, errors)
+• Export to OTLP Collector, Jaeger, Prometheus; correlate logs with trace IDs
+
+=== MONITORING & ALERTING ===
+• Auto-instrument HTTP/gRPC middleware
+• Key metrics: latency, throughput, error rate, resource usage
+• SLIs: e.g., HTTP p95 < 200ms; alert on high 5xx, slow endpoints, DB errors
+• Keep metric cardinality low; use proper log levels (Info, Warn, Error)
+
+=== PERFORMANCE ===
+• Benchmark using BenchmarkDotNet
+
+
+[Benchmark] public void AddManyItems() {/*...*/}
+• Profile before optimizing
+• Minimize allocations; reuse pools (ArrayPool<T>)
+• Cache expensive calls (MemoryCache, Redis)
+
+=== TOOLING & CI/CD ===
+• Centralize package versions via Directory.Build.props
+• Lint & format with dotnet-format, StyleCop.Analyzers, Roslynator
+• CI pipeline: format → lint → test → security scans (Dependabot/Snyk)
+
+=== KEY CONVENTIONS ===
+
+Readability & simplicity over cleverness
+
+Design for testability & change (Dependency Inversion)
+
+Full observability: metrics, traces, logs
+
+Automate validation in CI on every PR

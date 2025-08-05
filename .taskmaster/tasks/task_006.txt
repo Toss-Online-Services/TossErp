@@ -1,0 +1,43 @@
+# Task ID: 6
+# Title: Mobile App Development - Core Structure
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Implement the core Flutter mobile app structure and basic UI
+# Details:
+Create the Flutter mobile app with proper architecture, navigation, and basic UI components. Implement offline-first design with local SQLite database and state management.
+
+# Test Strategy:
+Unit tests for business logic and widget tests for UI components
+
+# Subtasks:
+## 1. Flutter Project Setup [pending]
+### Dependencies: None
+### Description: Set up Flutter project with proper dependencies and structure
+### Details:
+Create Flutter project with dependencies: sqflite, provider, dio, flutter_barcode_scanner, shared_preferences. Set up proper folder structure and configure pubspec.yaml with all required dependencies.
+
+## 2. App Architecture and Navigation [pending]
+### Dependencies: 6.1
+### Description: Implement app architecture with proper navigation
+### Details:
+Set up app architecture with main.dart, app.dart, and routes.dart. Implement bottom navigation with tabs for Dashboard, Stock Items, Movements, and Settings. Configure proper route management and navigation.
+
+## 3. Local Database Setup [pending]
+### Dependencies: 6.1
+### Description: Implement SQLite local database for offline-first design
+### Details:
+Create local database helper with SQLite setup for stock items, movements, and categories. Implement database operations with proper error handling and data synchronization logic.
+
+## 4. State Management Setup [pending]
+### Dependencies: 6.1
+### Description: Implement Provider state management for app state
+### Details:
+Set up Provider state management with proper providers for stock items, movements, categories, and app state. Implement proper state management patterns and data flow.
+
+## 5. Basic UI Components [pending]
+### Dependencies: 6.2
+### Description: Create reusable UI components and widgets
+### Details:
+Create reusable widgets: custom app bar, loading indicators, error displays, stock item cards, movement list items, and form components. Implement consistent styling and theme.
+

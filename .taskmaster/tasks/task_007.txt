@@ -1,0 +1,43 @@
+# Task ID: 7
+# Title: Mobile App - Stock Management Screens
+# Status: pending
+# Dependencies: 6
+# Priority: high
+# Description: Implement stock management screens and functionality
+# Details:
+Create comprehensive stock management screens including item listing, item details, add/edit items, stock movements, and basic reporting. Implement offline-first functionality with sync capabilities.
+
+# Test Strategy:
+Widget tests for all screens and integration tests for business logic
+
+# Subtasks:
+## 1. Stock Items List Screen [pending]
+### Dependencies: 6.3, 6.4
+### Description: Create screen for listing and managing stock items
+### Details:
+Implement stock items list screen with search, filter by category, sort options, and stock level indicators. Include pull-to-refresh, pagination, and offline data display. Show stock levels with color coding.
+
+## 2. Stock Item Details Screen [pending]
+### Dependencies: 7.1
+### Description: Create detailed view for individual stock items
+### Details:
+Implement stock item details screen showing all item information, current stock level, movement history, and quick actions. Include edit functionality and stock adjustment options.
+
+## 3. Add/Edit Stock Item Screen [pending]
+### Dependencies: 7.1
+### Description: Create form for adding and editing stock items
+### Details:
+Implement add/edit stock item form with validation, category selection, unit of measure input, pricing fields, and stock level settings. Include barcode scanning functionality and image capture.
+
+## 4. Stock Movements Screen [pending]
+### Dependencies: 7.1
+### Description: Create screen for viewing and recording stock movements
+### Details:
+Implement stock movements screen showing movement history with filtering by date range and movement type. Include functionality to record new movements with proper validation.
+
+## 5. Dashboard Screen [pending]
+### Dependencies: 7.1, 7.4
+### Description: Create dashboard with key metrics and quick actions
+### Details:
+Implement dashboard screen showing key metrics: total items, low stock items, recent movements, and inventory value. Include quick actions for common tasks and alerts for low stock items.
+

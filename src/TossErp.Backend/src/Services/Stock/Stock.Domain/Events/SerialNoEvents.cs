@@ -1,0 +1,31 @@
+using TossErp.Stock.Domain.Entities;
+using TossErp.Stock.Domain.Common;
+
+namespace TossErp.Stock.Domain.Events;
+
+public record SerialNoCreatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoBatchNoUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoDatesUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoLocationUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoWarehouseUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoBinUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoDescriptionUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoQuantityUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoTransferQuantityUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoConsumedQuantityUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoDispatchedQuantityUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoReturnedQuantityUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoScrappedQuantityUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoDeactivatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoActivatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoDeletedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoPurchaseDocumentUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoSalesDocumentUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoPartiesUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoCompanySettingsUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoAssetSettingsUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoMaintenanceSettingsUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoWarrantySettingsUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoRemarksUpdatedEvent(SerialNo SerialNo) : IDomainEvent;
+public record SerialNoStockLedgerEntryAddedEvent(SerialNo SerialNo, StockLedgerEntry StockLedgerEntry) : IDomainEvent;
+public record SerialNoStockLedgerEntryRemovedEvent(SerialNo SerialNo, StockLedgerEntry StockLedgerEntry) : IDomainEvent; 
