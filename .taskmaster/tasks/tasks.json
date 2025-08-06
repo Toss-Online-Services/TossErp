@@ -761,5 +761,13 @@
       "updated": "2025-08-05T20:52:58.304Z",
       "description": "Tasks for master context"
     }
+  },
+  "stock-review": {
+    "tasks": [],
+    "metadata": {
+      "created": "2025-08-06T20:29:38.013Z",
+      "updated": "2025-08-06T20:29:38.013Z",
+      "description": "Stock module review and adjustments"
+    }
   }
 }
