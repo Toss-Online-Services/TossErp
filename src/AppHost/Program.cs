@@ -15,16 +15,10 @@ var stock = builder.AddProject("stockapi", "../Services/Stock/Stock.API/Stock.AP
     .WithEndpoint(name: "http-stock", port: 5001, targetPort: 8080);
 
 // Gateway
-var gateway = builder.AddProject("gateway", "../../gateway/Gateway.csproj")
+var gateway = builder.AddProject("gateway", "../Gateway/Gateway.csproj")
     .WithEnvironment("ASPNETCORE_URLS", "http://+:8080")
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
     .WithEndpoint(name: "http-gateway", port: 8080, targetPort: 8080);
-
-// Web (Nuxt frontend)
-var web = builder.AddNpmApp("web", "../../TossErp.Web")
-    .WithHttpEndpoint(env: "PORT")
-    .WithExternalHttpEndpoints()
-    .WithReference(gateway);
 
 builder.Build().Run();
 
