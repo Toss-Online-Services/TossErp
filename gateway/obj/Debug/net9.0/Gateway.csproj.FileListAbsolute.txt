@@ -42,3 +42,4 @@ C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\gateway\obj\Debug\net
 C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\gateway\obj\Debug\net9.0\Gateway.pdb
 C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\gateway\obj\Debug\net9.0\Gateway.genruntimeconfig.cache
 C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\gateway\obj\Debug\net9.0\ref\Gateway.dll
+C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\gateway\bin\Debug\net9.0\appsettings.Development.json
