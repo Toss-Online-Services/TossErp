@@ -136,30 +136,28 @@ public class LangChainAgent
         }
     }
 
-    private async Task<QueryIntent> AnalyzeQueryIntent(string query, CancellationToken cancellationToken)
+    private Task<QueryIntent> AnalyzeQueryIntent(string query, CancellationToken cancellationToken)
     {
         // Simple keyword-based intent analysis
         var lowerQuery = query.ToLower();
-        
+
+        QueryIntent result;
         if (lowerQuery.Contains("stock") && (lowerQuery.Contains("level") || lowerQuery.Contains("quantity")))
-            return QueryIntent.StockLevel;
-        
-        if (lowerQuery.Contains("reorder") || lowerQuery.Contains("order") || lowerQuery.Contains("purchase"))
-            return QueryIntent.ReorderRecommendation;
-        
-        if (lowerQuery.Contains("find") || lowerQuery.Contains("search") || lowerQuery.Contains("item"))
-            return QueryIntent.ItemSearch;
-        
-        if (lowerQuery.Contains("movement") || lowerQuery.Contains("transaction") || lowerQuery.Contains("in") || lowerQuery.Contains("out"))
-            return QueryIntent.StockMovement;
-        
-        if (lowerQuery.Contains("warehouse") || lowerQuery.Contains("location"))
-            return QueryIntent.WarehouseAnalysis;
-        
-        if (lowerQuery.Contains("automate") || lowerQuery.Contains("auto") || lowerQuery.Contains("schedule"))
-            return QueryIntent.Automation;
-        
-        return QueryIntent.General;
+            result = QueryIntent.StockLevel;
+        else if (lowerQuery.Contains("reorder") || lowerQuery.Contains("order") || lowerQuery.Contains("purchase"))
+            result = QueryIntent.ReorderRecommendation;
+        else if (lowerQuery.Contains("find") || lowerQuery.Contains("search") || lowerQuery.Contains("item"))
+            result = QueryIntent.ItemSearch;
+        else if (lowerQuery.Contains("movement") || lowerQuery.Contains("transaction") || lowerQuery.Contains("in") || lowerQuery.Contains("out"))
+            result = QueryIntent.StockMovement;
+        else if (lowerQuery.Contains("warehouse") || lowerQuery.Contains("location"))
+            result = QueryIntent.WarehouseAnalysis;
+        else if (lowerQuery.Contains("automate") || lowerQuery.Contains("auto") || lowerQuery.Contains("schedule"))
+            result = QueryIntent.Automation;
+        else
+            result = QueryIntent.General;
+
+        return Task.FromResult(result);
     }
 
     private async Task<LangChainResponse> HandleStockLevelQuery(string query, CancellationToken cancellationToken)
@@ -192,14 +190,14 @@ public class LangChainAgent
             .Where(i => !i.Disabled && !i.Deleted && i.CurrentStock <= (i.ReOrderLevel ?? 0))
             .ToListAsync(cancellationToken);
 
-        var recommendations = lowStockItems.Select(item => new
+            var recommendations = lowStockItems.Select(item => new
         {
             item.ItemName,
             item.ItemCode.Value,
             CurrentStock = item.CurrentStock,
             ReOrderLevel = item.ReOrderLevel,
-            RecommendedOrderQty = (item.ReOrderQty ?? 0) - item.CurrentStock,
-            Priority = item.PriorityLevel.ToString()
+                RecommendedOrderQty = Math.Max((item.ReOrderQty ?? 0) - item.CurrentStock, 0),
+                Priority = item.PriorityLevel.ToString()
         }).ToList();
 
         return new LangChainResponse
@@ -219,9 +217,7 @@ public class LangChainAgent
             .Where(i => !i.Disabled && !i.Deleted)
             .Where(i => searchTerms.Any(term => 
                 i.ItemName.Contains(term) || 
-                i.ItemCode.Value.Contains(term) ||
-                i.Brand.Contains(term) ||
-                i.ItemGroup.Contains(term)))
+                i.ItemCode.Value.Contains(term)))
             .Take(10)
             .ToListAsync(cancellationToken);
 
@@ -251,11 +247,11 @@ public class LangChainAgent
             .Take(20)
             .Select(s => new
             {
-                s.ItemId,
-                s.Quantity,
+                s.ItemCode,
+                s.WarehouseCode,
                 s.PostingDate,
-                s.EntryType,
-                s.WarehouseId
+                Qty = s.Qty.Value,
+                InOrOut = s.Qty.Value > 0 ? "IN" : "OUT"
             })
             .ToListAsync(cancellationToken);
 
@@ -275,10 +271,10 @@ public class LangChainAgent
 
         var warehouseData = warehouses.Select(w => new
         {
-            w.WarehouseName,
-            w.WarehouseCode,
+            w.Name,
+            Code = w.Code.Value,
             BinCount = w.Bins.Count,
-            w.IsActive
+            IsActive = !w.IsDisabled
         }).ToList();
 
         return new LangChainResponse
@@ -301,9 +297,9 @@ public class LangChainAgent
         };
     }
 
-    private async Task<LangChainResponse> HandleGeneralQuery(string query, CancellationToken cancellationToken)
+    private Task<LangChainResponse> HandleGeneralQuery(string query, CancellationToken cancellationToken)
     {
-        return new LangChainResponse
+        var response = new LangChainResponse
         {
             Success = true,
             Message = "I understand your query. Here's what I can help you with: stock levels, reorder recommendations, item search, stock movements, warehouse analysis, and automation.",
@@ -320,6 +316,7 @@ public class LangChainAgent
                 }
             }
         };
+        return Task.FromResult(response);
     }
 
     private async Task<AutomationResult> AutomateReorderProcess(CancellationToken cancellationToken)
@@ -364,7 +361,7 @@ public class LangChainAgent
         };
     }
 
-    private async Task<AutomationResult> AutomateExpiryManagement(CancellationToken cancellationToken)
+    private Task<AutomationResult> AutomateExpiryManagement(CancellationToken cancellationToken)
     {
         // This would typically check batch expiry dates
         var operations = new List<string>
@@ -374,15 +371,16 @@ public class LangChainAgent
             "Updated expiry tracking"
         };
 
-        return new AutomationResult
+        var result = new AutomationResult
         {
             Success = true,
             Message = "Expiry management automation completed.",
             OperationsPerformed = operations
         };
+        return Task.FromResult(result);
     }
 
-    private async Task<AutomationResult> AutomateWarehouseOptimization(CancellationToken cancellationToken)
+    private Task<AutomationResult> AutomateWarehouseOptimization(CancellationToken cancellationToken)
     {
         var operations = new List<string>
         {
@@ -391,15 +389,16 @@ public class LangChainAgent
             "Generated space allocation recommendations"
         };
 
-        return new AutomationResult
+        var result = new AutomationResult
         {
             Success = true,
             Message = "Warehouse optimization analysis completed.",
             OperationsPerformed = operations
         };
+        return Task.FromResult(result);
     }
 
-    private async Task<AutomationResult> AutomateSupplierEvaluation(CancellationToken cancellationToken)
+    private Task<AutomationResult> AutomateSupplierEvaluation(CancellationToken cancellationToken)
     {
         var operations = new List<string>
         {
@@ -408,22 +407,24 @@ public class LangChainAgent
             "Generated supplier recommendations"
         };
 
-        return new AutomationResult
+        var result = new AutomationResult
         {
             Success = true,
             Message = "Supplier evaluation completed.",
             OperationsPerformed = operations
         };
+        return Task.FromResult(result);
     }
 
-    private async Task<AutomationResult> AutomateGeneralOperation(string operation, CancellationToken cancellationToken)
+    private Task<AutomationResult> AutomateGeneralOperation(string operation, CancellationToken cancellationToken)
     {
-        return new AutomationResult
+        var result = new AutomationResult
         {
             Success = true,
             Message = $"General automation for '{operation}' completed.",
             OperationsPerformed = new List<string> { $"Executed: {operation}" }
         };
+        return Task.FromResult(result);
     }
 
     private async Task<AIInsights> GenerateDemandInsights(CancellationToken cancellationToken)
@@ -529,24 +530,24 @@ public class LangChainAgent
     }
 
     // Helper methods for insights generation
-    private async Task<object> GetTrendingItems(CancellationToken cancellationToken) => new { items = new[] { "Item A", "Item B", "Item C" } };
-    private async Task<object> GetSeasonalPatterns(CancellationToken cancellationToken) => new { patterns = new[] { "Summer peak", "Winter low" } };
-    private async Task<object> GetDemandForecast(CancellationToken cancellationToken) => new { forecast = "Increasing demand expected" };
-    private async Task<object> GetCostAnalysis(CancellationToken cancellationToken) => new { analysis = "Costs are within budget" };
-    private async Task<object> GetSavingsOpportunities(CancellationToken cancellationToken) => new { opportunities = new[] { "Bulk purchasing", "Supplier negotiation" } };
-    private async Task<object> GetPriceTrends(CancellationToken cancellationToken) => new { trends = "Stable pricing" };
-    private async Task<object> GetSupplierPerformance(CancellationToken cancellationToken) => new { performance = "Good overall performance" };
-    private async Task<object> GetDeliveryAnalysis(CancellationToken cancellationToken) => new { delivery = "On-time delivery rate: 95%" };
-    private async Task<object> GetSupplierCostComparison(CancellationToken cancellationToken) => new { comparison = "Supplier A offers best value" };
-    private async Task<object> GetSpaceUtilization(CancellationToken cancellationToken) => new { utilization = "75% space utilization" };
-    private async Task<object> GetEfficiencyMetrics(CancellationToken cancellationToken) => new { efficiency = "High efficiency metrics" };
-    private async Task<object> GetOptimizationRecommendations(CancellationToken cancellationToken) => new { recommendations = new[] { "Reorganize storage", "Optimize picking routes" } };
-    private async Task<object> GetMarketTrends(CancellationToken cancellationToken) => new { trends = "Growing market demand" };
-    private async Task<object> GetInventoryTrends(CancellationToken cancellationToken) => new { trends = "Stable inventory levels" };
-    private async Task<object> GetPerformanceMetrics(CancellationToken cancellationToken) => new { metrics = "Above target performance" };
-    private async Task<object> GetGeneralOverview(CancellationToken cancellationToken) => new { overview = "System performing well" };
-    private async Task<object> GetKeyMetrics(CancellationToken cancellationToken) => new { metrics = "Key metrics are positive" };
-    private async Task<object> GetGeneralRecommendations(CancellationToken cancellationToken) => new { recommendations = new[] { "Continue current practices", "Monitor trends" } };
+    private Task<object> GetTrendingItems(CancellationToken cancellationToken) => Task.FromResult<object>(new { items = new[] { "Item A", "Item B", "Item C" } });
+    private Task<object> GetSeasonalPatterns(CancellationToken cancellationToken) => Task.FromResult<object>(new { patterns = new[] { "Summer peak", "Winter low" } });
+    private Task<object> GetDemandForecast(CancellationToken cancellationToken) => Task.FromResult<object>(new { forecast = "Increasing demand expected" });
+    private Task<object> GetCostAnalysis(CancellationToken cancellationToken) => Task.FromResult<object>(new { analysis = "Costs are within budget" });
+    private Task<object> GetSavingsOpportunities(CancellationToken cancellationToken) => Task.FromResult<object>(new { opportunities = new[] { "Bulk purchasing", "Supplier negotiation" } });
+    private Task<object> GetPriceTrends(CancellationToken cancellationToken) => Task.FromResult<object>(new { trends = "Stable pricing" });
+    private Task<object> GetSupplierPerformance(CancellationToken cancellationToken) => Task.FromResult<object>(new { performance = "Good overall performance" });
+    private Task<object> GetDeliveryAnalysis(CancellationToken cancellationToken) => Task.FromResult<object>(new { delivery = "On-time delivery rate: 95%" });
+    private Task<object> GetSupplierCostComparison(CancellationToken cancellationToken) => Task.FromResult<object>(new { comparison = "Supplier A offers best value" });
+    private Task<object> GetSpaceUtilization(CancellationToken cancellationToken) => Task.FromResult<object>(new { utilization = "75% space utilization" });
+    private Task<object> GetEfficiencyMetrics(CancellationToken cancellationToken) => Task.FromResult<object>(new { efficiency = "High efficiency metrics" });
+    private Task<object> GetOptimizationRecommendations(CancellationToken cancellationToken) => Task.FromResult<object>(new { recommendations = new[] { "Reorganize storage", "Optimize picking routes" } });
+    private Task<object> GetMarketTrends(CancellationToken cancellationToken) => Task.FromResult<object>(new { trends = "Growing market demand" });
+    private Task<object> GetInventoryTrends(CancellationToken cancellationToken) => Task.FromResult<object>(new { trends = "Stable inventory levels" });
+    private Task<object> GetPerformanceMetrics(CancellationToken cancellationToken) => Task.FromResult<object>(new { metrics = "Above target performance" });
+    private Task<object> GetGeneralOverview(CancellationToken cancellationToken) => Task.FromResult<object>(new { overview = "System performing well" });
+    private Task<object> GetKeyMetrics(CancellationToken cancellationToken) => Task.FromResult<object>(new { metrics = "Key metrics are positive" });
+    private Task<object> GetGeneralRecommendations(CancellationToken cancellationToken) => Task.FromResult<object>(new { recommendations = new[] { "Continue current practices", "Monitor trends" } });
 
     private string[] ExtractSearchTerms(string query)
     {
