@@ -18,7 +18,7 @@ public class Items : EndpointGroupBase
 {
     public override void Map(WebApplication app)
     {
-        var group = app.MapGroup(nameof(Items));
+        var group = app.MapGroup(this);
         
         // Basic CRUD operations
         group.MapGet(GetItems, "");
