@@ -1,163 +1,279 @@
-# TOSS ERP III - Inventory Management System
+# TossErp - Enterprise Resource Planning System
 
 ## Overview
-TOSS ERP III is a **third-generation ERP platform** designed for township and rural micro-enterprises in South Africa. This MVP focuses exclusively on the **Stock/Inventory Management module** with a **front-end first approach**.
+TossErp is a modern, microservices-based Enterprise Resource Planning (ERP) system built with .NET 8, Vue.js, and Kubernetes. The system provides comprehensive business management capabilities including inventory management, order processing, user management, and AI-powered automation.
 
-## 🎯 Problem Statement
-Informal micro-enterprises operate with thin margins and inefficient inventory processes due to lack of digital tools and collective bargaining power. TOSS provides an intuitive, mobile-first inventory management system that enables real-time stock tracking, automated reordering, and collaborative purchasing.
+## Architecture
 
-## 🏗️ Architecture
+### Microservices Architecture
+- **API Gateway**: Centralized routing and authentication
+- **Stock Service**: Inventory and catalog management
+- **User Service**: User management and authentication
+- **Order Service**: Order processing and fulfillment
+- **Payment Service**: Payment processing and financial management
+- **AI Service**: LangChain-powered automation and insights
 
-### Frontend (Priority 1)
-- **Flutter Mobile App:** Offline-first architecture with local SQLite database
-- **Nuxt.js Web Portal:** Dashboard and detailed reports (Phase 2)
+### Technology Stack
+- **Backend**: .NET 8, ASP.NET Core, Entity Framework Core
+- **Frontend**: Vue.js 3, Nuxt.js 3, TypeScript, Tailwind CSS
+- **Database**: SQL Server, Redis
+- **Message Broker**: RabbitMQ
+- **Containerization**: Docker, Kubernetes
+- **Monitoring**: Prometheus, Grafana, ELK Stack
+- **AI Integration**: LangChain.NET
 
-### Backend (.NET Core)
-- **Clean Architecture:** Domain, Application, Infrastructure, API layers
-- **Microservices:** Following eShopOnContainers patterns
-- **Database:** PostgreSQL with Entity Framework Core
-- **Authentication:** JWT tokens
-- **Event Bus:** RabbitMQ for integration events
+## Project Structure
 
-## 📁 Project Structure
 ```
 TossErp/
-├── .taskmaster/           # Task management
-├── src/
-│   ├── TossErp.Mobile/   # Flutter mobile app
-│   └── TossErp.Backend/  # .NET Core backend
-│       ├── TossErp.Api/           # Web API
-│       ├── TossErp.Application/   # Application layer
-│       ├── TossErp.Domain/        # Domain layer
-│       └── TossErp.Infrastructure/ # Infrastructure layer
-└── docs/                 # Documentation
+├── clients/                    # Frontend applications
+│   ├── web-app/               # Vue.js/Nuxt.js web application
+│   ├── mobile-app/            # Mobile application
+│   └── admin-panel/           # Admin dashboard
+├── services/                   # Microservices
+│   ├── stock-service/         # Inventory management service
+│   ├── user-service/          # User management service
+│   ├── order-service/         # Order processing service
+│   ├── payment-service/       # Payment processing service
+│   └── app-host/              # Application host (Aspire)
+├── gateways/                   # API Gateways
+│   ├── web-gateway/           # Web client gateway
+│   └── mobile-gateway/        # Mobile client gateway
+├── shared/                     # Shared libraries and utilities
+│   ├── service-defaults/      # Common service configurations
+│   ├── event-bus/             # Event-driven communication
+│   ├── common-libraries/      # Shared utilities
+│   ├── proto-definitions/     # gRPC protocol definitions
+│   └── config-templates/      # Configuration templates
+├── deploy/                     # Deployment configurations
+│   ├── kubernetes/            # Kubernetes manifests
+│   ├── docker/                # Docker configurations
+│   └── terraform/             # Infrastructure as Code
+├── docs/                       # Documentation
+│   ├── architecture/          # Architecture diagrams
+│   ├── api/                   # API documentation
+│   └── guides/                # Development guides
+├── tests/                      # Integration and E2E tests
+└── scripts/                    # Build and deployment scripts
 ```
 
-## 🚀 Features (MVP)
-
-### Stock Management
-- ✅ Stock item CRUD operations
-- ✅ Real-time stock level tracking
-- ✅ Stock movement history
-- ✅ Category management
-- ✅ Barcode scanning support
-
-### Smart Alerts
-- ✅ Low-stock notifications
-- ✅ Reorder point alerts
-- ✅ Margin tracking
-- ✅ Stock level indicators
-
-### Offline Capabilities
-- ✅ Local SQLite database
-- ✅ Offline-first design
-- ✅ Sync when online
-- ✅ Conflict resolution
-
-### Collaborative Features
-- ✅ Group purchasing
-- ✅ Supplier matching
-- ✅ Cost sharing
-- ✅ Progress tracking
-
-## 🛠️ Technology Stack
-
-### Frontend
-- **Flutter:** Mobile app framework
-- **Dart:** Programming language
-- **Provider:** State management
-- **sqflite:** Local database
-- **Dio:** HTTP client
-
-### Backend
-- **.NET 8:** Framework
-- **Entity Framework Core:** ORM
-- **PostgreSQL:** Database
-- **JWT:** Authentication
-- **Swagger:** API documentation
-
-### Infrastructure
-- **Docker:** Containerization
-- **Kubernetes:** Orchestration
-- **RabbitMQ:** Message broker
-- **Redis:** Caching
-
-## 📋 Development Roadmap
-
-### Phase 1: Frontend MVP (Weeks 1-4)
-- [ ] Flutter project setup
-- [ ] Basic UI framework
-- [ ] Stock item management
-- [ ] Local database integration
-
-### Phase 2: Backend Integration (Weeks 5-8)
-- [ ] .NET Core API
-- [ ] Database integration
-- [ ] Authentication
-- [ ] Real-time sync
-
-### Phase 3: Advanced Features (Weeks 9-12)
-- [ ] Barcode scanning
-- [ ] Collaborative purchasing
-- [ ] Reports and analytics
-- [ ] Pilot testing
-
-### Phase 4: Production Ready (Weeks 13-16)
-- [ ] Performance optimization
-- [ ] Security hardening
-- [ ] Documentation
-- [ ] Production deployment
-
-## 🎯 Target Users
-- **Sindi, Spaza Owner:** Quick stock updates and group buys
-- **Thabo, Township Tailor:** Material tracking and forecasting
-- **Mary, Home Baker:** Ingredient management and bulk purchasing
-
-## 📊 Success Metrics
-- User engagement (daily active users)
-- Inventory accuracy (reduction in stockouts)
-- Cost savings (average reduction in inventory costs)
-- User satisfaction (app ratings and feedback)
-
-## 🚀 Getting Started
+## Quick Start
 
 ### Prerequisites
 - .NET 8 SDK
-- Flutter SDK (for mobile development)
-- PostgreSQL
-- Docker (optional)
+- Node.js 18+
+- Docker Desktop
+- Kubernetes cluster (optional)
 
-### Backend Setup
+### Local Development
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-org/tosserp.git
+   cd tosserp
+   ```
+
+2. **Start the application host**
+   ```bash
+   cd services/app-host
+   dotnet run
+   ```
+
+3. **Start the web application**
+   ```bash
+   cd clients/web-app
+   npm install
+   npm run dev
+   ```
+
+4. **Access the application**
+   - Web App: http://localhost:3000
+   - API Gateway: http://localhost:8080
+   - Stock Service: http://localhost:5001
+
+### Docker Development
+
+1. **Start all services with Docker Compose**
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Access services**
+   - Web App: http://localhost:3000
+   - API Gateway: http://localhost:8080
+   - Stock Service: http://localhost:5001
+
+## Features
+
+### Core Features
+- **Inventory Management**: Complete stock tracking and management
+- **Order Processing**: End-to-end order lifecycle management
+- **User Management**: Role-based access control and authentication
+- **Payment Processing**: Secure payment handling
+- **Reporting**: Comprehensive business analytics and reporting
+
+### AI-Powered Features
+- **Natural Language Queries**: Ask questions about your data in plain English
+- **Automated Operations**: AI-driven stock reordering and optimization
+- **Predictive Analytics**: Demand forecasting and trend analysis
+- **Smart Recommendations**: Product recommendations and insights
+
+### Technical Features
+- **Microservices Architecture**: Scalable and maintainable design
+- **Event-Driven Communication**: Loose coupling between services
+- **API-First Design**: Comprehensive REST APIs with OpenAPI documentation
+- **Real-time Updates**: WebSocket integration for live data
+- **Comprehensive Testing**: Unit, integration, and E2E tests
+- **Monitoring & Observability**: Full-stack monitoring and logging
+
+## Development
+
+### Adding a New Service
+
+1. **Create service structure**
+   ```bash
+   mkdir -p services/new-service/src
+   cd services/new-service
+   ```
+
+2. **Add to application host**
+   ```bash
+   # In services/app-host/Program.cs
+   var newService = builder.AddProject("new-service", "../new-service/src/NewService.API");
+   ```
+
+3. **Configure gateway routing**
+   ```bash
+   # In gateways/web-gateway/appsettings.json
+   {
+     "ReverseProxy": {
+       "Routes": {
+         "new-service": {
+           "ClusterId": "new-service-cluster",
+           "Match": { "Path": "/api/new-service/{**catch-all}" }
+         }
+       }
+     }
+   }
+   ```
+
+### Testing
+
 ```bash
-cd src/TossErp.Backend
-dotnet restore
-dotnet build
-dotnet run --project src/TossErp.Api
+# Run all tests
+dotnet test
+
+# Run specific service tests
+dotnet test services/stock-service/tests/
+
+# Run E2E tests
+npm run test:e2e
 ```
 
-### Mobile App Setup
+### Code Quality
+
 ```bash
-cd src/TossErp.Mobile
-flutter pub get
-flutter run
+# Format code
+dotnet format
+
+# Run linting
+npm run lint
+
+# Run type checking
+npm run type-check
 ```
 
-## 📚 Documentation
-- [PRD](./.taskmaster/docs/prd.text) - Product Requirements Document
-- [API Documentation](./docs/api.md) - API endpoints and usage
-- [Architecture Guide](./docs/architecture.md) - System architecture details
+## Deployment
 
-## 🤝 Contributing
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+### Kubernetes Deployment
 
-## 📄 License
+1. **Deploy to development**
+   ```bash
+   kubectl apply -k deploy/kubernetes/overlays/development
+   ```
+
+2. **Deploy to production**
+   ```bash
+   kubectl apply -k deploy/kubernetes/overlays/production
+   ```
+
+### Docker Deployment
+
+```bash
+# Build and push images
+docker-compose -f docker-compose.prod.yml build
+docker-compose -f docker-compose.prod.yml push
+
+# Deploy to production
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+## Monitoring
+
+### Health Checks
+- **Service Health**: `/health` endpoint on each service
+- **Database Health**: Connection and query performance monitoring
+- **External Dependencies**: Third-party service health monitoring
+
+### Metrics
+- **Application Metrics**: Request rates, response times, error rates
+- **Business Metrics**: Orders, revenue, inventory levels
+- **Infrastructure Metrics**: CPU, memory, disk usage
+
+### Logging
+- **Structured Logging**: JSON-formatted logs with correlation IDs
+- **Centralized Logging**: ELK stack for log aggregation and analysis
+- **Log Levels**: Debug, Info, Warning, Error with appropriate filtering
+
+## Contributing
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes**: Follow the coding standards and add tests
+4. **Commit your changes**: `git commit -m 'Add amazing feature'`
+5. **Push to the branch**: `git push origin feature/amazing-feature`
+6. **Open a Pull Request**: Provide detailed description and screenshots
+
+### Development Standards
+- **Code Style**: Follow .NET and Vue.js coding conventions
+- **Testing**: Maintain >80% code coverage
+- **Documentation**: Update documentation for all changes
+- **Security**: Follow security best practices
+- **Performance**: Optimize for performance and scalability
+
+## License
+
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-- Inspired by [ERPNext](https://frappe.io/erpnext) modules
-- Architecture patterns from [eShopOnContainers](https://github.com/dotnet/eShop)
-- Best practices from [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) 
+## Support
+
+- **Documentation**: [docs/](docs/)
+- **Issues**: [GitHub Issues](https://github.com/your-org/tosserp/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/your-org/tosserp/discussions)
+- **Email**: support@tosserp.com
+
+## Roadmap
+
+### Phase 1: Core Services ✅
+- [x] Stock Service
+- [x] User Service
+- [x] API Gateway
+- [x] Web Application
+
+### Phase 2: Advanced Features 🚧
+- [ ] Order Service
+- [ ] Payment Service
+- [ ] AI Integration
+- [ ] Mobile Application
+
+### Phase 3: Enterprise Features 📋
+- [ ] Multi-tenancy
+- [ ] Advanced Analytics
+- [ ] Workflow Engine
+- [ ] Integration Hub
+
+### Phase 4: Scale & Optimize 📋
+- [ ] Performance Optimization
+- [ ] Advanced Monitoring
+- [ ] Auto-scaling
+- [ ] Disaster Recovery 
