@@ -60,14 +60,13 @@ if (!string.IsNullOrWhiteSpace(authority))
 
 // BFF endpoints
 app.MapGet("/", () => Results.Ok(new { ok = true, service = "gateway" }));
-app.MapGet("/api/mobile/dashboard", async (IHttpClientFactory http, IConfiguration cfg) =>
+app.MapGet("/api/mobile/dashboard", (IHttpClientFactory http, IConfiguration cfg) =>
 {
   var invBase = cfg["Services:Inventory:BaseUrl"] ?? cfg["Services__Inventory__BaseUrl"] ?? "http://inventory:8080";
   var salesBase = cfg["Services:Sales:BaseUrl"] ?? cfg["Services__Sales__BaseUrl"] ?? "http://sales:8080";
   var collabBase = cfg["Services:Collaboration:BaseUrl"] ?? cfg["Services__Collaboration__BaseUrl"] ?? "http://collaboration:8080";
 
-  var client = http.CreateClient();
-  // Minimal fan-out placeholders (these endpoints can be implemented later)
+  // Minimal fan-out placeholders (no awaits needed)
   var inventorySummary = new { lowStock = 0, items = 0 };
   var salesSummary = new { today = 0m, orders = 0 };
   var collabSummary = new { invites = 0 };

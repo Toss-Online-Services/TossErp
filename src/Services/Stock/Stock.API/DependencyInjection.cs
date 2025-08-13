@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using TossErp.Stock.API.Services;
 using TossErp.Stock.Application.Common.Interfaces;
-using TossErp.Stock.Agent;
+// using TossErp.Stock.Agent;
 
 namespace TossErp.Stock.API;
 
@@ -20,9 +20,7 @@ public static class DependencyInjection
 
         builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
-        // Register LangChain Agent
-        builder.Services.AddScoped<LangChainAgent>();
-        builder.Services.AddHttpClient<LangChainAgent>();
+        // LangChain Agent registration temporarily disabled until agent stabilizes
 
         // Customise default API behaviour
         builder.Services.Configure<ApiBehaviorOptions>(options =>
