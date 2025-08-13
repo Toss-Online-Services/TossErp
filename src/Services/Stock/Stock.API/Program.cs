@@ -72,6 +72,9 @@ app.MapDefaultEndpoints();
 // Map all endpoint groups
 app.MapEndpoints();
 
+// Ensure database is migrated and seeded on startup (dev/local)
+await app.InitialiseDatabaseAsync();
+
 app.Run();
 
 public partial class Program { }
