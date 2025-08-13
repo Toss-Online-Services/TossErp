@@ -10,7 +10,7 @@ public static class WebApplicationExtensions
         var groupName = group.GetType().Name.ToLowerInvariant();
 
         return app
-            .MapGroup($"api/{groupName}")
+            .MapGroup($"api/stock/{groupName}")
             .WithGroupName(groupName)
             .WithTags(groupName);
     }

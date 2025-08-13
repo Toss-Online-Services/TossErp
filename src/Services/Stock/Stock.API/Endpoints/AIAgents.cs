@@ -13,10 +13,11 @@ public class AIAgents : EndpointGroupBase
 {
     public override void Map(WebApplication app)
     {
-        var group = app.MapGroup(nameof(AIAgents));
+            var group = app.MapGroup(this);
 
         // AI Co-Pilot endpoints - temporarily disabled due to Stock.Agent compilation issues
         group.MapGet(Ping, "ping");
+            group.MapPost(Chat, "chat");
         // group.MapGet(GetInventoryRecommendations, "inventory-recommendations");
         // group.MapGet(GetItemRecommendations, "item-recommendations/{itemId}");
         // group.MapGet(GetCooperativeEconomyInsights, "cooperative-economy-insights");
@@ -34,6 +35,49 @@ public class AIAgents : EndpointGroupBase
         // This endpoint is used to check if the AI Agents service is running
         // It can be used for health checks or service discovery
         return TypedResults.Ok("AI Agents service is running");
+    }
+
+    /// <summary>
+    /// Simple chat endpoint for AI functionality (MVP stub)
+    /// </summary>
+    public static IResult Chat([FromBody] ChatMessageRequest request)
+    {
+        if (request == null || request.Messages.Count == 0)
+        {
+            return TypedResults.BadRequest();
+        }
+
+        var last = request.Messages.Last();
+        var replyText = GenerateAssistantReply(last.Content);
+        var response = new ChatMessageResponse
+        {
+            Reply = replyText
+        };
+        return TypedResults.Ok(response);
+    }
+
+    private static string GenerateAssistantReply(string userContent)
+    {
+        if (string.IsNullOrWhiteSpace(userContent))
+        {
+            return "Hello! How can I help you with stock, items, or warehouses today?";
+        }
+
+        // Minimal heuristic reply for MVP. Replace with real AI client later.
+        if (userContent.Contains("warehouse", StringComparison.OrdinalIgnoreCase))
+        {
+            return "You can view and manage warehouses under Stock → Warehouses. Would you like me to fetch current warehouse summaries?";
+        }
+        if (userContent.Contains("item", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Items are managed under Stock → Items. I can help you create or update an item. What would you like to do?";
+        }
+        if (userContent.Contains("ledger", StringComparison.OrdinalIgnoreCase))
+        {
+            return "The Stock Ledger report shows in/out/balance per voucher. Provide a date range and item to query.";
+        }
+
+        return $"You said: '{userContent}'. How can I assist further?";
     }
 
     /// <summary>
@@ -227,3 +271,19 @@ public class CreateGroupPurchaseOrderRequest
     // public List<GroupPurchaseParticipant> Participants { get; set; } = new();
     public List<object> Participants { get; set; } = new();
 } 
+
+public class ChatMessageRequest
+{
+    public List<ChatMessage> Messages { get; set; } = new();
+}
+
+public class ChatMessage
+{
+    public string Role { get; set; } = "user"; // user|assistant
+    public string Content { get; set; } = string.Empty;
+}
+
+public class ChatMessageResponse
+{
+    public string Reply { get; set; } = string.Empty;
+}

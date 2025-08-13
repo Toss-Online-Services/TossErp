@@ -29,7 +29,7 @@ public class Warehouses : EndpointGroupBase
 {
     public override void Map(WebApplication app)
     {
-        var group = app.MapGroup("/warehouses");
+        var group = app.MapGroup(this);
         
         // Basic CRUD operations
         group.MapGet(GetWarehouses, "");
