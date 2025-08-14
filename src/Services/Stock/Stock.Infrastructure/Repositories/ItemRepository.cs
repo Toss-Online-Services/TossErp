@@ -254,4 +254,11 @@ public class ItemRepository : IItemRepository
     public Task<IEnumerable<ItemAggregate>> GetAvailableForSaleAsync(CancellationToken cancellationToken = default) => Task.FromResult<IEnumerable<ItemAggregate>>(Array.Empty<ItemAggregate>());
     public Task<IEnumerable<ItemAggregate>> GetAvailableForPurchaseAsync(CancellationToken cancellationToken = default) => Task.FromResult<IEnumerable<ItemAggregate>>(Array.Empty<ItemAggregate>());
     public Task<IEnumerable<ItemAggregate>> GetBySupplierAsync(Guid supplierId, CancellationToken cancellationToken = default) => Task.FromResult<IEnumerable<ItemAggregate>>(Array.Empty<ItemAggregate>());
+
+    public IQueryable<ItemAggregate> GetQueryable()
+    {
+        return _context.Items
+            .Include(x => x.StockUOM)
+            .AsQueryable();
+    }
 }

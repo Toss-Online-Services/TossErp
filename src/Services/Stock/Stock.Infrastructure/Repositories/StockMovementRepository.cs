@@ -170,4 +170,13 @@ public class StockMovementRepository : IStockMovementRepository
     {
         _context.StockMovements.Remove(entity);
     }
+
+    public IQueryable<StockMovement> GetQueryable()
+    {
+        return _context.StockMovements
+            .Include(sm => sm.Item)
+            .Include(sm => sm.Warehouse)
+            .Include(sm => sm.Bin)
+            .Include(sm => sm.Batch);
+    }
 }

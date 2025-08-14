@@ -61,7 +61,7 @@ public class ReceiveStockCommandHandler : IRequestHandler<ReceiveStockCommand, b
 
         // Get or create stock level
         var stockLevel = await _stockLevelRepository.GetByItemAndWarehouseAsync(
-            request.ItemId, request.WarehouseId, cancellationToken);
+            request.ItemId, request.WarehouseId, null, cancellationToken);
 
         if (stockLevel == null)
         {
@@ -71,13 +71,13 @@ public class ReceiveStockCommandHandler : IRequestHandler<ReceiveStockCommand, b
                 request.WarehouseId, 
                 null, // binId
                 request.Quantity, 
-                request.UnitCost ?? 0);
+                0); // Default unit cost
             _stockLevelRepository.Add(stockLevel);
         }
         else
         {
             // Update existing stock level
-            stockLevel.ReceiveStock(request.Quantity, request.UnitCost ?? 0);
+            stockLevel.ReceiveStock(request.Quantity, 0); // Default unit cost
             _stockLevelRepository.Update(stockLevel);
         }
 
@@ -89,7 +89,7 @@ public class ReceiveStockCommandHandler : IRequestHandler<ReceiveStockCommand, b
             request.Quantity,
             request.CreatedBy,
             null, // binId
-            request.UnitCost,
+            0, // Default unit cost
             request.RefId,
             request.RefType,
             request.Reason ?? "Stock received");

@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
-using TossErp.Stock.Application.Common.DTOs;
+using TossErp.Stock.Application.DTOs;
 using TossErp.Stock.Application.Common.Interfaces;
 using TossErp.Stock.Domain.Aggregates.ItemAggregate;
 using TossErp.Stock.Domain.Entities;
@@ -36,11 +36,7 @@ public class GetStockLevelsQueryHandler : IRequestHandler<GetStockLevelsQuery, G
             request.ItemId, request.WarehouseId, request.LowStockOnly);
 
         // Build query
-        var query = _stockLevelRepository.GetAll()
-            .Include(sl => sl.Item)
-            .Include(sl => sl.Warehouse)
-            .Include(sl => sl.Bin)
-            .AsQueryable();
+        var query = _stockLevelRepository.GetQueryable();
 
         // Apply filters
         if (request.ItemId.HasValue)
@@ -60,7 +56,7 @@ public class GetStockLevelsQueryHandler : IRequestHandler<GetStockLevelsQuery, G
 
         if (request.LowStockOnly == true)
         {
-            query = query.Where(sl => sl.Quantity <= sl.Item.ReOrderLevel);
+            query = query.Where(sl => sl.Item.ReOrderLevel.HasValue && sl.Quantity <= sl.Item.ReOrderLevel.Value);
         }
 
         if (request.OutOfStockOnly == true)
@@ -103,11 +99,11 @@ public class GetStockLevelsQueryHandler : IRequestHandler<GetStockLevelsQuery, G
             Quantity = sl.Quantity,
             ReservedQuantity = sl.ReservedQuantity,
             AvailableQuantity = sl.Quantity - sl.ReservedQuantity,
-            ReorderLevel = sl.Item.ReOrderLevel ?? 0,
-            MaxQuantity = sl.Item.MaxQty,
+            ReorderLevel = sl.Item.ReOrderLevel ?? 0m,
+            MaxQuantity = sl.Item.MaxQty ?? 0m,
             LastMovementDate = sl.LastMovementDate,
             UnitCost = sl.UnitCost,
-            TotalValue = sl.Quantity * (sl.UnitCost ?? 0)
+            TotalValue = sl.Quantity * sl.UnitCost
         }).ToList();
 
         // Calculate summary statistics
@@ -115,8 +111,8 @@ public class GetStockLevelsQueryHandler : IRequestHandler<GetStockLevelsQuery, G
         {
             TotalItemsInStock = stockLevels.Count(sl => sl.Quantity > 0),
             TotalItemsOutOfStock = stockLevels.Count(sl => sl.Quantity <= 0),
-            TotalItemsLowStock = stockLevels.Count(sl => sl.Quantity <= (sl.Item.ReOrderLevel ?? 0)),
-            TotalStockValue = stockLevels.Sum(sl => sl.Quantity * (sl.UnitCost ?? 0))
+            TotalItemsLowStock = stockLevels.Count(sl => sl.Item.ReOrderLevel.HasValue && sl.Quantity <= sl.Item.ReOrderLevel.Value),
+            TotalStockValue = stockLevels.Sum(sl => sl.Quantity * sl.UnitCost)
         };
 
         var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);

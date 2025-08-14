@@ -1,9 +1,10 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
-using TossErp.Stock.Application.Common.DTOs;
+using TossErp.Stock.Application.DTOs;
 using TossErp.Stock.Application.Common.Interfaces;
 using TossErp.Stock.Domain.Aggregates.ItemAggregate;
 using TossErp.Stock.Domain.Entities;
+using TossErp.Stock.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace TossErp.Stock.Application.Items.Queries.GetLowStockItems;
@@ -35,82 +36,74 @@ public class GetLowStockItemsQueryHandler : IRequestHandler<GetLowStockItemsQuer
         _logger.LogInformation("Retrieving low stock items with filters: WarehouseId={WarehouseId}, OutOfStockOnly={OutOfStockOnly}, CriticalOnly={CriticalOnly}",
             request.WarehouseId, request.OutOfStockOnly, request.CriticalOnly);
 
-        // Build query to get items with their stock levels
-        var query = _itemRepository.GetAll()
-            .Include(i => i.StockLevels)
-            .ThenInclude(sl => sl.Warehouse)
-            .Where(i => i.IsStockItem && !i.Disabled && !i.Deleted)
-            .AsQueryable();
+        // Build query to get items with their stock levels using a join
+        var query = from item in _itemRepository.GetQueryable()
+                   join stockLevel in _stockLevelRepository.GetQueryable() on item.Id equals stockLevel.ItemId
+                   where item.IsStockItem && !item.Disabled && !item.Deleted
+                   select new { Item = item, StockLevel = stockLevel };
 
         // Apply item filters
         if (!string.IsNullOrWhiteSpace(request.ItemGroup))
         {
-            query = query.Where(i => i.ItemGroup == request.ItemGroup);
+            query = query.Where(x => x.Item.ItemGroup == request.ItemGroup);
         }
 
         if (!string.IsNullOrWhiteSpace(request.ItemType))
         {
             if (Enum.TryParse<ItemType>(request.ItemType, true, out var itemType))
             {
-                query = query.Where(i => i.ItemType == itemType);
+                query = query.Where(x => x.Item.ItemType == itemType);
             }
         }
 
+        // Apply warehouse filter
+        if (request.WarehouseId.HasValue)
+        {
+            query = query.Where(x => x.StockLevel.WarehouseId == request.WarehouseId.Value);
+        }
+
         // Get items and their stock levels
-        var items = await query.ToListAsync(cancellationToken);
+        var itemStockLevels = await query.ToListAsync(cancellationToken);
 
         // Filter by stock levels and calculate urgency
         var lowStockItems = new List<LowStockItemDto>();
 
-        foreach (var item in items)
+        foreach (var itemStockLevel in itemStockLevels)
         {
-            var stockLevels = item.StockLevels.Where(sl => 
-                !request.WarehouseId.HasValue || sl.WarehouseId == request.WarehouseId.Value).ToList();
+            var item = itemStockLevel.Item;
+            var stockLevel = itemStockLevel.StockLevel;
+            
+            var currentStock = stockLevel.Quantity;
+            var reorderLevel = item.ReOrderLevel ?? 0;
+            var maxStock = item.MaxQty ?? 0;
 
-            if (!stockLevels.Any())
+            // Determine if this item qualifies as low stock
+            var isLowStock = currentStock <= reorderLevel;
+            var isOutOfStock = currentStock <= 0;
+            var isCritical = currentStock <= (reorderLevel * 0.2m); // 20% of reorder level
+
+            if (!isLowStock && !isOutOfStock) continue;
+
+            // Apply filters
+            if (request.OutOfStockOnly == true && !isOutOfStock) continue;
+            if (request.CriticalOnly == true && !isCritical) continue;
+
+            var urgencyLevel = DetermineUrgencyLevel(currentStock, reorderLevel, maxStock);
+            var stockDeficit = Math.Max(0, reorderLevel - currentStock);
+
+            lowStockItems.Add(new LowStockItemDto
             {
-                // Item has no stock levels, consider it out of stock
-                if (request.OutOfStockOnly == true)
-                {
-                    lowStockItems.Add(CreateLowStockItemDto(item, null, 0, "Critical"));
-                }
-                continue;
-            }
-
-            foreach (var stockLevel in stockLevels)
-            {
-                var currentStock = stockLevel.Quantity;
-                var reorderLevel = item.ReOrderLevel ?? 0;
-                var maxStock = item.MaxQty ?? 0;
-
-                // Determine if this item qualifies as low stock
-                var isLowStock = currentStock <= reorderLevel;
-                var isOutOfStock = currentStock <= 0;
-                var isCritical = currentStock <= (reorderLevel * 0.2m); // 20% of reorder level
-
-                if (!isLowStock && !isOutOfStock) continue;
-
-                // Apply filters
-                if (request.OutOfStockOnly == true && !isOutOfStock) continue;
-                if (request.CriticalOnly == true && !isCritical) continue;
-
-                var urgencyLevel = DetermineUrgencyLevel(currentStock, reorderLevel, maxStock);
-                var stockDeficit = Math.Max(0, reorderLevel - currentStock);
-
-                lowStockItems.Add(new LowStockItemDto
-                {
-                    Id = item.Id,
-                    Name = item.ItemName,
-                    Code = item.ItemCode.Value,
-                    CurrentStock = currentStock,
-                    ReorderLevel = reorderLevel,
-                    MaxStock = maxStock,
-                    StockDeficit = stockDeficit,
-                    UrgencyLevel = urgencyLevel,
-                    WarehouseName = stockLevel.Warehouse.Name,
-                    LastMovementDate = stockLevel.LastMovementDate
-                });
-            }
+                Id = item.Id,
+                Name = item.ItemName,
+                Code = item.ItemCode.Value,
+                CurrentStock = currentStock,
+                ReorderLevel = reorderLevel,
+                MaxStock = maxStock,
+                StockDeficit = stockDeficit,
+                UrgencyLevel = urgencyLevel,
+                WarehouseName = stockLevel.Warehouse.Name,
+                LastMovementDate = stockLevel.LastMovementDate
+            });
         }
 
         // Apply sorting

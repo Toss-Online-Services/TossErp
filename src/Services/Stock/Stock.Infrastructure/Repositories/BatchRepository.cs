@@ -36,4 +36,5 @@ public class BatchRepository : IBatchRepository
     public Task<long> GetCountBySupplierAsync(string supplier, CancellationToken cancellationToken = default) => Task.FromResult(0L);
     public Task<long> GetExpiringCountAsync(int daysThreshold, CancellationToken cancellationToken = default) => Task.FromResult(0L);
     public Task<long> GetExpiredCountAsync(CancellationToken cancellationToken = default) => Task.FromResult(0L);
+    public IQueryable<Batch> GetQueryable() => _context.Batches.AsQueryable();
 } 

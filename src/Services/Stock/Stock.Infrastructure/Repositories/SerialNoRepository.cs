@@ -251,4 +251,9 @@ public class SerialNoRepository : ISerialNoRepository
     {
         return Task.FromResult(0L);
     }
+
+    public IQueryable<SerialNo> GetQueryable()
+    {
+        return _context.SerialNos.AsQueryable();
+    }
 } 

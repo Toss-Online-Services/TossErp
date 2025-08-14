@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TossErp.Stock.Domain.Aggregates.StockEntryAggregate;
+using TossErp.Stock.Domain.ValueObjects;
 
 namespace TossErp.Stock.Infrastructure.Data.Configurations;
 
@@ -14,7 +15,12 @@ public class StockEntryConfiguration : IEntityTypeConfiguration<StockEntryAggreg
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
         // Properties
-        builder.Property(x => x.EntryNumber).HasMaxLength(50).IsRequired();
+        builder.Property(x => x.EntryNumber)
+            .HasConversion(
+                v => v.Value,
+                v => new StockEntryNo(v))
+            .HasMaxLength(50)
+            .IsRequired();
         builder.Property(x => x.EntryDate).IsRequired();
         builder.Property(x => x.Reference).HasMaxLength(100);
         builder.Property(x => x.Notes).HasMaxLength(500);

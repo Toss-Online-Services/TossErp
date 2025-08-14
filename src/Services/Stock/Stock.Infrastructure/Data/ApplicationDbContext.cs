@@ -21,7 +21,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     // Stock Domain Entities
     public DbSet<ItemAggregate> Items => Set<ItemAggregate>();
     public DbSet<ItemVariant> ItemVariants => Set<ItemVariant>();
-    public DbSet<ItemVariantAttribute> ItemVariantAttributes => Set<ItemVariantAttribute>();
+    // Note: ItemVariantAttribute removed as it can't have a relationship with owned ItemVariant
+    // public DbSet<ItemVariantAttribute> ItemVariantAttributes => Set<ItemVariantAttribute>();
     public DbSet<ItemPrice> ItemPrices => Set<ItemPrice>();
     public DbSet<ItemSupplier> ItemSuppliers => Set<ItemSupplier>();
     public DbSet<ItemCustomer> ItemCustomers => Set<ItemCustomer>();
@@ -66,6 +67,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Owned<Colour>();
         builder.Owned<SerialNumber>();
         builder.Owned<StockEntryNo>();
+        
+        // Ignore ItemVariantAttribute as it can't have a proper relationship with owned ItemVariant
+        builder.Ignore<ItemVariantAttribute>();
         
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
