@@ -3,771 +3,874 @@
     "tasks": [
       {
         "id": 1,
-        "title": "Project Foundation Setup",
-        "description": "Set up the complete project foundation with proper architecture and development environment",
-        "status": "in-progress",
+        "title": "Set up Stock Module Project Structure",
+        "description": "Create the foundational project structure for the Stock module including Domain, Application, Infrastructure, API, and Agent projects",
+        "status": "done",
         "priority": "high",
         "dependencies": [],
-        "details": "Initialize the complete TOSS ERP III project with proper folder structure, development environment, and basic configuration. This includes setting up the solution structure, configuring development tools, and establishing the initial project skeleton following Clean Architecture patterns.",
-        "testStrategy": "Verify that the solution builds successfully and all projects are properly referenced",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Backend Solution Structure",
-            "description": "Set up the .NET Core backend solution with Clean Architecture layers",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [],
-            "details": "Create the complete backend solution structure with proper project references: TossErp.Api, TossErp.Application, TossErp.Domain, TossErp.Infrastructure. Configure project dependencies and basic build setup.",
-            "testStrategy": "Verify solution builds without errors and all project references are correct"
-          },
-          {
-            "id": 2,
-            "title": "Mobile App Foundation",
-            "description": "Set up Flutter mobile app with proper project structure",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [],
-            "details": "Create Flutter project structure with proper folder organization: lib/app, lib/core, lib/data, lib/presentation, lib/domain. Configure basic dependencies and project settings.",
-            "testStrategy": "Verify Flutter project builds and runs on simulator/device"
-          },
-          {
-            "id": 3,
-            "title": "Development Environment",
-            "description": "Configure development tools and environment settings",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "1.1",
-              "1.2"
-            ],
-            "details": "Set up development environment including IDE configuration, code formatting rules, linting, and basic CI/CD pipeline. Configure proper .gitignore files and development scripts.",
-            "testStrategy": "Verify all development tools work correctly and code formatting is applied"
-          }
-        ]
+        "details": "Set up the Stock module projects:\n- Stock.Domain (entities, value objects, aggregates)\n- Stock.Application (commands, queries, handlers)\n- Stock.Infrastructure (EF Core, repositories)\n- Stock.API (controllers, middleware)\n- Stock.Agent (AI/LangChain integration)\n- Stock.Domain.UnitTests\n- Stock.Application.UnitTests",
+        "subtasks": [],
+        "estimatedHours": 4,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
       },
       {
         "id": 2,
-        "title": "Domain Layer Implementation",
-        "description": "Implement the core domain entities and business logic for the Stock module",
-        "status": "pending",
+        "title": "Implement Stock Domain Model",
+        "description": "Create domain entities, value objects, and aggregates for the Stock module",
+        "status": "done",
         "priority": "high",
         "dependencies": [
           1
         ],
-        "details": "Create the domain layer with all necessary entities, value objects, and business logic for stock management. This includes StockItem, StockMovement, Category, and related domain services following DDD principles.",
-        "testStrategy": "Write comprehensive unit tests for all domain entities and business logic",
+        "details": "Implement domain model:\n- Item aggregate with ItemId, SKU, Name, etc.\n- Warehouse entity\n- StockLevel entity\n- StockMovement entity\n- Value objects: Quantity, Money, SKU, MovementType\n- Domain events: ItemCreated, StockReceived, StockLevelLow, etc.\n- Business rules and validations",
         "subtasks": [
           {
             "id": 1,
-            "title": "Stock Item Entity",
-            "description": "Create the StockItem domain entity with all required properties and business logic",
-            "status": "pending",
-            "priority": "high",
+            "title": "Create Base Domain Classes",
+            "description": "Set up base classes for Entity, AggregateRoot, ValueObject, and DomainEvent",
+            "details": "Create foundational domain classes:\\n- Entity<T> base class with Id property\\n- AggregateRoot base class extending Entity\\n- ValueObject base class with equality implementation\\n- IDomainEvent interface\\n- DomainEvent base class with timestamp",
+            "status": "done",
             "dependencies": [],
-            "details": "Implement StockItem entity with properties: Id, Name, Description, Category, UnitOfMeasure, CostPrice, SellingPrice, CurrentStock, MinimumStock, ReorderPoint, Barcode, SupplierName, IsActive, CreatedAt, UpdatedAt. Include business methods for stock updates, low stock checks, and margin calculations.",
-            "testStrategy": "Unit tests for all business methods and validation logic"
+            "parentTaskId": 2
           },
           {
             "id": 2,
-            "title": "Stock Movement Entity",
-            "description": "Create the StockMovement entity to track all inventory changes",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "2.1"
-            ],
-            "details": "Implement StockMovement entity with MovementType enum (Purchase, Sale, Adjustment, Transfer, Return), properties for quantity, unit price, total value, reference, notes, and timestamps. Include business logic for movement validation.",
-            "testStrategy": "Unit tests for movement validation and business logic"
+            "title": "Implement Value Objects",
+            "description": "Create value objects for Quantity, Money, SKU, and MovementType",
+            "details": "Implement value objects:\\n- Quantity: Value, Unit, conversion logic\\n- Money: Amount, Currency (ZAR default)\\n- SKU: Value with validation (alphanumeric, max length)\\n- MovementType: Enum (Receipt, Issue, Adjustment, Transfer)",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2
           },
           {
             "id": 3,
-            "title": "Category Entity",
-            "description": "Create the Category entity for organizing stock items",
-            "status": "pending",
-            "priority": "medium",
+            "title": "Create Item Aggregate",
+            "description": "Implement the Item aggregate root with properties and business logic",
+            "details": "Create Item aggregate:\\n- Properties: ItemId, TenantId, SKU, Barcode, Name, Description, Category, Unit, SellingPrice, CostPrice, ReorderLevel, ReorderQty, IsActive\\n- Methods: Create, Update, Deactivate, UpdatePricing, SetReorderLevels\\n- Validations: Required fields, price ranges, reorder logic\\n- Events: ItemCreated, ItemUpdated, ItemDeactivated",
+            "status": "done",
             "dependencies": [],
-            "details": "Implement Category entity with properties: Id, Name, Description, Color, IsActive, CreatedAt, UpdatedAt. Include navigation properties and basic business logic.",
-            "testStrategy": "Unit tests for category validation and business logic"
+            "parentTaskId": 2
           },
           {
             "id": 4,
-            "title": "Domain Services",
-            "description": "Create domain services for complex business logic",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "2.1",
-              "2.2",
-              "2.3"
-            ],
-            "details": "Implement domain services for stock calculations, reorder point logic, margin calculations, and inventory valuation. Follow DDD principles and keep business logic in domain layer.",
-            "testStrategy": "Unit tests for all domain services and business calculations"
+            "title": "Implement Warehouse Entity",
+            "description": "Create Warehouse entity with location and status management",
+            "details": "Implement Warehouse entity:\\n- Properties: WarehouseId, TenantId, Code, Name, Address, IsDefault, IsActive\\n- Methods: Create, Update, SetAsDefault, Deactivate\\n- Business rules: Only one default warehouse per tenant\\n- Validations: Unique code per tenant",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2
           },
           {
             "id": 5,
-            "title": "Domain Events",
-            "description": "Create domain events for significant state changes",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "2.1",
-              "2.2"
-            ],
-            "details": "Implement domain events for StockItemCreated, StockItemUpdated, StockMovementRecorded, LowStockAlert, ReorderPointReached. These events will be used for integration with other modules.",
-            "testStrategy": "Unit tests for domain event creation and handling"
+            "title": "Create Stock Movement Entities",
+            "description": "Implement StockLevel and StockMovement entities for tracking inventory",
+            "details": "Create stock tracking entities:\\n- StockLevel: ItemId, WarehouseId, OnHand, Available, OnOrder, Reserved\\n- StockMovement: MovementId, TenantId, ItemId, WarehouseId, Type, Qty, RefType, RefId, Reason, CreatedBy, CreatedAt\\n- Methods: RecordMovement, CalculateAvailable\\n- Validations: Prevent negative stock (configurable)",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2
+          },
+          {
+            "id": 6,
+            "title": "Define Domain Events",
+            "description": "Create all domain events for stock-related operations",
+            "details": "Implement domain events:\\n- ItemCreated, ItemUpdated, ItemDeactivated\\n- StockReceived, StockIssued, StockAdjusted, StockTransferred\\n- StockLevelLow (when stock < reorder level)\\n- WarehouseCreated, WarehouseUpdated\\n- Include relevant data in each event for downstream consumers",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2
           }
-        ]
+        ],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
       },
       {
         "id": 3,
-        "title": "Application Layer Implementation",
-        "description": "Implement application services, DTOs, and use cases for the Stock module",
-        "status": "pending",
+        "title": "Create Stock Application Layer",
+        "description": "Implement CQRS commands, queries, and handlers for stock operations",
+        "status": "done",
         "priority": "high",
         "dependencies": [
           2
         ],
-        "details": "Create the application layer with services, DTOs, and use cases for stock management. This includes CRUD operations, business logic orchestration, and data transformation.",
-        "testStrategy": "Write unit tests for all application services and use cases",
+        "details": "Build application layer:\n- Commands: CreateItem, UpdateItem, ReceiveStock, IssueStock, AdjustStock\n- Queries: GetItems, GetStockLevels, GetMovementHistory\n- DTOs and mappings\n- Validators using FluentValidation\n- Event handlers for external events (SaleCompleted, etc.)",
         "subtasks": [
           {
             "id": 1,
-            "title": "Stock Item Application Services",
-            "description": "Create application services for stock item management",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "2.1"
-            ],
-            "details": "Implement IStockItemService with methods: CreateAsync, GetByIdAsync, GetAllAsync, UpdateAsync, DeleteAsync, GetByCategoryAsync, SearchAsync. Create corresponding DTOs and validation.",
-            "testStrategy": "Unit tests for all application service methods"
+            "title": "Create Commands",
+            "description": "Implement CQRS commands for stock operations",
+            "details": "Create command classes:\\n- CreateItemCommand\\n- UpdateItemCommand\\n- ReceiveStockCommand\\n- IssueStockCommand\\n- AdjustStockCommand\\n- TransferStockCommand\\n- Each command should include validation attributes and proper data structure",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3
           },
           {
             "id": 2,
-            "title": "Stock Movement Application Services",
-            "description": "Create application services for stock movement tracking",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "2.2"
-            ],
-            "details": "Implement IStockMovementService with methods: RecordMovementAsync, GetMovementsByItemAsync, GetMovementsByDateRangeAsync, GetMovementHistoryAsync. Create DTOs for movement data.",
-            "testStrategy": "Unit tests for movement recording and retrieval logic"
+            "title": "Create Queries",
+            "description": "Implement CQRS queries for stock operations",
+            "details": "Create query classes:\\n- GetItemsQuery (with filtering, search, pagination)\\n- GetItemByIdQuery\\n- GetStockLevelsQuery\\n- GetMovementHistoryQuery\\n- GetLowStockItemsQuery\\n- Each query should include proper parameters and return appropriate DTOs",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3
           },
           {
             "id": 3,
-            "title": "Category Application Services",
-            "description": "Create application services for category management",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "2.3"
-            ],
-            "details": "Implement ICategoryService with methods: CreateAsync, GetByIdAsync, GetAllAsync, UpdateAsync, DeleteAsync, GetActiveCategoriesAsync. Create category DTOs and validation.",
-            "testStrategy": "Unit tests for category management operations"
+            "title": "Create DTOs",
+            "description": "Implement Data Transfer Objects for API responses",
+            "details": "Create DTO classes:\\n- ItemDto (with all item properties)\\n- StockLevelDto (current stock information)\\n- MovementDto (movement history)\\n- CreateItemRequest/Response\\n- UpdateItemRequest\\n- StockMovementRequest\\n- PaginatedResult<T> for list responses",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3
           },
           {
             "id": 4,
-            "title": "Stock Reports Application Services",
-            "description": "Create application services for stock reporting",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "3.1",
-              "3.2"
-            ],
-            "details": "Implement IStockReportService with methods: GetStockLevelsAsync, GetLowStockItemsAsync, GetReorderSuggestionsAsync, GetMovementSummaryAsync, GetInventoryValueAsync. Create report DTOs.",
-            "testStrategy": "Unit tests for report generation logic"
+            "title": "Implement Command Handlers",
+            "description": "Create command handlers using MediatR",
+            "details": "Implement command handlers:\\n- CreateItemCommandHandler\\n- UpdateItemCommandHandler\\n- ReceiveStockCommandHandler\\n- IssueStockCommandHandler\\n- AdjustStockCommandHandler\\n- TransferStockCommandHandler\\n- Each handler should use repositories, validate business rules, and publish domain events",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3
           },
           {
             "id": 5,
-            "title": "Validation and Error Handling",
-            "description": "Implement comprehensive validation and error handling",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "3.1",
-              "3.2",
-              "3.3"
-            ],
-            "details": "Create validation rules using FluentValidation for all DTOs. Implement proper error handling with custom exceptions and error responses. Add input validation for all application services.",
-            "testStrategy": "Unit tests for validation rules and error handling"
+            "title": "Implement Query Handlers",
+            "description": "Create query handlers using MediatR",
+            "details": "Implement query handlers:\\n- GetItemsQueryHandler\\n- GetItemByIdQueryHandler\\n- GetStockLevelsQueryHandler\\n- GetMovementHistoryQueryHandler\\n- GetLowStockItemsQueryHandler\\n- Each handler should use repositories and return appropriate DTOs",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3
+          },
+          {
+            "id": 6,
+            "title": "Create Validators",
+            "description": "Implement FluentValidation validators",
+            "details": "Create validators:\\n- CreateItemCommandValidator\\n- UpdateItemCommandValidator\\n- ReceiveStockCommandValidator\\n- IssueStockCommandValidator\\n- AdjustStockCommandValidator\\n- TransferStockCommandValidator\\n- Each validator should enforce business rules and data validation",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3
           }
-        ]
+        ],
+        "estimatedHours": 10,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
       },
       {
         "id": 4,
-        "title": "Infrastructure Layer Implementation",
-        "description": "Implement data access, repositories, and external service integrations",
-        "status": "pending",
+        "title": "Implement Stock Infrastructure",
+        "description": "Set up data persistence, repositories, and external service integrations",
+        "status": "in-progress",
         "priority": "high",
         "dependencies": [
           3
         ],
-        "details": "Create the infrastructure layer with Entity Framework Core setup, repository implementations, database context, and external service integrations. Configure PostgreSQL connection and migrations.",
-        "testStrategy": "Integration tests for repository implementations and database operations",
+        "details": "Build infrastructure:\n- EF Core DbContext configuration\n- PostgreSQL schema and migrations\n- Repository implementations\n- MassTransit + RabbitMQ event bus integration\n- External service clients (barcode, tax)\n- Unit of work pattern",
         "subtasks": [
           {
             "id": 1,
-            "title": "Database Context and Configuration",
-            "description": "Set up Entity Framework Core with PostgreSQL",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "2.1",
-              "2.2",
-              "2.3"
-            ],
-            "details": "Create TossErpDbContext with proper entity configurations, relationships, and indexes. Configure PostgreSQL connection string and Entity Framework settings. Set up code-first approach with proper migrations.",
-            "testStrategy": "Integration tests for database context and entity configurations"
+            "title": "Configure EF Core DbContext and Entity Configurations",
+            "description": "Set up the ApplicationDbContext with proper entity configurations for all Stock domain entities including Items, Warehouses, StockLevels, StockMovements, Batches, and Bins",
+            "details": "- Create ApplicationDbContext in Stock.Infrastructure/Data/\n- Configure entity relationships and constraints\n- Set up entity configurations for all domain entities\n- Configure indexes for performance optimization\n- Set up audit trail configurations",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 4
           },
           {
             "id": 2,
-            "title": "Repository Implementations",
-            "description": "Implement repository pattern for data access",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "4.1"
-            ],
-            "details": "Create repository implementations: StockItemRepository, StockMovementRepository, CategoryRepository. Implement IRepository<T> pattern with async methods and proper error handling.",
-            "testStrategy": "Integration tests for all repository methods"
+            "title": "Create PostgreSQL Schema and Migrations",
+            "description": "Generate and configure database migrations for the Stock module schema",
+            "details": "- Create initial migration for Stock entities\n- Configure PostgreSQL-specific optimizations\n- Set up proper data types and constraints\n- Configure connection string and database settings\n- Test migration generation and application",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 4
           },
           {
             "id": 3,
-            "title": "Database Migrations",
-            "description": "Create and configure database migrations",
+            "title": "Implement Repository Pattern",
+            "description": "Create concrete repository implementations for all domain entities",
+            "details": "- Implement IItemRepository, IWarehouseRepository, IStockLevelRepository, IStockMovementRepository\n- Add specialized query methods for complex business logic\n- Implement proper error handling and logging\n- Add caching strategies where appropriate\n- Ensure repository methods align with application layer requirements",
             "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "4.1"
-            ],
-            "details": "Create initial migration for all entities with proper relationships, indexes, and constraints. Configure migration scripts and database seeding for test data. Set up migration strategy for development and production.",
-            "testStrategy": "Verify migrations apply correctly and database schema is created properly"
+            "dependencies": [],
+            "parentTaskId": 4
           },
           {
             "id": 4,
-            "title": "External Service Integrations",
-            "description": "Implement external service integrations",
+            "title": "Configure MassTransit + RabbitMQ Event Bus",
+            "description": "Set up event bus integration for domain events and cross-service communication",
+            "details": "- Configure MassTransit with RabbitMQ transport\n- Set up event publishing for domain events\n- Configure event consumers for integration events\n- Implement event serialization and deserialization\n- Add health checks and monitoring for message bus",
             "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "4.2"
-            ],
-            "details": "Create service integrations for barcode scanning API, notification services (SMS/Email), and file storage. Implement proper HTTP client configurations and error handling for external calls.",
-            "testStrategy": "Integration tests for external service calls"
+            "dependencies": [],
+            "parentTaskId": 4
           },
           {
             "id": 5,
-            "title": "Caching Implementation",
-            "description": "Implement caching for frequently accessed data",
+            "title": "Implement External Service Clients",
+            "description": "Create clients for external services like barcode scanning and tax calculation",
+            "details": "- Create IBarcodeService client for barcode scanning\n- Create ITaxCalculationService client for tax calculations\n- Implement retry policies and circuit breakers\n- Add proper error handling and fallback mechanisms\n- Configure service discovery and health checks",
             "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "4.2"
-            ],
-            "details": "Implement Redis caching for stock levels, categories, and frequently accessed items. Create cache service with proper cache invalidation strategies and TTL settings.",
-            "testStrategy": "Unit tests for cache operations and integration tests for cache invalidation"
+            "dependencies": [],
+            "parentTaskId": 4
+          },
+          {
+            "id": 6,
+            "title": "Implement Unit of Work Pattern",
+            "description": "Create the Unit of Work pattern implementation for transaction management",
+            "details": "- Implement IUnitOfWork interface\n- Create UnitOfWork class with transaction management\n- Configure dependency injection for Unit of Work\n- Add proper disposal and error handling\n- Ensure transaction consistency across repositories",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 4
           }
-        ]
+        ],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
       },
       {
         "id": 5,
-        "title": "API Layer Implementation",
-        "description": "Implement RESTful API controllers and endpoints for the Stock module",
+        "title": "Build Stock API Endpoints",
+        "description": "Create RESTful API controllers and endpoints for stock management",
         "status": "pending",
         "priority": "high",
         "dependencies": [
           4
         ],
-        "details": "Create comprehensive RESTful API endpoints for stock management. Implement proper authentication, authorization, request/response models, and API documentation.",
-        "testStrategy": "Integration tests for all API endpoints and controller logic",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Stock Items API Controller",
-            "description": "Create API controller for stock item management",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "4.2"
-            ],
-            "details": "Implement StockItemsController with endpoints: GET /api/stock-items, GET /api/stock-items/{id}, POST /api/stock-items, PUT /api/stock-items/{id}, DELETE /api/stock-items/{id}, GET /api/stock-items/search. Include proper request/response models and validation.",
-            "testStrategy": "Integration tests for all stock item endpoints"
-          },
-          {
-            "id": 2,
-            "title": "Stock Movements API Controller",
-            "description": "Create API controller for stock movement tracking",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "4.2"
-            ],
-            "details": "Implement StockMovementsController with endpoints: GET /api/stock-movements, POST /api/stock-movements, GET /api/stock-movements/item/{itemId}, GET /api/stock-movements/date-range. Include movement recording and history retrieval.",
-            "testStrategy": "Integration tests for movement recording and retrieval"
-          },
-          {
-            "id": 3,
-            "title": "Categories API Controller",
-            "description": "Create API controller for category management",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "4.2"
-            ],
-            "details": "Implement CategoriesController with endpoints: GET /api/categories, GET /api/categories/{id}, POST /api/categories, PUT /api/categories/{id}, DELETE /api/categories/{id}. Include category CRUD operations.",
-            "testStrategy": "Integration tests for category management endpoints"
-          },
-          {
-            "id": 4,
-            "title": "Stock Reports API Controller",
-            "description": "Create API controller for stock reporting",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "5.1",
-              "5.2"
-            ],
-            "details": "Implement StockReportsController with endpoints: GET /api/stock-reports/levels, GET /api/stock-reports/low-stock, GET /api/stock-reports/reorder-suggestions, GET /api/stock-reports/inventory-value. Include report generation and data aggregation.",
-            "testStrategy": "Integration tests for report generation endpoints"
-          },
-          {
-            "id": 5,
-            "title": "API Authentication and Authorization",
-            "description": "Implement JWT authentication and role-based authorization",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "5.1",
-              "5.2",
-              "5.3",
-              "5.4"
-            ],
-            "details": "Configure JWT authentication with proper token generation and validation. Implement role-based authorization for different user types (admin, manager, user). Add authentication middleware and authorization attributes.",
-            "testStrategy": "Integration tests for authentication and authorization"
-          },
-          {
-            "id": 6,
-            "title": "API Documentation and Swagger",
-            "description": "Configure Swagger/OpenAPI documentation",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "5.1",
-              "5.2",
-              "5.3",
-              "5.4"
-            ],
-            "details": "Configure Swagger documentation with proper API descriptions, request/response examples, and authentication documentation. Add XML comments to controllers and models for better documentation.",
-            "testStrategy": "Verify Swagger UI displays all endpoints correctly"
-          }
-        ]
+        "details": "Implement API layer:\n- ItemsController (CRUD, bulk import)\n- StockMovementsController (receipts, issues, adjustments)\n- ReportsController (ledger, valuation)\n- Middleware for tenant resolution\n- API versioning\n- Swagger documentation\n- Request/response models",
+        "subtasks": [],
+        "estimatedHours": 10,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
       },
       {
         "id": 6,
-        "title": "Mobile App Development - Core Structure",
-        "description": "Implement the core Flutter mobile app structure and basic UI",
+        "title": "Implement Event-Driven Integration",
+        "description": "Set up event publishing and subscription for cross-service communication",
         "status": "pending",
         "priority": "high",
         "dependencies": [
-          1
+          5
         ],
-        "details": "Create the Flutter mobile app with proper architecture, navigation, and basic UI components. Implement offline-first design with local SQLite database and state management.",
-        "testStrategy": "Unit tests for business logic and widget tests for UI components",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Flutter Project Setup",
-            "description": "Set up Flutter project with proper dependencies and structure",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [],
-            "details": "Create Flutter project with dependencies: sqflite, provider, dio, flutter_barcode_scanner, shared_preferences. Set up proper folder structure and configure pubspec.yaml with all required dependencies.",
-            "testStrategy": "Verify Flutter project builds and runs correctly"
-          },
-          {
-            "id": 2,
-            "title": "App Architecture and Navigation",
-            "description": "Implement app architecture with proper navigation",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "6.1"
-            ],
-            "details": "Set up app architecture with main.dart, app.dart, and routes.dart. Implement bottom navigation with tabs for Dashboard, Stock Items, Movements, and Settings. Configure proper route management and navigation.",
-            "testStrategy": "Widget tests for navigation and route management"
-          },
-          {
-            "id": 3,
-            "title": "Local Database Setup",
-            "description": "Implement SQLite local database for offline-first design",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "6.1"
-            ],
-            "details": "Create local database helper with SQLite setup for stock items, movements, and categories. Implement database operations with proper error handling and data synchronization logic.",
-            "testStrategy": "Unit tests for database operations and data persistence"
-          },
-          {
-            "id": 4,
-            "title": "State Management Setup",
-            "description": "Implement Provider state management for app state",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "6.1"
-            ],
-            "details": "Set up Provider state management with proper providers for stock items, movements, categories, and app state. Implement proper state management patterns and data flow.",
-            "testStrategy": "Unit tests for state management and data flow"
-          },
-          {
-            "id": 5,
-            "title": "Basic UI Components",
-            "description": "Create reusable UI components and widgets",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "6.2"
-            ],
-            "details": "Create reusable widgets: custom app bar, loading indicators, error displays, stock item cards, movement list items, and form components. Implement consistent styling and theme.",
-            "testStrategy": "Widget tests for all reusable components"
-          }
-        ]
+        "details": "Configure event-driven architecture:\n- Publish events: ItemCreated, StockReceived, StockLevelLow\n- Subscribe to events: SaleCompleted, PurchaseOrderReceived\n- Implement outbox pattern for reliability\n- Event versioning strategy\n- Integration testing for event flows",
+        "subtasks": [],
+        "estimatedHours": 6,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
       },
       {
         "id": 7,
-        "title": "Mobile App - Stock Management Screens",
-        "description": "Implement stock management screens and functionality",
+        "title": "Create Stock Background Services",
+        "description": "Implement background workers for monitoring and sync operations",
         "status": "pending",
-        "priority": "high",
+        "priority": "medium",
         "dependencies": [
           6
         ],
-        "details": "Create comprehensive stock management screens including item listing, item details, add/edit items, stock movements, and basic reporting. Implement offline-first functionality with sync capabilities.",
-        "testStrategy": "Widget tests for all screens and integration tests for business logic",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Stock Items List Screen",
-            "description": "Create screen for listing and managing stock items",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "6.3",
-              "6.4"
-            ],
-            "details": "Implement stock items list screen with search, filter by category, sort options, and stock level indicators. Include pull-to-refresh, pagination, and offline data display. Show stock levels with color coding.",
-            "testStrategy": "Widget tests for list functionality and integration tests for data loading"
-          },
-          {
-            "id": 2,
-            "title": "Stock Item Details Screen",
-            "description": "Create detailed view for individual stock items",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "7.1"
-            ],
-            "details": "Implement stock item details screen showing all item information, current stock level, movement history, and quick actions. Include edit functionality and stock adjustment options.",
-            "testStrategy": "Widget tests for details display and interaction tests for edit functionality"
-          },
-          {
-            "id": 3,
-            "title": "Add/Edit Stock Item Screen",
-            "description": "Create form for adding and editing stock items",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "7.1"
-            ],
-            "details": "Implement add/edit stock item form with validation, category selection, unit of measure input, pricing fields, and stock level settings. Include barcode scanning functionality and image capture.",
-            "testStrategy": "Widget tests for form validation and integration tests for save operations"
-          },
-          {
-            "id": 4,
-            "title": "Stock Movements Screen",
-            "description": "Create screen for viewing and recording stock movements",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "7.1"
-            ],
-            "details": "Implement stock movements screen showing movement history with filtering by date range and movement type. Include functionality to record new movements with proper validation.",
-            "testStrategy": "Widget tests for movement display and integration tests for movement recording"
-          },
-          {
-            "id": 5,
-            "title": "Dashboard Screen",
-            "description": "Create dashboard with key metrics and quick actions",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "7.1",
-              "7.4"
-            ],
-            "details": "Implement dashboard screen showing key metrics: total items, low stock items, recent movements, and inventory value. Include quick actions for common tasks and alerts for low stock items.",
-            "testStrategy": "Widget tests for dashboard display and integration tests for metrics calculation"
-          }
-        ]
+        "details": "Build background services:\n- LowStockMonitor service\n- StockSyncService for offline sync\n- Scheduled reports generation\n- SignalR hub for real-time updates\n- Health check implementations",
+        "subtasks": [],
+        "estimatedHours": 6,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
       },
       {
         "id": 8,
-        "title": "Mobile App - Advanced Features",
-        "description": "Implement advanced mobile app features and functionality",
+        "title": "Implement Stock AI Agent",
+        "description": "Build LangChain-powered AI agent for stock recommendations and automation",
         "status": "pending",
         "priority": "medium",
         "dependencies": [
           7
         ],
-        "details": "Add advanced features including barcode scanning, offline sync, notifications, and enhanced UI/UX. Implement proper error handling and user feedback mechanisms.",
-        "testStrategy": "Integration tests for advanced features and user experience testing",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Barcode Scanning Integration",
-            "description": "Implement barcode scanning for quick item lookup",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "7.3"
-            ],
-            "details": "Integrate barcode scanning functionality for quick item lookup and stock updates. Implement camera access, barcode detection, and integration with stock item database. Include manual barcode entry as fallback.",
-            "testStrategy": "Integration tests for barcode scanning and item lookup"
-          },
-          {
-            "id": 2,
-            "title": "Offline Sync Implementation",
-            "description": "Implement offline-first functionality with sync capabilities",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "6.3"
-            ],
-            "details": "Implement offline sync functionality with conflict resolution. Create sync service to handle data synchronization between local database and server. Include sync status indicators and manual sync triggers.",
-            "testStrategy": "Integration tests for offline operations and sync functionality"
-          },
-          {
-            "id": 3,
-            "title": "Push Notifications",
-            "description": "Implement push notifications for stock alerts",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "7.5"
-            ],
-            "details": "Implement push notifications for low stock alerts, reorder reminders, and important updates. Configure notification permissions, local notifications, and notification handling.",
-            "testStrategy": "Integration tests for notification delivery and handling"
-          },
-          {
-            "id": 4,
-            "title": "Enhanced UI/UX",
-            "description": "Improve user interface and experience",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "7.1",
-              "7.2",
-              "7.3",
-              "7.4",
-              "7.5"
-            ],
-            "details": "Enhance UI with better styling, animations, loading states, and error handling. Implement dark mode support, accessibility features, and responsive design for different screen sizes.",
-            "testStrategy": "UI tests for different screen sizes and accessibility testing"
-          },
-          {
-            "id": 5,
-            "title": "Settings and Configuration",
-            "description": "Implement app settings and configuration options",
-            "status": "pending",
-            "priority": "low",
-            "dependencies": [
-              "8.1",
-              "8.2",
-              "8.3"
-            ],
-            "details": "Create settings screen for app configuration, user preferences, sync settings, notification preferences, and account management. Include data export/import functionality.",
-            "testStrategy": "Integration tests for settings persistence and configuration changes"
-          }
-        ]
+        "details": "Create AI agent:\n- LangChain integration setup\n- Reorder point optimization ML model\n- Demand forecasting implementation\n- Anomaly detection algorithms\n- Natural language query processing\n- Auto-purchase order generation (with approval)",
+        "subtasks": [],
+        "estimatedHours": 12,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
       },
       {
         "id": 9,
-        "title": "Testing and Quality Assurance",
-        "description": "Implement comprehensive testing strategy for all components",
+        "title": "Build Flutter Mobile Stock UI",
+        "description": "Create Flutter screens for stock management with offline support",
         "status": "pending",
         "priority": "high",
         "dependencies": [
-          5,
-          8
+          5
         ],
-        "details": "Create comprehensive testing strategy including unit tests, integration tests, API tests, and mobile app tests. Implement proper test coverage and quality assurance processes.",
-        "testStrategy": "Achieve minimum 80% code coverage and all tests passing",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Backend Unit Tests",
-            "description": "Create comprehensive unit tests for backend components",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "2.1",
-              "2.2",
-              "2.3",
-              "3.1",
-              "3.2",
-              "3.3"
-            ],
-            "details": "Write unit tests for all domain entities, application services, and business logic. Use xUnit framework and Moq for mocking. Achieve minimum 80% code coverage for domain and application layers.",
-            "testStrategy": "Unit tests with proper mocking and edge case coverage"
-          },
-          {
-            "id": 2,
-            "title": "API Integration Tests",
-            "description": "Create integration tests for API endpoints",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "5.1",
-              "5.2",
-              "5.3",
-              "5.4"
-            ],
-            "details": "Write integration tests for all API endpoints using WebApplicationFactory. Test authentication, authorization, request/response validation, and error handling. Include database integration tests.",
-            "testStrategy": "Integration tests with in-memory database and proper test data"
-          },
-          {
-            "id": 3,
-            "title": "Mobile App Tests",
-            "description": "Create tests for mobile app functionality",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "7.1",
-              "7.2",
-              "7.3",
-              "7.4",
-              "7.5"
-            ],
-            "details": "Write widget tests for all UI components, unit tests for business logic, and integration tests for database operations. Test offline functionality and sync capabilities.",
-            "testStrategy": "Widget tests for UI components and integration tests for app functionality"
-          },
-          {
-            "id": 4,
-            "title": "Performance Testing",
-            "description": "Implement performance testing for critical components",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "9.1",
-              "9.2"
-            ],
-            "details": "Create performance tests for API endpoints, database operations, and mobile app performance. Test with realistic data volumes and measure response times and resource usage.",
-            "testStrategy": "Performance benchmarks and load testing with realistic scenarios"
-          },
-          {
-            "id": 5,
-            "title": "Security Testing",
-            "description": "Implement security testing and vulnerability assessment",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "5.5"
-            ],
-            "details": "Conduct security testing for authentication, authorization, input validation, and data protection. Test for common vulnerabilities like SQL injection, XSS, and CSRF attacks.",
-            "testStrategy": "Security testing with automated vulnerability scanning"
-          }
-        ]
+        "details": "Implement mobile UI:\n- Stock dashboard screen\n- Items list with search/filter\n- Item detail and edit screens\n- Stock adjustment screens\n- Reports and analytics views\n- Offline data storage with SQLite\n- Sync queue implementation",
+        "subtasks": [],
+        "estimatedHours": 16,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
       },
       {
         "id": 10,
-        "title": "Documentation and Deployment",
-        "description": "Create comprehensive documentation and prepare for deployment",
+        "title": "Build Nuxt 3 Web Stock UI",
+        "description": "Create web interface for stock management with advanced features",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "details": "Implement web UI:\n- Stock management dashboard\n- DataTable with inline editing\n- Bulk import/export functionality\n- Stock ledger and reports\n- AI insights panel\n- Real-time updates via SignalR\n- Pinia state management",
+        "subtasks": [],
+        "estimatedHours": 14,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 11,
+        "title": "Implement Offline Sync Protocol",
+        "description": "Build robust offline-to-online synchronization mechanism",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          9,
+          10
+        ],
+        "details": "Create sync protocol:\n- Define sync batch format\n- Implement conflict resolution (last-write-wins)\n- Build sync endpoints in API\n- Create sync service in mobile app\n- Handle large batch optimization\n- Error recovery mechanisms",
+        "subtasks": [],
+        "estimatedHours": 10,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 12,
+        "title": "Create Stock Reports Module",
+        "description": "Implement comprehensive reporting functionality",
         "status": "pending",
         "priority": "medium",
         "dependencies": [
-          9
+          10
         ],
-        "details": "Create comprehensive documentation including API documentation, user guides, deployment guides, and developer documentation. Prepare deployment configuration and CI/CD pipeline.",
-        "testStrategy": "Verify all documentation is accurate and deployment process works correctly",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "API Documentation",
-            "description": "Create comprehensive API documentation",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "5.6"
-            ],
-            "details": "Create detailed API documentation with examples, request/response schemas, authentication details, and error codes. Include Postman collections and API usage examples.",
-            "testStrategy": "Verify API documentation accuracy and completeness"
-          },
-          {
-            "id": 2,
-            "title": "User Documentation",
-            "description": "Create user guides and help documentation",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "8.5"
-            ],
-            "details": "Create user guides for mobile app usage, feature explanations, troubleshooting guides, and best practices. Include screenshots, step-by-step instructions, and video tutorials.",
-            "testStrategy": "User acceptance testing with documentation validation"
-          },
-          {
-            "id": 3,
-            "title": "Developer Documentation",
-            "description": "Create technical documentation for developers",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "10.1"
-            ],
-            "details": "Create technical documentation including architecture overview, code standards, development setup, testing guidelines, and contribution guidelines. Include code examples and best practices.",
-            "testStrategy": "Code review process validation and documentation accuracy"
-          },
-          {
-            "id": 4,
-            "title": "Deployment Configuration",
-            "description": "Prepare deployment configuration and CI/CD pipeline",
-            "status": "pending",
-            "priority": "medium",
-            "dependencies": [
-              "10.1"
-            ],
-            "details": "Create Docker configurations, deployment scripts, environment configuration, and CI/CD pipeline setup. Include database migration scripts and environment-specific configurations.",
-            "testStrategy": "Deployment testing in staging environment"
-          },
-          {
-            "id": 5,
-            "title": "Production Readiness",
-            "description": "Prepare for production deployment",
-            "status": "pending",
-            "priority": "high",
-            "dependencies": [
-              "10.4"
-            ],
-            "details": "Conduct final testing, security review, performance optimization, and production environment setup. Create monitoring and logging configurations, backup strategies, and disaster recovery plans.",
-            "testStrategy": "Production deployment testing and go-live validation"
-          }
-        ]
+        "details": "Build reporting features:\n- Stock ledger report\n- Valuation report\n- Movement summary\n- Low stock analysis\n- Export to CSV/PDF\n- Report scheduling\n- Email delivery integration",
+        "subtasks": [],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 13,
+        "title": "Implement Security & Multi-tenancy",
+        "description": "Add security features and ensure proper tenant isolation",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "details": "Security implementation:\n- Row-level security by TenantId\n- Role-based access (Owner, Manager, Clerk)\n- API authentication middleware\n- Audit trail for all changes\n- Data encryption at rest\n- Rate limiting\n- POPIA compliance checks",
+        "subtasks": [],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 14,
+        "title": "Write Unit Tests",
+        "description": "Create comprehensive unit tests for domain and application layers",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "details": "Unit testing:\n- Domain logic tests (calculations, validations)\n- Application command/query handler tests\n- Value object conversion tests\n- Mock external dependencies\n- Achieve >80% code coverage\n- Use xUnit and Moq",
+        "subtasks": [],
+        "estimatedHours": 10,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 15,
+        "title": "Write Integration Tests",
+        "description": "Create integration tests for API and infrastructure",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          6
+        ],
+        "details": "Integration testing:\n- API endpoint tests\n- Repository operation tests\n- Event publishing/handling tests\n- Database migration tests\n- External service integration tests\n- Use TestContainers for dependencies",
+        "subtasks": [],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 16,
+        "title": "Create E2E Tests",
+        "description": "Build end-to-end tests for complete workflows",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "details": "E2E testing:\n- Complete stock workflow tests\n- Offline/online transition tests\n- Multi-tenant scenario tests\n- Flutter integration tests\n- Cypress tests for web UI\n- Performance benchmarks",
+        "subtasks": [],
+        "estimatedHours": 10,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 17,
+        "title": "Set up DevOps Pipeline",
+        "description": "Configure CI/CD pipeline and containerization",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          15
+        ],
+        "details": "DevOps setup:\n- Dockerize all services\n- GitHub Actions CI/CD pipeline\n- Automated testing in pipeline\n- Database migration automation\n- Health check endpoints\n- Kubernetes manifests\n- Environment configuration",
+        "subtasks": [],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 18,
+        "title": "Implement Monitoring & Observability",
+        "description": "Add logging, metrics, and distributed tracing",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          17
+        ],
+        "details": "Observability setup:\n- Structured logging with Serilog\n- OpenTelemetry integration\n- Distributed tracing setup\n- Custom metrics for stock operations\n- Performance monitoring\n- Alert configuration\n- Dashboard creation",
+        "subtasks": [],
+        "estimatedHours": 6,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 19,
+        "title": "Create Documentation",
+        "description": "Write comprehensive documentation for the Stock module",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          16
+        ],
+        "details": "Documentation:\n- API documentation with Swagger\n- Developer guide\n- Deployment guide\n- User manual for mobile/web\n- Architecture diagrams\n- Database schema documentation\n- Integration guide for other services",
+        "subtasks": [],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 20,
+        "title": "Performance Optimization & Final Testing",
+        "description": "Optimize performance and conduct final testing before deployment",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          18,
+          19
+        ],
+        "details": "Final optimization:\n- Performance profiling and optimization\n- Load testing with k6/Locust\n- Security vulnerability scanning\n- Final bug fixes\n- User acceptance testing\n- Deployment readiness checklist\n- Production configuration",
+        "subtasks": [],
+        "estimatedHours": 10,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
       }
     ],
     "metadata": {
-      "created": "2025-08-05T20:48:45.195Z",
-      "updated": "2025-08-05T20:52:58.304Z",
-      "description": "Tasks for master context"
+      "version": "1.0.0",
+      "lastUpdated": "2024-01-20T10:00:00Z",
+      "projectName": "TOSS Stock Module",
+      "totalTasks": 20,
+      "completedTasks": 0,
+      "totalEstimatedHours": 180,
+      "created": "2025-08-13T16:37:43.174Z",
+      "description": "Tasks for master context",
+      "updated": "2025-08-14T07:55:34.760Z"
     }
   },
   "stock-review": {
-    "tasks": [],
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Set up Stock Module Project Structure",
+        "description": "Create the foundational project structure for the Stock module including Domain, Application, Infrastructure, API, and Agent projects",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Set up the Stock module projects:\n- Stock.Domain (entities, value objects, aggregates)\n- Stock.Application (commands, queries, handlers)\n- Stock.Infrastructure (EF Core, repositories)\n- Stock.API (controllers, middleware)\n- Stock.Agent (AI/LangChain integration)\n- Stock.Domain.UnitTests\n- Stock.Application.UnitTests",
+        "subtasks": [],
+        "estimatedHours": 4,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 2,
+        "title": "Implement Stock Domain Model",
+        "description": "Create domain entities, value objects, and aggregates for the Stock module",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "details": "Implement domain model:\n- Item aggregate with ItemId, SKU, Name, etc.\n- Warehouse entity\n- StockLevel entity\n- StockMovement entity\n- Value objects: Quantity, Money, SKU, MovementType\n- Domain events: ItemCreated, StockReceived, StockLevelLow, etc.\n- Business rules and validations",
+        "subtasks": [],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 3,
+        "title": "Create Stock Application Layer",
+        "description": "Implement CQRS commands, queries, and handlers for stock operations",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "details": "Build application layer:\n- Commands: CreateItem, UpdateItem, ReceiveStock, IssueStock, AdjustStock\n- Queries: GetItems, GetStockLevels, GetMovementHistory\n- DTOs and mappings\n- Validators using FluentValidation\n- Event handlers for external events (SaleCompleted, etc.)",
+        "subtasks": [],
+        "estimatedHours": 10,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 4,
+        "title": "Implement Stock Infrastructure",
+        "description": "Set up data persistence, repositories, and external service integrations",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "details": "Build infrastructure:\n- EF Core DbContext configuration\n- PostgreSQL schema and migrations\n- Repository implementations\n- MassTransit + RabbitMQ event bus integration\n- External service clients (barcode, tax)\n- Unit of work pattern",
+        "subtasks": [],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 5,
+        "title": "Build Stock API Endpoints",
+        "description": "Create RESTful API controllers and endpoints for stock management",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "details": "Implement API layer:\n- ItemsController (CRUD, bulk import)\n- StockMovementsController (receipts, issues, adjustments)\n- ReportsController (ledger, valuation)\n- Middleware for tenant resolution\n- API versioning\n- Swagger documentation\n- Request/response models",
+        "subtasks": [],
+        "estimatedHours": 10,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 6,
+        "title": "Implement Event-Driven Integration",
+        "description": "Set up event publishing and subscription for cross-service communication",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "details": "Configure event-driven architecture:\n- Publish events: ItemCreated, StockReceived, StockLevelLow\n- Subscribe to events: SaleCompleted, PurchaseOrderReceived\n- Implement outbox pattern for reliability\n- Event versioning strategy\n- Integration testing for event flows",
+        "subtasks": [],
+        "estimatedHours": 6,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 7,
+        "title": "Create Stock Background Services",
+        "description": "Implement background workers for monitoring and sync operations",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "details": "Build background services:\n- LowStockMonitor service\n- StockSyncService for offline sync\n- Scheduled reports generation\n- SignalR hub for real-time updates\n- Health check implementations",
+        "subtasks": [],
+        "estimatedHours": 6,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 8,
+        "title": "Implement Stock AI Agent",
+        "description": "Build LangChain-powered AI agent for stock recommendations and automation",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "details": "Create AI agent:\n- LangChain integration setup\n- Reorder point optimization ML model\n- Demand forecasting implementation\n- Anomaly detection algorithms\n- Natural language query processing\n- Auto-purchase order generation (with approval)",
+        "subtasks": [],
+        "estimatedHours": 12,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 9,
+        "title": "Build Flutter Mobile Stock UI",
+        "description": "Create Flutter screens for stock management with offline support",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "details": "Implement mobile UI:\n- Stock dashboard screen\n- Items list with search/filter\n- Item detail and edit screens\n- Stock adjustment screens\n- Reports and analytics views\n- Offline data storage with SQLite\n- Sync queue implementation",
+        "subtasks": [],
+        "estimatedHours": 16,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 10,
+        "title": "Build Nuxt 3 Web Stock UI",
+        "description": "Create web interface for stock management with advanced features",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "details": "Implement web UI:\n- Stock management dashboard\n- DataTable with inline editing\n- Bulk import/export functionality\n- Stock ledger and reports\n- AI insights panel\n- Real-time updates via SignalR\n- Pinia state management",
+        "subtasks": [],
+        "estimatedHours": 14,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 11,
+        "title": "Implement Offline Sync Protocol",
+        "description": "Build robust offline-to-online synchronization mechanism",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          9,
+          10
+        ],
+        "details": "Create sync protocol:\n- Define sync batch format\n- Implement conflict resolution (last-write-wins)\n- Build sync endpoints in API\n- Create sync service in mobile app\n- Handle large batch optimization\n- Error recovery mechanisms",
+        "subtasks": [],
+        "estimatedHours": 10,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 12,
+        "title": "Create Stock Reports Module",
+        "description": "Implement comprehensive reporting functionality",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          10
+        ],
+        "details": "Build reporting features:\n- Stock ledger report\n- Valuation report\n- Movement summary\n- Low stock analysis\n- Export to CSV/PDF\n- Report scheduling\n- Email delivery integration",
+        "subtasks": [],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 13,
+        "title": "Implement Security & Multi-tenancy",
+        "description": "Add security features and ensure proper tenant isolation",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "details": "Security implementation:\n- Row-level security by TenantId\n- Role-based access (Owner, Manager, Clerk)\n- API authentication middleware\n- Audit trail for all changes\n- Data encryption at rest\n- Rate limiting\n- POPIA compliance checks",
+        "subtasks": [],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 14,
+        "title": "Write Unit Tests",
+        "description": "Create comprehensive unit tests for domain and application layers",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "details": "Unit testing:\n- Domain logic tests (calculations, validations)\n- Application command/query handler tests\n- Value object conversion tests\n- Mock external dependencies\n- Achieve >80% code coverage\n- Use xUnit and Moq",
+        "subtasks": [],
+        "estimatedHours": 10,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 15,
+        "title": "Write Integration Tests",
+        "description": "Create integration tests for API and infrastructure",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          6
+        ],
+        "details": "Integration testing:\n- API endpoint tests\n- Repository operation tests\n- Event publishing/handling tests\n- Database migration tests\n- External service integration tests\n- Use TestContainers for dependencies",
+        "subtasks": [],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 16,
+        "title": "Create E2E Tests",
+        "description": "Build end-to-end tests for complete workflows",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "details": "E2E testing:\n- Complete stock workflow tests\n- Offline/online transition tests\n- Multi-tenant scenario tests\n- Flutter integration tests\n- Cypress tests for web UI\n- Performance benchmarks",
+        "subtasks": [],
+        "estimatedHours": 10,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 17,
+        "title": "Set up DevOps Pipeline",
+        "description": "Configure CI/CD pipeline and containerization",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          15
+        ],
+        "details": "DevOps setup:\n- Dockerize all services\n- GitHub Actions CI/CD pipeline\n- Automated testing in pipeline\n- Database migration automation\n- Health check endpoints\n- Kubernetes manifests\n- Environment configuration",
+        "subtasks": [],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 18,
+        "title": "Implement Monitoring & Observability",
+        "description": "Add logging, metrics, and distributed tracing",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          17
+        ],
+        "details": "Observability setup:\n- Structured logging with Serilog\n- OpenTelemetry integration\n- Distributed tracing setup\n- Custom metrics for stock operations\n- Performance monitoring\n- Alert configuration\n- Dashboard creation",
+        "subtasks": [],
+        "estimatedHours": 6,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 19,
+        "title": "Create Documentation",
+        "description": "Write comprehensive documentation for the Stock module",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          16
+        ],
+        "details": "Documentation:\n- API documentation with Swagger\n- Developer guide\n- Deployment guide\n- User manual for mobile/web\n- Architecture diagrams\n- Database schema documentation\n- Integration guide for other services",
+        "subtasks": [],
+        "estimatedHours": 8,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      },
+      {
+        "id": 20,
+        "title": "Performance Optimization & Final Testing",
+        "description": "Optimize performance and conduct final testing before deployment",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          18,
+          19
+        ],
+        "details": "Final optimization:\n- Performance profiling and optimization\n- Load testing with k6/Locust\n- Security vulnerability scanning\n- Final bug fixes\n- User acceptance testing\n- Deployment readiness checklist\n- Production configuration",
+        "subtasks": [],
+        "estimatedHours": 10,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2024-01-20T10:00:00Z",
+        "updatedAt": "2024-01-20T10:00:00Z"
+      }
+    ],
     "metadata": {
-      "created": "2025-08-06T20:29:38.013Z",
-      "updated": "2025-08-06T20:29:38.013Z",
-      "description": "Stock module review and adjustments"
+      "version": "1.0.0",
+      "lastUpdated": "2024-01-20T10:00:00Z",
+      "projectName": "TOSS Stock Module",
+      "totalTasks": 20,
+      "completedTasks": 0,
+      "totalEstimatedHours": 180,
+      "created": "2025-08-13T16:37:43.174Z",
+      "description": "Tasks for master context"
     }
   }
 }

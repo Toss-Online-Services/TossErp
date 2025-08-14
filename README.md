@@ -193,9 +193,9 @@ npm run type-check
    ```
 
 2. **Deploy to production**
-   ```bash
+```bash
    kubectl apply -k deploy/kubernetes/overlays/production
-   ```
+```
 
 ### Docker Deployment
 

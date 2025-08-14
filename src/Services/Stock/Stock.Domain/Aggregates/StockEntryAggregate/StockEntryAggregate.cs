@@ -154,12 +154,12 @@ public class StockEntryAggregate : Entity, IAggregateRoot
 
     public decimal GetTotalQuantity()
     {
-        return _details.Sum(d => d.Quantity);
+        return _details.Sum(d => d.Quantity.Value);
     }
 
     public decimal GetTotalValue()
     {
-        return _details.Sum(d => d.Quantity * d.Rate) + 
+        return _details.Sum(d => d.Quantity.Value * d.Rate) + 
                _additionalCosts.Sum(ac => ac.Amount);
     }
 

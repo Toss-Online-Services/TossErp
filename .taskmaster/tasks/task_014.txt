@@ -1,0 +1,17 @@
+# Task ID: 14
+# Title: Write Unit Tests
+# Status: pending
+# Dependencies: 3
+# Priority: high
+# Description: Create comprehensive unit tests for domain and application layers
+# Details:
+Unit testing:
+- Domain logic tests (calculations, validations)
+- Application command/query handler tests
+- Value object conversion tests
+- Mock external dependencies
+- Achieve >80% code coverage
+- Use xUnit and Moq
+
+# Test Strategy:
+
