@@ -173,4 +173,11 @@ public class StockEntryRepository : IStockEntryRepository
     public Task<IEnumerable<StockEntryAggregate>> GetByWarehouseAsync(Guid warehouseId, CancellationToken cancellationToken = default) => Task.FromResult<IEnumerable<StockEntryAggregate>>(Array.Empty<StockEntryAggregate>());
     public Task<bool> ExistsByEntryNumberAsync(string entryNumber, CancellationToken cancellationToken = default) => Task.FromResult(false);
     public Task<string> GetNextEntryNumberAsync(string prefix, CancellationToken cancellationToken = default) => Task.FromResult($"{prefix}-{DateTime.Now:yyyyMMdd}-001");
+
+    public IQueryable<StockEntryAggregate> GetQueryable()
+    {
+        return _context.StockEntries
+            .Include(x => x.Details)
+            .AsQueryable();
+    }
 } 

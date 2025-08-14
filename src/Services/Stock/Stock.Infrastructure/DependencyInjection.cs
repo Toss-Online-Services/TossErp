@@ -70,6 +70,8 @@ public static class DependencyInjection
 
         // Register repositories
         services.AddScoped<IItemRepository, ItemRepository>();
+        services.AddScoped<IStockLevelRepository, StockLevelRepository>();
+        services.AddScoped<IStockMovementRepository, StockMovementRepository>();
         services.AddScoped<IStockEntryRepository, StockEntryRepository>();
         services.AddScoped<IStockLedgerEntryRepository, StockLedgerEntryRepository>();
         services.AddScoped<IWarehouseRepository, WarehouseRepository>();

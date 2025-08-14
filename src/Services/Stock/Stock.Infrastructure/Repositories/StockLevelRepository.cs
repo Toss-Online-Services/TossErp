@@ -144,4 +144,12 @@ public class StockLevelRepository : IStockLevelRepository
     {
         _context.StockLevels.Remove(entity);
     }
+
+    public IQueryable<StockLevel> GetQueryable()
+    {
+        return _context.StockLevels
+            .Include(sl => sl.Item)
+            .Include(sl => sl.Warehouse)
+            .Include(sl => sl.Bin);
+    }
 }

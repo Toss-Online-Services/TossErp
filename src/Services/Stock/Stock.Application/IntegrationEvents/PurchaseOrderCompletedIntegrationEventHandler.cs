@@ -48,7 +48,7 @@ public class PurchaseOrderCompletedIntegrationEventHandler : IIntegrationEventHa
                     stockEntry.Id,
                     Guid.Parse(item.ItemCode), // Assuming ItemCode is a GUID
                     Guid.Parse(item.WarehouseCode), // Assuming WarehouseCode is a GUID
-                    new Quantity(item.QuantityReceived),
+                    new Quantity(item.QuantityReceived, "PCS"), // Default unit
                     new Rate(item.UnitPrice, @event.Currency),
                     batchNo: item.BatchNumber,
                     expiryDate: item.ExpiryDate);

@@ -29,37 +29,21 @@ public class UpdateItemCommandValidator : AbstractValidator<UpdateItemCommand>
             .MaximumLength(100).When(x => !string.IsNullOrWhiteSpace(x.Brand))
             .WithMessage("Brand cannot exceed 100 characters.");
 
-        RuleFor(x => x.Unit)
-            .MaximumLength(20).When(x => !string.IsNullOrWhiteSpace(x.Unit))
-            .WithMessage("Unit cannot exceed 20 characters.");
-
         RuleFor(x => x.ItemType)
             .Must(BeValidItemType).When(x => !string.IsNullOrWhiteSpace(x.ItemType))
             .WithMessage("Invalid item type.");
 
-        RuleFor(x => x.SellingPrice)
-            .GreaterThanOrEqualTo(0).When(x => x.SellingPrice.HasValue)
-            .WithMessage("Selling price must be greater than or equal to 0.");
+        RuleFor(x => x.StandardRate)
+            .GreaterThanOrEqualTo(0).When(x => x.StandardRate.HasValue)
+            .WithMessage("Standard rate must be greater than or equal to 0.");
 
-        RuleFor(x => x.CostPrice)
-            .GreaterThanOrEqualTo(0).When(x => x.CostPrice.HasValue)
-            .WithMessage("Cost price must be greater than or equal to 0.");
+        RuleFor(x => x.MinimumPrice)
+            .GreaterThanOrEqualTo(0).When(x => x.MinimumPrice.HasValue)
+            .WithMessage("Minimum price must be greater than or equal to 0.");
 
-        RuleFor(x => x.ReorderLevel)
-            .GreaterThanOrEqualTo(0).When(x => x.ReorderLevel.HasValue)
-            .WithMessage("Reorder level must be greater than or equal to 0.");
-
-        RuleFor(x => x.ReorderQty)
-            .GreaterThanOrEqualTo(0).When(x => x.ReorderQty.HasValue)
-            .WithMessage("Reorder quantity must be greater than or equal to 0.");
-
-        RuleFor(x => x.MaxStock)
-            .GreaterThanOrEqualTo(0).When(x => x.MaxStock.HasValue)
-            .WithMessage("Maximum stock must be greater than or equal to 0.");
-
-        RuleFor(x => x.Weight)
-            .GreaterThanOrEqualTo(0).When(x => x.Weight.HasValue)
-            .WithMessage("Weight must be greater than or equal to 0.");
+        RuleFor(x => x.WeightPerUnit)
+            .GreaterThanOrEqualTo(0).When(x => x.WeightPerUnit.HasValue)
+            .WithMessage("Weight per unit must be greater than or equal to 0.");
 
         RuleFor(x => x.Length)
             .GreaterThanOrEqualTo(0).When(x => x.Length.HasValue)
@@ -73,20 +57,15 @@ public class UpdateItemCommandValidator : AbstractValidator<UpdateItemCommand>
             .GreaterThanOrEqualTo(0).When(x => x.Height.HasValue)
             .WithMessage("Height must be greater than or equal to 0.");
 
-        // Business rule: Max stock should be greater than reorder level when both are provided
+        // Business rule: Minimum price should not exceed standard rate when both are provided
         RuleFor(x => x)
-            .Must(x => !x.MaxStock.HasValue || !x.ReorderLevel.HasValue || x.MaxStock.Value > x.ReorderLevel.Value)
-            .When(x => x.MaxStock.HasValue && x.ReorderLevel.HasValue)
-            .WithMessage("Maximum stock must be greater than reorder level.");
-
-        // Business rule: Reorder quantity should be positive when provided
-        RuleFor(x => x.ReorderQty)
-            .GreaterThan(0).When(x => x.ReorderQty.HasValue)
-            .WithMessage("Reorder quantity must be greater than 0.");
+            .Must(x => !x.MinimumPrice.HasValue || !x.StandardRate.HasValue || x.MinimumPrice.Value <= x.StandardRate.Value)
+            .When(x => x.MinimumPrice.HasValue && x.StandardRate.HasValue)
+            .WithMessage("Minimum price cannot exceed standard rate.");
     }
 
-    private static bool BeValidItemType(string itemType)
+    private static bool BeValidItemType(string? itemType)
     {
-        return Enum.TryParse<ItemType>(itemType, true, out _);
+        return string.IsNullOrWhiteSpace(itemType) || Enum.TryParse<ItemType>(itemType, true, out _);
     }
 }

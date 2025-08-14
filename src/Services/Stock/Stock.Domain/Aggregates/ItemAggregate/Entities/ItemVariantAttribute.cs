@@ -1,10 +1,12 @@
 using TossErp.Stock.Domain.Common;
 using TossErp.Stock.Domain.Aggregates.ItemAggregate.Events;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TossErp.Stock.Domain.Aggregates.ItemAggregate.Entities;
 
 public class ItemVariantAttribute : BaseEntity
 {
+    [NotMapped]
     public ItemVariant ItemVariant { get; private set; } = null!;
     public string Attribute { get; private set; } = string.Empty;
     public string Value { get; private set; } = string.Empty;

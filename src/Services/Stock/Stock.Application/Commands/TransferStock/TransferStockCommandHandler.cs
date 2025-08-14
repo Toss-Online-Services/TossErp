@@ -67,7 +67,7 @@ public class TransferStockCommandHandler : IRequestHandler<TransferStockCommand,
 
         // Get source stock level
         var fromStockLevel = await _stockLevelRepository.GetByItemAndWarehouseAsync(
-            request.ItemId, request.FromWarehouseId, cancellationToken);
+            request.ItemId, request.FromWarehouseId, null, cancellationToken);
 
         if (fromStockLevel == null)
         {
@@ -84,7 +84,7 @@ public class TransferStockCommandHandler : IRequestHandler<TransferStockCommand,
 
         // Get or create destination stock level
         var toStockLevel = await _stockLevelRepository.GetByItemAndWarehouseAsync(
-            request.ItemId, request.ToWarehouseId, cancellationToken);
+            request.ItemId, request.ToWarehouseId, null, cancellationToken);
 
         if (toStockLevel == null)
         {

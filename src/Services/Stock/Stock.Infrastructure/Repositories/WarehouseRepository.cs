@@ -473,4 +473,9 @@ public class WarehouseRepository : IWarehouseRepository
     public Task<IEnumerable<WarehouseAggregate>> GetChildrenAsync(Guid parentId, CancellationToken cancellationToken = default) => Task.FromResult<IEnumerable<WarehouseAggregate>>(Array.Empty<WarehouseAggregate>());
     public Task<IEnumerable<WarehouseAggregate>> GetRejectedWarehousesAsync(CancellationToken cancellationToken = default) => Task.FromResult<IEnumerable<WarehouseAggregate>>(Array.Empty<WarehouseAggregate>());
     public Task<IEnumerable<WarehouseAggregate>> GetCanAcceptStockAsync(CancellationToken cancellationToken = default) => Task.FromResult<IEnumerable<WarehouseAggregate>>(Array.Empty<WarehouseAggregate>());
+
+    public IQueryable<WarehouseAggregate> GetQueryable()
+    {
+        return _context.Warehouses.AsQueryable();
+    }
 } 

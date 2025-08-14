@@ -272,4 +272,9 @@ public class BinRepository : IBinRepository
         // Bin does not have ordered stock
         return Task.FromResult<IEnumerable<Bin>>(new List<Bin>());
     }
+
+    public IQueryable<Bin> GetQueryable()
+    {
+        return _context.Bins.AsQueryable();
+    }
 } 

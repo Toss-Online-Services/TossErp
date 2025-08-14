@@ -60,7 +60,7 @@ public class AdjustStockCommandHandler : IRequestHandler<AdjustStockCommand, boo
 
         // Get stock level
         var stockLevel = await _stockLevelRepository.GetByItemAndWarehouseAsync(
-            request.ItemId, request.WarehouseId, cancellationToken);
+            request.ItemId, request.WarehouseId, null, cancellationToken);
 
         if (stockLevel == null)
         {

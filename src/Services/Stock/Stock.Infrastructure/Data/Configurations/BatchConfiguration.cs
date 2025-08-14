@@ -49,12 +49,12 @@ public class BatchConfiguration : IEntityTypeConfiguration<Batch>
         builder.HasIndex(x => x.Supplier);
         builder.HasIndex(x => x.IsDisabled);
 
-        // Relationships
-        builder.HasOne(x => x.Item)
-            .WithMany()
-            .HasForeignKey(x => x.ItemCode)
-            .HasPrincipalKey(x => x.ItemCode)
-            .OnDelete(DeleteBehavior.Restrict);
+        // Note: Item relationship is handled at the application level
+        // The ItemCode property stores the item code as a string
+        // builder.HasOne(x => x.Item)
+        //     .WithMany()
+        //     .HasForeignKey(x => x.ItemCode)
+        //     .OnDelete(DeleteBehavior.Restrict);
 
         // TODO: Implement Batch-StockLedgerEntry relationship when needed
         // StockLedgerEntry has BatchNo (string) but not BatchId (foreign key)

@@ -1,8 +1,11 @@
+#nullable disable
+
 using MediatR;
 using Microsoft.Extensions.Logging;
-using TossErp.Stock.Application.Common.DTOs;
+using TossErp.Stock.Application.DTOs;
 using TossErp.Stock.Application.Common.Interfaces;
 using TossErp.Stock.Domain.Entities;
+using TossErp.Stock.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace TossErp.Stock.Application.Items.Queries.GetMovementHistory;
@@ -35,12 +38,7 @@ public class GetMovementHistoryQueryHandler : IRequestHandler<GetMovementHistory
             request.ItemId, request.WarehouseId, request.MovementType);
 
         // Build query
-        var query = _stockMovementRepository.GetAll()
-            .Include(sm => sm.Item)
-            .Include(sm => sm.Warehouse)
-            .Include(sm => sm.Bin)
-            .Include(sm => sm.Batch)
-            .AsQueryable();
+        var query = _stockMovementRepository.GetQueryable();
 
         // Apply filters
         if (request.ItemId.HasValue)
@@ -87,7 +85,7 @@ public class GetMovementHistoryQueryHandler : IRequestHandler<GetMovementHistory
         }
 
         // Apply sorting
-        query = ApplySorting(query, request.SortBy, request.SortOrder);
+        query = ApplySorting(query, request.SortBy ?? string.Empty, request.SortOrder ?? string.Empty);
 
         // Get total count before pagination
         var totalCount = await query.CountAsync(cancellationToken);
@@ -107,12 +105,12 @@ public class GetMovementHistoryQueryHandler : IRequestHandler<GetMovementHistory
         {
             Id = sm.Id,
             ItemId = sm.ItemId,
-            ItemName = sm.Item.ItemName,
-            ItemCode = sm.Item.ItemCode.Value,
+            ItemName = sm.Item != null ? sm.Item.ItemName : string.Empty,
+            ItemCode = sm.Item != null && sm.Item.ItemCode != null ? sm.Item.ItemCode.Value : string.Empty,
             WarehouseId = sm.WarehouseId,
-            WarehouseName = sm.Warehouse.Name,
+            WarehouseName = sm.Warehouse != null ? sm.Warehouse.Name : string.Empty,
             BinId = sm.BinId,
-            BinCode = sm.Bin?.BinCode.Value,
+            BinCode = sm.Bin != null && sm.Bin.BinCode != null ? sm.Bin.BinCode.Value : null,
             MovementType = sm.MovementType.ToString(),
             Quantity = sm.Quantity,
             UnitCost = sm.UnitCost ?? 0,
@@ -121,7 +119,7 @@ public class GetMovementHistoryQueryHandler : IRequestHandler<GetMovementHistory
             Reason = sm.Reason,
             MovementDate = sm.MovementDate,
             BatchId = sm.BatchId,
-            BatchNumber = sm.Batch?.Name,
+            BatchNumber = sm.Batch != null ? sm.Batch.Name : null,
             CreatedBy = sm.CreatedBy,
             CreatedAt = sm.CreatedAt
         }).ToList();
@@ -129,9 +127,9 @@ public class GetMovementHistoryQueryHandler : IRequestHandler<GetMovementHistory
         // Calculate summary statistics
         var summary = new MovementHistorySummary
         {
-            TotalReceived = movements.Where(sm => sm.MovementType == MovementType.Receive).Sum(sm => sm.Quantity),
+            TotalReceived = movements.Where(sm => sm.MovementType == MovementType.Receipt).Sum(sm => sm.Quantity),
             TotalIssued = movements.Where(sm => sm.MovementType == MovementType.Issue).Sum(sm => sm.Quantity),
-            TotalAdjusted = movements.Where(sm => sm.MovementType == MovementType.Adjust).Sum(sm => sm.Quantity),
+            TotalAdjusted = movements.Where(sm => sm.MovementType == MovementType.Adjustment).Sum(sm => sm.Quantity),
             TotalTransferred = movements.Where(sm => sm.MovementType == MovementType.Transfer).Sum(sm => sm.Quantity),
             NetMovement = movements.Sum(sm => sm.Quantity * (sm.MovementType == MovementType.Issue ? -1 : 1))
         };
@@ -152,11 +150,11 @@ public class GetMovementHistoryQueryHandler : IRequestHandler<GetMovementHistory
         };
     }
 
-    private static IQueryable<StockMovement> ApplySorting(IQueryable<StockMovement> query, string? sortBy, string? sortOrder)
+    private static IQueryable<StockMovement> ApplySorting(IQueryable<StockMovement> query, string sortBy, string sortOrder)
     {
-        var isDescending = sortOrder?.ToLower() == "desc";
+        var isDescending = sortOrder != null && sortOrder.ToLower() == "desc";
 
-        return sortBy?.ToLower() switch
+        return sortBy != null ? sortBy.ToLower() switch
         {
             "date" => isDescending ? query.OrderByDescending(sm => sm.MovementDate) : query.OrderBy(sm => sm.MovementDate),
             "itemname" => isDescending ? query.OrderByDescending(sm => sm.Item.ItemName) : query.OrderBy(sm => sm.Item.ItemName),
@@ -164,6 +162,6 @@ public class GetMovementHistoryQueryHandler : IRequestHandler<GetMovementHistory
             "quantity" => isDescending ? query.OrderByDescending(sm => sm.Quantity) : query.OrderBy(sm => sm.Quantity),
             "movementtype" => isDescending ? query.OrderByDescending(sm => sm.MovementType) : query.OrderBy(sm => sm.MovementType),
             _ => isDescending ? query.OrderByDescending(sm => sm.MovementDate) : query.OrderBy(sm => sm.MovementDate)
-        };
+        } : isDescending ? query.OrderByDescending(sm => sm.MovementDate) : query.OrderBy(sm => sm.MovementDate);
     }
 }

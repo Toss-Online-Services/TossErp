@@ -53,7 +53,7 @@ public class CreateStockEntryCommandHandler : IRequestHandler<CreateStockEntryCo
                 stockEntry.Id,
                 Guid.NewGuid(), // ItemId - this should be resolved from ItemCode
                 Guid.NewGuid(), // WarehouseId - this should be resolved from WarehouseCode
-                new TossErp.Stock.Domain.ValueObjects.Quantity(detail.Qty),
+                new TossErp.Stock.Domain.ValueObjects.Quantity(detail.Qty, "PCS"), // Default unit
                 new TossErp.Stock.Domain.ValueObjects.Rate(detail.Rate),
                 null, // BinId - optional
                 detail.BatchNo,
