@@ -1,43 +1,79 @@
 # Task ID: 4
-# Title: Infrastructure Layer Implementation
-# Status: pending
+# Title: Implement Stock Infrastructure
+# Status: in-progress
 # Dependencies: 3
 # Priority: high
-# Description: Implement data access, repositories, and external service integrations
+# Description: Set up data persistence, repositories, and external service integrations
 # Details:
-Create the infrastructure layer with Entity Framework Core setup, repository implementations, database context, and external service integrations. Configure PostgreSQL connection and migrations.
+Build infrastructure:
+- EF Core DbContext configuration
+- PostgreSQL schema and migrations
+- Repository implementations
+- MassTransit + RabbitMQ event bus integration
+- External service clients (barcode, tax)
+- Unit of work pattern
 
 # Test Strategy:
-Integration tests for repository implementations and database operations
+
 
 # Subtasks:
-## 1. Database Context and Configuration [pending]
-### Dependencies: 2.1, 2.2, 2.3
-### Description: Set up Entity Framework Core with PostgreSQL
+## 1. Configure EF Core DbContext and Entity Configurations [pending]
+### Dependencies: None
+### Description: Set up the ApplicationDbContext with proper entity configurations for all Stock domain entities including Items, Warehouses, StockLevels, StockMovements, Batches, and Bins
 ### Details:
-Create TossErpDbContext with proper entity configurations, relationships, and indexes. Configure PostgreSQL connection string and Entity Framework settings. Set up code-first approach with proper migrations.
+- Create ApplicationDbContext in Stock.Infrastructure/Data/
+- Configure entity relationships and constraints
+- Set up entity configurations for all domain entities
+- Configure indexes for performance optimization
+- Set up audit trail configurations
 
-## 2. Repository Implementations [pending]
-### Dependencies: 4.1
-### Description: Implement repository pattern for data access
+## 2. Create PostgreSQL Schema and Migrations [pending]
+### Dependencies: None
+### Description: Generate and configure database migrations for the Stock module schema
 ### Details:
-Create repository implementations: StockItemRepository, StockMovementRepository, CategoryRepository. Implement IRepository<T> pattern with async methods and proper error handling.
+- Create initial migration for Stock entities
+- Configure PostgreSQL-specific optimizations
+- Set up proper data types and constraints
+- Configure connection string and database settings
+- Test migration generation and application
 
-## 3. Database Migrations [pending]
-### Dependencies: 4.1
-### Description: Create and configure database migrations
+## 3. Implement Repository Pattern [pending]
+### Dependencies: None
+### Description: Create concrete repository implementations for all domain entities
 ### Details:
-Create initial migration for all entities with proper relationships, indexes, and constraints. Configure migration scripts and database seeding for test data. Set up migration strategy for development and production.
+- Implement IItemRepository, IWarehouseRepository, IStockLevelRepository, IStockMovementRepository
+- Add specialized query methods for complex business logic
+- Implement proper error handling and logging
+- Add caching strategies where appropriate
+- Ensure repository methods align with application layer requirements
 
-## 4. External Service Integrations [pending]
-### Dependencies: 4.2
-### Description: Implement external service integrations
+## 4. Configure MassTransit + RabbitMQ Event Bus [pending]
+### Dependencies: None
+### Description: Set up event bus integration for domain events and cross-service communication
 ### Details:
-Create service integrations for barcode scanning API, notification services (SMS/Email), and file storage. Implement proper HTTP client configurations and error handling for external calls.
+- Configure MassTransit with RabbitMQ transport
+- Set up event publishing for domain events
+- Configure event consumers for integration events
+- Implement event serialization and deserialization
+- Add health checks and monitoring for message bus
 
-## 5. Caching Implementation [pending]
-### Dependencies: 4.2
-### Description: Implement caching for frequently accessed data
+## 5. Implement External Service Clients [pending]
+### Dependencies: None
+### Description: Create clients for external services like barcode scanning and tax calculation
 ### Details:
-Implement Redis caching for stock levels, categories, and frequently accessed items. Create cache service with proper cache invalidation strategies and TTL settings.
+- Create IBarcodeService client for barcode scanning
+- Create ITaxCalculationService client for tax calculations
+- Implement retry policies and circuit breakers
+- Add proper error handling and fallback mechanisms
+- Configure service discovery and health checks
+
+## 6. Implement Unit of Work Pattern [pending]
+### Dependencies: None
+### Description: Create the Unit of Work pattern implementation for transaction management
+### Details:
+- Implement IUnitOfWork interface
+- Create UnitOfWork class with transaction management
+- Configure dependency injection for Unit of Work
+- Add proper disposal and error handling
+- Ensure transaction consistency across repositories
 

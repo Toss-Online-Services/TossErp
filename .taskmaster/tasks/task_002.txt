@@ -1,43 +1,56 @@
 # Task ID: 2
-# Title: Domain Layer Implementation
-# Status: pending
+# Title: Implement Stock Domain Model
+# Status: done
 # Dependencies: 1
 # Priority: high
-# Description: Implement the core domain entities and business logic for the Stock module
+# Description: Create domain entities, value objects, and aggregates for the Stock module
 # Details:
-Create the domain layer with all necessary entities, value objects, and business logic for stock management. This includes StockItem, StockMovement, Category, and related domain services following DDD principles.
+Implement domain model:
+- Item aggregate with ItemId, SKU, Name, etc.
+- Warehouse entity
+- StockLevel entity
+- StockMovement entity
+- Value objects: Quantity, Money, SKU, MovementType
+- Domain events: ItemCreated, StockReceived, StockLevelLow, etc.
+- Business rules and validations
 
 # Test Strategy:
-Write comprehensive unit tests for all domain entities and business logic
+
 
 # Subtasks:
-## 1. Stock Item Entity [pending]
+## 1. Create Base Domain Classes [done]
 ### Dependencies: None
-### Description: Create the StockItem domain entity with all required properties and business logic
+### Description: Set up base classes for Entity, AggregateRoot, ValueObject, and DomainEvent
 ### Details:
-Implement StockItem entity with properties: Id, Name, Description, Category, UnitOfMeasure, CostPrice, SellingPrice, CurrentStock, MinimumStock, ReorderPoint, Barcode, SupplierName, IsActive, CreatedAt, UpdatedAt. Include business methods for stock updates, low stock checks, and margin calculations.
+Create foundational domain classes:\n- Entity<T> base class with Id property\n- AggregateRoot base class extending Entity\n- ValueObject base class with equality implementation\n- IDomainEvent interface\n- DomainEvent base class with timestamp
 
-## 2. Stock Movement Entity [pending]
-### Dependencies: 2.1
-### Description: Create the StockMovement entity to track all inventory changes
-### Details:
-Implement StockMovement entity with MovementType enum (Purchase, Sale, Adjustment, Transfer, Return), properties for quantity, unit price, total value, reference, notes, and timestamps. Include business logic for movement validation.
-
-## 3. Category Entity [pending]
+## 2. Implement Value Objects [done]
 ### Dependencies: None
-### Description: Create the Category entity for organizing stock items
+### Description: Create value objects for Quantity, Money, SKU, and MovementType
 ### Details:
-Implement Category entity with properties: Id, Name, Description, Color, IsActive, CreatedAt, UpdatedAt. Include navigation properties and basic business logic.
+Implement value objects:\n- Quantity: Value, Unit, conversion logic\n- Money: Amount, Currency (ZAR default)\n- SKU: Value with validation (alphanumeric, max length)\n- MovementType: Enum (Receipt, Issue, Adjustment, Transfer)
 
-## 4. Domain Services [pending]
-### Dependencies: 2.1, 2.2, 2.3
-### Description: Create domain services for complex business logic
+## 3. Create Item Aggregate [done]
+### Dependencies: None
+### Description: Implement the Item aggregate root with properties and business logic
 ### Details:
-Implement domain services for stock calculations, reorder point logic, margin calculations, and inventory valuation. Follow DDD principles and keep business logic in domain layer.
+Create Item aggregate:\n- Properties: ItemId, TenantId, SKU, Barcode, Name, Description, Category, Unit, SellingPrice, CostPrice, ReorderLevel, ReorderQty, IsActive\n- Methods: Create, Update, Deactivate, UpdatePricing, SetReorderLevels\n- Validations: Required fields, price ranges, reorder logic\n- Events: ItemCreated, ItemUpdated, ItemDeactivated
 
-## 5. Domain Events [pending]
-### Dependencies: 2.1, 2.2
-### Description: Create domain events for significant state changes
+## 4. Implement Warehouse Entity [done]
+### Dependencies: None
+### Description: Create Warehouse entity with location and status management
 ### Details:
-Implement domain events for StockItemCreated, StockItemUpdated, StockMovementRecorded, LowStockAlert, ReorderPointReached. These events will be used for integration with other modules.
+Implement Warehouse entity:\n- Properties: WarehouseId, TenantId, Code, Name, Address, IsDefault, IsActive\n- Methods: Create, Update, SetAsDefault, Deactivate\n- Business rules: Only one default warehouse per tenant\n- Validations: Unique code per tenant
+
+## 5. Create Stock Movement Entities [done]
+### Dependencies: None
+### Description: Implement StockLevel and StockMovement entities for tracking inventory
+### Details:
+Create stock tracking entities:\n- StockLevel: ItemId, WarehouseId, OnHand, Available, OnOrder, Reserved\n- StockMovement: MovementId, TenantId, ItemId, WarehouseId, Type, Qty, RefType, RefId, Reason, CreatedBy, CreatedAt\n- Methods: RecordMovement, CalculateAvailable\n- Validations: Prevent negative stock (configurable)
+
+## 6. Define Domain Events [done]
+### Dependencies: None
+### Description: Create all domain events for stock-related operations
+### Details:
+Implement domain events:\n- ItemCreated, ItemUpdated, ItemDeactivated\n- StockReceived, StockIssued, StockAdjusted, StockTransferred\n- StockLevelLow (when stock < reorder level)\n- WarehouseCreated, WarehouseUpdated\n- Include relevant data in each event for downstream consumers
 

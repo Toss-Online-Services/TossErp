@@ -48,6 +48,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
     public DbSet<StockEntryType> StockEntryTypes => Set<StockEntryType>();
+    
+    // Stock Level and Movement Entities
+    public DbSet<StockLevel> StockLevels => Set<StockLevel>();
+    public DbSet<StockMovement> StockMovements => Set<StockMovement>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -1,0 +1,18 @@
+# Task ID: 13
+# Title: Implement Security & Multi-tenancy
+# Status: pending
+# Dependencies: 5
+# Priority: high
+# Description: Add security features and ensure proper tenant isolation
+# Details:
+Security implementation:
+- Row-level security by TenantId
+- Role-based access (Owner, Manager, Clerk)
+- API authentication middleware
+- Audit trail for all changes
+- Data encryption at rest
+- Rate limiting
+- POPIA compliance checks
+
+# Test Strategy:
+

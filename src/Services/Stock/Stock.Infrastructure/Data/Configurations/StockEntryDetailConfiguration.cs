@@ -26,7 +26,7 @@ public class StockEntryDetailConfiguration : IEntityTypeConfiguration<StockEntry
         builder.Property(x => x.Quantity)
             .HasConversion(
                 v => v.Value,
-                v => new Quantity(v))
+                v => new Quantity(v, "PCS")) // Default unit
             .HasPrecision(18, 4)
             .IsRequired();
 

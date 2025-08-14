@@ -30,7 +30,7 @@ public class StockLedgerEntryConfiguration : IEntityTypeConfiguration<StockLedge
         builder.Property(x => x.Qty)
             .HasConversion(
                 v => v.Value,
-                v => new Quantity(v))
+                v => new Quantity(v, "PCS")) // Default unit, should be overridden by StockUOM
             .HasPrecision(18, 4)
             .IsRequired();
 

@@ -1,4 +1,6 @@
-﻿namespace TossErp.Stock.Domain.ValueObjects;
+﻿using TossErp.Stock.Domain.SeedWork;
+
+namespace TossErp.Stock.Domain.ValueObjects;
 
 public class Colour(string code) : ValueObject
 {

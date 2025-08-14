@@ -1,43 +1,54 @@
 # Task ID: 3
-# Title: Application Layer Implementation
-# Status: pending
+# Title: Create Stock Application Layer
+# Status: done
 # Dependencies: 2
 # Priority: high
-# Description: Implement application services, DTOs, and use cases for the Stock module
+# Description: Implement CQRS commands, queries, and handlers for stock operations
 # Details:
-Create the application layer with services, DTOs, and use cases for stock management. This includes CRUD operations, business logic orchestration, and data transformation.
+Build application layer:
+- Commands: CreateItem, UpdateItem, ReceiveStock, IssueStock, AdjustStock
+- Queries: GetItems, GetStockLevels, GetMovementHistory
+- DTOs and mappings
+- Validators using FluentValidation
+- Event handlers for external events (SaleCompleted, etc.)
 
 # Test Strategy:
-Write unit tests for all application services and use cases
+
 
 # Subtasks:
-## 1. Stock Item Application Services [pending]
-### Dependencies: 2.1
-### Description: Create application services for stock item management
+## 1. Create Commands [done]
+### Dependencies: None
+### Description: Implement CQRS commands for stock operations
 ### Details:
-Implement IStockItemService with methods: CreateAsync, GetByIdAsync, GetAllAsync, UpdateAsync, DeleteAsync, GetByCategoryAsync, SearchAsync. Create corresponding DTOs and validation.
+Create command classes:\n- CreateItemCommand\n- UpdateItemCommand\n- ReceiveStockCommand\n- IssueStockCommand\n- AdjustStockCommand\n- TransferStockCommand\n- Each command should include validation attributes and proper data structure
 
-## 2. Stock Movement Application Services [pending]
-### Dependencies: 2.2
-### Description: Create application services for stock movement tracking
+## 2. Create Queries [done]
+### Dependencies: None
+### Description: Implement CQRS queries for stock operations
 ### Details:
-Implement IStockMovementService with methods: RecordMovementAsync, GetMovementsByItemAsync, GetMovementsByDateRangeAsync, GetMovementHistoryAsync. Create DTOs for movement data.
+Create query classes:\n- GetItemsQuery (with filtering, search, pagination)\n- GetItemByIdQuery\n- GetStockLevelsQuery\n- GetMovementHistoryQuery\n- GetLowStockItemsQuery\n- Each query should include proper parameters and return appropriate DTOs
 
-## 3. Category Application Services [pending]
-### Dependencies: 2.3
-### Description: Create application services for category management
+## 3. Create DTOs [done]
+### Dependencies: None
+### Description: Implement Data Transfer Objects for API responses
 ### Details:
-Implement ICategoryService with methods: CreateAsync, GetByIdAsync, GetAllAsync, UpdateAsync, DeleteAsync, GetActiveCategoriesAsync. Create category DTOs and validation.
+Create DTO classes:\n- ItemDto (with all item properties)\n- StockLevelDto (current stock information)\n- MovementDto (movement history)\n- CreateItemRequest/Response\n- UpdateItemRequest\n- StockMovementRequest\n- PaginatedResult<T> for list responses
 
-## 4. Stock Reports Application Services [pending]
-### Dependencies: 3.1, 3.2
-### Description: Create application services for stock reporting
+## 4. Implement Command Handlers [done]
+### Dependencies: None
+### Description: Create command handlers using MediatR
 ### Details:
-Implement IStockReportService with methods: GetStockLevelsAsync, GetLowStockItemsAsync, GetReorderSuggestionsAsync, GetMovementSummaryAsync, GetInventoryValueAsync. Create report DTOs.
+Implement command handlers:\n- CreateItemCommandHandler\n- UpdateItemCommandHandler\n- ReceiveStockCommandHandler\n- IssueStockCommandHandler\n- AdjustStockCommandHandler\n- TransferStockCommandHandler\n- Each handler should use repositories, validate business rules, and publish domain events
 
-## 5. Validation and Error Handling [pending]
-### Dependencies: 3.1, 3.2, 3.3
-### Description: Implement comprehensive validation and error handling
+## 5. Implement Query Handlers [done]
+### Dependencies: None
+### Description: Create query handlers using MediatR
 ### Details:
-Create validation rules using FluentValidation for all DTOs. Implement proper error handling with custom exceptions and error responses. Add input validation for all application services.
+Implement query handlers:\n- GetItemsQueryHandler\n- GetItemByIdQueryHandler\n- GetStockLevelsQueryHandler\n- GetMovementHistoryQueryHandler\n- GetLowStockItemsQueryHandler\n- Each handler should use repositories and return appropriate DTOs
+
+## 6. Create Validators [done]
+### Dependencies: None
+### Description: Implement FluentValidation validators
+### Details:
+Create validators:\n- CreateItemCommandValidator\n- UpdateItemCommandValidator\n- ReceiveStockCommandValidator\n- IssueStockCommandValidator\n- AdjustStockCommandValidator\n- TransferStockCommandValidator\n- Each validator should enforce business rules and data validation
 
