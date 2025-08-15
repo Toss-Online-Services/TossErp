@@ -13,6 +13,10 @@ using TossErp.Stock.Infrastructure.Repositories;
 using TossErp.Stock.Domain.Common;
 using TossErp.Stock.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using eShop.EventBus.Extensions;
+using eShop.EventBus.Services;
+using eShop.EventBus.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace TossErp.Stock.Infrastructure;
 
@@ -87,6 +91,16 @@ public static class DependencyInjection
 
         // Register UnitOfWork
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // Register MassTransit Event Bus
+        services.AddMassTransitEventBus(configuration);
+
+        // Register Domain Event Dispatcher
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+
+        // Register Event Bus Health Check
+        services.AddHealthChecks()
+            .AddCheck<EventBusHealthCheck>("eventbus", tags: new[] { "eventbus", "messaging" });
 
         // Register AI Agent services from the Agent project
         // services.AddScoped<TossErp.Stock.Agent.AICoPilotService>();
