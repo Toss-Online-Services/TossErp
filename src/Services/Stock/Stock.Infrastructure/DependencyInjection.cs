@@ -78,6 +78,9 @@ public static class DependencyInjection
         services.AddScoped<IBinRepository, BinRepository>();
         services.AddScoped<IBatchRepository, BatchRepository>();
         services.AddScoped<ISerialNoRepository, SerialNoRepository>();
+        services.AddScoped<IUnitOfMeasureRepository, UnitOfMeasureRepository>();
+        services.AddScoped<IItemGroupRepository, ItemGroupRepository>();
+        services.AddScoped<IStockEntryTypeRepository, StockEntryTypeRepository>();
 
         // Register generic repository for all entities
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

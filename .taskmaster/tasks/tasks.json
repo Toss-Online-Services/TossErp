@@ -185,7 +185,7 @@
             "title": "Create PostgreSQL Schema and Migrations",
             "description": "Generate and configure database migrations for the Stock module schema",
             "details": "- Create initial migration for Stock entities\n- Configure PostgreSQL-specific optimizations\n- Set up proper data types and constraints\n- Configure connection string and database settings\n- Test migration generation and application",
-            "status": "in-progress",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 4
           },
@@ -194,7 +194,7 @@
             "title": "Implement Repository Pattern",
             "description": "Create concrete repository implementations for all domain entities",
             "details": "- Implement IItemRepository, IWarehouseRepository, IStockLevelRepository, IStockMovementRepository\n- Add specialized query methods for complex business logic\n- Implement proper error handling and logging\n- Add caching strategies where appropriate\n- Ensure repository methods align with application layer requirements",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 4
           },
@@ -516,7 +516,7 @@
       "totalEstimatedHours": 180,
       "created": "2025-08-13T16:37:43.174Z",
       "description": "Tasks for master context",
-      "updated": "2025-08-14T07:55:34.760Z"
+      "updated": "2025-08-14T19:19:41.577Z"
     }
   },
   "stock-review": {
