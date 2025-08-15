@@ -45,7 +45,7 @@ public class ItemGroupConfiguration : IEntityTypeConfiguration<ItemGroup>
             .HasMaxLength(100);
 
         builder.Property(x => x.LastModified)
-            .IsRequired(false);
+            .IsRequired();
 
         builder.Property(x => x.LastModifiedBy)
             .HasMaxLength(100);
