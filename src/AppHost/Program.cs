@@ -1,4 +1,4 @@
-using Aspire.Hosting;
+﻿using Aspire.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -12,13 +12,13 @@ var stock = builder.AddProject("stockapi", "../Services/Stock/Stock.API/Stock.AP
     .WithEnvironment("ASPNETCORE_URLS", "http://+:8080")
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
     .WithReference(inventoryDb, "ConnectionStrings__TossErpDb")
-    .WithEndpoint(name: "http-stock", port: 5001, targetPort: 8080);
+    .WithEndpoint(port: 5001, targetPort: 8080, name: "http-stock");
 
 // Gateway
 var gateway = builder.AddProject("gateway", "../Gateway/Gateway.csproj")
     .WithEnvironment("ASPNETCORE_URLS", "http://+:8080")
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
-    .WithEndpoint(name: "http-gateway", port: 8080, targetPort: 8080);
+    .WithEndpoint(port: 8081, targetPort: 8080, name: "http-gateway");
 
 builder.Build().Run();
 

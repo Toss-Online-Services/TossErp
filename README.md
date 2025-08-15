@@ -1,279 +1,270 @@
-# TossErp - Enterprise Resource Planning System
+# TOSS ERP POS & Store Management Mobile Application
 
-## Overview
-TossErp is a modern, microservices-based Enterprise Resource Planning (ERP) system built with .NET 8, Vue.js, and Kubernetes. The system provides comprehensive business management capabilities including inventory management, order processing, user management, and AI-powered automation.
+A comprehensive Flutter mobile application for Point of Sale (POS) and Store Management, integrated with the TOSS ERP system. This application provides offline-first functionality with real-time synchronization capabilities.
+
+## Features
+
+### 🛒 POS (Point of Sale)
+- **Quick Sales Interface**: Fast and intuitive sales screen
+- **Barcode/QR Code Scanning**: Scan products for quick lookup
+- **Customer Management**: Track customer information and history
+- **Payment Processing**: Multiple payment methods support
+- **Receipt Printing**: Bluetooth thermal printer support
+- **Offline Sales**: Complete functionality without internet connection
+
+### 📦 Stock Management
+- **Real-time Inventory**: Live stock level tracking
+- **Stock Movements**: Track all inventory transactions
+- **Low Stock Alerts**: Automatic notifications for reorder points
+- **Stock Adjustments**: Manual stock corrections
+- **Batch/Serial Tracking**: Support for batch and serial number tracking
+- **Multi-warehouse**: Support for multiple warehouse locations
+
+### 📊 Reports & Analytics
+- **Sales Reports**: Daily, weekly, monthly sales analysis
+- **Stock Reports**: Inventory valuation and movement reports
+- **Customer Reports**: Customer purchase history and analytics
+- **Performance Metrics**: Store and staff performance tracking
+- **Export Capabilities**: PDF and Excel export functionality
+
+### ⚙️ Settings & Configuration
+- **User Management**: Multi-user support with role-based access
+- **Store Configuration**: Store details and settings
+- **Printer Setup**: Thermal printer configuration
+- **Sync Settings**: Data synchronization preferences
+- **Backup & Restore**: Data backup and restoration
 
 ## Architecture
 
-### Microservices Architecture
-- **API Gateway**: Centralized routing and authentication
-- **Stock Service**: Inventory and catalog management
-- **User Service**: User management and authentication
-- **Order Service**: Order processing and fulfillment
-- **Payment Service**: Payment processing and financial management
-- **AI Service**: LangChain-powered automation and insights
+### Offline-First Design
+- **SQLite Database**: Local data storage for offline operation
+- **Sync Queue**: Automatic synchronization when online
+- **Conflict Resolution**: Smart conflict handling for data integrity
+- **Background Sync**: Automatic background synchronization
 
-### Technology Stack
-- **Backend**: .NET 8, ASP.NET Core, Entity Framework Core
-- **Frontend**: Vue.js 3, Nuxt.js 3, TypeScript, Tailwind CSS
-- **Database**: SQL Server, Redis
-- **Message Broker**: RabbitMQ
-- **Containerization**: Docker, Kubernetes
-- **Monitoring**: Prometheus, Grafana, ELK Stack
-- **AI Integration**: LangChain.NET
+### State Management
+- **Riverpod**: Modern state management with dependency injection
+- **Repository Pattern**: Clean separation of data access logic
+- **Service Layer**: Business logic encapsulation
+
+### Navigation
+- **GoRouter**: Declarative routing with deep linking support
+- **Bottom Navigation**: Intuitive tab-based navigation
+- **Nested Routes**: Complex navigation patterns support
+
+## Technology Stack
+
+- **Framework**: Flutter 3.x
+- **Language**: Dart
+- **State Management**: Riverpod
+- **Navigation**: GoRouter
+- **Database**: SQLite (sqflite)
+- **HTTP Client**: Dio + Retrofit
+- **UI Components**: Material Design 3
+- **Charts**: FL Chart
+- **Barcode Scanning**: Mobile Scanner
+- **Printing**: ESC/POS Utils
+- **Authentication**: Local Auth + Secure Storage
+
+## Getting Started
+
+### Prerequisites
+
+1. **Flutter SDK**: Install Flutter 3.x or higher
+   ```bash
+   # Check Flutter installation
+   flutter doctor
+   ```
+
+2. **Android Studio / VS Code**: Install your preferred IDE
+3. **Android SDK**: For Android development
+4. **Xcode**: For iOS development (macOS only)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd pos_store
+   ```
+
+2. **Install dependencies**
+   ```bash
+   flutter pub get
+   ```
+
+3. **Generate code**
+   ```bash
+   flutter packages pub run build_runner build
+   ```
+
+4. **Run the application**
+   ```bash
+   flutter run
+   ```
+
+### Configuration
+
+1. **API Configuration**
+   - Update `lib/core/network/api_service.dart` with your API endpoints
+   - Configure authentication tokens and headers
+
+2. **Database Configuration**
+   - The SQLite database is automatically created on first run
+   - Database schema is defined in `lib/core/database/database_service.dart`
+
+3. **Printer Configuration**
+   - Configure thermal printer settings in the app
+   - Test printer connectivity
 
 ## Project Structure
 
 ```
-TossErp/
-├── clients/                    # Frontend applications
-│   ├── web-app/               # Vue.js/Nuxt.js web application
-│   ├── mobile-app/            # Mobile application
-│   └── admin-panel/           # Admin dashboard
-├── services/                   # Microservices
-│   ├── stock-service/         # Inventory management service
-│   ├── user-service/          # User management service
-│   ├── order-service/         # Order processing service
-│   ├── payment-service/       # Payment processing service
-│   └── app-host/              # Application host (Aspire)
-├── gateways/                   # API Gateways
-│   ├── web-gateway/           # Web client gateway
-│   └── mobile-gateway/        # Mobile client gateway
-├── shared/                     # Shared libraries and utilities
-│   ├── service-defaults/      # Common service configurations
-│   ├── event-bus/             # Event-driven communication
-│   ├── common-libraries/      # Shared utilities
-│   ├── proto-definitions/     # gRPC protocol definitions
-│   └── config-templates/      # Configuration templates
-├── deploy/                     # Deployment configurations
-│   ├── kubernetes/            # Kubernetes manifests
-│   ├── docker/                # Docker configurations
-│   └── terraform/             # Infrastructure as Code
-├── docs/                       # Documentation
-│   ├── architecture/          # Architecture diagrams
-│   ├── api/                   # API documentation
-│   └── guides/                # Development guides
-├── tests/                      # Integration and E2E tests
-└── scripts/                    # Build and deployment scripts
+lib/
+├── core/                    # Core functionality
+│   ├── database/           # Database services
+│   ├── network/            # API services
+│   ├── providers/          # App-wide providers
+│   └── router/             # Navigation configuration
+├── features/               # Feature modules
+│   ├── auth/              # Authentication
+│   ├── pos/               # Point of Sale
+│   ├── stock/             # Stock Management
+│   ├── reports/           # Reports & Analytics
+│   └── settings/          # Settings & Configuration
+├── shared/                 # Shared components
+│   ├── models/            # Data models
+│   ├── services/          # Shared services
+│   ├── widgets/           # Reusable widgets
+│   ├── utils/             # Utility functions
+│   └── theme/             # App theming
+└── main.dart              # Application entry point
 ```
 
-## Quick Start
+## Development Guidelines
 
-### Prerequisites
-- .NET 8 SDK
-- Node.js 18+
-- Docker Desktop
-- Kubernetes cluster (optional)
+### Code Style
+- Follow Dart/Flutter best practices
+- Use meaningful variable and function names
+- Add comprehensive comments for complex logic
+- Follow the existing code structure and patterns
 
-### Local Development
+### State Management
+- Use Riverpod for all state management
+- Keep providers focused and single-purpose
+- Use `@riverpod` annotation for code generation
+- Implement proper error handling in providers
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-org/tosserp.git
-   cd tosserp
-   ```
+### Database Operations
+- Always use the DatabaseService for data access
+- Implement proper error handling for database operations
+- Use transactions for complex operations
+- Add items to sync queue for offline operations
 
-2. **Start the application host**
-   ```bash
-   cd services/app-host
-   dotnet run
-   ```
+### UI/UX Guidelines
+- Follow Material Design 3 principles
+- Ensure responsive design for different screen sizes
+- Implement proper loading and error states
+- Use consistent theming throughout the app
 
-3. **Start the web application**
-   ```bash
-   cd clients/web-app
-   npm install
-   npm run dev
-   ```
+## Testing
 
-4. **Access the application**
-   - Web App: http://localhost:3000
-   - API Gateway: http://localhost:8080
-   - Stock Service: http://localhost:5001
-
-### Docker Development
-
-1. **Start all services with Docker Compose**
-   ```bash
-   docker-compose up -d
-   ```
-
-2. **Access services**
-   - Web App: http://localhost:3000
-   - API Gateway: http://localhost:8080
-   - Stock Service: http://localhost:5001
-
-## Features
-
-### Core Features
-- **Inventory Management**: Complete stock tracking and management
-- **Order Processing**: End-to-end order lifecycle management
-- **User Management**: Role-based access control and authentication
-- **Payment Processing**: Secure payment handling
-- **Reporting**: Comprehensive business analytics and reporting
-
-### AI-Powered Features
-- **Natural Language Queries**: Ask questions about your data in plain English
-- **Automated Operations**: AI-driven stock reordering and optimization
-- **Predictive Analytics**: Demand forecasting and trend analysis
-- **Smart Recommendations**: Product recommendations and insights
-
-### Technical Features
-- **Microservices Architecture**: Scalable and maintainable design
-- **Event-Driven Communication**: Loose coupling between services
-- **API-First Design**: Comprehensive REST APIs with OpenAPI documentation
-- **Real-time Updates**: WebSocket integration for live data
-- **Comprehensive Testing**: Unit, integration, and E2E tests
-- **Monitoring & Observability**: Full-stack monitoring and logging
-
-## Development
-
-### Adding a New Service
-
-1. **Create service structure**
-   ```bash
-   mkdir -p services/new-service/src
-   cd services/new-service
-   ```
-
-2. **Add to application host**
-   ```bash
-   # In services/app-host/Program.cs
-   var newService = builder.AddProject("new-service", "../new-service/src/NewService.API");
-   ```
-
-3. **Configure gateway routing**
-   ```bash
-   # In gateways/web-gateway/appsettings.json
-   {
-     "ReverseProxy": {
-       "Routes": {
-         "new-service": {
-           "ClusterId": "new-service-cluster",
-           "Match": { "Path": "/api/new-service/{**catch-all}" }
-         }
-       }
-     }
-   }
-   ```
-
-### Testing
-
+### Unit Tests
 ```bash
-# Run all tests
-dotnet test
-
-# Run specific service tests
-dotnet test services/stock-service/tests/
-
-# Run E2E tests
-npm run test:e2e
+flutter test
 ```
 
-### Code Quality
-
+### Widget Tests
 ```bash
-# Format code
-dotnet format
+flutter test test/widget_test.dart
+```
 
-# Run linting
-npm run lint
+### Integration Tests
+```bash
+flutter test integration_test/
+```
 
-# Run type checking
-npm run type-check
+## Building for Production
+
+### Android
+```bash
+flutter build apk --release
+```
+
+### iOS
+```bash
+flutter build ios --release
 ```
 
 ## Deployment
 
-### Kubernetes Deployment
+### Android
+1. Generate signed APK/AAB
+2. Upload to Google Play Console
+3. Configure app signing
 
-1. **Deploy to development**
-   ```bash
-   kubectl apply -k deploy/kubernetes/overlays/development
-   ```
+### iOS
+1. Archive the app in Xcode
+2. Upload to App Store Connect
+3. Configure app signing and provisioning
 
-2. **Deploy to production**
-```bash
-   kubectl apply -k deploy/kubernetes/overlays/production
-```
+## Troubleshooting
 
-### Docker Deployment
+### Common Issues
 
-```bash
-# Build and push images
-docker-compose -f docker-compose.prod.yml build
-docker-compose -f docker-compose.prod.yml push
+1. **Build Errors**
+   - Run `flutter clean` and `flutter pub get`
+   - Regenerate code with `flutter packages pub run build_runner build`
 
-# Deploy to production
-docker-compose -f docker-compose.prod.yml up -d
-```
+2. **Database Issues**
+   - Check database initialization in `DatabaseService.initialize()`
+   - Verify database schema matches the current version
 
-## Monitoring
+3. **Sync Issues**
+   - Check network connectivity
+   - Verify API endpoints and authentication
+   - Check sync queue for pending items
 
-### Health Checks
-- **Service Health**: `/health` endpoint on each service
-- **Database Health**: Connection and query performance monitoring
-- **External Dependencies**: Third-party service health monitoring
-
-### Metrics
-- **Application Metrics**: Request rates, response times, error rates
-- **Business Metrics**: Orders, revenue, inventory levels
-- **Infrastructure Metrics**: CPU, memory, disk usage
-
-### Logging
-- **Structured Logging**: JSON-formatted logs with correlation IDs
-- **Centralized Logging**: ELK stack for log aggregation and analysis
-- **Log Levels**: Debug, Info, Warning, Error with appropriate filtering
+4. **Printer Issues**
+   - Verify Bluetooth permissions
+   - Check printer compatibility
+   - Test printer connectivity
 
 ## Contributing
 
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Make your changes**: Follow the coding standards and add tests
-4. **Commit your changes**: `git commit -m 'Add amazing feature'`
-5. **Push to the branch**: `git push origin feature/amazing-feature`
-6. **Open a Pull Request**: Provide detailed description and screenshots
-
-### Development Standards
-- **Code Style**: Follow .NET and Vue.js coding conventions
-- **Testing**: Maintain >80% code coverage
-- **Documentation**: Update documentation for all changes
-- **Security**: Follow security best practices
-- **Performance**: Optimize for performance and scalability
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Support
 
-- **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/your-org/tosserp/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/tosserp/discussions)
-- **Email**: support@tosserp.com
+For support and questions:
+- Create an issue in the repository
+- Contact the development team
+- Check the documentation
 
 ## Roadmap
 
-### Phase 1: Core Services ✅
-- [x] Stock Service
-- [x] User Service
-- [x] API Gateway
-- [x] Web Application
+### Version 1.1
+- [ ] Advanced reporting features
+- [ ] Multi-language support
+- [ ] Enhanced offline capabilities
+- [ ] Performance optimizations
 
-### Phase 2: Advanced Features 🚧
-- [ ] Order Service
-- [ ] Payment Service
-- [ ] AI Integration
-- [ ] Mobile Application
+### Version 1.2
+- [ ] Advanced inventory features
+- [ ] Customer loyalty program
+- [ ] Advanced analytics
+- [ ] API integrations
 
-### Phase 3: Enterprise Features 📋
-- [ ] Multi-tenancy
-- [ ] Advanced Analytics
-- [ ] Workflow Engine
-- [ ] Integration Hub
-
-### Phase 4: Scale & Optimize 📋
-- [ ] Performance Optimization
-- [ ] Advanced Monitoring
-- [ ] Auto-scaling
-- [ ] Disaster Recovery 
+### Version 2.0
+- [ ] Web dashboard
+- [ ] Multi-store support
+- [ ] Advanced security features
+- [ ] Cloud backup and restore 
