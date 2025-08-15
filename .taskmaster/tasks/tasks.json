@@ -253,7 +253,7 @@
         "id": 6,
         "title": "Implement Event-Driven Integration",
         "description": "Set up event publishing and subscription for cross-service communication",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
         "dependencies": [
           5
@@ -516,7 +516,7 @@
       "totalEstimatedHours": 180,
       "created": "2025-08-13T16:37:43.174Z",
       "description": "Tasks for master context",
-      "updated": "2025-08-15T10:24:50.059Z"
+      "updated": "2025-08-15T11:40:13.456Z"
     }
   },
   "stock-review": {
