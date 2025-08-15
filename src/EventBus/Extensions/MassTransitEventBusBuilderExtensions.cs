@@ -1,12 +1,13 @@
+#nullable enable
+
 using eShop.EventBus.Abstractions;
 using eShop.EventBus.Configuration;
 using eShop.EventBus.Events;
 using MassTransit;
-using MassTransit.RabbitMq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
 
 namespace eShop.EventBus.Extensions;
 
@@ -17,8 +18,14 @@ public static class MassTransitEventBusBuilderExtensions
         IConfiguration configuration,
         Action<IBusRegistrationConfigurator>? configureMassTransit = null)
     {
-        var eventBusConfig = new EventBusConfiguration();
-        configuration.GetSection("EventBus").Bind(eventBusConfig);
+        var eventBusConfig = new EventBusConfiguration
+        {
+            EventBusConnection = configuration["EventBus:EventBusConnection"] ?? "amqp://guest:guest@localhost:5672",
+            EventBusUserName = configuration["EventBus:EventBusUserName"] ?? "guest",
+            EventBusPassword = configuration["EventBus:EventBusPassword"] ?? "guest",
+            EventBusRetryCount = configuration["EventBus:EventBusRetryCount"] ?? "5",
+            SubscriptionClientName = configuration["EventBus:SubscriptionClientName"] ?? "DefaultService"
+        };
 
         services.AddMassTransit(x =>
         {
@@ -34,30 +41,17 @@ public static class MassTransitEventBusBuilderExtensions
                     host.Password(eventBusConfig.EventBusPassword);
                 });
 
-                // Configure message serialization
-                cfg.UseNewtonsoftJson(new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.Auto,
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-
                 // Configure retry policy
                 cfg.UseMessageRetry(r =>
                 {
                     r.Interval(int.Parse(eventBusConfig.EventBusRetryCount), TimeSpan.FromSeconds(2));
                 });
 
-                // Configure error handling
-                cfg.UseInMemoryOutbox();
+                // Configure error handling - use the new API
+                cfg.UseInMemoryOutbox(context);
 
                 // Configure consumers
                 cfg.ConfigureEndpoints(context);
-
-                // Configure message topology
-                cfg.Message<IntegrationEvent>(e =>
-                {
-                    e.SetEntityName("integration-events");
-                });
             });
 
             // Allow custom configuration
@@ -70,7 +64,7 @@ public static class MassTransitEventBusBuilderExtensions
         return services;
     }
 
-    public static IServiceCollection AddIntegrationEventHandlers<T>(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationEventHandlers<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>(this IServiceCollection services)
         where T : class, IIntegrationEventHandler
     {
         services.AddScoped<T>();
