@@ -53,6 +53,8 @@ public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
             await _mediator.Publish(domainEvent);
 
         // Publish integration events via MassTransit (for cross-service communication)
-        await _domainEventDispatcher.DispatchDomainEventsAsync(domainEvents);
+        // Convert TossErp domain events to generic domain events for the EventBus
+        var genericDomainEvents = domainEvents.Cast<eShop.EventBus.Services.IDomainEvent>();
+        await _domainEventDispatcher.DispatchDomainEventsAsync(genericDomainEvents);
     }
 }

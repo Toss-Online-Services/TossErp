@@ -1,8 +1,8 @@
+#nullable enable
+
 using eShop.EventBus.Abstractions;
 using eShop.EventBus.Events;
 using Microsoft.Extensions.Logging;
-using TossErp.Stock.Domain.Common;
-using TossErp.Stock.Application.IntegrationEvents;
 
 namespace eShop.EventBus.Services;
 
@@ -38,6 +38,11 @@ public class DomainEventDispatcher : IDomainEventDispatcher
                     _logger.LogDebug("No integration event mapping found for domain event: {EventType}", 
                         domainEvent.GetType().Name);
                 }
+            }
+            catch (NotSupportedException)
+            {
+                _logger.LogDebug("No integration event mapping found for domain event: {EventType}", 
+                    domainEvent.GetType().Name);
             }
             catch (Exception ex)
             {
@@ -103,4 +108,11 @@ public class DomainEventDispatcher : IDomainEventDispatcher
 public interface IDomainEventDispatcher
 {
     Task DispatchDomainEventsAsync(IEnumerable<IDomainEvent> domainEvents);
+}
+
+// Generic domain event interface that can be implemented by any domain
+public interface IDomainEvent
+{
+    Guid Id { get; }
+    DateTime OccurredOn { get; }
 }
