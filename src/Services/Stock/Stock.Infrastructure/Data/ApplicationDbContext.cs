@@ -49,6 +49,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<StockLedgerEntry> StockLedgerEntries => Set<StockLedgerEntry>();
     public DbSet<StockEntryType> StockEntryTypes => Set<StockEntryType>();
+    public DbSet<ItemGroup> ItemGroups => Set<ItemGroup>();
     
     // Stock Level and Movement Entities
     public DbSet<StockLevel> StockLevels => Set<StockLevel>();

@@ -19,6 +19,7 @@ public class StockEntryAggregate : Entity, IAggregateRoot
     public DateTime? PostedDate { get; private set; }
     public string? PostedBy { get; private set; }
     public string Company { get; private set; } = string.Empty;
+    public Guid? StockEntryTypeId { get; private set; }
 
     // Child Collections
     private readonly List<StockEntryDetail> _details = new();
@@ -135,6 +136,15 @@ public class StockEntryAggregate : Entity, IAggregateRoot
         Reference = reference?.Trim();
         Notes = notes?.Trim();
 
+        AddDomainEvent(new StockEntryUpdatedEvent(this));
+    }
+
+    public void SetStockEntryType(Guid? stockEntryTypeId)
+    {
+        if (IsPosted)
+            throw new InvalidOperationException("Cannot change stock entry type of a posted entry.");
+
+        StockEntryTypeId = stockEntryTypeId;
         AddDomainEvent(new StockEntryUpdatedEvent(this));
     }
 
