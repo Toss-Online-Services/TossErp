@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TossErp.Stock.Infrastructure.Identity;
 using TossErp.Stock.Infrastructure.Data.Interceptors;
 using TossErp.Stock.Infrastructure.Repositories;
+using TossErp.Stock.Infrastructure.Services;
 using TossErp.Stock.Domain.Common;
 using TossErp.Stock.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -101,6 +102,23 @@ public static class DependencyInjection
         // Register Event Bus Health Check
         services.AddHealthChecks()
             .AddCheck<EventBusHealthCheck>("eventbus", tags: new[] { "eventbus", "messaging" });
+
+        // Register HttpClient for external services
+        services.AddHttpClient<IBarcodeService, BarcodeService>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(30);
+            client.DefaultRequestHeaders.Add("User-Agent", "TossErp-Stock-Service");
+        });
+
+        services.AddHttpClient<ITaxCalculationService, TaxCalculationService>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(30);
+            client.DefaultRequestHeaders.Add("User-Agent", "TossErp-Stock-Service");
+        });
+
+        // Register external service implementations
+        services.AddScoped<IBarcodeService, BarcodeService>();
+        services.AddScoped<ITaxCalculationService, TaxCalculationService>();
 
         // Register AI Agent services from the Agent project
         // services.AddScoped<TossErp.Stock.Agent.AICoPilotService>();
