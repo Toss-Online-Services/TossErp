@@ -3,6 +3,7 @@
 using eShop.EventBus.Abstractions;
 using eShop.EventBus.Configuration;
 using eShop.EventBus.Events;
+using eShop.EventBus.Services;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,6 +61,10 @@ public static class MassTransitEventBusBuilderExtensions
 
         // Register EventBus implementation
         services.AddScoped<IEventBus, EventBus>();
+
+        // Register outbox services
+        services.AddScoped<IOutboxService, OutboxService>();
+        services.AddHostedService<OutboxProcessorService>();
 
         return services;
     }

@@ -61,44 +61,63 @@ public class DomainEventDispatcher : IDomainEventDispatcher
 
         return domainEvent switch
         {
-            // Add mappings for specific domain events to integration events
-            // Note: These are placeholder mappings - you'll need to implement the actual domain events
-            // and their properties to make these work correctly
+            // Map TossErp domain events to integration events
+            TossErp.Stock.Domain.Events.ItemCreatedEvent itemCreated => new eShop.EventBus.Events.Stock.ItemCreatedIntegrationEvent(
+                itemCreated.ItemId,
+                itemCreated.SKU, // ItemCode
+                itemCreated.Name, // ItemName
+                null, // Description - not available in domain event
+                itemCreated.Category,
+                string.Empty, // Unit - not available in domain event
+                0, // StandardRate - not available in domain event
+                0, // MinimumPrice - not available in domain event
+                null, // WeightPerUnit - not available in domain event
+                null, // Length - not available in domain event
+                null, // Width - not available in domain event
+                null, // Height - not available in domain event
+                true, // IsActive - assume true for new items
+                DateTime.UtcNow, // CreatedAt
+                null), // CreatedBy - not available in domain event
             
-            // Example mappings (uncomment and implement when domain events are available):
-            // ItemCreatedEvent itemCreated => new ItemCreatedIntegrationEvent(
-            //     itemCreated.ItemId,
-            //     itemCreated.ItemCode,
-            //     itemCreated.ItemName,
-            //     itemCreated.Description,
-            //     itemCreated.Category,
-            //     itemCreated.Unit,
-            //     itemCreated.StandardRate,
-            //     itemCreated.MinimumPrice,
-            //     itemCreated.WeightPerUnit,
-            //     itemCreated.Length,
-            //     itemCreated.Width,
-            //     itemCreated.Height,
-            //     itemCreated.IsActive,
-            //     itemCreated.CreatedAt,
-            //     itemCreated.CreatedBy),
+            TossErp.Stock.Domain.Events.StockReceivedEvent stockReceived => new eShop.EventBus.Events.Stock.StockReceivedIntegrationEvent(
+                Guid.NewGuid(), // StockMovementId - generate new ID
+                stockReceived.ItemId,
+                string.Empty, // ItemCode - would need to be retrieved from repository
+                string.Empty, // ItemName - would need to be retrieved from repository
+                stockReceived.WarehouseId,
+                string.Empty, // WarehouseCode - would need to be retrieved from repository
+                string.Empty, // WarehouseName - would need to be retrieved from repository
+                null, // BinId - not available in domain event
+                null, // BinCode - not available in domain event
+                stockReceived.Qty.Value, // Quantity
+                0, // UnitCost - not available in domain event
+                null, // BatchNo - not available in domain event
+                null, // SerialNo - not available in domain event
+                null, // ExpiryDate - not available in domain event
+                "Receipt", // MovementType
+                stockReceived.RefId ?? string.Empty, // VoucherNo
+                stockReceived.RefType, // ReferenceDocumentType
+                stockReceived.RefId, // ReferenceDocumentNo
+                DateTime.UtcNow, // ReceivedAt
+                null), // ReceivedBy - not available in domain event
             
-            // StockLevelUpdatedEvent stockUpdated => new StockLevelUpdatedIntegrationEvent(
-            //     stockUpdated.ItemId,
-            //     stockUpdated.ItemCode,
-            //     stockUpdated.ItemName,
-            //     stockUpdated.WarehouseId,
-            //     stockUpdated.WarehouseCode,
-            //     stockUpdated.WarehouseName,
-            //     stockUpdated.BinId,
-            //     stockUpdated.BinCode,
-            //     stockUpdated.PreviousQuantity,
-            //     stockUpdated.NewQuantity,
-            //     stockUpdated.ReservedQuantity,
-            //     stockUpdated.AvailableQuantity,
-            //     stockUpdated.UnitCost,
-            //     stockUpdated.UpdatedAt,
-            //     stockUpdated.UpdatedBy),
+            TossErp.Stock.Domain.Events.StockLevelLowEvent stockLevelLow => new eShop.EventBus.Events.Stock.StockLevelLowIntegrationEvent(
+                stockLevelLow.ItemId,
+                string.Empty, // ItemCode - would need to be retrieved from repository
+                string.Empty, // ItemName - would need to be retrieved from repository
+                string.Empty, // Category - would need to be retrieved from repository
+                stockLevelLow.WarehouseId,
+                string.Empty, // WarehouseCode - would need to be retrieved from repository
+                string.Empty, // WarehouseName - would need to be retrieved from repository
+                null, // BinId - not available in domain event
+                null, // BinCode - not available in domain event
+                stockLevelLow.CurrentQty.Value, // CurrentQuantity
+                10, // Threshold - default value
+                stockLevelLow.ReorderLevel.Value, // ReorderLevel
+                0, // UnitCost - not available in domain event
+                0, // TotalValue - not available in domain event
+                DateTime.UtcNow, // DetectedAt
+                null), // DetectedBy - not available in domain event
             
             _ => null
         };
