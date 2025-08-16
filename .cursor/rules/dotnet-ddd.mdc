@@ -1,5 +1,13 @@
 # .NET 9 DDD Development Guidelines
 
+## Latest .NET 9 Features
+- **Native AOT**: Compile to native code for better performance
+- **Blazor United**: Unified Blazor rendering model
+- **Enhanced Minimal APIs**: Improved performance and features
+- **Source Generators**: Better compile-time code generation
+- **Performance Improvements**: Faster startup and runtime
+- **Enhanced Security**: Latest security features and best practices
+
 ## Clean Architecture Structure
 - **Domain Layer**: Core business logic, entities, value objects, domain services
 - **Application Layer**: Use cases, application services, DTOs, interfaces
@@ -10,11 +18,25 @@
 ```
 Services/
   ServiceName/
-    ServiceName.API/           # Presentation layer
-    ServiceName.Application/    # Application layer
-    ServiceName.Domain/         # Domain layer
-    ServiceName.Infrastructure/ # Infrastructure layer
-    ServiceName.Processor/      # Background services
+    ServiceName.API/           # Presentation layer (.NET 9 Minimal APIs)
+    ServiceName.Application/    # Application layer (CQRS, MediatR)
+    ServiceName.Domain/         # Domain layer (DDD, Events)
+    ServiceName.Infrastructure/ # Infrastructure layer (EF Core 9, Redis)
+    ServiceName.Processor/      # Background services (Hosted Services)
+```
+
+## .NET 9 Project Configuration
+```xml
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <EnableAotCompilation>false</EnableAotCompilation>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+</Project>
 ```
 
 ## Domain Layer Guidelines
@@ -82,7 +104,7 @@ public sealed record Money(decimal Amount, string Currency)
 }
 ```
 
-## Repository Pattern
+## Repository Pattern (.NET 9)
 ```csharp
 public interface IProductRepository
 {
@@ -91,7 +113,44 @@ public interface IProductRepository
     Task AddAsync(Product product, CancellationToken cancellationToken = default);
     Task UpdateAsync(Product product, CancellationToken cancellationToken = default);
     Task DeleteAsync(ProductId id, CancellationToken cancellationToken = default);
+    Task<IAsyncEnumerable<Product>> GetStreamAsync(Expression<Func<Product, bool>> predicate, CancellationToken cancellationToken = default);
 }
+```
+
+## .NET 9 Minimal APIs
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+var app = builder.Build();
+
+// Configure endpoints
+app.MapGet("/products", async (IProductRepository repo, CancellationToken ct) =>
+    await repo.GetAllAsync(ct))
+    .WithName("GetProducts")
+    .WithOpenApi();
+
+app.MapGet("/products/{id}", async (ProductId id, IProductRepository repo, CancellationToken ct) =>
+    await repo.GetByIdAsync(id, ct) is Product product
+        ? Results.Ok(product)
+        : Results.NotFound())
+    .WithName("GetProduct")
+    .WithOpenApi();
+
+app.MapPost("/products", async (CreateProductRequest request, IProductRepository repo, CancellationToken ct) =>
+{
+    var product = Product.Create(request.Name, request.Price, request.Category);
+    await repo.AddAsync(product, ct);
+    return Results.CreatedAtRoute("GetProduct", new { id = product.Id }, product);
+})
+.WithName("CreateProduct")
+.WithOpenApi();
+```
 
 public class ProductRepository : IProductRepository
 {
@@ -337,26 +396,41 @@ public class ProductCreatedEventHandler : INotificationHandler<ProductCreatedEve
 - Test application services
 - Test API endpoints
 
-## Performance Optimization
+## Performance Optimization (.NET 9)
 - Use proper async/await patterns
-- Implement proper caching strategies
-- Use proper database indexing
-- Monitor performance metrics
-- Use proper profiling tools
+- Implement proper caching strategies with Redis
+- Use proper database indexing and EF Core 9 optimizations
+- Monitor performance metrics with OpenTelemetry
+- Use proper profiling tools and .NET 9 diagnostics
+- **Native AOT**: Enable for production deployments
+- **Compression**: Enable single-file compression
+- **Streaming**: Use IAsyncEnumerable for large data sets
+- **Memory Management**: Use ArrayPool<T> for temporary buffers
+- **Hot Reload**: Enable during development for faster iteration
 
-## Security Guidelines
-- Implement proper authentication
-- Use proper authorization policies
-- Validate all inputs
-- Use proper HTTPS configuration
-- Implement proper CORS policies
+## Security Guidelines (.NET 9)
+- Implement proper authentication with JWT and Identity
+- Use proper authorization policies with Policy-based auth
+- Validate all inputs with FluentValidation and DataAnnotations
+- Use proper HTTPS configuration with HSTS and security headers
+- Implement proper CORS policies and rate limiting
+- **Enhanced Security**: Use .NET 9 security features
+- **Input Validation**: Use built-in validation attributes
+- **HTTPS Enforcement**: Configure security headers and certificates
+- **Rate Limiting**: Implement API rate limiting with AspNetCore.RateLimiting
+- **Audit Logging**: Comprehensive security event logging
 
-## Monitoring & Observability
-- Use proper logging with structured data
-- Implement proper metrics collection
-- Use proper distributed tracing
-- Monitor application health
-- Implement proper alerting
+## Monitoring & Observability (.NET 9)
+- Use proper logging with structured data and Serilog
+- Implement proper metrics collection with OpenTelemetry
+- Use proper distributed tracing with ActivitySource
+- Monitor application health with built-in health checks
+- Implement proper alerting with Prometheus and Grafana
+- **OpenTelemetry**: Native .NET 9 OpenTelemetry support
+- **Health Checks**: Comprehensive health monitoring
+- **Metrics**: Built-in performance counters and custom metrics
+- **Tracing**: Distributed tracing across microservices
+- **Logging**: Structured logging with correlation IDs
 description: Comprehensive .NET 9 DDD guidelines for Clean Architecture, microservices, and Domain-Driven Design patterns
 globs: **/*.cs, **/*.csproj, **/*.sln, **/Program.cs, **/Startup.cs, **/appsettings.*
 alwaysApply: true

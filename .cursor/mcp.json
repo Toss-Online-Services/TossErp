@@ -68,6 +68,72 @@
 			"command": "npx",
 			"args": ["-y", "--package=@modelcontextprotocol/server-puppeteer", "mcp-server-puppeteer"],
 			"env": {}
+		},
+		"redis": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-redis", "mcp-server-redis"],
+			"env": {
+				"REDIS_URL": "YOUR_REDIS_URL_HERE"
+			}
+		},
+		"rabbitmq": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-rabbitmq", "mcp-server-rabbitmq"],
+			"env": {
+				"RABBITMQ_URL": "YOUR_RABBITMQ_URL_HERE"
+			}
+		},
+		"elasticsearch": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-elasticsearch", "mcp-server-elasticsearch"],
+			"env": {
+				"ELASTICSEARCH_URL": "YOUR_ELASTICSEARCH_URL_HERE"
+			}
+		},
+		"prometheus": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-prometheus", "mcp-server-prometheus"],
+			"env": {
+				"PROMETHEUS_URL": "YOUR_PROMETHEUS_URL_HERE"
+			}
+		},
+		"grafana": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-grafana", "mcp-server-grafana"],
+			"env": {
+				"GRAFANA_URL": "YOUR_GRAFANA_URL_HERE"
+			}
+		},
+		"terraform": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-terraform", "mcp-server-terraform"],
+			"env": {}
+		},
+		"aws": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-aws", "mcp-server-aws"],
+			"env": {
+				"AWS_ACCESS_KEY_ID": "YOUR_AWS_ACCESS_KEY_ID_HERE",
+				"AWS_SECRET_ACCESS_KEY": "YOUR_AWS_SECRET_ACCESS_KEY_HERE",
+				"AWS_REGION": "YOUR_AWS_REGION_HERE"
+			}
+		},
+		"azure": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-azure", "mcp-server-azure"],
+			"env": {
+				"AZURE_CLIENT_ID": "YOUR_AZURE_CLIENT_ID_HERE",
+				"AZURE_CLIENT_SECRET": "YOUR_AZURE_CLIENT_SECRET_HERE",
+				"AZURE_TENANT_ID": "YOUR_AZURE_TENANT_ID_HERE",
+				"AZURE_SUBSCRIPTION_ID": "YOUR_AZURE_SUBSCRIPTION_ID_HERE"
+			}
+		},
+		"gcp": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-gcp", "mcp-server-gcp"],
+			"env": {
+				"GOOGLE_APPLICATION_CREDENTIALS": "YOUR_GOOGLE_APPLICATION_CREDENTIALS_PATH_HERE"
+			}
 		}
 	}
 }
