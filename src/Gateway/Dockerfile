@@ -1,18 +1,20 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 8080
+EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY gateway/Gateway.csproj gateway/
-RUN dotnet restore gateway/Gateway.csproj
+COPY ["Gateway.csproj", "./"]
+RUN dotnet restore "Gateway.csproj"
 COPY . .
-RUN dotnet publish gateway/Gateway.csproj -c Release -o /out
+RUN dotnet build "Gateway.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "Gateway.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
-COPY --from=build /out .
-ENV ASPNETCORE_URLS=http://+:8080
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Gateway.dll"]
 
 

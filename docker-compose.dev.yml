@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  gateway:
+    build:
+      context: ./src/Gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      - stock-api
+      - stock-postgres
+      - stock-redis
+      - stock-rabbitmq
+    networks:
+      - toss-network
+    volumes:
+      - ./src/Gateway:/app
+      - /app/bin
+      - /app/obj
+
+  # Stock API Service
+  stock-api:
+    build:
+      context: ./src/Services/Stock/Stock.API
+      dockerfile: Dockerfile
+    ports:
+      - "5001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=stock-postgres;Database=tosserp_stock;Username=postgres;Password=postgres123
+      - EventBus__ConnectionString=amqp://guest:guest@stock-rabbitmq:5672
+      - Redis__ConnectionString=stock-redis:6379
+      - OpenAI__ApiKey=${OPENAI_API_KEY:-}
+    depends_on:
+      - stock-postgres
+      - stock-redis
+      - stock-rabbitmq
+    networks:
+      - toss-network
+    volumes:
+      - ./src/Services/Stock/Stock.API:/app
+      - /app/bin
+      - /app/obj
+
+  # PostgreSQL Database
+  stock-postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=tosserp_stock
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres123
+    volumes:
+      - stock-postgres-data:/var/lib/postgresql/data
+      - ./src/Services/Stock/Stock.Infrastructure/Data/Scripts:/docker-entrypoint-initdb.d
+    networks:
+      - toss-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  stock-redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - stock-redis-data:/data
+    networks:
+      - toss-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ Message Broker
+  stock-rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - stock-rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - toss-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  stock-postgres-data:
+  stock-redis-data:
+  stock-rabbitmq-data:
+
+networks:
+  toss-network:
+    driver: bridge
