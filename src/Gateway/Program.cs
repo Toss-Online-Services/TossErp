@@ -38,8 +38,12 @@ builder.Services.AddCors(options =>
     .AllowAnyMethod()
     .AllowCredentials()
     .WithOrigins(
-      "http://localhost:3000",
-      "http://localhost:5173"
+      "http://localhost:3000",    // Admin Panel
+      "http://localhost:5173",    // Web App (Nuxt)
+      "http://localhost:8080",    // Gateway
+      "http://localhost:5000",    // Mobile App (if web-based)
+      "http://localhost:3001",    // Alternative Admin port
+      "http://localhost:4173"     // Nuxt preview port
     ));
 });
 
@@ -57,6 +61,9 @@ if (!string.IsNullOrWhiteSpace(authority))
   app.UseAuthentication();
   app.UseAuthorization();
 }
+
+// Health check endpoint
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "gateway", timestamp = DateTime.UtcNow }));
 
 // BFF endpoints
 app.MapGet("/", () => Results.Ok(new { ok = true, service = "gateway" }));

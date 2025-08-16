@@ -1,8 +1,26 @@
 import type { StockItem, StockMovement } from '../stores/stock'
 
-// API Configuration
-const API_BASE_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-const API_TIMEOUT = 30000 // 30 seconds
+// API Configuration - Use Nuxt runtime config
+const getApiConfig = () => {
+  // In Nuxt, we'll get this from runtime config
+  if (process.client) {
+    // Client-side: use window.__NUXT__ or composables
+    return {
+      baseUrl: 'http://localhost:8080/api', // Fallback
+      timeout: 30000
+    }
+  }
+  
+  // Server-side: use environment variables
+  return {
+    baseUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:8080/api',
+    timeout: parseInt(process.env.API_TIMEOUT || '30000')
+  }
+}
+
+const config = getApiConfig()
+const API_BASE_URL = config.baseUrl
+const API_TIMEOUT = config.timeout
 
 // API Response Types
 interface ApiResponse<T> {
@@ -41,6 +59,9 @@ class ApiClient {
         signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
+          'User-Agent': 'TossErp-Web/1.0.0',
+          'X-Client-Type': 'web',
+          'X-Client-Version': '1.0.0',
           ...options.headers,
         },
       })
@@ -100,6 +121,16 @@ class ApiClient {
       method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined,
     })
+  }
+
+  // Health check
+  async healthCheck(): Promise<boolean> {
+    try {
+      const response = await fetch(`${API_BASE_URL.replace('/api', '')}/health`)
+      return response.ok
+    } catch {
+      return false
+    }
   }
 }
 
@@ -264,6 +295,11 @@ export class StockApiService {
     
     return this.client.get(endpoint)
   }
+
+  // Health check
+  async healthCheck(): Promise<boolean> {
+    return this.client.healthCheck()
+  }
 }
 
 // Export singleton instance
@@ -347,6 +383,10 @@ export class MockStockApiService {
   async getMovementSummary(params: any): Promise<any> {
     await this.delay(500)
     throw new Error('Mock API: Backend not available')
+  }
+
+  async healthCheck(): Promise<boolean> {
+    return false // Mock service is never healthy
   }
 }
 

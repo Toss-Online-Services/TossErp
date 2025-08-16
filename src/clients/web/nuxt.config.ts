@@ -47,14 +47,23 @@ export default defineNuxtConfig({
     fallback: 'light'
   },
 
-
-
   // Runtime config
   runtimeConfig: {
+    // Private keys (server-side only)
+    apiSecret: process.env.API_SECRET,
+    
+    // Public keys (client-side accessible)
     public: {
-      apiBase: process.env.API_BASE_URL || 'http://localhost:5000/api',
+      apiBase: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:8080/api',
+      gatewayUrl: process.env.NUXT_PUBLIC_GATEWAY_URL || 'http://localhost:8080',
       appName: 'TOSS ERP Stock Management',
-      appVersion: '1.0.0'
+      appVersion: '1.0.0',
+      environment: process.env.NODE_ENV || 'development',
+      enableMockApi: process.env.NUXT_USE_MOCK_API === 'true',
+      apiTimeout: parseInt(process.env.API_TIMEOUT || '30000'),
+      enableRealTimeUpdates: process.env.ENABLE_REAL_TIME_UPDATES !== 'false',
+      enableOfflineSupport: process.env.ENABLE_OFFLINE_SUPPORT !== 'false',
+      enableAnalytics: process.env.ENABLE_ANALYTICS !== 'false'
     }
   },
 
@@ -65,13 +74,26 @@ export default defineNuxtConfig({
 
   // Nitro configuration
   nitro: {
-    preset: 'node-server'
+    preset: 'node-server',
+    devProxy: {
+      // Proxy API requests to gateway during development
+      '/api': {
+        target: process.env.NUXT_PUBLIC_GATEWAY_URL || 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   },
 
   // Vite configuration
   vite: {
     optimizeDeps: {
       include: ['chart.js', 'vue-chartjs']
+    },
+    define: {
+      // Make environment variables available to client
+      __API_BASE_URL__: JSON.stringify(process.env.NUXT_PUBLIC_API_URL || 'http://localhost:8080/api'),
+      __GATEWAY_URL__: JSON.stringify(process.env.NUXT_PUBLIC_GATEWAY_URL || 'http://localhost:8080')
     }
   }
 })
