@@ -1,0 +1,82 @@
+# Error Handling & Logging Guidelines
+
+## Error Boundaries
+- Implement proper error boundaries
+- Use Nuxt error.vue for global error handling
+- Handle component errors gracefully
+- Implement proper fallback UI
+- Use proper error reporting
+
+## Error Types
+- Distinguish between user errors and system errors
+- Handle validation errors properly
+- Implement proper API error handling
+- Handle network errors gracefully
+- Use proper error categorization
+
+## Logging Strategy
+- Use structured logging
+- Implement proper log levels
+- Use proper log formatting
+- Implement proper log rotation
+- Use proper log aggregation
+
+## Client-Side Error Handling
+- Handle JavaScript errors properly
+- Implement proper error reporting
+- Use proper error boundaries
+- Handle async errors properly
+- Implement proper retry logic
+
+## Server-Side Error Handling
+- Handle API errors properly
+- Implement proper error responses
+- Use proper HTTP status codes
+- Handle database errors gracefully
+- Implement proper error logging
+
+## User Experience
+- Show user-friendly error messages
+- Implement proper loading states
+- Handle errors gracefully
+- Provide helpful error guidance
+- Implement proper error recovery
+
+## Monitoring & Alerting
+- Monitor error rates
+- Set up proper error alerts
+- Track error trends
+- Implement proper error reporting
+- Use proper error analytics
+
+## Testing Error Scenarios
+- Test error handling paths
+- Test error boundaries
+- Test error recovery
+- Test error reporting
+- Test error logging
+
+## Performance Impact
+- Minimize error handling overhead
+- Use proper error caching
+- Implement proper error throttling
+- Monitor error handling performance
+- Optimize error handling code
+
+## Security Considerations
+- Don't expose sensitive information in errors
+- Implement proper error sanitization
+- Handle authentication errors properly
+- Implement proper error rate limiting
+- Monitor for security-related errors
+
+## Best Practices
+- Use consistent error handling patterns
+- Implement proper error documentation
+- Use proper error codes
+- Implement proper error tracking
+- Follow error handling standards
+description: Comprehensive error handling and logging guidelines for Nuxt 4 applications
+globs: **/*.ts, **/*.vue, **/*.js, **/error.vue, **/error-handling/**/*
+alwaysApply: true
+---

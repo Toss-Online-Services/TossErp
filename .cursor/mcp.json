@@ -14,6 +14,60 @@
 				"AZURE_OPENAI_API_KEY": "YOUR_AZURE_KEY_HERE",
 				"OLLAMA_API_KEY": "YOUR_OLLAMA_API_KEY_HERE"
 			}
+		},
+		"filesystem": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-filesystem", "mcp-server-filesystem"],
+			"env": {}
+		},
+		"git": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-git", "mcp-server-git"],
+			"env": {}
+		},
+		"brave-search": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-brave-search", "mcp-server-brave-search"],
+			"env": {
+				"BRAVE_API_KEY": "YOUR_BRAVE_API_KEY_HERE"
+			}
+		},
+		"web-search": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-web-search", "mcp-server-web-search"],
+			"env": {}
+		},
+		"sqlite": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-sqlite", "mcp-server-sqlite"],
+			"env": {}
+		},
+		"postgres": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-postgres", "mcp-server-postgres"],
+			"env": {
+				"POSTGRES_CONNECTION_STRING": "YOUR_POSTGRES_CONNECTION_STRING_HERE"
+			}
+		},
+		"docker": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-docker", "mcp-server-docker"],
+			"env": {}
+		},
+		"kubernetes": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-kubernetes", "mcp-server-kubernetes"],
+			"env": {}
+		},
+		"http": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-http", "mcp-server-http"],
+			"env": {}
+		},
+		"puppeteer": {
+			"command": "npx",
+			"args": ["-y", "--package=@modelcontextprotocol/server-puppeteer", "mcp-server-puppeteer"],
+			"env": {}
 		}
 	}
 }

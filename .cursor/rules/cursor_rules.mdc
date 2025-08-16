@@ -44,6 +44,7 @@ alwaysApply: true
   - Add examples from actual codebase
   - Remove outdated patterns
   - Cross-reference related rules
+  - Ensure Beast Mode rule is always applied for autonomous problem-solving
 
 - **Best Practices:**
   - Use bullet points for clarity
