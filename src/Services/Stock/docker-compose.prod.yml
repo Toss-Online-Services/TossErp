@@ -1,0 +1,182 @@
+version: '3.8'
+
+services:
+  stock-api:
+    build:
+      context: .
+      dockerfile: Stock.API/Dockerfile
+    image: tosserp/stock-api:latest
+    container_name: stock-api
+    restart: unless-stopped
+    ports:
+      - "5001:80"
+      - "5002:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+      - ConnectionStrings__DefaultConnection=Host=stock-postgres;Port=5432;Database=stock_db;Username=postgres;Password=${POSTGRES_PASSWORD};SSL Mode=Prefer;TrustServerCertificate=true;
+      - ConnectionStrings__EventBus=Host=stock-rabbitmq;Port=5672;Username=${RABBITMQ_USER};Password=${RABBITMQ_PASSWORD}
+      - Stock__Agent__OpenAI__ApiKey=${OPENAI_API_KEY}
+      - Stock__Agent__OpenAI__Model=gpt-4
+      - Stock__Agent__OpenAI__MaxTokens=4000
+    depends_on:
+      - stock-postgres
+      - stock-rabbitmq
+      - stock-redis
+    networks:
+      - stock-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  stock-processor:
+    build:
+      context: .
+      dockerfile: Stock.Processor/Dockerfile
+    image: tosserp/stock-processor:latest
+    container_name: stock-processor
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=stock-postgres;Port=5432;Database=stock_db;Username=postgres;Password=${POSTGRES_PASSWORD};SSL Mode=Prefer;TrustServerCertificate=true;
+      - ConnectionStrings__EventBus=Host=stock-rabbitmq;Port=5672;Username=${RABBITMQ_USER};Password=${RABBITMQ_PASSWORD}
+      - Stock__Processor__LowStockAlert__Enabled=true
+      - Stock__Processor__LowStockAlert__CheckIntervalMinutes=15
+      - Stock__Processor__Reconciliation__Enabled=true
+      - Stock__Processor__Reconciliation__CheckIntervalHours=24
+      - Stock__Processor__Processing__Enabled=true
+      - Stock__Processor__Processing__BatchSize=100
+      - Stock__Processor__Processing__MaxRetries=3
+    depends_on:
+      - stock-postgres
+      - stock-rabbitmq
+      - stock-redis
+    networks:
+      - stock-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health/live"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+  stock-postgres:
+    image: postgres:15-alpine
+    container_name: stock-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=stock_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - stock-postgres-data:/var/lib/postgresql/data
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+    ports:
+      - "5432:5432"
+    networks:
+      - stock-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  stock-rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: stock-rabbitmq
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+      - RABBITMQ_DEFAULT_VHOST=/
+    volumes:
+      - stock-rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - stock-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  stock-redis:
+    image: redis:7-alpine
+    container_name: stock-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - stock-redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - stock-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  stock-prometheus:
+    image: prom/prometheus:latest
+    container_name: stock-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - stock-prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - stock-network
+
+  stock-grafana:
+    image: grafana/grafana:latest
+    container_name: stock-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - stock-grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - "3000:3000"
+    depends_on:
+      - stock-prometheus
+    networks:
+      - stock-network
+
+volumes:
+  stock-postgres-data:
+    driver: local
+  stock-rabbitmq-data:
+    driver: local
+  stock-redis-data:
+    driver: local
+  stock-prometheus-data:
+    driver: local
+  stock-grafana-data:
+    driver: local
+
+networks:
+  stock-network:
+    driver: bridge

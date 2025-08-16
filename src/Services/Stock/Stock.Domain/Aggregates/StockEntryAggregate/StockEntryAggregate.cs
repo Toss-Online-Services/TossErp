@@ -2,6 +2,7 @@ using TossErp.Stock.Domain.Common;
 using TossErp.Stock.Domain.ValueObjects;
 using TossErp.Stock.Domain.Aggregates.StockEntryAggregate.Entities;
 using TossErp.Stock.Domain.Aggregates.StockEntryAggregate.Events;
+using TossErp.Stock.Domain.Enums;
 
 namespace TossErp.Stock.Domain.Aggregates.StockEntryAggregate;
 
@@ -20,6 +21,7 @@ public class StockEntryAggregate : Entity, IAggregateRoot
     public string? PostedBy { get; private set; }
     public string Company { get; private set; } = string.Empty;
     public Guid? StockEntryTypeId { get; private set; }
+    public StockEntryStatus Status { get; private set; }
 
     // Child Collections
     private readonly List<StockEntryDetail> _details = new();
@@ -47,6 +49,7 @@ public class StockEntryAggregate : Entity, IAggregateRoot
         Reference = reference?.Trim();
         Notes = notes?.Trim();
         IsPosted = false;
+        Status = StockEntryStatus.Draft;
 
         AddDomainEvent(new StockEntryCreatedEvent(this));
     }
@@ -183,5 +186,38 @@ public class StockEntryAggregate : Entity, IAggregateRoot
     public IEnumerable<StockEntryDetail> GetDetailsByWarehouse(Guid warehouseId)
     {
         return _details.Where(d => d.WarehouseId == warehouseId);
+    }
+
+    /// <summary>
+    /// Mark the stock entry as processed
+    /// </summary>
+    public void MarkAsProcessed()
+    {
+        if (IsPosted)
+            throw new InvalidOperationException("Entry is already posted.");
+
+        // Mark as processed (this could be a separate status from posted)
+        // For now, we'll use the existing IsPosted flag
+        IsPosted = true;
+        PostedDate = DateTime.UtcNow;
+        PostedBy = "System";
+        Status = StockEntryStatus.Posted;
+
+        AddDomainEvent(new StockEntryProcessedEvent(this));
+    }
+
+    /// <summary>
+    /// Mark the stock entry as failed with an error message
+    /// </summary>
+    public void MarkAsFailed(string errorMessage)
+    {
+        if (string.IsNullOrWhiteSpace(errorMessage))
+            throw new ArgumentException("Error message cannot be empty", nameof(errorMessage));
+
+        // Add error information to notes
+        Notes = $"Processing failed: {errorMessage}";
+        Status = StockEntryStatus.Rejected;
+        
+        AddDomainEvent(new StockEntryFailedEvent(this, errorMessage));
     }
 } 

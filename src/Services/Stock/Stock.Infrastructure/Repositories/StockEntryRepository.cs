@@ -174,6 +174,15 @@ public class StockEntryRepository : IStockEntryRepository
     public Task<bool> ExistsByEntryNumberAsync(string entryNumber, CancellationToken cancellationToken = default) => Task.FromResult(false);
     public Task<string> GetNextEntryNumberAsync(string prefix, CancellationToken cancellationToken = default) => Task.FromResult($"{prefix}-{DateTime.Now:yyyyMMdd}-001");
 
+    public async Task<IEnumerable<StockEntryAggregate>> GetPendingEntriesAsync(CancellationToken cancellationToken = default)
+    {
+        // Get stock entries that are not posted and ready for processing
+        return await _context.StockEntries
+            .Include(x => x.Details)
+            .Where(x => !x.IsPosted && x.Status == StockEntryStatus.Pending)
+            .ToListAsync(cancellationToken);
+    }
+
     public IQueryable<StockEntryAggregate> GetQueryable()
     {
         return _context.StockEntries

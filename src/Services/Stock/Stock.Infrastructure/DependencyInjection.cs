@@ -121,8 +121,8 @@ public static class DependencyInjection
         services.AddScoped<ITaxCalculationService, TaxCalculationService>();
 
         // Register AI Agent services from the Agent project
-        // services.AddScoped<TossErp.Stock.Agent.AICoPilotService>();
-        // services.AddScoped<TossErp.Stock.Agent.GroupPurchaseAgent>();
+        services.AddScoped<TossErp.Stock.Agent.AICoPilotService>();
+        services.AddScoped<TossErp.Stock.Agent.GroupPurchaseAgent>();
 
         return services;
     }

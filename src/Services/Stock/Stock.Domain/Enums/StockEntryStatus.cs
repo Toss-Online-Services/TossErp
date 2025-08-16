@@ -4,8 +4,9 @@ public enum StockEntryStatus
 {
     Draft = 1,
     Submitted = 2,
-    Approved = 3,
-    Posted = 4,
-    Cancelled = 5,
-    Rejected = 6
+    Pending = 3,
+    Approved = 4,
+    Posted = 5,
+    Cancelled = 6,
+    Rejected = 7
 } 

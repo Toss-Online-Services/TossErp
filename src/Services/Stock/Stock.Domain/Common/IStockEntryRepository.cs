@@ -81,4 +81,9 @@ public interface IStockEntryRepository : IRepository<StockEntryAggregate>
     Task<IEnumerable<StockEntryAggregate>> GetByReferenceAsync(string reference, CancellationToken cancellationToken = default);
     Task<long> GetPostedCountAsync(CancellationToken cancellationToken = default);
     Task<long> GetUnpostedCountAsync(CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Get pending stock entries that are ready for processing
+    /// </summary>
+    Task<IEnumerable<StockEntryAggregate>> GetPendingEntriesAsync(CancellationToken cancellationToken = default);
 } 

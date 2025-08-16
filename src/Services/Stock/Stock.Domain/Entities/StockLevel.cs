@@ -14,6 +14,18 @@ public class StockLevel : Entity<Guid>
     public decimal Quantity { get; private set; }
     public decimal ReservedQuantity { get; private set; }
     public decimal UnitCost { get; private set; }
+    
+    // Alias property for compatibility with tests
+    public decimal QuantityOnHand => Quantity;
+    public string ItemCode => Item?.ItemCode?.Value ?? string.Empty;
+    public string ItemName => Item?.ItemName ?? string.Empty;
+    public string WarehouseCode => Warehouse?.WarehouseCode ?? string.Empty;
+    public string BinCode => Bin?.BinCode ?? string.Empty;
+    public string UnitOfMeasure => Item?.StockUOM?.Code ?? string.Empty;
+    public decimal DefaultPrice => Item?.DefaultPrice ?? 0;
+    public decimal ReorderLevel => Item?.ReorderLevel ?? 0;
+    public decimal ReorderQuantity => Item?.ReorderQuantity ?? 0;
+    public bool IsActive => Item?.IsActive ?? false;
     public DateTime LastMovementDate { get; private set; }
     public DateTime LastUpdated { get; private set; }
 
@@ -22,8 +34,32 @@ public class StockLevel : Entity<Guid>
     public virtual WarehouseAggregate Warehouse { get; private set; } = null!;
     public virtual Bin? Bin { get; private set; }
 
-    // For EF Core
-    private StockLevel() { }
+    protected StockLevel() { } // For EF Core
+
+    // Constructor for compatibility with tests
+    public StockLevel(Guid itemId, Guid warehouseId, Guid binId, decimal quantity, decimal unitCost)
+    {
+        if (itemId == Guid.Empty)
+            throw new ArgumentException("Item ID cannot be empty", nameof(itemId));
+        if (warehouseId == Guid.Empty)
+            throw new ArgumentException("Warehouse ID cannot be empty", nameof(warehouseId));
+        if (binId == Guid.Empty)
+            throw new ArgumentException("Bin ID cannot be empty", nameof(binId));
+        if (quantity < 0)
+            throw new ArgumentException("Quantity cannot be negative", nameof(quantity));
+        if (unitCost < 0)
+            throw new ArgumentException("Unit cost cannot be negative", nameof(unitCost));
+
+        Id = Guid.NewGuid();
+        ItemId = itemId;
+        WarehouseId = warehouseId;
+        BinId = binId;
+        Quantity = quantity;
+        UnitCost = unitCost;
+        ReservedQuantity = 0;
+        LastMovementDate = DateTime.UtcNow;
+        LastUpdated = DateTime.UtcNow;
+    }
 
     public static StockLevel Create(Guid itemId, Guid warehouseId, Guid? binId = null, decimal quantity = 0, decimal unitCost = 0)
     {

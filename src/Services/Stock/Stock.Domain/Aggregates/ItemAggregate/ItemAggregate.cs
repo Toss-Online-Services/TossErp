@@ -93,6 +93,13 @@ public class ItemAggregate : Entity, IAggregateRoot
     // Computed Properties (calculated from StockLedgerEntry)
     public decimal CurrentStock { get; set; } = 0; // This will be set by the repository or service layer
     public Guid ItemId => Id; // Alias for compatibility
+    
+    // Alias properties for compatibility
+    public decimal? ReorderLevel => ReOrderLevel;
+    public decimal? ReorderQuantity => ReOrderQty;
+    public decimal DefaultPrice => StandardRate ?? 0;
+    public string DefaultUnitOfMeasure => StockUOM?.Code ?? string.Empty;
+    public bool IsActive => !Disabled && !Deleted;
 
     protected ItemAggregate() { } // For EF Core
 
@@ -143,6 +150,40 @@ public class ItemAggregate : Entity, IAggregateRoot
         AddDomainEvent(new AggregateItemBasicInfoUpdatedEvent(this));
     }
 
+    public void Update(string itemName, string? description, ItemType itemType, string unitOfMeasure, decimal defaultPrice, int reorderLevel, int reorderQuantity)
+    {
+        if (string.IsNullOrWhiteSpace(itemName))
+            throw new ArgumentException("Item name cannot be empty", nameof(itemName));
+
+        ItemName = itemName;
+        Description = description;
+        ItemType = itemType;
+        // Note: UnitOfMeasure is not directly settable, would need to create a new one
+        StandardRate = defaultPrice;
+        ReOrderLevel = reorderLevel;
+        ReOrderQty = reorderQuantity;
+
+        AddDomainEvent(new AggregateItemBasicInfoUpdatedEvent(this));
+    }
+
+    public void Disable()
+    {
+        if (Disabled)
+            throw new InvalidOperationException("Item is already disabled");
+
+        Disabled = true;
+        AddDomainEvent(new ItemDisabledEvent(this));
+    }
+
+    public void Enable()
+    {
+        if (!Disabled)
+            throw new InvalidOperationException("Item is already enabled");
+
+        Disabled = false;
+        AddDomainEvent(new ItemEnabledEvent(this));
+    }
+
     public void UpdatePricing(decimal? standardRate, decimal? minimumPrice)
     {
         if (standardRate.HasValue && standardRate.Value < 0)
@@ -177,24 +218,6 @@ public class ItemAggregate : Entity, IAggregateRoot
     {
         ValuationMethod = valuationMethod;
         AddDomainEvent(new ItemValuationMethodUpdatedEvent(this));
-    }
-
-    public void Disable()
-    {
-        if (Disabled)
-            throw new InvalidOperationException("Item is already disabled");
-
-        Disabled = true;
-        AddDomainEvent(new ItemDisabledEvent(this));
-    }
-
-    public void Enable()
-    {
-        if (!Disabled)
-            throw new InvalidOperationException("Item is not disabled");
-
-        Disabled = false;
-        AddDomainEvent(new ItemEnabledEvent(this));
     }
 
     public void SoftDelete()

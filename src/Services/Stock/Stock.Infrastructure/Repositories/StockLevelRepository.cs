@@ -47,6 +47,15 @@ public class StockLevelRepository : IStockLevelRepository
         return await query.FirstOrDefaultAsync(cancellationToken);
     }
 
+    public async Task<StockLevel?> GetByItemAndLocationAsync(Guid itemId, Guid warehouseId, Guid binId, CancellationToken cancellationToken = default)
+    {
+        return await _context.StockLevels
+            .Include(sl => sl.Item)
+            .Include(sl => sl.Warehouse)
+            .Include(sl => sl.Bin)
+            .FirstOrDefaultAsync(sl => sl.ItemId == itemId && sl.WarehouseId == warehouseId && sl.BinId == binId, cancellationToken);
+    }
+
     public async Task<IEnumerable<StockLevel>> GetByItemAsync(Guid itemId, CancellationToken cancellationToken = default)
     {
         return await _context.StockLevels
@@ -91,6 +100,13 @@ public class StockLevelRepository : IStockLevelRepository
             .SumAsync(sl => sl.Quantity - sl.ReservedQuantity, cancellationToken);
 
         return availableStock >= quantity;
+    }
+
+    public async Task<decimal> GetTotalStockByItemAsync(Guid itemId, CancellationToken cancellationToken = default)
+    {
+        return await _context.StockLevels
+            .Where(sl => sl.ItemId == itemId)
+            .SumAsync(sl => sl.Quantity, cancellationToken);
     }
 
     public async Task<StockLevel> AddAsync(StockLevel entity, CancellationToken cancellationToken = default)

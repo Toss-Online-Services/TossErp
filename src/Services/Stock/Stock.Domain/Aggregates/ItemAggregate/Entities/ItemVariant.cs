@@ -14,6 +14,12 @@ public class ItemVariant : Entity
     public string? Description { get; private set; }
     public decimal? AdditionalCost { get; private set; }
     public bool IsActive { get; private set; }
+    
+    // Alias properties for compatibility with tests
+    public string Size => VariantName;
+    public string Value => VariantCode;
+    public string Code => VariantCode;
+    public decimal Price => AdditionalCost ?? 0;
 
     protected ItemVariant() { } // For EF Core
 
@@ -28,6 +34,23 @@ public class ItemVariant : Entity
         VariantName = variantName.Trim();
         Description = description?.Trim();
         AdditionalCost = additionalCost;
+        IsActive = true;
+    }
+
+    // Constructor for compatibility with tests
+    public ItemVariant(string size, string value, string code, decimal price)
+    {
+        if (string.IsNullOrWhiteSpace(size))
+            throw new ArgumentException("Size cannot be empty", nameof(size));
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("Value cannot be empty", nameof(value));
+        if (string.IsNullOrWhiteSpace(code))
+            throw new ArgumentException("Code cannot be empty", nameof(code));
+
+        VariantName = size.Trim();
+        VariantCode = code.Trim().ToUpperInvariant();
+        Description = value.Trim();
+        AdditionalCost = price;
         IsActive = true;
     }
 
