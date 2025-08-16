@@ -1,0 +1,82 @@
+# Accessibility Guidelines
+
+## Semantic HTML
+- Use proper HTML5 semantic elements
+- Implement proper heading hierarchy
+- Use proper form elements
+- Implement proper table structure
+- Use proper list elements
+
+## ARIA Attributes
+- Use proper ARIA labels
+- Implement proper ARIA descriptions
+- Use proper ARIA states
+- Implement proper ARIA live regions
+- Use proper ARIA landmarks
+
+## Keyboard Navigation
+- Ensure all interactive elements are keyboard accessible
+- Implement proper tab order
+- Use proper keyboard shortcuts
+- Handle keyboard events properly
+- Implement proper focus management
+
+## Screen Reader Support
+- Test with screen readers
+- Use proper alt text for images
+- Implement proper form labels
+- Use proper heading structure
+- Implement proper skip links
+
+## Color and Contrast
+- Ensure proper color contrast ratios
+- Don't rely solely on color for information
+- Test with color blindness simulators
+- Use proper color combinations
+- Implement proper dark mode support
+
+## Focus Management
+- Implement proper focus indicators
+- Handle focus properly in modals
+- Use proper focus trapping
+- Implement proper focus restoration
+- Use proper focus order
+
+## Form Accessibility
+- Use proper form labels
+- Implement proper error messages
+- Use proper field validation
+- Implement proper form feedback
+- Use proper form structure
+
+## Dynamic Content
+- Handle dynamic content updates properly
+- Use proper ARIA live regions
+- Implement proper loading states
+- Handle error states properly
+- Use proper progress indicators
+
+## Testing
+- Test with accessibility tools
+- Test with screen readers
+- Test keyboard navigation
+- Test color contrast
+- Test with different devices
+
+## Performance
+- Ensure accessibility doesn't impact performance
+- Use proper lazy loading
+- Implement proper caching
+- Monitor accessibility metrics
+- Optimize for accessibility
+
+## Best Practices
+- Follow WCAG 2.1 guidelines
+- Use proper accessibility patterns
+- Implement proper error handling
+- Use proper testing tools
+- Document accessibility features
+description: Comprehensive accessibility guidelines for Nuxt 4 and Vue 3 applications
+globs: **/*.vue, **/*.ts, **/*.js, **/components/**/*
+alwaysApply: true
+---
