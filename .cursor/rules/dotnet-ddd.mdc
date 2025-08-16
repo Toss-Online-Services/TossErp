@@ -1,0 +1,363 @@
+# .NET 9 DDD Development Guidelines
+
+## Clean Architecture Structure
+- **Domain Layer**: Core business logic, entities, value objects, domain services
+- **Application Layer**: Use cases, application services, DTOs, interfaces
+- **Infrastructure Layer**: Data access, external services, configuration
+- **Presentation Layer**: Controllers, API endpoints, middleware
+
+## Project Organization
+```
+Services/
+  ServiceName/
+    ServiceName.API/           # Presentation layer
+    ServiceName.Application/    # Application layer
+    ServiceName.Domain/         # Domain layer
+    ServiceName.Infrastructure/ # Infrastructure layer
+    ServiceName.Processor/      # Background services
+```
+
+## Domain Layer Guidelines
+- Keep domain entities focused on business logic
+- Use value objects for immutable descriptive types
+- Implement proper aggregate roots with invariants
+- Use domain events for significant state changes
+- Keep domain services stateless and focused
+
+## Entity Design
+```csharp
+public class Product : AggregateRoot
+{
+    public ProductId Id { get; private set; }
+    public ProductName Name { get; private set; }
+    public Money Price { get; private set; }
+    public ProductStatus Status { get; private set; }
+    
+    private readonly List<ProductCategory> _categories = new();
+    public IReadOnlyList<ProductCategory> Categories => _categories.AsReadOnly();
+    
+    public void UpdatePrice(Money newPrice)
+    {
+        if (newPrice.Amount <= 0)
+            throw new DomainException("Price must be positive");
+            
+        Price = newPrice;
+        AddDomainEvent(new ProductPriceUpdated(Id, newPrice));
+    }
+    
+    public void AddCategory(ProductCategory category)
+    {
+        if (_categories.Count >= 10)
+            throw new DomainException("Maximum 10 categories allowed");
+            
+        _categories.Add(category);
+    }
+}
+```
+
+## Value Objects
+```csharp
+public sealed record Money(decimal Amount, string Currency)
+{
+    public static Money Create(decimal amount, string currency)
+    {
+        if (amount < 0)
+            throw new DomainException("Amount cannot be negative");
+            
+        if (string.IsNullOrWhiteSpace(currency))
+            throw new DomainException("Currency is required");
+            
+        return new Money(amount, currency.ToUpperInvariant());
+    }
+    
+    public Money Add(Money other)
+    {
+        if (Currency != other.Currency)
+            throw new DomainException("Cannot add different currencies");
+            
+        return new Money(Amount + other.Amount, Currency);
+    }
+    
+    public override string ToString() => $"{Amount:F2} {Currency}";
+}
+```
+
+## Repository Pattern
+```csharp
+public interface IProductRepository
+{
+    Task<Product?> GetByIdAsync(ProductId id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Product>> GetByCategoryAsync(ProductCategory category, CancellationToken cancellationToken = default);
+    Task AddAsync(Product product, CancellationToken cancellationToken = default);
+    Task UpdateAsync(Product product, CancellationToken cancellationToken = default);
+    Task DeleteAsync(ProductId id, CancellationToken cancellationToken = default);
+}
+
+public class ProductRepository : IProductRepository
+{
+    private readonly ApplicationDbContext _context;
+    
+    public ProductRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+    
+    public async Task<Product?> GetByIdAsync(ProductId id, CancellationToken cancellationToken = default)
+    {
+        return await _context.Products
+            .Include(p => p.Categories)
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+    }
+}
+```
+
+## Application Layer Guidelines
+- Use CQRS pattern for complex operations
+- Implement proper validation with FluentValidation
+- Use MediatR for command/query handling
+- Keep application services thin and focused
+- Implement proper error handling and logging
+
+## CQRS Implementation
+```csharp
+public record CreateProductCommand : IRequest<ProductId>
+{
+    public string Name { get; init; } = string.Empty;
+    public decimal Price { get; init; }
+    public string Currency { get; init; } = string.Empty;
+    public List<string> Categories { get; init; } = new();
+}
+
+public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductId>
+{
+    private readonly IProductRepository _repository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<CreateProductCommandHandler> _logger;
+    
+    public CreateProductCommandHandler(
+        IProductRepository repository,
+        IUnitOfWork unitOfWork,
+        ILogger<CreateProductCommandHandler> logger)
+    {
+        _repository = repository;
+        _unitOfWork = unitOfWork;
+        _logger = logger;
+    }
+    
+    public async Task<ProductId> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var product = Product.Create(
+                ProductName.Create(request.Name),
+                Money.Create(request.Price, request.Currency),
+                request.Categories.Select(ProductCategory.Create).ToList()
+            );
+            
+            await _repository.AddAsync(product, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogInformation("Product {ProductId} created successfully", product.Id);
+            return product.Id;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create product");
+            throw;
+        }
+    }
+}
+```
+
+## Validation
+```csharp
+public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
+{
+    public CreateProductCommandValidator()
+    {
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .MaximumLength(100)
+            .Matches(@"^[a-zA-Z0-9\s\-_]+$")
+            .WithMessage("Name can only contain alphanumeric characters, spaces, hyphens, and underscores");
+            
+        RuleFor(x => x.Price)
+            .GreaterThan(0)
+            .LessThanOrEqualTo(1000000);
+            
+        RuleFor(x => x.Currency)
+            .NotEmpty()
+            .Length(3)
+            .Matches(@"^[A-Z]{3}$")
+            .WithMessage("Currency must be a 3-letter ISO code");
+            
+        RuleFor(x => x.Categories)
+            .NotEmpty()
+            .MaximumLength(10);
+            
+        RuleForEach(x => x.Categories)
+            .NotEmpty()
+            .MaximumLength(50);
+    }
+}
+```
+
+## Infrastructure Layer
+- Use Entity Framework Core for data access
+- Implement proper connection string management
+- Use proper migration strategies
+- Implement proper caching with Redis
+- Use proper logging with Serilog
+
+## Entity Framework Configuration
+```csharp
+public class ProductConfiguration : IEntityTypeConfiguration<Product>
+{
+    public void Configure(EntityTypeBuilder<Product> builder)
+    {
+        builder.HasKey(p => p.Id);
+        
+        builder.Property(p => p.Name)
+            .IsRequired()
+            .HasMaxLength(100);
+            
+        builder.Property(p => p.Price)
+            .HasColumnType("decimal(18,2)")
+            .IsRequired();
+            
+        builder.Property(p => p.Currency)
+            .IsRequired()
+            .HasMaxLength(3);
+            
+        builder.Property(p => p.Status)
+            .HasConversion<string>()
+            .IsRequired();
+            
+        builder.HasMany(p => p.Categories)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("ProductCategories"));
+            
+        builder.HasIndex(p => p.Name)
+            .IsUnique();
+    }
+}
+```
+
+## API Layer Guidelines
+- Use minimal APIs for .NET 9
+- Implement proper authentication and authorization
+- Use proper HTTP status codes
+- Implement proper error handling
+- Use proper API versioning
+
+## Minimal API Example
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProductCommand).Assembly));
+builder.Services.AddValidatorsFromAssembly(typeof(CreateProductCommandValidator).Assembly);
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+var app = builder.Build();
+
+app.MapPost("/api/products", async (
+    CreateProductCommand command,
+    IMediator mediator,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var productId = await mediator.Send(command, cancellationToken);
+        return Results.Created($"/api/products/{productId}", productId);
+    }
+    catch (ValidationException ex)
+    {
+        return Results.BadRequest(ex.Errors);
+    }
+    catch (DomainException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+})
+.WithName("CreateProduct")
+.WithOpenApi()
+.RequireAuthorization("CreateProduct");
+```
+
+## Microservices Patterns
+- Use proper service discovery
+- Implement circuit breaker patterns
+- Use proper message queuing
+- Implement proper distributed tracing
+- Use proper health checks
+
+## Event-Driven Architecture
+```csharp
+public class ProductCreatedEvent : INotification
+{
+    public ProductId ProductId { get; }
+    public string ProductName { get; }
+    public DateTime OccurredOn { get; }
+    
+    public ProductCreatedEvent(ProductId productId, string productName)
+    {
+        ProductId = productId;
+        ProductName = productName;
+        OccurredOn = DateTime.UtcNow;
+    }
+}
+
+public class ProductCreatedEventHandler : INotificationHandler<ProductCreatedEvent>
+{
+    private readonly ILogger<ProductCreatedEventHandler> _logger;
+    private readonly IMessageBus _messageBus;
+    
+    public ProductCreatedEventHandler(
+        ILogger<ProductCreatedEventHandler> logger,
+        IMessageBus messageBus)
+    {
+        _logger = logger;
+        _messageBus = messageBus;
+    }
+    
+    public async Task Handle(ProductCreatedEvent notification, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Product {ProductId} created, publishing event", notification.ProductId);
+        
+        await _messageBus.PublishAsync("product.created", notification, cancellationToken);
+    }
+}
+```
+
+## Testing Guidelines
+- Use xUnit for unit testing
+- Use Moq for mocking dependencies
+- Test domain logic thoroughly
+- Test application services
+- Test API endpoints
+
+## Performance Optimization
+- Use proper async/await patterns
+- Implement proper caching strategies
+- Use proper database indexing
+- Monitor performance metrics
+- Use proper profiling tools
+
+## Security Guidelines
+- Implement proper authentication
+- Use proper authorization policies
+- Validate all inputs
+- Use proper HTTPS configuration
+- Implement proper CORS policies
+
+## Monitoring & Observability
+- Use proper logging with structured data
+- Implement proper metrics collection
+- Use proper distributed tracing
+- Monitor application health
+- Implement proper alerting
+description: Comprehensive .NET 9 DDD guidelines for Clean Architecture, microservices, and Domain-Driven Design patterns
+globs: **/*.cs, **/*.csproj, **/*.sln, **/Program.cs, **/Startup.cs, **/appsettings.*
+alwaysApply: true
+---

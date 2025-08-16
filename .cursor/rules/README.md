@@ -23,8 +23,9 @@ This directory contains comprehensive rules for the TossErp project, ensuring co
 
 ### 🏗️ Architecture & Design
 - **`architecture.mdc`** - .NET microservices and Clean Architecture
-- **`ddd.mdc`** - Domain-Driven Design patterns
+- **`dotnet-ddd.mdc`** - .NET 9 DDD and Clean Architecture patterns
 - **`microservices.mdc`** - Microservices architecture best practices
+- **`system-design.mdc`** - System design, API design, and scalability patterns
 - **`deployment.mdc`** - Deployment and CI/CD guidelines
 - **`pinia.mdc`** - Pinia state management guidelines
 
@@ -35,6 +36,10 @@ This directory contains comprehensive rules for the TossErp project, ensuring co
 - **`security.mdc`** - Security best practices
 - **`error-handling.mdc`** - Error handling and logging guidelines
 - **`accessibility.mdc`** - Accessibility guidelines and WCAG compliance
+
+### 🚀 Mobile & AI
+- **`flutter.mdc`** - Flutter 3.x development with Riverpod and offline support
+- **`langchain-ai.mdc`** - LangChain workflows, AI agents, and RAG systems
 
 ## Key Features
 

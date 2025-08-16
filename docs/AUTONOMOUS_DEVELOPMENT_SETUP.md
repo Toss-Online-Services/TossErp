@@ -11,6 +11,10 @@ Your TossErp project is now fully configured for autonomous development with com
 - **Nuxt 4 Integration**: Latest best practices and patterns
 - **Vue 3 + Composition API**: Modern Vue development patterns
 - **TypeScript**: Full type safety and modern JavaScript features
+- **Flutter 3.x**: Cross-platform mobile development with Riverpod
+- **.NET 9 DDD**: Clean Architecture and Domain-Driven Design
+- **LangChain & AI**: Intelligent workflows and AI agents
+- **System Design**: Microservices, API design, and scalability
 - **Testing**: Comprehensive testing guidelines with Vitest and Playwright
 - **Deployment**: Docker, Kubernetes, and CI/CD best practices
 - **Accessibility**: WCAG compliance and accessibility guidelines
@@ -24,6 +28,8 @@ Your TossErp project is now fully configured for autonomous development with com
 - **Infrastructure**: Docker and Kubernetes management
 - **Testing**: HTTP API testing and web automation
 - **Task Management**: AI-powered project planning and task breakdown
+- **Mobile Development**: Flutter and mobile app development support
+- **AI Integration**: LangChain and AI agent development support
 
 ### ✅ Automated Setup Scripts
 - **Windows**: `.bat` files for easy installation and verification
@@ -105,6 +111,10 @@ Restart Cursor to load all the new MCP servers and rules.
 - **vue.mdc**: Vue 3 and Composition API patterns
 - **typescript.mdc**: Type safety and modern JavaScript
 - **tailwind.mdc**: CSS framework and UI patterns
+- **flutter.mdc**: Flutter 3.x mobile development patterns
+- **dotnet-ddd.mdc**: .NET 9 DDD and Clean Architecture
+- **langchain-ai.mdc**: AI workflows and agent development
+- **system-design.mdc**: System architecture and design patterns
 
 ### Technology-Specific Rules
 - **nuxt-testing.mdc**: Testing strategies and patterns
@@ -115,8 +125,9 @@ Restart Cursor to load all the new MCP servers and rules.
 
 ### Architecture Rules
 - **architecture.mdc**: .NET microservices and Clean Architecture
-- **ddd.mdc**: Domain-Driven Design patterns
+- **dotnet-ddd.mdc**: .NET 9 DDD and Clean Architecture patterns
 - **microservices.mdc**: Microservices architecture
+- **system-design.mdc**: System design and scalability patterns
 - **clean-code.mdc**: Code quality and maintainability
 
 ## 🎯 Autonomous Development Workflow
@@ -125,6 +136,8 @@ Restart Cursor to load all the new MCP servers and rules.
 - Use research servers to gather current information
 - Analyze requirements and constraints
 - Plan implementation approach
+- Consider mobile, web, and backend requirements
+- Plan AI integration where appropriate
 
 ### 2. Task Management
 - Use Taskmaster for project planning
@@ -135,6 +148,8 @@ Restart Cursor to load all the new MCP servers and rules.
 - Follow established coding standards
 - Implement features incrementally
 - Use proper error handling and testing
+- Implement cross-platform solutions (web, mobile, backend)
+- Integrate AI capabilities where beneficial
 
 ### 4. Quality Assurance
 - Run comprehensive tests
@@ -145,6 +160,8 @@ Restart Cursor to load all the new MCP servers and rules.
 - Use Docker and Kubernetes servers
 - Implement proper CI/CD pipelines
 - Monitor deployment health
+- Deploy to multiple platforms (web, mobile, cloud)
+- Monitor AI system performance and accuracy
 
 ## 🔍 Troubleshooting
 
@@ -193,6 +210,10 @@ npm run dev
 - **Vue 3**: https://vuejs.org/guide/
 - **TypeScript**: https://www.typescriptlang.org/docs/
 - **Tailwind CSS**: https://tailwindcss.com/docs
+- **Flutter**: https://docs.flutter.dev/
+- **.NET 9**: https://docs.microsoft.com/en-us/dotnet/
+- **LangChain**: https://python.langchain.com/docs/
+- **LangGraph**: https://langchain-ai.github.io/langgraph/
 
 ### MCP Resources
 - **Model Context Protocol**: https://modelcontextprotocol.io/
@@ -202,8 +223,12 @@ npm run dev
 ### Best Practices
 - **Clean Architecture**: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 - **Domain-Driven Design**: https://martinfowler.com/bliki/DomainDrivenDesign.html
+- **Microservices**: https://microservices.io/
+- **System Design**: https://github.com/donnemartin/system-design-primer
 - **Testing**: https://vitest.dev/guide/
 - **Accessibility**: https://www.w3.org/WAI/WCAG21/quickref/
+- **Flutter Best Practices**: https://docs.flutter.dev/perf/best-practices
+- **AI Development**: https://python.langchain.com/docs/use_cases/
 
 ## 🎉 You're Ready!
 
@@ -213,7 +238,9 @@ Your TossErp project is now fully configured for autonomous development. You hav
 - ✅ **All MCP Servers**: For autonomous file operations, research, and development
 - ✅ **Automated Setup**: Scripts for easy installation and verification
 - ✅ **Cross-Platform Support**: Works on Windows, macOS, and Linux
-- ✅ **Latest Technologies**: Nuxt 4, Vue 3, TypeScript, and modern patterns
+- ✅ **Latest Technologies**: Nuxt 4, Vue 3, TypeScript, Flutter 3.x, .NET 9, and modern patterns
+- ✅ **AI Integration**: LangChain workflows, AI agents, and RAG systems
 - ✅ **Quality Assurance**: Testing, accessibility, and deployment guidelines
+- ✅ **Full Stack Coverage**: Web, mobile, backend, and AI development
 
 **Start developing autonomously today!** 🚀
