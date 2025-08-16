@@ -304,7 +304,7 @@
         "id": 9,
         "title": "Build Flutter Mobile Stock UI",
         "description": "Create Flutter screens for stock management with offline support",
-        "status": "in-progress",
+        "status": "done",
         "priority": "high",
         "dependencies": [
           5
@@ -321,7 +321,7 @@
         "id": 10,
         "title": "Build Nuxt 3 Web Stock UI",
         "description": "Create web interface for stock management with advanced features",
-        "status": "pending",
+        "status": "in-progress",
         "priority": "high",
         "dependencies": [
           5
@@ -516,7 +516,7 @@
       "totalEstimatedHours": 180,
       "created": "2025-08-13T16:37:43.174Z",
       "description": "Tasks for master context",
-      "updated": "2025-08-15T11:41:46.652Z"
+      "updated": "2025-08-15T14:40:03.252Z"
     }
   },
   "stock-review": {
