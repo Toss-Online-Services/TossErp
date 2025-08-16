@@ -4,7 +4,7 @@ using eShop.EventBus.Abstractions;
 using TossErp.Stock.API.Services;
 using TossErp.Stock.Application.Common.Interfaces;
 using TossErp.Stock.Application.EventHandlers;
-// using TossErp.Stock.Agent;
+using TossErp.Stock.Agent;
 
 namespace TossErp.Stock.API;
 
@@ -25,7 +25,9 @@ public static class DependencyInjection
         builder.Services.AddScoped<IIntegrationEventHandler<eShop.EventBus.Events.Sales.SaleCompletedIntegrationEvent>, SaleCompletedIntegrationEventHandler>();
         builder.Services.AddScoped<IIntegrationEventHandler<eShop.EventBus.Events.Purchasing.PurchaseOrderReceivedIntegrationEvent>, PurchaseOrderReceivedIntegrationEventHandler>();
 
-        // LangChain Agent registration temporarily disabled until agent stabilizes
+        // Register AI Agent services
+        builder.Services.AddScoped<AICoPilotService>();
+        builder.Services.AddScoped<GroupPurchaseAgent>();
 
         // Customise default API behaviour
         builder.Services.Configure<ApiBehaviorOptions>(options =>

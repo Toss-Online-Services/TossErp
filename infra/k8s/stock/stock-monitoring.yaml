@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stock-prometheus-config
+  namespace: tosserp
+  labels:
+    component: stock
+    monitoring: prometheus
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    
+    rule_files:
+      - "stock_rules.yml"
+    
+    scrape_configs:
+      - job_name: 'stock-api'
+        static_configs:
+          - targets: ['stock-api-service:80']
+        metrics_path: /metrics
+        scrape_interval: 10s
+        
+      - job_name: 'stock-processor'
+        static_configs:
+          - targets: ['stock-processor-service:80']
+        metrics_path: /metrics
+        scrape_interval: 10s
+        
+      - job_name: 'stock-postgres'
+        static_configs:
+          - targets: ['stock-postgres-service:5432']
+        scrape_interval: 30s
+        
+      - job_name: 'stock-redis'
+        static_configs:
+          - targets: ['redis-service:6379']
+        scrape_interval: 30s
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stock-grafana-dashboards
+  namespace: tosserp
+  labels:
+    component: stock
+    monitoring: grafana
+data:
+  stock-overview.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Stock Module Overview",
+        "tags": ["stock", "overview"],
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "API Response Time",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m])",
+                "legendFormat": "{{method}} {{route}}"
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "title": "Stock Operations per Second",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(stock_operations_total[5m])",
+                "legendFormat": "{{operation_type}}"
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Low Stock Alerts",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "stock_low_stock_alerts_total"
+              }
+            ]
+          }
+        ]
+      }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stock-alerting-rules
+  namespace: tosserp
+  labels:
+    component: stock
+    monitoring: alerting
+data:
+  stock_rules.yml: |
+    groups:
+      - name: stock.rules
+        rules:
+          - alert: StockAPIDown
+            expr: up{job="stock-api"} == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Stock API is down"
+              description: "Stock API has been down for more than 1 minute"
+              
+          - alert: StockProcessorDown
+            expr: up{job="stock-processor"} == 0
+            for: 2m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Stock Processor is down"
+              description: "Stock Processor has been down for more than 2 minutes"
+              
+          - alert: StockDatabaseHighLatency
+            expr: pg_stat_database_blk_read_time{job="stock-postgres"} > 1000
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Stock Database high latency"
+              description: "Stock Database is experiencing high latency"
+              
+          - alert: StockLowStockItems
+            expr: stock_low_stock_items_count > 50
+            for: 10m
+            labels:
+              severity: info
+            annotations:
+              summary: "High number of low stock items"
+              description: "There are {{ $value }} items with low stock levels"

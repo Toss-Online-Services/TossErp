@@ -13,8 +13,11 @@ public class StockEntryDetail : Entity
     public Guid ItemId { get; private set; }
     public Guid WarehouseId { get; private set; }
     public Guid? BinId { get; private set; }
+    public Guid? FromWarehouseId { get; private set; }
+    public Guid? FromBinId { get; private set; }
     public Quantity Quantity { get; private set; } = null!;
     public Rate Rate { get; private set; } = null!;
+    public decimal UnitCost { get; private set; }
     public string? BatchNo { get; private set; }
     public string? SerialNo { get; private set; }
     public DateTime? ExpiryDate { get; private set; }
@@ -33,7 +36,9 @@ public class StockEntryDetail : Entity
         string? batchNo = null,
         string? serialNo = null,
         DateTime? expiryDate = null,
-        string? remarks = null)
+        string? remarks = null,
+        Guid? fromWarehouseId = null,
+        Guid? fromBinId = null)
     {
         if (stockEntryId == Guid.Empty)
             throw new ArgumentException("Stock entry ID cannot be empty", nameof(stockEntryId));
@@ -47,7 +52,10 @@ public class StockEntryDetail : Entity
         WarehouseId = warehouseId;
         Quantity = quantity;
         Rate = rate;
+        UnitCost = rate.Value;
         BinId = binId;
+        FromWarehouseId = fromWarehouseId;
+        FromBinId = fromBinId;
         BatchNo = batchNo?.Trim();
         SerialNo = serialNo?.Trim();
         ExpiryDate = expiryDate;
@@ -78,6 +86,12 @@ public class StockEntryDetail : Entity
 
         WarehouseId = warehouseId;
         BinId = binId;
+    }
+
+    public void UpdateFromLocation(Guid? fromWarehouseId, Guid? fromBinId = null)
+    {
+        FromWarehouseId = fromWarehouseId;
+        FromBinId = fromBinId;
     }
 
     public void UpdateBatchInfo(string? batchNo, DateTime? expiryDate)
