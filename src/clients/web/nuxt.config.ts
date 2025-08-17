@@ -75,6 +75,10 @@ export default defineNuxtConfig({
   // Nitro configuration - Use static preset for Docker build
   nitro: {
     preset: 'static',
+    prerender: {
+      crawlLinks: false,
+      routes: ['/']
+    },
     devProxy: {
       // Proxy API requests to gateway during development
       '/api': {
@@ -84,6 +88,9 @@ export default defineNuxtConfig({
       }
     }
   },
+  
+  // Disable SSR for now to focus on SPA mode
+  ssr: false,
 
   // Vite configuration
   vite: {
