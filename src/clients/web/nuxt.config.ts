@@ -26,14 +26,14 @@ export default defineNuxtConfig({
     }
   },
 
-  // CSS
-  css: [
-    '@/assets/css/main.css'
-  ],
+  // CSS - Temporarily commented out to fix build issue
+  // css: [
+  //   '@/assets/css/main.css'
+  // ],
 
   // Tailwind CSS configuration
   tailwindcss: {
-    cssPath: '@/assets/css/main.css',
+    // cssPath: '@/assets/css/main.css', // Temporarily commented out
     configPath: 'tailwind.config.ts',
     exposeConfig: false,
     injectPosition: 0,
@@ -72,9 +72,9 @@ export default defineNuxtConfig({
     transpile: ['vue-chartjs', 'chart.js']
   },
 
-  // Nitro configuration
+  // Nitro configuration - Use static preset for Docker build
   nitro: {
-    preset: 'node-server',
+    preset: 'static',
     devProxy: {
       // Proxy API requests to gateway during development
       '/api': {
