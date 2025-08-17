@@ -1,17 +1,23 @@
 # Build stage
-FROM node:18-alpine AS build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 COPY nuxt.config.ts ./
+COPY tailwind.config.ts ./
+COPY tsconfig.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm install
 
 # Copy source code
 COPY . .
+
+# Set environment for build
+ENV NODE_ENV=production
+ENV NUXT_TELEMETRY_DISABLED=1
 
 # Build the application
 RUN npm run build

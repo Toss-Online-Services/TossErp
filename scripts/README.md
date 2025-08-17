@@ -1,169 +1,122 @@
-# Running All Applications Locally
+# TOSS ERP - Scripts Directory
 
-This directory contains scripts to launch all TOSS ERP applications simultaneously.
+This directory contains scripts for launching and managing the TOSS ERP system using Docker Compose and .NET Aspire.
 
-## Quick Start
+## 🚀 **Launch Scripts**
 
-### Option 1: PowerShell (Recommended)
+### **Full Stack Launch**
+- **`launch-full-stack.ps1`** - PowerShell script to launch complete TOSS ERP system
+- **`launch-full-stack.bat`** - Windows batch file alternative
+- **`launch-docker.ps1`** - PowerShell script for Docker Compose management
+- **`launch-docker.bat`** - Windows batch file alternative
+
+### **Legacy Scripts**
+- **`launch-all-apps.ps1`** - Original PowerShell script (legacy)
+- **`launch-all-apps.bat`** - Original batch file (legacy)
+
+## 🎯 **What Each Script Does**
+
+### **Full Stack Scripts**
+Launch the complete TOSS ERP system including:
+- **Backend Services**: API Gateway, Stock API, PostgreSQL, Redis, RabbitMQ
+- **Client Applications**: Mobile (Flutter), Web (Nuxt.js with admin functionality)
+- **Infrastructure**: Nginx reverse proxy, unified access portal
+
+### **Docker Management Scripts**
+Provide Docker Compose management with options for:
+- Full stack deployment
+- Backend-only deployment
+- Infrastructure-only deployment
+- Service monitoring and logs
+
+## 🌐 **Access Points After Launch**
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| **Main Portal** | http://localhost/ | Unified access through Nginx |
+| **Mobile Client** | http://localhost:3000/ | Flutter web app |
+| **Web Client** | http://localhost:3001/ | Nuxt.js app (includes admin) |
+| **API Gateway** | http://localhost:8080/ | Backend API endpoints |
+| **RabbitMQ** | http://localhost:15672/ | Message broker management |
+
+## 🔧 **Usage Examples**
+
+### **PowerShell**
 ```powershell
-# Run with browser auto-open
-.\launch-all-apps.ps1 -OpenBrowser
+# Launch full stack
+.\launch-full-stack.ps1
 
-# Run without browser auto-open
-.\launch-all-apps.ps1
-
-# Skip prerequisite checks
-.\launch-all-apps.ps1 -SkipPrerequisites
+# Launch with options
+.\launch-full-stack.ps1 -OpenBrowser -ShowLogs
 ```
 
-### Option 2: Batch File
-```cmd
-# Double-click the file or run from command prompt
-launch-all-apps.bat
+### **Batch (Windows)**
+```batch
+# Launch full stack
+scripts\launch-full-stack.bat
+
+# Launch with options
+scripts\launch-full-stack.bat --open-browser
 ```
 
-## What Gets Started
-
-The scripts will launch the following applications in separate console windows:
-
-### Backend Services
-- **API Gateway** - http://localhost:8080
-- **Stock API** - http://localhost:5001
-
-### Client Applications
-- **Mobile Client** (Flutter Web) - http://localhost:5000
-- **Web Client** (Nuxt.js) - http://localhost:5173
-- **Admin Client** (React) - http://localhost:3000
-
-## Prerequisites
-
-Before running the scripts, ensure you have:
-
-1. **.NET 8.0 SDK**
-   - Download from: https://dotnet.microsoft.com/download
-   - Verify with: `dotnet --version`
-
-2. **Node.js 18+**
-   - Download from: https://nodejs.org/
-   - Verify with: `node --version`
-
-3. **Flutter 3.0+**
-   - Download from: https://flutter.dev/docs/get-started/install
-   - Verify with: `flutter --version`
-
-## Manual Setup (Alternative)
-
-If you prefer to start applications manually:
-
-### 1. Start Backend Services
+### **Manual Docker Compose**
 ```bash
-# Terminal 1: Start Gateway
-cd src/Gateway
-dotnet run
+# Full stack
+docker-compose -f docker-compose.full-stack.yml up -d --build
 
-# Terminal 2: Start Stock API
-cd src/Services/Stock/Stock.API
-dotnet run
+# Backend only
+docker-compose -f docker-compose.dev.yml up -d --build
+
+# Infrastructure only
+docker-compose -f docker-compose.infrastructure.yml up -d
 ```
 
-### 2. Start Client Applications
+## 📱 **Client Applications**
+
+### **Mobile Client (Flutter)**
+- **Port**: 3000
+- **Purpose**: Field operations, inventory management
+- **Features**: Offline support, barcode scanning, real-time sync
+
+### **Web Client (Nuxt.js)**
+- **Port**: 3001
+- **Purpose**: Web-based management and reporting
+- **Features**: **Comprehensive admin functionality**, responsive design, analytics
+
+> **Note**: The web client includes all admin functionality, eliminating the need for a separate admin client.
+
+## 🛠️ **Prerequisites**
+
+1. **Docker Desktop** installed and running
+2. **Docker Compose** v2.38.2+ (included with Docker Desktop)
+3. **PowerShell 5.1+** or **Command Prompt** (Windows)
+
+## 🔍 **Troubleshooting**
+
+### **Common Issues**
+- **Port conflicts** - Ensure required ports are available
+- **Docker not running** - Start Docker Desktop
+- **Build failures** - Check Docker logs and source files
+
+### **Debug Commands**
 ```bash
-# Terminal 3: Start Mobile Client
-cd src/clients/mobile
-flutter run -d web-server --web-port 5000
+# Check service status
+docker-compose -f docker-compose.full-stack.yml ps
 
-# Terminal 4: Start Web Client
-cd src/clients/web
-npm run dev
+# View logs
+docker-compose -f docker-compose.full-stack.yml logs -f
 
-# Terminal 5: Start Admin Client
-cd src/clients/admin
-npm start
+# Check specific service
+docker-compose -f docker-compose.full-stack.yml logs <service-name>
 ```
 
-## Environment Configuration
+## 📚 **Related Files**
 
-The scripts automatically create `.env` files from templates:
-- `src/clients/mobile/.env`
-- `src/clients/web/.env`
-- `src/clients/admin/.env`
+- **`docker-compose.full-stack.yml`** - Complete system configuration
+- **`docker-compose.dev.yml`** - Backend services only
+- **`docker-compose.infrastructure.yml`** - Infrastructure services only
+- **`README-DOCKER-ASPIRE.md`** - Comprehensive setup documentation
 
-These files configure the API endpoints to point to the Gateway.
+---
 
-## Troubleshooting
-
-### Common Issues
-
-1. **Port Already in Use**
-   - Close other applications using the same ports
-   - Or modify the port numbers in the scripts
-
-2. **Prerequisites Not Found**
-   - Install missing tools
-   - Ensure they're in your system PATH
-   - Restart your terminal after installation
-
-3. **Build Errors**
-   - Run `npm install` in client directories first
-   - Run `flutter pub get` in mobile directory first
-   - Ensure all dependencies are installed
-
-### Verification
-
-Test that all services are running:
-
-```powershell
-# Test Gateway
-Invoke-WebRequest http://localhost:8080/health
-
-# Test Stock API
-Invoke-WebRequest http://localhost:5001/health
-
-# Test Mobile Client
-Invoke-WebRequest http://localhost:5000
-
-# Test Web Client
-Invoke-WebRequest http://localhost:5173
-
-# Test Admin Client
-Invoke-WebRequest http://localhost:3000
-```
-
-## Stopping Applications
-
-To stop all applications:
-1. Close each console window
-2. Or press `Ctrl+C` in each window
-3. Or use Task Manager to end the processes
-
-## Development Workflow
-
-1. **Start all applications** using the launch script
-2. **Make code changes** in your preferred editor
-3. **Applications auto-reload** when you save changes
-4. **Test changes** in the browser
-5. **Stop applications** when done developing
-
-## Next Steps
-
-After all applications are running:
-
-1. **Test the integration** using the test scripts:
-   ```powershell
-   .\test-client-integration.ps1
-   ```
-
-2. **Deploy to production** using the deployment scripts:
-   ```powershell
-   .\deploy-clients.sh
-   ```
-
-3. **Monitor health** of all services through the Gateway
-
-## Support
-
-If you encounter issues:
-1. Check the console output for error messages
-2. Verify all prerequisites are installed
-3. Ensure no other applications are using the required ports
-4. Check the troubleshooting section above
+**🎉 Use these scripts to quickly launch your TOSS ERP development environment!**

@@ -11,11 +11,11 @@ RUN apt-get update && apt-get install -y \
     libglu1-mesa \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Flutter
+# Install Flutter (latest stable)
 RUN git clone https://github.com/flutter/flutter.git /flutter
 ENV PATH="/flutter/bin:${PATH}"
 
-# Enable web support
+# Enable web support and use stable channel
 RUN flutter channel stable
 RUN flutter upgrade
 RUN flutter config --enable-web
