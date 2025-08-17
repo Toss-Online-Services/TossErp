@@ -361,3 +361,4 @@ export class StockService {
 
 // Export default service
 export default StockService
+

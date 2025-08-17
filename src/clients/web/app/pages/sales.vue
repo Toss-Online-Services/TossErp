@@ -162,11 +162,26 @@
             </div>
           </div>
           <div class="p-6">
-            <div class="space-y-4">
-              <div v-for="sale in recentSales" :key="sale.id" class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+            <div v-if="loading" class="text-center py-4">
+              <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Loading sales data...</p>
+            </div>
+            <div v-else-if="error" class="text-center py-4">
+              <div class="text-red-500 dark:text-red-400">
+                <svg class="mx-auto h-12 w-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.704-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <p class="text-sm">{{ error }}</p>
+                <button @click="refreshData" class="mt-2 text-blue-600 hover:text-blue-700 text-sm underline">
+                  Try again
+                </button>
+              </div>
+            </div>
+            <div v-else class="space-y-4">
+              <div v-for="sale in filteredRecentSales" :key="sale.id" class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
                 <div class="flex items-center space-x-4">
                   <div class="flex-shrink-0">
-                    <div :class="[sale.status === 'completed' ? 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400' : sale.status === 'pending' ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-400' : 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400', 'w-8 h-8 rounded-full flex items-center justify-center']">
+                    <div :class="[getStatusBadgeClass(sale.status), 'w-8 h-8 rounded-full flex items-center justify-center']">
                       <svg v-if="sale.status === 'completed'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                       </svg>
@@ -183,7 +198,7 @@
                       Sale #{{ sale.orderNumber }}
                     </p>
                     <p class="text-xs text-gray-500 dark:text-gray-400">
-                      {{ sale.customer || 'Walk-in Customer' }} • {{ formatTime(sale.createdAt) }}
+                      {{ sale.customer?.name || 'Walk-in Customer' }} • {{ formatTime(sale.createdAt) }}
                     </p>
                   </div>
                 </div>
@@ -192,7 +207,7 @@
                     R {{ formatCurrency(sale.total) }}
                   </p>
                   <p class="text-xs text-gray-500 dark:text-gray-400">
-                    {{ sale.items }} item{{ sale.items > 1 ? 's' : '' }}
+                    {{ sale.items.length }} item{{ sale.items.length > 1 ? 's' : '' }}
                   </p>
                 </div>
               </div>
@@ -279,8 +294,14 @@
               <p class="text-sm text-gray-500 dark:text-gray-400">This month's best performers</p>
             </div>
             <div class="p-6">
-              <div class="space-y-4">
-                <div v-for="(product, index) in topProducts" :key="product.id" class="flex items-center justify-between">
+              <div v-if="loading" class="text-center py-4">
+                <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              </div>
+              <div v-else-if="topProductsDisplay.length === 0" class="text-center py-4">
+                <p class="text-sm text-gray-500 dark:text-gray-400">No top products data available</p>
+              </div>
+              <div v-else class="space-y-4">
+                <div v-for="(product, index) in topProductsDisplay" :key="product.id" class="flex items-center justify-between">
                   <div class="flex items-center">
                     <div class="flex-shrink-0 w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">
                       <span class="text-xs font-medium text-gray-600 dark:text-gray-300">{{ index + 1 }}</span>
@@ -392,95 +413,43 @@ definePageMeta({
   description: 'Process sales, manage customers, and track business performance'
 })
 
+// Use sales management composable
+const {
+  salesOverview,
+  topProducts,
+  loading,
+  error,
+  todaysSales,
+  todaysOrders,
+  averageOrderValue,
+  totalCustomers,
+  recentSales,
+  loadSalesOverview,
+  loadTopProducts,
+  formatCurrency,
+  formatTime,
+  getStatusBadgeClass
+} = useSalesManagement()
+
 // Reactive data
 const salesFilter = ref('today')
 const showNewSaleModal = ref(false)
 const showNewCustomerModal = ref(false)
 const showCustomerList = ref(false)
 
-// Mock data
-const todaysSales = ref(2456.75)
-const todaysOrders = ref(23)
-const averageOrderValue = ref(106.81)
-const totalCustomers = ref(156)
+// Computed properties
+const filteredRecentSales = computed(() => {
+  return recentSales.value.slice(0, 5) // Show only 5 most recent
+})
 
-const recentSales = ref([
-  {
-    id: 1,
-    orderNumber: '2024-0001',
-    customer: 'John Doe',
-    total: 156.75,
-    items: 3,
-    status: 'completed',
-    createdAt: new Date(Date.now() - 5 * 60 * 1000)
-  },
-  {
-    id: 2,
-    orderNumber: '2024-0002',
-    customer: null,
-    total: 89.50,
-    items: 2,
-    status: 'completed',
-    createdAt: new Date(Date.now() - 15 * 60 * 1000)
-  },
-  {
-    id: 3,
-    orderNumber: '2024-0003',
-    customer: 'Jane Smith',
-    total: 234.25,
-    items: 5,
-    status: 'pending',
-    createdAt: new Date(Date.now() - 30 * 60 * 1000)
-  },
-  {
-    id: 4,
-    orderNumber: '2024-0004',
-    customer: null,
-    total: 67.00,
-    items: 1,
-    status: 'completed',
-    createdAt: new Date(Date.now() - 45 * 60 * 1000)
-  },
-  {
-    id: 5,
-    orderNumber: '2024-0005',
-    customer: 'Mike Johnson',
-    total: 189.90,
-    items: 4,
-    status: 'cancelled',
-    createdAt: new Date(Date.now() - 60 * 60 * 1000)
-  }
-])
+const topProductsDisplay = computed(() => {
+  return topProducts.value.slice(0, 5) // Show only top 5
+})
 
-const topProducts = ref([
-  { id: 1, name: 'Samsung Galaxy S21', sold: 12, revenue: 155988.00 },
-  { id: 2, name: 'Nike Air Force 1', sold: 25, revenue: 47475.00 },
-  { id: 3, name: 'iPhone 13 Pro', sold: 8, revenue: 175992.00 },
-  { id: 4, name: 'Coca Cola 500ml', sold: 156, revenue: 2340.00 },
-  { id: 5, name: 'Levi\'s 501 Jeans', sold: 18, revenue: 16182.00 }
-])
-
-// Utility functions
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-ZA', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(amount)
-}
-
-const formatTime = (date: Date): string => {
-  const now = new Date()
-  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
-  
-  if (diffInMinutes < 1) return 'Just now'
-  if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`
-  
-  const diffInHours = Math.floor(diffInMinutes / 60)
-  if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`
-  
-  const diffInDays = Math.floor(diffInHours / 24)
-  return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`
-}
+// Watch sales filter changes
+watch(salesFilter, async (newFilter) => {
+  await loadSalesOverview(newFilter as 'today' | 'week' | 'month')
+})
 
 // Methods
 const openPOS = () => {
@@ -495,17 +464,16 @@ const createQuickSale = () => {
   // TODO: Implement quick sale functionality
 }
 
+const refreshData = async () => {
+  await Promise.all([
+    loadSalesOverview(salesFilter.value as 'today' | 'week' | 'month'),
+    loadTopProducts({ period: salesFilter.value as 'today' | 'week' | 'month', limit: 5 })
+  ])
+}
+
 // Load sales data on mount
 onMounted(async () => {
-  try {
-    // TODO: Replace with actual API calls to gateway
-    // const salesData = await $fetch('/api/sales/overview')
-    // Update reactive data with API response
-    
-    console.log('Sales data loaded')
-  } catch (error) {
-    console.error('Failed to load sales data:', error)
-  }
+  await refreshData()
 })
 
 // SEO

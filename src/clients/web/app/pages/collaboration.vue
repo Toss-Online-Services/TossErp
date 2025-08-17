@@ -169,11 +169,26 @@
             </div>
           </div>
           <div class="p-6">
-            <div class="space-y-4">
+            <div v-if="loading" class="text-center py-4">
+              <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Loading collaborations...</p>
+            </div>
+            <div v-else-if="error" class="text-center py-4">
+              <div class="text-red-500 dark:text-red-400">
+                <svg class="mx-auto h-12 w-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.704-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <p class="text-sm">{{ error }}</p>
+                <button @click="refreshData" class="mt-2 text-blue-600 hover:text-blue-700 text-sm underline">
+                  Try again
+                </button>
+              </div>
+            </div>
+            <div v-else class="space-y-4">
               <div v-for="collaboration in filteredCollaborations" :key="collaboration.id" class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
                 <div class="flex items-center space-x-4">
                   <div class="flex-shrink-0">
-                    <div :class="[getCollaborationColor(collaboration.type), 'w-8 h-8 rounded-full flex items-center justify-center']">
+                    <div :class="[getCollaborationTypeClass(collaboration.type), 'w-8 h-8 rounded-full flex items-center justify-center']">
                       <svg v-if="collaboration.type === 'group-buying'" class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                       </svg>
@@ -300,12 +315,12 @@
                         </span>
                         <span class="mx-1 text-gray-300">•</span>
                         <span class="text-xs text-gray-500 dark:text-gray-400">
-                          {{ opportunity.spots }} spots left
+                          {{ opportunity.spotsLeft }} spots left
                         </span>
                       </div>
                     </div>
                     <button
-                      @click="joinOpportunity(opportunity)"
+                      @click="joinOpportunityHandler(opportunity)"
                       class="ml-4 inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
                     >
                       Join
@@ -430,6 +445,33 @@ definePageMeta({
   description: 'Connect with other businesses for group buying, shared logistics, and community collaboration'
 })
 
+// Use collaboration management composable
+const {
+  collaborations,
+  opportunities,
+  connections,
+  stats,
+  loading,
+  error,
+  activeCollaborations,
+  totalSavings,
+  collaborationsJoined,
+  trustScore,
+  activePartnerships,
+  networkConnections,
+  availableOpportunities,
+  loadStats,
+  loadCollaborations,
+  loadOpportunities,
+  loadConnections,
+  joinOpportunity,
+  searchPartners,
+  connectWithBusiness,
+  formatCurrency,
+  formatDate,
+  getCollaborationTypeClass
+} = useCollaborationManagement()
+
 // Reactive data
 const collaborationFilter = ref('all')
 const showCreateGroupModal = ref(false)
@@ -438,77 +480,14 @@ const showGroupBuying = ref(false)
 const showLogistics = ref(false)
 const showNetwork = ref(false)
 
-// Mock data
-const activeGroupPurchases = ref(5)
-const sharedDeliveries = ref(12)
-const networkConnections = ref(34)
-const totalSavings = ref(8750.50)
-const collaborationsJoined = ref(15)
-const trustScore = ref(92)
-const activePartnerships = ref(8)
+// Computed for display
+const activeGroupPurchases = computed(() => 
+  collaborations.value.filter(c => c.type === 'group-buying' && c.status === 'active').length
+)
 
-const collaborations = ref([
-  {
-    id: 1,
-    type: 'group-buying',
-    title: 'Electronics Bulk Purchase',
-    participants: 8,
-    status: 'Active',
-    savings: 2500.00,
-    deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-  },
-  {
-    id: 2,
-    type: 'logistics',
-    title: 'Weekly Grocery Delivery',
-    participants: 15,
-    status: 'Ongoing',
-    metric: '15% cost reduction',
-    deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
-  },
-  {
-    id: 3,
-    type: 'resource-sharing',
-    title: 'Storage Space Sharing',
-    participants: 6,
-    status: 'Active',
-    metric: '2000 sqft shared',
-    deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-  },
-  {
-    id: 4,
-    type: 'group-buying',
-    title: 'Packaging Materials',
-    participants: 12,
-    status: 'Forming',
-    savings: 1200.00,
-    deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
-  }
-])
-
-const availableOpportunities = ref([
-  {
-    id: 1,
-    title: 'Office Supplies Bulk Order',
-    description: 'Join 20+ businesses for quarterly office supplies purchase',
-    savings: 25,
-    spots: 5
-  },
-  {
-    id: 2,
-    title: 'Shared Marketing Campaign',
-    description: 'Collaborative digital marketing for local businesses',
-    savings: 40,
-    spots: 3
-  },
-  {
-    id: 3,
-    title: 'Equipment Rental Pool',
-    description: 'Share construction and maintenance equipment',
-    savings: 60,
-    spots: 8
-  }
-])
+const sharedDeliveries = computed(() => 
+  collaborations.value.filter(c => c.type === 'logistics' && c.status === 'active').length
+)
 
 // Computed properties
 const filteredCollaborations = computed(() => {
@@ -518,61 +497,64 @@ const filteredCollaborations = computed(() => {
   return collaborations.value.filter(c => c.type === collaborationFilter.value)
 })
 
-// Utility functions
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-ZA', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(amount)
-}
-
-const formatDate = (date: Date): string => {
-  const days = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-  if (days <= 0) return 'Today'
-  if (days === 1) return 'Tomorrow'
-  return `${days} days`
-}
-
-const getCollaborationColor = (type: string): string => {
-  switch (type) {
-    case 'group-buying':
-      return 'bg-blue-500'
-    case 'logistics':
-      return 'bg-green-500'
-    case 'resource-sharing':
-      return 'bg-purple-500'
-    default:
-      return 'bg-gray-500'
+// Watch filter changes
+watch(collaborationFilter, async (newFilter) => {
+  if (newFilter === 'all') {
+    await loadCollaborations()
+  } else {
+    await loadCollaborations({ 
+      type: newFilter,
+      limit: 10
+    })
   }
-}
+})
 
 // Methods
-const findLogisticsPartners = () => {
-  console.log('Finding logistics partners...')
-  // TODO: Implement logistics partner matching
+const findLogisticsPartners = async () => {
+  try {
+    const partners = await searchPartners({
+      type: 'logistics',
+      services: ['delivery', 'logistics', 'transport']
+    })
+    console.log('Found logistics partners:', partners)
+    // TODO: Show partners in a modal or navigate to partners page
+  } catch (err) {
+    console.error('Failed to find logistics partners:', err)
+  }
 }
 
 const shareResources = () => {
   console.log('Sharing resources...')
-  // TODO: Implement resource sharing
+  // TODO: Implement resource sharing modal
 }
 
-const joinOpportunity = (opportunity: any) => {
-  console.log('Joining opportunity:', opportunity)
-  // TODO: Implement opportunity joining
+const joinOpportunityHandler = async (opportunity: any) => {
+  try {
+    const success = await joinOpportunity(opportunity.id, {
+      message: 'Interested in joining this collaboration'
+    })
+    
+    if (success) {
+      console.log('Successfully joined opportunity:', opportunity.title)
+      // TODO: Show success message
+    }
+  } catch (err) {
+    console.error('Failed to join opportunity:', err)
+  }
+}
+
+const refreshData = async () => {
+  await Promise.all([
+    loadStats(),
+    loadCollaborations({ limit: 10 }),
+    loadOpportunities({ limit: 10 }),
+    loadConnections({ limit: 10 })
+  ])
 }
 
 // Load collaboration data on mount
 onMounted(async () => {
-  try {
-    // TODO: Replace with actual API calls to gateway
-    // const collaborationData = await $fetch('/api/collaboration/overview')
-    // Update reactive data with API response
-    
-    console.log('Collaboration data loaded')
-  } catch (error) {
-    console.error('Failed to load collaboration data:', error)
-  }
+  await refreshData()
 })
 
 // SEO

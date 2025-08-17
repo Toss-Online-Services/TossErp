@@ -20,6 +20,13 @@ builder.Services.AddCors(options =>
         .AllowAnyOrigin());
 });
 
+// Add YARP for reverse proxy
+builder.Services.AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
+// Add HTTP client for service communication
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
@@ -52,14 +59,17 @@ app.MapGet("/", () => Results.Ok(new {
     ok = true, 
     service = "gateway",
     message = "TOSS ERP Gateway is running!",
-    endpoints = new[] { "/health", "/swagger" }
+    endpoints = new[] { "/health", "/swagger", "/api" }
 }));
 
 app.MapGet("/api/status", () => Results.Ok(new { 
     status = "operational",
-    services = new[] { "gateway", "postgres", "redis", "rabbitmq" },
+    services = new[] { "gateway", "stock-api", "postgres", "redis", "rabbitmq" },
     timestamp = DateTime.UtcNow
 }));
+
+// Map the reverse proxy to handle API routes
+app.MapReverseProxy();
 
 app.Run();
 
