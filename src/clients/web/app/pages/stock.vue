@@ -281,7 +281,7 @@
                       </svg>
                     </button>
                     <button
-                      @click="adjustStock(item)"
+                                              @click="adjustStockLocal(item)"
                       class="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300"
                       title="Adjust stock"
                     >
@@ -468,39 +468,8 @@ const filteredStockItems = computed(() => {
   return filtered
 })
 
-// Utility functions
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-ZA', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(amount)
-}
-
-const getStatusBadgeClass = (status: string): string => {
-  switch (status) {
-    case 'in-stock':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-    case 'low-stock':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-    case 'out-of-stock':
-      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
-  }
-}
-
-const getStatusText = (status: string): string => {
-  switch (status) {
-    case 'in-stock':
-      return 'In Stock'
-    case 'low-stock':
-      return 'Low Stock'
-    case 'out-of-stock':
-      return 'Out of Stock'
-    default:
-      return 'Unknown'
-  }
-}
+// Note: Utility functions (formatCurrency, getStatusBadgeClass, getStatusText) 
+// are now provided by the useStockManagement composable
 
 // Methods
 const exportStock = () => {
@@ -513,9 +482,9 @@ const editItem = (item: any) => {
   // TODO: Implement edit functionality
 }
 
-const adjustStock = (item: any) => {
+const adjustStockLocal = (item: any) => {
   console.log('Adjusting stock for:', item)
-  // TODO: Implement stock adjustment
+  // TODO: Implement stock adjustment using composable's adjustStock method
 }
 
 const deleteItem = (item: any) => {

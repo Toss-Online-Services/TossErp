@@ -189,11 +189,26 @@
             </div>
           </div>
           <div class="p-6">
-            <div class="space-y-4">
+            <div v-if="loading" class="text-center py-4">
+              <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Loading transactions...</p>
+            </div>
+            <div v-else-if="error" class="text-center py-4">
+              <div class="text-red-500 dark:text-red-400">
+                <svg class="mx-auto h-12 w-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.704-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <p class="text-sm">{{ error }}</p>
+                <button @click="refreshData" class="mt-2 text-blue-600 hover:text-blue-700 text-sm underline">
+                  Try again
+                </button>
+              </div>
+            </div>
+            <div v-else class="space-y-4">
               <div v-for="transaction in filteredTransactions" :key="transaction.id" class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
                 <div class="flex items-center space-x-4">
                   <div class="flex-shrink-0">
-                    <div :class="[transaction.type === 'income' ? 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400' : 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400', 'w-8 h-8 rounded-full flex items-center justify-center']">
+                    <div :class="[getTransactionTypeClass(transaction.type), 'w-8 h-8 rounded-full flex items-center justify-center']">
                       <svg v-if="transaction.type === 'income'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
@@ -230,8 +245,14 @@
               <p class="text-sm text-gray-500 dark:text-gray-400">This month's breakdown</p>
             </div>
             <div class="p-6">
-              <div class="space-y-4">
-                <div v-for="category in expenseCategories" :key="category.name" class="flex items-center justify-between">
+              <div v-if="loading" class="text-center py-4">
+                <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              </div>
+              <div v-else-if="expenseCategories.length === 0" class="text-center py-4">
+                <p class="text-sm text-gray-500 dark:text-gray-400">No expense data available</p>
+              </div>
+              <div v-else class="space-y-4">
+                <div v-for="category in expenseCategories" :key="category.id" class="flex items-center justify-between">
                   <div class="flex items-center">
                     <div :class="[category.color, 'w-3 h-3 rounded-full mr-3']"></div>
                     <span class="text-sm font-medium text-gray-900 dark:text-white">{{ category.name }}</span>
@@ -268,7 +289,7 @@
                 </button>
 
                 <button
-                  @click="generateReport"
+                  @click="generateFinancialReport"
                   class="w-full flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <div class="flex items-center">
@@ -382,120 +403,107 @@ definePageMeta({
   description: 'Track expenses, manage cash flow, and monitor financial health'
 })
 
+// Use finance management composable
+const {
+  transactions,
+  financialOverview,
+  expenseCategories,
+  loading,
+  error,
+  totalRevenue,
+  totalExpenses,
+  netProfit,
+  cashFlow,
+  healthScore,
+  recentTransactions,
+  loadFinancialOverview,
+  loadTransactions,
+  loadExpenseCategories,
+  exportData,
+  generateReport,
+  formatCurrency,
+  formatDate,
+  getTransactionTypeClass
+} = useFinanceManagement()
+
 // Reactive data
 const transactionFilter = ref('all')
 const showAddTransactionModal = ref(false)
 
-// Mock financial data
-const totalRevenue = ref(67890.50)
-const totalExpenses = ref(45123.75)
-const netProfit = ref(22766.75)
-const cashFlow = ref(18450.25)
-const healthScore = ref(85)
-
-const transactions = ref([
-  {
-    id: 1,
-    type: 'income',
-    description: 'Sale - Samsung Galaxy S21',
-    category: 'Sales',
-    amount: 12999.00,
-    date: new Date(Date.now() - 2 * 60 * 60 * 1000)
-  },
-  {
-    id: 2,
-    type: 'expense',
-    description: 'Office Rent',
-    category: 'Overhead',
-    amount: 3500.00,
-    date: new Date(Date.now() - 4 * 60 * 60 * 1000)
-  },
-  {
-    id: 3,
-    type: 'income',
-    description: 'Sale - Nike Air Force 1',
-    category: 'Sales',
-    amount: 1899.00,
-    date: new Date(Date.now() - 6 * 60 * 60 * 1000)
-  },
-  {
-    id: 4,
-    type: 'expense',
-    description: 'Inventory Purchase',
-    category: 'Cost of Goods',
-    amount: 8750.00,
-    date: new Date(Date.now() - 8 * 60 * 60 * 1000)
-  },
-  {
-    id: 5,
-    type: 'expense',
-    description: 'Marketing Campaign',
-    category: 'Marketing',
-    amount: 1200.00,
-    date: new Date(Date.now() - 12 * 60 * 60 * 1000)
-  }
-])
-
-const expenseCategories = ref([
-  { name: 'Cost of Goods', amount: 15750.00, percentage: 35, color: 'bg-blue-500' },
-  { name: 'Overhead', amount: 12250.00, percentage: 27, color: 'bg-red-500' },
-  { name: 'Marketing', amount: 8900.00, percentage: 20, color: 'bg-green-500' },
-  { name: 'Operations', amount: 5500.00, percentage: 12, color: 'bg-yellow-500' },
-  { name: 'Other', amount: 2723.75, percentage: 6, color: 'bg-purple-500' }
-])
-
 // Computed properties
 const filteredTransactions = computed(() => {
   if (transactionFilter.value === 'all') {
-    return transactions.value
+    return recentTransactions.value
   }
-  return transactions.value.filter(t => t.type === transactionFilter.value)
+  return recentTransactions.value.filter(t => t.type === transactionFilter.value)
 })
 
-// Utility functions
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-ZA', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(amount)
-}
-
-const formatDate = (date: Date): string => {
-  return new Intl.DateTimeFormat('en-ZA', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date)
-}
+// Watch filter changes
+watch(transactionFilter, async (newFilter) => {
+  if (newFilter === 'all') {
+    await loadTransactions()
+  } else {
+    await loadTransactions({ 
+      type: newFilter as 'income' | 'expense',
+      limit: 10
+    })
+  }
+})
 
 // Methods
-const exportFinancials = () => {
-  console.log('Exporting financial report...')
-  // TODO: Implement export functionality
+const exportFinancials = async () => {
+  try {
+    const result = await exportData({
+      type: 'summary',
+      format: 'pdf'
+    })
+    if (result) {
+      console.log('Export completed:', result.filename)
+      // In a real app, you'd trigger the download
+    }
+  } catch (err) {
+    console.error('Export failed:', err)
+  }
 }
 
-const generateReport = () => {
-  console.log('Generating financial report...')
-  // TODO: Implement report generation
+const generateFinancialReport = async () => {
+  try {
+    const endDate = new Date()
+    const startDate = new Date()
+    startDate.setMonth(startDate.getMonth() - 1)
+    
+    const report = await generateReport({
+      type: 'profit_loss',
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      format: 'pdf'
+    })
+    
+    if (report) {
+      console.log('Report generated:', report.name)
+      // In a real app, you'd open or download the report
+    }
+  } catch (err) {
+    console.error('Report generation failed:', err)
+  }
 }
 
 const manageCategories = () => {
   console.log('Managing expense categories...')
-  // TODO: Implement category management
+  // TODO: Implement category management modal
+}
+
+const refreshData = async () => {
+  await Promise.all([
+    loadFinancialOverview('month'),
+    loadTransactions({ limit: 10 }),
+    loadExpenseCategories({ period: 'month' })
+  ])
 }
 
 // Load financial data on mount
 onMounted(async () => {
-  try {
-    // TODO: Replace with actual API calls to gateway
-    // const financialData = await $fetch('/api/finance/overview')
-    // Update reactive data with API response
-    
-    console.log('Financial data loaded')
-  } catch (error) {
-    console.error('Failed to load financial data:', error)
-  }
+  await refreshData()
 })
 
 // SEO

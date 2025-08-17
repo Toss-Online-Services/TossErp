@@ -31,6 +31,8 @@ public class Items : EndpointGroupBase
         group.MapGet(GetLowStockItems, "low-stock");
         group.MapGet(GetOutOfStockItems, "out-of-stock");
         group.MapGet(GetStockItems, "stock-items");
+        group.MapGet(GetStockOverview, "overview");
+        group.MapGet(GetCategories, "categories");
         group.MapGet(GetItemStockHistory, "{id}/stock-history");
         group.MapGet(GetItemBySku, "sku/{sku}");
         group.MapGet(GetItemByBarcode, "barcode/{barcode}");
@@ -242,6 +244,76 @@ public class Items : EndpointGroupBase
                 return TypedResults.NotFound();
                 
             return TypedResults.Ok(item);
+        }
+        catch (Exception)
+        {
+            return TypedResults.BadRequest();
+        }
+    }
+
+    /// <summary>
+    /// Get stock overview with summary statistics
+    /// </summary>
+    public async Task<Results<Ok<StockOverviewDto>, BadRequest>> GetStockOverview(
+        ISender sender)
+    {
+        try
+        {
+            // For now, we'll calculate this from existing queries
+            var allItemsQuery = new GetItemsQuery { PageSize = int.MaxValue };
+            var allItems = await sender.Send(allItemsQuery);
+            
+            var lowStockQuery = new GetItemsQuery { LowStockOnly = true, PageSize = int.MaxValue };
+            var lowStockItems = await sender.Send(lowStockQuery);
+            
+            var outOfStockQuery = new GetItemsQuery { OutOfStockOnly = true, PageSize = int.MaxValue };
+            var outOfStockItems = await sender.Send(outOfStockQuery);
+
+            var overview = new StockOverviewDto
+            {
+                TotalItems = allItems.TotalCount,
+                LowStockItems = lowStockItems.TotalCount,
+                OutOfStockItems = outOfStockItems.TotalCount,
+                TotalValue = allItems.Items.Sum(i => i.Price * i.QuantityOnHand),
+                TotalCategories = allItems.Items.Select(i => i.Category).Distinct().Count(),
+                CategorySummary = allItems.Items
+                    .GroupBy(i => i.Category)
+                    .Select(g => new CategorySummaryDto
+                    {
+                        Category = g.Key,
+                        ItemCount = g.Count(),
+                        TotalValue = g.Sum(i => i.Price * i.QuantityOnHand)
+                    })
+                    .ToList()
+            };
+            
+            return TypedResults.Ok(overview);
+        }
+        catch (Exception)
+        {
+            return TypedResults.BadRequest();
+        }
+    }
+
+    /// <summary>
+    /// Get all available categories
+    /// </summary>
+    public async Task<Results<Ok<List<string>>, BadRequest>> GetCategories(
+        ISender sender)
+    {
+        try
+        {
+            var query = new GetItemsQuery { PageSize = int.MaxValue };
+            var items = await sender.Send(query);
+            
+            var categories = items.Items
+                .Select(i => i.Category)
+                .Where(c => !string.IsNullOrEmpty(c))
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+            
+            return TypedResults.Ok(categories);
         }
         catch (Exception)
         {
