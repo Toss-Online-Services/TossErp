@@ -1,329 +1,168 @@
-# TOSS – Full-Stack Product Requirements Document (Enhanced Stock Module Focus)
-
-> **Context**: TOSS is a cloud-native **ERP III + collaborative network + AI co-pilot** for South African township & rural SMMEs (TREP sectors).
-> **Principles**: **front-end first** (Flutter mobile, Nuxt 3 web), **offline-first**, low data use, ultra-simple UX, modular **microservices** (.NET 8), **event-driven**, POPIA-compliant, **agentic AI** with human-in-the-loop.
-
----
-
-## 1) Executive Summary
-
-TOSS helps micro-businesses manage stock, sell faster, buy cheaper together, keep simple books, keep in touch with customers, and get proactive AI nudges. The MVP prioritises **Inventory**, **Sales/POS**, **Buying + Group-Buy**, **Accounting (cash-based)**, **CRM**, **Collaboration/Notifications**, and **AI insights**—with **Flutter** and **Nuxt 3** delivered first, then the .NET microservices and ML/agents.
-
-**Phase 1 Focus**: Complete end-to-end implementation of the **Stock/Inventory module** with full offline support, AI recommendations, and event-driven integration.
-
----
-
-## 2) Goals & Success Metrics (Stock Module Phase; 30 days)
-
-* **Stock Accuracy**: ≥95% inventory accuracy with real-time updates
-* **Low Stock Prevention**: 80% reduction in stockouts via AI alerts
-* **Data Entry Speed**: Stock adjustment ≤ 5s; bulk import ≤ 30s for 100 items
-* **Sync Performance**: Offline-to-online sync ≤ 10s for typical daily data
-* **AI Adoption**: ≥50% of reorder recommendations viewed; ≥25% acted upon
-
----
-
-## 3) Stock Module Detailed Requirements
-
-### 3.1 Domain Model (Stock)
-
-**Core Entities:**
-* **Item**: ItemId, TenantId, SKU, Barcode?, Name, Description?, Category, Unit, SellingPrice, CostPrice?, ReorderLevel, ReorderQty, IsActive
-* **Warehouse**: WarehouseId, TenantId, Code, Name, Address?, IsDefault, IsActive
-* **StockLevel**: ItemId, WarehouseId, OnHand, Available, OnOrder, Reserved
-* **StockMovement**: MovementId, TenantId, ItemId, WarehouseId, Type, Qty, RefType?, RefId?, Reason?, CreatedBy, CreatedAt
-* **StockAdjustment**: AdjustmentId, TenantId, WarehouseId, Reason, Status, CreatedBy, CreatedAt, Items[]
-
-**Value Objects:**
-* **Quantity**: Value, Unit (with conversion logic)
-* **Money**: Amount, Currency (ZAR default)
-* **SKU**: Value (with validation)
-* **MovementType**: Receipt, Issue, Adjustment, Transfer
-
-### 3.2 Stock Service API Endpoints
-
-**Items Management:**
-* `GET /api/stock/items` - List with filtering, search, pagination
-* `GET /api/stock/items/{id}` - Get item details with current stock
-* `POST /api/stock/items` - Create new item
-* `PUT /api/stock/items/{id}` - Update item
-* `DELETE /api/stock/items/{id}` - Soft delete item
-* `POST /api/stock/items/bulk` - Bulk import from CSV/JSON
-
-**Stock Levels:**
-* `GET /api/stock/levels` - Current stock across warehouses
-* `GET /api/stock/levels/low` - Items below reorder level
-* `GET /api/stock/levels/item/{itemId}` - Stock for specific item
-
-**Stock Movements:**
-* `POST /api/stock/movements/receipt` - Record stock receipt
-* `POST /api/stock/movements/issue` - Record stock issue
-* `POST /api/stock/movements/adjustment` - Stock adjustment
-* `POST /api/stock/movements/transfer` - Transfer between warehouses
-* `GET /api/stock/movements` - Movement history with filters
-
-**Stock Reports:**
-* `GET /api/stock/reports/ledger` - Stock ledger by item/date range
-* `GET /api/stock/reports/valuation` - Current stock valuation
-* `GET /api/stock/reports/movement-summary` - Movement summary by type
-
-**AI & Analytics:**
-* `GET /api/stock/ai/reorder-suggestions` - AI reorder recommendations
-* `GET /api/stock/ai/demand-forecast/{itemId}` - 7/30 day forecast
-* `POST /api/stock/ai/analyze-movement` - Anomaly detection
-
-### 3.3 Events Published
-
-* **ItemCreated**: { ItemId, TenantId, SKU, Name, Category }
-* **ItemUpdated**: { ItemId, Changes[] }
-* **StockReceived**: { ItemId, WarehouseId, Qty, RefType, RefId }
-* **StockIssued**: { ItemId, WarehouseId, Qty, RefType, RefId }
-* **StockAdjusted**: { ItemId, WarehouseId, OldQty, NewQty, Reason }
-* **StockLevelLow**: { ItemId, WarehouseId, CurrentQty, ReorderLevel }
-* **StockTransferred**: { ItemId, FromWarehouseId, ToWarehouseId, Qty }
-
-### 3.4 Event Subscriptions
-
-* **SaleCompleted** → Auto-decrement stock
-* **PurchaseOrderReceived** → Auto-increment stock
-* **ManufacturingCompleted** → Update raw materials & finished goods
-
-### 3.5 Business Rules
-
-* Stock cannot go negative (configurable per tenant)
-* Movements must have valid reason codes
-* Audit trail for all stock changes
-* FIFO/LIFO/Average costing methods
-* Multi-warehouse with transfer validation
-* Batch/Serial tracking (optional)
-* Expiry date tracking for perishables
-
-### 3.6 AI Agent Capabilities
-
-* **Reorder Point Optimization**: ML model using sales velocity, lead time, seasonality
-* **Demand Forecasting**: Time-series analysis with external factors
-* **Anomaly Detection**: Unusual consumption patterns, potential theft/loss
-* **Smart Categorization**: Auto-suggest categories based on item names
-* **Price Optimization**: Suggest selling prices based on cost and market
-
----
-
-## 4) Technical Architecture (Stock Module)
-
-### 4.1 Stock.Domain
-* Aggregates: Item, Warehouse, StockAdjustment
-* Entities: StockLevel, StockMovement
-* Value Objects: Quantity, Money, SKU, MovementType
-* Domain Events: ItemCreated, StockReceived, StockLevelLow, etc.
-* Domain Services: StockCalculationService, CostingService
-
-### 4.2 Stock.Application
-* Commands: CreateItem, UpdateItem, ReceiveStock, IssueStock, AdjustStock
-* Queries: GetItems, GetStockLevels, GetMovementHistory
-* DTOs: ItemDto, StockLevelDto, MovementDto
-* Validators: ItemValidator, MovementValidator
-* Event Handlers: SaleCompletedHandler, PurchaseReceivedHandler
-
-### 4.3 Stock.Infrastructure
-* EF Core DbContext with PostgreSQL
-* Repositories: ItemRepository, StockMovementRepository
-* Event Bus: MassTransit + RabbitMQ integration
-* External Services: BarcodeService, TaxService
-* Migrations: Database schema versioning
-
-### 4.4 Stock.API
-* Controllers: ItemsController, StockMovementsController, ReportsController
-* Middleware: TenantResolution, StockValidation
-* Background Services: LowStockMonitor, StockSyncService
-* SignalR Hubs: StockUpdatesHub (real-time updates)
-
-### 4.5 Stock.Agent
-* LangChain Integration: Natural language stock queries
-* ML Models: Demand forecasting, anomaly detection
-* Recommendation Engine: Reorder suggestions
-* Automation: Auto-purchase order generation (with approval)
-
----
-
-## 5) Offline-First Architecture
-
-### 5.1 Mobile (Flutter)
-* **Local DB**: SQLite with sqflite
-* **Sync Strategy**: 
-  - Queue local changes with UUID + timestamp
-  - Batch sync on connectivity
-  - Conflict resolution: Last-write-wins with manual override
-* **Tables**: items, stock_levels, movements, sync_queue
-* **Offline Capabilities**: Full CRUD, stock adjustments, reports
-
-### 5.2 Web (Nuxt 3)
-* **State Management**: Pinia with persistence
-* **Offline Detection**: Network status monitoring
-* **Local Storage**: IndexedDB for large datasets
-* **Service Worker**: Background sync, cache strategies
-
-### 5.3 Sync Protocol
-```json
-{
-  "sync_batch": {
-    "tenant_id": "t1",
-    "device_id": "d1",
-    "operations": [
-      {
-        "id": "uuid",
-        "type": "create_item",
-        "data": {...},
-        "timestamp": "2024-01-20T10:00:00Z"
-      }
-    ]
-  }
-}
-```
-
----
-
-## 6) UI/UX Specifications (Stock Module)
-
-### 6.1 Mobile Screens (Flutter)
-
-**Stock Dashboard**
-* Quick stats: Total items, Low stock count, Today's movements
-* Quick actions: Add item, Receive stock, Stock count
-* Recent movements list
-* AI insights card
-
-**Items List**
-* Search bar with barcode scanner
-* Filter: Category, Status, Stock level
-* Sort: Name, SKU, Stock level
-* Swipe actions: Edit, Adjust stock
-* FAB: Add new item
-
-**Item Detail**
-* Basic info with image
-* Current stock by warehouse
-* Movement history (last 10)
-* Reorder settings
-* AI recommendations
-* Action buttons: Adjust, Transfer, Edit
-
-**Stock Adjustment**
-* Warehouse selector
-* Item search/scan
-* Quantity input with +/- buttons
-* Reason dropdown
-* Notes field
-* Review & confirm
-
-**Stock Reports**
-* Stock valuation card
-* Low stock items
-* Movement summary chart
-* Export actions
-
-### 6.2 Web Screens (Nuxt 3)
-
-**Stock Management Dashboard**
-* KPI cards: Stock value, Items count, Low stock alerts
-* Stock movement chart (7/30 days)
-* Low stock table with quick reorder
-* Recent adjustments
-
-**Items Management**
-* DataTable with inline editing
-* Bulk actions: Import, Export, Update
-* Advanced filters
-* Category tree view
-
-**Stock Ledger**
-* Date range picker
-* Item multi-select
-* Movement type filter
-* Tabular view with running balance
-* Export to CSV/PDF
-
-**AI Insights Panel**
-* Reorder recommendations
-* Demand forecast charts
-* Anomaly alerts
-* Price optimization suggestions
-
----
-
-## 7) Integration Points
-
-### 7.1 Internal Integrations
-* **Sales Service**: Auto-decrement on sale
-* **Purchasing Service**: Auto-increment on receipt
-* **Accounting Service**: Stock valuation for P&L
-* **Notification Service**: Low stock alerts
-
-### 7.2 External Integrations
-* **Barcode Scanning**: ZXing library
-* **SMS/WhatsApp**: Twilio for alerts
-* **Payment Gateway**: For supplier payments
-* **Supplier APIs**: For catalog and pricing
-
----
-
-## 8) Testing Requirements
-
-### 8.1 Unit Tests
-* Domain logic: Stock calculations, validations
-* Application services: Command/Query handlers
-* Value objects: Quantity conversions
-
-### 8.2 Integration Tests
-* Repository operations
-* Event publishing/handling
-* API endpoints
-* Sync operations
-
-### 8.3 E2E Tests
-* Complete stock workflow
-* Offline/online transitions
-* Multi-tenant scenarios
-
----
-
-## 9) Performance Requirements
-
-* Item search: < 100ms for 10k items
-* Stock adjustment: < 200ms including events
-* Sync batch: < 5s for 100 operations
-* Reports: < 2s for monthly data
-* Real-time updates: < 500ms via SignalR
-
----
-
-## 10) Security & Compliance
-
-* Row-level security by TenantId
-* Audit trail for all changes
-* Role-based access (Owner, Manager, Clerk)
-* Data encryption at rest
-* POPIA compliance for supplier data
-* API rate limiting
-
----
-
-## 11) Deployment & DevOps
-
-* Docker containers for each service
-* Kubernetes orchestration
-* GitHub Actions CI/CD
-* Automated database migrations
-* Health checks and monitoring
-* Distributed tracing with OpenTelemetry
-
----
-
-## 12) Success Criteria (Stock Module)
-
-1. **Functional**: All CRUD operations, movements, reports working
-2. **Offline**: Full functionality offline with reliable sync
-3. **Performance**: Meets all response time requirements
-4. **AI**: Reorder recommendations generating with >70% accuracy
-5. **Integration**: Events flowing to other services correctly
-6. **Testing**: >80% code coverage, all E2E tests passing
-7. **Documentation**: API docs, user guides, deployment guides complete
+# TOSS ERP III MVP - Complete Task Breakdown
+
+## Project Overview
+TOSS ERP III is a cloud-native ERP system for South African SMMEs with the following architecture:
+- **Backend**: .NET 8 microservices (Stock, Sales, Buying, Accounting, CRM, Collaboration, Notifications, AI)
+- **Frontend**: Flutter mobile app + Nuxt 3 web app
+- **Infrastructure**: Docker, Kubernetes, Event-driven architecture with MassTransit + RabbitMQ
+- **AI**: Service-as-a-Software with autonomous agents
+
+## Core Modules for MVP
+
+### 1. Infrastructure & Foundation
+- **Identity & Authentication Service**
+- **Event Bus & Message Broker**
+- **API Gateway**
+- **Shared Infrastructure**
+
+### 2. Core Business Services
+- **Stock/Inventory Service** (Priority 1)
+- **Sales/POS Service**
+- **Buying/Purchasing Service**
+- **Accounting Service**
+- **CRM Service**
+- **Collaboration Service**
+- **Notifications Service**
+
+### 3. AI & Intelligence
+- **AI Service** (Service-as-a-Software)
+- **Analytics & Reporting**
+
+### 4. Client Applications
+- **Flutter Mobile App**
+- **Nuxt 3 Web App**
+
+### 5. DevOps & Deployment
+- **Docker & Containerization**
+- **Kubernetes Deployment**
+- **CI/CD Pipeline**
+- **Monitoring & Observability**
+
+## MVP Success Criteria
+1. **Functional**: All core business processes working end-to-end
+2. **Offline-First**: Full offline capability with reliable sync
+3. **Multi-Tenant**: Proper tenant isolation and security
+4. **AI-Powered**: Basic AI recommendations and automation
+5. **Production Ready**: Deployed, monitored, and scalable
+6. **User Experience**: Intuitive UI/UX for SMME users
+7. **Performance**: Meets all response time requirements
+8. **Security**: POPIA compliant with proper data protection
+
+## Technical Requirements
+- **Database**: PostgreSQL with EF Core
+- **Caching**: Redis for session and data caching
+- **Search**: Elasticsearch for advanced search
+- **File Storage**: Azure Blob Storage or AWS S3
+- **Monitoring**: OpenTelemetry, Prometheus, Grafana
+- **Logging**: Structured logging with Serilog
+- **Testing**: Unit, Integration, and E2E tests
+- **Documentation**: API docs, user guides, deployment guides
+
+## Business Requirements
+- **Multi-tenant**: Support for multiple SMME businesses
+- **Offline-first**: Work without internet connectivity
+- **Real-time**: Live updates and notifications
+- **Scalable**: Handle growth from small to medium businesses
+- **Secure**: Role-based access control and data encryption
+- **Compliant**: POPIA and local business regulations
+- **User-friendly**: Simple interface for non-technical users
+
+## Integration Requirements
+- **Payment Gateways**: Integration with local payment providers
+- **SMS/WhatsApp**: Twilio for notifications
+- **Barcode Scanning**: ZXing for inventory management
+- **Supplier APIs**: For catalog and pricing data
+- **Banking APIs**: For financial data integration
+
+## Performance Requirements
+- **Response Time**: < 200ms for API calls
+- **Sync Speed**: < 10s for offline-to-online sync
+- **Concurrent Users**: Support 100+ users per tenant
+- **Data Volume**: Handle 10k+ items per business
+- **Uptime**: 99.9% availability
+
+## Security Requirements
+- **Authentication**: JWT-based with refresh tokens
+- **Authorization**: Role-based access control
+- **Data Encryption**: At rest and in transit
+- **Audit Trail**: Complete audit logging
+- **Tenant Isolation**: Proper data segregation
+- **API Security**: Rate limiting and input validation
+
+## Deployment Requirements
+- **Containerization**: Docker for all services
+- **Orchestration**: Kubernetes for production
+- **CI/CD**: Automated testing and deployment
+- **Monitoring**: Health checks and alerting
+- **Backup**: Automated database backups
+- **Scaling**: Horizontal scaling capability
+
+## Testing Requirements
+- **Unit Tests**: >80% code coverage
+- **Integration Tests**: Service-to-service communication
+- **E2E Tests**: Complete user workflows
+- **Performance Tests**: Load and stress testing
+- **Security Tests**: Penetration testing
+- **Accessibility Tests**: WCAG compliance
+
+## Documentation Requirements
+- **API Documentation**: OpenAPI/Swagger specs
+- **User Guides**: Step-by-step instructions
+- **Developer Docs**: Architecture and setup guides
+- **Deployment Guides**: Infrastructure setup
+- **Troubleshooting**: Common issues and solutions
+- **Training Materials**: Video tutorials and webinars
+
+## Success Metrics
+- **User Adoption**: 50+ active businesses in first 3 months
+- **System Performance**: < 200ms average response time
+- **Data Accuracy**: >95% inventory accuracy
+- **User Satisfaction**: >4.5/5 rating
+- **Business Impact**: 20% improvement in operational efficiency
+- **Technical Quality**: < 1% error rate in production
+- **Security**: Zero security incidents
+- **Uptime**: >99.9% availability
+
+## Risk Mitigation
+- **Technical Risks**: Comprehensive testing and monitoring
+- **Business Risks**: User feedback and iterative development
+- **Security Risks**: Regular security audits and updates
+- **Performance Risks**: Load testing and optimization
+- **Compliance Risks**: Legal review and documentation
+- **Deployment Risks**: Blue-green deployment and rollback plans
+
+## Timeline & Phases
+- **Phase 1**: Core infrastructure and Stock service (4 weeks)
+- **Phase 2**: Sales, Buying, and Accounting services (4 weeks)
+- **Phase 3**: CRM, Collaboration, and Notifications (3 weeks)
+- **Phase 4**: AI service and advanced features (3 weeks)
+- **Phase 5**: Client applications and integration (4 weeks)
+- **Phase 6**: Testing, deployment, and optimization (2 weeks)
+
+Total MVP Timeline: 20 weeks
+
+## Resource Requirements
+- **Development Team**: 6-8 developers
+- **DevOps Engineer**: 1-2 engineers
+- **QA Engineer**: 1-2 testers
+- **Product Manager**: 1 manager
+- **UI/UX Designer**: 1 designer
+- **Infrastructure**: Cloud hosting and services
+
+## Budget Considerations
+- **Development**: 20 weeks × team cost
+- **Infrastructure**: Cloud services and tools
+- **Third-party Services**: APIs, payment gateways, SMS
+- **Testing**: Tools and environments
+- **Documentation**: Technical writing and training
+- **Deployment**: Production environment setup
+
+## Post-MVP Roadmap
+- **Advanced AI**: Machine learning and predictive analytics
+- **Mobile App**: Native iOS and Android apps
+- **Integrations**: More third-party service integrations
+- **Advanced Features**: Multi-currency, advanced reporting
+- **Enterprise Features**: Multi-location, advanced workflows
+- **Marketplace**: Supplier and customer marketplace
+- **Analytics**: Advanced business intelligence
+- **Automation**: Workflow automation and RPA
