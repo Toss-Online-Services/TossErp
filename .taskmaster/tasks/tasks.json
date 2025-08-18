@@ -870,7 +870,139 @@
       "completedTasks": 0,
       "totalEstimatedHours": 180,
       "created": "2025-08-13T16:37:43.174Z",
-      "description": "Tasks for master context"
+      "description": "Tasks for master context",
+      "updated": "2025-08-13T16:37:43.174Z"
+    }
+  },
+  "mvp": {
+    "tasks": [
+      {"id":1,"title":"Core Infrastructure Baseline","description":"Establish foundational services and cross-cutting infrastructure for the MVP","status":"pending","priority":"high","dependencies":[],"complexity":4,"details":"Baseline platform services: identity, gateway, event bus, shared libs, configuration, secrets, local dev env","subtasks":[
+        {"id":1,"title":"Identity & Auth Service (JWT, tenants, roles)","status":"pending","complexity":3},
+        {"id":2,"title":"API Gateway (reverse proxy, routing, rate limits)","status":"pending","complexity":2},
+        {"id":3,"title":"Event Bus (MassTransit + RabbitMQ) shared config","status":"pending","complexity":2},
+        {"id":4,"title":"Shared packages (Contracts, Abstractions, Error model)","status":"pending","complexity":2},
+        {"id":5,"title":"Centralized configuration & secrets (appsettings, KeyVault)","status":"pending","complexity":2},
+        {"id":6,"title":"Local dev environment (docker-compose, seed data)","status":"pending","complexity":1},
+        {"id":7,"title":"JWT signing keys & refresh token flow","status":"pending","complexity":2},
+        {"id":8,"title":"Tenant resolution middleware + per-tenant RLS","status":"pending","complexity":3},
+        {"id":9,"title":"Gateway rate limiting & request size limits","status":"pending","complexity":2},
+        {"id":10,"title":"Event contracts package + error/retry DLQ policy","status":"pending","complexity":2},
+        {"id":11,"title":"ProblemDetails + correlation IDs cross-cutting","status":"pending","complexity":2},
+        {"id":12,"title":"Dev bootstrap: RabbitMQ, Postgres, Redis containers","status":"pending","complexity":1}
+      ],"estimatedHours":20},
+      {"id":2,"title":"Observability & Health","description":"Logging, metrics, tracing, health endpoints and dashboards","status":"pending","priority":"high","dependencies":[1],"complexity":3,"details":"Serilog, OpenTelemetry, health checks, Prometheus/Grafana dashboards, alerting","subtasks":[{"id":1,"title":"Structured logging with correlation IDs","status":"pending","complexity":2},{"id":2,"title":"OpenTelemetry tracing + metrics across services","status":"pending","complexity":3},{"id":3,"title":"Health endpoints + readiness/liveness","status":"pending","complexity":1},{"id":4,"title":"Dashboards + alert rules (Prometheus/Grafana)","status":"pending","complexity":2}],"estimatedHours":12},
+      {"id":3,"title":"DevOps & CI/CD","description":"Pipelines, containerization, manifests and environment promotion","status":"pending","priority":"high","dependencies":[1,2],"complexity":4,"details":"GitHub Actions, Dockerfiles, Container registry, K8s manifests, Kustomize/Helm, migration automation","subtasks":[
+        {"id":1,"title":"Dockerfiles for all services","status":"pending","complexity":2},
+        {"id":2,"title":"GitHub Actions build/test/publish","status":"pending","complexity":2},
+        {"id":3,"title":"Kubernetes manifests + Kustomize overlays","status":"pending","complexity":3},
+        {"id":4,"title":"DB migration automation per service","status":"pending","complexity":2},
+        {"id":5,"title":"Environment promotion (dev→staging→prod)","status":"pending","complexity":2},
+        {"id":6,"title":"Container registry + image versioning (semver)","status":"pending","complexity":2},
+        {"id":7,"title":"Supply chain: image scanning + SBOM","status":"pending","complexity":2},
+        {"id":8,"title":"Blue/green or rolling deploy strategy","status":"pending","complexity":2}
+      ],"estimatedHours":18},
+      {"id":4,"title":"Stock Module Completion (MVP integration)","description":"Finish remaining Stock tasks and integrate with platform baselines","status":"pending","priority":"high","dependencies":[1,2],"complexity":3,"details":"Leverage existing Stock work; finalize background services, AI hooks, reports","subtasks":[{"id":1,"title":"LowStockMonitor + SignalR hubs finalized","status":"pending","complexity":2},{"id":2,"title":"Stock reports (ledger/valuation/movement) polish","status":"pending","complexity":2},{"id":3,"title":"AI reorder recommendations endpoint integration","status":"pending","complexity":2}],"estimatedHours":10},
+      {"id":5,"title":"Sales/POS Service (MVP)","description":"Sales domain + POS flows, receipts/invoices, payments integration, events","status":"pending","priority":"high","dependencies":[1,4],"complexity":4,"details":"Sales domain/application/infrastructure/API, publish SaleCompleted, basic payments","subtasks":[
+        {"id":1,"title":"Domain model (Sale, SaleItem, Tender, Till)","status":"pending","complexity":2},
+        {"id":2,"title":"Commands/Queries (CreateSale, Cancel, GetDailySales)","status":"pending","complexity":2},
+        {"id":3,"title":"API endpoints + validations + Swagger","status":"pending","complexity":2},
+        {"id":4,"title":"Event publishing: SaleCompleted","status":"pending","complexity":1},
+        {"id":5,"title":"Payments gateway integration (MVP set)","status":"pending","complexity":3},
+        {"id":6,"title":"Repositories + unit tests (domain/app)","status":"pending","complexity":2},
+        {"id":7,"title":"Receipt generation & numbering","status":"pending","complexity":2},
+        {"id":8,"title":"POS input validation & error codes","status":"pending","complexity":2}
+      ],"estimatedHours":24}
+      ,
+      {"id":6,"title":"Buying/Procurement Service (MVP)","description":"Suppliers, purchase orders, receipts, pricing; events to Stock","status":"pending","priority":"high","dependencies":[1,4,5],"complexity":3,"details":"Core procurement lifecycle and integration with Stock increments","subtasks":[{"id":1,"title":"Domain (Supplier, PurchaseOrder, POItem)","status":"pending","complexity":2},{"id":2,"title":"Commands/Queries (CreatePO, ReceivePO)","status":"pending","complexity":2},{"id":3,"title":"API endpoints + events (PurchaseOrderReceived)","status":"pending","complexity":2},{"id":4,"title":"Basic price list + lead time tracking","status":"pending","complexity":2}],"estimatedHours":16},
+      {"id":7,"title":"Accounting (Cash-based MVP)","description":"Cashbook, simple ledgers, P&L summary; integrate with Sales & Stock valuation","status":"pending","priority":"high","dependencies":[1,5,6],"complexity":4,"details":"Minimal but coherent cash accounting for MVP KPIs","subtasks":[
+        {"id":1,"title":"Domain (Cashbook, Entry, Account) + invariants","status":"pending","complexity":2},
+        {"id":2,"title":"Posting rules: SaleCompleted, purchase receipts, adjustments","status":"pending","complexity":3},
+        {"id":3,"title":"Stock valuation snapshot for P&L","status":"pending","complexity":2},
+        {"id":4,"title":"Cashbook UI (web): entries, filters, export CSV","status":"pending","complexity":2},
+        {"id":5,"title":"Reports: P&L summary, cash position, month-over-month","status":"pending","complexity":2},
+        {"id":6,"title":"Reconciliation helpers + rounding rules","status":"pending","complexity":2}
+      ],"estimatedHours":28},
+      {"id":8,"title":"CRM Service (MVP)","description":"Customers, interactions, simple loyalty and segments","status":"pending","priority":"medium","dependencies":[1,5],"complexity":3,"details":"Customer profiles, purchase history, preferences, segments","subtasks":[{"id":1,"title":"Domain (Customer, Segment, LoyaltyTx)","status":"pending","complexity":2},{"id":2,"title":"Queries (TopCustomers, LapsedCustomers)","status":"pending","complexity":2},{"id":3,"title":"API endpoints + basic loyalty accrual","status":"pending","complexity":2}],"estimatedHours":14},
+      {"id":9,"title":"Notifications Service (MVP)","description":"Channels (SMS/WhatsApp), templates, audits, rate limits","status":"pending","priority":"medium","dependencies":[1,2],"complexity":3,"details":"Unified notifications for alerts, promos, reports","subtasks":[{"id":1,"title":"Channel providers + retries/Polly","status":"pending","complexity":2},{"id":2,"title":"Templates + variables + localization","status":"pending","complexity":2},{"id":3,"title":"Audit log + consent (POPIA)","status":"pending","complexity":2}],"estimatedHours":12},
+      {"id":10,"title":"Collaboration (Group-Buy) Service (MVP)","description":"Campaigns, participant enrollment, supplier quotation, order split & settlement","status":"pending","priority":"medium","dependencies":[1,6,9],"complexity":4,"details":"Enable collaborative procurement to reduce costs","subtasks":[
+        {"id":1,"title":"Domain (Campaign, Participant, Allocation)","status":"pending","complexity":3},
+        {"id":2,"title":"Supplier quotation intake + best-price selection","status":"pending","complexity":3},
+        {"id":3,"title":"Participant enrollment + commitment tracking","status":"pending","complexity":2},
+        {"id":4,"title":"Order split + settlement per participant","status":"pending","complexity":3},
+        {"id":5,"title":"Events + integration with Buying/Stock","status":"pending","complexity":2},
+        {"id":6,"title":"Web UI: campaign list/detail, join/leave, progress","status":"pending","complexity":2}
+      ],"estimatedHours":32},
+      {"id":11,"title":"AI Service (Service-as-a-Software)","description":"Conversational orchestrator, agents, background monitors, outcome tracking","status":"pending","priority":"high","dependencies":[1,4,5,6,7,8,9,10],"complexity":4,"details":"MVP orchestration with Inventory, Sales, Purchasing, Finance, Customer agents","subtasks":[
+        {"id":1,"title":"Public endpoints: /api/ai/conversation, /automate, /services/status, /outcomes","status":"pending","complexity":2},
+        {"id":2,"title":"Intent classification + routing (keyword + rule-based + fallback)","status":"pending","complexity":2},
+        {"id":3,"title":"Request validation + authorization policies (per intent)","status":"pending","complexity":2},
+        {"id":4,"title":"Inventory agent: low stock check, reorder recs, auto-PO draft","status":"pending","complexity":3},
+        {"id":5,"title":"Sales agent: process sale request, generate invoice, send receipt","status":"pending","complexity":3},
+        {"id":6,"title":"Purchasing agent: create PO, receive goods, supplier selection hint","status":"pending","complexity":3},
+        {"id":7,"title":"Finance agent: cash flow snapshot, monthly P&L summary, overdue alerts","status":"pending","complexity":3},
+        {"id":8,"title":"Customer agent: follow-ups for lapsed customers, answer FAQs","status":"pending","complexity":3},
+        {"id":9,"title":"Proactive monitor: schedules + event hooks (low stock, overdue invoices, churn)","status":"pending","complexity":2},
+        {"id":10,"title":"Automation scheduler: cron-like recurring tasks (daily/weekly/monthly)","status":"pending","complexity":2},
+        {"id":11,"title":"Outcome tracker: define KPIs (revenue↑, stockouts↓, time saved), persist","status":"pending","complexity":2},
+        {"id":12,"title":"Outcome analytics: service performance metrics + ROI report endpoints","status":"pending","complexity":2},
+        {"id":13,"title":"Idempotency + retries + circuit breakers on downstream calls","status":"pending","complexity":2},
+        {"id":14,"title":"Structured errors + ProblemDetails for all endpoints","status":"pending","complexity":1},
+        {"id":15,"title":"Observability: traces around orchestration spans + agent actions","status":"pending","complexity":2},
+        {"id":16,"title":"Integration tests: orchestrator→agents happy/edge paths","status":"pending","complexity":2},
+        {"id":17,"title":"Load smoke: conversation/automation p95 latency check","status":"pending","complexity":1},
+        {"id":18,"title":"Docs: swagger annotations + examples for every endpoint","status":"pending","complexity":1}
+      ],"estimatedHours":34},
+      {"id":12,"title":"Flutter Mobile App (MVP)","description":"Auth, stock flows, POS, offline sync, notifications","status":"pending","priority":"high","dependencies":[4,5,11],"complexity":4,"details":"Primary field app for SMMEs with offline-first","subtasks":[
+        {"id":1,"title":"Auth + tenant selector + secure storage (flutter_secure_storage)","status":"pending","complexity":2},
+        {"id":2,"title":"Stock dashboard (low stock, quick actions)","status":"pending","complexity":2},
+        {"id":3,"title":"Items list (search, filter, barcode scan)","status":"pending","complexity":2},
+        {"id":4,"title":"Item detail (stock by warehouse, history, actions)","status":"pending","complexity":2},
+        {"id":5,"title":"Stock adjustment flow (reasons, review & confirm)","status":"pending","complexity":2},
+        {"id":6,"title":"POS quick sale (cart, payment method, receipt PDF/share)","status":"pending","complexity":3},
+        {"id":7,"title":"Offline cache (SQLite) + sync queue (batch, retry)","status":"pending","complexity":3},
+        {"id":8,"title":"Notifications inbox + deep links to entities","status":"pending","complexity":2},
+        {"id":9,"title":"Localization (en/af/zu baseline) + RTL ready","status":"pending","complexity":2},
+        {"id":10,"title":"Accessibility (large text, contrast, voiceover labels)","status":"pending","complexity":1},
+        {"id":11,"title":"Design system (spacing, typography, buttons, inputs)","status":"pending","complexity":2},
+        {"id":12,"title":"E2E flows (happy/edge) with integration env","status":"pending","complexity":2}
+      ],"estimatedHours":36},
+      {"id":13,"title":"Nuxt 3 Web App (MVP)","description":"Admin dashboards, advanced stock, sales back-office, customers","status":"pending","priority":"high","dependencies":[4,5,7,8,11],"complexity":4,"details":"Back-office web for management and reporting","subtasks":[
+        {"id":1,"title":"Authentication + session + permissions (route guards, Pinia)","status":"pending","complexity":2},
+        {"id":2,"title":"Stock management: DataTable (server-side), bulk import/export","status":"pending","complexity":3},
+        {"id":3,"title":"Stock ledger + movement history with running balance","status":"pending","complexity":2},
+        {"id":4,"title":"Sales back-office: refunds, day-end reports","status":"pending","complexity":2},
+        {"id":5,"title":"Customer management + segments + search","status":"pending","complexity":2},
+        {"id":6,"title":"AI insights panel (reorders, anomalies, forecasts)","status":"pending","complexity":2},
+        {"id":7,"title":"Real-time updates (SignalR) + optimistic UI","status":"pending","complexity":2},
+        {"id":8,"title":"Design system + responsive layout (Tailwind)","status":"pending","complexity":2},
+        {"id":9,"title":"Accessibility + keyboard nav + aria labels","status":"pending","complexity":1},
+        {"id":10,"title":"E2E tests (Playwright/Cypress) key workflows","status":"pending","complexity":2}
+      ],"estimatedHours":32},
+      {"id":14,"title":"Offline Sync Platform (Cross-Module)","description":"Generic sync protocol and services extended beyond Stock","status":"pending","priority":"high","dependencies":[4,5,8,12,13],"complexity":4,"details":"Sync engine, conflict resolution, batching and retries for Sales/CRM/Buying","subtasks":[
+        {"id":1,"title":"Sync protocol v1 + payload versioning","status":"pending","complexity":2},
+        {"id":2,"title":"Module adapters (Sales, CRM, Buying) for local ops","status":"pending","complexity":3},
+        {"id":3,"title":"Conflict resolution strategies per module","status":"pending","complexity":3},
+        {"id":4,"title":"Batching, backoff & retry with jitter","status":"pending","complexity":2},
+        {"id":5,"title":"Telemetry (success, failure, duration, last sync)","status":"pending","complexity":2},
+        {"id":6,"title":"Admin UI: sync status, retry, conflict review (web)","status":"pending","complexity":2}
+      ],"estimatedHours":26},
+      {"id":15,"title":"Security & Compliance (POPIA)","description":"RBAC, tenant isolation, encryption, consent & audit","status":"pending","priority":"high","dependencies":[1,2,5,8,9],"complexity":3,"details":"Harden services and ensure compliance","subtasks":[{"id":1,"title":"RBAC policies + enforcement in APIs","status":"pending","complexity":2},{"id":2,"title":"Row-level security by TenantId","status":"pending","complexity":2},{"id":3,"title":"Encryption at rest + TLS everywhere","status":"pending","complexity":2},{"id":4,"title":"Consent + unsubscribe + audit trail","status":"pending","complexity":2}],"estimatedHours":14},
+      {"id":16,"title":"Performance & Scalability","description":"Indexes, pagination, caching, stress tests","status":"pending","priority":"medium","dependencies":[4,5,6,7,8,11],"complexity":3,"details":"Meet PRD performance targets under load","subtasks":[{"id":1,"title":"DB indexes + query tuning","status":"pending","complexity":2},{"id":2,"title":"Pagination everywhere + projections","status":"pending","complexity":1},{"id":3,"title":"Cache hotspots with Redis (where safe)","status":"pending","complexity":2},{"id":4,"title":"Load/stress tests + fixes","status":"pending","complexity":2}],"estimatedHours":12},
+      {"id":17,"title":"Testing Strategy Execution","description":"Unit, integration, E2E across modules with coverage targets","status":"pending","priority":"high","dependencies":[4,5,6,7,8,9,10,11,12,13],"complexity":3,"details":"Automated tests integrated into CI with coverage reports","subtasks":[{"id":1,"title":"Unit tests domain/app for each service","status":"pending","complexity":2},{"id":2,"title":"Integration tests API/repo/events","status":"pending","complexity":2},{"id":3,"title":"E2E (mobile/web) critical flows","status":"pending","complexity":3}],"estimatedHours":20},
+      {"id":18,"title":"Deployment to Production","description":"Infra provisioning, DNS/TLS, backups, runbooks","status":"pending","priority":"high","dependencies":[2,3,16],"complexity":3,"details":"Reliable prod rollout with monitoring and rollback","subtasks":[{"id":1,"title":"Provision K8s cluster + managed DB/Redis","status":"pending","complexity":2},{"id":2,"title":"DNS, TLS, WAF/rate limits","status":"pending","complexity":2},{"id":3,"title":"Backups + restore procedures","status":"pending","complexity":2},{"id":4,"title":"Runbooks + on-call rotation","status":"pending","complexity":1}],"estimatedHours":14},
+      {"id":19,"title":"Documentation & Training","description":"Finalize docs (API, user, dev, ops) and training materials","status":"pending","priority":"medium","dependencies":[11,12,13,18],"complexity":2,"details":"Ensure stakeholders can adopt and operate the platform","subtasks":[{"id":1,"title":"API refs + SDK snippets","status":"pending","complexity":1},{"id":2,"title":"User guides + videos (mobile/web)","status":"pending","complexity":1},{"id":3,"title":"Dev/ops guides + troubleshooting","status":"pending","complexity":1}],"estimatedHours":10},
+      {"id":20,"title":"Go-Live Readiness & UAT","description":"UAT cycles, smoke tests, cutover checklist, launch","status":"pending","priority":"high","dependencies":[17,18,19],"complexity":2,"details":"Final checks and stakeholder sign-off for MVP","subtasks":[{"id":1,"title":"UAT planning + execution + fixes","status":"pending","complexity":1},{"id":2,"title":"Cutover plan + rollback","status":"pending","complexity":1},{"id":3,"title":"Launch communications","status":"pending","complexity":1}],"estimatedHours":8}
+    ],
+    "metadata": {
+      "version": "1.0.0",
+      "lastUpdated": "2025-08-18T00:00:00Z",
+      "projectName": "TOSS ERP III MVP (All Core Modules)",
+      "totalTasks": 20,
+      "completedTasks": 0,
+      "totalEstimatedHours": 336,
+      "created": "2025-08-18T00:00:00Z",
+      "description": "End-to-end MVP across infrastructure, core services, AI, clients, and DevOps",
+      "updated": "2025-08-18T00:00:00Z"
     }
   }
 }
