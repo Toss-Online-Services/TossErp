@@ -1,0 +1,47 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: toss-erp-staging
+
+namespace: toss-erp-staging
+
+resources:
+- ../../base
+
+namePrefix: staging-
+
+commonLabels:
+  environment: staging
+  app.kubernetes.io/instance: toss-erp-staging
+
+images:
+- name: ghcr.io/toss-online-services/toss-erp/gateway
+  newTag: staging-latest
+- name: ghcr.io/toss-online-services/toss-erp/identity
+  newTag: staging-latest
+- name: ghcr.io/toss-online-services/toss-erp/ai
+  newTag: staging-latest
+- name: ghcr.io/toss-online-services/toss-erp/web
+  newTag: staging-latest
+- name: ghcr.io/toss-online-services/toss-erp/mobile
+  newTag: staging-latest
+
+patchesStrategicMerge:
+- replicas-patch.yaml
+- ingress-patch.yaml
+
+configMapGenerator:
+- name: toss-config-generated
+  behavior: merge
+  literals:
+  - ASPNETCORE_ENVIRONMENT=Staging
+  - Logging__LogLevel__Default=Information
+  - Logging__LogLevel__Microsoft=Warning
+
+secretGenerator:
+- name: toss-secrets-generated
+  behavior: merge
+  literals:
+  - jwt-secret=staging-jwt-secret-change-in-production
+  - database-password=staging-password

@@ -1,0 +1,42 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: toss-erp-base
+
+resources:
+- namespace.yaml
+- gateway-deployment.yaml
+- identity-deployment.yaml
+- ai-deployment.yaml
+- web-deployment.yaml
+- mobile-deployment.yaml
+- ingress.yaml
+
+commonLabels:
+  app.kubernetes.io/managed-by: kustomize
+  app.kubernetes.io/part-of: toss-erp
+
+images:
+- name: ghcr.io/toss-online-services/toss-erp/gateway
+  newTag: latest
+- name: ghcr.io/toss-online-services/toss-erp/identity
+  newTag: latest
+- name: ghcr.io/toss-online-services/toss-erp/ai
+  newTag: latest
+- name: ghcr.io/toss-online-services/toss-erp/web
+  newTag: latest
+- name: ghcr.io/toss-online-services/toss-erp/mobile
+  newTag: latest
+
+configMapGenerator:
+- name: toss-config-generated
+  literals:
+  - ASPNETCORE_ENVIRONMENT=Production
+  - Logging__LogLevel__Default=Information
+
+secretGenerator:
+- name: toss-secrets-generated
+  literals:
+  - jwt-secret=default-jwt-secret-change-in-production
+  - database-password=default-db-password-change-in-production

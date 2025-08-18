@@ -42,17 +42,18 @@ public static class MassTransitEventBusBuilderExtensions
                     host.Password(eventBusConfig.EventBusPassword);
                 });
 
-                // Configure retry policy
+                // Configure retry + delayed redelivery (exponential backoff)
                 cfg.UseMessageRetry(r =>
                 {
                     r.Interval(int.Parse(eventBusConfig.EventBusRetryCount), TimeSpan.FromSeconds(2));
                 });
+                cfg.UseDelayedRedelivery(r => r.Intervals(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(45)));
 
                 // Configure error handling - use the new API
                 cfg.UseInMemoryOutbox(context);
 
-                // Configure consumers
-                cfg.ConfigureEndpoints(context);
+                // Configure consumers and endpoints
+                cfg.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter("toss", false));
             });
 
             // Allow custom configuration

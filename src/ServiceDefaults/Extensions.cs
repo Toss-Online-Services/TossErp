@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using System.Diagnostics;
+using eShop.ServiceDefaults.Middleware;
 
 namespace eShop.ServiceDefaults;
 
@@ -39,10 +41,14 @@ public static partial class Extensions
     /// </remarks>
     public static IHostApplicationBuilder AddBasicServiceDefaults(this IHostApplicationBuilder builder)
     {
+        // Add structured logging
+        builder.AddStructuredLogging();
+
         // Default health checks assume the event bus and self health checks
         builder.AddDefaultHealthChecks();
 
         builder.ConfigureOpenTelemetry();
+        builder.AddDefaultProblemDetails();
 
         return builder;
     }
@@ -107,6 +113,7 @@ public static partial class Extensions
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
+        app.UseDefaultProblemDetails();
         // Uncomment the following line to enable the Prometheus endpoint (requires the OpenTelemetry.Exporter.Prometheus.AspNetCore package)
         // app.MapPrometheusScrapingEndpoint();
 
@@ -125,5 +132,33 @@ public static partial class Extensions
         }
 
         return app;
+    }
+
+    public static IApplicationBuilder UseCorrelationId(this IApplicationBuilder app)
+    {
+        return app.Use(async (context, next) =>
+        {
+            const string headerName = "X-Correlation-Id";
+            if (!context.Request.Headers.TryGetValue(headerName, out var correlationId) || string.IsNullOrWhiteSpace(correlationId))
+            {
+                correlationId = Activity.Current?.Id ?? Guid.NewGuid().ToString("N");
+                context.Response.Headers[headerName] = correlationId.ToString();
+            }
+            context.Items[headerName] = correlationId.ToString();
+            await next();
+        });
+    }
+
+    public static IApplicationBuilder UseTenantResolution(this IApplicationBuilder app)
+    {
+        return app.Use(async (context, next) =>
+        {
+            const string tenantHeader = "X-Tenant-Id";
+            if (context.Request.Headers.TryGetValue(tenantHeader, out var tenantId) && !string.IsNullOrWhiteSpace(tenantId))
+            {
+                context.Items[tenantHeader] = tenantId.ToString();
+            }
+            await next();
+        });
     }
 }
