@@ -24,3 +24,4 @@
 <script setup lang="ts">
 // Daily sales mini chart component
 </script>
+

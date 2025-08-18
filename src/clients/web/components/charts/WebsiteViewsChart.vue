@@ -14,3 +14,4 @@
 <script setup lang="ts">
 // Website views mini chart component
 </script>
+
