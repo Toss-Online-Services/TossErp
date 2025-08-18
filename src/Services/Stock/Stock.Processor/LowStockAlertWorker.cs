@@ -115,14 +115,25 @@ public class LowStockAlertWorker : BackgroundService
     {
         try
         {
-            // This would integrate with your notification service
-            // For now, just log the notification
-            _logger.LogInformation("Low stock notification sent for item {ItemName}. Current stock: {CurrentStock}, Reorder level: {ReorderLevel}", 
-                item.Name, currentStock, item.ReorderLevel);
-
-            // TODO: Integrate with notification service
-            // var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-            // await notificationService.SendLowStockAlertAsync(item, currentStock, cancellationToken);
+            using var scope = _serviceProvider.CreateScope();
+            
+            // Get the notification service
+            var notificationService = scope.ServiceProvider.GetService<IStockNotificationService>();
+            if (notificationService != null)
+            {
+                // Get tenant ID from current context or configuration
+                var tenantId = GetTenantId();
+                
+                // Send SignalR notification
+                await notificationService.SendLowStockAlertAsync(item, currentStock, tenantId, cancellationToken);
+                
+                _logger.LogInformation("Low stock SignalR notification sent for item {ItemName}. Current stock: {CurrentStock}, Reorder level: {ReorderLevel}", 
+                    item.Name, currentStock, item.ReorderLevel);
+            }
+            else
+            {
+                _logger.LogWarning("StockNotificationService not available, skipping SignalR notification for item {ItemId}", item.Id);
+            }
         }
         catch (Exception ex)
         {
@@ -152,6 +163,13 @@ public class LowStockAlertWorker : BackgroundService
         {
             _logger.LogError(ex, "Error creating reorder suggestion for item {ItemId}", item.Id);
         }
+    }
+
+    private string GetTenantId()
+    {
+        // In a real implementation, this would come from the current context
+        // For now, return a default tenant ID or get from configuration
+        return _configuration["TenantId"] ?? "default-tenant";
     }
 
     public override void Dispose()

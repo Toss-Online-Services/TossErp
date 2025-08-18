@@ -5,6 +5,7 @@ using TossErp.Stock.Application.Common.Interfaces;
 using TossErp.Stock.API.Services;
 using TossErp.Stock.API.Infrastructure;
 using TossErp.Stock.API.Endpoints;
+using TossErp.Stock.API.Hubs;
 using eShop.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,15 @@ builder.Services.AddHttpContextAccessor();
 
 // Register current user service
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+// Register SignalR notification service
+builder.Services.AddScoped<IStockNotificationService, StockNotificationService>();
+
+// Register AI reorder recommendation service
+builder.Services.AddScoped<IAIReorderRecommendationService, AIReorderRecommendationService>();
+
+// Add SignalR
+builder.Services.AddSignalR();
 
 // Add Swagger/OpenAPI support
 builder.Services.AddEndpointsApiExplorer();
@@ -71,6 +81,9 @@ app.MapDefaultEndpoints();
 
 // Map all endpoint groups
 app.MapEndpoints();
+
+// Map SignalR hubs
+app.MapHub<StockNotificationHub>("/hubs/stock-notifications");
 
 // Ensure database is migrated and seeded on startup (dev/local)
 await app.InitialiseDatabaseAsync();

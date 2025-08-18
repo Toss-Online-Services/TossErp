@@ -771,16 +771,89 @@ public class Reports : EndpointGroupBase
         }
     }
 
-    // Placeholder methods for other reports
-    public static async Task<Results<Ok<string>, BadRequest>> GetSlowMovingReport(
+    /// <summary>
+    /// Get slow moving stock report - items with little or no movement in specified period
+    /// </summary>
+    public static async Task<Results<Ok<SlowMovingStockReportDto>, BadRequest>> GetSlowMovingReport(
         [FromServices] IStockMovementRepository movementRepository,
+        [FromServices] IItemRepository itemRepository,
+        [FromServices] IStockLevelRepository stockLevelRepository,
         [FromQuery] int days = 90,
+        [FromQuery] decimal minQuantity = 0,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            await Task.CompletedTask; // Placeholder
-            return TypedResults.Ok("Slow moving report - to be implemented");
+            var cutoffDate = DateTime.UtcNow.AddDays(-days);
+            var movements = await movementRepository.GetAllAsync(cancellationToken);
+            var items = await itemRepository.GetAllAsync(cancellationToken);
+            var stockLevels = await stockLevelRepository.GetAllAsync(cancellationToken);
+
+            // Get items with movements in the specified period
+            var recentMovements = movements
+                .Where(m => m.CreatedAt >= cutoffDate)
+                .GroupBy(m => m.ItemId)
+                .ToDictionary(g => g.Key, g => new
+                {
+                    TotalQuantity = g.Sum(m => Math.Abs(m.Quantity)),
+                    MovementCount = g.Count(),
+                    LastMovement = g.Max(m => m.CreatedAt),
+                    AverageMovement = g.Average(m => Math.Abs(m.Quantity))
+                });
+
+            var slowMovingItems = new List<SlowMovingStockItemDto>();
+
+            foreach (var item in items)
+            {
+                var stockLevel = stockLevels.FirstOrDefault(sl => sl.ItemId == item.Id);
+                if (stockLevel == null || stockLevel.Quantity < minQuantity) continue;
+
+                var movementInfo = recentMovements.GetValueOrDefault(item.Id);
+                var totalMovement = movementInfo?.TotalQuantity ?? 0;
+                var movementCount = movementInfo?.MovementCount ?? 0;
+                var lastMovement = movementInfo?.LastMovement;
+
+                // Consider item slow-moving if:
+                // 1. No movements in the period, OR
+                // 2. Very low movement relative to current stock
+                var isSlowMoving = movementCount == 0 || 
+                                 (totalMovement < stockLevel.Quantity * 0.1m); // Less than 10% turnover
+
+                if (isSlowMoving)
+                {
+                    slowMovingItems.Add(new SlowMovingStockItemDto
+                    {
+                        ItemId = item.Id,
+                        ItemCode = item.ItemCode,
+                        ItemName = item.ItemName,
+                        Category = item.ItemGroup,
+                        WarehouseId = stockLevel.WarehouseId,
+                        CurrentQuantity = stockLevel.Quantity,
+                        TotalMovement = totalMovement,
+                        MovementCount = movementCount,
+                        LastMovementDate = lastMovement,
+                        DaysWithoutMovement = lastMovement.HasValue ? 
+                            (int)(DateTime.UtcNow - lastMovement.Value).TotalDays : days,
+                        UnitCost = stockLevel.UnitCost,
+                        TotalValue = stockLevel.Quantity * stockLevel.UnitCost,
+                        TurnoverRate = stockLevel.Quantity > 0 ? totalMovement / stockLevel.Quantity : 0
+                    });
+                }
+            }
+
+            var report = new SlowMovingStockReportDto
+            {
+                GeneratedDate = DateTime.UtcNow,
+                PeriodDays = days,
+                MinQuantity = minQuantity,
+                TotalItems = slowMovingItems.Count,
+                TotalValue = slowMovingItems.Sum(i => i.TotalValue),
+                Items = slowMovingItems.OrderByDescending(i => i.DaysWithoutMovement)
+                                     .ThenByDescending(i => i.TotalValue)
+                                     .ToList()
+            };
+
+            return TypedResults.Ok(report);
         }
         catch (Exception)
         {
@@ -788,15 +861,82 @@ public class Reports : EndpointGroupBase
         }
     }
 
-    public static async Task<Results<Ok<string>, BadRequest>> GetFastMovingReport(
+    /// <summary>
+    /// Get fast moving stock report - items with high movement in specified period
+    /// </summary>
+    public static async Task<Results<Ok<FastMovingStockReportDto>, BadRequest>> GetFastMovingReport(
         [FromServices] IStockMovementRepository movementRepository,
+        [FromServices] IItemRepository itemRepository,
+        [FromServices] IStockLevelRepository stockLevelRepository,
         [FromQuery] int days = 30,
+        [FromQuery] int topCount = 50,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            await Task.CompletedTask; // Placeholder
-            return TypedResults.Ok("Fast moving report - to be implemented");
+            var cutoffDate = DateTime.UtcNow.AddDays(-days);
+            var movements = await movementRepository.GetAllAsync(cancellationToken);
+            var items = await itemRepository.GetAllAsync(cancellationToken);
+            var stockLevels = await stockLevelRepository.GetAllAsync(cancellationToken);
+
+            // Get items with movements in the specified period
+            var recentMovements = movements
+                .Where(m => m.CreatedAt >= cutoffDate)
+                .GroupBy(m => m.ItemId)
+                .Select(g => new
+                {
+                    ItemId = g.Key,
+                    TotalQuantity = g.Sum(m => Math.Abs(m.Quantity)),
+                    MovementCount = g.Count(),
+                    LastMovement = g.Max(m => m.CreatedAt),
+                    AverageMovement = g.Average(m => Math.Abs(m.Quantity)),
+                    TotalValue = g.Sum(m => Math.Abs(m.Quantity) * (m.UnitCost ?? 0))
+                })
+                .OrderByDescending(x => x.TotalQuantity)
+                .Take(topCount)
+                .ToList();
+
+            var fastMovingItems = new List<FastMovingStockItemDto>();
+
+            foreach (var movement in recentMovements)
+            {
+                var item = items.FirstOrDefault(i => i.Id == movement.ItemId);
+                if (item == null) continue;
+
+                var stockLevel = stockLevels.FirstOrDefault(sl => sl.ItemId == item.Id);
+                var currentQuantity = stockLevel?.Quantity ?? 0;
+
+                fastMovingItems.Add(new FastMovingStockItemDto
+                {
+                    ItemId = item.Id,
+                    ItemCode = item.ItemCode,
+                    ItemName = item.ItemName,
+                    Category = item.ItemGroup,
+                    WarehouseId = stockLevel?.WarehouseId ?? Guid.Empty,
+                    CurrentQuantity = currentQuantity,
+                    TotalMovement = movement.TotalQuantity,
+                    MovementCount = movement.MovementCount,
+                    AverageMovement = movement.AverageMovement,
+                    LastMovementDate = movement.LastMovement,
+                    UnitCost = stockLevel?.UnitCost ?? 0,
+                    TotalValue = movement.TotalValue,
+                    TurnoverRate = currentQuantity > 0 ? movement.TotalQuantity / currentQuantity : 0,
+                    DailyAverage = movement.TotalQuantity / days
+                });
+            }
+
+            var report = new FastMovingStockReportDto
+            {
+                GeneratedDate = DateTime.UtcNow,
+                PeriodDays = days,
+                TopCount = topCount,
+                TotalItems = fastMovingItems.Count,
+                TotalMovement = fastMovingItems.Sum(i => i.TotalMovement),
+                TotalValue = fastMovingItems.Sum(i => i.TotalValue),
+                Items = fastMovingItems
+            };
+
+            return TypedResults.Ok(report);
         }
         catch (Exception)
         {
@@ -1034,4 +1174,60 @@ public class OutOfStockItemDto
     public decimal LastQuantity { get; set; }
     public DateTime LastMovementDate { get; set; }
     public decimal ReorderQuantity { get; set; }
+}
+
+public class SlowMovingStockReportDto
+{
+    public DateTime GeneratedDate { get; set; }
+    public int PeriodDays { get; set; }
+    public decimal MinQuantity { get; set; }
+    public int TotalItems { get; set; }
+    public decimal TotalValue { get; set; }
+    public List<SlowMovingStockItemDto> Items { get; set; } = new();
+}
+
+public class SlowMovingStockItemDto
+{
+    public Guid ItemId { get; set; }
+    public string ItemCode { get; set; } = string.Empty;
+    public string ItemName { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
+    public Guid WarehouseId { get; set; }
+    public decimal CurrentQuantity { get; set; }
+    public decimal TotalMovement { get; set; }
+    public int MovementCount { get; set; }
+    public DateTime? LastMovementDate { get; set; }
+    public int DaysWithoutMovement { get; set; }
+    public decimal UnitCost { get; set; }
+    public decimal TotalValue { get; set; }
+    public decimal TurnoverRate { get; set; }
+}
+
+public class FastMovingStockReportDto
+{
+    public DateTime GeneratedDate { get; set; }
+    public int PeriodDays { get; set; }
+    public int TopCount { get; set; }
+    public int TotalItems { get; set; }
+    public decimal TotalMovement { get; set; }
+    public decimal TotalValue { get; set; }
+    public List<FastMovingStockItemDto> Items { get; set; } = new();
+}
+
+public class FastMovingStockItemDto
+{
+    public Guid ItemId { get; set; }
+    public string ItemCode { get; set; } = string.Empty;
+    public string ItemName { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
+    public Guid WarehouseId { get; set; }
+    public decimal CurrentQuantity { get; set; }
+    public decimal TotalMovement { get; set; }
+    public int MovementCount { get; set; }
+    public decimal AverageMovement { get; set; }
+    public DateTime LastMovementDate { get; set; }
+    public decimal UnitCost { get; set; }
+    public decimal TotalValue { get; set; }
+    public decimal TurnoverRate { get; set; }
+    public decimal DailyAverage { get; set; }
 }
