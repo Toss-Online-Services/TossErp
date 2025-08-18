@@ -41,8 +41,10 @@ builder.Services.AddScoped<ITillRepository, MockTillRepository>();
 
 // Add domain event and notification services
 builder.Services.AddScoped<IDomainEventService, DomainEventService>();
-builder.Services.AddScoped<INotificationService, MockNotificationService>();
-builder.Services.AddScoped<IInventoryService, MockInventoryService>();
+        builder.Services.AddScoped<INotificationService, MockNotificationService>();
+        builder.Services.AddScoped<IInventoryService, MockInventoryService>();
+        builder.Services.AddScoped<IPaymentGatewayService, MockPaymentGatewayService>();
+        builder.Services.AddScoped<IReceiptService, ReceiptService>();
 
 // Add CORS
 builder.Services.AddCors(options =>
@@ -71,6 +73,10 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthorization();
+
+// Add exception handling middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.MapControllers();
 
 app.Run();
