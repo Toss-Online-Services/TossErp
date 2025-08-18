@@ -1,0 +1,155 @@
+{
+  "rabbit_version": "3.12.0",
+  "rabbitmq_version": "3.12.0",
+  "product_name": "RabbitMQ",
+  "product_version": "3.12.0",
+  "users": [
+    {
+      "name": "guest",
+      "password_hash": "8LYTIFbVUwi8HuV/dGlp2BYsD1I=",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "topic_permissions": [],
+  "parameters": [],
+  "global_parameters": [
+    {
+      "name": "internal_cluster_id",
+      "value": "rabbitmq-cluster-id-toss-erp"
+    }
+  ],
+  "policies": [
+    {
+      "vhost": "/",
+      "name": "toss-ha-policy",
+      "pattern": "toss.*",
+      "apply-to": "all",
+      "definition": {
+        "ha-mode": "all",
+        "ha-sync-mode": "automatic"
+      },
+      "priority": 0
+    }
+  ],
+  "queues": [
+    {
+      "name": "toss-stock-events",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 3600000,
+        "x-dead-letter-exchange": "toss-dlx"
+      }
+    },
+    {
+      "name": "toss-sales-events",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 3600000,
+        "x-dead-letter-exchange": "toss-dlx"
+      }
+    },
+    {
+      "name": "toss-ai-events",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 3600000,
+        "x-dead-letter-exchange": "toss-dlx"
+      }
+    },
+    {
+      "name": "toss-dlq",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 86400000
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "toss",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "toss-dlx",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "toss-delayed",
+      "vhost": "/",
+      "type": "x-delayed-message",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {
+        "x-delayed-type": "topic"
+      }
+    }
+  ],
+  "bindings": [
+    {
+      "source": "toss",
+      "vhost": "/",
+      "destination": "toss-stock-events",
+      "destination_type": "queue",
+      "routing_key": "stock.*",
+      "arguments": {}
+    },
+    {
+      "source": "toss",
+      "vhost": "/",
+      "destination": "toss-sales-events",
+      "destination_type": "queue",
+      "routing_key": "sales.*",
+      "arguments": {}
+    },
+    {
+      "source": "toss",
+      "vhost": "/",
+      "destination": "toss-ai-events",
+      "destination_type": "queue",
+      "routing_key": "ai.*",
+      "arguments": {}
+    },
+    {
+      "source": "toss-dlx",
+      "vhost": "/",
+      "destination": "toss-dlq",
+      "destination_type": "queue",
+      "routing_key": "*",
+      "arguments": {}
+    }
+  ]
+}

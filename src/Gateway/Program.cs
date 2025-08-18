@@ -2,8 +2,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using eShop.ServiceDefaults;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddServiceDefaults();
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer();
@@ -18,6 +22,21 @@ builder.Services.AddCors(options =>
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowAnyOrigin());
+});
+
+// Basic rate limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "anon",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 100,
+                Window = TimeSpan.FromMinutes(1),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            }));
 });
 
 // Add YARP for reverse proxy
@@ -41,6 +60,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("Default");
+app.UseRateLimiter();
+app.UseCorrelationId();
+app.UseTenantResolution();
 
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { 

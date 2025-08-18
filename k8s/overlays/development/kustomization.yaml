@@ -1,0 +1,48 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: toss-erp-development
+
+namespace: toss-erp-dev
+
+resources:
+- ../../base
+
+namePrefix: dev-
+
+commonLabels:
+  environment: development
+  app.kubernetes.io/instance: toss-erp-dev
+
+images:
+- name: ghcr.io/toss-online-services/toss-erp/gateway
+  newTag: dev-latest
+- name: ghcr.io/toss-online-services/toss-erp/identity
+  newTag: dev-latest
+- name: ghcr.io/toss-online-services/toss-erp/ai
+  newTag: dev-latest
+- name: ghcr.io/toss-online-services/toss-erp/web
+  newTag: dev-latest
+- name: ghcr.io/toss-online-services/toss-erp/mobile
+  newTag: dev-latest
+
+patchesStrategicMerge:
+- replicas-patch.yaml
+- resources-patch.yaml
+- ingress-patch.yaml
+
+configMapGenerator:
+- name: toss-config-generated
+  behavior: merge
+  literals:
+  - ASPNETCORE_ENVIRONMENT=Development
+  - Logging__LogLevel__Default=Debug
+  - Logging__LogLevel__Microsoft=Information
+
+secretGenerator:
+- name: toss-secrets-generated
+  behavior: merge
+  literals:
+  - jwt-secret=dev-jwt-secret-not-for-production
+  - database-password=dev-password
