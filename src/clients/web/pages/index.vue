@@ -1,95 +1,140 @@
 <template>
   <div class="space-y-6">
-    <!-- Page header -->
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-        <p class="text-gray-600 dark:text-gray-400">Stock management overview and insights</p>
+    <!-- Material Design Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Website Views Card -->
+      <div class="material-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h6 class="material-card-title">Website Views</h6>
+            <p class="material-card-subtitle">Last Campaign Performance</p>
+          </div>
+          <div class="stats-icon gradient-primary">
+            <ChartBarIcon class="w-6 h-6" />
+          </div>
+        </div>
+        <!-- Mini Chart Placeholder -->
+        <div class="h-16 mb-4">
+          <WebsiteViewsChart />
+        </div>
+        <div class="flex items-center text-xs text-gray-500">
+          <ClockIcon class="w-4 h-4 mr-1" />
+          campaign sent 2 days ago
+        </div>
       </div>
-      <div class="flex space-x-3">
-        <button class="btn-outline" @click="showBulkOperations = !showBulkOperations">
-          <ArrowDownTrayIcon class="w-4 h-4 mr-2" />
-          {{ showBulkOperations ? 'Hide' : 'Show' }} Bulk Operations
-        </button>
-        <button class="btn-primary" @click="showAddItemModal = true">
-          <PlusIcon class="w-4 h-4 mr-2" />
-          Add Item
-        </button>
+
+      <!-- Daily Sales Card -->
+      <div class="material-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h6 class="material-card-title">Daily Sales</h6>
+            <p class="material-card-subtitle">(+15%) increase in today sales.</p>
+          </div>
+          <div class="stats-icon gradient-success">
+            <CurrencyDollarIcon class="w-6 h-6" />
+          </div>
+        </div>
+        <!-- Mini Chart Placeholder -->
+        <div class="h-16 mb-4">
+          <DailySalesChart />
+        </div>
+        <div class="flex items-center text-xs text-gray-500">
+          <ClockIcon class="w-4 h-4 mr-1" />
+          updated 4 min ago
+        </div>
+      </div>
+
+      <!-- Completed Tasks Card -->
+      <div class="material-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h6 class="material-card-title">Completed Tasks</h6>
+            <p class="material-card-subtitle">Last Campaign Performance</p>
+          </div>
+          <div class="stats-icon gradient-warning">
+            <CheckCircleIcon class="w-6 h-6" />
+          </div>
+        </div>
+        <!-- Mini Chart Placeholder -->
+        <div class="h-16 mb-4">
+          <CompletedTasksChart />
+        </div>
+        <div class="flex items-center text-xs text-gray-500">
+          <ClockIcon class="w-4 h-4 mr-1" />
+          just updated
+        </div>
+      </div>
+
+      <!-- Stock Overview Card -->
+      <div class="material-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h6 class="material-card-title">Stock Level</h6>
+            <p class="material-card-subtitle">Current inventory status</p>
+          </div>
+          <div class="stats-icon gradient-danger">
+            <CubeIcon class="w-6 h-6" />
+          </div>
+        </div>
+        <!-- Mini Chart Placeholder -->
+        <div class="h-16 mb-4">
+          <StockLevelChart />
+        </div>
+        <div class="flex items-center text-xs text-gray-500">
+          <ClockIcon class="w-4 h-4 mr-1" />
+          real-time data
+        </div>
       </div>
     </div>
 
-    <!-- Stats cards -->
+    <!-- Key Metrics Row -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="stat-card">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center">
-              <CubeIcon class="w-5 h-5 text-primary-600 dark:text-primary-400" />
-            </div>
-          </div>
-          <div class="ml-4">
-            <p class="stat-label">Total Items</p>
-            <p class="stat-value">{{ stockStore.stats.totalItems.toLocaleString() }}</p>
-            <p class="stat-change-positive">
-              <ArrowUpIcon class="w-4 h-4 inline mr-1" />
-              +{{ Math.round((stockStore.stats.totalItems / 100) * 12.5) }}%
-            </p>
+      <!-- Bookings -->
+      <div class="material-card text-center">
+        <div class="flex justify-center mb-3">
+          <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center">
+            <CalendarIcon class="w-6 h-6 text-white" />
           </div>
         </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-1">281</h3>
+        <p class="text-sm text-gray-600 mb-2">Bookings</p>
+        <p class="text-xs text-green-600 font-medium">+55% than last week</p>
       </div>
 
-      <div class="stat-card">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-secondary-100 dark:bg-secondary-900 rounded-lg flex items-center justify-center">
-              <TruckIcon class="w-5 h-5 text-secondary-600 dark:text-secondary-400" />
-            </div>
-          </div>
-          <div class="ml-4">
-            <p class="stat-label">Warehouses</p>
-            <p class="stat-value">{{ stockStore.stats.warehousesCount }}</p>
-            <p class="stat-change-positive">
-              <ArrowUpIcon class="w-4 h-4 inline mr-1" />
-              +{{ Math.max(0, stockStore.stats.warehousesCount - 6) }}
-            </p>
+      <!-- Today's Users -->
+      <div class="material-card text-center">
+        <div class="flex justify-center mb-3">
+          <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center">
+            <UserGroupIcon class="w-6 h-6 text-white" />
           </div>
         </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-1">2,300</h3>
+        <p class="text-sm text-gray-600 mb-2">Today's Users</p>
+        <p class="text-xs text-green-600 font-medium">+3% than last month</p>
       </div>
 
-      <div class="stat-card">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-accent-100 dark:bg-accent-900 rounded-lg flex items-center justify-center">
-              <ExclamationTriangleIcon class="w-5 h-5 text-accent-600 dark:text-accent-400" />
-            </div>
-          </div>
-          <div class="ml-4">
-            <p class="stat-label">Low Stock</p>
-            <p class="stat-value">{{ stockStore.stats.lowStockCount }}</p>
-            <p class="stat-change-negative">
-              <ArrowDownIcon class="w-4 h-4 inline mr-1" />
-              +{{ Math.max(0, stockStore.stats.lowStockCount - 18) }}
-            </p>
+      <!-- Revenue -->
+      <div class="material-card text-center">
+        <div class="flex justify-center mb-3">
+          <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center">
+            <CurrencyDollarIcon class="w-6 h-6 text-white" />
           </div>
         </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-1">$34,000</h3>
+        <p class="text-sm text-gray-600 mb-2">Revenue</p>
+        <p class="text-xs text-green-600 font-medium">+35% than last month</p>
       </div>
 
-      <div class="stat-card">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
-              <CurrencyDollarIcon class="w-5 h-5 text-green-600 dark:text-green-400" />
-            </div>
-          </div>
-          <div class="ml-4">
-            <p class="stat-label">Total Value</p>
-            <p class="stat-value">${{ formatCurrency(stockStore.stats.totalValue) }}</p>
-            <p class="stat-change-positive">
-              <ArrowUpIcon class="w-4 h-4 inline mr-1" />
-              +{{ Math.round((stockStore.stats.totalValue / 45000) * 8.3) }}%
-            </p>
+      <!-- Followers -->
+      <div class="material-card text-center">
+        <div class="flex justify-center mb-3">
+          <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center">
+            <UserPlusIcon class="w-6 h-6 text-white" />
           </div>
         </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-1">+2,910</h3>
+        <p class="text-sm text-gray-600 mb-2">Followers</p>
+        <p class="text-xs text-gray-500 font-medium">Just updated</p>
       </div>
     </div>
 
@@ -239,11 +284,20 @@ import {
   ArrowDownIcon,
   ArrowUpTrayIcon,
   ChartBarIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  CalendarIcon,
+  UserGroupIcon,
+  UserPlusIcon
 } from '@heroicons/vue/24/outline'
 import { useStockStore } from '../stores/stock'
 import StockMovementChart from '../components/charts/StockMovementChart.vue'
 import CategoryDistributionChart from '../components/charts/CategoryDistributionChart.vue'
+import WebsiteViewsChart from '../components/charts/WebsiteViewsChart.vue'
+import DailySalesChart from '../components/charts/DailySalesChart.vue'
+import CompletedTasksChart from '../components/charts/CompletedTasksChart.vue'
+import StockLevelChart from '../components/charts/StockLevelChart.vue'
 import AiInsightsPanel from '../components/AiInsightsPanel.vue'
 import BulkImportExport from '../components/BulkImportExport.vue'
 

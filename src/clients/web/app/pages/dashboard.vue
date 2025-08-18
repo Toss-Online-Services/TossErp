@@ -1,45 +1,123 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- Page Header -->
-    <div class="bg-white dark:bg-gray-800 shadow">
-      <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div class="md:flex md:items-center md:justify-between">
-          <div class="flex-1 min-w-0">
-            <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:text-3xl sm:truncate">
-              Business Dashboard
-            </h2>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Welcome back! Here's what's happening with your business today.
-            </p>
-          </div>
-          <div class="mt-4 flex md:mt-0 md:ml-4">
-            <button
-              type="button"
-              class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-              </svg>
-              Export Data
-            </button>
-            <button
-              type="button"
-              class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Quick Actions
-            </button>
-          </div>
+  <div class="space-y-6">
+    <!-- Material Design Page Header with Beautiful Gradient -->
+    <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 rounded-2xl shadow-2xl p-8 mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-white mb-2">Analytics Dashboard</h1>
+          <p class="text-blue-100 text-lg">Welcome back! Here's what's happening with your business today.</p>
+        </div>
+        <div class="flex space-x-3">
+          <button class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200 backdrop-blur-sm">
+            <ArrowDownTrayIcon class="w-5 h-5 inline mr-2" />
+            Export
+          </button>
+          <button class="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg transition-all duration-200 font-medium">
+            <PlusIcon class="w-5 h-5 inline mr-2" />
+            Quick Actions
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Dashboard Content -->
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-      <!-- KPI Cards -->
-      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+    <!-- Material Design Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Website Views Card -->
+      <div class="material-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h6 class="material-card-title">Website Views</h6>
+            <p class="material-card-subtitle">Last Campaign Performance</p>
+          </div>
+          <div class="stats-icon gradient-primary">
+            <ChartBarIcon class="w-6 h-6" />
+          </div>
+        </div>
+        <!-- Mini Chart Placeholder -->
+        <div class="h-16 mb-4">
+          <WebsiteViewsChart />
+        </div>
+        <div class="flex items-center text-xs text-gray-500">
+          <ClockIcon class="w-4 h-4 mr-1" />
+          campaign sent 2 days ago
+        </div>
+      </div>
+
+      <!-- Daily Sales Card -->
+      <div class="material-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h6 class="material-card-title">Daily Sales</h6>
+            <p class="material-card-subtitle">(+15%) increase in today sales.</p>
+          </div>
+          <div class="stats-icon gradient-success">
+            <CurrencyDollarIcon class="w-6 h-6" />
+          </div>
+        </div>
+        <!-- Mini Chart Placeholder -->
+        <div class="h-16 mb-4">
+          <DailySalesChart />
+        </div>
+        <div class="flex items-center text-xs text-gray-500">
+          <ClockIcon class="w-4 h-4 mr-1" />
+          updated 4 min ago
+        </div>
+      </div>
+
+      <!-- Completed Tasks Card -->
+      <div class="material-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h6 class="material-card-title">Completed Tasks</h6>
+            <p class="material-card-subtitle">Last Campaign Performance</p>
+          </div>
+          <div class="stats-icon gradient-warning">
+            <CheckCircleIcon class="w-6 h-6" />
+          </div>
+        </div>
+        <!-- Mini Chart Placeholder -->
+        <div class="h-16 mb-4">
+          <CompletedTasksChart />
+        </div>
+        <div class="flex items-center text-xs text-gray-500">
+          <ClockIcon class="w-4 h-4 mr-1" />
+          just updated
+        </div>
+      </div>
+
+      <!-- Stock Overview Card -->
+      <div class="material-card">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h6 class="material-card-title">Stock Level</h6>
+            <p class="material-card-subtitle">Current inventory status</p>
+          </div>
+          <div class="stats-icon gradient-danger">
+            <CubeIcon class="w-6 h-6" />
+          </div>
+        </div>
+        <!-- Mini Chart Placeholder -->
+        <div class="h-16 mb-4">
+          <StockLevelChart />
+        </div>
+        <div class="flex items-center text-xs text-gray-500">
+          <ClockIcon class="w-4 h-4 mr-1" />
+          real-time data
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Metrics Row -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+      <!-- Bookings -->
+      <div class="material-card text-center">
+        <div class="flex justify-center mb-3">
+          <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center">
+            <CalendarIcon class="w-6 h-6 text-white" />
+          </div>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-1">281</h3>
+        <p class="text-sm text-gray-600 mb-2">Bookings</p>
         <!-- Revenue Card -->
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
           <div class="p-5">
