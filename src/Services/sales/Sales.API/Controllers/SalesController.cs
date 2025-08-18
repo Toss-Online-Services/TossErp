@@ -4,6 +4,7 @@ using TossErp.Sales.Application.Commands.CreateSale;
 using TossErp.Sales.Application.Commands.CancelSale;
 using TossErp.Sales.Application.Queries.GetDailySales;
 using TossErp.Sales.Application.Common.DTOs;
+using TossErp.Sales.Application.Common.Interfaces;
 
 namespace TossErp.Sales.API.Controllers;
 
@@ -17,11 +18,15 @@ public class SalesController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ILogger<SalesController> _logger;
+    private readonly IPaymentGatewayService _paymentGatewayService;
+    private readonly IReceiptService _receiptService;
 
-    public SalesController(IMediator mediator, ILogger<SalesController> logger)
+    public SalesController(IMediator mediator, ILogger<SalesController> logger, IPaymentGatewayService paymentGatewayService, IReceiptService receiptService)
     {
         _mediator = mediator;
         _logger = logger;
+        _paymentGatewayService = paymentGatewayService;
+        _receiptService = receiptService;
     }
 
     /// <summary>
@@ -196,6 +201,122 @@ public class SalesController : ControllerBase
         {
             _logger.LogError(ex, "Error retrieving sales for till {TillId}", tillId);
             return StatusCode(StatusCodes.Status500InternalServerError, new { error = "An error occurred while retrieving sales for the till" });
+        }
+    }
+
+    /// <summary>
+    /// Process payment for a sale
+    /// </summary>
+    /// <param name="saleId">Sale ID</param>
+    /// <param name="request">Payment request</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Payment result</returns>
+    [HttpPost("{saleId:guid}/payments")]
+    [ProducesResponseType(typeof(PaymentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<PaymentResult>> ProcessPayment(
+        Guid saleId,
+        [FromBody] PaymentRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        if (request.SaleId != saleId)
+        {
+            return BadRequest(new { error = "Sale ID in URL must match Sale ID in request body" });
+        }
+
+        try
+        {
+            var result = await _paymentGatewayService.ProcessPaymentAsync(request, cancellationToken);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing payment for sale {SaleId}", saleId);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Error processing payment" });
+        }
+    }
+
+    /// <summary>
+    /// Process refund for a payment
+    /// </summary>
+    /// <param name="saleId">Sale ID</param>
+    /// <param name="request">Refund request</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Refund result</returns>
+    [HttpPost("{saleId:guid}/refunds")]
+    [ProducesResponseType(typeof(RefundResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<RefundResult>> ProcessRefund(
+        Guid saleId,
+        [FromBody] RefundRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await _paymentGatewayService.ProcessRefundAsync(request, cancellationToken);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing refund for sale {SaleId}", saleId);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Error processing refund" });
+        }
+    }
+
+    /// <summary>
+    /// Get payment status
+    /// </summary>
+    /// <param name="saleId">Sale ID</param>
+    /// <param name="paymentId">Payment ID</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Payment status</returns>
+    [HttpGet("{saleId:guid}/payments/{paymentId}/status")]
+    [ProducesResponseType(typeof(PaymentStatus), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<PaymentStatus>> GetPaymentStatus(
+        Guid saleId,
+        string paymentId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var status = await _paymentGatewayService.GetPaymentStatusAsync(paymentId, cancellationToken);
+            return Ok(status);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting payment status for payment {PaymentId}", paymentId);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Error getting payment status" });
+        }
+    }
+
+    /// <summary>
+    /// Generate receipt for a sale
+    /// </summary>
+    /// <param name="saleId">Sale ID</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Receipt content</returns>
+    [HttpGet("{saleId:guid}/receipt")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<string>> GenerateReceipt(
+        Guid saleId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // TODO: Get sale from repository instead of returning mock
+            // For MVP, we'll return a mock receipt
+            var mockReceipt = await _receiptService.GetReceiptTemplateAsync(cancellationToken);
+            return Ok(mockReceipt);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating receipt for sale {SaleId}", saleId);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Error generating receipt" });
         }
     }
 }
