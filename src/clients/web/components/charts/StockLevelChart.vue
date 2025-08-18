@@ -14,3 +14,4 @@
 <script setup lang="ts">
 // Stock level mini chart component
 </script>
+

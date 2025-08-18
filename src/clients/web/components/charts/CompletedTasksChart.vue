@@ -26,3 +26,4 @@
 <script setup lang="ts">
 // Completed tasks mini chart component
 </script>
+
