@@ -1,5 +1,7 @@
 // using TossErp.Stock.Agent;
 using TossErp.Stock.Application.Common.Security;
+using TossErp.Stock.Application.Common.Interfaces;
+using TossErp.Stock.API.Services;
 using TossErp.Stock.Domain.Constants;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +17,14 @@ public class AIAgents : EndpointGroupBase
     {
             var group = app.MapGroup(this);
 
-        // AI Co-Pilot endpoints - temporarily disabled due to Stock.Agent compilation issues
+        // AI Co-Pilot endpoints
         group.MapGet(Ping, "ping");
-            group.MapPost(Chat, "chat");
-        // group.MapGet(GetInventoryRecommendations, "inventory-recommendations");
-        // group.MapGet(GetItemRecommendations, "item-recommendations/{itemId}");
-        // group.MapGet(GetCooperativeEconomyInsights, "cooperative-economy-insights");
+        group.MapPost(Chat, "chat");
+        group.MapGet(GetReorderRecommendations, "reorder-recommendations");
+        group.MapGet(GetItemReorderRecommendation, "reorder-recommendations/{itemId}");
+        group.MapGet(GetInventoryRecommendations, "inventory-recommendations");
+        group.MapGet(GetItemRecommendations, "item-recommendations/{itemId}");
+        group.MapGet(GetCooperativeEconomyInsights, "cooperative-economy-insights");
         
         // Group Purchase Agent endpoints - temporarily disabled
         // group.MapGet(GetGroupPurchaseOpportunities, "group-purchase-opportunities");
@@ -78,6 +82,51 @@ public class AIAgents : EndpointGroupBase
         }
 
         return $"You said: '{userContent}'. How can I assist further?";
+    }
+
+    /// <summary>
+    /// Get AI-powered reorder recommendations for all items
+    /// </summary>
+    public static async Task<Results<Ok<List<ReorderRecommendationDto>>, BadRequest>> GetReorderRecommendations(
+        [FromServices] IAIReorderRecommendationService aiReorderService,
+        [FromServices] ICurrentUserService currentUserService,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var tenantId = currentUserService.TenantId ?? "default-tenant";
+            var recommendations = await aiReorderService.GetReorderRecommendationsAsync(tenantId, cancellationToken);
+            return TypedResults.Ok(recommendations);
+        }
+        catch (Exception)
+        {
+            return TypedResults.BadRequest();
+        }
+    }
+
+    /// <summary>
+    /// Get AI-powered reorder recommendation for a specific item
+    /// </summary>
+    public static async Task<Results<Ok<ReorderRecommendationDto>, NotFound, BadRequest>> GetItemReorderRecommendation(
+        Guid itemId,
+        [FromServices] IAIReorderRecommendationService aiReorderService,
+        [FromServices] ICurrentUserService currentUserService,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var tenantId = currentUserService.TenantId ?? "default-tenant";
+            var recommendation = await aiReorderService.GetItemReorderRecommendationAsync(itemId, tenantId, cancellationToken);
+            
+            if (recommendation == null)
+                return TypedResults.NotFound();
+                
+            return TypedResults.Ok(recommendation);
+        }
+        catch (Exception)
+        {
+            return TypedResults.BadRequest();
+        }
     }
 
     /// <summary>

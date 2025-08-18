@@ -34,6 +34,7 @@
     <PackageReference Include="FluentValidation.AspNetCore" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" />
   </ItemGroup>
 
 </Project>

@@ -1068,7 +1068,7 @@
         "id": 4,
         "title": "Stock Module Completion (MVP integration)",
         "description": "Finish remaining Stock tasks and integrate with platform baselines",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
         "dependencies": [
           1,
@@ -1080,19 +1080,19 @@
           {
             "id": 1,
             "title": "LowStockMonitor + SignalR hubs finalized",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           },
           {
             "id": 2,
             "title": "Stock reports (ledger/valuation/movement) polish",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           },
           {
             "id": 3,
             "title": "AI reorder recommendations endpoint integration",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           }
         ],
@@ -1102,7 +1102,7 @@
         "id": 5,
         "title": "Sales/POS Service (MVP)",
         "description": "Sales domain + POS flows, receipts/invoices, payments integration, events",
-        "status": "pending",
+        "status": "in-progress",
         "priority": "high",
         "dependencies": [
           1,
@@ -1114,31 +1114,31 @@
           {
             "id": 1,
             "title": "Domain model (Sale, SaleItem, Tender, Till)",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           },
           {
             "id": 2,
             "title": "Commands/Queries (CreateSale, Cancel, GetDailySales)",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           },
           {
             "id": 3,
             "title": "API endpoints + validations + Swagger",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           },
           {
             "id": 4,
             "title": "Event publishing: SaleCompleted",
-            "status": "pending",
+            "status": "done",
             "complexity": 1
           },
           {
             "id": 5,
             "title": "Payments gateway integration (MVP set)",
-            "status": "pending",
+            "status": "in-progress",
             "complexity": 3
           },
           {
@@ -1981,7 +1981,7 @@
       "totalEstimatedHours": 336,
       "created": "2025-08-18T00:00:00Z",
       "description": "End-to-end MVP across infrastructure, core services, AI, clients, and DevOps",
-      "updated": "2025-08-18T09:45:55.079Z"
+      "updated": "2025-08-18T11:00:25.052Z"
     }
   }
 }
