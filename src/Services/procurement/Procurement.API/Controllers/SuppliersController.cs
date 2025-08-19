@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TossErp.Procurement.Application.Commands.CreateSupplier;
 using TossErp.Procurement.Application.Common.DTOs;
 using TossErp.Procurement.Application.Queries.GetSuppliers;
+using TossErp.Procurement.Application.Queries.GetSupplierById;
 using TossErp.Procurement.Domain.Enums;
 
 namespace TossErp.Procurement.API.Controllers;
@@ -53,8 +54,13 @@ public class SuppliersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<SupplierDto>> GetSupplier(Guid id)
     {
-        // TODO: Implement GetSupplierByIdQuery
-        return NotFound("Not implemented yet");
+        var query = new GetSupplierByIdQuery { Id = id };
+        var result = await _mediator.Send(query);
+        
+        if (result == null)
+            return NotFound($"Supplier with ID {id} not found");
+            
+        return Ok(result);
     }
 
     /// <summary>
@@ -95,10 +101,10 @@ public class SuppliersController : ControllerBase
     /// <param name="request">Contact info update request</param>
     /// <returns>Updated supplier</returns>
     [HttpPut("{id}/contact-info")]
-    public async Task<ActionResult<SupplierDto>> UpdateContactInfo(Guid id, [FromBody] UpdateSupplierContactInfoRequest request)
+    public Task<ActionResult<SupplierDto>> UpdateContactInfo(Guid id, [FromBody] UpdateSupplierContactInfoRequest request)
     {
         // TODO: Implement UpdateSupplierContactInfoCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<SupplierDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -108,10 +114,10 @@ public class SuppliersController : ControllerBase
     /// <param name="request">Business info update request</param>
     /// <returns>Updated supplier</returns>
     [HttpPut("{id}/business-info")]
-    public async Task<ActionResult<SupplierDto>> UpdateBusinessInfo(Guid id, [FromBody] UpdateSupplierBusinessInfoRequest request)
+    public Task<ActionResult<SupplierDto>> UpdateBusinessInfo(Guid id, [FromBody] UpdateSupplierBusinessInfoRequest request)
     {
         // TODO: Implement UpdateSupplierBusinessInfoCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<SupplierDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -121,10 +127,10 @@ public class SuppliersController : ControllerBase
     /// <param name="request">Financial info update request</param>
     /// <returns>Updated supplier</returns>
     [HttpPut("{id}/financial-info")]
-    public async Task<ActionResult<SupplierDto>> UpdateFinancialInfo(Guid id, [FromBody] UpdateSupplierFinancialInfoRequest request)
+    public Task<ActionResult<SupplierDto>> UpdateFinancialInfo(Guid id, [FromBody] UpdateSupplierFinancialInfoRequest request)
     {
         // TODO: Implement UpdateSupplierFinancialInfoCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<SupplierDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -134,10 +140,10 @@ public class SuppliersController : ControllerBase
     /// <param name="request">Operational info update request</param>
     /// <returns>Updated supplier</returns>
     [HttpPut("{id}/operational-info")]
-    public async Task<ActionResult<SupplierDto>> UpdateOperationalInfo(Guid id, [FromBody] UpdateSupplierOperationalInfoRequest request)
+    public Task<ActionResult<SupplierDto>> UpdateOperationalInfo(Guid id, [FromBody] UpdateSupplierOperationalInfoRequest request)
     {
         // TODO: Implement UpdateSupplierOperationalInfoCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<SupplierDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -146,10 +152,10 @@ public class SuppliersController : ControllerBase
     /// <param name="id">Supplier ID</param>
     /// <returns>Updated supplier</returns>
     [HttpPost("{id}/activate")]
-    public async Task<ActionResult<SupplierDto>> ActivateSupplier(Guid id)
+    public Task<ActionResult<SupplierDto>> ActivateSupplier(Guid id)
     {
         // TODO: Implement ActivateSupplierCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<SupplierDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -159,10 +165,10 @@ public class SuppliersController : ControllerBase
     /// <param name="request">Deactivation request</param>
     /// <returns>Updated supplier</returns>
     [HttpPost("{id}/deactivate")]
-    public async Task<ActionResult<SupplierDto>> DeactivateSupplier(Guid id, [FromBody] DeactivateSupplierRequest request)
+    public Task<ActionResult<SupplierDto>> DeactivateSupplier(Guid id, [FromBody] DeactivateSupplierRequest request)
     {
         // TODO: Implement DeactivateSupplierCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<SupplierDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -172,10 +178,10 @@ public class SuppliersController : ControllerBase
     /// <param name="request">Hold request</param>
     /// <returns>Updated supplier</returns>
     [HttpPost("{id}/hold")]
-    public async Task<ActionResult<SupplierDto>> PutSupplierOnHold(Guid id, [FromBody] PutSupplierOnHoldRequest request)
+    public Task<ActionResult<SupplierDto>> PutSupplierOnHold(Guid id, [FromBody] PutSupplierOnHoldRequest request)
     {
         // TODO: Implement PutSupplierOnHoldCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<SupplierDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -185,10 +191,10 @@ public class SuppliersController : ControllerBase
     /// <param name="request">Blacklist request</param>
     /// <returns>Updated supplier</returns>
     [HttpPost("{id}/blacklist")]
-    public async Task<ActionResult<SupplierDto>> BlacklistSupplier(Guid id, [FromBody] BlacklistSupplierRequest request)
+    public Task<ActionResult<SupplierDto>> BlacklistSupplier(Guid id, [FromBody] BlacklistSupplierRequest request)
     {
         // TODO: Implement BlacklistSupplierCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<SupplierDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -198,9 +204,9 @@ public class SuppliersController : ControllerBase
     /// <param name="request">Notes request</param>
     /// <returns>Updated supplier</returns>
     [HttpPost("{id}/notes")]
-    public async Task<ActionResult<SupplierDto>> AddNotes(Guid id, [FromBody] AddSupplierNotesRequest request)
+    public Task<ActionResult<SupplierDto>> AddNotes(Guid id, [FromBody] AddSupplierNotesRequest request)
     {
         // TODO: Implement AddSupplierNotesCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<SupplierDto>>(NotFound("Not implemented yet"));
     }
 }

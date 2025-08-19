@@ -1,9 +1,11 @@
+using MediatR;
+
 namespace TossErp.Sales.Domain.Events;
 
 /// <summary>
 /// Marker interface for domain events
 /// </summary>
-public interface IDomainEvent
+public interface IDomainEvent : INotification
 {
     /// <summary>
     /// Unique identifier for the event

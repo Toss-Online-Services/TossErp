@@ -1,4 +1,4 @@
-using TossErp.Stock.API.Services;
+using TossErp.Stock.Application.Common.Models;
 
 namespace TossErp.Stock.Application.Common.Interfaces;
 

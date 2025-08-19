@@ -3,8 +3,11 @@ using TossErp.Stock.Domain.Entities;
 using TossErp.Stock.Domain.ValueObjects;
 using TossErp.Stock.Domain.Enums;
 using TossErp.Stock.Application.Common.Interfaces;
+using TossErp.Stock.Domain.Common;
+using TossErp.Stock.Domain.Aggregates.ItemAggregate;
 using Moq;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Stock.Application.UnitTests.Items;
 
@@ -12,13 +15,17 @@ public class CreateItemCommandTests
 {
     private readonly Mock<IItemRepository> _mockItemRepository;
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    private readonly Mock<ICurrentUserService> _mockCurrentUserService;
+    private readonly Mock<ILogger<CreateItemCommandHandler>> _mockLogger;
     private readonly CreateItemCommandHandler _handler;
 
     public CreateItemCommandTests()
     {
         _mockItemRepository = new Mock<IItemRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
-        _handler = new CreateItemCommandHandler(_mockItemRepository.Object, _mockUnitOfWork.Object);
+        _mockCurrentUserService = new Mock<ICurrentUserService>();
+        _mockLogger = new Mock<ILogger<CreateItemCommandHandler>>();
+        _handler = new CreateItemCommandHandler(_mockItemRepository.Object, _mockUnitOfWork.Object, _mockCurrentUserService.Object, _mockLogger.Object);
     }
 
     [Fact]
@@ -27,28 +34,34 @@ public class CreateItemCommandTests
         // Arrange
         var command = new CreateItemCommand
         {
-            Name = "Test Item",
-            Description = "Test Description",
             ItemCode = "TEST001",
-            ItemType = ItemType.Stock,
-            UnitOfMeasure = "PCS",
-            DefaultPrice = 10.99m,
-            ReorderLevel = 10,
-            ReorderQuantity = 50
+            ItemName = "Test Item",
+            ItemGroup = "Test Group",
+            StockUOM = "PCS",
+            ItemType = "Stock",
+            ValuationMethod = "FIFO",
+            Company = "Test Company",
+            Description = "Test Description",
+            StandardRate = 10.99m,
+            ReOrderLevel = 10,
+            ReOrderQty = 50
         };
 
-        _mockItemRepository.Setup(x => x.AddAsync(It.IsAny<ItemAggregate>()))
-            .Returns(Task.CompletedTask);
+        _mockCurrentUserService.Setup(x => x.CompanyId).Returns("Test Company");
+        _mockItemRepository.Setup(x => x.GetByCodeAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<ItemAggregate?>(null));
+        _mockItemRepository.Setup(x => x.Add(It.IsAny<ItemAggregate>()));
         _mockUnitOfWork.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
+            .Returns(Task.FromResult(1));
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.NotEqual(Guid.Empty, result);
-        _mockItemRepository.Verify(x => x.AddAsync(It.IsAny<ItemAggregate>()), Times.Once);
-        _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        Assert.NotNull(result);
+        Assert.Equal(command.ItemCode, result.ItemCode);
+        _mockItemRepository.Verify(x => x.Add(It.IsAny<ItemAggregate>()), Times.Once());
+        _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once());
     }
 
     [Fact]
@@ -57,38 +70,38 @@ public class CreateItemCommandTests
         // Arrange
         var command = new CreateItemCommand
         {
-            Name = "Test Item",
-            Description = "Test Description",
             ItemCode = "TEST001",
-            ItemType = ItemType.Stock,
-            UnitOfMeasure = "PCS",
-            DefaultPrice = 10.99m,
-            ReorderLevel = 10,
-            ReorderQuantity = 50
+            ItemName = "Test Item",
+            ItemGroup = "Test Group",
+            StockUOM = "PCS",
+            ItemType = "Stock",
+            ValuationMethod = "FIFO",
+            Company = "Test Company",
+            Description = "Test Description",
+            StandardRate = 10.99m,
+            ReOrderLevel = 10,
+            ReOrderQty = 50
         };
 
-        _mockItemRepository.Setup(x => x.AddAsync(It.IsAny<ItemAggregate>()))
+        _mockCurrentUserService.Setup(x => x.CompanyId).Returns("Test Company");
+        _mockItemRepository.Setup(x => x.GetByCodeAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<ItemAggregate?>(null));
+        _mockItemRepository.Setup(x => x.Add(It.IsAny<ItemAggregate>()))
             .Callback<ItemAggregate>(item =>
             {
-                Assert.Equal(command.Name, item.Name);
-                Assert.Equal(command.Description, item.Description);
+                Assert.Equal(command.ItemName, item.ItemName);
                 Assert.Equal(command.ItemCode, item.ItemCode.Value);
-                Assert.Equal(command.ItemType, item.ItemType);
-                Assert.Equal(command.UnitOfMeasure, item.DefaultUnitOfMeasure);
-                Assert.Equal(command.DefaultPrice, item.DefaultPrice);
-                Assert.Equal(command.ReorderLevel, item.ReorderLevel);
-                Assert.Equal(command.ReorderQuantity, item.ReorderQuantity);
-            })
-            .Returns(Task.CompletedTask);
-
+                Assert.Equal(command.ItemGroup, item.ItemGroup);
+                Assert.Equal(command.StockUOM, item.StockUOM.Name);
+            });
         _mockUnitOfWork.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
+            .Returns(Task.FromResult(1));
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        _mockItemRepository.Verify(x => x.AddAsync(It.IsAny<ItemAggregate>()), Times.Once);
+        _mockItemRepository.Verify(x => x.Add(It.IsAny<ItemAggregate>()), Times.Once());
     }
 
     [Fact]
@@ -97,25 +110,27 @@ public class CreateItemCommandTests
         // Arrange
         var command = new CreateItemCommand
         {
-            Name = "Test Item",
-            Description = "Test Description",
             ItemCode = "TEST001",
-            ItemType = ItemType.Stock,
-            UnitOfMeasure = "PCS"
+            ItemName = "Test Item",
+            ItemGroup = "Test Group",
+            StockUOM = "PCS",
+            ItemType = "Stock",
+            ValuationMethod = "FIFO",
+            Company = "Test Company"
         };
 
-        _mockItemRepository.Setup(x => x.AddAsync(It.IsAny<ItemAggregate>()))
-            .Returns(Task.CompletedTask);
+        _mockCurrentUserService.Setup(x => x.CompanyId).Returns("Test Company");
+        _mockItemRepository.Setup(x => x.GetByCodeAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.FromResult<ItemAggregate?>(null));
+        _mockItemRepository.Setup(x => x.Add(It.IsAny<ItemAggregate>()));
         _mockUnitOfWork.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
+            .Returns(Task.FromResult(1));
 
         // Act
         var result1 = await _handler.Handle(command, CancellationToken.None);
         var result2 = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.NotEqual(Guid.Empty, result1);
-        Assert.NotEqual(Guid.Empty, result2);
-        Assert.NotEqual(result1, result2);
+        Assert.NotEqual(result1.Id, result2.Id);
     }
 }

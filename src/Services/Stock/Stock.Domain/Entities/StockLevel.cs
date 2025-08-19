@@ -19,7 +19,7 @@ public class StockLevel : Entity<Guid>
     public decimal QuantityOnHand => Quantity;
     public string ItemCode => Item?.ItemCode?.Value ?? string.Empty;
     public string ItemName => Item?.ItemName ?? string.Empty;
-    public string WarehouseCode => Warehouse?.WarehouseCode ?? string.Empty;
+    public string WarehouseCode => Warehouse?.Code?.Value ?? string.Empty;
     public string BinCode => Bin?.BinCode ?? string.Empty;
     public string UnitOfMeasure => Item?.StockUOM?.Code ?? string.Empty;
     public decimal DefaultPrice => Item?.DefaultPrice ?? 0;

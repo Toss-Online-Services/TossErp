@@ -1,5 +1,6 @@
 using MediatR;
 using TossErp.Procurement.Application.Common.DTOs;
+using TossErp.Procurement.Domain.Enums;
 
 namespace TossErp.Procurement.Application.Commands.CreatePurchaseOrder;
 

@@ -7,7 +7,8 @@ namespace TossErp.Procurement.Domain.ValueObjects;
 /// </summary>
 public sealed record PurchaseOrderNumber
 {
-    private static readonly Regex PurchaseOrderNumberPattern = new(@"^PO-\d{4}-\d{6}$", RegexOptions.Compiled);
+    private static readonly Regex PurchaseOrderNumberPattern = new(@"^PO-\d{4}-\d{3}$", RegexOptions.Compiled);
+    private static long _sequence = 0;
     
     public string Value { get; }
 
@@ -36,8 +37,17 @@ public sealed record PurchaseOrderNumber
         if (sequenceNumber <= 0)
             throw new ArgumentException("Sequence number must be positive", nameof(sequenceNumber));
 
-        var purchaseOrderNumber = $"PO-{year}-{sequenceNumber:D6}";
+        var purchaseOrderNumber = $"PO-{year}-{sequenceNumber:D3}";
         return new PurchaseOrderNumber(purchaseOrderNumber);
+    }
+
+    /// <summary>
+    /// Generate a new purchase order number using current year and a default sequence.
+    /// </summary>
+    public static PurchaseOrderNumber Generate()
+    {
+        var next = Interlocked.Increment(ref _sequence);
+        return Generate(DateTime.UtcNow.Year, next);
     }
 
     public static implicit operator string(PurchaseOrderNumber purchaseOrderNumber) => purchaseOrderNumber.Value;
