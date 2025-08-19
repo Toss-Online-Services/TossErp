@@ -25,7 +25,7 @@ public sealed record Money
     public static Money operator +(Money left, Money right)
     {
         if (left.Currency != right.Currency)
-            throw new InvalidOperationException($"Cannot add different currencies: {left.Currency} and {right.Currency}");
+            throw new InvalidOperationException($"Cannot add money with different currencies: {left.Currency} and {right.Currency}");
 
         return new Money(left.Amount + right.Amount, left.Currency);
     }
@@ -33,7 +33,7 @@ public sealed record Money
     public static Money operator -(Money left, Money right)
     {
         if (left.Currency != right.Currency)
-            throw new InvalidOperationException($"Cannot subtract different currencies: {left.Currency} and {right.Currency}");
+            throw new InvalidOperationException($"Cannot subtract money with different currencies: {left.Currency} and {right.Currency}");
 
         return new Money(left.Amount - right.Amount, left.Currency);
     }
@@ -83,7 +83,7 @@ public sealed record Money
         return left.Amount <= right.Amount;
     }
 
-    public override string ToString() => $"{Amount:C} {Currency}";
+    public override string ToString() => $"{Amount} {Currency}";
 
     public string ToString(string format) => $"{Amount.ToString(format)} {Currency}";
 }

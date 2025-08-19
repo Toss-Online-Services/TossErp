@@ -1,3 +1,5 @@
+using TossErp.Sales.Application.Common.DTOs;
+
 namespace TossErp.Sales.Application.Common.Interfaces;
 
 /// <summary>

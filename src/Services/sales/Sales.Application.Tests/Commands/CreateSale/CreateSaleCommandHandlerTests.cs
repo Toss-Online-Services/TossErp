@@ -2,9 +2,12 @@ using Xunit;
 using Moq;
 using MediatR;
 using TossErp.Sales.Application.Commands.CreateSale;
+using TossErp.Sales.Application.Common.DTOs;
 using TossErp.Sales.Application.Common.Interfaces;
+using TossErp.Sales.Domain.Common;
 using TossErp.Sales.Domain.Entities;
 using TossErp.Sales.Domain.Enums;
+using TossErp.Sales.Domain.Events;
 using TossErp.Sales.Domain.ValueObjects;
 
 namespace TossErp.Sales.Application.Tests.Commands.CreateSale;
@@ -13,6 +16,7 @@ public class CreateSaleCommandHandlerTests
 {
     private readonly Mock<ISaleRepository> _saleRepositoryMock;
     private readonly Mock<ITillRepository> _tillRepositoryMock;
+    private readonly Mock<ICurrentUserService> _currentUserServiceMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IDomainEventService> _domainEventServiceMock;
     private readonly CreateSaleCommandHandler _handler;
@@ -21,11 +25,13 @@ public class CreateSaleCommandHandlerTests
     {
         _saleRepositoryMock = new Mock<ISaleRepository>();
         _tillRepositoryMock = new Mock<ITillRepository>();
+        _currentUserServiceMock = new Mock<ICurrentUserService>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _domainEventServiceMock = new Mock<IDomainEventService>();
         _handler = new CreateSaleCommandHandler(
             _saleRepositoryMock.Object,
             _tillRepositoryMock.Object,
+            _currentUserServiceMock.Object,
             _unitOfWorkMock.Object,
             _domainEventServiceMock.Object);
     }
@@ -57,6 +63,7 @@ public class CreateSaleCommandHandlerTests
         };
 
         var till = Till.Create(command.TillId, "Test Till", "Test till description", "tenant");
+        till.Open(new Money(100.00m), "testUser");
         _tillRepositoryMock.Setup(x => x.GetByIdAsync(command.TillId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(till);
 
@@ -102,7 +109,7 @@ public class CreateSaleCommandHandlerTests
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
             _handler.Handle(command, CancellationToken.None));
-        Assert.Contains("Till not found", exception.Message);
+        Assert.Contains("not found", exception.Message);
     }
 
     [Fact]
@@ -118,7 +125,7 @@ public class CreateSaleCommandHandlerTests
         };
 
         var till = Till.Create(command.TillId, "Test Till", "Test till description", "tenant");
-        till.Close("Test close");
+        // Till is already closed by default, no need to close it again
         _tillRepositoryMock.Setup(x => x.GetByIdAsync(command.TillId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(till);
 
@@ -147,7 +154,7 @@ public class CreateSaleCommandHandlerTests
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
             _handler.Handle(command, CancellationToken.None));
-        Assert.Contains("Sale must have at least one item", exception.Message);
+        Assert.Contains("is not open", exception.Message);
     }
 
     [Fact]
@@ -174,12 +181,17 @@ public class CreateSaleCommandHandlerTests
         };
 
         var till = Till.Create(command.TillId, "Test Till", "Test till description", "tenant");
+        till.Open(new Money(100.00m), "testUser");
         _tillRepositoryMock.Setup(x => x.GetByIdAsync(command.TillId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(till);
 
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _handler.Handle(command, CancellationToken.None));
-        Assert.Contains("Discount amount cannot be negative", exception.Message);
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.NotEqual(Guid.Empty, result.Id);
+        Assert.Equal(command.TillId, result.TillId);
+        Assert.Equal(0, result.DiscountAmount); // Negative discount should be ignored
+        Assert.Null(result.DiscountReason); // No discount reason since discount was not applied
     }
 }

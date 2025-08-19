@@ -1,8 +1,11 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TossErp.Procurement.Application.Commands.CreatePurchaseOrder;
+using TossErp.Procurement.Application.Commands.SubmitPurchaseOrder;
+using TossErp.Procurement.Application.Commands.ReceivePurchaseOrder;
 using TossErp.Procurement.Application.Common.DTOs;
 using TossErp.Procurement.Application.Queries.GetPurchaseOrders;
+using TossErp.Procurement.Application.Queries.GetPurchaseOrderById;
 using TossErp.Procurement.Domain.Enums;
 
 namespace TossErp.Procurement.API.Controllers;
@@ -59,8 +62,13 @@ public class PurchaseOrdersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<PurchaseOrderDto>> GetPurchaseOrder(Guid id)
     {
-        // TODO: Implement GetPurchaseOrderByIdQuery
-        return NotFound("Not implemented yet");
+        var query = new GetPurchaseOrderByIdQuery { Id = id };
+        var result = await _mediator.Send(query);
+        
+        if (result == null)
+            return NotFound($"Purchase order with ID {id} not found");
+            
+        return Ok(result);
     }
 
     /// <summary>
@@ -89,12 +97,19 @@ public class PurchaseOrdersController : ControllerBase
     /// Submit a purchase order for approval
     /// </summary>
     /// <param name="id">Purchase order ID</param>
+    /// <param name="request">Submit request with optional notes</param>
     /// <returns>Updated purchase order</returns>
     [HttpPost("{id}/submit")]
-    public async Task<ActionResult<PurchaseOrderDto>> SubmitPurchaseOrder(Guid id)
+    public async Task<ActionResult<PurchaseOrderDto>> SubmitPurchaseOrder(Guid id, [FromBody] SubmitPurchaseOrderRequest? request = null)
     {
-        // TODO: Implement SubmitPurchaseOrderCommand
-        return NotFound("Not implemented yet");
+        var command = new SubmitPurchaseOrderCommand
+        {
+            PurchaseOrderId = id,
+            Notes = request?.Notes
+        };
+
+        var result = await _mediator.Send(command);
+        return Ok(result);
     }
 
     /// <summary>
@@ -104,10 +119,10 @@ public class PurchaseOrdersController : ControllerBase
     /// <param name="request">Approval request</param>
     /// <returns>Updated purchase order</returns>
     [HttpPost("{id}/approve")]
-    public async Task<ActionResult<PurchaseOrderDto>> ApprovePurchaseOrder(Guid id, [FromBody] ApprovePurchaseOrderRequest request)
+    public Task<ActionResult<PurchaseOrderDto>> ApprovePurchaseOrder(Guid id, [FromBody] ApprovePurchaseOrderRequest request)
     {
         // TODO: Implement ApprovePurchaseOrderCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<PurchaseOrderDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -116,10 +131,10 @@ public class PurchaseOrdersController : ControllerBase
     /// <param name="id">Purchase order ID</param>
     /// <returns>Updated purchase order</returns>
     [HttpPost("{id}/send")]
-    public async Task<ActionResult<PurchaseOrderDto>> SendPurchaseOrder(Guid id)
+    public Task<ActionResult<PurchaseOrderDto>> SendPurchaseOrder(Guid id)
     {
         // TODO: Implement SendPurchaseOrderCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<PurchaseOrderDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -128,10 +143,10 @@ public class PurchaseOrdersController : ControllerBase
     /// <param name="id">Purchase order ID</param>
     /// <returns>Updated purchase order</returns>
     [HttpPost("{id}/acknowledge")]
-    public async Task<ActionResult<PurchaseOrderDto>> AcknowledgePurchaseOrder(Guid id)
+    public Task<ActionResult<PurchaseOrderDto>> AcknowledgePurchaseOrder(Guid id)
     {
         // TODO: Implement AcknowledgePurchaseOrderCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<PurchaseOrderDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -141,10 +156,25 @@ public class PurchaseOrdersController : ControllerBase
     /// <param name="request">Receive items request</param>
     /// <returns>Updated purchase order</returns>
     [HttpPost("{id}/receive")]
-    public async Task<ActionResult<PurchaseOrderDto>> ReceiveItems(Guid id, [FromBody] ReceiveItemsRequest request)
+    public async Task<ActionResult<PurchaseOrderDto>> ReceiveItems(Guid id, [FromBody] ReceivePurchaseOrderRequest request)
     {
-        // TODO: Implement ReceiveItemsCommand
-        return NotFound("Not implemented yet");
+        var command = new ReceivePurchaseOrderCommand
+        {
+            PurchaseOrderId = id,
+            ReceivedDate = request.ReceivedDate,
+            ReceiptNumber = request.ReceiptNumber,
+            Notes = request.Notes,
+            Items = request.Items.Select(item => new TossErp.Procurement.Application.Commands.ReceivePurchaseOrder.ReceivePurchaseOrderItemRequest
+            {
+                PurchaseOrderItemId = item.PurchaseOrderItemId,
+                ReceivedQuantity = item.ReceivedQuantity,
+                UnitPrice = item.UnitPrice,
+                Notes = item.Notes
+            }).ToList()
+        };
+
+        var result = await _mediator.Send(command);
+        return Ok(result);
     }
 
     /// <summary>
@@ -154,10 +184,10 @@ public class PurchaseOrdersController : ControllerBase
     /// <param name="request">Cancellation request</param>
     /// <returns>Updated purchase order</returns>
     [HttpPost("{id}/cancel")]
-    public async Task<ActionResult<PurchaseOrderDto>> CancelPurchaseOrder(Guid id, [FromBody] CancelPurchaseOrderRequest request)
+    public Task<ActionResult<PurchaseOrderDto>> CancelPurchaseOrder(Guid id, [FromBody] CancelPurchaseOrderRequest request)
     {
         // TODO: Implement CancelPurchaseOrderCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<PurchaseOrderDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -167,10 +197,10 @@ public class PurchaseOrdersController : ControllerBase
     /// <param name="request">Hold request</param>
     /// <returns>Updated purchase order</returns>
     [HttpPost("{id}/hold")]
-    public async Task<ActionResult<PurchaseOrderDto>> PutPurchaseOrderOnHold(Guid id, [FromBody] PutPurchaseOrderOnHoldRequest request)
+    public Task<ActionResult<PurchaseOrderDto>> PutPurchaseOrderOnHold(Guid id, [FromBody] PutPurchaseOrderOnHoldRequest request)
     {
         // TODO: Implement PutPurchaseOrderOnHoldCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<PurchaseOrderDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -179,10 +209,10 @@ public class PurchaseOrdersController : ControllerBase
     /// <param name="id">Purchase order ID</param>
     /// <returns>Updated purchase order</returns>
     [HttpPost("{id}/resume")]
-    public async Task<ActionResult<PurchaseOrderDto>> ResumePurchaseOrderFromHold(Guid id)
+    public Task<ActionResult<PurchaseOrderDto>> ResumePurchaseOrderFromHold(Guid id)
     {
         // TODO: Implement ResumePurchaseOrderFromHoldCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<PurchaseOrderDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -192,10 +222,10 @@ public class PurchaseOrdersController : ControllerBase
     /// <param name="request">Delivery date update request</param>
     /// <returns>Updated purchase order</returns>
     [HttpPut("{id}/delivery-date")]
-    public async Task<ActionResult<PurchaseOrderDto>> UpdateDeliveryDate(Guid id, [FromBody] UpdatePurchaseOrderDeliveryDateRequest request)
+    public Task<ActionResult<PurchaseOrderDto>> UpdateDeliveryDate(Guid id, [FromBody] UpdatePurchaseOrderDeliveryDateRequest request)
     {
         // TODO: Implement UpdatePurchaseOrderDeliveryDateCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<PurchaseOrderDto>>(NotFound("Not implemented yet"));
     }
 
     /// <summary>
@@ -205,9 +235,9 @@ public class PurchaseOrdersController : ControllerBase
     /// <param name="request">Notes request</param>
     /// <returns>Updated purchase order</returns>
     [HttpPost("{id}/notes")]
-    public async Task<ActionResult<PurchaseOrderDto>> AddNotes(Guid id, [FromBody] AddPurchaseOrderNotesRequest request)
+    public Task<ActionResult<PurchaseOrderDto>> AddNotes(Guid id, [FromBody] AddPurchaseOrderNotesRequest request)
     {
         // TODO: Implement AddPurchaseOrderNotesCommand
-        return NotFound("Not implemented yet");
+        return Task.FromResult<ActionResult<PurchaseOrderDto>>(NotFound("Not implemented yet"));
     }
 }

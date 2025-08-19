@@ -1,5 +1,6 @@
 using FluentValidation;
 using TossErp.Sales.Application.Commands.CreateSale;
+using TossErp.Sales.Application.Common.DTOs;
 
 namespace TossErp.Sales.Application.Commands.CreateSale;
 

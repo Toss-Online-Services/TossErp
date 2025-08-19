@@ -1166,7 +1166,7 @@
         "id": 6,
         "title": "Buying/Procurement Service (MVP)",
         "description": "Suppliers, purchase orders, receipts, pricing; events to Stock",
-        "status": "in-progress",
+        "status": "done",
         "priority": "high",
         "dependencies": [
           1,
@@ -1179,25 +1179,25 @@
           {
             "id": 1,
             "title": "Domain (Supplier, PurchaseOrder, POItem)",
-            "status": "in-progress",
+            "status": "done",
             "complexity": 2
           },
           {
             "id": 2,
             "title": "Commands/Queries (CreatePO, ReceivePO)",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           },
           {
             "id": 3,
             "title": "API endpoints + events (PurchaseOrderReceived)",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           },
           {
             "id": 4,
             "title": "Basic price list + lead time tracking",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           }
         ],
@@ -1981,7 +1981,7 @@
       "totalEstimatedHours": 336,
       "created": "2025-08-18T00:00:00Z",
       "description": "End-to-end MVP across infrastructure, core services, AI, clients, and DevOps",
-      "updated": "2025-08-18T11:28:15.564Z"
+      "updated": "2025-08-19T08:56:35.964Z"
     }
   }
 }

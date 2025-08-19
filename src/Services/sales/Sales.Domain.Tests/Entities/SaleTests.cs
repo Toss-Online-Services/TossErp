@@ -54,7 +54,7 @@ public class SaleTests
         Assert.Equal(itemSku, item.ItemSku);
         Assert.Equal(quantity, item.Quantity);
         Assert.Equal(unitPrice.Amount, item.UnitPrice.Amount);
-        Assert.Equal(21.00m, sale.TotalAmount.Amount); // 2 * 10.50
+        Assert.Equal(24.15m, sale.TotalAmount.Amount); // (2 * 10.50) + 15% tax = 21.00 + 3.15 = 24.15
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class SaleTests
         var total = sale.TotalAmount;
 
         // Assert
-        Assert.Equal(35.00m, total.Amount); // (2 * 10) + (1 * 15)
+        Assert.Equal(40.25m, total.Amount); // (2 * 10) + (1 * 15) + 15% tax = 35.00 + 5.25 = 40.25
     }
 
     [Fact]
@@ -187,14 +187,14 @@ public class SaleTests
         // Arrange
         var sale = Sale.Create(Guid.NewGuid(), Guid.NewGuid(), "Customer", "tenant");
         sale.AddItem(Guid.NewGuid(), "Item", "SKU", 1, new Money(100.00m, "ZAR"));
-        sale.ApplyDiscount(10.00m, "10% discount");
+        sale.ApplyDiscount(new Money(10.00m, "ZAR"), "10% discount");
 
         // Act
         var total = sale.TotalAmount;
 
         // Assert
-        Assert.Equal(90.00m, total.Amount); // 100 - 10
-        Assert.Equal(10.00m, sale.DiscountAmount);
+        Assert.Equal(105.00m, total.Amount); // 100 + 15% tax - 10 discount = 115 - 10 = 105
+        Assert.Equal(10.00m, sale.DiscountAmount.Amount);
         Assert.Equal("10% discount", sale.DiscountReason);
     }
 }

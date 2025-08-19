@@ -22,13 +22,20 @@ public class Till : Entity<Guid>
     public string? ClosedBy { get; private set; }
     public long LastReceiptSequence { get; private set; }
     public string ReceiptPrefix { get; private set; } = string.Empty;
-    public string TenantId { get; private set; } = string.Empty;
 
     // Domain events
     private readonly List<IDomainEvent> _domainEvents = new();
     public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     protected Till() : base() { } // For EF Core
+
+    /// <summary>
+    /// Create a new till
+    /// </summary>
+    public static Till Create(Guid id, string name, string description, string tenantId)
+    {
+        return new Till(id, name, $"TILL-{id:N}", description, "RCPT", tenantId);
+    }
 
     public Till(Guid id, string name, string code, string location, string receiptPrefix, string tenantId) : base(id, tenantId)
     {

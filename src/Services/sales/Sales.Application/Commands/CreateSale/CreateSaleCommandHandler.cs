@@ -118,6 +118,7 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, SaleD
             SubTotal = sale.SubTotal.Amount,
             TaxAmount = sale.TaxAmount.Amount,
             DiscountAmount = sale.DiscountAmount.Amount,
+            DiscountReason = sale.DiscountReason,
             Total = sale.Total.Amount,
             PaidAmount = sale.PaidAmount.Amount,
             ChangeAmount = sale.ChangeAmount.Amount,

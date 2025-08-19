@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TossErp.Sales.Application.Common.Interfaces;
 using TossErp.Sales.Domain.Events;
 
@@ -53,6 +54,9 @@ public class SaleCompletedEventHandler : INotificationHandler<SaleCompletedEvent
             // For MVP, we'll simulate inventory updates
             // In a real implementation, this would call the inventory service
             _logger.LogInformation("Updating inventory stock for sale {SaleId}", notification.SaleId);
+            
+            // Simulate async work for MVP
+            await Task.Delay(1, cancellationToken);
             
             // TODO: Get sale items from repository and update inventory
             // var sale = await _saleRepository.GetByIdAsync(notification.SaleId, cancellationToken);

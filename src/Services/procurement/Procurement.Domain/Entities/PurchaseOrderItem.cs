@@ -20,6 +20,9 @@ public class PurchaseOrderItem : Entity<Guid>
     public string? Notes { get; private set; }
     public DateTime? ExpectedDeliveryDate { get; private set; }
 
+    // Compatibility alias properties for older tests
+    public decimal QuantityOrdered => Quantity;
+
     protected PurchaseOrderItem() : base() { } // For EF Core
 
     public PurchaseOrderItem(Guid id, Guid purchaseOrderId, Guid itemId, string itemName, string itemSku, 

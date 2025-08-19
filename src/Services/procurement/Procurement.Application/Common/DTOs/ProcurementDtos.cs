@@ -132,6 +132,7 @@ public class CreatePurchaseOrderItemRequest
 public class SubmitPurchaseOrderRequest
 {
     public Guid PurchaseOrderId { get; set; }
+    public string? Notes { get; set; }
 }
 
 /// <summary>
@@ -167,6 +168,28 @@ public class ReceiveItemsRequest
     public Guid PurchaseOrderId { get; set; }
     public Guid ItemId { get; set; }
     public decimal ReceivedQuantity { get; set; }
+}
+
+/// <summary>
+/// Receive Purchase Order Request
+/// </summary>
+public class ReceivePurchaseOrderRequest
+{
+    public DateTime ReceivedDate { get; set; } = DateTime.UtcNow;
+    public string? ReceiptNumber { get; set; }
+    public string? Notes { get; set; }
+    public List<ReceivePurchaseOrderItemRequest> Items { get; set; } = new();
+}
+
+/// <summary>
+/// Receive Purchase Order Item Request
+/// </summary>
+public class ReceivePurchaseOrderItemRequest
+{
+    public Guid PurchaseOrderItemId { get; set; }
+    public decimal ReceivedQuantity { get; set; }
+    public decimal? UnitPrice { get; set; }
+    public string? Notes { get; set; }
 }
 
 /// <summary>
@@ -352,4 +375,99 @@ public class SupplierSummaryDto
     public string? Phone { get; set; }
     public decimal? CreditLimit { get; set; }
     public int? PaymentTermsDays { get; set; }
+}
+
+/// <summary>
+/// Supplier Price List DTO
+/// </summary>
+public class SupplierPriceListDto
+{
+    public Guid Id { get; set; }
+    public Guid SupplierId { get; set; }
+    public string SupplierName { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public DateTime EffectiveFrom { get; set; }
+    public DateTime? EffectiveTo { get; set; }
+    public bool IsActive { get; set; }
+    public string Currency { get; set; } = "ZAR";
+    public bool IsCurrentlyEffective { get; set; }
+    public List<SupplierPriceListItemDto> Items { get; set; } = new();
+    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public string CreatedBy { get; set; } = string.Empty;
+    public string? UpdatedBy { get; set; }
+    public string TenantId { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Supplier Price List Item DTO
+/// </summary>
+public class SupplierPriceListItemDto
+{
+    public Guid Id { get; set; }
+    public Guid SupplierPriceListId { get; set; }
+    public Guid ItemId { get; set; }
+    public string ItemName { get; set; } = string.Empty;
+    public string ItemSku { get; set; } = string.Empty;
+    public decimal UnitPrice { get; set; }
+    public string Currency { get; set; } = "ZAR";
+    public decimal? MinimumOrderQuantity { get; set; }
+    public int? LeadTimeDays { get; set; }
+    public string? Notes { get; set; }
+    public DateTime LastUpdated { get; set; }
+}
+
+/// <summary>
+/// Create Supplier Price List Request
+/// </summary>
+public class CreateSupplierPriceListRequest
+{
+    public Guid SupplierId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public DateTime? EffectiveFrom { get; set; }
+    public DateTime? EffectiveTo { get; set; }
+    public string Currency { get; set; } = "ZAR";
+    public List<CreateSupplierPriceListItemRequest> Items { get; set; } = new();
+}
+
+/// <summary>
+/// Create Supplier Price List Item Request
+/// </summary>
+public class CreateSupplierPriceListItemRequest
+{
+    public Guid ItemId { get; set; }
+    public string ItemName { get; set; } = string.Empty;
+    public string ItemSku { get; set; } = string.Empty;
+    public decimal UnitPrice { get; set; }
+    public decimal? MinimumOrderQuantity { get; set; }
+    public int? LeadTimeDays { get; set; }
+    public string? Notes { get; set; }
+}
+
+/// <summary>
+/// Update Supplier Price List Request
+/// </summary>
+public class UpdateSupplierPriceListRequest
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public DateTime? EffectiveTo { get; set; }
+}
+
+/// <summary>
+/// Add Price List Item Request
+/// </summary>
+public class AddPriceListItemRequest
+{
+    public Guid PriceListId { get; set; }
+    public Guid ItemId { get; set; }
+    public string ItemName { get; set; } = string.Empty;
+    public string ItemSku { get; set; } = string.Empty;
+    public decimal UnitPrice { get; set; }
+    public decimal? MinimumOrderQuantity { get; set; }
+    public int? LeadTimeDays { get; set; }
+    public string? Notes { get; set; }
 }

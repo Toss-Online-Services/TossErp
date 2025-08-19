@@ -99,31 +99,32 @@ public class MockSupplierRepository : ISupplierRepository
     {
         // Create sample suppliers
         var supplier1 = Supplier.Create("ABC Electronics", "ABC001", "default-tenant");
-        supplier1.UpdateContactInfo("John Smith", "john.smith@abcelectronics.com", "+1-555-0123", "123 Main St", "New York", "10001", "USA");
-        supplier1.UpdateBusinessInfo("TAX123456", "REG789012");
-        supplier1.UpdateFinancialInfo(50000.00m, 30);
-        supplier1.UpdateOperationalInfo(14.0m);
-        supplier1.Activate("system");
+        supplier1.UpdateContactInfo("John Smith", "john.smith@abcelectronics.com", "+1-555-0123");
+        supplier1.UpdateBusinessInfo("123 Main St", "New York", "NY", "10001", "USA", "TAX123456");
+        supplier1.UpdateFinancialInfo("Bank of America", "1234567890", "021000021", "Net 30");
+        supplier1.UpdateOperationalInfo(14.0m, "system");
+        supplier1.Activate();
         _suppliers.Add(supplier1);
 
         var supplier2 = Supplier.Create("XYZ Manufacturing", "XYZ002", "default-tenant");
-        supplier2.UpdateContactInfo("Jane Doe", "jane.doe@xyzmanufacturing.com", "+1-555-0456", "456 Industrial Ave", "Chicago", "60601", "USA");
-        supplier2.UpdateBusinessInfo("TAX654321", "REG210987");
-        supplier2.UpdateFinancialInfo(75000.00m, 45);
-        supplier2.UpdateOperationalInfo(21.0m);
-        supplier2.Activate("system");
+        supplier2.UpdateContactInfo("Jane Doe", "jane.doe@xyzmanufacturing.com", "+1-555-0456");
+        supplier2.UpdateBusinessInfo("456 Industrial Ave", "Chicago", "IL", "60601", "USA", "TAX654321");
+        supplier2.UpdateFinancialInfo("Chase Bank", "0987654321", "021000021", "Net 45");
+        supplier2.UpdateOperationalInfo(21.0m, "system");
+        supplier2.Activate();
         _suppliers.Add(supplier2);
 
         var supplier3 = Supplier.Create("Global Parts Co", "GPC003", "default-tenant");
-        supplier3.UpdateContactInfo("Bob Johnson", "bob.johnson@globalparts.com", "+1-555-0789", "789 Warehouse Blvd", "Los Angeles", "90001", "USA");
-        supplier3.UpdateBusinessInfo("TAX987654", "REG345678");
-        supplier3.UpdateFinancialInfo(100000.00m, 60);
-        supplier3.UpdateOperationalInfo(30.0m);
-        supplier3.Activate("system");
+        supplier3.UpdateContactInfo("Bob Johnson", "bob.johnson@globalparts.com", "+1-555-0789");
+        supplier3.UpdateBusinessInfo("789 Warehouse Blvd", "Los Angeles", "CA", "90001", "USA", "TAX987654");
+        supplier3.UpdateFinancialInfo("Wells Fargo", "1122334455", "121000248", "Net 60");
+        supplier3.UpdateOperationalInfo(30.0m, "system");
+        supplier3.Activate();
         _suppliers.Add(supplier3);
 
         var supplier4 = Supplier.Create("Pending Supplier", "PEND004", "default-tenant");
-        supplier4.UpdateContactInfo("Alice Brown", "alice.brown@pending.com", "+1-555-0321", "321 Test St", "Test City", "12345", "USA");
+        supplier4.UpdateContactInfo("Alice Brown", "alice.brown@pending.com", "+1-555-0321");
+        supplier4.UpdateBusinessInfo("321 Test St", "Test City", "TX", "12345", "USA", "TAX111111");
         // This supplier remains in PendingApproval status
         _suppliers.Add(supplier4);
     }

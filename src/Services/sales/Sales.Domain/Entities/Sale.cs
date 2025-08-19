@@ -28,7 +28,6 @@ public class Sale : Entity<Guid>
     public DateTime? CompletedAt { get; private set; }
     public DateTime? CancelledAt { get; private set; }
     public string? CancellationReason { get; private set; }
-    public string TenantId { get; private set; } = string.Empty;
 
     // Navigation properties
     public IReadOnlyList<SaleItem> Items => _items.AsReadOnly();
@@ -48,6 +47,15 @@ public class Sale : Entity<Guid>
         CreatedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
 
         AddDomainEvent(new SaleCreatedEvent(Id, ReceiptNumber.Value, TillId, tenantId));
+    }
+
+    public static Sale Create(Guid tillId, Guid? customerId, string customerName, string tenantId, ReceiptNumber? receiptNumber = null, string createdBy = "system")
+    {
+        var id = Guid.NewGuid();
+        var rn = receiptNumber ?? new ReceiptNumber("RC-00000001");
+        var sale = new Sale(id, rn, tillId, tenantId, createdBy);
+        sale.SetCustomer(customerId, customerName);
+        return sale;
     }
 
     /// <summary>
@@ -71,7 +79,7 @@ public class Sale : Entity<Guid>
             throw new InvalidOperationException("Cannot add items to a non-pending sale");
 
         if (quantity <= 0)
-            throw new ArgumentException("Quantity must be positive", nameof(quantity));
+            throw new InvalidOperationException("Quantity must be greater than zero");
 
         if (unitPrice.Amount < 0)
             throw new ArgumentException("Unit price cannot be negative", nameof(unitPrice));
@@ -146,6 +154,7 @@ public class Sale : Entity<Guid>
             throw new ArgumentException("Discount cannot be greater than subtotal", nameof(discountAmount));
 
         DiscountAmount = discountAmount;
+        DiscountReason = reason;
         RecalculateTotals();
         AddDomainEvent(new SaleDiscountAppliedEvent(Id, discountAmount, reason));
     }
@@ -279,5 +288,40 @@ public class Sale : Entity<Guid>
     public void ClearDomainEvents()
     {
         _domainEvents.Clear();
+    }
+
+    public Money TotalAmount => Total;
+    public string? DiscountReason { get; private set; }
+
+    /// <summary>
+    /// Apply a discount amount to the sale
+    /// </summary>
+    public void ApplyDiscount(decimal amount, string reason)
+    {
+        ApplyDiscount(new Money(amount), reason);
+    }
+
+    /// <summary>
+    /// Complete the sale (parameterless overload for tests)
+    /// </summary>
+    public void Complete()
+    {
+        if (!_items.Any())
+            throw new InvalidOperationException("Cannot complete sale without items");
+        if (!_payments.Any())
+            throw new InvalidOperationException("Cannot complete sale without payments");
+        Status = SaleStatus.Completed;
+        CompletedAt = DateTime.UtcNow;
+        AddDomainEvent(new SaleCompletedEvent(Id, Total, PaidAmount, ChangeAmount));
+    }
+
+    /// <summary>
+    /// Cancel the sale (parameterless user overload)
+    /// </summary>
+    public void Cancel(string reason)
+    {
+        if (string.IsNullOrWhiteSpace(reason))
+            throw new InvalidOperationException("Cancellation reason is required");
+        Cancel(reason, "system");
     }
 }

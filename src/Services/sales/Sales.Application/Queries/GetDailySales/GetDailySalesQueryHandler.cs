@@ -2,6 +2,7 @@ using MediatR;
 using TossErp.Sales.Application.Common.DTOs;
 using TossErp.Sales.Application.Common.Interfaces;
 using TossErp.Sales.Domain.Common;
+using TossErp.Sales.Domain.Entities;
 using TossErp.Sales.Domain.Enums;
 
 namespace TossErp.Sales.Application.Queries.GetDailySales;

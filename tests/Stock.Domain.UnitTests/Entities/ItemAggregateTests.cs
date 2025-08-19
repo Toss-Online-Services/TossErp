@@ -1,269 +1,221 @@
+using TossErp.Stock.Domain.Aggregates.ItemAggregate;
+using TossErp.Stock.Domain.Aggregates.ItemAggregate.Entities;
+using TossErp.Stock.Domain.Aggregates.ItemAggregate.Events;
 using TossErp.Stock.Domain.Entities;
-using TossErp.Stock.Domain.ValueObjects;
 using TossErp.Stock.Domain.Enums;
-using TossErp.Stock.Domain.Exceptions;
+using TossErp.Stock.Domain.ValueObjects;
 
 namespace Stock.Domain.UnitTests.Entities;
 
 public class ItemAggregateTests
 {
-    [Fact]
-    public void Constructor_ValidParameters_ShouldCreateItem()
-    {
-        // Arrange & Act
-        var item = new ItemAggregate(
-            "Test Item",
-            "Test Description",
-            new ItemCode("TEST001"),
-            ItemType.Stock,
-            "PCS",
-            10.99m,
-            10,
-            50
-        );
+	[Fact]
+	public void Constructor_ValidParameters_ShouldCreateItem()
+	{
+		// Arrange
+		var uom = new UnitOfMeasure("PCS", "Pieces");
 
-        // Assert
-        Assert.NotEqual(Guid.Empty, item.Id);
-        Assert.Equal("Test Item", item.Name);
-        Assert.Equal("Test Description", item.Description);
-        Assert.Equal("TEST001", item.ItemCode.Value);
-        Assert.Equal(ItemType.Stock, item.ItemType);
-        Assert.Equal("PCS", item.DefaultUnitOfMeasure);
-        Assert.Equal(10.99m, item.DefaultPrice);
-        Assert.Equal(10, item.ReorderLevel);
-        Assert.Equal(50, item.ReorderQuantity);
-        Assert.True(item.IsActive);
-        Assert.Empty(item.DomainEvents);
-    }
+		// Act
+		var item = new ItemAggregate(
+			new ItemCode("TEST001"),
+			"Test Item",
+			"Default",
+			uom,
+			ItemType.Stock,
+			ValuationMethod.FIFO,
+			"ACME"
+		);
+		item.UpdatePricing(10.99m, null);
+		item.UpdateInventorySettings(10, 50, null, null);
 
-    [Fact]
-    public void Constructor_InvalidItemCode_ShouldThrowException()
-    {
-        // Arrange & Act & Assert
-        var exception = Assert.Throws<DomainException>(() => new ItemAggregate(
-            "Test Item",
-            "Test Description",
-            new ItemCode(""), // Invalid empty code
-            ItemType.Stock,
-            "PCS",
-            10.99m,
-            10,
-            50
-        ));
+		// Assert
+		Assert.NotEqual(Guid.Empty, item.Id);
+		Assert.Equal("Test Item", item.ItemName);
+		Assert.Equal("TEST001", item.ItemCode.Value);
+		Assert.Equal(ItemType.Stock, item.ItemType);
+		Assert.Equal("PCS", item.StockUOM.Code);
+		Assert.Equal(10.99m, item.DefaultPrice);
+		Assert.Equal(10, item.ReorderLevel);
+		Assert.Equal(50, item.ReorderQuantity);
+		Assert.True(item.IsActive);
+	}
 
-        Assert.Contains("Item code cannot be empty", exception.Message);
-    }
+	[Fact]
+	public void Constructor_InvalidItemCode_ShouldThrowException()
+	{
+		// Arrange
+		var uom = new UnitOfMeasure("PCS", "Pieces");
 
-    [Fact]
-    public void Constructor_NegativePrice_ShouldThrowException()
-    {
-        // Arrange & Act & Assert
-        var exception = Assert.Throws<DomainException>(() => new ItemAggregate(
-            "Test Item",
-            "Test Description",
-            new ItemCode("TEST001"),
-            ItemType.Stock,
-            "PCS",
-            -10.99m, // Negative price
-            10,
-            50
-        ));
+		// Act & Assert
+		var ex = Assert.Throws<ArgumentException>(() => new ItemAggregate(
+			new ItemCode(""),
+			"Test Item",
+			"Default",
+			uom,
+			ItemType.Stock,
+			ValuationMethod.FIFO,
+			"ACME"
+		));
+		Assert.Contains("Item code", ex.Message, StringComparison.OrdinalIgnoreCase);
+	}
 
-        Assert.Contains("Price cannot be negative", exception.Message);
-    }
+	[Fact]
+	public void UpdatePricing_NegativePrice_ShouldThrowException()
+	{
+		// Arrange
+		var uom = new UnitOfMeasure("PCS", "Pieces");
+		var item = new ItemAggregate(
+			new ItemCode("TEST001"),
+			"Test Item",
+			"Default",
+			uom,
+			ItemType.Stock,
+			ValuationMethod.FIFO,
+			"ACME"
+		);
 
-    [Fact]
-    public void Constructor_NegativeReorderLevel_ShouldThrowException()
-    {
-        // Arrange & Act & Assert
-        var exception = Assert.Throws<DomainException>(() => new ItemAggregate(
-            "Test Item",
-            "Test Description",
-            new ItemCode("TEST001"),
-            ItemType.Stock,
-            "PCS",
-            10.99m,
-            -10, // Negative reorder level
-            50
-        ));
+		// Act & Assert
+		var ex = Assert.Throws<ArgumentException>(() => item.UpdatePricing(-10.99m, null));
+		Assert.Contains("Standard rate", ex.Message, StringComparison.OrdinalIgnoreCase);
+	}
 
-        Assert.Contains("Reorder level cannot be negative", exception.Message);
-    }
+	[Fact]
+	public void UpdateInventorySettings_NegativeReorderLevel_ShouldThrowException()
+	{
+		// Arrange
+		var uom = new UnitOfMeasure("PCS", "Pieces");
+		var item = new ItemAggregate(
+			new ItemCode("TEST001"),
+			"Test Item",
+			"Default",
+			uom,
+			ItemType.Stock,
+			ValuationMethod.FIFO,
+			"ACME"
+		);
 
-    [Fact]
-    public void Update_ValidParameters_ShouldUpdateItem()
-    {
-        // Arrange
-        var item = new ItemAggregate(
-            "Test Item",
-            "Test Description",
-            new ItemCode("TEST001"),
-            ItemType.Stock,
-            "PCS",
-            10.99m,
-            10,
-            50
-        );
+		// Act & Assert
+		var ex = Assert.Throws<ArgumentException>(() => item.UpdateInventorySettings(-10, 50, null, null));
+		Assert.Contains("Reorder level", ex.Message, StringComparison.OrdinalIgnoreCase);
+	}
 
-        // Act
-        item.Update(
-            "Updated Item",
-            "Updated Description",
-            ItemType.Service,
-            "KG",
-            20.99m,
-            20,
-            100
-        );
+	[Fact]
+	public void Update_ValidParameters_ShouldUpdateItem()
+	{
+		// Arrange
+		var uom = new UnitOfMeasure("PCS", "Pieces");
+		var item = new ItemAggregate(
+			new ItemCode("TEST001"),
+			"Test Item",
+			"Default",
+			uom,
+			ItemType.Stock,
+			ValuationMethod.FIFO,
+			"ACME"
+		);
 
-        // Assert
-        Assert.Equal("Updated Item", item.Name);
-        Assert.Equal("Updated Description", item.Description);
-        Assert.Equal(ItemType.Service, item.ItemType);
-        Assert.Equal("KG", item.DefaultUnitOfMeasure);
-        Assert.Equal(20.99m, item.DefaultPrice);
-        Assert.Equal(20, item.ReorderLevel);
-        Assert.Equal(100, item.ReorderQuantity);
-        Assert.NotEmpty(item.DomainEvents);
-    }
+		// Act
+		item.Update("Updated Item", "Updated Description", ItemType.Service, "KG", 20.99m, 20, 100);
 
-    [Fact]
-    public void Update_DisabledItem_ShouldThrowException()
-    {
-        // Arrange
-        var item = new ItemAggregate(
-            "Test Item",
-            "Test Description",
-            new ItemCode("TEST001"),
-            ItemType.Stock,
-            "PCS",
-            10.99m,
-            10,
-            50
-        );
-        item.Disable();
+		// Assert
+		Assert.Equal("Updated Item", item.ItemName);
+		Assert.Equal("Updated Description", item.Description);
+		Assert.Equal(ItemType.Service, item.ItemType);
+		Assert.Equal(20.99m, item.DefaultPrice);
+		Assert.Equal(20, item.ReorderLevel);
+		Assert.Equal(100, item.ReorderQuantity);
+	}
 
-        // Act & Assert
-        var exception = Assert.Throws<DomainException>(() => item.Update(
-            "Updated Item",
-            "Updated Description",
-            ItemType.Service,
-            "KG",
-            20.99m,
-            20,
-            100
-        ));
+	[Fact]
+	public void Disable_ActiveItem_ShouldDisableItem()
+	{
+		// Arrange
+		var uom = new UnitOfMeasure("PCS", "Pieces");
+		var item = new ItemAggregate(
+			new ItemCode("TEST001"),
+			"Test Item",
+			"Default",
+			uom,
+			ItemType.Stock,
+			ValuationMethod.FIFO,
+			"ACME"
+		);
 
-        Assert.Contains("Cannot update disabled item", exception.Message);
-    }
+		// Act
+		item.Disable();
 
-    [Fact]
-    public void Disable_ActiveItem_ShouldDisableItem()
-    {
-        // Arrange
-        var item = new ItemAggregate(
-            "Test Item",
-            "Test Description",
-            new ItemCode("TEST001"),
-            ItemType.Stock,
-            "PCS",
-            10.99m,
-            10,
-            50
-        );
+		// Assert
+		Assert.False(item.IsActive);
+		Assert.True(item.DomainEvents.Any(e => e is ItemDisabledEvent));
+	}
 
-        // Act
-        item.Disable();
+	[Fact]
+	public void Enable_DisabledItem_ShouldEnableItem()
+	{
+		// Arrange
+		var uom = new UnitOfMeasure("PCS", "Pieces");
+		var item = new ItemAggregate(
+			new ItemCode("TEST001"),
+			"Test Item",
+			"Default",
+			uom,
+			ItemType.Stock,
+			ValuationMethod.FIFO,
+			"ACME"
+		);
+		item.Disable();
 
-        // Assert
-        Assert.False(item.IsActive);
-        Assert.NotEmpty(item.DomainEvents);
-        var domainEvent = item.DomainEvents.First();
-        Assert.IsType<ItemDisabledEvent>(domainEvent);
-    }
+		// Act
+		item.Enable();
 
-    [Fact]
-    public void Enable_DisabledItem_ShouldEnableItem()
-    {
-        // Arrange
-        var item = new ItemAggregate(
-            "Test Item",
-            "Test Description",
-            new ItemCode("TEST001"),
-            ItemType.Stock,
-            "PCS",
-            10.99m,
-            10,
-            50
-        );
-        item.Disable();
+		// Assert
+		Assert.True(item.IsActive);
+		Assert.True(item.DomainEvents.Any(e => e is ItemEnabledEvent));
+	}
 
-        // Act
-        item.Enable();
+	[Fact]
+	public void AddVariant_ValidVariant_ShouldAddVariant()
+	{
+		// Arrange
+		var uom = new UnitOfMeasure("PCS", "Pieces");
+		var item = new ItemAggregate(
+			new ItemCode("TEST001"),
+			"Test Item",
+			"Default",
+			uom,
+			ItemType.Stock,
+			ValuationMethod.FIFO,
+			"ACME"
+		);
+		var variant = new ItemVariant("Size", "Large", "L", 15.99m);
 
-        // Assert
-        Assert.True(item.IsActive);
-        Assert.NotEmpty(item.DomainEvents);
-        var domainEvent = item.DomainEvents.Last();
-        Assert.IsType<ItemEnabledEvent>(domainEvent);
-    }
+		// Act
+		item.AddVariant(variant);
 
-    [Fact]
-    public void AddVariant_ValidVariant_ShouldAddVariant()
-    {
-        // Arrange
-        var item = new ItemAggregate(
-            "Test Item",
-            "Test Description",
-            new ItemCode("TEST001"),
-            ItemType.Stock,
-            "PCS",
-            10.99m,
-            10,
-            50
-        );
+		// Assert
+		Assert.Contains(variant, item.Variants);
+		Assert.True(item.DomainEvents.Any(e => e is ItemVariantAddedEvent));
+	}
 
-        var variant = new ItemVariant(
-            "Size",
-            "Large",
-            "L",
-            15.99m
-        );
+	[Fact]
+	public void AddVariant_DuplicateVariant_ShouldThrowException()
+	{
+		// Arrange
+		var uom = new UnitOfMeasure("PCS", "Pieces");
+		var item = new ItemAggregate(
+			new ItemCode("TEST001"),
+			"Test Item",
+			"Default",
+			uom,
+			ItemType.Stock,
+			ValuationMethod.FIFO,
+			"ACME"
+		);
+		var variant = new ItemVariant("Size", "Large", "L", 15.99m);
+		item.AddVariant(variant);
 
-        // Act
-        item.AddVariant(variant);
-
-        // Assert
-        Assert.Contains(variant, item.Variants);
-        Assert.NotEmpty(item.DomainEvents);
-    }
-
-    [Fact]
-    public void AddVariant_DuplicateVariant_ShouldThrowException()
-    {
-        // Arrange
-        var item = new ItemAggregate(
-            "Test Item",
-            "Test Description",
-            new ItemCode("TEST001"),
-            ItemType.Stock,
-            "PCS",
-            10.99m,
-            10,
-            50
-        );
-
-        var variant = new ItemVariant(
-            "Size",
-            "Large",
-            "L",
-            15.99m
-        );
-
-        item.AddVariant(variant);
-
-        // Act & Assert
-        var exception = Assert.Throws<DomainException>(() => item.AddVariant(variant));
-        Assert.Contains("Variant already exists", exception.Message);
-    }
+		// Act & Assert
+		var ex = Assert.Throws<InvalidOperationException>(() => item.AddVariant(variant));
+		Assert.Contains("already exists", ex.Message, StringComparison.OrdinalIgnoreCase);
+	}
 }

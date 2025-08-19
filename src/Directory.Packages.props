@@ -85,6 +85,8 @@
     <PackageVersion Include="Duende.IdentityServer.Storage" Version="$(DuendeVersion)" />
     <!-- VS Test -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.0" />
+    <PackageVersion Include="Moq" Version="4.20.70" />
     <!-- Scaffolding -->
     <PackageVersion Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0-rc.1.23461.3" />
     <!-- Grpc -->
@@ -111,6 +113,8 @@
     <PackageVersion Include="FluentValidation" Version="11.9.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftExtensionsVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsVersion)" />
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
@@ -123,5 +127,23 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
     <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.3.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Azure.Security.KeyVault.Secrets" Version="4.6.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
+    <PackageVersion Include="Serilog" Version="3.1.1" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.1" />
+    <PackageVersion Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageVersion Include="Serilog.Formatting.Compact" Version="2.0.0" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageVersion Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageVersion Include="Serilog.Sinks.Seq" Version="6.0.0" />
+    <PackageVersion Include="Serilog.Sinks.Elasticsearch" Version="9.0.3" />
+    <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
+    <PackageVersion Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
+    <PackageVersion Include="AspNetCore.HealthChecks.RabbitMQ" Version="9.0.0" />
+    <PackageVersion Include="AspNetCore.HealthChecks.System" Version="9.0.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.10.0-beta.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.0.0-rc1.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.0.0-rc1.1" />
   </ItemGroup>
 </Project>

@@ -45,33 +45,24 @@ public class CreateSupplierCommandHandler : IRequestHandler<CreateSupplierComman
         // Update contact information if provided
         if (!string.IsNullOrWhiteSpace(request.ContactPerson) || 
             !string.IsNullOrWhiteSpace(request.Email) || 
-            !string.IsNullOrWhiteSpace(request.Phone) ||
-            !string.IsNullOrWhiteSpace(request.Address) ||
-            !string.IsNullOrWhiteSpace(request.City) ||
-            !string.IsNullOrWhiteSpace(request.PostalCode) ||
-            !string.IsNullOrWhiteSpace(request.Country))
+            !string.IsNullOrWhiteSpace(request.Phone))
         {
             supplier.UpdateContactInfo(
                 request.ContactPerson,
                 request.Email,
-                request.Phone,
-                request.Address,
-                request.City,
-                request.PostalCode,
-                request.Country,
-                currentUser);
+                request.Phone);
         }
 
         // Update business information if provided
         if (!string.IsNullOrWhiteSpace(request.TaxNumber) || !string.IsNullOrWhiteSpace(request.RegistrationNumber))
         {
-            supplier.UpdateBusinessInfo(request.TaxNumber, request.RegistrationNumber, currentUser);
+            supplier.UpdateBusinessInfo(null, null, null, null, null, request.TaxNumber);
         }
 
         // Update financial information if provided
         if (request.CreditLimit.HasValue || request.PaymentTermsDays.HasValue)
         {
-            supplier.UpdateFinancialInfo(request.CreditLimit, request.PaymentTermsDays, currentUser);
+            supplier.UpdateFinancialInfo(null, null, null, null);
         }
 
         // Update operational information if provided
@@ -83,7 +74,7 @@ public class CreateSupplierCommandHandler : IRequestHandler<CreateSupplierComman
         // Add notes if provided
         if (!string.IsNullOrWhiteSpace(request.Notes))
         {
-            supplier.AddNotes(request.Notes, currentUser);
+            supplier.AddNotes(request.Notes);
         }
 
         // Save supplier

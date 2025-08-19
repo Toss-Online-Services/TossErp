@@ -18,6 +18,7 @@ public class SaleDto
     public decimal SubTotal { get; set; }
     public decimal TaxAmount { get; set; }
     public decimal DiscountAmount { get; set; }
+    public string? DiscountReason { get; set; }
     public decimal Total { get; set; }
     public decimal PaidAmount { get; set; }
     public decimal ChangeAmount { get; set; }
