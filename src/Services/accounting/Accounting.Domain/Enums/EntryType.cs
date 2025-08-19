@@ -15,3 +15,4 @@ public enum EntryType
     /// </summary>
     Credit = 2
 }
+

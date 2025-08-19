@@ -27,3 +27,4 @@
 // Completed tasks mini chart component
 </script>
 
+

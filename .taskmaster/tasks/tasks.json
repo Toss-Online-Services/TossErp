@@ -1226,25 +1226,25 @@
           {
             "id": 2,
             "title": "Posting rules: SaleCompleted, purchase receipts, adjustments",
-            "status": "pending",
+            "status": "done",
             "complexity": 3
           },
           {
             "id": 3,
             "title": "Stock valuation snapshot for P&L",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           },
           {
             "id": 4,
             "title": "Cashbook UI (web): entries, filters, export CSV",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           },
           {
             "id": 5,
             "title": "Reports: P&L summary, cash position, month-over-month",
-            "status": "pending",
+            "status": "in-progress",
             "complexity": 2
           },
           {
@@ -1981,7 +1981,7 @@
       "totalEstimatedHours": 336,
       "created": "2025-08-18T00:00:00Z",
       "description": "End-to-end MVP across infrastructure, core services, AI, clients, and DevOps",
-      "updated": "2025-08-19T09:35:20.859Z"
+      "updated": "2025-08-19T15:19:38.043Z"
     }
   }
 }

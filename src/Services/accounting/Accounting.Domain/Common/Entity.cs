@@ -60,3 +60,4 @@ public abstract class Entity<T> : IEquatable<Entity<T>> where T : notnull
         UpdatedBy = updatedBy;
     }
 }
+

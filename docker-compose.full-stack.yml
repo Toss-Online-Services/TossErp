@@ -95,26 +95,11 @@ services:
       dockerfile: Dockerfile
     container_name: tosserp-web-client
     ports:
-      - "3001:80"
-    networks:
-      - toss-network
-    depends_on:
-      - gateway
-
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: tosserp-nginx
-    ports:
       - "80:80"
-    volumes:
-      - ./nginx.full-stack.conf:/etc/nginx/nginx.conf:ro
     networks:
       - toss-network
     depends_on:
       - gateway
-      - mobile-client
-      - web-client
 
 volumes:
   stock-postgres-data:
