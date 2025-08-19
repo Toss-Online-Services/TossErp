@@ -52,3 +52,4 @@ public enum EntryCategory
     Miscellaneous = 9000,
     Other = 9999
 }
+

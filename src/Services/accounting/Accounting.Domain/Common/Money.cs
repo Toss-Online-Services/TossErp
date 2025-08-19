@@ -68,5 +68,9 @@ public record Money(decimal Amount, string Currency = "ZAR")
         return left.Amount <= right.Amount;
     }
     
+    public bool IsZero() => Amount == 0;
+    public bool IsPositive() => Amount > 0;
+    public bool IsNegative() => Amount < 0;
+    
     public override string ToString() => $"{Amount:F2} {Currency}";
 }

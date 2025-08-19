@@ -74,3 +74,19 @@ public record AccountDeactivatedEvent(Guid AccountId, string DeactivatedBy, stri
 {
     public DateTime OccurredOn { get; } = DateTime.UtcNow;
 }
+
+/// <summary>
+/// Event raised when a stock valuation snapshot is created
+/// </summary>
+public record StockValuationSnapshotCreatedEvent(Guid SnapshotId, DateTime SnapshotDate, string WarehouseCode, string ItemCode, Money TotalValue, string TenantId) : IDomainEvent
+{
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
+
+/// <summary>
+/// Event raised when a stock valuation snapshot is updated
+/// </summary>
+public record StockValuationSnapshotUpdatedEvent(Guid SnapshotId, DateTime SnapshotDate, string WarehouseCode, string ItemCode, Money TotalValue) : IDomainEvent
+{
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
