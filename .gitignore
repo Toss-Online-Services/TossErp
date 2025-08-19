@@ -26,7 +26,7 @@ node_modules/
 
 # OS specific
 .DS_Store
-prd/.templates/
+**/.templates/*
 
 # Task files
 # tasks.json
