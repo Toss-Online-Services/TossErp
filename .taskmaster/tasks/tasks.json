@@ -1207,7 +1207,7 @@
         "id": 7,
         "title": "Accounting (Cash-based MVP)",
         "description": "Cashbook, simple ledgers, P&L summary; integrate with Sales & Stock valuation",
-        "status": "pending",
+        "status": "in-progress",
         "priority": "high",
         "dependencies": [
           1,
@@ -1220,7 +1220,7 @@
           {
             "id": 1,
             "title": "Domain (Cashbook, Entry, Account) + invariants",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           },
           {
@@ -1981,7 +1981,7 @@
       "totalEstimatedHours": 336,
       "created": "2025-08-18T00:00:00Z",
       "description": "End-to-end MVP across infrastructure, core services, AI, clients, and DevOps",
-      "updated": "2025-08-19T08:56:35.964Z"
+      "updated": "2025-08-19T09:35:20.859Z"
     }
   }
 }
