@@ -1,561 +1,482 @@
 <template>
-  <div class="space-y-6">
-    <!-- Material Design Page Header with Beautiful Gradient -->
-    <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 rounded-2xl shadow-2xl p-8 mb-8">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-bold text-white mb-2">Analytics Dashboard</h1>
-          <p class="text-blue-100 text-lg">Welcome back! Here's what's happening with your business today.</p>
-        </div>
-        <div class="flex space-x-3">
-          <button class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200 backdrop-blur-sm">
-            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-            </svg>
-            Export
-          </button>
-          <button class="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg transition-all duration-200 font-medium">
-            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Quick Actions
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Material Design Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <!-- Website Views Card -->
-      <div class="material-card">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h6 class="material-card-title">Website Views</h6>
-            <p class="material-card-subtitle">Last Campaign Performance</p>
+  <div class="min-h-screen bg-gray-50">
+    <!-- Page Header -->
+    <div class="bg-white shadow">
+      <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="md:flex md:items-center md:justify-between">
+          <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+              General Dashboard
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">
+              Real-time business analytics and performance metrics
+            </p>
           </div>
-          <div class="stats-icon gradient-primary">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-          </div>
-        </div>
-        <!-- Mini Chart Placeholder -->
-        <div class="h-16 mb-4">
-          <WebsiteViewsChart />
-        </div>
-        <div class="flex items-center text-xs text-gray-500">
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          campaign sent 2 days ago
-        </div>
-      </div>
-
-      <!-- Daily Sales Card -->
-      <div class="material-card">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h6 class="material-card-title">Daily Sales</h6>
-            <p class="material-card-subtitle">(+15%) increase in today sales.</p>
-          </div>
-          <div class="stats-icon gradient-success">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-        </div>
-        <!-- Mini Chart Placeholder -->
-        <div class="h-16 mb-4">
-          <DailySalesChart />
-        </div>
-        <div class="flex items-center text-xs text-gray-500">
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          updated 4 min ago
-        </div>
-      </div>
-
-      <!-- Completed Tasks Card -->
-      <div class="material-card">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h6 class="material-card-title">Completed Tasks</h6>
-            <p class="material-card-subtitle">Last Campaign Performance</p>
-          </div>
-          <div class="stats-icon gradient-warning">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-        </div>
-        <!-- Mini Chart Placeholder -->
-        <div class="h-16 mb-4">
-          <CompletedTasksChart />
-        </div>
-        <div class="flex items-center text-xs text-gray-500">
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          just updated
-        </div>
-      </div>
-
-      <!-- Stock Overview Card -->
-      <div class="material-card">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h6 class="material-card-title">Stock Level</h6>
-            <p class="material-card-subtitle">Current inventory status</p>
-          </div>
-          <div class="stats-icon gradient-danger">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-          </div>
-        </div>
-        <!-- Mini Chart Placeholder -->
-        <div class="h-16 mb-4">
-          <StockLevelChart />
-        </div>
-        <div class="flex items-center text-xs text-gray-500">
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          real-time data
-        </div>
-      </div>
-    </div>
-
-    <!-- Key Metrics Row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-      <!-- Monthly Revenue -->
-      <div class="material-card">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+            <button @click="exportData" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-            </div>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                Monthly Revenue
-              </dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900 dark:text-white">
-                  R {{ formatCurrency(monthlyRevenue) }}
-                </div>
-                <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
-                  <svg class="self-center flex-shrink-0 h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="sr-only">Increased by</span>
-                  12%
-                </div>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-
-      <!-- Total Orders -->
-      <div class="material-card">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              Export
+            </button>
+            <button @click="refreshData" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-            </div>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                Total Orders
-              </dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900 dark:text-white">
-                  {{ totalOrders }}
-                </div>
-                <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
-                  <svg class="self-center flex-shrink-0 h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="sr-only">Increased by</span>
-                  8%
-                </div>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stock Items -->
-      <div class="material-card">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
-            </div>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                Stock Items
-              </dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900 dark:text-white">
-                  {{ totalStockItems }}
-                </div>
-                <div class="ml-2 flex items-baseline text-sm font-semibold text-yellow-600">
-                  <svg class="self-center flex-shrink-0 h-5 w-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="sr-only">Decreased by</span>
-                  {{ lowStockItems }} low
-                </div>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-
-      <!-- Active Customers -->
-      <div class="material-card">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-indigo-500 rounded-md flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                Active Customers
-              </dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900 dark:text-white">
-                  {{ activeCustomers }}
-                </div>
-                <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
-                  <svg class="self-center flex-shrink-0 h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="sr-only">Increased by</span>
-                  5%
-                </div>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Charts and Analytics -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      <!-- Sales Chart -->
-      <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Sales Overview</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Last 7 days performance</p>
-        </div>
-        <div class="p-6">
-          <div class="h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <div class="text-center">
-              <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Sales chart will be displayed here</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Top Products -->
-      <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Top Selling Products</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Best performers this month</p>
-        </div>
-        <div class="p-6">
-          <div class="space-y-4">
-            <div v-for="product in topProducts" :key="product.id" class="flex items-center justify-between">
-              <div class="flex items-center">
-                <div class="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">
-                  <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ product.name.charAt(0) }}</span>
-                </div>
-                <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900 dark:text-white">{{ product.name }}</p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">{{ product.category }}</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ product.sold }} sold</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">R {{ formatCurrency(product.revenue) }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Recent Activity and Quick Actions -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Recent Activity -->
-      <div class="lg:col-span-2 bg-white dark:bg-gray-800 shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Activity</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Latest business transactions and updates</p>
-        </div>
-        <div class="p-6">
-          <div class="space-y-4">
-            <div v-for="activity in recentActivities" :key="activity.id" class="flex items-start space-x-3">
-              <div class="flex-shrink-0">
-                <div :class="[activity.type === 'sale' ? 'bg-green-100 dark:bg-green-900' : activity.type === 'stock' ? 'bg-blue-100 dark:bg-blue-900' : 'bg-yellow-100 dark:bg-yellow-900', 'w-8 h-8 rounded-full flex items-center justify-center']">
-                  <svg v-if="activity.type === 'sale'" class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <svg v-else-if="activity.type === 'stock'" class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                  </svg>
-                  <svg v-else class="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                </div>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm text-gray-900 dark:text-white">{{ activity.description }}</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatTime(activity.timestamp) }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Quick Actions</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Common tasks</p>
-        </div>
-        <div class="p-6">
-          <div class="space-y-3">
-            <NuxtLink
-              to="/stock?action=add"
-              class="w-full flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <div class="flex items-center">
-                <svg class="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">Add Stock Item</span>
-              </div>
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </NuxtLink>
-
-            <NuxtLink
-              to="/sales?action=new"
-              class="w-full flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <div class="flex items-center">
-                <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">New Sale</span>
-              </div>
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </NuxtLink>
-
-            <NuxtLink
-              to="/finance?view=reports"
-              class="w-full flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <div class="flex items-center">
-                <svg class="w-5 h-5 text-purple-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">View Reports</span>
-              </div>
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </NuxtLink>
-
-            <button
-              @click="openAIAssistant"
-              class="w-full flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <div class="flex items-center">
-                <svg class="w-5 h-5 text-yellow-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">Ask AI Assistant</span>
-              </div>
-              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
+              Refresh
             </button>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <!-- Real-time Stats Cards -->
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <!-- Today's Money -->
+        <div class="bg-white overflow-hidden shadow rounded-lg" data-testid="today-money">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">
+                    Today's Money
+                  </dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-2xl font-semibold text-gray-900">
+                      {{ formatCurrency(dashboardData.todayMoney) }}
+                    </div>
+                    <div class="ml-2 flex items-baseline text-sm font-semibold" :class="dashboardData.todayMoneyChange >= 0 ? 'text-green-600' : 'text-red-600'">
+                      <svg class="self-center flex-shrink-0 h-5 w-5" :class="dashboardData.todayMoneyChange >= 0 ? 'text-green-500' : 'text-red-500'" fill="currentColor" viewBox="0 0 20 20">
+                        <path v-if="dashboardData.todayMoneyChange >= 0" fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        <path v-else fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 13.586V6a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
+                      <span class="sr-only">{{ dashboardData.todayMoneyChange >= 0 ? 'Increased' : 'Decreased' }} by</span>
+                      {{ dashboardData.todayMoneyChange >= 0 ? '+' : '' }}{{ dashboardData.todayMoneyChange }}%
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today's Users -->
+        <div class="bg-white overflow-hidden shadow rounded-lg" data-testid="today-users">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">
+                    Today's Users
+                  </dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-2xl font-semibold text-gray-900">
+                      {{ dashboardData.todayUsers.toLocaleString() }}
+                    </div>
+                    <div class="ml-2 flex items-baseline text-sm font-semibold" :class="dashboardData.todayUsersChange >= 0 ? 'text-green-600' : 'text-red-600'">
+                      <svg class="self-center flex-shrink-0 h-5 w-5" :class="dashboardData.todayUsersChange >= 0 ? 'text-green-500' : 'text-red-500'" fill="currentColor" viewBox="0 0 20 20">
+                        <path v-if="dashboardData.todayUsersChange >= 0" fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        <path v-else fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 13.586V6a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
+                      <span class="sr-only">{{ dashboardData.todayUsersChange >= 0 ? 'Increased' : 'Decreased' }} by</span>
+                      {{ dashboardData.todayUsersChange >= 0 ? '+' : '' }}{{ dashboardData.todayUsersChange }}%
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- New Clients -->
+        <div class="bg-white overflow-hidden shadow rounded-lg" data-testid="new-clients">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">
+                    New Clients
+                  </dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-2xl font-semibold text-gray-900">
+                      +{{ dashboardData.newClients.toLocaleString() }}
+                    </div>
+                    <div class="ml-2 flex items-baseline text-sm font-semibold" :class="dashboardData.newClientsChange >= 0 ? 'text-green-600' : 'text-red-600'">
+                      <svg class="self-center flex-shrink-0 h-5 w-5" :class="dashboardData.newClientsChange >= 0 ? 'text-green-500' : 'text-red-500'" fill="currentColor" viewBox="0 0 20 20">
+                        <path v-if="dashboardData.newClientsChange >= 0" fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        <path v-else fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 13.586V6a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
+                      <span class="sr-only">{{ dashboardData.newClientsChange >= 0 ? 'Increased' : 'Decreased' }} by</span>
+                      {{ dashboardData.newClientsChange >= 0 ? '+' : '' }}{{ dashboardData.newClientsChange }}%
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales -->
+        <div class="bg-white overflow-hidden shadow rounded-lg" data-testid="sales">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">
+                    Sales
+                  </dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-2xl font-semibold text-gray-900">
+                      {{ formatCurrency(dashboardData.sales) }}
+                    </div>
+                    <div class="ml-2 flex items-baseline text-sm font-semibold" :class="dashboardData.salesChange >= 0 ? 'text-green-600' : 'text-red-600'">
+                      <svg class="self-center flex-shrink-0 h-5 w-5" :class="dashboardData.salesChange >= 0 ? 'text-green-500' : 'text-red-500'" fill="currentColor" viewBox="0 0 20 20">
+                        <path v-if="dashboardData.salesChange >= 0" fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        <path v-else fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 13.586V6a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
+                      <span class="sr-only">{{ dashboardData.salesChange >= 0 ? 'Increased' : 'Decreased' }} by</span>
+                      {{ dashboardData.salesChange >= 0 ? '+' : '' }}{{ dashboardData.salesChange }}%
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts and Analytics Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Sales Chart -->
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Sales Trend</h3>
+          <div class="h-64 flex items-center justify-center">
+            <div class="text-center">
+              <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <p class="text-gray-500">Chart component will be implemented</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Revenue Chart -->
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Revenue Overview</h3>
+          <div class="h-64 flex items-center justify-center">
+            <div class="text-center">
+              <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p class="text-gray-500">Chart component will be implemented</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sales by Country and Global Sales -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Sales by Country -->
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Sales by Country</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sales</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bounce</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-for="country in dashboardData.salesByCountry" :key="country.name">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-8 w-8">
+                        <div class="h-8 w-8 rounded-full" :style="{ backgroundColor: country.color }"></div>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">{{ country.name }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ country.sales.toLocaleString() }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatCurrency(country.value) }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ country.bounce }}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Global Sales -->
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Global Sales</h3>
+            <p class="text-sm text-gray-500">Check the global stats</p>
+          </div>
+          <div class="p-6">
+            <div class="text-center">
+              <div class="text-3xl font-bold text-gray-900 mb-2">{{ formatCurrency(dashboardData.globalSales) }}</div>
+              <div class="text-sm text-gray-500 mb-6">Total Sales</div>
+              
+              <div class="grid grid-cols-2 gap-4">
+                <div class="text-center">
+                  <div class="text-2xl font-bold text-gray-900">{{ dashboardData.reachedUsers.toLocaleString() }}</div>
+                  <div class="text-sm text-gray-500">Reached Users</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-2xl font-bold text-gray-900">{{ dashboardData.activeUsers.toLocaleString() }}</div>
+                  <div class="text-sm text-gray-500">Active Users</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Stats Row -->
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div class="bg-white overflow-hidden shadow rounded-lg" data-testid="users-stat">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Users</dt>
+                  <dd class="text-lg font-medium text-gray-900">{{ dashboardData.users.toLocaleString() }}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg" data-testid="clicks-stat">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.122 2.122" />
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Clicks</dt>
+                  <dd class="text-lg font-medium text-gray-900">{{ dashboardData.clicks.toLocaleString() }}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg" data-testid="sales-stat">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Sales</dt>
+                  <dd class="text-lg font-medium text-gray-900">{{ formatCurrency(dashboardData.salesAmount) }}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg" data-testid="items-stat">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Items</dt>
+                  <dd class="text-lg font-medium text-gray-900">{{ dashboardData.items.toLocaleString() }}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sales Overview -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900">Sales overview</h3>
+          <p class="text-sm text-gray-500">{{ dashboardData.salesOverviewChange }}% more in comparison to last month</p>
+        </div>
+        <div class="p-6">
+          <div class="h-64 flex items-center justify-center">
+            <div class="text-center">
+              <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <p class="text-gray-500">Sales overview chart will be implemented</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chatbot Component -->
+    <Chatbot />
   </div>
 </template>
 
 <script setup lang="ts">
-// Page meta
-definePageMeta({
-  title: 'Dashboard - TOSS ERP',
-  description: 'Business dashboard with key metrics and insights'
-})
+// Vue composables are auto-imported in Nuxt 3
+
+// Types
+interface DashboardData {
+  todayMoney: number
+  todayMoneyChange: number
+  todayUsers: number
+  todayUsersChange: number
+  newClients: number
+  newClientsChange: number
+  sales: number
+  salesChange: number
+  globalSales: number
+  reachedUsers: number
+  activeUsers: number
+  activeUsersChange: number
+  users: number
+  clicks: number
+  salesAmount: number
+  items: number
+  salesOverviewChange: number
+  salesByCountry: Array<{
+    name: string
+    sales: number
+    value: number
+    bounce: number
+    color: string
+  }>
+}
 
 // Reactive data
-const monthlyRevenue = ref(45750.00)
-const totalOrders = ref(1234)
-const totalStockItems = ref(567)
-const lowStockItems = ref(7)
-const activeCustomers = ref(245)
+const dashboardData = ref<DashboardData>({
+  todayMoney: 53000,
+  todayMoneyChange: 55,
+  todayUsers: 2300,
+  todayUsersChange: 12,
+  newClients: 3462,
+  newClientsChange: 8,
+  sales: 103430,
+  salesChange: 23,
+  globalSales: 103430,
+  reachedUsers: 24500,
+  activeUsers: 24500,
+  activeUsersChange: 15,
+  users: 24500,
+  clicks: 24500,
+  salesAmount: 103430,
+  items: 24500,
+  salesOverviewChange: 55,
+  salesByCountry: [
+    { name: 'United States', sales: 4000, value: 230900, bounce: 29.9, color: '#FF6384' },
+    { name: 'Germany', sales: 3000, value: 440000, bounce: 40.22, color: '#36A2EB' },
+    { name: 'Great Britain', sales: 2000, value: 290000, bounce: 53.78, color: '#FFCE56' },
+    { name: 'Brasil', sales: 2780, value: 230900, bounce: 19.15, color: '#4BC0C0' }
+  ]
+})
 
-// Top products data
-const topProducts = ref([
-  { id: 1, name: 'Product A', category: 'Electronics', sold: 145, revenue: 12500.00 },
-  { id: 2, name: 'Product B', category: 'Clothing', sold: 98, revenue: 8750.00 },
-  { id: 3, name: 'Product C', category: 'Food', sold: 87, revenue: 6200.00 },
-  { id: 4, name: 'Product D', category: 'Books', sold: 65, revenue: 4300.00 },
-  { id: 5, name: 'Product E', category: 'Home', sold: 52, revenue: 3800.00 }
-])
+// Methods
+const refreshData = async () => {
+  // Simulate API call
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  
+  // Update with random data
+  dashboardData.value = {
+    ...dashboardData.value,
+    todayMoney: Math.floor(Math.random() * 100000) + 20000,
+    todayUsers: Math.floor(Math.random() * 5000) + 1000,
+    newClients: Math.floor(Math.random() * 5000) + 2000,
+    sales: Math.floor(Math.random() * 200000) + 50000
+  }
+}
 
-// Recent activities
-const recentActivities = ref([
-  { id: 1, type: 'sale', description: 'Sale completed: R 234.50', timestamp: new Date(Date.now() - 5 * 60 * 1000) },
-  { id: 2, type: 'stock', description: 'Stock updated: Added 50 units of Product A', timestamp: new Date(Date.now() - 15 * 60 * 1000) },
-  { id: 3, type: 'alert', description: 'Low stock alert: Product C (5 units remaining)', timestamp: new Date(Date.now() - 30 * 60 * 1000) },
-  { id: 4, type: 'sale', description: 'Sale completed: R 156.75', timestamp: new Date(Date.now() - 45 * 60 * 1000) },
-  { id: 5, type: 'stock', description: 'New product added: Product F', timestamp: new Date(Date.now() - 60 * 60 * 1000) }
-])
+const exportData = () => {
+  // Implement export functionality
+  const dataStr = JSON.stringify(dashboardData.value, null, 2)
+  const dataBlob = new Blob([dataStr], { type: 'application/json' })
+  const url = URL.createObjectURL(dataBlob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'dashboard-data.json'
+  link.click()
+  URL.revokeObjectURL(url)
+}
 
-// Utility functions
 const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-ZA', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(amount)
 }
 
-const formatTime = (date: Date): string => {
-  const now = new Date()
-  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
-  
-  if (diffInMinutes < 1) return 'Just now'
-  if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`
-  
-  const diffInHours = Math.floor(diffInMinutes / 60)
-  if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`
-  
-  const diffInDays = Math.floor(diffInHours / 24)
-  return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`
-}
-
-// Methods
-const openAIAssistant = () => {
-  // This will be implemented to open the AI assistant
-  console.log('Opening AI Assistant...')
-}
-
-// Load dashboard data
-onMounted(async () => {
-  try {
-    // TODO: Replace with actual API calls to gateway
-    // const dashboardData = await $fetch('/api/dashboard/overview')
-    // Update reactive data with API response
-    
-    console.log('Dashboard overview loaded')
-  } catch (error) {
-    console.error('Failed to load dashboard data:', error)
-  }
-})
-
-// SEO
-useHead({
-  title: 'Dashboard - TOSS ERP',
-  meta: [
-    { name: 'description', content: 'Business dashboard with key metrics, analytics, and insights for your township business' }
-  ]
+// Lifecycle
+onMounted(() => {
+  // Load initial data
+  refreshData()
 })
 </script>
 
 <style scoped>
-/* Material Design Card Styles */
-.material-card {
-  @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-100 dark:border-gray-700;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.material-card:hover {
-  @apply shadow-xl transform -translate-y-1;
-}
-
-.material-card-title {
-  @apply text-lg font-semibold text-gray-900 dark:text-white mb-1;
-}
-
-.material-card-subtitle {
-  @apply text-sm text-gray-500 dark:text-gray-400;
-}
-
-.stats-icon {
-  @apply w-12 h-12 rounded-xl flex items-center justify-center text-white;
-}
-
-.gradient-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.gradient-success {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.gradient-warning {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.gradient-danger {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-}
-
-/* Smooth transitions for interactive elements */
-.transition-colors {
-  transition-property: color, background-color, border-color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
-}
-
-/* Hover effects */
-.hover\:bg-gray-50:hover {
-  background-color: #f9fafb;
-}
-
-.dark .hover\:bg-gray-600:hover {
-  background-color: #4b5563;
-}
-
-.hover\:bg-gray-100:hover {
-  background-color: #f3f4f6;
-}
-
-.dark .hover\:bg-gray-700:hover {
-  background-color: #374151;
-}
+/* Add any component-specific styles here */
 </style>
 

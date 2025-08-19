@@ -10,6 +10,11 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode'
   ],
 
+  // Auto-imports
+  imports: {
+    autoImport: true
+  },
+
   // App configuration
   app: {
     head: {
