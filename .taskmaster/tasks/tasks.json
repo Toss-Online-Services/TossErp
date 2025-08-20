@@ -1333,7 +1333,7 @@
         "id": 10,
         "title": "Collaboration (Group-Buy) Service (MVP)",
         "description": "Campaigns, participant enrollment, supplier quotation, order split & settlement",
-        "status": "pending",
+        "status": "in-progress",
         "priority": "medium",
         "dependencies": [
           1,
@@ -1346,7 +1346,7 @@
           {
             "id": 1,
             "title": "Domain (Campaign, Participant, Allocation)",
-            "status": "pending",
+            "status": "done",
             "complexity": 3
           },
           {
@@ -1987,7 +1987,7 @@
       "totalEstimatedHours": 336,
       "created": "2025-08-18T00:00:00Z",
       "description": "End-to-end MVP across infrastructure, core services, AI, clients, and DevOps",
-      "updated": "2025-08-20T20:10:57.251Z"
+      "updated": "2025-08-20T20:59:03.852Z"
     }
   },
   "agent-prepared": {
