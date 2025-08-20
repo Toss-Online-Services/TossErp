@@ -1,6 +1,109 @@
-# TOSS ERP POS & Store Management Mobile Application
+# TOSS ERP - Enterprise Resource Planning System
 
-A comprehensive Flutter mobile application for Point of Sale (POS) and Store Management, integrated with the TOSS ERP system. This application provides offline-first functionality with real-time synchronization capabilities.
+A comprehensive, modern enterprise resource planning system built with .NET 9.0 microservices, Nuxt 4 web application, and Flutter mobile application. This system provides a complete solution for business management with a focus on stock management, CRM, collaboration, and financial operations.
+
+## 🚀 Quick Start
+
+### Prerequisites
+- .NET 9.0 SDK
+- Docker & Docker Compose
+- Node.js 18+ (for frontend development)
+- PowerShell (Windows) or Make (Unix/Linux/macOS)
+
+### Development Environment Setup
+
+**Windows (PowerShell):**
+```powershell
+# Build backend
+.\scripts\build.ps1 -Restore -Test
+
+# Start development environment
+.\scripts\docker.ps1 dev
+
+# Or start infrastructure only
+.\scripts\docker.ps1 infra
+```
+
+**Unix/Linux/macOS (Make):**
+```bash
+# Build backend
+make build
+
+# Start development environment
+make docker-dev
+
+# Or start infrastructure only
+make docker-infra
+```
+
+**Manual Setup:**
+```bash
+# 1. Build backend
+dotnet restore TossErp.sln
+dotnet build TossErp.sln
+
+# 2. Start infrastructure
+docker-compose -f docker/docker-compose.yml up postgres redis rabbitmq
+
+# 3. Start development environment
+docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up
+
+# 4. Frontend development
+cd src/clients/web
+npm install
+npm run dev
+```
+
+## 🏗️ System Architecture
+
+### Backend Services
+- **Identity Service** (Port 5001): User management, authentication, authorization
+- **Stock Service** (Port 5002): Inventory management, stock tracking
+- **CRM Service** (Port 5003): Customer relationship management
+- **Collaboration Service**: Group-buy and business collaboration
+- **API Gateway** (Port 8080): Centralized API routing and aggregation
+
+### Frontend Applications
+- **Web Client** (Port 3000): Nuxt 4 web application with modern UI
+- **Mobile Client**: Flutter mobile application for POS and field operations
+
+### Infrastructure
+- **PostgreSQL**: Primary database
+- **Redis**: Caching and session management
+- **RabbitMQ**: Message queuing and event bus
+- **Nginx**: Reverse proxy and load balancing
+
+## 📱 Features
+
+### 🛒 POS (Point of Sale)
+- **Quick Sales Interface**: Fast and intuitive sales screen
+- **Barcode/QR Code Scanning**: Scan products for quick lookup
+- **Customer Management**: Track customer information and history
+- **Payment Processing**: Multiple payment methods support
+- **Receipt Printing**: Bluetooth thermal printer support
+- **Offline Sales**: Complete functionality without internet connection
+
+### 📦 Stock Management
+- **Real-time Inventory**: Live stock level tracking
+- **Stock Movements**: Track all inventory transactions
+- **Low Stock Alerts**: Automatic notifications for reorder points
+- **Stock Adjustments**: Manual stock corrections
+- **Batch/Serial Tracking**: Support for batch and serial number tracking
+- **Multi-warehouse**: Support for multiple warehouse locations
+
+### 📊 Reports & Analytics
+- **Sales Reports**: Daily, weekly, monthly sales analysis
+- **Stock Reports**: Inventory valuation and movement reports
+- **Customer Reports**: Customer purchase history and analytics
+- **Performance Metrics**: Store and staff performance tracking
+- **Export Capabilities**: PDF and Excel export functionality
+
+### ⚙️ Settings & Configuration
+- **User Management**: Multi-user support with role-based access
+- **Store Configuration**: Store details and settings
+- **Printer Setup**: Thermal printer configuration
+- **Sync Settings**: Data synchronization preferences
+- **Backup & Restore**: Data backup and restoration
 
 ## Features
 
@@ -34,23 +137,73 @@ A comprehensive Flutter mobile application for Point of Sale (POS) and Store Man
 - **Sync Settings**: Data synchronization preferences
 - **Backup & Restore**: Data backup and restoration
 
-## Architecture
+## 🏗️ Architecture
 
-### Offline-First Design
-- **SQLite Database**: Local data storage for offline operation
-- **Sync Queue**: Automatic synchronization when online
-- **Conflict Resolution**: Smart conflict handling for data integrity
-- **Background Sync**: Automatic background synchronization
+### Monorepo Structure
+This project follows a systematic monorepo structure with clear separation of concerns:
 
-### State Management
-- **Riverpod**: Modern state management with dependency injection
-- **Repository Pattern**: Clean separation of data access logic
-- **Service Layer**: Business logic encapsulation
+```
+TossErp/
+├── 📁 src/                        # Source code
+│   ├── 📁 AppHost/                # Single Aspire AppHost project
+│   ├── 📁 Services/               # Backend microservices
+│   ├── 📁 Gateway/                # API Gateway
+│   ├── 📁 Shared/                 # Shared libraries
+│   └── 📁 Clients/                # Frontend applications
+├── 📁 docker/                     # Docker orchestration
+├── 📁 scripts/                    # Build and deployment scripts
+├── 📁 tools/                      # Development tools
+└── 📁 configs/                    # Configuration files
+```
 
-### Navigation
-- **GoRouter**: Declarative routing with deep linking support
-- **Bottom Navigation**: Intuitive tab-based navigation
-- **Nested Routes**: Complex navigation patterns support
+### Backend Architecture
+- **Clean Architecture**: Domain, Application, Infrastructure layers
+- **Microservices**: Independent services with well-defined boundaries
+- **MediatR**: Command/Query separation and event handling
+- **Entity Framework Core**: Data access with in-memory repositories for development
+
+### Frontend Architecture
+- **Nuxt 4**: Modern Vue.js framework with app router
+- **Tailwind CSS**: Utility-first CSS framework
+- **Composition API**: Modern Vue 3 patterns
+- **Auto-imports**: Automatic component and composable imports
+
+### Mobile Architecture
+- **Flutter**: Cross-platform mobile development
+- **Offline-First Design**: Local SQLite database with sync capabilities
+- **Riverpod**: Modern state management
+- **GoRouter**: Declarative routing
+
+### Infrastructure
+- **Docker Compose**: Local development environment
+- **PostgreSQL**: Primary database
+- **Redis**: Caching and session management
+- **RabbitMQ**: Message queuing and event bus
+- **Nginx**: Reverse proxy and load balancing
+
+## 🛠️ Development Tools
+
+### Scripts
+- **`scripts/build.ps1`**: PowerShell build script for Windows
+- **`scripts/docker.ps1`**: PowerShell Docker management for Windows
+- **`Makefile`**: Cross-platform commands for Unix/Linux/macOS
+
+### Docker Management
+```bash
+# Development environment
+docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up
+
+# Production environment
+docker-compose -f docker/docker-compose.yml up
+
+# Infrastructure only
+docker-compose -f docker/docker-compose.yml up postgres redis rabbitmq
+```
+
+## 📚 Documentation
+
+- **[README-STRUCTURE.md](README-STRUCTURE.md)**: Detailed monorepo structure documentation
+- **[README-DOCKER-ASPIRE.md](README-DOCKER-ASPIRE.md)**: Docker and Aspire setup guide
 
 ## Technology Stack
 

@@ -1,200 +1,25 @@
+# TOSS ERP - Main Docker Compose
+# This file orchestrates the entire system
+# Use: docker-compose -f docker-compose.yml up
+
 version: '3.8'
 
-services:
-  # Database
-  postgres:
-    image: postgres:16-alpine
-    container_name: toss-postgres
-    environment:
-      POSTGRES_DB: toss_erp
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      PGDATA: /var/lib/postgresql/data/pgdata
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
-    networks:
-      - toss-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+# Import the main services from the docker directory
+# This file serves as the entry point for the entire system
 
-  # Redis Cache
-  redis:
-    image: redis:7-alpine
-    container_name: toss-redis
-    ports:
-      - "6379:6379"
-    command: redis-server --appendonly yes --requirepass redis123
-    volumes:
-      - redis_data:/data
-    networks:
-      - toss-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # RabbitMQ Message Broker
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: toss-rabbitmq
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-      RABBITMQ_DEFAULT_VHOST: /
-    ports:
-      - "5672:5672"   # AMQP port
-      - "15672:15672" # Management UI
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-      - ./scripts/rabbitmq-definitions.json:/etc/rabbitmq/definitions.json:ro
-      - ./scripts/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-    networks:
-      - toss-network
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-  # API Gateway
-  gateway:
-    build:
-      context: .
-      dockerfile: src/Gateway/Dockerfile
-    container_name: toss-gateway
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - Database__ConnectionString=Host=postgres;Database=toss_erp;Username=postgres;Password=postgres;
-      - EventBus__ConnectionString=amqp://guest:guest@rabbitmq:5672
-      - Redis__ConnectionString=redis:6379
-    ports:
-      - "5000:80"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    networks:
-      - toss-network
-
-  # Identity Service
-  identity:
-    build:
-      context: .
-      dockerfile: src/Services/identity/Dockerfile
-    container_name: toss-identity
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - Database__ConnectionString=Host=postgres;Database=toss_erp;Username=postgres;Password=postgres;
-      - EventBus__ConnectionString=amqp://guest:guest@rabbitmq:5672
-      - Jwt__SigningKey=YourSuperSecretSigningKeyThatShouldBeAtLeast32CharactersLong
-      - Jwt__Issuer=https://identity.toss-erp.local
-      - Jwt__Audience=toss-erp-api
-    depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    networks:
-      - toss-network
-
-  # Stock Service
-  stock:
-    build:
-      context: .
-      dockerfile: src/Services/Stock/Stock.API/Dockerfile
-    container_name: toss-stock
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - Database__ConnectionString=Host=postgres;Database=toss_erp;Username=postgres;Password=postgres;
-      - EventBus__ConnectionString=amqp://guest:guest@rabbitmq:5672
-      - Redis__ConnectionString=redis:6379
-    depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - toss-network
-
-  # Sales Service
-  sales:
-    build:
-      context: .
-      dockerfile: src/Services/sales/Dockerfile
-    container_name: toss-sales
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - Database__ConnectionString=Host=postgres;Database=toss_erp;Username=postgres;Password=postgres;
-      - EventBus__ConnectionString=amqp://guest:guest@rabbitmq:5672
-    depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    networks:
-      - toss-network
-
-  # AI Service
-  ai:
-    build:
-      context: .
-      dockerfile: src/Services/ai/Dockerfile
-    container_name: toss-ai
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - Database__ConnectionString=Host=postgres;Database=toss_erp;Username=postgres;Password=postgres;
-      - EventBus__ConnectionString=amqp://guest:guest@rabbitmq:5672
-      - Redis__ConnectionString=redis:6379
-    depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - toss-network
-
-  # Web Client (Nuxt 3)
-  web:
-    build:
-      context: .
-      dockerfile: src/clients/web/Dockerfile
-    container_name: toss-web
-    environment:
-      - NUXT_PUBLIC_API_BASE=http://gateway/api
-    ports:
-      - "3000:3000"
-    depends_on:
-      - gateway
-    networks:
-      - toss-network
-
-volumes:
-  postgres_data:
-    driver: local
-  redis_data:
-    driver: local
-  rabbitmq_data:
-    driver: local
-
-networks:
-  toss-network:
-    driver: bridge
+# Use the following commands:
+# 
+# Development (with monitoring):
+# docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up
+#
+# Production:
+# docker-compose -f docker/docker-compose.yml up
+#
+# Infrastructure only:
+# docker-compose -f docker/docker-compose.yml up postgres redis rabbitmq
+#
+# Services only:
+# docker-compose -f docker/docker-compose.yml up identity-api stock-api crm-api gateway
+#
+# Frontend only:
+# docker-compose -f docker/docker-compose.yml up web-client nginx
