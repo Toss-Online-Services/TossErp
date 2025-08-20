@@ -15,3 +15,4 @@ public interface ICashbookRepository
     Task DeleteAsync(Cashbook cashbook, CancellationToken cancellationToken = default);
 }
 
+

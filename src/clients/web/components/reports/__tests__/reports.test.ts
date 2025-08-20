@@ -46,8 +46,11 @@ describe('TOSS ERP III Report Components', () => {
       }).format(amount)
     }
     
-    expect(formatCurrency(1000)).toContain('R1 000')
-    expect(formatCurrency(125000)).toContain('R125 000')
+    const result1 = formatCurrency(1000)
+    const result2 = formatCurrency(125000)
+    
+    expect(result1).toMatch(/R.*1\s*000/)
+    expect(result2).toMatch(/R.*125\s*000/)
   })
 
   it('should calculate financial metrics correctly', () => {

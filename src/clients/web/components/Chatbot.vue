@@ -178,7 +178,7 @@
 </template>
 
 <script setup lang="ts">
-// Vue composables are auto-imported in Nuxt 3
+import { ref, nextTick, onMounted } from 'vue'
 
 // Type declarations for speech recognition
 declare global {
@@ -379,7 +379,7 @@ const toggleVoiceInput = () => {
         isListening.value = true
       }
       
-      recognition.onresult = (event) => {
+      recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript
         newMessage.value = transcript
         sendMessage()

@@ -13,3 +13,4 @@ public class CreateStockValuationSnapshotCommand : IRequest<Guid>
     public string? Notes { get; init; }
 }
 
+

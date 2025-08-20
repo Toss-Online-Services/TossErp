@@ -135,3 +135,4 @@ public class MonthlyTrendDto
     public decimal PercentageChange { get; init; }
 }
 
+
