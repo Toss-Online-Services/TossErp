@@ -1476,8 +1476,9 @@
           {
             "id": 13,
             "title": "Idempotency + retries + circuit breakers on downstream calls",
-            "status": "pending",
-            "complexity": 2
+            "status": "in-progress",
+            "complexity": 2,
+            "details": "Progress (2025-08-20): Idempotency middleware implemented for AgentManager & Orchestrator (Idempotency-Key + body hash, 10m cache) with tests. Pending: Polly retry & circuit breaker policies on outbound HTTP clients (LLM calls, future service clients) and metrics integration."
           },
           {
             "id": 14,
@@ -2003,21 +2004,23 @@
         "actualHours": null,
         "assignee": null,
         "createdAt": "2025-08-20T12:00:00Z",
-        "updatedAt": "2025-08-20T12:00:00Z"
+        "updatedAt": "2025-08-20T12:00:00Z",
+        "consolidatedInto": { "tag": "mvp", "taskId": 11, "subtaskId": 1 }
       },
       {
         "id": 2,
         "title": "Add unit tests for AgentManager & Orchestrator",
         "description": "Create xUnit unit tests for controller logic and basic in-memory stores.",
-        "status": "pending",
+  "status": "done",
         "priority": "high",
         "dependencies": [1],
-        "details": "Add test projects under tests/ to assert Execute and Intent endpoints return expected shapes; mock external dependencies where needed.",
+  "details": "Add test projects under tests/ to assert Execute and Intent endpoints return expected shapes; mock external dependencies where needed.\n\nUpdate (2025-08-20): Implemented AgentController and OrchestratorController unit tests including idempotency replay and tenant enforcement cases.",
         "estimatedHours": 4,
         "actualHours": null,
         "assignee": null,
         "createdAt": "2025-08-20T12:00:00Z",
-        "updatedAt": "2025-08-20T12:00:00Z"
+  "updatedAt": "2025-08-20T18:30:00Z",
+        "consolidatedInto": { "tag": "mvp", "taskId": 17, "subtaskId": 1 }
       },
       {
         "id": 3,
@@ -2031,21 +2034,23 @@
         "actualHours": null,
         "assignee": null,
         "createdAt": "2025-08-20T12:00:00Z",
-        "updatedAt": "2025-08-20T12:00:00Z"
+        "updatedAt": "2025-08-20T12:00:00Z",
+        "consolidatedInto": { "tag": "mvp", "taskId": 17, "subtaskId": 2 }
       },
       {
         "id": 4,
         "title": "Generate OpenAPI specs for both services",
         "description": "Emit complete OpenAPI YAML/JSON for Orchestrator and AgentManager and store under docs/openapi/.",
-        "status": "pending",
+  "status": "done",
         "priority": "medium",
         "dependencies": [1],
-        "details": "Enable Swashbuckle/NSwag in each project, export the swagger.json and save checked-in examples.",
+  "details": "Enable Swashbuckle/NSwag in each project, export the swagger.json and save checked-in examples.\n\nUpdate (2025-08-20): Added export-openapi.ps1 script invoking Swashbuckle CLI and committed generated specs under docs/openapi/. README updated with usage instructions.",
         "estimatedHours": 2,
         "actualHours": null,
         "assignee": null,
         "createdAt": "2025-08-20T12:00:00Z",
-        "updatedAt": "2025-08-20T12:00:00Z"
+  "updatedAt": "2025-08-20T18:30:00Z",
+        "consolidatedInto": { "tag": "mvp", "taskId": 11, "subtaskId": 18 }
       },
       {
         "id": 5,
@@ -2059,7 +2064,8 @@
         "actualHours": null,
         "assignee": null,
         "createdAt": "2025-08-20T12:00:00Z",
-        "updatedAt": "2025-08-20T12:00:00Z"
+        "updatedAt": "2025-08-20T12:00:00Z",
+        "consolidatedInto": { "tag": "mvp", "taskId": 3, "subtaskId": 2 }
       },
       {
         "id": 6,
@@ -2073,35 +2079,38 @@
         "actualHours": null,
         "assignee": null,
         "createdAt": "2025-08-20T12:00:00Z",
-        "updatedAt": "2025-08-20T12:00:00Z"
+        "updatedAt": "2025-08-20T12:00:00Z",
+        "consolidatedInto": { "tag": "mvp", "taskId": 11, "subtaskId": 18 }
       },
       {
         "id": 7,
         "title": "Scaffold Temporal workflow integration",
         "description": "Add initial Temporal client scaffolding and a sample durable workflow for long-running orchestrations.",
-        "status": "pending",
+  "status": "done",
         "priority": "medium",
         "dependencies": [1],
-        "details": "Add Temporal dependencies and a sample worker project; provide configuration placeholders and README notes for running Temporal locally.",
+  "details": "Add Temporal dependencies and a sample worker project; provide configuration placeholders and README notes for running Temporal locally.\n\nUpdate (2025-08-20): Implemented Temporal worker project with SampleWorkflow & Activities; OrchestratorController executes workflow (conditional skip in tests).",
         "estimatedHours": 6,
         "actualHours": null,
         "assignee": null,
         "createdAt": "2025-08-20T12:00:00Z",
-        "updatedAt": "2025-08-20T12:00:00Z"
+  "updatedAt": "2025-08-20T18:30:00Z",
+        "consolidatedInto": { "tag": "mvp", "taskId": 11, "subtaskId": 16 }
       },
       {
         "id": 8,
         "title": "Add LLMAdapter stub and config",
         "description": "Create a minimal LLMAdapter abstraction and config entries to allow swapping providers (OpenAI/Azure/Ollama).",
-        "status": "pending",
+  "status": "done",
         "priority": "high",
         "dependencies": [1,4],
-        "details": "Implement an interface ILLMAdapter with a test double; wire to AgentManager for intent resolution.",
+  "details": "Implement an interface ILLMAdapter with a test double; wire to AgentManager for intent resolution.\n\nUpdate (2025-08-20): Added StubLLMAdapter and OpenAIAdapter with DI selection via env vars (OPENAI_API_KEY, LLM_MODEL) and health endpoint reflecting adapter.",
         "estimatedHours": 4,
         "actualHours": null,
         "assignee": null,
         "createdAt": "2025-08-20T12:00:00Z",
-        "updatedAt": "2025-08-20T12:00:00Z"
+  "updatedAt": "2025-08-20T18:30:00Z",
+        "consolidatedInto": { "tag": "mvp", "taskId": 11, "subtaskId": 2 }
       },
       {
         "id": 9,
@@ -2115,7 +2124,8 @@
         "actualHours": null,
         "assignee": null,
         "createdAt": "2025-08-20T12:00:00Z",
-        "updatedAt": "2025-08-20T12:00:00Z"
+        "updatedAt": "2025-08-20T12:00:00Z",
+        "consolidatedInto": { "tag": "mvp", "taskId": 19, "subtaskId": 1 }
       },
       {
         "id": 10,
@@ -2129,12 +2139,13 @@
         "actualHours": null,
         "assignee": null,
         "createdAt": "2025-08-20T12:00:00Z",
-        "updatedAt": "2025-08-20T12:00:00Z"
+        "updatedAt": "2025-08-20T12:00:00Z",
+        "consolidatedInto": { "tag": "master", "taskId": 20 }
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastUpdated": "2025-08-20T12:00:00Z",
+  "lastUpdated": "2025-08-20T18:30:00Z",
       "projectName": "agent-prepared",
       "totalTasks": 10,
       "completedTasks": 0,
@@ -2142,6 +2153,151 @@
       "created": "2025-08-20T12:00:00Z",
       "description": "Non-destructive agent-prepared follow-up tasks",
       "updated": "2025-08-20T12:00:00Z"
+    }
+  }
+  ,
+  "feature-ai-service": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Public AI Service Endpoints",
+        "description": "Implement /api/ai/conversation, /api/ai/automate, /api/ai/services/status, /api/ai/outcomes endpoints",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Create minimal controllers with stub responses returning correlationId and placeholder data; include ProblemDetails examples.",
+        "estimatedHours": 4
+      },
+      {
+        "id": 2,
+        "title": "Intent Classification & Routing Core",
+        "description": "Rule/keyword-based intent classification with fallback to LLMAdapter",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [1],
+        "details": "Mapping table of patterns -> agent; confidence scoring merge (rule vs LLM).",
+        "estimatedHours": 6
+      },
+      {
+        "id": 3,
+        "title": "Inventory Agent Actions",
+        "description": "Low stock check, reorder recommendation, auto PO draft stub",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [2],
+        "details": "Query stock service (stub client now); compute reorder suggestions based on threshold formula.",
+        "estimatedHours": 6
+      },
+      {
+        "id": 4,
+        "title": "Sales Agent Actions",
+        "description": "Process sale request, generate invoice, send receipt (stub)",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [2],
+        "details": "Invoke sales service client; simulate receipt generation.",
+        "estimatedHours": 5
+      },
+      {
+        "id": 5,
+        "title": "Purchasing Agent Actions",
+        "description": "Create PO, receive goods, supplier selection hint",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [2],
+        "details": "Use procurement client; heuristic supplier selection score (price, leadTime).",
+        "estimatedHours": 5
+      },
+      {
+        "id": 6,
+        "title": "Finance Agent Actions",
+        "description": "Cash flow snapshot, monthly P&L summary, overdue alerts",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [2],
+        "details": "Aggregate accounting service endpoints; compute deltas; stub when service absent.",
+        "estimatedHours": 6
+      },
+      {
+        "id": 7,
+        "title": "Customer Agent Actions",
+        "description": "Lapsed customer follow-ups, FAQ answers",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [2],
+        "details": "Segment query + templated outreach suggestions; FAQ retrieval stub.",
+        "estimatedHours": 4
+      },
+      {
+        "id": 8,
+        "title": "Proactive Monitor Scheduler",
+        "description": "Schedules + event hooks (low stock, overdue invoices, churn)",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [3,4,5,6,7],
+        "details": "Temporal cron & signal workflows to trigger agent checks; maintain last-run state.",
+        "estimatedHours": 6
+      },
+      {
+        "id": 9,
+        "title": "Automation Scheduler Engine",
+        "description": "User-defined recurring tasks (daily/weekly/monthly)",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [8],
+        "details": "Persist schedule definitions; Temporal schedule API integration.",
+        "estimatedHours": 6
+      },
+      {
+        "id": 10,
+        "title": "Outcome Tracking & Analytics",
+        "description": "Persist KPIs (revenue increase, stockouts decrease, time saved) & reporting endpoints",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [3,4,5,6,7],
+        "details": "Schema for kpi_events + rollups; endpoints for summary + trend; traces correlation.",
+        "estimatedHours": 6
+      },
+      {
+        "id": 11,
+        "title": "Resilience & Observability Hardening",
+        "description": "Idempotency, retries, circuit breakers, enriched tracing spans",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [1,2],
+        "details": "Add Polly policies to HTTP clients; idempotency key middleware; span attributes per agent action.",
+        "estimatedHours": 5
+      },
+      {
+        "id": 12,
+        "title": "Integration & Load Tests (AI Service)",
+        "description": "Happy/edge paths + p95 latency smoke",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [1,2,3,4,5,6,7,8,9,10],
+        "details": "Test orchestrator→agents flows & latency budget assertions.",
+        "estimatedHours": 4
+      },
+      {
+        "id": 13,
+        "title": "API Documentation & Examples",
+        "description": "Swagger annotations + illustrative requests/responses",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [1,2],
+        "details": "XML comments + example providers; markdown quick-start.",
+        "estimatedHours": 3
+      }
+    ],
+    "metadata": {
+      "version": "0.1.0",
+  "lastUpdated": "2025-08-20T18:30:00Z",
+      "projectName": "AI Service Feature",
+      "totalTasks": 13,
+      "completedTasks": 0,
+      "created": "2025-08-20T12:00:00Z",
+      "description": "Dedicated context for AI Service orchestration and agents",
+  "updated": "2025-08-20T18:30:00Z"
     }
   }
 }

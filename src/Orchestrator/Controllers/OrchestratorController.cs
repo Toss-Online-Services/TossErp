@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Temporalio.Client;
 
 namespace Orchestrator.Controllers;
 
@@ -6,22 +7,38 @@ namespace Orchestrator.Controllers;
 [Route("orchestrator")]
 public class OrchestratorController : ControllerBase
 {
-    private static readonly Dictionary<string, object> _store = new();
+    private readonly Task<TemporalClient> _clientTask;
+
+    public OrchestratorController(Task<TemporalClient> clientTask)
+    {
+        _clientTask = clientTask;
+    }
 
     [HttpPost("execute")]
-    public IActionResult Execute([FromBody] object request)
+    public async Task<IActionResult> Execute([FromBody] ExecuteRequest request)
     {
-        var id = "wf_" + Guid.NewGuid().ToString("N");
-        var entry = new { WorkflowId = id, Status = "started", Request = request, StartedAt = DateTime.UtcNow };
-        _store[id] = entry;
-        return Ok(new { workflowId = id, status = "started", startedAt = DateTime.UtcNow });
+        var client = await _clientTask; // lazy connect
+        var workflowId = request.WorkflowId ?? ($"sample-" + Guid.NewGuid().ToString("N"));
+        var handle = await client.StartWorkflowAsync((TemporalWorker.SampleWorkflow wf) => wf.RunAsync(request.Input ?? ""),
+            new(id: workflowId, taskQueue: "orchestrator-tq"));
+        return Ok(new { workflowId = handle.Id, runId = handle.RunId, status = "started" });
     }
 
     [HttpGet("workflow/{id}")]
-    public IActionResult Get(string id)
+    public async Task<IActionResult> Get(string id)
     {
-        if (_store.TryGetValue(id, out var entry))
-            return Ok(entry);
-        return NotFound();
+        var client = await _clientTask;
+        try
+        {
+            var handle = client.GetWorkflowHandle(id);
+            var desc = await handle.DescribeAsync();
+            return Ok(new { workflowId = id, status = desc.Status.ToString(), runId = desc.RunId });
+        }
+        catch (WorkflowNotFoundException)
+        {
+            return NotFound();
+        }
     }
 }
+
+public record ExecuteRequest(string? WorkflowId, string? Input);

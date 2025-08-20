@@ -1,0 +1,20 @@
+{
+  "openapi": "3.0.1",
+  "info": { "title": "AgentManager", "version": "0.1.0" },
+  "paths": {
+    "/agents/intent": {
+      "post": {
+        "summary": "Send intent to AgentManager",
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "200": { "description": "suggested actions", "content": { "application/json": { "schema": { "type": "object" } } } } }
+      }
+    },
+    "/agents/authorize-action": {
+      "post": {
+        "summary": "Authorize a suggested action",
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "200": { "description": "ack", "content": { "application/json": { "schema": { "type": "object" } } } } }
+      }
+    }
+  }
+}
