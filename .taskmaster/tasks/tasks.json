@@ -509,14 +509,19 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastUpdated": "2024-01-20T10:00:00Z",
+      "lastUpdated": "2025-08-20T12:00:00Z",
       "projectName": "TOSS Stock Module",
       "totalTasks": 20,
       "completedTasks": 0,
       "totalEstimatedHours": 180,
       "created": "2025-08-13T16:37:43.174Z",
       "description": "Tasks for master context",
-      "updated": "2025-08-15T14:40:03.252Z"
+      "updated": "2025-08-20T12:00:00Z",
+      "merge": {
+        "by": "agent",
+        "when": "2025-08-20T12:00:00Z",
+        "notes": "Merged prepared Taskmaster tasks; no new tasks required because existing list already covered the prepared items."
+      }
     }
   },
   "stock-review": {
@@ -1982,6 +1987,161 @@
       "created": "2025-08-18T00:00:00Z",
       "description": "End-to-end MVP across infrastructure, core services, AI, clients, and DevOps",
       "updated": "2025-08-19T15:19:38.043Z"
+    }
+  },
+  "agent-prepared": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Verify Orchestrator & AgentManager scaffolds",
+        "description": "Run and smoke-test the Orchestrator and AgentManager services added by the agent; record endpoints and sample responses.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Start both services locally, call /orchestrator/execute and /agents/intent to validate in-memory behavior and example payloads.",
+        "estimatedHours": 1,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2025-08-20T12:00:00Z",
+        "updatedAt": "2025-08-20T12:00:00Z"
+      },
+      {
+        "id": 2,
+        "title": "Add unit tests for AgentManager & Orchestrator",
+        "description": "Create xUnit unit tests for controller logic and basic in-memory stores.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [1],
+        "details": "Add test projects under tests/ to assert Execute and Intent endpoints return expected shapes; mock external dependencies where needed.",
+        "estimatedHours": 4,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2025-08-20T12:00:00Z",
+        "updatedAt": "2025-08-20T12:00:00Z"
+      },
+      {
+        "id": 3,
+        "title": "Add integration test harness",
+        "description": "Create an integration test that runs both services in-memory (TestServer) and validates a full intent->workflow flow.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [2],
+        "details": "Use Microsoft.AspNetCore.Mvc.Testing WebApplicationFactory to spin both apps and perform a simulated conversation leading to a workflow creation and status check.",
+        "estimatedHours": 6,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2025-08-20T12:00:00Z",
+        "updatedAt": "2025-08-20T12:00:00Z"
+      },
+      {
+        "id": 4,
+        "title": "Generate OpenAPI specs for both services",
+        "description": "Emit complete OpenAPI YAML/JSON for Orchestrator and AgentManager and store under docs/openapi/.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [1],
+        "details": "Enable Swashbuckle/NSwag in each project, export the swagger.json and save checked-in examples.",
+        "estimatedHours": 2,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2025-08-20T12:00:00Z",
+        "updatedAt": "2025-08-20T12:00:00Z"
+      },
+      {
+        "id": 5,
+        "title": "Add GitHub Actions CI workflow",
+        "description": "Add a workflow that builds solution, runs unit and integration tests, and publishes artifacts.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [2,3],
+        "details": "Create .github/workflows/ci.yml to run on push/PR, use matrix for windows/linux, and include dotnet restore/build/test steps.",
+        "estimatedHours": 3,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2025-08-20T12:00:00Z",
+        "updatedAt": "2025-08-20T12:00:00Z"
+      },
+      {
+        "id": 6,
+        "title": "Create OpenAPI-based client contracts",
+        "description": "Generate strongly-typed clients for internal use from the exported OpenAPI specs.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [4],
+        "details": "Use NSwag or OpenAPI Generator to produce C# clients and add them to a shared Contracts package.",
+        "estimatedHours": 2,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2025-08-20T12:00:00Z",
+        "updatedAt": "2025-08-20T12:00:00Z"
+      },
+      {
+        "id": 7,
+        "title": "Scaffold Temporal workflow integration",
+        "description": "Add initial Temporal client scaffolding and a sample durable workflow for long-running orchestrations.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [1],
+        "details": "Add Temporal dependencies and a sample worker project; provide configuration placeholders and README notes for running Temporal locally.",
+        "estimatedHours": 6,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2025-08-20T12:00:00Z",
+        "updatedAt": "2025-08-20T12:00:00Z"
+      },
+      {
+        "id": 8,
+        "title": "Add LLMAdapter stub and config",
+        "description": "Create a minimal LLMAdapter abstraction and config entries to allow swapping providers (OpenAI/Azure/Ollama).",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [1,4],
+        "details": "Implement an interface ILLMAdapter with a test double; wire to AgentManager for intent resolution.",
+        "estimatedHours": 4,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2025-08-20T12:00:00Z",
+        "updatedAt": "2025-08-20T12:00:00Z"
+      },
+      {
+        "id": 9,
+        "title": "Document run & dev steps for agents",
+        "description": "Add short README snippets and PS1 helper scripts to start services locally for contributors.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [1],
+        "details": "Place scripts in scripts/ and update the docs/SERVICE_AS_A_SOFTWARE.md quick-start with exact commands.",
+        "estimatedHours": 1,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2025-08-20T12:00:00Z",
+        "updatedAt": "2025-08-20T12:00:00Z"
+      },
+      {
+        "id": 10,
+        "title": "Taskmaster: verify & sync master list",
+        "description": "Review overlapping tasks between existing `master` and this `agent-prepared` tag, and mark duplicates or consolidate where appropriate.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [],
+        "details": "Create a short report (docs/task-merge-report.md) listing duplicates and suggested canonical IDs for consolidation.",
+        "estimatedHours": 2,
+        "actualHours": null,
+        "assignee": null,
+        "createdAt": "2025-08-20T12:00:00Z",
+        "updatedAt": "2025-08-20T12:00:00Z"
+      }
+    ],
+    "metadata": {
+      "version": "1.0.0",
+      "lastUpdated": "2025-08-20T12:00:00Z",
+      "projectName": "agent-prepared",
+      "totalTasks": 10,
+      "completedTasks": 0,
+      "totalEstimatedHours": 31,
+      "created": "2025-08-20T12:00:00Z",
+      "description": "Non-destructive agent-prepared follow-up tasks",
+      "updated": "2025-08-20T12:00:00Z"
     }
   }
 }
