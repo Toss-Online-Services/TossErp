@@ -6,6 +6,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" />
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Crm.Application/Crm.Application.csproj" />
+    <ProjectReference Include="../Crm.Infrastructure/Crm.Infrastructure.csproj" />
   </ItemGroup>
 </Project>
 
