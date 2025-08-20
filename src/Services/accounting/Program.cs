@@ -26,6 +26,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<TossErp.Accounting.Application.Services.PostingRulesService>();
 builder.Services.AddScoped<TossErp.Accounting.Application.Services.StockValuationService>();
 builder.Services.AddScoped<IReportingService, TossErp.Accounting.Application.Services.ReportingService>();
+builder.Services.AddScoped<IReconciliationService, TossErp.Accounting.Application.Services.ReconciliationService>();
 
 // Add CORS for web UI
 builder.Services.AddCors(options =>
