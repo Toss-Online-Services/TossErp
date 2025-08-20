@@ -21,6 +21,27 @@ jobs:
         run: |
           dotnet build src/eShop.sln -c Release
 
+      - name: Run .NET Tests
+        run: |
+          dotnet test src/eShop.sln -c Release --no-build --logger "trx;LogFileName=tests.trx"
+
+      - name: Export OpenAPI Specs
+        run: pwsh -File scripts/export-openapi.ps1
+        shell: pwsh
+
+      - name: Upload OpenAPI Specs
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-specs
+          path: docs/openapi/*.json
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-test-results
+          path: '**/TestResults/*.trx'
+
       - name: Node setup
         uses: actions/setup-node@v4
         with:

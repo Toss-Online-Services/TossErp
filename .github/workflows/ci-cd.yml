@@ -38,7 +38,25 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+        run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --logger "trx;LogFileName=tests.trx"
+
+      - name: Export OpenAPI Specs (AgentManager & Orchestrator)
+        run: |
+          pwsh -File scripts/export-openapi.ps1 -Verbose
+        shell: pwsh
+
+      - name: Upload OpenAPI Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-specs
+          path: docs/openapi/*.json
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-test-results
+          path: '**/TestResults/*.trx'
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4

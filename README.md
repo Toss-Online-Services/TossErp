@@ -268,3 +268,14 @@ For support and questions:
 - [ ] Multi-store support
 - [ ] Advanced security features
 - [ ] Cloud backup and restore 
+
+## OpenAPI Specification Export
+
+The backend AI-related services expose Swagger/OpenAPI definitions. To export and commit the specs:
+
+```powershell
+dotnet tool install --global Swashbuckle.AspNetCore.Cli   # once
+pwsh ./scripts/export-openapi.ps1 -Configuration Release
+```
+
+Outputs are written to `docs/openapi/agentmanager-v1.json` and `docs/openapi/orchestrator-v1.json` for client generation and documentation.

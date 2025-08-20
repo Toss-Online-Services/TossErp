@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/RicoSuter/NSwag/master/src/NSwag.Commands/configuration.schema.json",
+  "runtime": "Net70",
+  "documentGenerator": {
+    "fromSwagger": {
+      "url": "http://localhost:5001/swagger/v1/swagger.json",
+      "output": null
+    }
+  },
+  "codeGenerators": {
+    "csharp": {
+      "className": "AgentManagerApiClient",
+      "namespace": "Generated.Clients.AgentManager",
+      "generateClientInterfaces": true,
+      "generateDtoTypes": true,
+      "injectHttpClient": true,
+      "useBaseUrl": true,
+      "output": "Generated/AgentManagerClient.cs"
+    },
+    "typescript": {
+      "template": "fetch",
+      "className": "AgentManagerApiClient",
+      "moduleName": "agent-manager-client",
+      "typeScriptVersion": 5.0,
+      "output": "Generated/agent-manager-client.ts"
+    }
+  }
+}
