@@ -7,20 +7,7 @@
 </template>
 
 <script setup lang="ts">
-// App-level setup
-useHead({
-  title: 'TOSS ERP - Stock Management',
-  meta: [
-    { name: 'description', content: 'Enterprise Stock Management System' },
-    { name: 'theme-color', content: '#2563eb' }
-  ]
-})
-
-// Initialize color mode
-const colorMode = useColorMode()
-colorMode.preference = 'system'
-
-
+// App-level setup - simplified to avoid import issues
 </script>
 
 <style>

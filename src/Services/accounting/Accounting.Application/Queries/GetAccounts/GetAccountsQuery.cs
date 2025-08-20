@@ -13,3 +13,4 @@ public class GetAccountsQuery : IRequest<IEnumerable<AccountDto>>
     public bool? IsActive { get; init; }
 }
 
+

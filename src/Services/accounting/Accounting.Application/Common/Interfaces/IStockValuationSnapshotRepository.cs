@@ -20,3 +20,4 @@ public interface IStockValuationSnapshotRepository
     Task DeleteAsync(StockValuationSnapshot snapshot, CancellationToken cancellationToken = default);
 }
 
+

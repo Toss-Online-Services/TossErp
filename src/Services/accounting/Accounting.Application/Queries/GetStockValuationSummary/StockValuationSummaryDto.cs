@@ -17,3 +17,4 @@ public class StockValuationSummaryDto
     public Dictionary<string, decimal> CategoryValues { get; init; } = new();
 }
 
+

@@ -13,12 +13,14 @@
     "paths": {
       "@/*": ["./*"],
       "~/*": ["./*"]
-    }
+    },
+    "types": ["vitest/globals", "jsdom"]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "**/*.vue"
+    "**/*.vue",
+    "vitest.setup.ts"
   ],
   "exclude": [
     "node_modules",

@@ -11,3 +11,4 @@ public class GetStockValuationSummaryQuery : IRequest<StockValuationSummaryDto>
     public DateTime AsOfDate { get; init; }
 }
 
+

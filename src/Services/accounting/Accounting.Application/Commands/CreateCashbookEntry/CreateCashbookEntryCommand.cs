@@ -20,3 +20,4 @@ public class CreateCashbookEntryCommand : IRequest<Guid>
     public string? RelatedEntityType { get; init; }
 }
 
+

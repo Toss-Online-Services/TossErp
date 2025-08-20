@@ -33,3 +33,4 @@ public interface IPostingRulesService
     Task HandleCashPaymentAsync(decimal amount, string reference, string description, Guid accountId, string tenantId, CancellationToken cancellationToken = default);
 }
 
+

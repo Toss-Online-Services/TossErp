@@ -17,3 +17,4 @@ public class CreateAccountCommand : IRequest<Guid>
     public string Currency { get; init; } = "ZAR";
 }
 
+

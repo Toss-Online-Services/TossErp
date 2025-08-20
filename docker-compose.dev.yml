@@ -1,67 +1,20 @@
 version: '3.8'
 
 services:
-  # API Gateway
-  gateway:
-    build:
-      context: ./src/Gateway
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-    depends_on:
-      - stock-api
-      - stock-postgres
-      - stock-redis
-      - stock-rabbitmq
-    networks:
-      - toss-network
-    volumes:
-      - ./src/Gateway:/app
-      - /app/bin
-      - /app/obj
-
-  # Stock API Service
-  stock-api:
-    build:
-      context: ./src/Services/Stock/Stock.API
-      dockerfile: Dockerfile
-    ports:
-      - "5001:80"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Host=stock-postgres;Database=tosserp_stock;Username=postgres;Password=postgres123
-      - EventBus__ConnectionString=amqp://guest:guest@stock-rabbitmq:5672
-      - Redis__ConnectionString=stock-redis:6379
-      - OpenAI__ApiKey=${OPENAI_API_KEY:-}
-    depends_on:
-      - stock-postgres
-      - stock-redis
-      - stock-rabbitmq
-    networks:
-      - toss-network
-    volumes:
-      - ./src/Services/Stock/Stock.API:/app
-      - /app/bin
-      - /app/obj
-
   # PostgreSQL Database
   stock-postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
+    container_name: tosserp-stock-postgres-dev
+    environment:
+      POSTGRES_DB: tosserp_stock
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_DB=tosserp_stock
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres123
     volumes:
-      - stock-postgres-data:/var/lib/postgresql/data
-      - ./src/Services/Stock/Stock.Infrastructure/Data/Scripts:/docker-entrypoint-initdb.d
+      - stock-postgres-data-dev:/var/lib/postgresql/data
     networks:
-      - toss-network
+      - toss-network-dev
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -71,12 +24,13 @@ services:
   # Redis Cache
   stock-redis:
     image: redis:7-alpine
+    container_name: tosserp-stock-redis-dev
     ports:
       - "6379:6379"
     volumes:
-      - stock-redis-data:/data
+      - stock-redis-data-dev:/data
     networks:
-      - toss-network
+      - toss-network-dev
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -86,27 +40,67 @@ services:
   # RabbitMQ Message Broker
   stock-rabbitmq:
     image: rabbitmq:3-management-alpine
+    container_name: tosserp-stock-rabbitmq-dev
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     ports:
       - "5672:5672"
       - "15672:15672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
     volumes:
-      - stock-rabbitmq-data:/var/lib/rabbitmq
+      - stock-rabbitmq-data-dev:/var/lib/rabbitmq
     networks:
-      - toss-network
+      - toss-network-dev
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-volumes:
-  stock-postgres-data:
-  stock-redis-data:
-  stock-rabbitmq-data:
+  # API Gateway
+  gateway:
+    build:
+      context: ./src/Gateway
+      dockerfile: Dockerfile
+    container_name: tosserp-gateway-dev
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      - stock-postgres
+      - stock-redis
+      - stock-rabbitmq
+    networks:
+      - toss-network-dev
+
+  # Web Client (Nuxt.js) - Development Mode
+  web-client:
+    build:
+      context: ./src/clients/web
+      dockerfile: Dockerfile.dev
+    container_name: tosserp-web-client-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+    volumes:
+      - ./src/clients/web:/app
+      - /app/node_modules
+    networks:
+      - toss-network-dev
+    depends_on:
+      - gateway
+    command: npm run dev
 
 networks:
-  toss-network:
+  toss-network-dev:
     driver: bridge
+
+volumes:
+  stock-postgres-data-dev:
+  stock-redis-data-dev:
+  stock-rabbitmq-data-dev:

@@ -109,3 +109,4 @@ public class CashbookEntryFilters
     public string? Description { get; init; }
 }
 
+

@@ -33,7 +33,7 @@ export enum ErrorType {
 }
 
 // Create application errors
-export function createError(
+export function createAppError(
   message: string,
   code?: string,
   details?: any,
@@ -50,7 +50,7 @@ export function createError(
 
 // Create validation error
 export function createValidationError(message: string, field?: string): AppError {
-  return createError(
+  return createAppError(
     message,
     ErrorType.VALIDATION,
     { field },
@@ -60,7 +60,7 @@ export function createValidationError(message: string, field?: string): AppError
 
 // Create network error
 export function createNetworkError(message: string, details?: any): AppError {
-  return createError(
+  return createAppError(
     message,
     ErrorType.NETWORK,
     details,
@@ -70,7 +70,7 @@ export function createNetworkError(message: string, details?: any): AppError {
 
 // Create authentication error
 export function createAuthError(message: string): AppError {
-  return createError(
+  return createAppError(
     message,
     ErrorType.AUTHENTICATION,
     undefined,
@@ -80,7 +80,7 @@ export function createAuthError(message: string): AppError {
 
 // Create server error
 export function createServerError(message: string, details?: any): AppError {
-  return createError(
+  return createAppError(
     message,
     ErrorType.SERVER_ERROR,
     details,
@@ -104,7 +104,7 @@ export function handleApiError(error: any): AppError {
       return createNetworkError('Request timed out. Please try again.')
     }
     
-    return createError(error.message, ErrorType.UNKNOWN, undefined, true)
+    return createAppError(error.message, ErrorType.UNKNOWN, undefined, true)
   }
   
   // HTTP response errors
@@ -115,13 +115,13 @@ export function handleApiError(error: any): AppError {
       case 401:
         return createAuthError('Authentication required. Please log in again.')
       case 403:
-        return createError('Access denied. You do not have permission to perform this action.', ErrorType.AUTHORIZATION)
+        return createAppError('Access denied. You do not have permission to perform this action.', ErrorType.AUTHORIZATION)
       case 404:
-        return createError('The requested resource was not found.', ErrorType.NOT_FOUND)
+        return createAppError('The requested resource was not found.', ErrorType.NOT_FOUND)
       case 422:
         return createValidationError(error.message || 'Validation failed')
       case 429:
-        return createError('Too many requests. Please try again later.', ErrorType.NETWORK)
+        return createAppError('Too many requests. Please try again later.', ErrorType.NETWORK)
       case 500:
         return createServerError('Internal server error. Please try again later.')
       case 502:
@@ -129,7 +129,7 @@ export function handleApiError(error: any): AppError {
       case 504:
         return createNetworkError('Service temporarily unavailable. Please try again later.')
       default:
-        return createError(
+        return createAppError(
           error.message || 'An unexpected error occurred',
           ErrorType.UNKNOWN,
           error
@@ -138,7 +138,7 @@ export function handleApiError(error: any): AppError {
   }
   
   // Unknown error
-  return createError(
+  return createAppError(
     'An unexpected error occurred. Please try again.',
     ErrorType.UNKNOWN,
     error,
@@ -258,7 +258,7 @@ export function showSuccessToast(message: string): void {
 // Global error handler
 export function setupGlobalErrorHandler(): void {
   window.addEventListener('error', (event) => {
-    const error = createError(
+    const error = createAppError(
       event.message || 'JavaScript error occurred',
       'JS_ERROR',
       {
@@ -274,7 +274,7 @@ export function setupGlobalErrorHandler(): void {
   })
   
   window.addEventListener('unhandledrejection', (event) => {
-    const error = createError(
+    const error = createAppError(
       'Unhandled promise rejection',
       'PROMISE_REJECTION',
       {

@@ -11,3 +11,4 @@ public class GetCashbookSummaryQuery : IRequest<CashbookSummaryResponse>
     public DateTime AsOfDate { get; init; } = DateTime.Today;
 }
 
+

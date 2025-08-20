@@ -22,3 +22,4 @@ public class GetCashbookEntriesQuery : IRequest<CashbookEntriesResponse>
     public string? SortDirection { get; init; } = "asc";
 }
 
+
