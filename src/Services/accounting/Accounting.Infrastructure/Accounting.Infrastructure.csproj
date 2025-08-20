@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Accounting.Domain\Accounting.Domain.csproj" />
-    <ProjectReference Include="..\Accounting.Application\Accounting.Application.csproj" />
   </ItemGroup>
 
 </Project>

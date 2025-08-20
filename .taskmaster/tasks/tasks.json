@@ -321,7 +321,7 @@
         "id": 10,
         "title": "Build Nuxt 3 Web Stock UI",
         "description": "Create web interface for stock management with advanced features",
-        "status": "in-progress",
+  "status": "done",
         "priority": "high",
         "dependencies": [
           5
@@ -1212,15 +1212,15 @@
         "id": 7,
         "title": "Accounting (Cash-based MVP)",
         "description": "Cashbook, simple ledgers, P&L summary; integrate with Sales & Stock valuation",
-        "status": "in-progress",
+  "status": "done",
         "priority": "high",
         "dependencies": [
           1,
           5,
           6
         ],
-        "complexity": 4,
-        "details": "Minimal but coherent cash accounting for MVP KPIs",
+  "complexity": 4,
+  "details": "Minimal but coherent cash accounting for MVP KPIs.\n\nUpdate 2025-08-20: Reconciliation helpers (auto one-to-one match with amount/date tolerances; manual reconcile/unreconcile) implemented plus standardized monetary rounding via RoundMoney() extension (AwayFromZero, 2dp) applied across reporting & reconciliation. Central package management and layering cleanup performed.",
         "subtasks": [
           {
             "id": 1,
@@ -1249,13 +1249,13 @@
           {
             "id": 5,
             "title": "Reports: P&L summary, cash position, month-over-month",
-            "status": "in-progress",
+            "status": "done",
             "complexity": 2
           },
           {
             "id": 6,
             "title": "Reconciliation helpers + rounding rules",
-            "status": "pending",
+            "status": "done",
             "complexity": 2
           }
         ],
@@ -2262,10 +2262,10 @@
         "id": 11,
         "title": "Resilience & Observability Hardening",
         "description": "Idempotency, retries, circuit breakers, enriched tracing spans",
-        "status": "pending",
+        "status": "in-progress",
         "priority": "medium",
         "dependencies": [1,2],
-        "details": "Add Polly policies to HTTP clients; idempotency key middleware; span attributes per agent action.",
+        "details": "Implemented: Idempotency middleware (POST replay safety); Added custom resilience pipeline (retry x3 exponential + jitter, circuit breaker 50%/30s window/5s break, per-attempt timeout 10s, total client timeout 30s) for OpenAI HttpClient with telemetry logging & Activity tags. Pending: enrich spans with retry/circuit breaker counters, add metrics, integration tests, ProblemDetails mapping.",
         "estimatedHours": 5
       },
       {
