@@ -265,10 +265,6 @@ builder.Services.AddHealthChecks()
 // HTTP client for external services
 builder.Services.AddHttpClient();
 
-// Background services
-builder.Services.AddHostedService<ProjectStatusUpdateService>();
-builder.Services.AddHostedService<TimeEntryReminderService>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
