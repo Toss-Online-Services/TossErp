@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Financial.Infrastructure.Data;
+using Financial.Application;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,9 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.JsonSerializerOptions.WriteIndented = true;
     });
+
+// Add application services (includes MediatR, FluentValidation, AutoMapper)
+builder.Services.AddFinancialApplication();
 
 // Add database context
 var connectionString = builder.Configuration.GetConnectionString("TossErpDb") 
