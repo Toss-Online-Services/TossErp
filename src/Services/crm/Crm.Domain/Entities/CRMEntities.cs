@@ -22,7 +22,12 @@ public class Contact : Entity
     public DateTime CreatedAt { get; private set; }
     public DateTime? LastContactedAt { get; private set; }
 
-    private Contact() { } // EF Core
+    private Contact() 
+    {
+        FirstName = null!;
+        LastName = null!;
+        Email = null!;
+    } // EF Core
 
     public Contact(
         Guid id,
@@ -116,7 +121,11 @@ public class Activity : Entity
     public string? Outcome { get; private set; }
     public string? NextAction { get; private set; }
 
-    private Activity() { } // EF Core
+    private Activity() 
+    {
+        Subject = null!;
+        CreatedBy = null!;
+    } // EF Core
 
     public Activity(
         Guid id,
@@ -209,6 +218,9 @@ public class Note : Entity
     private Note() 
     { 
         Tags = new List<string>();
+        Title = null!;
+        Content = null!;
+        CreatedBy = null!;
     } // EF Core
 
     public Note(
@@ -286,6 +298,8 @@ public class Communication : Entity
     private Communication() 
     { 
         Attachments = new List<string>();
+        Subject = null!;
+        CreatedBy = null!;
     } // EF Core
 
     public Communication(
@@ -361,7 +375,13 @@ public class Document : Entity
     public bool IsActive { get; private set; }
     public string? Tags { get; private set; }
 
-    private Document() { } // EF Core
+    private Document() 
+    {
+        FileName = null!;
+        FilePath = null!;
+        ContentType = null!;
+        UploadedBy = null!;
+    } // EF Core
 
     public Document(
         Guid id,

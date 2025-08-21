@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace TossErp.CRM.Domain.SeedWork;
+namespace TossErp.Accounts.Domain.SeedWork;
 
 public interface IAggregateRoot
 {

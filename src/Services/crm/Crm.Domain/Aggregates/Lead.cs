@@ -64,6 +64,12 @@ public class Lead : AggregateRoot
         _activities = new List<Activity>();
         _notes = new List<Note>();
         _communications = new List<Communication>();
+        FirstName = null!;
+        LastName = null!;
+        Company = null!;
+        Email = null!;
+        Score = null!;
+        CreatedBy = null!;
     } // EF Core
 
     public Lead(

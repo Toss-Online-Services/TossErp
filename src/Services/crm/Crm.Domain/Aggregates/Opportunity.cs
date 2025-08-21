@@ -70,6 +70,9 @@ public class Opportunity : AggregateRoot
         _notes = new List<Note>();
         _communications = new List<Communication>();
         _documents = new List<Document>();
+        Name = null!;
+        Value = null!;
+        CreatedBy = null!;
     } // EF Core
 
     public Opportunity(
