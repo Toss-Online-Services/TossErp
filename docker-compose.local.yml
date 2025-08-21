@@ -1,0 +1,182 @@
+version: '3.8'
+
+# TOSS ERP Local Development Environment
+# Complete setup for local development with hot-reload and admin tools
+
+services:
+  # Infrastructure Services
+  postgres:
+    image: postgres:16-alpine
+    container_name: tosserp-postgres-local
+    environment:
+      POSTGRES_DB: tosserp_main
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_MULTIPLE_DATABASES: tosserp_identity,tosserp_stock,tosserp_crm,tosserp_collaboration,tosserp_finance
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-local-data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql
+    networks:
+      - toss-local-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: tosserp-redis-local
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-local-data:/data
+    networks:
+      - toss-local-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: tosserp-rabbitmq-local
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: /
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit log_levels [{connection,error}]"
+    ports:
+      - "5672:5672"    # AMQP port
+      - "15672:15672"  # Management UI
+    volumes:
+      - rabbitmq-local-data:/var/lib/rabbitmq
+      - ./scripts/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./scripts/rabbitmq-definitions.json:/etc/rabbitmq/definitions.json
+    networks:
+      - toss-local-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Development Database Admin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: tosserp-pgadmin-local
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@tosserp.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 20
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-local-data:/var/lib/pgadmin
+    networks:
+      - toss-local-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Redis Commander (Redis Web UI)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: tosserp-redis-commander-local
+    environment:
+      REDIS_HOSTS: local:redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      HTTP_USER: admin
+      HTTP_PASSWORD: admin123
+    ports:
+      - "8081:8081"
+    networks:
+      - toss-local-network
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # Mailhog (Email testing in development)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: tosserp-mailhog-local
+    ports:
+      - "1025:1025"   # SMTP server
+      - "8025:8025"   # Web UI
+    networks:
+      - toss-local-network
+
+  # Jaeger (Distributed Tracing)
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: tosserp-jaeger-local
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+    ports:
+      - "14268:14268"  # Jaeger collector HTTP
+      - "16686:16686"  # Jaeger UI
+      - "4317:4317"    # OTLP gRPC receiver
+      - "4318:4318"    # OTLP HTTP receiver
+    networks:
+      - toss-local-network
+
+  # Seq (Structured Logging)
+  seq:
+    image: datalust/seq:latest
+    container_name: tosserp-seq-local
+    environment:
+      ACCEPT_EULA: Y
+      SEQ_FIRSTRUN_ADMINPASSWORDHASH: # Leave empty for no password in dev
+    ports:
+      - "5341:80"      # Seq UI
+      - "5342:5341"    # Seq ingestion
+    volumes:
+      - seq-local-data:/data
+    networks:
+      - toss-local-network
+
+  # MinIO (S3-compatible object storage for file uploads)
+  minio:
+    image: minio/minio:latest
+    container_name: tosserp-minio-local
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+    ports:
+      - "9000:9000"    # MinIO API
+      - "9001:9001"    # MinIO Console
+    volumes:
+      - minio-local-data:/data
+    networks:
+      - toss-local-network
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres-local-data:
+    driver: local
+  redis-local-data:
+    driver: local
+  rabbitmq-local-data:
+    driver: local
+  pgadmin-local-data:
+    driver: local
+  seq-local-data:
+    driver: local
+  minio-local-data:
+    driver: local
+
+networks:
+  toss-local-network:
+    driver: bridge
+    name: toss-local-network

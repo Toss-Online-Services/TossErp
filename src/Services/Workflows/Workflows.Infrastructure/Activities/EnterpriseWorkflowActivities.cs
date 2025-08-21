@@ -818,7 +818,13 @@ public class WorkflowTemplateService : IWorkflowTemplateService
                         ["action"] = "ProcessPayment"
                     }
                 }
-            ]
+            ],
+            Transitions = new List<WorkflowTransition>
+            {
+                new WorkflowTransition { From = "validate-invoice", To = "manager-approval" },
+                new WorkflowTransition { From = "manager-approval", To = "finance-approval" },
+                new WorkflowTransition { From = "finance-approval", To = "process-payment" }
+            }
         };
     }
 
@@ -875,7 +881,13 @@ public class WorkflowTemplateService : IWorkflowTemplateService
                         ["approver"] = "{document.owner}"
                     }
                 }
-            ]
+            ],
+            Transitions = new List<WorkflowTransition>
+            {
+                new WorkflowTransition { From = "assign-reviewers", To = "collect-reviews" },
+                new WorkflowTransition { From = "collect-reviews", To = "consolidate-feedback" },
+                new WorkflowTransition { From = "consolidate-feedback", To = "final-approval" }
+            }
         };
     }
 
