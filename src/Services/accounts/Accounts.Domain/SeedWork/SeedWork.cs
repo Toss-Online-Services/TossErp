@@ -12,7 +12,29 @@ public interface IAggregateRoot
 
 public abstract class AggregateRoot : Entity, IAggregateRoot
 {
-    // Inherits from Entity which already has domain events implementation
+    // Multi-tenant support
+    public string TenantId { get; protected set; } = string.Empty;
+
+    protected AggregateRoot() : base() { }
+
+    protected AggregateRoot(Guid id, string tenantId) : base()
+    {
+        Id = id;
+        TenantId = tenantId ?? throw new ArgumentNullException(nameof(tenantId));
+        CreatedAt = DateTime.UtcNow;
+    }
+
+    // Audit properties
+    public DateTime CreatedAt { get; protected set; }
+    public string? CreatedBy { get; protected set; }
+    public DateTime? UpdatedAt { get; protected set; }
+    public string? UpdatedBy { get; protected set; }
+
+    protected void MarkAsUpdated(string? updatedBy = null)
+    {
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = updatedBy;
+    }
 }
 
 public interface IDomainEvent : INotification
@@ -21,7 +43,20 @@ public interface IDomainEvent : INotification
     DateTime OccurredOn { get; }
 }
 
-public abstract class Entity
+public interface ITenantEntity
+{
+    string TenantId { get; }
+}
+
+public interface IAuditableEntity
+{
+    DateTime CreatedAt { get; }
+    string? CreatedBy { get; }
+    DateTime? UpdatedAt { get; }
+    string? UpdatedBy { get; }
+}
+
+public abstract class Entity : ITenantEntity, IAuditableEntity
 {
     private int? _requestedHashCode;
     private Guid _id;
@@ -32,6 +67,27 @@ public abstract class Entity
     {
         get => _id;
         protected set => _id = value;
+    }
+
+    // Multi-tenant support
+    public string TenantId { get; protected set; } = string.Empty;
+
+    // Audit properties
+    public DateTime CreatedAt { get; protected set; }
+    public string? CreatedBy { get; protected set; }
+    public DateTime? UpdatedAt { get; protected set; }
+    public string? UpdatedBy { get; protected set; }
+
+    protected Entity()
+    {
+        CreatedAt = DateTime.UtcNow;
+    }
+
+    protected Entity(Guid id, string tenantId)
+    {
+        Id = id;
+        TenantId = tenantId ?? throw new ArgumentNullException(nameof(tenantId));
+        CreatedAt = DateTime.UtcNow;
     }
 
     public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly() ?? new List<INotification>().AsReadOnly();
@@ -52,9 +108,10 @@ public abstract class Entity
         _domainEvents?.Clear();
     }
 
-    protected void MarkAsModified()
+    protected void MarkAsUpdated(string? updatedBy = null)
     {
-        // This can be used by EF Core change tracking or other persistence mechanisms
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = updatedBy;
     }
 
     public bool IsTransient()
@@ -150,7 +207,7 @@ public abstract class ValueObject
         return EqualOperator(one!, two!);
     }
 
-    public static bool operator !=(ValueObject? one, ValueObject? two)
+    public static bool operator !=(ValueObject? two, ValueObject? one)
     {
         return NotEqualOperator(one!, two!);
     }

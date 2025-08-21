@@ -71,12 +71,12 @@ public interface ITimeEntryRepository : IRepository<TimeEntry>
 /// <summary>
 /// Repository interface for Resource entities
 /// </summary>
-public interface IResourceRepository : IRepository<Resource>
+public interface IResourceRepository : IRepository<ResourceAllocation>
 {
-    Task<IEnumerable<Resource>> GetByProjectIdAsync(Guid projectId, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Resource>> GetByTypeAsync(ResourceType type, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Resource>> GetAvailableResourcesAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
-    Task<PaginatedResult<Resource>> GetResourcesAsync(
+    Task<IEnumerable<ResourceAllocation>> GetByProjectIdAsync(Guid projectId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ResourceAllocation>> GetByTypeAsync(ResourceType type, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ResourceAllocation>> GetAvailableResourcesAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
+    Task<PaginatedResult<ResourceAllocation>> GetResourcesAsync(
         int pageNumber, 
         int pageSize, 
         string? searchTerm = null,
@@ -88,12 +88,12 @@ public interface IResourceRepository : IRepository<Resource>
 /// <summary>
 /// Repository interface for Milestone entities
 /// </summary>
-public interface IMilestoneRepository : IRepository<Milestone>
+public interface IMilestoneRepository : IRepository<ProjectMilestone>
 {
-    Task<IEnumerable<Milestone>> GetByProjectIdAsync(Guid projectId, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Milestone>> GetUpcomingMilestonesAsync(DateOnly? beforeDate = null, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Milestone>> GetOverdueMilestonesAsync(CancellationToken cancellationToken = default);
-    Task<PaginatedResult<Milestone>> GetMilestonesAsync(
+    Task<IEnumerable<ProjectMilestone>> GetByProjectIdAsync(Guid projectId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ProjectMilestone>> GetUpcomingMilestonesAsync(DateOnly? beforeDate = null, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ProjectMilestone>> GetOverdueMilestonesAsync(CancellationToken cancellationToken = default);
+    Task<PaginatedResult<ProjectMilestone>> GetMilestonesAsync(
         int pageNumber, 
         int pageSize, 
         Guid? projectId = null,
