@@ -11,9 +11,10 @@ public enum LeadStatus
     Interested = 4,
     Qualified = 5,
     Unqualified = 6,
-    Lost = 7,
-    Converted = 8,
-    DoNotContact = 9
+    Disqualified = 7,
+    Lost = 8,
+    Converted = 9,
+    DoNotContact = 10
 }
 
 /// <summary>
@@ -30,7 +31,8 @@ public enum LeadSource
     TradeShow = 7,
     ColdCall = 8,
     Partner = 9,
-    Other = 10
+    DirectMail = 10,
+    Other = 11
 }
 
 /// <summary>
@@ -124,7 +126,7 @@ public enum ActivityPriority
 /// </summary>
 public enum ActivityStatus
 {
-    Planned = 1,
+    Scheduled = 1,
     InProgress = 2,
     Completed = 3,
     Cancelled = 4,
@@ -206,4 +208,109 @@ public enum SubscriptionStatus
     Expired = 5,
     Suspended = 6,
     Paused = 7
+}
+
+/// <summary>
+/// Customer tier classification for SaaS business model
+/// </summary>
+public enum CustomerTier
+{
+    Basic = 1,
+    Standard = 2,
+    Premium = 3,
+    Enterprise = 4
+}
+
+/// <summary>
+/// Contact type classification
+/// </summary>
+public enum ContactType
+{
+    General = 1,
+    Primary = 2,
+    Secondary = 3,
+    Technical = 4,
+    Billing = 5,
+    Support = 6
+}
+
+/// <summary>
+/// Note type classification
+/// </summary>
+public enum NoteType
+{
+    General = 1,
+    Meeting = 2,
+    Call = 3,
+    Follow = 4,
+    Important = 5,
+    Internal = 6
+}
+
+/// <summary>
+/// Communication type
+/// </summary>
+public enum CommunicationType
+{
+    Email = 1,
+    Phone = 2,
+    SMS = 3,
+    Meeting = 4,
+    VideoCall = 5,
+    Chat = 6,
+    SocialMedia = 7,
+    Letter = 8
+}
+
+/// <summary>
+/// Communication status
+/// </summary>
+public enum CommunicationStatus
+{
+    Completed = 1,
+    Failed = 2,
+    Pending = 3,
+    Cancelled = 4
+}
+
+/// <summary>
+/// Document type classification
+/// </summary>
+public enum DocumentType
+{
+    General = 1,
+    Contract = 2,
+    Proposal = 3,
+    Invoice = 4,
+    Receipt = 5,
+    Agreement = 6,
+    Specification = 7,
+    Presentation = 8,
+    Brochure = 9,
+    Other = 10
+}
+
+/// <summary>
+/// Opportunity type classification
+/// </summary>
+public enum OpportunityType
+{
+    NewBusiness = 1,
+    Existing = 2,
+    Renewal = 3,
+    Upgrade = 4,
+    CrossSell = 5,
+    Upsell = 6
+}
+
+/// <summary>
+/// Campaign response type
+/// </summary>
+public enum CampaignResponseType
+{
+    Opened = 1,
+    Clicked = 2,
+    Responded = 3,
+    Converted = 4,
+    Unsubscribed = 5
 }

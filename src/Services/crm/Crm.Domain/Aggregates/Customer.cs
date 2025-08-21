@@ -3,6 +3,7 @@ using TossErp.CRM.Domain.Enums;
 using TossErp.CRM.Domain.Events;
 using TossErp.CRM.Domain.SeedWork;
 using TossErp.CRM.Domain.ValueObjects;
+using CustomerStatus = TossErp.CRM.Domain.Enums.CustomerStatus;
 
 namespace TossErp.CRM.Domain.Aggregates;
 
@@ -69,6 +70,10 @@ public class Customer : AggregateRoot
         _notes = new List<Note>();
         _communications = new List<Communication>();
         _documents = new List<Document>();
+        CustomerNumber = null!;
+        Name = null!;
+        CreatedBy = null!;
+        CustomerScore = null!;
     } // EF Core
 
     public Customer(
@@ -472,7 +477,7 @@ public class Customer : AggregateRoot
 
     public decimal GetLifetimeValue()
     {
-        if (!MonthlyRecurringRevenue.HasValue || !SubscriptionStartDate.HasValue)
+        if (MonthlyRecurringRevenue == null || !SubscriptionStartDate.HasValue)
             return 0;
 
         var monthsActive = SubscriptionEndDate.HasValue ? 

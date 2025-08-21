@@ -1,6 +1,7 @@
 using MediatR;
 using TossErp.CRM.Domain.Enums;
 using TossErp.CRM.Domain.ValueObjects;
+using CustomerStatus = TossErp.CRM.Domain.Enums.CustomerStatus;
 
 namespace TossErp.CRM.Domain.Events;
 
