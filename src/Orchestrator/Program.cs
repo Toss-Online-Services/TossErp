@@ -6,6 +6,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using Shared.Infrastructure.Idempotency;
+using Orchestrator.Tenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,14 +34,17 @@ builder.Services.AddOpenTelemetry()
         .AddConsoleExporter());
 
 // Temporal client (lazy) registration
-builder.Services.AddSingleton(async sp =>
+builder.Services.AddSingleton<Func<Task<Temporalio.Client.TemporalClient>>>(sp =>
 {
-    var target = Environment.GetEnvironmentVariable("TEMPORAL_TARGET") ?? "localhost:7233";
-    var ns = Environment.GetEnvironmentVariable("TEMPORAL_NAMESPACE") ?? "default";
-    return await Temporalio.Client.TemporalClient.ConnectAsync(new Temporalio.Client.TemporalClientConnectOptions(target)
+    return async () =>
     {
-        Namespace = ns
-    });
+        var target = Environment.GetEnvironmentVariable("TEMPORAL_TARGET") ?? "localhost:7233";
+        var ns = Environment.GetEnvironmentVariable("TEMPORAL_NAMESPACE") ?? "default";
+        return await Temporalio.Client.TemporalClient.ConnectAsync(new Temporalio.Client.TemporalClientConnectOptions(target)
+        {
+            Namespace = ns
+        });
+    };
 });
 
 var app = builder.Build();
