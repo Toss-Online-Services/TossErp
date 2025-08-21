@@ -1,0 +1,23 @@
+version: '3.7'
+services:
+  temporal:
+    image: temporalio/auto-setup:1.20.0
+    container_name: temporal
+    ports:
+      - '7233:7233'
+    environment:
+      - DB=postgres
+      - POSTGRES_USER=temporal
+      - POSTGRES_PASSWORD=temporal
+      - POSTGRES_DB=temporal
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: temporal
+      POSTGRES_DB: temporal
+    volumes:
+      - temporal-db:/var/lib/postgresql/data
+
+volumes:
+  temporal-db:
