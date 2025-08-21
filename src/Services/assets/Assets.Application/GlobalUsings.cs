@@ -1,0 +1,9 @@
+global using MediatR;
+global using Microsoft.Extensions.Logging;
+global using TossErp.Assets.Domain.Aggregates;
+global using TossErp.Assets.Domain.Entities;
+global using TossErp.Assets.Domain.Enums;
+global using TossErp.Assets.Domain.Events;
+global using TossErp.Assets.Domain.ValueObjects;
+global using TossErp.Assets.Application.Common.Interfaces;
+global using TossErp.Assets.Application.DTOs;
