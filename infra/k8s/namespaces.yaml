@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: toss-ai
+  labels:
+    name: toss-ai
+    purpose: ai-services
+    security-policy: restricted
+    network-policy: enabled
+    monitoring: enabled
+  annotations:
+    description: "TOSS AI Services - Multi-tenant AI platform"
+    owner: "platform-team"
+    cost-center: "ai-infrastructure"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: toss-data
+  labels:
+    name: toss-data
+    purpose: data-services
+    security-policy: restricted
+    network-policy: enabled
+    monitoring: enabled
+  annotations:
+    description: "TOSS Data Services - Database and caching layer"
+    owner: "platform-team"
+    cost-center: "data-infrastructure"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: toss-gateway
+  labels:
+    name: toss-gateway
+    purpose: api-gateway
+    security-policy: restricted
+    network-policy: enabled
+    monitoring: enabled
+  annotations:
+    description: "TOSS API Gateway - External traffic entry point"
+    owner: "platform-team"
+    cost-center: "gateway-infrastructure"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: toss-monitoring
+  labels:
+    name: toss-monitoring
+    purpose: observability
+    security-policy: privileged
+    network-policy: enabled
+    monitoring: self
+  annotations:
+    description: "TOSS Monitoring - Observability and metrics collection"
+    owner: "platform-team"
+    cost-center: "monitoring-infrastructure"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: toss-security
+  labels:
+    name: toss-security
+    purpose: security-services
+    security-policy: restricted
+    network-policy: enabled
+    monitoring: enabled
+  annotations:
+    description: "TOSS Security Services - Authentication and authorization"
+    owner: "security-team"
+    cost-center: "security-infrastructure"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: toss-workflows
+  labels:
+    name: toss-workflows
+    purpose: workflow-automation
+    security-policy: restricted
+    network-policy: enabled
+    monitoring: enabled
+  annotations:
+    description: "TOSS Workflows - Business process automation"
+    owner: "platform-team"
+    cost-center: "workflow-infrastructure"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: toss-integration
+  labels:
+    name: toss-integration
+    purpose: external-integrations
+    security-policy: restricted
+    network-policy: enabled
+    monitoring: enabled
+  annotations:
+    description: "TOSS Integration - External service connectors"
+    owner: "integration-team"
+    cost-center: "integration-infrastructure"
