@@ -10,6 +10,7 @@ using Microsoft.Extensions.Http.Resilience;
 using System.Net;
 using Polly; // For TimeoutRejectedException
 using Shared.LLMAdapter; // Resilience metrics
+using AgentManager.Tenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 

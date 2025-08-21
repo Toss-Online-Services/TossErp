@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Temporalio.Client;
+using Temporalio.Exceptions;
 
 namespace Orchestrator.Controllers;
 
@@ -7,17 +8,17 @@ namespace Orchestrator.Controllers;
 [Route("orchestrator")]
 public class OrchestratorController : ControllerBase
 {
-    private readonly Task<TemporalClient> _clientTask;
+    private readonly Func<Task<TemporalClient>> _clientFactory;
 
-    public OrchestratorController(Task<TemporalClient> clientTask)
+    public OrchestratorController(Func<Task<TemporalClient>> clientFactory)
     {
-        _clientTask = clientTask;
+        _clientFactory = clientFactory;
     }
 
     [HttpPost("execute")]
     public async Task<IActionResult> Execute([FromBody] ExecuteRequest request)
     {
-        var client = await _clientTask; // lazy connect
+        var client = await _clientFactory(); // lazy connect
         var workflowId = request.WorkflowId ?? ($"sample-" + Guid.NewGuid().ToString("N"));
         var handle = await client.StartWorkflowAsync((TemporalWorker.SampleWorkflow wf) => wf.RunAsync(request.Input ?? ""),
             new(id: workflowId, taskQueue: "orchestrator-tq"));
@@ -27,7 +28,7 @@ public class OrchestratorController : ControllerBase
     [HttpGet("workflow/{id}")]
     public async Task<IActionResult> Get(string id)
     {
-        var client = await _clientTask;
+        var client = await _clientFactory();
         try
         {
             var handle = client.GetWorkflowHandle(id);
