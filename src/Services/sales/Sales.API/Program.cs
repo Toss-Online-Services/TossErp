@@ -1,52 +1,54 @@
-using TossErp.Sales.Application.Commands.CreateSale;
-using TossErp.Sales.Application.Commands.CancelSale;
-using TossErp.Sales.Application.Queries.GetDailySales;
-using TossErp.Sales.Application.Common.Interfaces;
-using TossErp.Sales.API.Services;
+using TossErp.Sales.Application;
+using TossErp.Sales.Infrastructure;
+using Microsoft.OpenApi.Models;
+using TossErp.Sales.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddControllers();
+
+// Application and Infrastructure layers
+builder.Services.AddSalesApplication();
+builder.Services.AddSalesInfrastructure(builder.Configuration, builder.Environment);
+
+// API Documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    c.SwaggerDoc("v1", new OpenApiInfo 
+    { 
+        Title = "TOSS Sales API", 
+        Version = "v1",
+        Description = "Sales management API for TOSS ERP system"
+    });
+    
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Title = "TOSS ERP Sales API",
-        Description = "API for managing sales transactions and POS operations",
-        Version = "v1"
+        Description = "JWT Authorization header using the Bearer scheme",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+    
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
     });
 });
 
-// Add MediatR
-builder.Services.AddMediatR(cfg => {
-    cfg.RegisterServicesFromAssembly(typeof(CreateSaleCommand).Assembly);
-});
-
-// Add FluentValidation
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssembly(typeof(CreateSaleCommandValidator).Assembly);
-
-// Add HttpContextAccessor for CurrentUserService
-builder.Services.AddHttpContextAccessor();
-
-// Add application services
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// Add mock repositories for MVP
-builder.Services.AddScoped<ISaleRepository, MockSaleRepository>();
-builder.Services.AddScoped<ITillRepository, MockTillRepository>();
-
-// Add domain event and notification services
-builder.Services.AddScoped<IDomainEventService, DomainEventService>();
-        builder.Services.AddScoped<INotificationService, MockNotificationService>();
-        builder.Services.AddScoped<IInventoryService, MockInventoryService>();
-        builder.Services.AddScoped<IPaymentGatewayService, MockPaymentGatewayService>();
-        builder.Services.AddScoped<IReceiptService, ReceiptService>();
-
-// Add CORS
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -57,26 +59,46 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Health checks
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "TOSS ERP Sales API v1");
-        c.RoutePrefix = string.Empty; // Serve Swagger UI at root
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "TOSS Sales API v1");
+        c.RoutePrefix = string.Empty;
     });
 }
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
-app.UseAuthorization();
 
 // Add exception handling middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
+app.MapHealthChecks("/health");
+
+app.MapGet("/", () => "TOSS Sales API - Running");
+
+// Initialize database
+try
+{
+    await app.Services.MigrateSalesDatabaseAsync();
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"An error occurred while migrating the Sales database: {ex.Message}");
+    throw;
+}
 
 app.Run();
