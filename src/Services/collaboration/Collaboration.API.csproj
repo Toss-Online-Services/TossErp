@@ -4,8 +4,16 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+  
   <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="Collaboration.Application\Collaboration.Application.csproj" />
+    <ProjectReference Include="Collaboration.Infrastructure\Collaboration.Infrastructure.csproj" />
   </ItemGroup>
 </Project>
 

@@ -28,7 +28,7 @@ public class GetBestPriceQuotationsQueryHandler : IRequestHandler<GetBestPriceQu
         ILogger<GetBestPriceQuotationsQueryHandler> logger)
     {
         _quotationRepository = quotationRepository;
-        _campaignRepository = quotationRepository;
+        _campaignRepository = campaignRepository;
         _logger = logger;
     }
 

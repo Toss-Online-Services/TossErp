@@ -45,7 +45,12 @@ public class Campaign : Entity
     public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     // Private constructor for EF Core
-    private Campaign() { }
+    private Campaign() 
+    { 
+        Name = string.Empty;
+        Description = string.Empty;
+        SupplierName = string.Empty;
+    }
 
     public Campaign(
         string name,
@@ -93,6 +98,7 @@ public class Campaign : Entity
         CreatedBy = createdBy;
         TenantId = tenantId;
         CreatedAt = DateTime.UtcNow;
+        SupplierName = string.Empty;
     }
 
     public void UpdateDetails(string name, string description, DateTime startDate, DateTime endDate)

@@ -33,7 +33,11 @@ public class CampaignParticipant : Entity
     public Campaign Campaign { get; private set; } = null!;
 
     // Private constructor for EF Core
-    private CampaignParticipant() { }
+    private CampaignParticipant() 
+    { 
+        UserName = string.Empty;
+        UserEmail = string.Empty;
+    }
 
     public CampaignParticipant(
         Guid campaignId,
