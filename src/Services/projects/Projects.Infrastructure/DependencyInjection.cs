@@ -1,11 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TossErp.Projects.Infrastructure.Data;
-using TossErp.Projects.Infrastructure.Repositories;
-using TossErp.Projects.Infrastructure.Services;
+using Projects.Application.Common.Interfaces;
+using Projects.Infrastructure.BackgroundServices;
+using Projects.Infrastructure.Data;
+using Projects.Infrastructure.HealthChecks;
+using Projects.Infrastructure.Hubs;
+using Projects.Infrastructure.Repositories;
+using Projects.Infrastructure.Services;
 
-namespace TossErp.Projects.Infrastructure;
+namespace Projects.Infrastructure;
 
 public static class DependencyInjection
 {
@@ -32,18 +36,35 @@ public static class DependencyInjection
         });
 
         // Repositories
-        services.AddScoped(typeof(IRepository<>), typeof(ProjectsRepository<>));
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IProjectRepository, ProjectRepository>();
-        services.AddScoped<IProjectTaskRepository, ProjectTaskRepository>();
+        services.AddScoped<ITaskRepository, TaskRepository>();
         services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
-        services.AddScoped<IResourceRepository, ResourceRepository>();
         services.AddScoped<IMilestoneRepository, MilestoneRepository>();
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
 
         // Unit of Work
-        services.AddScoped<IProjectsUnitOfWork, ProjectsUnitOfWork>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // Services
-        services.AddScoped<IProjectReportingService, ProjectReportingService>();
+        // Business Services
+        services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<ITaskService, TaskService>();
+        services.AddScoped<ITimeTrackingService, TimeTrackingService>();
+        services.AddScoped<IReportingService, ReportingService>();
+
+        // SignalR Hubs
+        services.AddSignalR();
+        services.AddScoped<ProjectUpdatesHub>();
+        services.AddScoped<TeamCollaborationHub>();
+        services.AddScoped<TimeTrackingHub>();
+
+        // Background Services
+        services.AddHostedService<ProjectStatusUpdateService>();
+        services.AddHostedService<TimeEntryReminderService>();
+        services.AddHostedService<DataCleanupService>();
+
+        // Health Checks
+        services.AddScoped<ProjectsHealthCheck>();
 
         return services;
     }
