@@ -35,7 +35,13 @@ public class SupplierQuotation : Entity
     public Campaign Campaign { get; private set; } = null!;
 
     // Private constructor for EF Core
-    private SupplierQuotation() { }
+    private SupplierQuotation() 
+    { 
+        SupplierName = string.Empty;
+        SupplierEmail = string.Empty;
+        SupplierPhone = string.Empty;
+        ProductDescription = string.Empty;
+    }
 
     public SupplierQuotation(
         Guid campaignId,
