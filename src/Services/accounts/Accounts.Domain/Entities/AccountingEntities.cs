@@ -453,3 +453,198 @@ public class RecurringTransactionLine : Entity
         Description = description?.Trim();
     }
 }
+
+/// <summary>
+/// Cashbook aggregate root representing a cash management book for simplified accounting
+/// </summary>
+public class Cashbook : AggregateRoot
+{
+    private readonly List<CashbookEntry> _entries = new();
+
+    public string Name { get; private set; } = string.Empty;
+    public string? Description { get; private set; }
+    public Money OpeningBalance { get; private set; } = Money.Zero();
+    public DateTime OpeningBalanceDate { get; private set; }
+    public bool IsActive { get; private set; }
+
+    // Navigation properties
+    public IReadOnlyList<CashbookEntry> Entries => _entries.AsReadOnly();
+
+    private Cashbook() : base() { } // For EF Core
+
+    public Cashbook(
+        Guid id,
+        string name,
+        string tenantId,
+        Money openingBalance,
+        string? description = null) : base(id, tenantId)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Cashbook name cannot be empty", nameof(name));
+
+        Name = name.Trim();
+        Description = description?.Trim();
+        OpeningBalance = openingBalance;
+        OpeningBalanceDate = DateTime.UtcNow;
+        IsActive = true;
+    }
+
+    public static Cashbook Create(string name, string tenantId, Money openingBalance, string? description = null)
+    {
+        return new Cashbook(Guid.NewGuid(), name, tenantId, openingBalance, description);
+    }
+
+    public void AddEntry(CashbookEntry entry)
+    {
+        if (!IsActive)
+            throw new InvalidOperationException("Cannot add entries to inactive cashbook");
+
+        if (entry == null)
+            throw new ArgumentNullException(nameof(entry));
+
+        _entries.Add(entry);
+    }
+
+    public CashbookEntry CreateAndAddEntry(DateTime transactionDate, string reference, string description,
+        Money amount, CashbookEntryType type, CashbookEntryCategory category, Guid accountId,
+        string? relatedEntityId = null, string? relatedEntityType = null)
+    {
+        var entry = CashbookEntry.Create(transactionDate, reference, description, amount, type,
+            category, accountId, TenantId, relatedEntityId, relatedEntityType);
+
+        AddEntry(entry);
+        return entry;
+    }
+
+    public Money GetCurrentBalance()
+    {
+        var totalDebits = _entries.Where(e => e.Type == CashbookEntryType.Debit).Sum(e => e.Amount.Amount);
+        var totalCredits = _entries.Where(e => e.Type == CashbookEntryType.Credit).Sum(e => e.Amount.Amount);
+
+        var netAmount = totalDebits - totalCredits;
+        netAmount += OpeningBalance.Amount;
+
+        return new Money(netAmount, OpeningBalance.Currency);
+    }
+
+    public IEnumerable<CashbookEntry> GetEntriesForDateRange(DateTime fromDate, DateTime toDate)
+    {
+        return _entries.Where(e => e.TransactionDate.Date >= fromDate.Date &&
+                                  e.TransactionDate.Date <= toDate.Date)
+                      .OrderBy(e => e.TransactionDate)
+                      .ThenBy(e => e.CreatedAt);
+    }
+
+    public IEnumerable<CashbookEntry> GetEntriesForAccount(Guid accountId)
+    {
+        return _entries.Where(e => e.AccountId == accountId)
+                      .OrderBy(e => e.TransactionDate)
+                      .ThenBy(e => e.CreatedAt);
+    }
+
+    public IEnumerable<CashbookEntry> GetEntriesByCategory(CashbookEntryCategory category)
+    {
+        return _entries.Where(e => e.Category == category)
+                      .OrderBy(e => e.TransactionDate)
+                      .ThenBy(e => e.CreatedAt);
+    }
+
+    public IEnumerable<CashbookEntry> GetUnreconciledEntries()
+    {
+        return _entries.Where(e => !e.IsReconciled)
+                      .OrderBy(e => e.TransactionDate)
+                      .ThenBy(e => e.CreatedAt);
+    }
+
+    public void UpdateDetails(string name, string? description)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Cashbook name cannot be empty", nameof(name));
+
+        Name = name.Trim();
+        Description = description?.Trim();
+    }
+
+    public void Deactivate()
+    {
+        if (!IsActive)
+            throw new InvalidOperationException("Cashbook is already inactive");
+
+        IsActive = false;
+    }
+}
+
+/// <summary>
+/// Cashbook Entry entity representing individual cash transactions
+/// </summary>
+public class CashbookEntry : Entity
+{
+    public Guid CashbookId { get; private set; }
+    public DateTime TransactionDate { get; private set; }
+    public string Reference { get; private set; } = string.Empty;
+    public string Description { get; private set; } = string.Empty;
+    public Money Amount { get; private set; } = Money.Zero();
+    public CashbookEntryType Type { get; private set; }
+    public CashbookEntryCategory Category { get; private set; }
+    public Guid AccountId { get; private set; }
+    public bool IsReconciled { get; private set; }
+    public DateTime? ReconciledDate { get; private set; }
+    public string? ReconciledBy { get; private set; }
+    public string? RelatedEntityId { get; private set; }
+    public string? RelatedEntityType { get; private set; }
+
+    // Navigation properties
+    public Account? Account { get; private set; }
+
+    private CashbookEntry() : base() { } // For EF Core
+
+    public CashbookEntry(
+        Guid id,
+        Guid cashbookId,
+        DateTime transactionDate,
+        string reference,
+        string description,
+        Money amount,
+        CashbookEntryType type,
+        CashbookEntryCategory category,
+        Guid accountId,
+        string tenantId,
+        string? relatedEntityId = null,
+        string? relatedEntityType = null) : base(id, tenantId)
+    {
+        CashbookId = cashbookId;
+        TransactionDate = transactionDate;
+        Reference = reference?.Trim() ?? throw new ArgumentException("Reference cannot be empty");
+        Description = description?.Trim() ?? throw new ArgumentException("Description cannot be empty");
+        Amount = amount ?? throw new ArgumentNullException(nameof(amount));
+        Type = type;
+        Category = category;
+        AccountId = accountId;
+        RelatedEntityId = relatedEntityId?.Trim();
+        RelatedEntityType = relatedEntityType?.Trim();
+        IsReconciled = false;
+    }
+
+    public static CashbookEntry Create(DateTime transactionDate, string reference, string description,
+        Money amount, CashbookEntryType type, CashbookEntryCategory category, Guid accountId,
+        string tenantId, string? relatedEntityId = null, string? relatedEntityType = null)
+    {
+        return new CashbookEntry(Guid.NewGuid(), Guid.Empty, transactionDate, reference, description,
+            amount, type, category, accountId, tenantId, relatedEntityId, relatedEntityType);
+    }
+
+    public void MarkAsReconciled(string reconciledBy)
+    {
+        if (IsReconciled)
+            throw new InvalidOperationException("Entry is already reconciled");
+
+        IsReconciled = true;
+        ReconciledDate = DateTime.UtcNow;
+        ReconciledBy = reconciledBy?.Trim();
+    }
+
+    public void UpdateDescription(string description)
+    {
+        Description = description?.Trim() ?? throw new ArgumentException("Description cannot be empty");
+    }
+}

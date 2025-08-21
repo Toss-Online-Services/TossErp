@@ -297,3 +297,30 @@ public enum FiscalYearType
     October = 4,
     Custom = 5
 }
+
+/// <summary>
+/// Cashbook entry types for cash management
+/// </summary>
+public enum CashbookEntryType
+{
+    Debit = 1,
+    Credit = 2
+}
+
+/// <summary>
+/// Cashbook entry categories for transaction classification
+/// </summary>
+public enum CashbookEntryCategory
+{
+    Sale = 1,
+    Purchase = 2,
+    SalesTax = 3,
+    PurchaseTax = 4,
+    CashReceipt = 5,
+    CashPayment = 6,
+    Adjustment = 7,
+    Transfer = 8,
+    Expense = 9,
+    Income = 10,
+    Other = 11
+}

@@ -1,9 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using TossErp.Accounts.Domain.Entities;
+using TossErp.Accounts.Domain.SeedWork;
+using TossErp.Accounts.Infrastructure.Data.Configurations;
+using TossErp.Shared.SeedWork;
+
 namespace TossErp.Accounts.Infrastructure.Data;
 
 /// <summary>
 /// Multi-tenant DbContext for Accounts service with EF Core 9 optimizations
 /// </summary>
-public class AccountsDbContext : DbContext
+public class AccountsDbContext : DbContext, IUnitOfWork
 {
     private readonly ICurrentTenantService _currentTenantService;
 
@@ -53,6 +59,10 @@ public class AccountsDbContext : DbContext
     // Audit and Documents
     public DbSet<AccountingDocument> AccountingDocuments => Set<AccountingDocument>();
     public DbSet<AccountingAuditLog> AccountingAuditLogs => Set<AccountingAuditLog>();
+    
+    // Cashbook Management (from merged accounting service)
+    public DbSet<Cashbook> Cashbooks => Set<Cashbook>();
+    public DbSet<CashbookEntry> CashbookEntries => Set<CashbookEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,10 +91,10 @@ public class AccountsDbContext : DbContext
 
         // Chart of Accounts and Types
         modelBuilder.Entity<ChartOfAccount>()
-            .HasQueryFilter(e => e.TenantId == tenantId || e.TenantId == Guid.Empty);
+            .HasQueryFilter(e => e.TenantId == tenantId || e.TenantId == "system");
         
         modelBuilder.Entity<AccountType>()
-            .HasQueryFilter(e => e.TenantId == tenantId || e.TenantId == Guid.Empty);
+            .HasQueryFilter(e => e.TenantId == tenantId || e.TenantId == "system");
 
         // Journal Entries and GL
         modelBuilder.Entity<JournalEntry>()
@@ -140,7 +150,7 @@ public class AccountsDbContext : DbContext
             .HasQueryFilter(e => e.TenantId == tenantId);
         
         modelBuilder.Entity<PaymentMethod>()
-            .HasQueryFilter(e => e.TenantId == tenantId || e.TenantId == Guid.Empty);
+            .HasQueryFilter(e => e.TenantId == tenantId || e.TenantId == "system");
 
         // Financial Reports and Budget
         modelBuilder.Entity<FinancialPeriod>()
@@ -150,13 +160,20 @@ public class AccountsDbContext : DbContext
             .HasQueryFilter(e => e.TenantId == tenantId);
         
         modelBuilder.Entity<TaxRate>()
-            .HasQueryFilter(e => e.TenantId == tenantId || e.TenantId == Guid.Empty);
+            .HasQueryFilter(e => e.TenantId == tenantId || e.TenantId == "system");
 
         // Documents and Audit
         modelBuilder.Entity<AccountingDocument>()
             .HasQueryFilter(e => e.TenantId == tenantId);
         
         modelBuilder.Entity<AccountingAuditLog>()
+            .HasQueryFilter(e => e.TenantId == tenantId);
+        
+        // Cashbook Management
+        modelBuilder.Entity<Cashbook>()
+            .HasQueryFilter(e => e.TenantId == tenantId);
+        
+        modelBuilder.Entity<CashbookEntry>()
             .HasQueryFilter(e => e.TenantId == tenantId);
     }
 
@@ -267,30 +284,37 @@ public class AccountsDbContext : DbContext
         {
             if (entry.State == EntityState.Added && entry.Entity is ITenantEntity tenantEntity)
             {
-                tenantEntity.TenantId = tenantId;
+                if (string.IsNullOrEmpty(tenantEntity.TenantId))
+                {
+                    var entity = entry.Entity;
+                    var property = entity.GetType().GetProperty("TenantId");
+                    property?.SetValue(entity, tenantId);
+                }
             }
         }
     }
 
     private void SetAuditFields()
     {
-        var userId = _currentTenantService.UserId;
+        var userId = _currentTenantService.UserId ?? "system";
         var now = DateTime.UtcNow;
 
         foreach (var entry in ChangeTracker.Entries())
         {
             if (entry.Entity is IAuditableEntity auditableEntity)
             {
+                var entity = entry.Entity;
+                
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        auditableEntity.CreatedAt = now;
-                        auditableEntity.CreatedBy = userId;
+                        entity.GetType().GetProperty("CreatedAt")?.SetValue(entity, now);
+                        entity.GetType().GetProperty("CreatedBy")?.SetValue(entity, userId);
                         break;
                     
                     case EntityState.Modified:
-                        auditableEntity.UpdatedAt = now;
-                        auditableEntity.UpdatedBy = userId;
+                        entity.GetType().GetProperty("UpdatedAt")?.SetValue(entity, now);
+                        entity.GetType().GetProperty("UpdatedBy")?.SetValue(entity, userId);
                         break;
                 }
             }
