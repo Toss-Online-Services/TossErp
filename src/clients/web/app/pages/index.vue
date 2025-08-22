@@ -13,19 +13,22 @@
           </p>
           <div class="mt-10 flex justify-center space-x-4">
             <NuxtLink
-              to="/dashboard"
+              to="/service-as-software"
               class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            >
+              <svg class="mr-2 -ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Service-as-a-Software
+            </NuxtLink>
+            <NuxtLink
+              to="/dashboard"
+              class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
               Go to Dashboard
               <svg class="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
-            </NuxtLink>
-            <NuxtLink
-              to="/stock"
-              class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-            >
-              Manage Stock
             </NuxtLink>
           </div>
         </div>
@@ -102,6 +105,115 @@
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center">Collaboration</h3>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 text-center">
                   Group buying, shared logistics, and community features
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI-Powered Features Section -->
+    <div class="py-16 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+            Service-as-a-Software Features
+          </h2>
+          <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-500 dark:text-gray-300">
+            Experience the future of business automation with AI agents that work for you 24/7
+          </p>
+        </div>
+
+        <div class="mt-16">
+          <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <!-- Service Dashboard -->
+            <div class="relative group">
+              <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer" @click="navigateTo('/service-dashboard')">
+                <div class="w-12 h-12 mx-auto bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mb-4">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center">AI Service Dashboard</h3>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 text-center">
+                  Monitor and control AI agents working autonomously for your business
+                </p>
+              </div>
+            </div>
+
+            <!-- Autonomous Tasks -->
+            <div class="relative group">
+              <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer" @click="navigateTo('/autonomous-tasks')">
+                <div class="w-12 h-12 mx-auto bg-gradient-to-r from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center mb-4">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center">Autonomous Task Execution</h3>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 text-center">
+                  AI agents executing business tasks without human intervention
+                </p>
+              </div>
+            </div>
+
+            <!-- Background Processes -->
+            <div class="relative group">
+              <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer" @click="navigateTo('/background-processes')">
+                <div class="w-12 h-12 mx-auto bg-gradient-to-r from-green-500 to-teal-600 rounded-lg flex items-center justify-center mb-4">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center">Background Processes</h3>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 text-center">
+                  Continuous AI-driven operations running behind the scenes
+                </p>
+              </div>
+            </div>
+
+            <!-- Service Outcomes -->
+            <div class="relative group">
+              <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer" @click="navigateTo('/service-outcomes')">
+                <div class="w-12 h-12 mx-auto bg-gradient-to-r from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center mb-4">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center">Service Outcomes & Metrics</h3>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 text-center">
+                  Measure business outcomes and ROI from AI automation
+                </p>
+              </div>
+            </div>
+
+            <!-- AI Configuration -->
+            <div class="relative group">
+              <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer" @click="navigateTo('/ai-configuration')">
+                <div class="w-12 h-12 mx-auto bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center mb-4">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center">AI Model Configuration</h3>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 text-center">
+                  Configure and fine-tune AI models for optimal performance
+                </p>
+              </div>
+            </div>
+
+            <!-- AI Co-Pilot -->
+            <div class="relative group">
+              <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer" @click="navigateTo('/ai-copilot')">
+                <div class="w-12 h-12 mx-auto bg-gradient-to-r from-red-500 to-pink-600 rounded-lg flex items-center justify-center mb-4">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center">AI Co-Pilot</h3>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 text-center">
+                  Conversational AI assistant for business guidance and support
                 </p>
               </div>
             </div>
