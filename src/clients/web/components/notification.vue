@@ -35,6 +35,8 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, computed } from 'vue'
+
 interface Props {
   isVisible: boolean
   type?: 'success' | 'error' | 'warning' | 'info'

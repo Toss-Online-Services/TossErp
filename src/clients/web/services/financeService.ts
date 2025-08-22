@@ -157,9 +157,8 @@ export class FinanceService {
       return mockFinancialOverview
     }
     
-    return await apiGet<FinancialOverview>(`${API_ENDPOINTS.finance}/overview`, {
-      query: { period }
-    })
+    const url = `${API_ENDPOINTS.finance}/overview?period=${period}`
+    return await apiGet<FinancialOverview>(url)
   }
 
   /**
@@ -188,9 +187,19 @@ export class FinanceService {
       return transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     }
     
-    return await apiGet<Transaction[]>(`${API_ENDPOINTS.finance}/transactions`, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.finance}/transactions?${queryString}` : `${API_ENDPOINTS.finance}/transactions`
+    
+    return await apiGet<Transaction[]>(url)
   }
 
   /**
@@ -281,9 +290,19 @@ export class FinanceService {
       return mockExpenseCategories
     }
     
-    return await apiGet<ExpenseCategory[]>(`${API_ENDPOINTS.finance}/categories`, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.finance}/categories?${queryString}` : `${API_ENDPOINTS.finance}/categories`
+    
+    return await apiGet<ExpenseCategory[]>(url)
   }
 
   /**
@@ -359,9 +378,19 @@ export class FinanceService {
       ]
     }
     
-    return await apiGet<BudgetItem[]>(`${API_ENDPOINTS.finance}/budget-comparison`, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.finance}/budget-comparison?${queryString}` : `${API_ENDPOINTS.finance}/budget-comparison`
+    
+    return await apiGet<BudgetItem[]>(url)
   }
 
   /**
@@ -414,9 +443,19 @@ export class FinanceService {
       }
     }
     
-    return await apiGet(`${API_ENDPOINTS.finance}/cash-flow-projection`, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.finance}/cash-flow-projection?${queryString}` : `${API_ENDPOINTS.finance}/cash-flow-projection`
+    
+    return await apiGet(url)
   }
 
   /**

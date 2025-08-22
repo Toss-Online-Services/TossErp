@@ -46,20 +46,19 @@ describe('Analytics Dashboard E2E Tests', () => {
   })
 
   it('should refresh data when refresh button is clicked', () => {
-    // Store initial values
-    let initialRevenue: string
+    // Store initial values and perform refresh test
     cy.get('.bg-gradient-to-r.from-blue-500').then(($el) => {
-      initialRevenue = $el.text()
+      const initialRevenue = $el.text()
+      
+      // Click refresh button
+      cy.get('button').contains('Refresh').click()
+      
+      // Wait for refresh to complete
+      cy.wait(2000)
+      
+      // Verify data has changed (simulated random data)
+      cy.get('.bg-gradient-to-r.from-blue-500').should('not.have.text', initialRevenue)
     })
-
-    // Click refresh button
-    cy.get('button').contains('Refresh').click()
-    
-    // Wait for refresh to complete
-    cy.wait(2000)
-    
-    // Verify data has changed (simulated random data)
-    cy.get('.bg-gradient-to-r.from-blue-500').should('not.have.text', initialRevenue)
   })
 
   it('should display charts section', () => {
@@ -185,8 +184,8 @@ describe('Analytics Dashboard E2E Tests', () => {
   })
 
   it('should support keyboard navigation', () => {
-    // Test tab navigation
-    cy.get('body').tab()
+    // Test tab navigation by pressing Tab key
+    cy.get('body').type('{tab}')
     cy.focused().should('exist')
     
     // Test select navigation

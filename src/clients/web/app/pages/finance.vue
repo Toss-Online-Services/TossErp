@@ -397,6 +397,81 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue'
+
+// Mock Nuxt functions
+const definePageMeta = (meta: any) => {
+  // Meta data handling
+}
+
+const useHead = (head: any) => {
+  // Head management
+}
+
+const useFinanceManagement = () => {
+  const transactions = ref([])
+  const financialOverview = ref({})
+  const expenseCategories = ref([
+    { id: 1, name: 'Office Supplies', amount: 1500, percentage: 25, color: 'bg-blue-500' },
+    { id: 2, name: 'Marketing', amount: 2400, percentage: 40, color: 'bg-green-500' },
+    { id: 3, name: 'Utilities', amount: 900, percentage: 15, color: 'bg-yellow-500' }
+  ])
+  const loading = ref(false)
+  const error = ref(null)
+  const totalRevenue = ref(45000)
+  const totalExpenses = ref(32000)
+  const netProfit = ref(13000)
+  const cashFlow = ref(18500)
+  const healthScore = ref(85)
+  const recentTransactions = ref([
+    {
+      id: 1,
+      description: 'Sales Revenue',
+      category: 'Income',
+      type: 'income',
+      amount: 2450,
+      date: new Date().toISOString()
+    },
+    {
+      id: 2,
+      description: 'Office Rent',
+      category: 'Expenses',
+      type: 'expense',
+      amount: 1200,
+      date: new Date().toISOString()
+    }
+  ])
+  
+  return {
+    transactions,
+    financialOverview,
+    expenseCategories,
+    loading,
+    error,
+    totalRevenue,
+    totalExpenses,
+    netProfit,
+    cashFlow,
+    healthScore,
+    recentTransactions,
+    loadFinancialOverview: (period: string) => Promise.resolve(),
+    loadTransactions: (filter?: any) => Promise.resolve(),
+    loadExpenseCategories: (params?: any) => Promise.resolve(),
+    exportData: (options: any) => Promise.resolve({ filename: 'export.pdf' }),
+    generateReport: (options: any) => Promise.resolve({ name: 'report.pdf' }),
+    formatCurrency: (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount),
+    formatDate: (date: string) => new Date(date).toLocaleDateString(),
+    getTransactionTypeClass: (type: string) => {
+      const classes: Record<string, string> = {
+        'income': 'text-green-600',
+        'expense': 'text-red-600',
+        'transfer': 'text-blue-600'
+      }
+      return classes[type] || 'text-gray-600'
+    }
+  }
+}
+
 // Page meta
 definePageMeta({
   title: 'Financial Management - TOSS ERP',

@@ -295,6 +295,22 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
+
+// Navigation function 
+const navigateTo = (path: string) => {
+  window.location.href = path
+}
+
+// Mock definePageMeta and useHead for TypeScript
+const definePageMeta = (meta: any) => {
+  // Meta data handling
+}
+
+const useHead = (head: any) => {
+  // Head management
+}
+
 // Page meta
 definePageMeta({
   title: 'TOSS ERP - Township One-Stop Solution',

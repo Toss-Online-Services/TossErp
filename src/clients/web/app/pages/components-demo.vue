@@ -315,6 +315,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, reactive } from 'vue'
+
 // Reactive state
 const showSmallModal = ref(false)
 const showMediumModal = ref(false)

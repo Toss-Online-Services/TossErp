@@ -201,7 +201,7 @@
 </template>
 
 <script setup lang="ts">
-// Vue composables are auto-imported in Nuxt 3
+import { ref, watch, onMounted } from 'vue'
 
 // Types
 interface AnalyticsData {

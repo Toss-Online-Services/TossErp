@@ -296,9 +296,19 @@ export class CollaborationService {
       return collaborations.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
     }
     
-    return await apiGet<CollaborationGroup[]>(`${API_ENDPOINTS.collaboration}/groups`, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.collaboration}/groups?${queryString}` : `${API_ENDPOINTS.collaboration}/groups`
+    
+    return await apiGet<CollaborationGroup[]>(url)
   }
 
   /**
@@ -435,9 +445,19 @@ export class CollaborationService {
       return opportunities.sort((a, b) => b.savings - a.savings)
     }
     
-    return await apiGet<CollaborationOpportunity[]>(`${API_ENDPOINTS.opportunities}`, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.opportunities}?${queryString}` : `${API_ENDPOINTS.opportunities}`
+    
+    return await apiGet<CollaborationOpportunity[]>(url)
   }
 
   /**
@@ -484,9 +504,19 @@ export class CollaborationService {
       return [...mockConnections]
     }
     
-    return await apiGet<NetworkConnection[]>(`${API_ENDPOINTS.collaboration}/network`, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.collaboration}/network?${queryString}` : `${API_ENDPOINTS.collaboration}/network`
+    
+    return await apiGet<NetworkConnection[]>(url)
   }
 
   /**
@@ -533,9 +563,19 @@ export class CollaborationService {
       })
     }
     
-    return await apiGet<NetworkConnection[]>(`${API_ENDPOINTS.collaboration}/search-partners`, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.collaboration}/search-partners?${queryString}` : `${API_ENDPOINTS.collaboration}/search-partners`
+    
+    return await apiGet<NetworkConnection[]>(url)
   }
 
   /**

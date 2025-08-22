@@ -1,4 +1,6 @@
 // Validation utility for form validation
+import { reactive, readonly, computed } from 'vue'
+
 export interface ValidationRule {
   required?: boolean
   minLength?: number
@@ -78,6 +80,10 @@ export const commonValidations = {
       const num = parseFloat(value)
       return isNaN(num) || num > max ? (message || `Value must be at most ${max}`) : null
     }
+  }),
+
+  custom: (validator: (value: any) => string | null): ValidationRule => ({
+    custom: validator
   })
 }
 
@@ -341,6 +347,3 @@ export function createValidationState(validations: FieldValidation) {
     resetValidation
   }
 }
-
-// Import reactive and computed for the validation state
-import { reactive, readonly, computed } from 'vue'

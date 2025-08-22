@@ -123,6 +123,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue'
+
 // Props
 interface Props {
   period?: string
@@ -170,7 +172,7 @@ const grossProfit = computed(() => revenue.value.total - cogs.value.total)
 const grossProfitMargin = computed(() => ((grossProfit.value / revenue.value.total) * 100).toFixed(1))
 
 const totalOperatingExpenses = computed(() => 
-  operatingExpenses.value.reduce((sum, expense) => sum + expense.amount, 0)
+  operatingExpenses.value.reduce((sum: number, expense: any) => sum + expense.amount, 0)
 )
 
 const netProfit = computed(() => grossProfit.value - totalOperatingExpenses.value)

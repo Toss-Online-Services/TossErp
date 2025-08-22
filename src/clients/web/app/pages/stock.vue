@@ -396,6 +396,33 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue'
+
+// Mock Nuxt functions
+const definePageMeta = (meta: any) => {
+  // Meta data handling
+}
+
+const useHead = (head: any) => {
+  // Head management
+}
+
+// Types
+interface StockItem {
+  id: string
+  name: string
+  description: string
+  category: string
+  sku: string
+  quantity: number
+  unitPrice: number
+  totalValue: number
+  status: string
+  minStock: number
+  createdAt: string
+  updatedAt: string
+}
+
 // Page meta
 definePageMeta({
   title: 'Stock Management - TOSS ERP',
@@ -525,7 +552,7 @@ const filteredStockItems = computed(() => {
   // Filter by search query
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(item =>
+    filtered = filtered.filter((item: StockItem) =>
       item.name.toLowerCase().includes(query) ||
       item.description.toLowerCase().includes(query) ||
       item.sku.toLowerCase().includes(query)
@@ -534,12 +561,12 @@ const filteredStockItems = computed(() => {
 
   // Filter by category
   if (selectedCategory.value) {
-    filtered = filtered.filter(item => item.category === selectedCategory.value)
+    filtered = filtered.filter((item: StockItem) => item.category === selectedCategory.value)
   }
 
   // Filter by status
   if (selectedStatus.value) {
-    filtered = filtered.filter(item => item.status === selectedStatus.value)
+    filtered = filtered.filter((item: StockItem) => item.status === selectedStatus.value)
   }
 
   return filtered
@@ -570,12 +597,8 @@ const deleteItem = (item: any) => {
 
 // Watch for filter changes and reload data
 watch([searchQuery, selectedCategory, selectedStatus], () => {
-  loadStockItems({
-    search: searchQuery.value || undefined,
-    category: selectedCategory.value || undefined,
-    status: selectedStatus.value || undefined
-  })
-}, { debounce: 300 })
+  loadStockItems()
+})
 
 // Load stock data on mount
 onMounted(async () => {

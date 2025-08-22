@@ -196,9 +196,19 @@ export class StockService {
       return items
     }
     
-    return await apiGet<StockItem[]>(API_ENDPOINTS.stockItems, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.stockItems}?${queryString}` : `${API_ENDPOINTS.stockItems}`
+    
+    return await apiGet<StockItem[]>(url)
   }
   
   /**
@@ -353,9 +363,19 @@ export class StockService {
       return mockOverview.recentAdjustments
     }
     
-    return await apiGet<StockAdjustment[]>(API_ENDPOINTS.stockAdjustments, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.stockAdjustments}?${queryString}` : `${API_ENDPOINTS.stockAdjustments}`
+    
+    return await apiGet<StockAdjustment[]>(url)
   }
 }
 

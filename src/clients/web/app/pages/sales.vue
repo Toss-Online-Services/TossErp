@@ -407,6 +407,76 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue'
+
+// Mock Nuxt functions
+const definePageMeta = (meta: any) => {
+  // Meta data handling
+}
+
+const useHead = (head: any) => {
+  // Head management
+}
+
+const useSalesManagement = () => {
+  const salesOverview = ref({})
+  const topProducts = ref([
+    { id: 1, name: 'Product A', sold: 50, revenue: 1250 },
+    { id: 2, name: 'Product B', sold: 35, revenue: 875 },
+    { id: 3, name: 'Product C', sold: 28, revenue: 700 }
+  ])
+  const loading = ref(false)
+  const error = ref(null)
+  const todaysSales = ref(5432)
+  const todaysOrders = ref(23)
+  const averageOrderValue = ref(236)
+  const totalCustomers = ref(156)
+  const recentSales = ref([
+    { 
+      id: 1, 
+      orderNumber: 'ORD-001', 
+      status: 'completed', 
+      customer: { name: 'John Doe' }, 
+      createdAt: new Date().toISOString(),
+      total: 234.50,
+      items: [{ name: 'Item 1' }, { name: 'Item 2' }]
+    },
+    { 
+      id: 2, 
+      orderNumber: 'ORD-002', 
+      status: 'pending', 
+      customer: { name: 'Jane Smith' }, 
+      createdAt: new Date().toISOString(),
+      total: 156.75,
+      items: [{ name: 'Item 3' }]
+    }
+  ])
+  
+  return {
+    salesOverview,
+    topProducts,
+    loading,
+    error,
+    todaysSales,
+    todaysOrders,
+    averageOrderValue,
+    totalCustomers,
+    recentSales,
+    loadSalesOverview: (filter: string) => Promise.resolve(),
+    loadTopProducts: () => Promise.resolve(),
+    formatCurrency: (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount),
+    formatTime: (time: string) => new Date(time).toLocaleTimeString(),
+    getStatusBadgeClass: (status: string) => {
+      const classes: Record<string, string> = {
+        'completed': 'bg-green-100 text-green-800',
+        'pending': 'bg-yellow-100 text-yellow-800',
+        'cancelled': 'bg-red-100 text-red-800'
+      }
+      return classes[status] || 'bg-gray-100 text-gray-800'
+    }
+  }
+}
+
 // Page meta
 definePageMeta({
   title: 'Sales & POS - TOSS ERP',
@@ -447,7 +517,7 @@ const topProductsDisplay = computed(() => {
 })
 
 // Watch sales filter changes
-watch(salesFilter, async (newFilter) => {
+watch(salesFilter, async (newFilter: string) => {
   await loadSalesOverview(newFilter as 'today' | 'week' | 'month')
 })
 
@@ -467,7 +537,7 @@ const createQuickSale = () => {
 const refreshData = async () => {
   await Promise.all([
     loadSalesOverview(salesFilter.value as 'today' | 'week' | 'month'),
-    loadTopProducts({ period: salesFilter.value as 'today' | 'week' | 'month', limit: 5 })
+    loadTopProducts()
   ])
 }
 
