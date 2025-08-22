@@ -1,4 +1,5 @@
 // Collaboration Management Composable
+import { ref, computed, readonly } from 'vue'
 import type { 
   CollaborationGroup, 
   CollaborationOpportunity, 
@@ -40,11 +41,11 @@ export const useCollaborationManagement = () => {
   )
 
   const groupBuyingOpportunities = computed(() => 
-    opportunities.value.filter(o => o.type === 'group-buying')
+    opportunities.value.filter((o: CollaborationOpportunity) => o.type === 'group-buying')
   )
 
   const logisticsOpportunities = computed(() => 
-    opportunities.value.filter(o => o.type === 'logistics')
+    opportunities.value.filter((o: CollaborationOpportunity) => o.type === 'logistics')
   )
 
   // Load collaboration statistics
@@ -129,7 +130,7 @@ export const useCollaborationManagement = () => {
       const updatedCollaboration = await CollaborationService.updateCollaboration(id, data)
       
       // Update local collaborations array
-      const index = collaborations.value.findIndex(c => c.id === id)
+      const index = collaborations.value.findIndex((c: CollaborationGroup) => c.id === id)
       if (index !== -1) {
         collaborations.value[index] = updatedCollaboration
       }
@@ -153,7 +154,7 @@ export const useCollaborationManagement = () => {
       
       if (result.success) {
         // Update local data
-        const collaboration = collaborations.value.find(c => c.id === data.collaborationId)
+        const collaboration = collaborations.value.find((c: CollaborationGroup) => c.id === data.collaborationId)
         if (collaboration) {
           collaboration.participants += 1
         }
@@ -181,7 +182,7 @@ export const useCollaborationManagement = () => {
       
       if (result.success) {
         // Update local data
-        const collaboration = collaborations.value.find(c => c.id === collaborationId)
+        const collaboration = collaborations.value.find((c: CollaborationGroup) => c.id === collaborationId)
         if (collaboration) {
           collaboration.participants = Math.max(0, collaboration.participants - 1)
         }
@@ -232,7 +233,7 @@ export const useCollaborationManagement = () => {
       
       if (result.success) {
         // Update local data
-        const opportunity = opportunities.value.find(o => o.id === opportunityId)
+        const opportunity = opportunities.value.find((o: CollaborationOpportunity) => o.id === opportunityId)
         if (opportunity) {
           opportunity.spotsLeft = Math.max(0, opportunity.spotsLeft - 1)
         }

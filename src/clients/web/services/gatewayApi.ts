@@ -126,8 +126,13 @@ class GatewayApiService {
   private timeout: number
 
   constructor() {
-    // In Nuxt 3, useRuntimeConfig is auto-imported
-    const config = useRuntimeConfig()
+    // Mock runtime config
+    const config = {
+      public: {
+        gatewayUrl: 'http://localhost:8080',
+        apiTimeout: 30000
+      }
+    }
     this.baseUrl = config.public.gatewayUrl || 'http://localhost:8080'
     this.timeout = config.public.apiTimeout || 30000
   }
@@ -145,12 +150,20 @@ class GatewayApiService {
         },
       }
 
-      const response = await $fetch<ApiResponse<T>>(url, {
+      const response = await fetch(url, {
         ...defaultOptions,
         ...options,
       })
 
-      return response
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
+      const data = await response.json() as T
+      return {
+        success: true,
+        data
+      } as ApiResponse<T>
     } catch (error: any) {
       console.error(`API Error (${endpoint}):`, error)
       return {

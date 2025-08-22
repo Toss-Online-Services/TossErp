@@ -34,11 +34,11 @@
         <h3 class="text-lg font-medium text-gray-900 mb-3">{{ selectedMetricLabel }} Trend</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="text-center">
-            <p class="text-2xl font-bold text-blue-600">{{ formatCurrency(currentPeriod.value) }}</p>
+            <p class="text-2xl font-bold text-blue-600">{{ formatCurrency(currentPeriod) }}</p>
             <p class="text-sm text-blue-700">Current Period</p>
           </div>
           <div class="text-center">
-            <p class="text-lg font-semibold text-purple-600">{{ formatCurrency(previousPeriod.value) }}</p>
+            <p class="text-lg font-semibold text-purple-600">{{ formatCurrency(previousPeriod) }}</p>
             <p class="text-sm text-purple-700">Previous Period</p>
           </div>
           <div class="text-center">
@@ -180,6 +180,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue'
+
 // Props
 interface Props {
   metric?: string
@@ -236,13 +238,13 @@ const percentageChange = computed(() => {
 })
 
 const bestMonth = computed(() => {
-  return monthlyData.value.reduce((best, current) => 
+  return monthlyData.value.reduce((best: any, current: any) => 
     current.value > best.value ? current : best
   )
 })
 
 const worstMonth = computed(() => {
-  return monthlyData.value.reduce((worst, current) => 
+  return monthlyData.value.reduce((worst: any, current: any) => 
     current.value < worst.value ? current : worst
   )
 })
@@ -279,7 +281,7 @@ const exportReport = async () => {
 
 const generateCSV = (): string => {
   const headers = ['Month', selectedMetricLabel.value, 'Change', '% Change', 'Trend']
-  const rows = monthlyData.value.map(month => [
+  const rows = monthlyData.value.map((month: any) => [
     month.period,
     month.value,
     month.change,

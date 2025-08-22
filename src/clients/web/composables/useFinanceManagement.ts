@@ -1,4 +1,5 @@
 // Finance Management Composable
+import { ref, computed, readonly } from 'vue'
 import type { 
   Transaction, 
   FinancialOverview, 
@@ -34,14 +35,14 @@ export const useFinanceManagement = () => {
   // Income vs Expense totals
   const totalIncome = computed(() => 
     transactions.value
-      .filter(t => t.type === 'income')
-      .reduce((sum, t) => sum + t.amount, 0)
+      .filter((t: Transaction) => t.type === 'income')
+      .reduce((sum: number, t: Transaction) => sum + t.amount, 0)
   )
 
   const totalExpensesFromTransactions = computed(() => 
     transactions.value
-      .filter(t => t.type === 'expense')
-      .reduce((sum, t) => sum + t.amount, 0)
+      .filter((t: Transaction) => t.type === 'expense')
+      .reduce((sum: number, t: Transaction) => sum + t.amount, 0)
   )
 
   // Load financial overview
@@ -127,7 +128,7 @@ export const useFinanceManagement = () => {
       const updatedTransaction = await FinanceService.updateTransaction(id, data)
       
       // Update local transactions array
-      const index = transactions.value.findIndex(t => t.id === id)
+      const index = transactions.value.findIndex((t: Transaction) => t.id === id)
       if (index !== -1) {
         transactions.value[index] = updatedTransaction
       }
@@ -153,7 +154,7 @@ export const useFinanceManagement = () => {
       await FinanceService.deleteTransaction(id)
       
       // Remove from local transactions array
-      const index = transactions.value.findIndex(t => t.id === id)
+      const index = transactions.value.findIndex((t: Transaction) => t.id === id)
       if (index !== -1) {
         transactions.value.splice(index, 1)
       }

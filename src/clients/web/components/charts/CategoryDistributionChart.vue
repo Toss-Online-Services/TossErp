@@ -95,8 +95,8 @@ const chartConfig: ChartConfiguration<'pie'> = {
                 const percentage = ((value / totalValue) * 100).toFixed(1)
                 return {
                   text: `${label} (${percentage}%)`,
-                  fillStyle: data.datasets[0].backgroundColor?.[i] as string,
-                  strokeStyle: data.datasets[0].borderColor?.[i] as string,
+                  fillStyle: (data.datasets[0].backgroundColor as string[])?.[i] as string,
+                  strokeStyle: (data.datasets[0].borderColor as string[])?.[i] as string,
                   lineWidth: 0,
                   pointStyle: 'circle',
                   hidden: false,

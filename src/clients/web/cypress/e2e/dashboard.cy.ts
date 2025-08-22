@@ -49,20 +49,19 @@ describe('Dashboard E2E Tests', () => {
   })
 
   it('should refresh data when refresh button is clicked', () => {
-    // Store initial values
-    let initialMoney: string
+    // Store initial values and perform refresh test
     cy.get('[data-testid="today-money"]').then(($el) => {
-      initialMoney = $el.text()
+      const initialMoney = $el.text()
+      
+      // Click refresh button
+      cy.get('button').contains('Refresh').click()
+      
+      // Wait for refresh to complete
+      cy.wait(2000)
+      
+      // Verify data has changed (simulated random data)
+      cy.get('[data-testid="today-money"]').should('not.have.text', initialMoney)
     })
-
-    // Click refresh button
-    cy.get('button').contains('Refresh').click()
-    
-    // Wait for refresh to complete
-    cy.wait(2000)
-    
-    // Verify data has changed (simulated random data)
-    cy.get('[data-testid="today-money"]').should('not.have.text', initialMoney)
   })
 
   it('should display bottom stats row', () => {

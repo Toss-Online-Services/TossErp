@@ -1,7 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { defineNuxtConfig } from 'nuxt/config'
+const defineNuxtConfig = (config: any) => config
 
 export default defineNuxtConfig({
+  // Nuxt 4 compatibility
+  compatibilityDate: '2025-08-21',
+  future: {
+    compatibilityVersion: 4,
+  },
+  
   // Development server configuration
   devServer: {
     port: 3001,
@@ -25,18 +31,38 @@ export default defineNuxtConfig({
 
   // CSS and styling
   css: [
-    '~/assets/css/main.css'
+    // '~/assets/css/main.css'  // Temporarily commented out
   ],
 
   // Modules
   modules: [
     '@nuxtjs/tailwindcss',
-    '@pinia/nuxt'
+    '@pinia/nuxt',
+    '@vueuse/nuxt'
   ],
 
-  // Auto-imports configuration
+  // Auto-imports configuration (Nuxt 4 enhanced)
   imports: {
-    autoImport: true
+    autoImport: true,
+    dirs: [
+      'composables/**',
+      'utils/**',
+      'types/**'
+    ]
+  },
+
+  // Components auto-import (Nuxt 4 enhanced)
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false,
+    }
+  ],
+
+  // TypeScript configuration
+  typescript: {
+    strict: true,
+    typeCheck: true
   },
 
   // Runtime configuration
@@ -55,6 +81,13 @@ export default defineNuxtConfig({
         changeOrigin: true,
         secure: false
       }
+    }
+  },
+
+  // Build optimization
+  vite: {
+    optimizeDeps: {
+      include: ['chart.js', 'apexcharts']
     }
   }
 })

@@ -170,9 +170,8 @@ export class SalesService {
       return mockOverview
     }
     
-    return await apiGet<SalesOverview>(API_ENDPOINTS.sales, {
-      query: { period }
-    })
+    const url = `${API_ENDPOINTS.sales}?period=${period}`
+    return await apiGet<SalesOverview>(url)
   }
   
   /**
@@ -201,9 +200,19 @@ export class SalesService {
       return sales
     }
     
-    return await apiGet<Sale[]>(API_ENDPOINTS.orders, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.orders}?${queryString}` : `${API_ENDPOINTS.orders}`
+    
+    return await apiGet<Sale[]>(url)
   }
   
   /**
@@ -336,9 +345,19 @@ export class SalesService {
       return customers
     }
     
-    return await apiGet<Customer[]>(API_ENDPOINTS.customers, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.customers}?${queryString}` : `${API_ENDPOINTS.customers}`
+    
+    return await apiGet<Customer[]>(url)
   }
   
   /**
@@ -427,9 +446,19 @@ export class SalesService {
       return mockTopProducts.slice(0, params?.limit || 10)
     }
     
-    return await apiGet<TopProduct[]>(`${API_ENDPOINTS.sales}/top-products`, {
-      query: params
-    })
+    // Convert params to query string
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, String(value))
+        }
+      })
+    }
+    const queryString = searchParams.toString()
+    const url = queryString ? `${API_ENDPOINTS.sales}/top-products?${queryString}` : `${API_ENDPOINTS.sales}/top-products`
+    
+    return await apiGet<TopProduct[]>(url)
   }
   
   /**

@@ -50,6 +50,8 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, onUnmounted } from 'vue'
+
 interface Props {
   isOpen: boolean
   title?: string

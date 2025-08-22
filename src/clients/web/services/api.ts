@@ -2,8 +2,8 @@ import type { StockItem, StockMovement } from '../stores/stock'
 
 // API Configuration - Use Nuxt runtime config
 const getApiConfig = () => {
-  // In Nuxt, we'll get this from runtime config
-  if (process.client) {
+  // Check if we're in browser
+  if (typeof window !== 'undefined') {
     // Client-side: use window.__NUXT__ or composables
     return {
       baseUrl: 'http://localhost:8080/api', // Fallback
@@ -285,10 +285,12 @@ export class StockApiService {
     movements: StockMovement[]
   }> {
     const searchParams = new URLSearchParams()
-    searchParams.append('startDate', params.startDate)
-    searchParams.append('endDate', params.endDate)
-    if (params?.warehouse) searchParams.append('warehouse', params.warehouse)
-    if (params?.type) searchParams.append('type', params.type)
+    if (params) {
+      searchParams.append('startDate', params.startDate)
+      searchParams.append('endDate', params.endDate)
+      if (params.warehouse) searchParams.append('warehouse', params.warehouse)
+      if (params.type) searchParams.append('type', params.type)
+    }
 
     const queryString = searchParams.toString()
     const endpoint = `/stock/reports/movements${queryString ? `?${queryString}` : ''}`

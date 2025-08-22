@@ -180,6 +180,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
+
 // Report tabs configuration
 const reportTabs = [
   { id: 'dashboard', name: 'Dashboard' },

@@ -1,4 +1,5 @@
 // Sales Management Composable
+import { ref, computed, readonly } from 'vue'
 import type { 
   Sale, 
   Customer, 
@@ -108,14 +109,14 @@ export const useSalesManagement = () => {
       const updatedSale = await SalesService.updateSaleStatus(id, status)
       
       // Update local sales array
-      const index = sales.value.findIndex(sale => sale.id === id)
+      const index = sales.value.findIndex((sale: Sale) => sale.id === id)
       if (index !== -1) {
         sales.value[index] = updatedSale
       }
       
       // Update recent sales in overview if available
       if (salesOverview.value?.recentSales) {
-        const recentIndex = salesOverview.value.recentSales.findIndex(sale => sale.id === id)
+        const recentIndex = salesOverview.value.recentSales.findIndex((sale: Sale) => sale.id === id)
         if (recentIndex !== -1) {
           salesOverview.value.recentSales[recentIndex] = updatedSale
         }
@@ -139,7 +140,7 @@ export const useSalesManagement = () => {
       await SalesService.cancelSale(id, reason)
       
       // Update local sales
-      const index = sales.value.findIndex(sale => sale.id === id)
+      const index = sales.value.findIndex((sale: Sale) => sale.id === id)
       if (index !== -1) {
         sales.value[index].status = 'cancelled'
       }
@@ -162,7 +163,7 @@ export const useSalesManagement = () => {
       await SalesService.refundSale(id, amount, reason)
       
       // Update local sales
-      const index = sales.value.findIndex(sale => sale.id === id)
+      const index = sales.value.findIndex((sale: Sale) => sale.id === id)
       if (index !== -1) {
         sales.value[index].status = 'refunded'
       }
@@ -240,7 +241,7 @@ export const useSalesManagement = () => {
       const updatedCustomer = await SalesService.updateCustomer(id, data)
       
       // Update local customers array
-      const index = customers.value.findIndex(customer => customer.id === id)
+      const index = customers.value.findIndex((customer: Customer) => customer.id === id)
       if (index !== -1) {
         customers.value[index] = updatedCustomer
       }
@@ -263,7 +264,7 @@ export const useSalesManagement = () => {
       await SalesService.deleteCustomer(id)
       
       // Remove from local customers array
-      const index = customers.value.findIndex(customer => customer.id === id)
+      const index = customers.value.findIndex((customer: Customer) => customer.id === id)
       if (index !== -1) {
         customers.value.splice(index, 1)
       }

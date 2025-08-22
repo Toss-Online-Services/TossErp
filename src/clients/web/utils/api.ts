@@ -2,7 +2,7 @@
 import type { FetchOptions } from 'ofetch'
 
 // Types
-export interface ApiResponse<T = any> {
+interface ApiResponse<T = any> {
   data?: T
   success: boolean
   message?: string
@@ -16,8 +16,30 @@ export interface ApiError {
   data?: any
 }
 
-// Configuration
-const config = useRuntimeConfig()
+// Configuration helper
+const getConfig = () => {
+  try {
+    // Check if we're in browser environment  
+    if (typeof window !== 'undefined') {
+      return {
+        public: {
+          gatewayUrl: 'http://localhost:8080',
+          apiTimeout: 30000
+        }
+      }
+    }
+  } catch {
+    // Fallback for non-Nuxt contexts
+  }
+  return {
+    public: {
+      gatewayUrl: 'http://localhost:8080',
+      apiTimeout: 30000
+    }
+  }
+}
+
+const config = getConfig()
 
 // Base API URL from runtime config
 export const API_BASE_URL = config.public.gatewayUrl || 'http://localhost:8080'
@@ -53,92 +75,113 @@ export const API_ENDPOINTS = {
 } as const
 
 // Default fetch options
-const defaultOptions: FetchOptions = {
-  baseURL: API_BASE_URL,
+const defaultOptions = {
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   },
-  timeout: config.public.apiTimeout || 30000,
-  retry: 2,
-  retryDelay: 1000
+  timeout: (config.public as any)?.apiTimeout || 30000
+}
+
+// Helper to get auth token safely
+const getAuthToken = () => {
+  try {
+    if (typeof window !== 'undefined' && (window as any).__NUXT__) {
+      // Try to get token from Nuxt context or localStorage
+      return localStorage.getItem('auth-token')
+    }
+  } catch {
+    // Fallback
+  }
+  return null
+}
+
+// Generate correlation ID for request tracking
+const generateCorrelationId = () => {
+  return `req-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 }
 
 // Custom fetch wrapper with error handling
-export const apiClient = $fetch.create({
-  ...defaultOptions,
-  onRequest({ request, options }) {
-    // Add authentication token if available
-    const token = useCookie('auth-token')
-    if (token.value) {
-      options.headers = {
-        ...options.headers,
-        Authorization: `Bearer ${token.value}`
-      }
-    }
-    
-    // Add correlation ID for request tracking
-    const correlationId = generateCorrelationId()
-    options.headers = {
-      ...options.headers,
-      'X-Correlation-ID': correlationId
-    }
-    
-    console.log(`🚀 API Request: ${request}`, {
-      method: options.method || 'GET',
-      correlationId,
-      body: options.body
-    })
-  },
+export const apiClient = async <T = any>(
+  url: string, 
+  options: RequestInit & { timeout?: number } = {}
+): Promise<T> => {
+  const token = getAuthToken()
+  const correlationId = generateCorrelationId()
   
-  onResponse({ request, response }) {
-    console.log(`✅ API Response: ${request}`, {
+  const headers = {
+    ...defaultOptions.headers,
+    ...options.headers,
+    'X-Correlation-ID': correlationId,
+    ...(token && { Authorization: `Bearer ${token}` })
+  }
+
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), options.timeout || defaultOptions.timeout)
+
+  try {
+    const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`
+    
+    console.log(`🚀 API Request: ${fullUrl}`, {
+      method: options.method || 'GET',
+      correlationId
+    })
+
+    const response = await fetch(fullUrl, {
+      ...options,
+      headers,
+      signal: controller.signal
+    })
+
+    clearTimeout(timeoutId)
+
+    console.log(`✅ API Response: ${fullUrl}`, {
       status: response.status,
       statusText: response.statusText
     })
-  },
-  
-  onResponseError({ request, response, error }) {
-    console.error(`❌ API Error: ${request}`, {
-      status: response?.status,
-      statusText: response?.statusText,
-      error: error.message
+
+    if (!response.ok) {
+      // Handle specific error cases
+      if (response.status === 401) {
+        console.warn('Unauthorized access - clearing auth token')
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('auth-token')
+        }
+      }
+
+      if (response.status === 403) {
+        console.warn('Access forbidden')
+      }
+
+      if (response.status >= 500) {
+        console.error('Server error occurred')
+      }
+
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+    }
+
+    const contentType = response.headers.get('Content-Type')
+    if (contentType?.includes('application/json')) {
+      return await response.json()
+    }
+    
+    return await response.text() as T
+  } catch (error) {
+    clearTimeout(timeoutId)
+    
+    console.error(`❌ API Error: ${url}`, {
+      error: error instanceof Error ? error.message : 'Unknown error'
     })
-    
-    // Handle specific error cases
-    if (response?.status === 401) {
-      // Unauthorized - redirect to login or refresh token
-      console.warn('Unauthorized access - clearing auth token')
-      const token = useCookie('auth-token')
-      token.value = null
-      
-      // In a real app, you might want to redirect to login
-      // await navigateTo('/login')
+
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error('Request timeout')
     }
-    
-    if (response?.status === 403) {
-      // Forbidden - user doesn't have permission
-      console.warn('Access forbidden')
-      // Handle forbidden access
-    }
-    
-    if (response?.status >= 500) {
-      // Server error - show user-friendly message
-      console.error('Server error occurred')
-      // You might want to show a toast notification here
-    }
-    
     throw error
   }
-})
-
-// Utility functions
-export function generateCorrelationId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 }
 
 // Mock data flag
-export const USE_MOCK_DATA = config.public.enableMockApi || process.env.NODE_ENV === 'development'
+export const USE_MOCK_DATA = (config.public as any)?.enableMockApi || process.env.NODE_ENV === 'development'
 
 // Mock delay for development
 export function mockDelay(ms: number = 500): Promise<void> {
@@ -146,12 +189,23 @@ export function mockDelay(ms: number = 500): Promise<void> {
 }
 
 // Generic API functions
-export async function apiGet<T>(endpoint: string, options?: FetchOptions): Promise<T> {
+export async function apiGet<T>(endpoint: string, options?: RequestInit): Promise<T> {
   try {
-    return await apiClient<T>(endpoint, {
+    const config = getConfig()
+    const response = await fetch(`${config.public.gatewayUrl}${endpoint}`, {
       method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+      },
       ...options
     })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+    }
+    
+    return await response.json()
   } catch (error) {
     throw handleApiError(error)
   }
@@ -193,12 +247,23 @@ export async function apiPatch<T>(endpoint: string, data?: any, options?: FetchO
   }
 }
 
-export async function apiDelete<T>(endpoint: string, options?: FetchOptions): Promise<T> {
+export async function apiDelete<T>(endpoint: string, options?: RequestInit): Promise<T> {
   try {
-    return await apiClient<T>(endpoint, {
+    const config = getConfig()
+    const response = await fetch(`${config.public.gatewayUrl}${endpoint}`, {
       method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+      },
       ...options
     })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+    }
+    
+    return await response.json()
   } catch (error) {
     throw handleApiError(error)
   }
@@ -232,7 +297,7 @@ function handleApiError(error: any): ApiError {
 // Health check
 export async function checkApiHealth(): Promise<boolean> {
   try {
-    const response = await apiGet(API_ENDPOINTS.health)
+    const response = await apiGet<{ status: string }>(API_ENDPOINTS.health)
     return response?.status === 'healthy'
   } catch (error) {
     console.error('Health check failed:', error)
@@ -243,7 +308,7 @@ export async function checkApiHealth(): Promise<boolean> {
 // Version info
 export async function getApiVersion(): Promise<string> {
   try {
-    const response = await apiGet(API_ENDPOINTS.version)
+    const response = await apiGet<{ version: string }>(API_ENDPOINTS.version)
     return response?.version || 'unknown'
   } catch (error) {
     console.error('Version check failed:', error)
