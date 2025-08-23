@@ -31,7 +31,7 @@ export default defineNuxtConfig({
 
   // CSS and styling
   css: [
-    // '~/assets/css/main.css'  // Temporarily commented out
+  '~/assets/css/main.css'
   ],
 
   // Modules

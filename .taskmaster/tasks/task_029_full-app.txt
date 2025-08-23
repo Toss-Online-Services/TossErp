@@ -1,0 +1,31 @@
+# Task ID: 29
+# Title: Reporting & Exports Service (MVP)
+# Status: pending
+# Dependencies: 1, 7, 27, 28, 30
+# Priority: medium
+# Description: Jobs API-based report generation, CSV/PDF exports, scheduling
+# Details:
+Endpoints for standard reports; long-running jobs; async polling; export templates; schedules and delivery.
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Reporting: Jobs-based exports [pending]
+### Dependencies: None
+### Description: Async export endpoints (CSV, XLSX, PDF) via Jobs API
+### Details:
+Acceptance:
+- /exports create → 202 + Location
+- Progress polling; result download with ETag
+- Templates and sample reports
+
+## 2. Reporting: Schedules & delivery [pending]
+### Dependencies: None
+### Description: Saved reports, schedules, email/webhook delivery
+### Details:
+Acceptance:
+- CRON-like schedules with pause/resume
+- Email with attachments; webhook delivery
+- Audit logs; retry policy
+

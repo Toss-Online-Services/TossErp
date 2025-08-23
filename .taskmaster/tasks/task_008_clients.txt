@@ -1,0 +1,31 @@
+# Task ID: 8
+# Title: CRM Service (MVP)
+# Status: pending
+# Dependencies: 1, 5
+# Priority: medium
+# Description: Customers, interactions, simple loyalty and segments
+# Details:
+Customer profiles, purchase history, preferences, segments
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Domain (Customer, Segment, LoyaltyTx) [pending]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 2. Queries (TopCustomers, LapsedCustomers) [pending]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 3. API endpoints + basic loyalty accrual [pending]
+### Dependencies: None
+### Description: 
+### Details:
+
+

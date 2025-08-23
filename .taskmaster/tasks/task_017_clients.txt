@@ -1,0 +1,31 @@
+# Task ID: 17
+# Title: Testing Strategy Execution
+# Status: pending
+# Dependencies: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+# Priority: high
+# Description: Unit, integration, E2E across modules with coverage targets
+# Details:
+Automated tests integrated into CI with coverage reports
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Unit tests domain/app for each service [pending]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 2. Integration tests API/repo/events [pending]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 3. E2E (mobile/web) critical flows [pending]
+### Dependencies: None
+### Description: 
+### Details:
+
+

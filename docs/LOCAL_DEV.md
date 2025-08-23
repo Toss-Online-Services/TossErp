@@ -25,9 +25,10 @@ Services:
 ## Nuxt Web app (if running outside compose)
 
 ```bash
-cd TossErp.Web
+cd src/clients/web
 npm ci
 npm run dev
+# Dev server: http://localhost:3001 (configured in nuxt.config.ts)
 ```
 
 ## Notes

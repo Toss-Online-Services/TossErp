@@ -1,0 +1,31 @@
+# Task ID: 4
+# Title: Stock Module Completion (MVP integration)
+# Status: done
+# Dependencies: 1, 2
+# Priority: high
+# Description: Finish remaining Stock tasks and integrate with platform baselines
+# Details:
+Leverage existing Stock work; finalize background services, AI hooks, reports
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. LowStockMonitor + SignalR hubs finalized [done]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 2. Stock reports (ledger/valuation/movement) polish [done]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 3. AI reorder recommendations endpoint integration [done]
+### Dependencies: None
+### Description: 
+### Details:
+
+

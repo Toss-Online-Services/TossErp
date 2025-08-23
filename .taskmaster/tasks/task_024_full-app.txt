@@ -1,0 +1,57 @@
+# Task ID: 24
+# Title: Pooled Credit Service (MVP)
+# Status: pending
+# Dependencies: 1, 7, 27, 28
+# Priority: medium
+# Description: Pools, contributions, loans, repayments, approvals; cooperative finance flows.
+# Details:
+Scope: CreditPool, Contribution, Loan, Repayment, Approval. Align to pooledcredit.openapi; webhooks; ETag/If-Match on updates; async approvals via Jobs API.
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Pooled Credit: Database schema + migrations [pending]
+### Dependencies: None
+### Description: Pools, Contributions, Drawdowns, Repayments, Member, Ledger
+### Details:
+Acceptance:
+- DDL with RLS & tenant keys; constraints; indexes
+- Migrations scripted; ER diagram
+
+## 2. Pooled Credit: Domain + API endpoints [pending]
+### Dependencies: None
+### Description: Create/Manage pools, contribute, request drawdown, approve, repay
+### Details:
+Acceptance:
+- Endpoints with scopes, idempotency, ETag/If-Match
+- Webhook events (contribution.created, drawdown.approved)
+- Tests + examples
+
+## 3. Pooled Credit: Accounting integration [pending]
+### Dependencies: None
+### Description: Post journal entries to Finance on contribution/drawdown/repayment
+### Details:
+Acceptance:
+- Events to Accounting; reconciliation report
+- Failure handling + retries; idempotent consumers
+- Test harness with fake finance
+
+## 4. Pooled Credit: Web UI [pending]
+### Dependencies: None
+### Description: Pool admin, member portal (balance, contribute, request)
+### Details:
+Acceptance:
+- Admin: create/manage pools; approvals
+- Member: view balance, contribute, request drawdown
+- E2E tests
+
+## 5. Pooled Credit: Tests + docs [pending]
+### Dependencies: None
+### Description: Coverage and documentation
+### Details:
+Acceptance:
+- Unit/integration tests ≥70%
+- API and webhook docs; runbook
+- Security review (abuse prevention)
+

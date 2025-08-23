@@ -1,0 +1,210 @@
+# Task ID: 12
+# Title: Flutter Mobile App (MVP)
+# Status: pending
+# Dependencies: 4, 5, 11
+# Priority: high
+# Description: Auth, stock flows, POS, offline sync, notifications
+# Details:
+Primary field app for SMMEs with offline-first
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Flutter: Env & flavors (dev/staging/prod) [pending]
+### Dependencies: None
+### Description: Configure dev/staging/prod env files and ensure runtime config works in debug/release.
+### Details:
+Acceptance:
+- .env/dev, .env/staging, .env/prod loaded via flutter_dotenv (or similar)
+- API base URL, tenant ID, log level switch per flavor
+- Build variants selectable; readme snippet for running each
+- Secrets not committed; .env.example added
+
+## 2. Flutter: API client (Dio + interceptors) [pending]
+### Dependencies: None
+### Description: HTTP client with interceptors for auth, idempotency, tracing, and error mapping.
+### Details:
+Acceptance:
+- Dio client singleton with interceptors: Authorization, Idempotency-Key (POST/PUT), X-Correlation-ID
+- Retry/backoff for 5xx and network errors
+- RFC9457 ProblemDetails parsed to a typed error
+- Unit tests for interceptor behavior
+
+## 3. Flutter: Auth flow + secure token storage [pending]
+### Dependencies: None
+### Description: Username/password auth, token storage, refresh, and lock screen.
+### Details:
+Acceptance:
+- Login screen (email+password) → JWT + refresh saved to secure storage
+- Auto-refresh tokens before expiry; logout on 401/invalid
+- Lock screen after inactivity (configurable)
+- Happy/edge path tests for auth service
+
+## 4. Flutter: RBAC guards for routes & UI [pending]
+### Dependencies: None
+### Description: Guard routes and features using roles/permissions from JWT/claims.
+### Details:
+Acceptance:
+- Permissions model derived from JWT roles/scopes
+- Route guard denies access and shows friendly message
+- Feature flags hide actions when lacking permission
+- Unit tests for guard logic
+
+## 5. Flutter: App shell + GoRouter navigation [pending]
+### Dependencies: None
+### Description: Set up app shell, theming, and typed navigation.
+### Details:
+Acceptance:
+- GoRouter configured with strongly-typed routes
+- Light/dark theme and brand colors
+- AppScaffold with top-level nav, error boundary, and toast system
+- Navigation tests for deep-links
+
+## 6. Flutter: Offline storage (Drift/Hive) + repositories [pending]
+### Dependencies: None
+### Description: Local DB and caching for offline-first flows (stock, sales queue).
+### Details:
+Acceptance:
+- Drift/Hive chosen and wired
+- Entities: Item, StockLevel, PendingSale, SyncCursor
+- Repository pattern with online/offline sources
+- Unit tests for repo fallbacks
+
+## 7. Flutter: Offline sync engine + conflict handling [pending]
+### Dependencies: None
+### Description: Bidirectional sync engine with conflict handling.
+### Details:
+Acceptance:
+- Background sync task with exponential backoff
+- Push PendingSales; pull StockLevels; merge by updatedAt + ETag
+- Conflict policy documented; surfaced in UI review list
+- Telemetry: last sync time, counts
+
+## 8. Flutter: Stock list (server pagination + filters) [pending]
+### Dependencies: None
+### Description: Stock list with server-driven pagination, filters, and infinite scroll.
+### Details:
+Acceptance:
+- Screen: Stock list with search, filters (brand/category), sort
+- Uses server cursor pagination via API client
+- Infinite scroll with loading states; pull-to-refresh
+- Snapshot tests for UI states
+
+## 9. Flutter: Item detail + ledger/movements [pending]
+### Dependencies: None
+### Description: Item detail with stock ledger and recent movements.
+### Details:
+Acceptance:
+- Screen: Item detail with tabs (Details, Ledger, Movements)
+- Ledger: paginated; Movement: last 20
+- Error display uses ProblemDetails mapping
+- Unit/component tests
+
+## 10. Flutter: POS flow (cart → tender → receipt) [pending]
+### Dependencies: None
+### Description: Point-of-Sale cart, tender, and receipt printing/share.
+### Details:
+Acceptance:
+- Screen: POS with scan/add, quantities/discounts
+- Tender: cash/mobile money; validation
+- On submit: CreateSale; show receipt with share/print
+- Offline queue when network down
+
+## 11. Flutter: Notifications (local + push) [pending]
+### Dependencies: None
+### Description: In-app notifications and push integration for critical events.
+### Details:
+Acceptance:
+- Local notification service abstraction
+- Push via FCM/APNS wired; token registered with backend
+- Handle foreground/background taps
+- E2E happy path with a mock push
+
+## 12. Flutter: Real-time updates (SignalR) [pending]
+### Dependencies: None
+### Description: Monitor server-sent events (SignalR) for stock updates and POS outcomes.
+### Details:
+Acceptance:
+- SignalR client connected; auto-reconnect/backoff
+- Subscribe to stock update + sale completed channels
+- UI reacts in real-time; unit tests for stream handling
+
+## 13. Flutter: i18n + locale formats [pending]
+### Dependencies: None
+### Description: Language packs and runtime language switcher.
+### Details:
+Acceptance:
+- intl/arb scaffolding; en + one additional locale
+- Date/number/currency formatting per locale
+- In-app language switch persists
+- i18n tests for key screens
+
+## 14. Flutter: Accessibility (a11y) pass [pending]
+### Dependencies: None
+### Description: Accessibility basics for mobile flows.
+### Details:
+Acceptance:
+- Semantic labels, focus order, larger fonts support
+- Color contrast validated
+- Screen reader friendly on auth, stock, POS
+- Accessibility checklist completed
+
+## 15. Flutter: Testing harness + coverage [pending]
+### Dependencies: None
+### Description: Unit, widget, and integration tests with coverage gates.
+### Details:
+Acceptance:
+- Test harness for API client, repos, sync, POS
+- Golden tests for key screens
+- Coverage threshold >= 60%
+- Test docs in README
+
+## 16. Flutter: Analytics + crash reporting [pending]
+### Dependencies: None
+### Description: Telemetry and crash reporting for mobile app.
+### Details:
+Acceptance:
+- Analytics events for key flows (login, POS submit, sync)
+- Crash reporting hooked (e.g., Sentry/Firebase Crashlytics)
+- Privacy toggle and PII scrubber
+- Dashboard shows events within test project
+
+## 17. Flutter: Settings + profile screens [pending]
+### Dependencies: None
+### Description: Basic settings and profile pages.
+### Details:
+Acceptance:
+- Settings: env switch (dev/staging), theme, language
+- Profile: view claims/roles; logout
+- Unit tests for settings persistence
+
+## 18. Flutter: Docker image (web) + nginx config [pending]
+### Dependencies: None
+### Description: Dockerfile for Flutter web build and nginx runtime.
+### Details:
+Acceptance:
+- Multi-stage Dockerfile: flutter build web → nginx
+- nginx.conf sets security headers; gzip/brotli
+- Image built locally; serves PWA with correct base href
+
+## 19. Flutter: Release packaging (Android/iOS) [pending]
+### Dependencies: None
+### Description: Play Store/TestFlight packaging setup.
+### Details:
+Acceptance:
+- App icons/splash; package IDs and signing configs
+- Dev and prod distribution tracks
+- Store metadata placeholders
+- Checklist for release steps
+
+## 20. Flutter: Docs + CI wiring [pending]
+### Dependencies: None
+### Description: Docs and CI steps to build/test/lint the mobile app.
+### Details:
+Acceptance:
+- README: run, test, build, env setup
+- CI: flutter analyze + test + build web
+- Badges and coverage upload
+- Troubleshooting tips
+

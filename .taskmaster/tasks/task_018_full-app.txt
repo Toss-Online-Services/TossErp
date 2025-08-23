@@ -1,0 +1,37 @@
+# Task ID: 18
+# Title: Deployment to Production
+# Status: pending
+# Dependencies: 2, 3, 16
+# Priority: high
+# Description: Infra provisioning, DNS/TLS, backups, runbooks
+# Details:
+Reliable prod rollout with monitoring and rollback
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Provision K8s cluster + managed DB/Redis [pending]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 2. DNS, TLS, WAF/rate limits [pending]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 3. Backups + restore procedures [pending]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 4. Runbooks + on-call rotation [pending]
+### Dependencies: None
+### Description: 
+### Details:
+
+
