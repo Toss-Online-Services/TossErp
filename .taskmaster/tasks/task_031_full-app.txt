@@ -1,0 +1,72 @@
+# Task ID: 31
+# Title: Scaffold remaining domain services (HR, Projects, Logistics, PooledCredit, CreditEngine, AssetSharing)
+# Status: pending
+# Dependencies: 27, 28
+# Priority: high
+# Description: Create .NET service skeletons following Stock/Sales layout (Domain, Application, Infrastructure, API). Add Program.cs with RFC9457 ProblemDetails, Serilog, OpenTelemetry, Health checks, Swagger; Dockerfile; appsettings; baseline csproj wiring to ServiceDefaults and Contracts. Prepare initial EF Core migrations and docker-compose entries.
+# Details:
+Deliverables:
+- Folders: src/Services/{hr,projects,logistics,pooledcredit,creditengine,assetsharing}/ with Domain, Application, Infrastructure, API projects
+- API: Minimal endpoints (/health, /_status) and Swagger; ProblemDetails per RFC9457; Serilog request logging; OpenTelemetry tracing/metrics
+- Infrastructure: DbContext + initial migration stubs; connection string via env; RLS template hooks
+- Docker: Multistage build, non-root run, healthcheck
+- Compose: Add each service with ports and dependencies (postgres, rabbitmq)
+- Solution: Add projects to TossErp.sln under Services folder
+Acceptance:
+- dotnet build succeeds for all new projects
+- docker build works per service
+- GET /health returns 200
+- Basic OpenAPI served at /swagger
+
+# Test Strategy:
+Build and smoke test each service: dotnet build; dotnet run; curl /health; verify Swagger UI loads.
+
+# Subtasks:
+## 1. HR service skeleton [pending]
+### Dependencies: None
+### Description: Create src/Services/hr/{Domain,Application,Infrastructure,API} with baseline wiring and health endpoints.
+### Details:
+
+
+## 2. Projects service skeleton [pending]
+### Dependencies: None
+### Description: Create src/Services/projects/{Domain,Application,Infrastructure,API} with baseline wiring and health endpoints.
+### Details:
+
+
+## 3. Logistics service skeleton [pending]
+### Dependencies: None
+### Description: Create src/Services/logistics/{Domain,Application,Infrastructure,API} with baseline wiring and health endpoints.
+### Details:
+
+
+## 4. PooledCredit service skeleton [pending]
+### Dependencies: None
+### Description: Create src/Services/pooledcredit/{Domain,Application,Infrastructure,API} with baseline wiring and health endpoints.
+### Details:
+
+
+## 5. CreditEngine service skeleton [pending]
+### Dependencies: None
+### Description: Create src/Services/creditengine/{Domain,Application,Infrastructure,API} with baseline wiring and health endpoints.
+### Details:
+
+
+## 6. AssetSharing service skeleton [pending]
+### Dependencies: None
+### Description: Create src/Services/assetsharing/{Domain,Application,Infrastructure,API} with baseline wiring and health endpoints.
+### Details:
+
+
+## 7. Solution & compose wiring [pending]
+### Dependencies: None
+### Description: Add new projects to TossErp.sln and docker-compose.yml with healthchecks and dependencies.
+### Details:
+
+
+## 8. CI build matrix update [pending]
+### Dependencies: None
+### Description: Extend GitHub Actions to build/test new services and push images.
+### Details:
+
+

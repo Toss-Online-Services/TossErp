@@ -1,7 +1,7 @@
 # Task ID: 22
 # Title: Project Management Service (MVP)
 # Status: pending
-# Dependencies: 1, 7, 27, 28
+# Dependencies: 1, 7, 27, 28, 31
 # Priority: medium
 # Description: Projects, tasks, timesheets, budgets; integrates with Sales/Accounting.
 # Details:

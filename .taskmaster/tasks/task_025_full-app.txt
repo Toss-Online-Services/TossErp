@@ -1,7 +1,7 @@
 # Task ID: 25
 # Title: Credit Engine Service (MVP)
 # Status: pending
-# Dependencies: 1, 7, 8, 27, 28
+# Dependencies: 1, 7, 8, 27, 28, 31
 # Priority: medium
 # Description: Credit profiles and decisions; integrates with Sales/CRM/Accounting.
 # Details:

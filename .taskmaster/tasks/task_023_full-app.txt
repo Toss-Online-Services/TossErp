@@ -1,7 +1,7 @@
 # Task ID: 23
 # Title: Logistics/Delivery Service (MVP)
 # Status: pending
-# Dependencies: 1, 4, 5, 27, 28
+# Dependencies: 1, 4, 5, 27, 28, 31
 # Priority: medium
 # Description: Shipments, carriers, tracking, delivery confirmations; integrates with Sales and Stock.
 # Details:

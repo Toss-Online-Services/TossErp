@@ -1,7 +1,7 @@
 # Task ID: 26
 # Title: Asset Sharing Service (MVP)
 # Status: pending
-# Dependencies: 1, 6, 7, 27, 28
+# Dependencies: 1, 6, 7, 27, 28, 31
 # Priority: low
 # Description: Assets, bookings, usage, settlements among participants.
 # Details:
