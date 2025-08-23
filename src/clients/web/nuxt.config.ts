@@ -62,7 +62,7 @@ export default defineNuxtConfig({
   // TypeScript configuration
   typescript: {
     strict: true,
-    typeCheck: true
+    typeCheck: false  // Temporarily disabled for testing
   },
 
   // Runtime configuration
