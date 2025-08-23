@@ -1,0 +1,103 @@
+extends: "spectral:oas"
+documentationUrl: https://docs.tosserp.com/api-style-guide
+formats: 
+  - oas3
+
+rules:
+  # Operation rules
+  operation-operationId:
+    description: "Operations must have operationId"
+    given: "$.paths[*][*]"
+    severity: error
+    then:
+      field: operationId
+      function: truthy
+
+  operation-summary:
+    description: "Operations must have summary"
+    given: "$.paths[*][*]"
+    severity: error
+    then:
+      field: summary
+      function: truthy
+
+  operation-description:
+    description: "Operations should have description"
+    given: "$.paths[*][*]"
+    severity: warn
+    then:
+      field: description
+      function: truthy
+
+  operation-tags:
+    description: "Operations must have tags"
+    given: "$.paths[*][*]"
+    severity: error
+    then:
+      field: tags
+      function: truthy
+
+  # Parameter rules
+  parameter-description:
+    description: "Parameters must have description"
+    given: "$.paths[*][*].parameters[*]"
+    severity: error
+    then:
+      field: description
+      function: truthy
+
+  # Schema rules
+  schema-description:
+    description: "Schema properties should have description"
+    given: "$.components.schemas[*].properties[*]"
+    severity: warn
+    then:
+      field: description
+      function: truthy
+
+  # Response rules
+  response-description:
+    description: "Responses must have description"
+    given: "$.paths[*][*].responses[*]"
+    severity: error
+    then:
+      field: description
+      function: truthy
+
+  # TOSS ERP specific rules
+  toss-operation-id-naming:
+    description: "OperationId should follow camelCase"
+    given: "$.paths[*][*].operationId"
+    severity: error
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"
+
+  toss-tag-naming:
+    description: "Tags should be lowercase with hyphens"
+    given: "$.tags[*].name"
+    severity: error
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z]+(-[a-z]+)*$"
+
+  toss-path-naming:
+    description: "Paths should be lowercase with hyphens"
+    given: "$.paths[*]~"
+    severity: error
+    then:
+      function: pattern
+      functionOptions:
+        match: "^/v[0-9]+/[a-z]+(-[a-z]+)*.*$"
+
+  # Versioning
+  toss-api-version:
+    description: "Paths should include version prefix"
+    given: "$.paths[*]~"
+    severity: error
+    then:
+      function: pattern
+      functionOptions:
+        match: "^/v[0-9]+/"

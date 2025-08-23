@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>TossErp.AssetSharing.Infrastructure</RootNamespace>
+    <AssemblyName>TossErp.AssetSharing.Infrastructure</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Ardalis.GuardClauses" />
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Azure.Identity" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Polly" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AssetSharing.Domain\AssetSharing.Domain.csproj" />
+    <ProjectReference Include="..\AssetSharing.Application\AssetSharing.Application.csproj" />
+  </ItemGroup>
+</Project>

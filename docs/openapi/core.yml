@@ -1,0 +1,541 @@
+openapi: 3.1.0
+info:
+  title: TOSS ERP III Core API
+  description: |
+    Township One-Stop Solution (TOSS) ERP III Core API provides comprehensive enterprise resource planning capabilities
+    with multi-tenant architecture, real-time collaboration, and AI-powered insights.
+    
+    ## Features
+    - Multi-tenant with row-level security
+    - OAuth2 authentication with fine-grained scopes
+    - Real-time collaboration via SignalR
+    - Comprehensive audit logging
+    - AI-powered analytics and recommendations
+    - Async job processing for long-running operations
+    
+    ## Standards
+    - RFC 9457 Problem Details for error responses
+    - Cursor-based pagination for list endpoints
+    - Idempotency keys for POST operations
+    - ETag/If-Match for optimistic concurrency
+    - HMAC-signed webhooks for external integrations
+    
+    ## Rate Limiting
+    All endpoints are subject to rate limiting. Rate limit information is provided in response headers:
+    - `X-RateLimit-Limit`: Total number of requests allowed per window
+    - `X-RateLimit-Remaining`: Number of requests remaining in current window
+    - `X-RateLimit-Reset`: Unix timestamp when the rate limit window resets
+    
+  version: 1.0.0
+  contact:
+    name: TOSS ERP Support
+    url: https://docs.tosserp.com
+    email: support@tosserp.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://tosserp.com/terms
+
+servers:
+  - url: https://api.tosserp.com/v1
+    description: Production server
+  - url: https://staging-api.tosserp.com/v1
+    description: Staging server
+  - url: https://localhost:5001/v1
+    description: Local development server
+
+security:
+  - OAuth2: []
+  - ApiKey: []
+
+tags:
+  - name: core
+    description: Core system operations
+  - name: auth
+    description: Authentication and authorization
+  - name: tenants
+    description: Tenant management
+  - name: users
+    description: User management
+  - name: health
+    description: System health monitoring
+
+paths:
+  /health:
+    get:
+      tags: [health]
+      summary: Check system health
+      description: Returns the overall health status of the system
+      operationId: getHealth
+      security: []
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+        '503':
+          description: System is unhealthy
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+  /health/ready:
+    get:
+      tags: [health]
+      summary: Check system readiness
+      description: Returns whether the system is ready to accept requests
+      operationId: getReadiness
+      security: []
+      responses:
+        '200':
+          description: System is ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessStatus'
+        '503':
+          description: System is not ready
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+  /auth/token:
+    post:
+      tags: [auth]
+      summary: Obtain access token
+      description: Exchange credentials for OAuth2 access token
+      operationId: getAccessToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '200':
+          description: Token issued successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '401':
+          description: Invalid credentials
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+  /tenants:
+    get:
+      tags: [tenants]
+      summary: List tenants
+      description: Retrieve a paginated list of tenants the user has access to
+      operationId: listTenants
+      security:
+        - OAuth2: [tenants:read]
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/TenantHeader'
+      responses:
+        '200':
+          description: List of tenants
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: /auth/token
+          scopes:
+            tenants:read: Read tenant information
+            tenants:write: Manage tenants
+            users:read: Read user information
+            users:write: Manage users
+            core:read: Read core system data
+            core:write: Modify core system data
+    
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  parameters:
+    Cursor:
+      name: cursor
+      in: query
+      description: Cursor for pagination
+      required: false
+      schema:
+        type: string
+        example: "eyJpZCI6MTIzfQ=="
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    TenantHeader:
+      name: X-Tenant-ID
+      in: header
+      description: Tenant identifier for multi-tenant operations
+      required: false
+      schema:
+        type: string
+        format: uuid
+
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      description: Idempotency key for safe retries
+      required: false
+      schema:
+        type: string
+        pattern: '^[a-zA-Z0-9\-_]{1,255}$'
+
+    IfMatch:
+      name: If-Match
+      in: header
+      description: ETag value for optimistic concurrency control
+      required: false
+      schema:
+        type: string
+
+  headers:
+    X-RateLimit-Limit:
+      description: Total number of requests allowed per window
+      schema:
+        type: integer
+        example: 1000
+
+    X-RateLimit-Remaining:
+      description: Number of requests remaining in current window
+      schema:
+        type: integer
+        example: 999
+
+    X-RateLimit-Reset:
+      description: Unix timestamp when the rate limit window resets
+      schema:
+        type: integer
+        example: 1609459200
+
+    ETag:
+      description: Entity tag for resource versioning
+      schema:
+        type: string
+        example: '"abc123"'
+
+  responses:
+    Unauthorized:
+      description: Authentication credentials are missing or invalid
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    Forbidden:
+      description: Access to the resource is forbidden
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    NotFound:
+      description: The requested resource was not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    Conflict:
+      description: Request conflicts with current state of the resource
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+        Retry-After:
+          description: Number of seconds to wait before making a new request
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+  schemas:
+    ProblemDetails:
+      type: object
+      description: RFC 9457 Problem Details for HTTP APIs
+      properties:
+        type:
+          type: string
+          format: uri
+          description: URI reference identifying the problem type
+          example: "https://docs.tosserp.com/problems/unauthorized"
+        title:
+          type: string
+          description: Human-readable summary of the problem type
+          example: "Unauthorized"
+        status:
+          type: integer
+          description: HTTP status code
+          example: 401
+        detail:
+          type: string
+          description: Human-readable explanation specific to this problem
+          example: "Invalid or expired authentication token"
+        instance:
+          type: string
+          format: uri
+          description: URI reference identifying the specific occurrence
+          example: "/auth/token"
+        traceId:
+          type: string
+          description: Unique identifier for request tracing
+          example: "abc123-def456-ghi789"
+      required:
+        - type
+        - title
+        - status
+
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy, degraded]
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        checks:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [healthy, unhealthy, degraded]
+              description:
+                type: string
+              responseTime:
+                type: number
+                description: Response time in milliseconds
+      required:
+        - status
+        - timestamp
+        - version
+
+    ReadinessStatus:
+      type: object
+      properties:
+        ready:
+          type: boolean
+        timestamp:
+          type: string
+          format: date-time
+        services:
+          type: object
+          additionalProperties:
+            type: boolean
+      required:
+        - ready
+        - timestamp
+
+    TokenRequest:
+      type: object
+      properties:
+        grant_type:
+          type: string
+          enum: [client_credentials, password, refresh_token]
+        client_id:
+          type: string
+        client_secret:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        refresh_token:
+          type: string
+        scope:
+          type: string
+      required:
+        - grant_type
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          example: "Bearer"
+        expires_in:
+          type: integer
+          description: Token lifetime in seconds
+        refresh_token:
+          type: string
+        scope:
+          type: string
+      required:
+        - access_token
+        - token_type
+        - expires_in
+
+    TenantListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tenant'
+        pagination:
+          $ref: '#/components/schemas/CursorPagination'
+      required:
+        - data
+        - pagination
+
+    Tenant:
+      type: object
+      description: A tenant in the multi-tenant system
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique tenant identifier
+        name:
+          type: string
+          description: Tenant display name
+        slug:
+          type: string
+          pattern: '^[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?$'
+          description: URL-friendly tenant identifier
+        status:
+          type: string
+          enum: [active, suspended, pending]
+        settings:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - slug
+        - status
+        - createdAt
+        - updatedAt
+
+    CursorPagination:
+      type: object
+      properties:
+        nextCursor:
+          type: string
+          nullable: true
+          description: Cursor for the next page of results
+        prevCursor:
+          type: string
+          nullable: true
+          description: Cursor for the previous page of results
+        hasNext:
+          type: boolean
+          description: Whether there are more results available
+        hasPrev:
+          type: boolean
+          description: Whether there are previous results available
+        count:
+          type: integer
+          description: Number of items in current page
+      required:
+        - hasNext
+        - hasPrev
+        - count
+
+webhooks:
+  tenant-created:
+    post:
+      summary: Tenant Created
+      description: Triggered when a new tenant is created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventType:
+                  type: string
+                  example: "tenant.created"
+                eventId:
+                  type: string
+                  format: uuid
+                timestamp:
+                  type: string
+                  format: date-time
+                data:
+                  $ref: '#/components/schemas/Tenant'
+                signature:
+                  type: string
+                  description: HMAC signature for verification
+              required:
+                - eventType
+                - eventId
+                - timestamp
+                - data
+                - signature
+      responses:
+        '200':
+          description: Webhook processed successfully
+        '400':
+          description: Invalid webhook payload

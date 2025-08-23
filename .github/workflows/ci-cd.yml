@@ -88,7 +88,7 @@ jobs:
     needs: code-quality
     strategy:
       matrix:
-        service: [gateway, identity, ai, stock, sales, buying, accounting, crm, notifications, collaboration]
+        service: [gateway, identity, ai, stock, sales, buying, accounting, crm, notifications, collaboration, hr, logistics, pooledcredit, creditengine, assetsharing]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -107,6 +107,16 @@ jobs:
             dotnet build src/Gateway/Gateway.csproj --no-restore --configuration Release
           elif [ "${{ matrix.service }}" = "stock" ]; then
             dotnet build src/Services/Stock/Stock.API/Stock.API.csproj --no-restore --configuration Release
+          elif [ "${{ matrix.service }}" = "hr" ]; then
+            dotnet build src/Services/hr/HR.API/HR.API.csproj --no-restore --configuration Release
+          elif [ "${{ matrix.service }}" = "logistics" ]; then
+            dotnet build src/Services/logistics/Logistics.API/Logistics.API.csproj --no-restore --configuration Release
+          elif [ "${{ matrix.service }}" = "pooledcredit" ]; then
+            dotnet build src/Services/pooledcredit/PooledCredit.API/PooledCredit.API.csproj --no-restore --configuration Release
+          elif [ "${{ matrix.service }}" = "creditengine" ]; then
+            dotnet build src/Services/creditengine/CreditEngine.API/CreditEngine.API.csproj --no-restore --configuration Release
+          elif [ "${{ matrix.service }}" = "assetsharing" ]; then
+            dotnet build src/Services/assetsharing/AssetSharing.API/AssetSharing.API.csproj --no-restore --configuration Release
           else
             dotnet build src/Services/${{ matrix.service }}/${{ matrix.service }}.API.csproj --no-restore --configuration Release
           fi

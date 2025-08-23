@@ -5548,7 +5548,7 @@
         "description": "Postgres schema standards, migrations, HA/backup, performance, multi-tenant controls",
         "details": "Owns DB conventions: naming, schemas, RLS; migration process; backups; HA; perf; data retention and privacy.",
         "testStrategy": "",
-        "status": "pending",
+        "status": "done",
         "dependencies": [
           1,
           2,
@@ -5561,7 +5561,7 @@
             "title": "Database Platform: Standards & migrations",
             "description": "Migration conventions, naming, RLS templates, seed flows",
             "details": "Acceptance:\n- Conventions doc; migration templates\n- RLS policy templates for multi-tenant\n- Seed data flow per environment",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 27
           },
@@ -5570,7 +5570,7 @@
             "title": "Database Platform: HA, backups, retention",
             "description": "Backups (full+incremental), PITR, restore runbooks",
             "details": "Acceptance:\n- Scheduled backups with verification\n- PITR tested; RPO/RTO documented\n- Restore drills documented",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 27
           },
@@ -5579,7 +5579,7 @@
             "title": "Database Platform: Performance & indexing",
             "description": "Index strategy, query review, partitioning where needed",
             "details": "Acceptance:\n- Index playbook; slow query review\n- Partitioning policy for large tables\n- Monitoring dashboards & alerts",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 27
           }
@@ -5591,7 +5591,7 @@
         "description": "OpenAPI specs, NSwag generation, versioning, deprecation, samples",
         "details": "Centralize OpenAPI; enforce standards; SDK generation for web/mobile; samples; versioning strategy.",
         "testStrategy": "",
-        "status": "pending",
+        "status": "in-progress",
         "dependencies": [
           1,
           "27"
@@ -5603,7 +5603,7 @@
             "title": "API Contracts: Linting & CI validation",
             "description": "OpenAPI lint rules, CI gating, examples coverage",
             "details": "Acceptance:\n- Spectral ruleset; CI fails on violations\n- Examples for all endpoints; schemas validated\n- Versioning policy doc",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 28
           },
@@ -5612,7 +5612,7 @@
             "title": "SDKs: Generation & publishing",
             "description": "NSwag/Autorest pipeline; npm/nuget packages; samples",
             "details": "Acceptance:\n- Generate TS/.NET clients from specs\n- Publish prerelease packages; changelogs\n- Samples and quickstarts",
-            "status": "pending",
+            "status": "in-progress",
             "dependencies": [],
             "parentTaskId": 28
           }
@@ -5792,7 +5792,7 @@
     ],
     "metadata": {
       "created": "2025-08-23T16:02:37.798Z",
-      "updated": "2025-08-23T16:22:16.191Z",
+      "updated": "2025-08-23T17:55:59.476Z",
       "description": "Tag created on 23/8/2025"
     }
   }

@@ -1,0 +1,57 @@
+# Spectral Action Configuration for TOSS ERP
+name: 'Spectral OpenAPI Linting'
+description: 'Lint OpenAPI specifications using Spectral with TOSS ERP rules'
+
+inputs:
+  file_glob:
+    description: 'Glob pattern for OpenAPI files to lint'
+    required: false
+    default: 'docs/openapi/**/*.{yml,yaml}'
+  
+  spectral_ruleset:
+    description: 'Path to Spectral ruleset file'
+    required: false
+    default: '.spectral.yml'
+    
+  output_format:
+    description: 'Output format for results'
+    required: false
+    default: 'stylish'
+    
+  fail_severity:
+    description: 'Minimum severity level to fail the action'
+    required: false
+    default: 'error'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install Spectral CLI
+      shell: bash
+      run: npm install -g @stoplight/spectral-cli
+      
+    - name: Run Spectral Linting
+      shell: bash
+      run: |
+        echo "Linting OpenAPI files with pattern: ${{ inputs.file_glob }}"
+        spectral lint "${{ inputs.file_glob }}" \
+          --ruleset "${{ inputs.spectral_ruleset }}" \
+          --format "${{ inputs.output_format }}" \
+          --fail-severity "${{ inputs.fail_severity }}" \
+          --verbose
+          
+    - name: Generate JUnit Report
+      if: always()
+      shell: bash
+      run: |
+        mkdir -p spectral-results
+        spectral lint "${{ inputs.file_glob }}" \
+          --ruleset "${{ inputs.spectral_ruleset }}" \
+          --format junit \
+          --output spectral-results/junit.xml \
+          --fail-severity info || true

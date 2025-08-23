@@ -107,6 +107,91 @@ services:
     networks:
       - toss-network
 
+  # HR Service
+  hr-api:
+    build:
+      context: ../src/Services/hr/HR.API
+      dockerfile: Dockerfile
+    container_name: tosserp-hr-api
+    ports:
+      - "5004:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - toss-network
+
+  # Logistics Service
+  logistics-api:
+    build:
+      context: ../src/Services/logistics/Logistics.API
+      dockerfile: Dockerfile
+    container_name: tosserp-logistics-api
+    ports:
+      - "5005:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - toss-network
+
+  # PooledCredit Service
+  pooledcredit-api:
+    build:
+      context: ../src/Services/pooledcredit/PooledCredit.API
+      dockerfile: Dockerfile
+    container_name: tosserp-pooledcredit-api
+    ports:
+      - "5006:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - toss-network
+
+  # CreditEngine Service
+  creditengine-api:
+    build:
+      context: ../src/Services/creditengine/CreditEngine.API
+      dockerfile: Dockerfile
+    container_name: tosserp-creditengine-api
+    ports:
+      - "5007:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - toss-network
+
+  # AssetSharing Service
+  assetsharing-api:
+    build:
+      context: ../src/Services/assetsharing/AssetSharing.API
+      dockerfile: Dockerfile
+    container_name: tosserp-assetsharing-api
+    ports:
+      - "5008:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - toss-network
+
   # API Gateway
   gateway:
     build:
@@ -122,6 +207,11 @@ services:
       - identity-api
       - stock-api
       - crm-api
+      - hr-api
+      - logistics-api
+      - pooledcredit-api
+      - creditengine-api
+      - assetsharing-api
     networks:
       - toss-network
 
