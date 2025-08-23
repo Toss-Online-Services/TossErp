@@ -223,5 +223,10 @@ Cypress.Commands.add('checkPerformance', () => {
   });
 });
 
+// Custom command for keyboard navigation (tab key)
+Cypress.Commands.add('tabKey', () => {
+  cy.focused().type('{tab}');
+});
+
 // Export commands for use in other files
 export {};

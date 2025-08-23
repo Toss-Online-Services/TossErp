@@ -166,5 +166,10 @@ declare namespace Cypress {
      * Custom command to check performance metrics
      */
     checkPerformance(): Chainable<void>
+
+    /**
+     * Custom command for keyboard navigation (tab key)
+     */
+    tabKey(): Chainable<void>
   }
 }
