@@ -1,0 +1,57 @@
+# Task ID: 25
+# Title: Credit Engine Service (MVP)
+# Status: pending
+# Dependencies: 1, 7, 8, 27, 28
+# Priority: medium
+# Description: Credit profiles and decisions; integrates with Sales/CRM/Accounting.
+# Details:
+Scope: CreditProfile, Evaluation, Decision, Limit. Align to creditengine.openapi; idempotent decisioning; webhook notifications; audit & explainability.
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Credit Engine: Database schema + migrations [pending]
+### Dependencies: None
+### Description: CreditPolicy, Rule, Scorecard, Decision, Application, BureauReport
+### Details:
+Acceptance:
+- DDL with RLS; constraints; indexes
+- Migrations scripted; seed reference policies
+
+## 2. Credit Engine: Decisioning API [pending]
+### Dependencies: None
+### Description: Score and decision endpoints; async if long-running
+### Details:
+Acceptance:
+- /applications, /score, /decisions with scopes
+- Async job for long-running bureau calls
+- RFC9457 errors; examples; tests
+
+## 3. Credit Engine: Bureau and data integrations [pending]
+### Dependencies: None
+### Description: Pluggable providers; sandbox fakes; retries and backoff
+### Details:
+Acceptance:
+- Provider interface; mock and 1 real provider adapter stub
+- Circuit breaker; backoff; observability
+- Contract tests
+
+## 4. Credit Engine: Web UI [pending]
+### Dependencies: None
+### Description: Policy editor, rule testing, decision audit trails
+### Details:
+Acceptance:
+- Edit policies/rules; simulate scores
+- Decision log with filters; export
+- E2E tests
+
+## 5. Credit Engine: Tests + docs [pending]
+### Dependencies: None
+### Description: Coverage and documentation
+### Details:
+Acceptance:
+- Unit/integration tests ≥70%
+- Provider guide; policy authoring docs
+- Runbook for provider outages
+

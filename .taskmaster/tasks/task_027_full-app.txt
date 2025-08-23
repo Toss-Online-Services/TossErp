@@ -1,0 +1,40 @@
+# Task ID: 27
+# Title: Database Platform & Operations
+# Status: pending
+# Dependencies: 1, 2, 3
+# Priority: high
+# Description: Postgres schema standards, migrations, HA/backup, performance, multi-tenant controls
+# Details:
+Owns DB conventions: naming, schemas, RLS; migration process; backups; HA; perf; data retention and privacy.
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Database Platform: Standards & migrations [pending]
+### Dependencies: None
+### Description: Migration conventions, naming, RLS templates, seed flows
+### Details:
+Acceptance:
+- Conventions doc; migration templates
+- RLS policy templates for multi-tenant
+- Seed data flow per environment
+
+## 2. Database Platform: HA, backups, retention [pending]
+### Dependencies: None
+### Description: Backups (full+incremental), PITR, restore runbooks
+### Details:
+Acceptance:
+- Scheduled backups with verification
+- PITR tested; RPO/RTO documented
+- Restore drills documented
+
+## 3. Database Platform: Performance & indexing [pending]
+### Dependencies: None
+### Description: Index strategy, query review, partitioning where needed
+### Details:
+Acceptance:
+- Index playbook; slow query review
+- Partitioning policy for large tables
+- Monitoring dashboards & alerts
+

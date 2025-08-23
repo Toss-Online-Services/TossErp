@@ -1,0 +1,56 @@
+# Task ID: 26
+# Title: Asset Sharing Service (MVP)
+# Status: pending
+# Dependencies: 1, 6, 7, 27, 28
+# Priority: low
+# Description: Assets, bookings, usage, settlements among participants.
+# Details:
+Scope: Asset, Booking, UsageRecord, Settlement. Align to assetshare.openapi; payments integration; calendar views; events to Accounting.
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Asset Sharing: Database schema + migrations [pending]
+### Dependencies: None
+### Description: Assets, Listings, Reservations, Usage, Pricing, Disputes
+### Details:
+Acceptance:
+- DDL with RLS; constraints; indexes
+- Migrations scripted; ER diagram
+
+## 2. Asset Sharing: Domain + API endpoints [pending]
+### Dependencies: None
+### Description: List asset, request/approve reservation, usage log, settle
+### Details:
+Acceptance:
+- Endpoints with scopes, idempotency, ETag/If-Match
+- Webhooks (reservation.approved, usage.closed)
+- Tests + examples
+
+## 3. Asset Sharing: Payments & Accounting integration [pending]
+### Dependencies: None
+### Description: Calculate fees, payouts; post journals to Finance
+### Details:
+Acceptance:
+- Fee engine; payout schedule
+- Events to Finance; reconciliation report
+- Idempotent consumers; retry logic
+
+## 4. Asset Sharing: Web UI [pending]
+### Dependencies: None
+### Description: Owner dashboard, renter portal
+### Details:
+Acceptance:
+- Owner: list/manage assets; calendar view
+- Renter: search, reserve, pay
+- E2E tests
+
+## 5. Asset Sharing: Tests + docs [pending]
+### Dependencies: None
+### Description: Coverage and documentation
+### Details:
+Acceptance:
+- Unit/integration tests ≥70%
+- API/webhook docs; runbook; fraud/abuse guidelines
+

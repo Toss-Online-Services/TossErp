@@ -1,0 +1,57 @@
+# Task ID: 22
+# Title: Project Management Service (MVP)
+# Status: pending
+# Dependencies: 1, 7, 27, 28
+# Priority: medium
+# Description: Projects, tasks, timesheets, budgets; integrates with Sales/Accounting.
+# Details:
+Scope: Project, Task, Milestone, Timesheet, Assignment, Budget. APIs for CRUD; time capture; cost rollups to Accounting; basic Gantt data endpoints.
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Projects: Database schema + migrations [pending]
+### Dependencies: None
+### Description: Schema for Project, Task, Milestone, Timesheet, Assignment, Budget
+### Details:
+Acceptance:
+- DDL with RLS; FK and indexes
+- Migrations scripted
+- ER diagram
+
+## 2. Projects: Domain + API endpoints [pending]
+### Dependencies: None
+### Description: CRUD and flows for projects, tasks, timesheets, budgets
+### Details:
+Acceptance:
+- CQRS; validations; ProblemDetails
+- Timesheet approvals; budget checks
+- Swagger examples + tests
+
+## 3. Projects: Integrations (Accounting, Sales) [pending]
+### Dependencies: None
+### Description: Billable time to invoices; cost rollups
+### Details:
+Acceptance:
+- Sales invoice creation from approved timesheets
+- Cost rollups to Accounting
+- E2E tests
+
+## 4. Projects: Web UI [pending]
+### Dependencies: None
+### Description: Project board, task list, timesheet entry
+### Details:
+Acceptance:
+- Kanban/sprints basics
+- Timesheet capture UI
+- Cypress tests
+
+## 5. Projects: Tests + docs [pending]
+### Dependencies: None
+### Description: Coverage and docs
+### Details:
+Acceptance:
+- Unit/integration tests; >=70%
+- API docs; user guide for time tracking
+

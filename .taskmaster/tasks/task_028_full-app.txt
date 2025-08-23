@@ -1,0 +1,31 @@
+# Task ID: 28
+# Title: API Contracts & SDKs
+# Status: pending
+# Dependencies: 1, 27
+# Priority: high
+# Description: OpenAPI specs, NSwag generation, versioning, deprecation, samples
+# Details:
+Centralize OpenAPI; enforce standards; SDK generation for web/mobile; samples; versioning strategy.
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. API Contracts: Linting & CI validation [pending]
+### Dependencies: None
+### Description: OpenAPI lint rules, CI gating, examples coverage
+### Details:
+Acceptance:
+- Spectral ruleset; CI fails on violations
+- Examples for all endpoints; schemas validated
+- Versioning policy doc
+
+## 2. SDKs: Generation & publishing [pending]
+### Dependencies: None
+### Description: NSwag/Autorest pipeline; npm/nuget packages; samples
+### Details:
+Acceptance:
+- Generate TS/.NET clients from specs
+- Publish prerelease packages; changelogs
+- Samples and quickstarts
+
