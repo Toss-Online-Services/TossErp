@@ -17,6 +17,6 @@ alwaysApply: true
 - Mandatory audit on payroll runs, approvals, and corrections with reasons.
 
 ## Acceptance Criteria
-- API: RFC7807 errors, cursor pagination; PII redaction on list endpoints; rate limits on payroll operations.
+- API: RFC9457 errors, cursor pagination; PII redaction on list endpoints; rate limits on payroll operations.
 - Cross-links: [Model](mdc:docs/models/hr.model.md) · [API](mdc:docs/api-specs/hr.openapi.md) · [Workflow](mdc:docs/architecture/hr.workflow.md)
 - Validate payroll calculations, leave accruals, and approval flows.

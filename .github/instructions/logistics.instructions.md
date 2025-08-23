@@ -18,7 +18,7 @@ alwaysApply: true
 - Ensure data sharing agreements and compliance with customs/export controls where applicable.
 
 ## Acceptance Criteria
-- API: RFC7807, cursor pagination, idempotency on shipment creation/updates; rate limits on tracking endpoints.
+- API: RFC9457, cursor pagination, idempotency on shipment creation/updates; rate limits on tracking endpoints.
 - Conflict handling: 409 for double scans or invalid status transitions; webhooks for status events.
 - Cross-links: [Model](mdc:docs/models/logistics.model.md) · [API](mdc:docs/api-specs/logistics.openapi.md) · [Workflow](mdc:docs/architecture/logistics.workflow.md)
 - Validate route planning constraints, delivery confirmations, and advanced warehousing flows.

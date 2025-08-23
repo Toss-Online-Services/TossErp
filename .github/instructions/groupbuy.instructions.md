@@ -18,7 +18,7 @@ alwaysApply: true
 - Multi-company and role-based visibility; consent for cross-organization data sharing.
 
 ## Acceptance Criteria
-- API: RFC7807, cursor pagination, idempotency for commitments and RFQ responses; rate-limiting on negotiation endpoints.
+- API: RFC9457, cursor pagination, idempotency for commitments and RFQ responses; rate-limiting on negotiation endpoints.
 - Conflict handling: 409 when commitments exceed capacity or deadlines; transparent allocation rules.
 - Cross-links: [Model](mdc:docs/models/groupbuy.model.md) · [API](mdc:docs/api-specs/groupbuy.openapi.md) · [Workflow](mdc:docs/architecture/groupbuy.workflow.md)
 - Validate end-to-end flow: Request → Commitments → RFQ/Vendor → Allocation → Settlement.

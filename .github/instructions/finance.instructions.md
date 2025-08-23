@@ -19,6 +19,6 @@ alwaysApply: true
 - Regional tax handling and period closing controls; approval workflows for postings.
 
 ## Acceptance Criteria
-- API adheres to: RFC7807 errors, cursor pagination, idempotency keys on POST, rate limits.
+- API adheres to: RFC9457 errors, cursor pagination, idempotency keys on POST, rate limits.
 - Cross-links available: [Model](mdc:docs/models/finance.model.md) · [API](mdc:docs/api-specs/finance.openapi.md) · [Workflow](mdc:docs/architecture/finance.workflow.md)
 - Tests validate balanced entries, currency conversion, and lockout on closed periods.

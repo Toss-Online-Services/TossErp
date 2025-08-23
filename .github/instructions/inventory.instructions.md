@@ -17,6 +17,6 @@ alwaysApply: true
 - Immutable audit of stock moves; conflict handling on over-issuance with 409.
 
 ## Acceptance Criteria
-- API: RFC7807 errors, cursor pagination, idempotency on stock-moves and receipts.
+- API: RFC9457 errors, cursor pagination, idempotency on stock-moves and receipts.
 - Cross-links: [Model](mdc:docs/models/inventory.model.md) · [API](mdc:docs/api-specs/inventory.openapi.md) · [Workflow](mdc:docs/architecture/inventory.workflow.md)
 - Validate batch/serial tracking, expiry, and 3-way match (PO→Receipt→Invoice).

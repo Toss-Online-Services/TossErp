@@ -18,6 +18,6 @@ alwaysApply: true
 - PII minimized and access-logged; approvals required on discount thresholds.
 
 ## Acceptance Criteria
-- API standards: RFC7807 errors, cursor pagination, search/filter, idempotency on POST.
+- API standards: RFC9457 errors, cursor pagination, search/filter, idempotency on POST.
 - Cross-links: [Model](mdc:docs/models/sales.model.md) · [API](mdc:docs/api-specs/sales.openapi.md) · [Workflow](mdc:docs/architecture/sales.workflow.md)
 - E2E path: Lead→Opportunity→Quote→Order→Invoice; inventory reservation on order.

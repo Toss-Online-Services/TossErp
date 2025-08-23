@@ -18,7 +18,7 @@ alwaysApply: true
 - Model explainability and bias checks where applicable; configurable retention policies.
 
 ## Acceptance Criteria
-- API: RFC7807, cursor pagination; idempotency for decision requests; rate limits on scoring endpoints.
+- API: RFC9457, cursor pagination; idempotency for decision requests; rate limits on scoring endpoints.
 - Integrations: pluggable connectors for bureaus/fintechs; retries with backoff; circuit breaker patterns.
 - Cross-links: [Model](mdc:docs/models/creditengine.model.md) · [API](mdc:docs/api-specs/creditengine.openapi.md) · [Workflow](mdc:docs/architecture/creditengine.workflow.md)
 - Validate decisioning outcomes, overrides with audit, and downstream finance linkage.
