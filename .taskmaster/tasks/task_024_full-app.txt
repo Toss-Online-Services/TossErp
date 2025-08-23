@@ -1,7 +1,7 @@
 # Task ID: 24
 # Title: Pooled Credit Service (MVP)
 # Status: pending
-# Dependencies: 1, 7, 27, 28
+# Dependencies: 1, 7, 27, 28, 31
 # Priority: medium
 # Description: Pools, contributions, loans, repayments, approvals; cooperative finance flows.
 # Details:

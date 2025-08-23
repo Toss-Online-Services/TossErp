@@ -5163,7 +5163,8 @@
           1,
           7,
           "27",
-          "28"
+          "28",
+          "31"
         ],
         "priority": "medium",
         "subtasks": [
@@ -5234,7 +5235,8 @@
           1,
           7,
           "27",
-          "28"
+          "28",
+          "31"
         ],
         "priority": "medium",
         "subtasks": [
@@ -5297,7 +5299,8 @@
           4,
           5,
           "27",
-          "28"
+          "28",
+          "31"
         ],
         "priority": "medium",
         "subtasks": [
@@ -5359,7 +5362,8 @@
           1,
           7,
           "27",
-          "28"
+          "28",
+          "31"
         ],
         "priority": "medium",
         "subtasks": [
@@ -5422,7 +5426,8 @@
           7,
           8,
           "27",
-          "28"
+          "28",
+          "31"
         ],
         "priority": "medium",
         "subtasks": [
@@ -5485,7 +5490,8 @@
           6,
           7,
           "27",
-          "28"
+          "28",
+          "31"
         ],
         "priority": "low",
         "subtasks": [
@@ -5682,11 +5688,111 @@
             "parentTaskId": 30
           }
         ]
+      },
+      {
+        "id": 31,
+        "title": "Scaffold remaining domain services (HR, Projects, Logistics, PooledCredit, CreditEngine, AssetSharing)",
+        "description": "Create .NET service skeletons following Stock/Sales layout (Domain, Application, Infrastructure, API). Add Program.cs with RFC9457 ProblemDetails, Serilog, OpenTelemetry, Health checks, Swagger; Dockerfile; appsettings; baseline csproj wiring to ServiceDefaults and Contracts. Prepare initial EF Core migrations and docker-compose entries.",
+        "details": "Deliverables:\n- Folders: src/Services/{hr,projects,logistics,pooledcredit,creditengine,assetsharing}/ with Domain, Application, Infrastructure, API projects\n- API: Minimal endpoints (/health, /_status) and Swagger; ProblemDetails per RFC9457; Serilog request logging; OpenTelemetry tracing/metrics\n- Infrastructure: DbContext + initial migration stubs; connection string via env; RLS template hooks\n- Docker: Multistage build, non-root run, healthcheck\n- Compose: Add each service with ports and dependencies (postgres, rabbitmq)\n- Solution: Add projects to TossErp.sln under Services folder\nAcceptance:\n- dotnet build succeeds for all new projects\n- docker build works per service\n- GET /health returns 200\n- Basic OpenAPI served at /swagger",
+        "testStrategy": "Build and smoke test each service: dotnet build; dotnet run; curl /health; verify Swagger UI loads.",
+        "status": "pending",
+        "dependencies": [
+          27,
+          28
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "HR service skeleton",
+            "description": "Create src/Services/hr/{Domain,Application,Infrastructure,API} with baseline wiring and health endpoints.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 31
+          },
+          {
+            "id": 2,
+            "title": "Projects service skeleton",
+            "description": "Create src/Services/projects/{Domain,Application,Infrastructure,API} with baseline wiring and health endpoints.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 31
+          },
+          {
+            "id": 3,
+            "title": "Logistics service skeleton",
+            "description": "Create src/Services/logistics/{Domain,Application,Infrastructure,API} with baseline wiring and health endpoints.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 31
+          },
+          {
+            "id": 4,
+            "title": "PooledCredit service skeleton",
+            "description": "Create src/Services/pooledcredit/{Domain,Application,Infrastructure,API} with baseline wiring and health endpoints.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 31
+          },
+          {
+            "id": 5,
+            "title": "CreditEngine service skeleton",
+            "description": "Create src/Services/creditengine/{Domain,Application,Infrastructure,API} with baseline wiring and health endpoints.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 31
+          },
+          {
+            "id": 6,
+            "title": "AssetSharing service skeleton",
+            "description": "Create src/Services/assetsharing/{Domain,Application,Infrastructure,API} with baseline wiring and health endpoints.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 31
+          },
+          {
+            "id": 7,
+            "title": "Solution & compose wiring",
+            "description": "Add new projects to TossErp.sln and docker-compose.yml with healthchecks and dependencies.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 31
+          },
+          {
+            "id": 8,
+            "title": "CI build matrix update",
+            "description": "Extend GitHub Actions to build/test new services and push images.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 31
+          }
+        ]
+      },
+      {
+        "id": 32,
+        "title": "Monorepo cleanup: remove stale root Node artifacts; align to clients/web",
+        "description": "Audit root and src-level Node artifacts (package.json, lockfiles) and remove or migrate to src/clients/web. Ensure web client is the only Node workspace unless additional clients exist.",
+        "details": "- Identify stray package.json files at repo root or src/ that are not part of clients.\n- Remove or archive deprecated Node projects; update docs accordingly.\n- Ensure src/clients/web has complete setup (postcss, tailwind, eslint, tsconfig) and runs.\n- Add a root-level .nvmrc (Node 20) and optional Volta config for consistency.\nAcceptance: npm scripts run only under src/clients/web; docs updated; CI uses correct path.",
+        "testStrategy": "Run npm ci && npm run dev from src/clients/web; verify no root-level npm scripts are required.",
+        "status": "pending",
+        "dependencies": [
+          13
+        ],
+        "priority": "medium",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-08-23T16:02:37.798Z",
-      "updated": "2025-08-23T16:06:26.448Z",
+      "updated": "2025-08-23T16:22:16.191Z",
       "description": "Tag created on 23/8/2025"
     }
   }

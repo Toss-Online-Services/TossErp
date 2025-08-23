@@ -1,7 +1,7 @@
 # Task ID: 21
 # Title: HR/Payroll Service (MVP)
 # Status: pending
-# Dependencies: 1, 7, 27, 28
+# Dependencies: 1, 7, 27, 28, 31
 # Priority: medium
 # Description: Employees, payroll runs, leave/attendance, statutory deductions; integrates with Accounting.
 # Details:
