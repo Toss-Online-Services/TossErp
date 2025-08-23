@@ -18,7 +18,7 @@ alwaysApply: true
 - Require approvals for restricted/high-value assets; enforce usage terms and liability acknowledgments.
 
 ## Acceptance Criteria
-- API standards: RFC7807 errors, cursor pagination, idempotency keys on POST (bookings, check-in/out), rate limits.
+- API standards: RFC9457 errors, cursor pagination, idempotency keys on POST (bookings, check-in/out), rate limits.
 - Conflict handling: return 409 on overlapping bookings or unavailable assets.
 - Cross-links: [Model](mdc:docs/models/assetshare.model.md) · [API](mdc:docs/api-specs/assetshare.openapi.md) · [Workflow](mdc:docs/architecture/assetshare.workflow.md)
 - Validate booking lifecycle, cost allocation, and permission checks.

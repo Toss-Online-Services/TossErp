@@ -18,7 +18,7 @@ alwaysApply: true
 - KYC/AML where applicable; segregation of duties for approvals.
 
 ## Acceptance Criteria
-- API: RFC7807, cursor pagination, idempotency for contributions and disbursements; rate limits on sensitive operations.
+- API: RFC9457, cursor pagination, idempotency for contributions and disbursements; rate limits on sensitive operations.
 - Conflict handling: 409 on over-allocation beyond pool size or delinquency constraints.
 - Cross-links: [Model](mdc:docs/models/pooledcredit.model.md) · [API](mdc:docs/api-specs/pooledcredit.openapi.md) · [Workflow](mdc:docs/architecture/pooledcredit.workflow.md)
 - Validate pool accounting integrity, repayment schedules, and member equity tracking.

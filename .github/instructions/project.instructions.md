@@ -17,6 +17,6 @@ alwaysApply: true
 - Audit logs on task transitions, approvals, and SLA breaches.
 
 ## Acceptance Criteria
-- API: RFC7807 errors, cursor pagination, sort by due_date; rate limits on timesheet writes.
+- API: RFC9457 errors, cursor pagination, sort by due_date; rate limits on timesheet writes.
 - Cross-links: [Model](mdc:docs/models/project.model.md) · [API](mdc:docs/api-specs/project.openapi.md) · [Workflow](mdc:docs/architecture/project.workflow.md)
 - Validate timesheet approval, SLA checks, and finance linkage for billing.

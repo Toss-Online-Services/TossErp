@@ -4,7 +4,7 @@ description: Project & Service Management API — endpoints, scopes, headers, pa
 
 # Project API
 
-Reference: See shared API standards in ../api-specs/STANDARDS.md for authentication, headers, RFC7807 errors, cursor pagination, idempotency keys, rate limits, webhooks, and auditing.
+Reference: See shared API standards in ../api-specs/STANDARDS.md for authentication, headers, RFC9457 errors, cursor pagination, idempotency keys, rate limits, webhooks, and auditing.
 
 ## Security & Scopes
 - OAuth2 scopes: project:read, project:write, timesheet:write
@@ -32,7 +32,7 @@ Reference: See shared API standards in ../api-specs/STANDARDS.md for authenticat
 - GET /projects/audit?entity=Task&id=...
 
 ## Errors & SLA Conflicts
-- RFC7807
+- RFC9457
 - 409 for SLA constraint violations or invalid status transitions
 - 412 ETag precondition failure when concurrent edits
 
