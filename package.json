@@ -1,5 +1,24 @@
 {
+  "name": "toss-erp",
+  "version": "1.0.0",
+  "description": "Township One-Stop Solution (TOSS) ERP III",
+  "scripts": {
+    "lint:api": "spectral lint 'docs/openapi/**/*.{yml,yaml}' --verbose",
+    "lint:api:junit": "spectral lint 'docs/openapi/**/*.{yml,yaml}' --format junit --output api-lint-results.xml",
+    "docs:generate": "redoc-cli build docs/openapi/core.yml --output docs/generated/api.html",
+    "docs:serve": "redoc-cli serve docs/openapi/core.yml --watch",
+    "precommit:api": "npm run lint:api",
+    "sdk:install": "cd tools/sdk && npm install",
+    "sdk:generate:dotnet": "cd tools/sdk && npm run generate:dotnet",
+    "sdk:generate:typescript": "cd tools/sdk && npm run generate:typescript", 
+    "sdk:generate": "cd tools/sdk && npm run generate:all",
+    "sdk:clean": "cd tools/sdk && npm run clean"
+  },
   "dependencies": {
     "@headlessui/vue": "^1.7.23"
+  },
+  "devDependencies": {
+    "@stoplight/spectral-cli": "^6.11.0",
+    "redoc-cli": "^0.13.21"
   }
 }

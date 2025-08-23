@@ -1,0 +1,192 @@
+name: API Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'docs/openapi/**/*.yml'
+      - 'docs/openapi/**/*.yaml'
+      - 'docs/openapi/**/*.json'
+      - '.spectral.yml'
+      - '.github/workflows/api-validation.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'docs/openapi/**/*.yml'
+      - 'docs/openapi/**/*.yaml'
+      - 'docs/openapi/**/*.json'
+      - '.spectral.yml'
+      - '.github/workflows/api-validation.yml'
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  lint-openapi:
+    name: Lint OpenAPI Specifications
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install Spectral CLI
+        run: npm install -g @stoplight/spectral-cli
+        
+      - name: Create results directory
+        run: mkdir -p lint-results
+        
+      - name: Lint OpenAPI specs with Spectral
+        run: |
+          find docs/openapi -name "*.yml" -o -name "*.yaml" -o -name "*.json" | while read file; do
+            echo "Linting $file"
+            spectral lint "$file" \
+              --format junit \
+              --output "lint-results/$(basename "$file" | sed 's/\.[^.]*$//').xml" \
+              --verbose || echo "Linting failed for $file"
+          done
+          
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spectral-results
+          path: lint-results/
+          retention-days: 30
+          
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          junit_files: "lint-results/*.xml"
+          check_name: "OpenAPI Lint Results"
+          comment_title: "OpenAPI Lint Results"
+          
+  validate-examples:
+    name: Validate OpenAPI Examples
+    runs-on: ubuntu-latest
+    needs: lint-openapi
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install swagger-codegen-cli
+        run: |
+          wget https://repo1.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/3.0.46/swagger-codegen-cli-3.0.46.jar -O swagger-codegen-cli.jar
+          
+      - name: Validate OpenAPI specs
+        run: |
+          find docs/openapi -name "*.yml" -o -name "*.yaml" | while read file; do
+            echo "Validating $file"
+            java -jar swagger-codegen-cli.jar validate -i "$file" || echo "Validation failed for $file"
+          done
+          
+  generate-docs:
+    name: Generate API Documentation
+    runs-on: ubuntu-latest
+    needs: [lint-openapi, validate-examples]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install Redoc CLI
+        run: npm install -g redoc-cli
+        
+      - name: Generate HTML documentation
+        run: |
+          mkdir -p generated-docs
+          find docs/openapi -name "*.yml" -o -name "*.yaml" | while read file; do
+            filename=$(basename "$file" | sed 's/\.[^.]*$//')
+            echo "Generating docs for $file"
+            redoc-cli build "$file" --output "generated-docs/${filename}.html"
+          done
+          
+      - name: Upload generated docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-documentation
+          path: generated-docs/
+          retention-days: 90
+
+  security-audit:
+    name: Security Audit of API Specs
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Install 42Crunch API Security Audit
+        run: npm install -g @42crunch/cli
+        
+      - name: Run security audit
+        env:
+          SECURITY_AUDIT_TOKEN: ${{ secrets.CRUNCH_TOKEN }}
+        run: |
+          if [ -n "$SECURITY_AUDIT_TOKEN" ]; then
+            find docs/openapi -name "*.yml" -o -name "*.yaml" | while read file; do
+              echo "Security audit for $file"
+              42c audit "$file" || echo "Security audit failed for $file"
+            done
+          else
+            echo "Security audit skipped - no token provided"
+          fi
+          
+  breaking-changes:
+    name: Check for Breaking Changes
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Install OpenAPI Diff
+        run: npm install -g openapi-diff
+        
+      - name: Check for breaking changes
+        run: |
+          git diff --name-only HEAD^ HEAD | grep -E '\.(yml|yaml)$' | grep docs/openapi | while read file; do
+            if git show HEAD^:"$file" > /tmp/old.yml 2>/dev/null; then
+              echo "Checking breaking changes in $file"
+              openapi-diff /tmp/old.yml "$file" --fail-on-incompatible || {
+                echo "::error::Breaking changes detected in $file"
+                exit 1
+              }
+            else
+              echo "New file: $file (no breaking change check needed)"
+            fi
+          done

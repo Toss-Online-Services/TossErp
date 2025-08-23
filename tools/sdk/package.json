@@ -1,0 +1,21 @@
+{
+  "name": "@toss-erp/sdk-tools",
+  "version": "1.0.0",
+  "description": "SDK generation tools for TOSS ERP",
+  "private": true,
+  "scripts": {
+    "generate:dotnet": "dotnet nswag run dotnet-client.nswag",
+    "generate:typescript": "openapi-generator-cli generate",
+    "generate:all": "npm run generate:dotnet && npm run generate:typescript",
+    "clean": "rimraf ../../src/Client/TossErp.Client.Generated.cs ../../src/Client/TypeScript",
+    "install:tools": "dotnet tool install NSwag.ConsoleCore --version 14.2.0",
+    "prepare": "npm run install:tools"
+  },
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.15.3",
+    "rimraf": "^6.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

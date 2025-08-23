@@ -1,0 +1,34 @@
+{
+  "spaces": 2,
+  "generator-cli": {
+    "version": "7.10.0",
+    "useDocker": true,
+    "dockerImageName": "openapitools/openapi-generator-cli",
+    "generators": {
+      "TossErpClient": {
+        "generatorName": "typescript-axios",
+        "inputSpec": "/local/docs/openapi/core.yml",
+        "output": "/local/src/Client/TypeScript",
+        "additionalProperties": {
+          "supportsES6": true,
+          "withInterfaces": true,
+          "useSingleRequestParameter": true,
+          "apiPackage": "api",
+          "modelPackage": "models",
+          "npmName": "@toss-erp/client",
+          "npmVersion": "1.0.0",
+          "npmDescription": "TypeScript client library for TOSS ERP API",
+          "npmAuthor": "TOSS ERP Team",
+          "npmRepository": "https://github.com/toss-online-services/TossErp",
+          "stringEnums": true,
+          "enumNameSuffix": "",
+          "removeOperationIdPrefix": true,
+          "generateSourceCodeOnly": false
+        },
+        "globalProperties": {
+          "skipFormModel": "false"
+        }
+      }
+    }
+  }
+}

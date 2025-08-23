@@ -1,0 +1,346 @@
+name: SDK Generation and Publishing
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'docs/openapi/**'
+      - 'tools/sdk/**'
+      - '.github/workflows/sdk-generation.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/openapi/**'
+      - 'tools/sdk/**'
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish SDKs to package feeds'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  NODE_VERSION: '20.x'
+
+jobs:
+  validate-openapi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate OpenAPI specification
+        run: npm run lint:api
+
+  generate-dotnet-sdk:
+    needs: validate-openapi
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install NSwag CLI
+        working-directory: tools/sdk
+        run: |
+          dotnet tool install NSwag.ConsoleCore --version 14.2.0 --tool-path ./tools
+          echo "$(pwd)/tools" >> $GITHUB_PATH
+
+      - name: Generate .NET client
+        working-directory: tools/sdk
+        run: nswag run dotnet-client.nswag
+
+      - name: Create .NET client project
+        run: |
+          mkdir -p src/Client
+          cat > src/Client/TossErp.Client.csproj << 'EOF'
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <TargetFramework>net8.0</TargetFramework>
+              <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+              <PackageId>TossErp.Client</PackageId>
+              <PackageVersion>1.0.0-alpha.${{ github.run_number }}</PackageVersion>
+              <Authors>TOSS ERP Team</Authors>
+              <Description>Generated .NET client library for TOSS ERP API</Description>
+              <PackageProjectUrl>https://github.com/toss-online-services/TossErp</PackageProjectUrl>
+              <RepositoryUrl>https://github.com/toss-online-services/TossErp</RepositoryUrl>
+              <RepositoryType>git</RepositoryType>
+              <PackageTags>toss-erp;api-client;openapi</PackageTags>
+              <PackageLicenseExpression>MIT</PackageLicenseExpression>
+              <Nullable>enable</Nullable>
+            </PropertyGroup>
+            <ItemGroup>
+              <PackageReference Include="System.Text.Json" Version="8.0.0" />
+              <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+            </ItemGroup>
+          </Project>
+          EOF
+
+      - name: Build .NET client
+        working-directory: src/Client
+        run: dotnet build --configuration Release
+
+      - name: Pack .NET client
+        working-directory: src/Client
+        run: dotnet pack --configuration Release --no-build --output ../../artifacts/nuget
+
+      - name: Upload .NET SDK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-sdk
+          path: artifacts/nuget/*.nupkg
+
+  generate-typescript-sdk:
+    needs: validate-openapi
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install SDK generation tools
+        working-directory: tools/sdk
+        run: npm install
+
+      - name: Generate TypeScript client
+        working-directory: tools/sdk
+        run: npm run generate:typescript
+
+      - name: Create TypeScript package.json
+        run: |
+          mkdir -p artifacts/npm
+          cat > artifacts/npm/package.json << 'EOF'
+          {
+            "name": "@toss-erp/client",
+            "version": "1.0.0-alpha.${{ github.run_number }}",
+            "description": "TypeScript client library for TOSS ERP API",
+            "main": "dist/index.js",
+            "types": "dist/index.d.ts",
+            "files": [
+              "dist/**/*",
+              "README.md"
+            ],
+            "scripts": {
+              "build": "tsc",
+              "prepublishOnly": "npm run build"
+            },
+            "keywords": [
+              "toss-erp",
+              "api-client",
+              "openapi",
+              "typescript"
+            ],
+            "author": "TOSS ERP Team",
+            "license": "MIT",
+            "repository": {
+              "type": "git",
+              "url": "https://github.com/toss-online-services/TossErp.git"
+            },
+            "dependencies": {
+              "axios": "^1.6.0"
+            },
+            "devDependencies": {
+              "typescript": "^5.3.0",
+              "@types/node": "^20.0.0"
+            },
+            "engines": {
+              "node": ">=16.0.0"
+            }
+          }
+          EOF
+
+      - name: Create TypeScript config
+        run: |
+          cat > artifacts/npm/tsconfig.json << 'EOF'
+          {
+            "compilerOptions": {
+              "target": "ES2020",
+              "module": "commonjs",
+              "lib": ["ES2020"],
+              "declaration": true,
+              "outDir": "./dist",
+              "rootDir": "./src",
+              "strict": true,
+              "esModuleInterop": true,
+              "skipLibCheck": true,
+              "forceConsistentCasingInFileNames": true
+            },
+            "include": ["src/**/*"],
+            "exclude": ["node_modules", "dist"]
+          }
+          EOF
+
+      - name: Copy generated TypeScript files
+        run: |
+          mkdir -p artifacts/npm/src
+          cp -r src/Client/TypeScript/* artifacts/npm/src/
+
+      - name: Create TypeScript README
+        run: |
+          cat > artifacts/npm/README.md << 'EOF'
+          # TOSS ERP TypeScript Client
+
+          Generated TypeScript client library for TOSS ERP API.
+
+          ## Installation
+
+          ```bash
+          npm install @toss-erp/client
+          ```
+
+          ## Usage
+
+          ```typescript
+          import { Configuration, DefaultApi } from '@toss-erp/client';
+
+          const config = new Configuration({
+            basePath: 'https://api.toss-erp.com',
+            accessToken: 'your-access-token'
+          });
+
+          const api = new DefaultApi(config);
+
+          // Example usage
+          async function getUsers() {
+            try {
+              const response = await api.getUsers();
+              console.log(response.data);
+            } catch (error) {
+              console.error('Error:', error);
+            }
+          }
+          ```
+
+          ## Documentation
+
+          For detailed API documentation, visit [API Documentation](https://api.toss-erp.com/docs).
+          EOF
+
+      - name: Install TypeScript SDK dependencies
+        working-directory: artifacts/npm
+        run: npm install
+
+      - name: Build TypeScript SDK
+        working-directory: artifacts/npm
+        run: npm run build
+
+      - name: Upload TypeScript SDK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: typescript-sdk
+          path: artifacts/npm
+
+  publish-sdks:
+    needs: [generate-dotnet-sdk, generate-typescript-sdk]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event.inputs.publish == 'true'
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Download .NET SDK artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dotnet-sdk
+          path: artifacts/nuget
+
+      - name: Download TypeScript SDK artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: typescript-sdk
+          path: artifacts/npm
+
+      - name: Publish .NET package to NuGet
+        if: env.NUGET_API_KEY != ''
+        working-directory: artifacts/nuget
+        run: |
+          dotnet nuget push "*.nupkg" \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+      - name: Publish TypeScript package to npm
+        if: env.NODE_AUTH_TOKEN != ''
+        working-directory: artifacts/npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  create-release:
+    needs: [publish-sdks]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: sdk-v1.0.0-alpha.${{ github.run_number }}
+          release_name: SDK Release v1.0.0-alpha.${{ github.run_number }}
+          body: |
+            ## SDK Release v1.0.0-alpha.${{ github.run_number }}
+
+            ### Generated SDKs
+            - .NET Client: TossErp.Client v1.0.0-alpha.${{ github.run_number }}
+            - TypeScript Client: @toss-erp/client v1.0.0-alpha.${{ github.run_number }}
+
+            ### Changes
+            - Updated OpenAPI specification
+            - Generated client libraries with latest API changes
+            - Automated SDK generation and publishing pipeline
+
+            ### Installation
+
+            #### .NET
+            ```
+            dotnet add package TossErp.Client --version 1.0.0-alpha.${{ github.run_number }}
+            ```
+
+            #### TypeScript/JavaScript
+            ```
+            npm install @toss-erp/client@1.0.0-alpha.${{ github.run_number }}
+            ```
+          draft: false
+          prerelease: true
