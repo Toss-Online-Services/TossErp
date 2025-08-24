@@ -57,6 +57,9 @@ onBeforeUnmount(() => {
 </script>
 
 <style>
+/* Import main CSS */
+@import './assets/css/main.css';
+
 /* Global TOSS ERP styles */
 html {
   scroll-behavior: smooth;
