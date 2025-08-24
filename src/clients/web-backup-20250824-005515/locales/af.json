@@ -1,0 +1,113 @@
+{
+  "common": {
+    "loading": "Laai...",
+    "save": "Bewaar",
+    "cancel": "Kanselleer",
+    "delete": "Skrap",
+    "edit": "Wysig",
+    "add": "Voeg by",
+    "create": "Skep",
+    "update": "Dateer op",
+    "search": "Soek",
+    "filter": "Filter",
+    "export": "Uitvoer",
+    "import": "Invoer",
+    "submit": "Dien in",
+    "reset": "Herstel",
+    "close": "Sluit",
+    "back": "Terug",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "confirm": "Bevestig",
+    "yes": "Ja",
+    "no": "Nee"
+  },
+  "nav": {
+    "main": "Hoof",
+    "erp_modules": "ERP Modules",
+    "collaborative": "Samewerkend",
+    "ai_analytics": "AI & Analitiek",
+    "administration": "Administrasie"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "finance": "Finansies",
+    "sales": "Verkope & CRM",
+    "inventory": "Voorraad",
+    "projects": "Projekte",
+    "hr": "Menslike Hulpbronne",
+    "reports": "Verslae",
+    "collaborative": "Samewerkend",
+    "ai_copilot": "AI Ko-loods",
+    "settings": "Instellings"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welkom by TOSS ERP III",
+    "quick_stats": "Vinnige Statistieke",
+    "recent_activities": "Onlangse Aktiwiteite",
+    "pending_tasks": "Hangende Take",
+    "ai_insights": "AI Insigte"
+  },
+  "finance": {
+    "title": "Finansiële Bestuur",
+    "accounts_payable": "Rekeninge Betaalbaar",
+    "accounts_receivable": "Rekeninge Ontvangbaar",
+    "general_ledger": "Algemene Grootboek",
+    "budgeting": "Begrotings",
+    "expenses": "Uitgawes",
+    "invoicing": "Fakturering"
+  },
+  "sales": {
+    "title": "Verkope & Kliënte Bestuur",
+    "leads": "Leidrade",
+    "opportunities": "Geleenthede",
+    "customers": "Kliënte",
+    "quotations": "Kwotasies",
+    "orders": "Verkoopsorders",
+    "pipeline": "Verkoopspypleiding"
+  },
+  "inventory": {
+    "title": "Voorraad & Verkryging",
+    "products": "Produkte",
+    "stock_levels": "Voorraadvlakke",
+    "purchase_orders": "Aankooporders",
+    "suppliers": "Verskaffers",
+    "warehouses": "Pakhuise",
+    "stock_movements": "Voorraadbeweging"
+  },
+  "collaborative": {
+    "title": "Samewerkende Ekonomie",
+    "group_buying": "Groep Aankope",
+    "shared_assets": "Gedeelde Bates",
+    "pooled_credit": "Gesamentlike Krediet",
+    "network": "Samewerkende Netwerk",
+    "collaboration": "Samewerking Hub",
+    "partnerships": "Besigheid Vennootskappe",
+    "resource_sharing": "Hulpbron Deling",
+    "cost_sharing": "Koste Deling",
+    "collective_procurement": "Kollektiewe Verkryging",
+    "mutual_financing": "Wedersydse Finansiering",
+    "cross_promotion": "Kruis Bevordering",
+    "supply_chain": "Gedeelde Voorsieningsketting",
+    "logistics": "Samewerkende Logistiek"
+  },
+  "ai": {
+    "copilot": "AI Besigheid Ko-loods",
+    "chat": "Gesels met AI",
+    "insights": "AI Insigte",
+    "automation": "Outomatisering",
+    "recommendations": "Aanbevelings",
+    "voice_assistant": "Stem Assistent"
+  },
+  "auth": {
+    "login": "Teken In",
+    "logout": "Teken Uit",
+    "register": "Registreer",
+    "forgot_password": "Wagwoord Vergeet",
+    "reset_password": "Herstel Wagwoord",
+    "email": "E-pos",
+    "password": "Wagwoord",
+    "remember_me": "Onthou my"
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "create": "Create",
+    "update": "Update",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "submit": "Submit",
+    "reset": "Reset",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "nav": {
+    "main": "Main",
+    "erp_modules": "ERP Modules",
+    "cooperative": "Cooperative",
+    "ai_analytics": "AI & Analytics",
+    "administration": "Administration"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "finance": "Finance",
+    "sales": "Sales & CRM",
+    "inventory": "Inventory",
+    "projects": "Projects",
+    "hr": "Human Resources",
+    "reports": "Reports",
+    "cooperative": "Cooperative",
+    "ai_copilot": "AI Co-Pilot",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to TOSS ERP III",
+    "quick_stats": "Quick Statistics",
+    "recent_activities": "Recent Activities",
+    "pending_tasks": "Pending Tasks",
+    "ai_insights": "AI Insights"
+  },
+  "finance": {
+    "title": "Financial Management",
+    "accounts_payable": "Accounts Payable",
+    "accounts_receivable": "Accounts Receivable",
+    "general_ledger": "General Ledger",
+    "budgeting": "Budgeting",
+    "expenses": "Expenses",
+    "invoicing": "Invoicing"
+  },
+  "sales": {
+    "title": "Sales & Customer Management",
+    "leads": "Leads",
+    "opportunities": "Opportunities",
+    "customers": "Customers",
+    "quotations": "Quotations",
+    "orders": "Sales Orders",
+    "pipeline": "Sales Pipeline"
+  },
+  "inventory": {
+    "title": "Inventory & Procurement",
+    "products": "Products",
+    "stock_levels": "Stock Levels",
+    "purchase_orders": "Purchase Orders",
+    "suppliers": "Suppliers",
+    "warehouses": "Warehouses",
+    "stock_movements": "Stock Movements"
+  },
+  "cooperative": {
+    "title": "Cooperative Economy",
+    "group_buying": "Group Buying",
+    "shared_assets": "Shared Assets",
+    "pooled_credit": "Pooled Credit",
+    "network": "Co-op Network",
+    "collaboration": "Collaboration Hub"
+  },
+  "ai": {
+    "copilot": "AI Business Co-Pilot",
+    "chat": "Chat with AI",
+    "insights": "AI Insights",
+    "automation": "Automation",
+    "recommendations": "Recommendations",
+    "voice_assistant": "Voice Assistant"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "forgot_password": "Forgot Password",
+    "reset_password": "Reset Password",
+    "email": "Email",
+    "password": "Password",
+    "remember_me": "Remember me"
+  }
+}
