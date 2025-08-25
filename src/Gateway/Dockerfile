@@ -7,25 +7,19 @@ WORKDIR /src
 
 # Copy project files and restore dependencies (layer caching optimization)
 COPY ["src/Gateway/Gateway.csproj", "Gateway/"]
-COPY ["src/ServiceDefaults/eShop.ServiceDefaults.csproj", "ServiceDefaults/"]
-COPY ["src/Services/_shared/Configuration/Configuration.csproj", "Services/_shared/Configuration/"]
-COPY ["Directory.Build.props", "Directory.Build.targets", "Directory.Packages.props", "./"]
+COPY ["src/Directory.Build.props", "src/Directory.Build.targets", "Directory.Packages.props", "./"]
 
-RUN dotnet restore "Gateway/Gateway.csproj" --runtime alpine-x64
+RUN dotnet restore "Gateway/Gateway.csproj"
 
 # Copy source code and build
 COPY src/Gateway/ Gateway/
-COPY src/ServiceDefaults/ ServiceDefaults/
-COPY src/Services/_shared/Configuration/ Services/_shared/Configuration/
 
 WORKDIR /src/Gateway
-RUN dotnet build "Gateway.csproj" -c Release --runtime alpine-x64 --self-contained false --no-restore
+RUN dotnet build "Gateway.csproj" -c Release --no-restore
 
 # Publish stage
 FROM build AS publish
 RUN dotnet publish "Gateway.csproj" -c Release -o /app/publish \
-    --runtime alpine-x64 \
-    --self-contained false \
     --no-restore
 
 # Runtime stage

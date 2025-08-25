@@ -1,25 +1,21 @@
-# TOSS ERP - Main Docker Compose
-# This file orchestrates the entire system
-# Use: docker-compose -f docker-compose.yml up
+# TOSS ERP III - Core Services Docker Compose
+# This file provides a simplified setup for the core working services:
+# - PostgreSQL Database
+# - Redis Cache  
+# - RabbitMQ Message Broker
+# - CRM API Service
+# - API Gateway with YARP routing
+# - Web Client (Nuxt.js)
+#
+# Usage:
+#   docker-compose up -d
+#
+# Or specifically using the core file:
+#   docker-compose -f docker-compose.core.yml up -d
+#
+# For full development setup with all services:
+#   docker-compose -f docker/docker-compose.yml up -d
 
-version: '3.8'
-
-# Import the main services from the docker directory
-# This file serves as the entry point for the entire system
-
-# Use the following commands:
-# 
-# Development (with monitoring):
-# docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up
-#
-# Production:
-# docker-compose -f docker/docker-compose.yml up
-#
-# Infrastructure only:
-# docker-compose -f docker/docker-compose.yml up postgres redis rabbitmq
-#
-# Services only:
-# docker-compose -f docker/docker-compose.yml up identity-api stock-api crm-api gateway
-#
-# Frontend only:
-# docker-compose -f docker/docker-compose.yml up web-client nginx
+# Include core services configuration
+include:
+  - docker-compose.core.yml

@@ -30,6 +30,10 @@ declare module "nitropack/types" {
     '/api/communication/messages/send': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/communication/messages/send.post').default>>>>
     }
+    '/api/crm/customers': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/crm/customers.get').default>>>>
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/crm/customers.post').default>>>>
+    }
     '/api/customers': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/customers/index.get').default>>>>
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/customers/index.post').default>>>>

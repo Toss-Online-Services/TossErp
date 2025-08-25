@@ -13,15 +13,22 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // Add Entity Framework - simplified for now
+        // Add Entity Framework
         services.AddDbContext<CrmDbContext>(options =>
         {
-            var connectionString = configuration.GetConnectionString("TossErpDb");
-            // TODO: Configure PostgreSQL once packages are properly restored
-            // options.UseNpgsql(connectionString);
-            
-            // For now, use in-memory database to avoid package issues
-            options.UseInMemoryDatabase("CrmDb");
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                // Fallback to in-memory database
+                options.UseInMemoryDatabase("CrmDb");
+            }
+            else
+            {
+                options.UseNpgsql(connectionString, b =>
+                {
+                    b.MigrationsAssembly("Crm.Infrastructure");
+                });
+            }
         });
 
         // TODO: Add health checks once packages are restored

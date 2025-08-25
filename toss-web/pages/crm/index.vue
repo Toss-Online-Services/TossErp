@@ -306,7 +306,7 @@ const pending = computed(() => customersPending.value || analyticsPending.value)
 async function fetchCustomers() {
   customersPending.value = true
   try {
-    const response = await fetch('/api/customers')
+    const response = await fetch('/api/crm/customers')
     const data = await response.json()
     customers.value = data || []
   } catch (error) {
@@ -412,7 +412,7 @@ const debouncedSearch = debounce(() => {
 async function createCustomer() {
   creatingCustomer.value = true
   try {
-    const response = await fetch('/api/customers', {
+    const response = await fetch('/api/crm/customers', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
