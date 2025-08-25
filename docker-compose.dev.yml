@@ -1,0 +1,265 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: toss_erp
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Auth Service
+  auth-service:
+    build:
+      context: .
+      dockerfile: src/backend/services/auth/Dockerfile.dev
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: "postgresql://postgres:password@postgres:5432/toss_auth"
+      REDIS_URL: "redis://redis:6379"
+      JWT_SECRET: "dev-jwt-secret-key"
+      REFRESH_TOKEN_SECRET: "dev-refresh-token-secret"
+      EMAIL_FROM: "noreply@toss-erp.com"
+      EMAIL_SMTP_HOST: "mailhog"
+      EMAIL_SMTP_PORT: 1025
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./src/backend/services/auth:/app
+      - /app/node_modules
+      - ./src/backend/shared:/app/shared
+    command: ["npm", "run", "dev"]
+
+  # CRM Service
+  crm-service:
+    build:
+      context: .
+      dockerfile: src/backend/services/crm/Dockerfile.dev
+    ports:
+      - "3002:3002"
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+      DATABASE_URL: "postgresql://postgres:password@postgres:5432/toss_crm"
+      REDIS_URL: "redis://redis:6379"
+      AUTH_SERVICE_URL: "http://auth-service:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    volumes:
+      - ./src/backend/services/crm:/app
+      - /app/node_modules
+      - ./src/backend/shared:/app/shared
+    command: ["npm", "run", "dev"]
+
+  # Inventory Service
+  inventory-service:
+    build:
+      context: .
+      dockerfile: src/backend/services/inventory/Dockerfile.dev
+    ports:
+      - "3003:3003"
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      DATABASE_URL: "postgresql://postgres:password@postgres:5432/toss_inventory"
+      REDIS_URL: "redis://redis:6379"
+      AUTH_SERVICE_URL: "http://auth-service:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    volumes:
+      - ./src/backend/services/inventory:/app
+      - /app/node_modules
+      - ./src/backend/shared:/app/shared
+    command: ["npm", "run", "dev"]
+
+  # Accounting Service
+  accounting-service:
+    build:
+      context: .
+      dockerfile: src/backend/services/accounting/Dockerfile.dev
+    ports:
+      - "3004:3004"
+    environment:
+      NODE_ENV: development
+      PORT: 3004
+      DATABASE_URL: "postgresql://postgres:password@postgres:5432/toss_accounting"
+      REDIS_URL: "redis://redis:6379"
+      AUTH_SERVICE_URL: "http://auth-service:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    volumes:
+      - ./src/backend/services/accounting:/app
+      - /app/node_modules
+      - ./src/backend/shared:/app/shared
+    command: ["npm", "run", "dev"]
+
+  # Sales Service
+  sales-service:
+    build:
+      context: .
+      dockerfile: src/backend/services/sales/Dockerfile.dev
+    ports:
+      - "3005:3005"
+    environment:
+      NODE_ENV: development
+      PORT: 3005
+      DATABASE_URL: "postgresql://postgres:password@postgres:5432/toss_sales"
+      REDIS_URL: "redis://redis:6379"
+      AUTH_SERVICE_URL: "http://auth-service:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    volumes:
+      - ./src/backend/services/sales:/app
+      - /app/node_modules
+      - ./src/backend/shared:/app/shared
+    command: ["npm", "run", "dev"]
+
+  # AI Copilot Service
+  ai-copilot-service:
+    build:
+      context: .
+      dockerfile: src/backend/services/ai-copilot/Dockerfile.dev
+    ports:
+      - "3010:3010"
+    environment:
+      NODE_ENV: development
+      PORT: 3010
+      DATABASE_URL: "postgresql://postgres:password@postgres:5432/toss_ai"
+      REDIS_URL: "redis://redis:6379"
+      AUTH_SERVICE_URL: "http://auth-service:3001"
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    volumes:
+      - ./src/backend/services/ai-copilot:/app
+      - /app/node_modules
+      - ./src/backend/shared:/app/shared
+    command: ["npm", "run", "dev"]
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: .
+      dockerfile: src/backend/gateway/Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      AUTH_SERVICE_URL: "http://auth-service:3001"
+      CRM_SERVICE_URL: "http://crm-service:3002"
+      INVENTORY_SERVICE_URL: "http://inventory-service:3003"
+      ACCOUNTING_SERVICE_URL: "http://accounting-service:3004"
+      SALES_SERVICE_URL: "http://sales-service:3005"
+      AI_COPILOT_SERVICE_URL: "http://ai-copilot-service:3010"
+    depends_on:
+      - auth-service
+      - crm-service
+      - inventory-service
+      - accounting-service
+      - sales-service
+      - ai-copilot-service
+    volumes:
+      - ./src/backend/gateway:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev"]
+
+  # Frontend (Nuxt 3)
+  frontend:
+    build:
+      context: .
+      dockerfile: toss-web/Dockerfile.dev
+    ports:
+      - "3100:3000"
+    environment:
+      NODE_ENV: development
+      NUXT_PUBLIC_API_BASE: "http://localhost:3000"
+    depends_on:
+      - api-gateway
+    volumes:
+      - ./toss-web:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev"]
+
+  # MailHog (Email testing)
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+    environment:
+      MH_STORAGE: maildir
+      MH_MAILDIR_PATH: /maildir
+
+  # Adminer (Database management)
+  adminer:
+    image: adminer:latest
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    driver: bridge

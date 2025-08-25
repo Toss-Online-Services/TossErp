@@ -18,8 +18,8 @@ public class CrmDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Use PostgreSQL schema
-        modelBuilder.HasDefaultSchema("crm");
+        // Skip schema for InMemory database
+        // modelBuilder.HasDefaultSchema("crm");
 
         // Apply all entity configurations from this assembly
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

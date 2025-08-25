@@ -1,13 +1,15 @@
+using Crm.Domain.Common;
+
 namespace Crm.Domain.Entities;
 
 public class CustomerInteraction : Entity
 {
     public Guid CustomerId { get; private set; }
     public InteractionType Type { get; private set; }
-    public string Description { get; private set; }
-    public string Notes { get; private set; }
+    public string Description { get; private set; } = string.Empty;
+    public string Notes { get; private set; } = string.Empty;
     public DateTime CreatedAt { get; private set; }
-    public string CreatedBy { get; private set; }
+    public string CreatedBy { get; private set; } = string.Empty;
     public InteractionStatus Status { get; private set; }
     public DateTime? FollowUpDate { get; private set; }
 
