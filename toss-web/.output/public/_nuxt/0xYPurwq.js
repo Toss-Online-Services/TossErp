@@ -1,0 +1,1 @@
+import{e as s,c as o,D as a,E as t,o as r}from"./Bxwy2Pe9.js";const i=["width","height","viewBox"],p=s({__name:"IconBase",props:{size:{default:24},viewBox:{default:"0 0 24 24"},classes:{default:"fill-current"}},setup(l){return(e,n)=>(r(),o("svg",t({width:e.size,height:e.size,viewBox:e.viewBox,class:e.classes},e.$attrs),[a(e.$slots,"default")],16,i))}});export{p as default};
