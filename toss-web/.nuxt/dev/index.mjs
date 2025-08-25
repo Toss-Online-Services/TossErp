@@ -3,7 +3,7 @@ import { Server } from 'node:http';
 import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, getResponseStatusText } from 'file://C:/Users/PROBOOK/source/repos/Toss-Online-Services/TossErp/toss-web/node_modules/h3/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, setCookie, getCookie, getResponseStatusText } from 'file://C:/Users/PROBOOK/source/repos/Toss-Online-Services/TossErp/toss-web/node_modules/h3/dist/index.mjs';
 import { escapeHtml } from 'file://C:/Users/PROBOOK/source/repos/Toss-Online-Services/TossErp/toss-web/node_modules/@vue/shared/dist/shared.cjs.js';
 import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file://C:/Users/PROBOOK/source/repos/Toss-Online-Services/TossErp/toss-web/node_modules/vue-bundle-renderer/dist/runtime.mjs';
 import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file://C:/Users/PROBOOK/source/repos/Toss-Online-Services/TossErp/toss-web/node_modules/ufo/dist/index.mjs';
@@ -1530,10 +1530,18 @@ async function getIslandContext(event) {
   return ctx;
 }
 
+const _lazy_ldjkMJ = () => Promise.resolve().then(function () { return login_post$1; });
+const _lazy_3QfYhG = () => Promise.resolve().then(function () { return logout_post$1; });
+const _lazy_uboXFf = () => Promise.resolve().then(function () { return me_get$1; });
+const _lazy_dm0Ylo = () => Promise.resolve().then(function () { return register_post$1; });
 const _lazy_qSSj97 = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
   { route: '', handler: _11TZDX, lazy: false, middleware: true, method: undefined },
+  { route: '/api/auth/login', handler: _lazy_ldjkMJ, lazy: true, middleware: false, method: "post" },
+  { route: '/api/auth/logout', handler: _lazy_3QfYhG, lazy: true, middleware: false, method: "post" },
+  { route: '/api/auth/me', handler: _lazy_uboXFf, lazy: true, middleware: false, method: "get" },
+  { route: '/api/auth/register', handler: _lazy_dm0Ylo, lazy: true, middleware: false, method: "post" },
   { route: '/__nuxt_error', handler: _lazy_qSSj97, lazy: true, middleware: false, method: undefined },
   { route: '/__nuxt_island/**', handler: _SxA8c9, lazy: false, middleware: false, method: undefined },
   { route: '/**', handler: _lazy_qSSj97, lazy: true, middleware: false, method: undefined }
@@ -1862,6 +1870,234 @@ const styles = {};
 const styles$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: styles
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const login_post = defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  const { email, password } = body;
+  if (!email || !password) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Email and password are required"
+    });
+  }
+  const demoUsers = [
+    {
+      id: "1",
+      email: "owner@demo.toss.co.za",
+      password: "password123",
+      firstName: "Thabo",
+      lastName: "Molefe",
+      businessName: "Thabo's Spaza Shop",
+      businessId: "business_1",
+      role: "owner",
+      status: "active"
+    },
+    {
+      id: "2",
+      email: "manager@demo.toss.co.za",
+      password: "password123",
+      firstName: "Nomsa",
+      lastName: "Dlamini",
+      businessName: "Thabo's Spaza Shop",
+      businessId: "business_1",
+      role: "manager",
+      status: "active"
+    },
+    {
+      id: "3",
+      email: "employee@demo.toss.co.za",
+      password: "password123",
+      firstName: "Sipho",
+      lastName: "Mthembu",
+      businessName: "Thabo's Spaza Shop",
+      businessId: "business_1",
+      role: "employee",
+      status: "active"
+    }
+  ];
+  const user = demoUsers.find((u) => u.email === email && u.password === password);
+  if (!user) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Invalid email or password"
+    });
+  }
+  const token = Buffer.from(`${user.id}:${Date.now()}`).toString("base64");
+  setCookie(event, "auth-token", token, {
+    maxAge: 60 * 60 * 24 * 7,
+    // 7 days
+    secure: false,
+    sameSite: "strict",
+    httpOnly: true
+  });
+  const { password: _, ...userWithoutPassword } = user;
+  return {
+    success: true,
+    user: {
+      ...userWithoutPassword,
+      createdAt: "2024-01-01T00:00:00Z",
+      updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+    },
+    token,
+    permissions: user.role === "owner" ? ["admin"] : [user.role]
+  };
+});
+
+const login_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: login_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const logout_post = defineEventHandler(async (event) => {
+  setCookie(event, "auth-token", "", {
+    maxAge: 0,
+    secure: false,
+    sameSite: "strict",
+    httpOnly: true
+  });
+  return {
+    success: true,
+    message: "Logged out successfully"
+  };
+});
+
+const logout_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: logout_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const me_get = defineEventHandler(async (event) => {
+  const token = getCookie(event, "auth-token");
+  if (!token) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "No authentication token provided"
+    });
+  }
+  try {
+    const decoded = Buffer.from(token, "base64").toString("utf-8");
+    const [userId] = decoded.split(":");
+    const demoUsers = [
+      {
+        id: "1",
+        email: "owner@demo.toss.co.za",
+        firstName: "Thabo",
+        lastName: "Molefe",
+        businessName: "Thabo's Spaza Shop",
+        businessId: "business_1",
+        role: "owner",
+        status: "active"
+      },
+      {
+        id: "2",
+        email: "manager@demo.toss.co.za",
+        firstName: "Nomsa",
+        lastName: "Dlamini",
+        businessName: "Thabo's Spaza Shop",
+        businessId: "business_1",
+        role: "manager",
+        status: "active"
+      },
+      {
+        id: "3",
+        email: "employee@demo.toss.co.za",
+        firstName: "Sipho",
+        lastName: "Mthembu",
+        businessName: "Thabo's Spaza Shop",
+        businessId: "business_1",
+        role: "employee",
+        status: "active"
+      }
+    ];
+    const user = demoUsers.find((u) => u.id === userId);
+    if (!user) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: "Invalid token"
+      });
+    }
+    return {
+      success: true,
+      user: {
+        ...user,
+        createdAt: "2024-01-01T00:00:00Z",
+        updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+      },
+      permissions: user.role === "owner" ? ["admin"] : [user.role]
+    };
+  } catch (error) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Invalid token"
+    });
+  }
+});
+
+const me_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: me_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const register_post = defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  const { businessName, firstName, lastName, email, phone, password, businessType } = body;
+  if (!businessName || !firstName || !lastName || !email || !password || !businessType) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "All required fields must be provided"
+    });
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid email format"
+    });
+  }
+  if (password.length < 8) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Password must be at least 8 characters long"
+    });
+  }
+  const existingEmails = [
+    "owner@demo.toss.co.za",
+    "manager@demo.toss.co.za",
+    "employee@demo.toss.co.za"
+  ];
+  if (existingEmails.includes(email)) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: "An account with this email already exists"
+    });
+  }
+  const newUser = {
+    id: `user_${Date.now()}`,
+    email,
+    firstName,
+    lastName,
+    businessName,
+    businessId: `business_${Date.now()}`,
+    phone,
+    businessType,
+    role: "owner",
+    // First user of a business becomes owner
+    status: "pending",
+    // Requires email verification
+    createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+    updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+  };
+  return {
+    success: true,
+    message: "Account created successfully. Please check your email to verify your account.",
+    user: newUser
+  };
+});
+
+const register_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: register_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
 function renderPayloadResponse(ssrContext) {

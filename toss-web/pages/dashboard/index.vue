@@ -6,8 +6,10 @@
         <div class="py-4">
           <div class="flex items-center justify-between">
             <div>
-              <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-              <p class="text-gray-600 dark:text-gray-400">Overview of your business performance and key metrics</p>
+              <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                Welcome back, {{ userStore.user?.firstName }}!
+              </h1>
+              <p class="text-gray-600 dark:text-gray-400">Overview of {{ userStore.user?.businessName || 'your business' }} performance and key metrics</p>
             </div>
             <div class="flex space-x-3">
               <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
@@ -165,6 +167,14 @@
 </template>
 
 <script setup lang="ts">
+// Middleware
+definePageMeta({
+  middleware: 'auth'
+})
+
+// Store
+const userStore = useUserStore()
+
 // Sample data
 const metrics = ref({
   revenue: 125600,
