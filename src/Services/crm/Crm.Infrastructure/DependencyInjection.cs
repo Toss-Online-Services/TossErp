@@ -1,6 +1,8 @@
 using Crm.Domain.Repositories;
 using Crm.Infrastructure.Data;
 using Crm.Infrastructure.Persistence.Repositories;
+using Crm.Infrastructure.Repositories;
+using TossErp.CRM.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +39,8 @@ public static class DependencyInjection
 
         // Register repositories
         services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<ILeadRepository, InMemoryLeadRepository>();
+        services.AddScoped<IOpportunityRepository, InMemoryOpportunityRepository>();
 
         return services;
     }
