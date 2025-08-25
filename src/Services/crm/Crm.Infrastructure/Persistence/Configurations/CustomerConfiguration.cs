@@ -8,6 +8,9 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 {
     public void Configure(EntityTypeBuilder<Customer> builder)
     {
+        // Table configuration
+        builder.ToTable("Customers");
+
         // Primary key
         builder.HasKey(c => c.Id);
         builder.Property(c => c.Id)
@@ -36,7 +39,8 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             .HasMaxLength(500);
 
         builder.Property(c => c.DateOfBirth)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnType("date");
 
         // Enum properties
         builder.Property(c => c.Status)
@@ -49,42 +53,61 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             .HasConversion<string>()
             .HasMaxLength(20);
 
-        // Date properties
+        // Audit properties
         builder.Property(c => c.CreatedAt)
-            .IsRequired();
+            .IsRequired()
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-        builder.Property(c => c.LastPurchaseDate);
+        builder.Property(c => c.LastPurchaseDate)
+            .HasColumnType("timestamp with time zone");
 
-        // Numeric properties
+        // Financial properties
         builder.Property(c => c.TotalSpent)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnType("decimal(18,2)")
+            .HasDefaultValue(0);
 
         builder.Property(c => c.PurchaseCount)
-            .IsRequired();
+            .IsRequired()
+            .HasDefaultValue(0);
 
         builder.Property(c => c.LoyaltyPoints)
-            .IsRequired();
+            .IsRequired()
+            .HasDefaultValue(0);
 
         // Relationships
         builder.HasMany(c => c.Interactions)
             .WithOne()
-            .HasForeignKey(i => i.CustomerId)
+            .HasForeignKey("CustomerId")
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(c => c.LoyaltyTransactions)
             .WithOne()
-            .HasForeignKey(lt => lt.CustomerId)
+            .HasForeignKey("CustomerId")
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Indexes (simplified for InMemory)
+        // Indexes
         builder.HasIndex(c => c.Email)
-            .IsUnique();
+            .IsUnique()
+            .HasDatabaseName("IX_Customer_Email");
 
-        builder.HasIndex(c => c.Phone);
-        builder.HasIndex(c => c.Status);
-        builder.HasIndex(c => c.Segment);
-        builder.HasIndex(c => c.CreatedAt);
-        builder.HasIndex(c => c.LastPurchaseDate);
+        builder.HasIndex(c => c.Phone)
+            .HasDatabaseName("IX_Customer_Phone");
+
+        builder.HasIndex(c => c.Status)
+            .HasDatabaseName("IX_Customer_Status");
+
+        builder.HasIndex(c => c.Segment)
+            .HasDatabaseName("IX_Customer_Segment");
+
+        builder.HasIndex(c => c.CreatedAt)
+            .HasDatabaseName("IX_Customer_CreatedAt");
+
+        builder.HasIndex(c => c.LastPurchaseDate)
+            .HasDatabaseName("IX_Customer_LastPurchaseDate");
+
+        builder.HasIndex(c => c.TotalSpent)
+            .HasDatabaseName("IX_Customer_TotalSpent");
 
         // Computed properties (read-only)
         builder.Ignore(c => c.FullName);

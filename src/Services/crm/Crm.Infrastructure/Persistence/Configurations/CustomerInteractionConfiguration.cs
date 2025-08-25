@@ -9,7 +9,7 @@ public class CustomerInteractionConfiguration : IEntityTypeConfiguration<Custome
     public void Configure(EntityTypeBuilder<CustomerInteraction> builder)
     {
         // Table configuration
-        // builder.ToTable("CustomerInteractions"); // Remove for InMemory
+        builder.ToTable("CustomerInteractions");
 
         // Primary key
         builder.HasKey(ci => ci.Id);
@@ -32,10 +32,12 @@ public class CustomerInteractionConfiguration : IEntityTypeConfiguration<Custome
             .HasMaxLength(500);
 
         builder.Property(ci => ci.Notes)
-            .HasMaxLength(2000);
+            .HasMaxLength(2000)
+            .HasDefaultValue(string.Empty);
 
         builder.Property(ci => ci.CreatedAt)
-            .IsRequired();
+            .IsRequired()
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.Property(ci => ci.CreatedBy)
             .IsRequired()
@@ -46,14 +48,26 @@ public class CustomerInteractionConfiguration : IEntityTypeConfiguration<Custome
             .HasConversion<string>()
             .HasMaxLength(20);
 
-        builder.Property(ci => ci.FollowUpDate);
+        builder.Property(ci => ci.FollowUpDate)
+            .HasColumnType("timestamp with time zone");
 
-        // Indexes (simplified for InMemory)
-        builder.HasIndex(ci => ci.CustomerId);
-        builder.HasIndex(ci => ci.Type);
-        builder.HasIndex(ci => ci.Status);
-        builder.HasIndex(ci => ci.CreatedAt);
-        builder.HasIndex(ci => ci.FollowUpDate);
-        builder.HasIndex(ci => ci.CreatedBy);
+        // Indexes
+        builder.HasIndex(ci => ci.CustomerId)
+            .HasDatabaseName("IX_CustomerInteraction_CustomerId");
+
+        builder.HasIndex(ci => ci.Type)
+            .HasDatabaseName("IX_CustomerInteraction_Type");
+
+        builder.HasIndex(ci => ci.Status)
+            .HasDatabaseName("IX_CustomerInteraction_Status");
+
+        builder.HasIndex(ci => ci.CreatedAt)
+            .HasDatabaseName("IX_CustomerInteraction_CreatedAt");
+
+        builder.HasIndex(ci => ci.FollowUpDate)
+            .HasDatabaseName("IX_CustomerInteraction_FollowUpDate");
+
+        builder.HasIndex(ci => ci.CreatedBy)
+            .HasDatabaseName("IX_CustomerInteraction_CreatedBy");
     }
 }

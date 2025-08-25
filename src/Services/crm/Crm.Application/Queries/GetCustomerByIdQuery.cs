@@ -36,8 +36,8 @@ public class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerByIdQuery,
             Phone = customer.Phone,
             Address = customer.Address,
             DateOfBirth = customer.DateOfBirth,
-            Status = customer.Status.ToString(),
-            Segment = customer.Segment.ToString(),
+            Status = customer.Status,
+            Segment = customer.Segment,
             CreatedAt = customer.CreatedAt,
             LastPurchaseDate = customer.LastPurchaseDate,
             TotalSpent = customer.TotalSpent,
@@ -45,8 +45,7 @@ public class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerByIdQuery,
             LoyaltyPoints = customer.LoyaltyPoints,
             FullName = customer.FullName,
             IsLapsed = customer.IsLapsed,
-            IsHighValue = customer.IsHighValue,
-            AverageOrderValue = customer.PurchaseCount > 0 ? customer.TotalSpent / customer.PurchaseCount : 0
+            IsHighValue = customer.IsHighValue
         };
     }
 }
