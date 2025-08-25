@@ -1,0 +1,101 @@
+Sector,Enterprise,Type,Typical scale,Short description
+Retail & Trade,Spaza / Convenience shop,P/H,Micro/Informal,"Small local shop selling groceries, airtime, household goods."
+Retail & Trade,Hawkers / Street traders,P/H,Micro/Informal,"Mobile sellers of food, fruit, small goods."
+Retail & Trade,Pavement / Market stall sellers,P/H,Micro/Informal,"Fixed-day stalls selling clothing, utensils, produce."
+Retail & Trade,Second-hand clothing (thrift) stalls,P,Micro,Buy/resell used clothes.
+Retail & Trade,Small kiosks (tuck-shops),P,Micro,"Single-item focused retail (snacks, cold drinks)."
+Retail & Trade,Bulk-buying group retail (stokvel shops),P/H,Micro/Small,Group procurement and resale.
+Food & Hospitality,Shebeen / informal tavern,S/H,Micro/Informal,Local drinking/social venue often serving snacks.
+Food & Hospitality,Township restaurant / Imbizo / braai stalls,S/H,Micro/Small,"Cooked-food outlets, often outdoor."
+Food & Hospitality,Home bakeries & confectioneries,P/H,Micro,"Bread, cakes made at home for sale."
+Food & Hospitality,Prepared-food vendors / street food,S/H,Micro/Informal,"Ready-to-eat meals (pap, vetkoek, samosas)."
+Food & Hospitality,Catering for events,S/H,Micro/Small,Small-scale event catering for local functions.
+Food & Hospitality,Mobile food truck / cart,S/H,Micro/Small,Mobile prepared-food service.
+Food & Hospitality,Informal lodging / backyard B&B,S/H,Micro,Short-stay accommodation in homes.
+Personal & Household Services,Hair salons / barbershops,S,Micro,Haircuts and styling from small shops or at home.
+Personal & Household Services,Beauty & nail services,S,Micro,"Manicure, pedicure and beauty treatments."
+Personal & Household Services,Laundry / wash-and-fold,S,Micro/Small,Manual or small-machine based laundry services.
+Personal & Household Services,Domestic cleaning / housekeepers,S,Micro,Home cleaning and chores.
+Personal & Household Services,Childminders / day-mothers (informal),S,Micro/Informal,Unregistered childcare in homes.
+Early Childhood & Social Care,Daycare / ECD centres / crèches,S,Micro/Small,Registered/unregistered childcare and early learning.
+Early Childhood & Social Care,After-school care / homework clubs,S,Micro,Supervision & tutoring outside school hours.
+Early Childhood & Social Care,Elderly care / home caregivers,S,Micro,Basic in-home elder support.
+Trades & Technical Services,Electricians,S,Micro/Small,"Residential/commercial wiring, repairs."
+Trades & Technical Services,Plumbers,S,Micro/Small,"Drainage, piping, toilet installation and repair."
+Trades & Technical Services,Carpenters & joiners,P/H,Micro/Small,Furniture manufacture and installation.
+Trades & Technical Services,Welders & metalworkers,P/H,Micro/Small,"Gates, repairs, fabrication."
+Trades & Technical Services,Panel beaters / vehicle body repair,S/H,Micro/Small,Repair for minibuses and cars.
+Trades & Technical Services,Mechanics (vehicle repairs),S/H,Micro/Small,"Engine, brake, general repairs."
+Trades & Technical Services,Auto-electrical services,S,Micro,"Batteries, wiring, starter repairs."
+Trades & Technical Services,"Appliance repair (phones, TVs, fridges)",S/H,Micro,Electronics and appliance fixes.
+Trades & Technical Services,Solar installers / maintenance,S/H,Micro/Small,Small-scale solar panel installation & upkeep.
+Trades & Technical Services,IT / PC / phone repair & mobile tech support,S,Micro,Repair and basic IT services.
+Automotive & Mobility Services,Car washes (fixed bays),S,Micro/Small,Manual/pressure cleaning.
+Automotive & Mobility Services,Mobile car wash,S,Micro,Door-to-door vehicle cleaning.
+Automotive & Mobility Services,Minibus taxi / shared transport,S,Small,Passenger transport services.
+Automotive & Mobility Services,Courier / small goods delivery (local),S,Micro,Last-mile delivery.
+Automotive & Mobility Services,Vehicle detailing / upholstery,S/H,Micro/Small,Interior cleaning and small product sales.
+Agriculture & Agribusiness,Small-scale vegetable gardening,P,Micro,Backyard or community-plot produce.
+Agriculture & Agribusiness,Poultry (chicken) farming,P,Micro/Small,Eggs and broiler production.
+Agriculture & Agribusiness,"Small livestock (goats, sheep)",P,Micro/Small,Meat and breeding stock.
+Agriculture & Agribusiness,Small-scale dairy / milk collection,P/H,Micro/Small,Local milk production & basic processing.
+Agriculture & Agribusiness,Bee-keeping / honey production,P,Micro,Honey and beeswax products.
+Agriculture & Agribusiness,Aquaculture / fish ponds (tilapia),P,Micro,Local fish farming.
+Agriculture & Agribusiness,"Agri-processing (sun-dried produce, preserves)",P/H,Micro/Small,Value-added foods.
+Agriculture & Agribusiness,Packhouse / small-scale cold storage (micro),S/H,Micro/Small,Packing and short-term storage.
+Fisheries & Coastal Livelihoods,Small-scale fishing,P,Micro,Local catch for markets.
+Fisheries & Coastal Livelihoods,Fish smoking / processing,P/H,Micro,Value-add and preservation.
+Manufacturing & Artisanal Production,Brickmaking,P,Micro,Hand-pressed clay bricks for local construction.
+Manufacturing & Artisanal Production,Local furniture makers,P/H,Micro/Small,"Beds, tables made to order."
+Manufacturing & Artisanal Production,Textile crafts / tailoring,P/H,Micro,"Clothing, school uniforms, alterations."
+Manufacturing & Artisanal Production,"Beadwork, basket-weaving, pottery",P,Micro,Cultural crafts for market/tourists.
+Manufacturing & Artisanal Production,Leatherwork & cobblers,P/H,Micro,Shoe repairs and leather goods.
+Manufacturing & Artisanal Production,"Small-scale printing (T-shirts, flyers)",P/H,Micro/Small,Custom printing services.
+Manufacturing & Artisanal Production,Candle / soap making,P,Micro,Household and gift products.
+"Construction, Housing & Building Supplies",Small builders / contractors,S/H,Small,Home repairs and small construction.
+"Construction, Housing & Building Supplies",Masonry / bricklaying,S,Micro/Small,Building walls and foundations.
+"Construction, Housing & Building Supplies",Roofing contractors (corrugated sheets),S/H,Micro/Small,Install and supply roofing.
+"Construction, Housing & Building Supplies","Supply of sand, stone, building aggregates",P,Micro/Small,Local materials for builders.
+"Construction, Housing & Building Supplies",Gate & burglar-proof manufacture,P/H,Micro/Small,Security products and installation.
+"Energy, Water & Environment",Water delivery / tanker services,S/H,Micro/Small,Paid water supply where municipal is limited.
+"Energy, Water & Environment",Solar kiosk / battery charging station,S/H,Micro,Charging and small energy sales.
+"Energy, Water & Environment",Waste collection & recycling entrepreneurs,S/P/H,Micro/Small,"Collect, sort, resell recyclables."
+"Energy, Water & Environment",Composting & organic fertilizer production,P,Micro,From food and agricultural waste.
+Health & Wellness,Traditional healers / herbalists,S/P,Micro,Cultural health services and remedies.
+Health & Wellness,Pharmacy kiosks / OTC sellers,P,Micro,Basic medicines and health products.
+Health & Wellness,Fitness instructors / informal gyms,S,Micro,Local exercise classes or low-cost gyms.
+Health & Wellness,First aid training & community health workers,S,Micro,Basic health services and education.
+"Education, Skills & Training",After-school tutors / literacy classes,S,Micro,Education support services.
+"Education, Skills & Training",Computer literacy / digital skills training,S,Micro,Small training centres.
+"Education, Skills & Training",Trade apprenticeships (informal),S,Micro,On-the-job skills training.
+Financial Services & Group Savings,Stokvels / rotating savings groups,S/H,Micro,Collective savings and bulk buying.
+Financial Services & Group Savings,Burial societies,S,Micro/Community,Social insurance via membership contributions.
+Financial Services & Group Savings,Micro-lending / hawker credit schemes,S,Micro/Informal,Informal credit to traders.
+Financial Services & Group Savings,Agent banking / airtime & voucher shops,S/H,Micro,Financial transactions and airtime sales.
+"Tourism, Culture & Recreation",Tour guides (local cultural tours),S,Micro,Guided experiences for visitors.
+"Tourism, Culture & Recreation",Guesthouses / informal B&Bs,S/H,Micro/Small,Accommodation and local hospitality.
+"Tourism, Culture & Recreation",Cultural performance / music & DJ services,S,Micro,Entertainment for events.
+"Tourism, Culture & Recreation",Artists & galleries selling local art,P,Micro,Visual art for sale.
+"Digital, Mobile & Platform Services",Mobile money / airtime resellers,S/H,Micro,Digital transaction facilitation.
+"Digital, Mobile & Platform Services",Small app-based service providers,S,Micro,"Platform-enabled bookings (plumbing, electrician)."
+"Digital, Mobile & Platform Services",Social media micro-marketing services,S,Micro,Help small traders sell online.
+"Digital, Mobile & Platform Services",Simple web design / printing for local SMEs,S/H,Micro,Marketing collateral and digital presence.
+"Waste, Repair & Circular Economy",Scrap-metal collection & resale,P,Micro,Collectors sell to recyclers.
+"Waste, Repair & Circular Economy",E-waste repair & parts salvage,S/P,Micro,Repair and re-sell reclaimed parts.
+"Waste, Repair & Circular Economy",Upcycling artisans (furniture & decor),P/H,Micro,Create products from waste.
+"Events, Weddings & Funeral Services",Event planners (local),S,Micro,"Organize weddings, funerals, parties."
+"Events, Weddings & Funeral Services",Sound & lighting hire,S/H,Micro/Small,Equipment hire and operation.
+"Events, Weddings & Funeral Services",Catering & food stalls for events,S/H,Micro,One-off event food services.
+"Security, Cleaning & Maintenance",Security guards / neighbourhood watch contractors,S,Micro/Small,Local security services.
+"Security, Cleaning & Maintenance",Gardening & landscaping (basic),S,Micro,Yard maintenance.
+"Security, Cleaning & Maintenance",Pest control (informal),S,Micro,Rodent and insect control services.
+Wholesale & Distribution,"Local distributors / wholesalers (groceries, airtime)",P/H,Small,Supply spazas and vendors.
+Wholesale & Distribution,Group procurement agents for stokvels or co-ops,S/H,Micro/Small,Aggregate buying service.
+Cooperatives & Formalized Group Models,Agricultural co-ops,P/H,Small,Joint production and marketing of crops and livestock.
+Cooperatives & Formalized Group Models,Artisan co-ops / craft collectives,P/H,Micro/Small,"Group sales, training and market access."
+Cooperatives & Formalized Group Models,Transport or taxi cooperatives,S/H,Small,Shared fleets and route management.
+Miscellaneous & Niche,Funeral parlours & mortuary-related services,S/H,Small,"Planning, coffin-making, transport."
+Miscellaneous & Niche,Pet care & small-animal services,S/H,Micro,"Basic grooming, feeding, small-animal sales."
+Miscellaneous & Niche,Printing & photocopying kiosks,S/H,Micro,Basic office services for community.
+Miscellaneous & Niche,Stationery & school-supply shops,P,Micro,Supply of school needs and uniforms.
+Miscellaneous & Niche,Antenna / decoder installation & TV services,S/H,Micro,Setup and product sales.
