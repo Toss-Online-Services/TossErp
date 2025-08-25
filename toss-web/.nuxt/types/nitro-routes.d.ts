@@ -30,11 +30,17 @@ declare module "nitropack/types" {
     '/api/customers': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/customers/index.get').default>>>>
     }
+    '/api/dashboard/outcomes': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/dashboard/outcomes.get').default>>>>
+    }
     '/api/group-buying': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/group-buying/index.get').default>>>>
     }
     '/api/group-buying/join': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/group-buying/join.post').default>>>>
+    }
+    '/api/health': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/health.get').default>>>>
     }
     '/api/inventory/:id': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/inventory/[id].get').default>>>>
@@ -61,6 +67,9 @@ declare module "nitropack/types" {
     '/api/notifications/mark-read': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/notifications/mark-read.post').default>>>>
     }
+    '/api/onboarding/setup': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/onboarding/setup.post').default>>>>
+    }
     '/api/projects': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/projects/index.get').default>>>>
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/projects/index.post').default>>>>
@@ -68,6 +77,18 @@ declare module "nitropack/types" {
     '/api/sales': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/sales/index.get').default>>>>
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/sales/index.post').default>>>>
+    }
+    '/api/services/analytics': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/services/analytics.get').default>>>>
+    }
+    '/api/services/catalog': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/services/catalog.get').default>>>>
+    }
+    '/api/services/execute': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/services/execute.post').default>>>>
+    }
+    '/api/services/manage': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/services/manage.post').default>>>>
     }
     '/__nuxt_error': {
       'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../node_modules/nuxt/dist/core/runtime/nitro/handlers/renderer').default>>>>
