@@ -1,3 +1,5 @@
+using Crm.Domain.Entities;
+
 namespace Crm.Domain.Repositories;
 
 public interface ICustomerRepository
@@ -5,6 +7,15 @@ public interface ICustomerRepository
     Task<Customer?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Customer?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
     Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<(List<Customer> customers, int totalCount)> GetPagedAsync(
+        int page,
+        int limit,
+        string? search = null,
+        string? status = null,
+        string? segment = null,
+        string? sortBy = "CreatedAt",
+        string? sortOrder = "desc",
+        CancellationToken cancellationToken = default);
     Task<IEnumerable<Customer>> GetBySegmentAsync(CustomerSegment segment, CancellationToken cancellationToken = default);
     Task<IEnumerable<Customer>> GetLapsedCustomersAsync(int daysThreshold = 90, CancellationToken cancellationToken = default);
     Task<IEnumerable<Customer>> GetTopCustomersAsync(int count = 10, CancellationToken cancellationToken = default);

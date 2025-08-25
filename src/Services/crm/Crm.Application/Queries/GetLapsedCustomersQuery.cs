@@ -1,3 +1,8 @@
+using Crm.Application.DTOs;
+using Crm.Domain.Repositories;
+using MediatR;
+using Microsoft.Extensions.Logging;
+
 namespace Crm.Application.Queries;
 
 public record GetLapsedCustomersQuery(int DaysThreshold = 90) : IRequest<IEnumerable<CustomerDto>>;
@@ -28,8 +33,8 @@ public class GetLapsedCustomersQueryHandler : IRequestHandler<GetLapsedCustomers
             Phone = c.Phone,
             Address = c.Address,
             DateOfBirth = c.DateOfBirth,
-            Status = c.Status,
-            Segment = c.Segment,
+            Status = c.Status.ToString(),
+            Segment = c.Segment.ToString(),
             CreatedAt = c.CreatedAt,
             LastPurchaseDate = c.LastPurchaseDate,
             TotalSpent = c.TotalSpent,
