@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../Crm.Domain/Crm.Domain.csproj" />
+    <ProjectReference Include="../Crm.Application/Crm.Application.csproj" />
   </ItemGroup>
 
 </Project>

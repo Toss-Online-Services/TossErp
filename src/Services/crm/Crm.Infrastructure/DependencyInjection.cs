@@ -1,8 +1,7 @@
-using Crm.Domain.Repositories;
+using Crm.Infrastructure.Interfaces;
 using Crm.Infrastructure.Data;
+using Crm.Infrastructure.Data.Seeders;
 using Crm.Infrastructure.Persistence.Repositories;
-using Crm.Infrastructure.Repositories;
-using TossErp.CRM.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,10 +36,13 @@ public static class DependencyInjection
         // services.AddHealthChecks()
         //     .AddDbContextCheck<CrmDbContext>("crm-database");
 
-        // Register repositories
-        services.AddScoped<ICustomerRepository, CustomerRepository>();
-        services.AddScoped<ILeadRepository, LeadRepository>();
-        services.AddScoped<IOpportunityRepository, OpportunityRepository>();
+        // Register repositories - using full namespace paths
+        services.AddScoped<ICustomerRepository, Crm.Infrastructure.Persistence.Repositories.CustomerRepositoryEF>();
+        services.AddScoped<ILeadRepository, Crm.Infrastructure.Persistence.Repositories.LeadRepository>();
+        services.AddScoped<IOpportunityRepository, Crm.Infrastructure.Persistence.Repositories.OpportunityRepository>();
+        
+        // Register data seeder
+        services.AddScoped<CrmDataSeeder>();
 
         return services;
     }
@@ -60,6 +62,25 @@ public static class DependencyInjection
         catch (Exception ex)
         {
             logger.LogError(ex, "An error occurred while migrating the CRM database");
+            throw;
+        }
+    }
+
+    public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var seeder = scope.ServiceProvider.GetRequiredService<CrmDataSeeder>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<CrmDataSeeder>>();
+
+        try
+        {
+            logger.LogInformation("Starting CRM database seeding...");
+            await seeder.SeedAsync();
+            logger.LogInformation("CRM database seeding completed successfully");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while seeding the CRM database");
             throw;
         }
     }

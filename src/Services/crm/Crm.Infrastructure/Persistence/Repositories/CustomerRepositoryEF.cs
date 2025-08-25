@@ -202,7 +202,8 @@ public class CustomerRepositoryEF : ICustomerRepository
             var customer = await GetByIdAsync(id, cancellationToken);
             if (customer != null)
             {
-                customer.Delete("System");
+                // Use domain method to change status to Churned instead of hard delete
+                customer.ChangeStatus(CustomerStatus.Churned, "System");
                 await _context.SaveChangesAsync(cancellationToken);
             }
         }
