@@ -218,6 +218,24 @@ public class LeadAssignedEvent : CRMDomainEvent
     }
 }
 
+/// <summary>
+/// Event raised when a lead is deleted
+/// </summary>
+public class LeadDeletedEvent : CRMDomainEvent
+{
+    public Guid LeadId { get; }
+    public string LeadName { get; }
+    public string DeletedBy { get; }
+
+    public LeadDeletedEvent(Guid tenantId, Guid leadId, string leadName, string deletedBy)
+        : base(tenantId)
+    {
+        LeadId = leadId;
+        LeadName = leadName;
+        DeletedBy = deletedBy;
+    }
+}
+
 #endregion
 
 #region Opportunity Events
@@ -335,6 +353,24 @@ public class OpportunityValueUpdatedEvent : CRMDomainEvent
         NewValue = newValue;
         UpdatedBy = updatedBy;
         UpdateReason = updateReason;
+    }
+}
+
+/// <summary>
+/// Event raised when an opportunity is deleted
+/// </summary>
+public class OpportunityDeletedEvent : CRMDomainEvent
+{
+    public Guid OpportunityId { get; }
+    public Guid CustomerId { get; }
+    public string DeletedBy { get; }
+
+    public OpportunityDeletedEvent(Guid tenantId, Guid opportunityId, Guid customerId, string deletedBy)
+        : base(tenantId)
+    {
+        OpportunityId = opportunityId;
+        CustomerId = customerId;
+        DeletedBy = deletedBy;
     }
 }
 

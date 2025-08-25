@@ -1,8 +1,11 @@
 using Crm.Domain.Entities;
 using TossErp.CRM.Domain.SeedWork;
+using TossErp.CRM.Domain.Aggregates;
+using TossErp.CRM.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection;
+using Customer = TossErp.CRM.Domain.Aggregates.Customer;
 
 namespace Crm.Infrastructure.Data;
 
@@ -15,6 +18,8 @@ public class CrmDbContext : DbContext
     public DbSet<Customer> Customers { get; set; } = null!;
     public DbSet<CustomerInteraction> CustomerInteractions { get; set; } = null!;
     public DbSet<LoyaltyTransaction> LoyaltyTransactions { get; set; } = null!;
+    public DbSet<Lead> Leads { get; set; } = null!;
+    public DbSet<Opportunity> Opportunities { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

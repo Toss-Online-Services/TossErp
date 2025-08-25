@@ -54,6 +54,18 @@ public class Lead : AggregateRoot
     public Guid? CampaignId { get; private set; }
     public string? CampaignName { get; private set; }
 
+    // Additional tracking properties
+    public string? WebsiteUrl { get; private set; }
+    public string? Remarks { get; private set; }
+    public DateTime? NextFollowUp { get; private set; }
+    public int ContactAttempts { get; private set; } = 0;
+    public DateTime? LastActivityDate { get; private set; }
+
+    // Soft delete support
+    public bool IsDeleted { get; private set; } = false;
+    public DateTime? DeletedAt { get; private set; }
+    public string? DeletedBy { get; private set; }
+
     // Collections
     public IReadOnlyList<Activity> Activities => _activities.AsReadOnly();
     public IReadOnlyList<Note> Notes => _notes.AsReadOnly();
@@ -458,6 +470,10 @@ public class Lead : AggregateRoot
     public bool IsConverted => Status == LeadStatus.Converted;
     public bool IsActive => Status != LeadStatus.Converted && Status != LeadStatus.Disqualified;
 
+    public int DaysInPipeline => (int)(DateTime.UtcNow - CreatedAt).TotalDays;
+    public int? DaysSinceLastContact => LastContactedAt.HasValue ? 
+        (int)(DateTime.UtcNow - LastContactedAt.Value).TotalDays : null;
+
     public TimeSpan? TimeSinceLastContact => LastContactedAt.HasValue ? 
         DateTime.UtcNow - LastContactedAt.Value : null;
 
@@ -485,6 +501,18 @@ public class Lead : AggregateRoot
         var cutoff = DateTime.UtcNow.AddDays(-days);
         return _communications.Where(c => c.CommunicatedAt >= cutoff)
                             .OrderByDescending(c => c.CommunicatedAt);
+    }
+
+    public void Delete(string deletedBy)
+    {
+        if (IsDeleted)
+            throw new InvalidOperationException("Lead is already deleted");
+
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        DeletedBy = deletedBy ?? throw new ArgumentNullException(nameof(deletedBy));
+        
+        AddDomainEvent(new LeadDeletedEvent(TenantId, Id, FullName, deletedBy));
     }
 
     #endregion

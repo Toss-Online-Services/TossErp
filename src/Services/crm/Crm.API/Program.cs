@@ -1,5 +1,6 @@
 using Crm.Application;
 using Crm.Infrastructure;
+using Crm.Infrastructure.Data.Seeders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Crm.Infrastructure.Data;
@@ -49,11 +50,24 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Ensure database is created
+// Ensure database is created and seed data
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<CrmDbContext>();
-    await context.Database.EnsureCreatedAsync();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<CrmDataSeeder>>();
+    
+    try
+    {
+        await context.Database.EnsureCreatedAsync();
+        
+        var seeder = new CrmDataSeeder(context, logger);
+        await seeder.SeedAsync();
+    }
+    catch (Exception ex)
+    {
+        var appLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        appLogger.LogError(ex, "An error occurred while seeding the database");
+    }
 }
 
 app.Run();

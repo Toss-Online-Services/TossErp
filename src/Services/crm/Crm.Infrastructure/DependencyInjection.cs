@@ -39,8 +39,8 @@ public static class DependencyInjection
 
         // Register repositories
         services.AddScoped<ICustomerRepository, CustomerRepository>();
-        services.AddScoped<ILeadRepository, InMemoryLeadRepository>();
-        services.AddScoped<IOpportunityRepository, InMemoryOpportunityRepository>();
+        services.AddScoped<ILeadRepository, LeadRepository>();
+        services.AddScoped<IOpportunityRepository, OpportunityRepository>();
 
         return services;
     }
