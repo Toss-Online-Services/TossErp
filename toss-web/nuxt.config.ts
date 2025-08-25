@@ -46,6 +46,16 @@ export default defineNuxtConfig({
   nitro: {
     experimental: {
       wasm: true
+    },
+    devProxy: {
+      '/api/crm': {
+        target: 'http://localhost:8080/api/crm',
+        changeOrigin: true
+      },
+      '/api/analytics': {
+        target: 'http://localhost:8080/api/analytics',
+        changeOrigin: true
+      }
     }
   }
 })

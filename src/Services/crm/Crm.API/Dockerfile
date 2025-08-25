@@ -4,6 +4,7 @@ WORKDIR /src
 
 # Copy Directory.Packages.props for central package management
 COPY ["Directory.Packages.props", "./"]
+COPY ["src/Directory.Build.props", "src/Directory.Build.targets", "./"]
 
 # Copy csproj files and restore dependencies
 COPY ["src/Services/crm/Crm.API/Crm.API.csproj", "Services/crm/Crm.API/"]
@@ -13,8 +14,8 @@ COPY ["src/Services/crm/Crm.Infrastructure/Crm.Infrastructure.csproj", "Services
 
 RUN dotnet restore "Services/crm/Crm.API/Crm.API.csproj"
 
-# Copy the rest of the source code
-COPY src/ .
+# Copy only the CRM service source code
+COPY ["src/Services/crm/", "Services/crm/"]
 
 # Build the application
 WORKDIR "/src/Services/crm/Crm.API"

@@ -1,5 +1,5 @@
-/// <reference types="@nuxt/telemetry" />
 /// <reference types="@nuxt/devtools" />
+/// <reference types="@nuxt/telemetry" />
 /// <reference types="@vueuse/nuxt" />
 /// <reference types="@nuxtjs/tailwindcss" />
 /// <reference types="@nuxtjs/color-mode" />

@@ -1,14 +1,15 @@
-# Use the official Node.js 18 Alpine image
-FROM node:18-alpine AS base
+# Use the official Node.js 18 image (not Alpine due to native binding issues)
+FROM node:18 AS base
 
-# Install necessary packages
-RUN apk update && apk add --no-cache libc6-compat
+# Install necessary packages  
+RUN apt-get update && apt-get install -y libc6-dev
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY nx.json ./
+COPY nuxt.config.ts ./
+COPY tailwind.config.js ./
 
 # Install dependencies
 RUN npm ci --only=production && npm cache clean --force
@@ -23,10 +24,10 @@ FROM base AS builder
 RUN npm ci
 
 # Build the application
-RUN npm run build:toss-web
+RUN npm run build
 
 # Production stage
-FROM node:18-alpine AS runner
+FROM node:18 AS runner
 
 WORKDIR /app
 

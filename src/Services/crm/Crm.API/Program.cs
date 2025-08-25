@@ -23,24 +23,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// Add DbContext
-builder.Services.AddDbContext<CrmDbContext>(options =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    if (string.IsNullOrEmpty(connectionString))
-    {
-        // Use in-memory database for development
-        options.UseInMemoryDatabase("CrmDb");
-    }
-    else
-    {
-        options.UseNpgsql(connectionString, b =>
-        {
-            b.MigrationsAssembly("Crm.Infrastructure");
-        });
-    }
-});
-
 // Add CORS
 builder.Services.AddCors(options =>
 {
