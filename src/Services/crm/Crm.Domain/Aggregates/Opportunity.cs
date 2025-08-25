@@ -58,6 +58,16 @@ public class Opportunity : AggregateRoot
     public Guid? CampaignId { get; private set; }
     public string? CampaignName { get; private set; }
 
+    // Additional properties
+    public string? Remarks { get; private set; }
+    public string? CloseReason { get; private set; }
+    public int? StageProgressDays { get; private set; }
+
+    // Soft delete support
+    public bool IsDeleted { get; private set; } = false;
+    public DateTime? DeletedAt { get; private set; }
+    public string? DeletedBy { get; private set; }
+
     // Collections
     public IReadOnlyList<Activity> Activities => _activities.AsReadOnly();
     public IReadOnlyList<Note> Notes => _notes.AsReadOnly();
@@ -417,6 +427,11 @@ public class Opportunity : AggregateRoot
     public bool IsWon => Stage == OpportunityStage.ClosedWon;
     public bool IsLost => Stage == OpportunityStage.ClosedLost;
 
+    public int DaysInPipeline => (int)(DateTime.UtcNow - CreatedAt).TotalDays;
+    public int? DaysSinceLastActivity => LastActivityDate.HasValue ? 
+        (int)(DateTime.UtcNow - LastActivityDate.Value).TotalDays : null;
+    public int DaysUntilExpectedClose => (ExpectedCloseDate.Date - DateTime.UtcNow.Date).Days;
+
     public bool IsOverdue => IsOpen && ExpectedCloseDate < DateTime.UtcNow.Date;
     public bool IsClosingSoon => IsOpen && ExpectedCloseDate <= DateTime.UtcNow.Date.AddDays(7);
 
@@ -475,6 +490,18 @@ public class Opportunity : AggregateRoot
                                     a.ScheduledAt >= DateTime.UtcNow)
                          .OrderBy(a => a.ScheduledAt)
                          .FirstOrDefault();
+    }
+
+    public void Delete(string deletedBy)
+    {
+        if (IsDeleted)
+            throw new InvalidOperationException("Opportunity is already deleted");
+
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        DeletedBy = deletedBy ?? throw new ArgumentNullException(nameof(deletedBy));
+        
+        AddDomainEvent(new OpportunityDeletedEvent(TenantId, Id, CustomerId, deletedBy));
     }
 
     #endregion
