@@ -1,5 +1,3 @@
-using Crm.Domain.Common;
-
 namespace Crm.Domain.Entities;
 
 public class LoyaltyTransaction : Entity
@@ -7,7 +5,7 @@ public class LoyaltyTransaction : Entity
     public Guid CustomerId { get; private set; }
     public int Points { get; private set; }
     public LoyaltyTransactionType Type { get; private set; }
-    public string Description { get; private set; } = string.Empty;
+    public string Description { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public Guid? RelatedOrderId { get; private set; }
     public DateTime? ExpiryDate { get; private set; }

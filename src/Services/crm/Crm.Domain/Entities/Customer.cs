@@ -1,14 +1,12 @@
-using Crm.Domain.Common;
-
 namespace Crm.Domain.Entities;
 
 public class Customer : Entity
 {
-    public string FirstName { get; private set; } = string.Empty;
-    public string LastName { get; private set; } = string.Empty;
-    public string Email { get; private set; } = string.Empty;
-    public string Phone { get; private set; } = string.Empty;
-    public string Address { get; private set; } = string.Empty;
+    public string FirstName { get; private set; }
+    public string LastName { get; private set; }
+    public string Email { get; private set; }
+    public string Phone { get; private set; }
+    public string Address { get; private set; }
     public DateTime DateOfBirth { get; private set; }
     public CustomerStatus Status { get; private set; }
     public CustomerSegment Segment { get; private set; }

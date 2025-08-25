@@ -1,8 +1,3 @@
-using Crm.Application.DTOs;
-using Crm.Domain.Repositories;
-using MediatR;
-using Microsoft.Extensions.Logging;
-
 namespace Crm.Application.Queries;
 
 public record GetTopCustomersQuery(int Count = 10) : IRequest<IEnumerable<CustomerDto>>;
@@ -33,8 +28,8 @@ public class GetTopCustomersQueryHandler : IRequestHandler<GetTopCustomersQuery,
             Phone = c.Phone,
             Address = c.Address,
             DateOfBirth = c.DateOfBirth,
-            Status = c.Status.ToString(),
-            Segment = c.Segment.ToString(),
+            Status = c.Status,
+            Segment = c.Segment,
             CreatedAt = c.CreatedAt,
             LastPurchaseDate = c.LastPurchaseDate,
             TotalSpent = c.TotalSpent,
@@ -42,8 +37,7 @@ public class GetTopCustomersQueryHandler : IRequestHandler<GetTopCustomersQuery,
             LoyaltyPoints = c.LoyaltyPoints,
             FullName = c.FullName,
             IsLapsed = c.IsLapsed,
-            IsHighValue = c.IsHighValue,
-            AverageOrderValue = c.PurchaseCount > 0 ? c.TotalSpent / c.PurchaseCount : 0
+            IsHighValue = c.IsHighValue
         });
     }
 }
