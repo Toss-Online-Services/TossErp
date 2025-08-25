@@ -1,6 +1,10 @@
 declare global {
+  const SERVICE_REGISTRY: typeof import('../../server/utils/services')['SERVICE_REGISTRY']
+  const ServiceOrchestrator: typeof import('../../server/utils/services')['ServiceOrchestrator']
+  const ServiceTriggerProcessor: typeof import('../../server/utils/services')['ServiceTriggerProcessor']
   const __buildAssetsURL: typeof import('../../node_modules/nuxt/dist/core/runtime/nitro/utils/paths')['buildAssetsURL']
   const __publicAssetsURL: typeof import('../../node_modules/nuxt/dist/core/runtime/nitro/utils/paths')['publicAssetsURL']
+  const addTenantFilter: typeof import('../../server/utils/tenant')['addTenantFilter']
   const appendCorsHeaders: typeof import('../../node_modules/h3')['appendCorsHeaders']
   const appendCorsPreflightHeaders: typeof import('../../node_modules/h3')['appendCorsPreflightHeaders']
   const appendHeader: typeof import('../../node_modules/h3')['appendHeader']
@@ -11,6 +15,7 @@ declare global {
   const cachedEventHandler: typeof import('../../node_modules/nitropack/dist/runtime/internal/cache')['cachedEventHandler']
   const cachedFunction: typeof import('../../node_modules/nitropack/dist/runtime/internal/cache')['cachedFunction']
   const callNodeListener: typeof import('../../node_modules/h3')['callNodeListener']
+  const checkUsageLimit: typeof import('../../server/utils/tenant')['checkUsageLimit']
   const clearResponseHeaders: typeof import('../../node_modules/h3')['clearResponseHeaders']
   const clearSession: typeof import('../../node_modules/h3')['clearSession']
   const createApp: typeof import('../../node_modules/h3')['createApp']
@@ -19,6 +24,7 @@ declare global {
   const createEvent: typeof import('../../node_modules/h3')['createEvent']
   const createEventStream: typeof import('../../node_modules/h3')['createEventStream']
   const createRouter: typeof import('../../node_modules/h3')['createRouter']
+  const createServiceContext: typeof import('../../server/utils/tenant')['createServiceContext']
   const defaultContentType: typeof import('../../node_modules/h3')['defaultContentType']
   const defineAppConfig: typeof import('../../node_modules/nuxt/dist/core/runtime/nitro/utils/config')['defineAppConfig']
   const defineCachedEventHandler: typeof import('../../node_modules/nitropack/dist/runtime/internal/cache')['defineCachedEventHandler']
@@ -66,10 +72,12 @@ declare global {
   const getRouterParam: typeof import('../../node_modules/h3')['getRouterParam']
   const getRouterParams: typeof import('../../node_modules/h3')['getRouterParams']
   const getSession: typeof import('../../node_modules/h3')['getSession']
+  const getTenantContext: typeof import('../../server/utils/tenant')['getTenantContext']
   const getValidatedQuery: typeof import('../../node_modules/h3')['getValidatedQuery']
   const getValidatedRouterParams: typeof import('../../node_modules/h3')['getValidatedRouterParams']
   const handleCacheHeaders: typeof import('../../node_modules/h3')['handleCacheHeaders']
   const handleCors: typeof import('../../node_modules/h3')['handleCors']
+  const hasFeature: typeof import('../../server/utils/tenant')['hasFeature']
   const isCorsOriginAllowed: typeof import('../../node_modules/h3')['isCorsOriginAllowed']
   const isError: typeof import('../../node_modules/h3')['isError']
   const isEvent: typeof import('../../node_modules/h3')['isEvent']
@@ -89,6 +97,7 @@ declare global {
   const readRawBody: typeof import('../../node_modules/h3')['readRawBody']
   const readValidatedBody: typeof import('../../node_modules/h3')['readValidatedBody']
   const removeResponseHeader: typeof import('../../node_modules/h3')['removeResponseHeader']
+  const requireTenant: typeof import('../../server/utils/tenant')['requireTenant']
   const runTask: typeof import('../../node_modules/nitropack/dist/runtime/internal/task')['runTask']
   const sanitizeStatusCode: typeof import('../../node_modules/h3')['sanitizeStatusCode']
   const sanitizeStatusMessage: typeof import('../../node_modules/h3')['sanitizeStatusMessage']
@@ -114,6 +123,7 @@ declare global {
   const toPlainHandler: typeof import('../../node_modules/h3')['toPlainHandler']
   const toWebHandler: typeof import('../../node_modules/h3')['toWebHandler']
   const toWebRequest: typeof import('../../node_modules/h3')['toWebRequest']
+  const trackServiceUsage: typeof import('../../server/utils/tenant')['trackServiceUsage']
   const unsealSession: typeof import('../../node_modules/h3')['unsealSession']
   const updateSession: typeof import('../../node_modules/h3')['updateSession']
   const useAppConfig: typeof import('../../node_modules/nitropack/dist/runtime/internal/config')['useAppConfig']
@@ -124,6 +134,15 @@ declare global {
   const useSession: typeof import('../../node_modules/h3')['useSession']
   const useStorage: typeof import('../../node_modules/nitropack/dist/runtime/internal/storage')['useStorage']
   const writeEarlyHints: typeof import('../../node_modules/h3')['writeEarlyHints']
+}
+// for type re-export
+declare global {
+  // @ts-ignore
+  export type { ServiceOrchestrator, ServiceTriggerProcessor, ServiceDefinition, ServiceTrigger, ServiceAction, ServiceExecution } from '../../server/utils/services'
+  import('../../server/utils/services')
+  // @ts-ignore
+  export type { TenantContext, ServiceContext } from '../../server/utils/tenant'
+  import('../../server/utils/tenant')
 }
 export { useNitroApp } from 'nitropack/runtime/internal/app';
 export { useRuntimeConfig, useAppConfig } from 'nitropack/runtime/internal/config';
@@ -139,3 +158,5 @@ export { defineNitroErrorHandler } from 'nitropack/runtime/internal/error/utils'
 export { appendCorsHeaders, appendCorsPreflightHeaders, appendHeader, appendHeaders, appendResponseHeader, appendResponseHeaders, assertMethod, callNodeListener, clearResponseHeaders, clearSession, createApp, createAppEventHandler, createError, createEvent, createEventStream, createRouter, defaultContentType, defineEventHandler, defineLazyEventHandler, defineNodeListener, defineNodeMiddleware, defineRequestMiddleware, defineResponseMiddleware, defineWebSocket, defineWebSocketHandler, deleteCookie, dynamicEventHandler, eventHandler, fetchWithEvent, fromNodeMiddleware, fromPlainHandler, fromWebHandler, getCookie, getHeader, getHeaders, getMethod, getProxyRequestHeaders, getQuery, getRequestFingerprint, getRequestHeader, getRequestHeaders, getRequestHost, getRequestIP, getRequestPath, getRequestProtocol, getRequestURL, getRequestWebStream, getResponseHeader, getResponseHeaders, getResponseStatus, getResponseStatusText, getRouterParam, getRouterParams, getSession, getValidatedQuery, getValidatedRouterParams, handleCacheHeaders, handleCors, isCorsOriginAllowed, isError, isEvent, isEventHandler, isMethod, isPreflightRequest, isStream, isWebResponse, lazyEventHandler, parseCookies, promisifyNodeListener, proxyRequest, readBody, readFormData, readMultipartFormData, readRawBody, readValidatedBody, removeResponseHeader, sanitizeStatusCode, sanitizeStatusMessage, sealSession, send, sendError, sendIterable, sendNoContent, sendProxy, sendRedirect, sendStream, sendWebResponse, serveStatic, setCookie, setHeader, setHeaders, setResponseHeader, setResponseHeaders, setResponseStatus, splitCookiesString, toEventHandler, toNodeListener, toPlainHandler, toWebHandler, toWebRequest, unsealSession, updateSession, useBase, useSession, writeEarlyHints } from 'h3';
 export { buildAssetsURL as __buildAssetsURL, publicAssetsURL as __publicAssetsURL } from 'C:/Users/PROBOOK/source/repos/Toss-Online-Services/TossErp/toss-web/node_modules/nuxt/dist/core/runtime/nitro/utils/paths';
 export { defineAppConfig } from 'C:/Users/PROBOOK/source/repos/Toss-Online-Services/TossErp/toss-web/node_modules/nuxt/dist/core/runtime/nitro/utils/config';
+export { SERVICE_REGISTRY, ServiceOrchestrator, ServiceTriggerProcessor } from 'C:/Users/PROBOOK/source/repos/Toss-Online-Services/TossErp/toss-web/server/utils/services';
+export { getTenantContext, requireTenant, hasFeature, checkUsageLimit, createServiceContext, addTenantFilter, trackServiceUsage } from 'C:/Users/PROBOOK/source/repos/Toss-Online-Services/TossErp/toss-web/server/utils/tenant';
