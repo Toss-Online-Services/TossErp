@@ -33,6 +33,9 @@ declare module "nitropack/types" {
     '/api/dashboard/outcomes': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/dashboard/outcomes.get').default>>>>
     }
+    '/api/debug/tenant': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/debug/tenant.get').default>>>>
+    }
     '/api/group-buying': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/group-buying/index.get').default>>>>
     }
