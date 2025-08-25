@@ -7,7 +7,7 @@ namespace Crm.Application;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddCrmApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         // Add MediatR
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));

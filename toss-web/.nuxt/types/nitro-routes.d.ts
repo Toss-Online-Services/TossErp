@@ -9,6 +9,9 @@ declare module "nitropack/types" {
     '/api/analytics/dashboard': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/analytics/dashboard.get').default>>>>
     }
+    '/api/analytics': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/analytics/index.get').default>>>>
+    }
     '/api/auth/login': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/auth/login.post').default>>>>
     }
@@ -29,6 +32,7 @@ declare module "nitropack/types" {
     }
     '/api/customers': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/customers/index.get').default>>>>
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/customers/index.post').default>>>>
     }
     '/api/dashboard/outcomes': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/dashboard/outcomes.get').default>>>>

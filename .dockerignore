@@ -1,0 +1,63 @@
+# Exclude common development files and directories
+**/.git
+**/.gitignore
+**/.dockerignore
+**/Dockerfile*
+**/docker-compose*
+**/README.md
+**/LICENSE
+**/.vscode
+**/.vs
+**/.idea
+
+# Exclude build output directories
+**/bin
+**/obj
+**/out
+**/dist
+**/build
+**/publish
+
+# Exclude node modules and frontend build artifacts
+**/node_modules
+**/.nuxt
+**/.output
+**/dist
+**/coverage
+
+# Exclude test projects and test results
+**/test
+**/tests
+**/Test*
+**/TestResults
+**/*.trx
+
+# Exclude logs and temporary files
+**/logs
+**/*.log
+**/tmp
+**/temp
+
+# Exclude documentation that's not needed in container
+docs/
+audit/
+prd/
+
+# Exclude infrastructure and deployment files
+infra/
+k8s/
+terraform/
+helm/
+monitoring/
+deploy/
+scripts/
+
+# Exclude specific large directories we don't need
+toss-web/
+cypress/
+tools/
+lib/
+
+# Include what we need for the CRM service
+!src/Services/Crm/
+!Directory.Packages.props

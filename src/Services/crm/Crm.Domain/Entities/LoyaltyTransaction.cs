@@ -1,3 +1,5 @@
+using Crm.Domain.Common;
+
 namespace Crm.Domain.Entities;
 
 public class LoyaltyTransaction : Entity
@@ -27,7 +29,10 @@ public class LoyaltyTransaction : Entity
         }
     }
 
-    private LoyaltyTransaction() { }
+    private LoyaltyTransaction() 
+    {
+        Description = string.Empty;
+    }
 
     public bool IsExpired => ExpiryDate.HasValue && DateTime.UtcNow > ExpiryDate.Value;
     

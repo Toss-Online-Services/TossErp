@@ -1,5 +1,0 @@
-const NotificationContainer_vue_vue_type_style_index_0_scoped_2b80c1c0_lang = ".notification-enter-active[data-v-2b80c1c0],.notification-leave-active[data-v-2b80c1c0]{transition:all .3s ease}.notification-enter-from[data-v-2b80c1c0],.notification-leave-to[data-v-2b80c1c0]{opacity:0;transform:translate(100%)}.notification-move[data-v-2b80c1c0]{transition:transform .3s ease}";
-export {
-  NotificationContainer_vue_vue_type_style_index_0_scoped_2b80c1c0_lang as default
-};
-//# sourceMappingURL=NotificationContainer-styles-1.mjs-XoFRBNrl.js.map

@@ -1,3 +1,5 @@
+using Crm.Domain.Common;
+
 namespace Crm.Domain.Entities;
 
 public class Customer : Entity
@@ -41,7 +43,14 @@ public class Customer : Entity
     }
 
     // Constructor for existing customers (from database)
-    private Customer() { }
+    private Customer() 
+    {
+        FirstName = string.Empty;
+        LastName = string.Empty;
+        Email = string.Empty;
+        Phone = string.Empty;
+        Address = string.Empty;
+    }
 
     public void UpdateProfile(string firstName, string lastName, string email, string phone, string address)
     {
