@@ -1,1 +1,0 @@
-import{B as i,n as t,C as o}from"./Bxwy2Pe9.js";import{u as a}from"./BUMlGY71.js";const m=i(e=>{const s=a();if(!s.isAuthenticated)return t("/login");if(e.meta.requiresPermission){const r=e.meta.requiresPermission;if(!s.hasPermission.value(r))throw o({statusCode:403,statusMessage:"Access denied. Insufficient permissions."})}});export{m as default};

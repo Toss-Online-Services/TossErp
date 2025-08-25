@@ -93,7 +93,7 @@ services:
   # CRM Service
   crm-api:
     build:
-      context: ../src/Services/crm/Crm.API
+      context: ../src/Services/Crm/Crm.API
       dockerfile: Dockerfile
     container_name: tosserp-crm-api
     ports:

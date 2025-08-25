@@ -24,14 +24,20 @@
       </div>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Loading State -->
+    <div v-if="pending" class="flex justify-center items-center h-64">
+      <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div v-else class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 dark:text-gray-400">Total Customers</p>
-              <p class="text-2xl font-bold text-blue-600">{{ stats.totalCustomers }}</p>
+              <p class="text-2xl font-bold text-blue-600">{{ analytics?.totalCustomers || 0 }}</p>
             </div>
             <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
               <UsersIcon class="w-6 h-6 text-blue-600" />
@@ -43,7 +49,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 dark:text-gray-400">Active Leads</p>
-              <p class="text-2xl font-bold text-yellow-600">{{ stats.activeLeads }}</p>
+              <p class="text-2xl font-bold text-yellow-600">{{ analytics?.activeLeads || 0 }}</p>
             </div>
             <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
               <ChartBarIcon class="w-6 h-6 text-yellow-600" />
@@ -55,7 +61,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 dark:text-gray-400">Conversion Rate</p>
-              <p class="text-2xl font-bold text-green-600">{{ stats.conversionRate }}%</p>
+              <p class="text-2xl font-bold text-green-600">{{ analytics?.conversionRate || 0 }}%</p>
             </div>
             <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
               <TrendingUpIcon class="w-6 h-6 text-green-600" />
@@ -67,7 +73,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 dark:text-gray-400">Pipeline Value</p>
-              <p class="text-2xl font-bold text-purple-600">R {{ formatCurrency(stats.pipelineValue) }}</p>
+              <p class="text-2xl font-bold text-purple-600">R {{ formatCurrency(analytics?.pipelineValue || 0) }}</p>
             </div>
             <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
               <CurrencyDollarIcon class="w-6 h-6 text-purple-600" />
@@ -140,11 +146,17 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <div class="p-6 border-b border-gray-200 dark:border-gray-700">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Customers</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Customers</h3>
             <div class="flex space-x-2">
-              <input type="text" placeholder="Search customers..." class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
-              <button class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                <FunnelIcon class="w-4 h-4" />
+              <input 
+                v-model="searchTerm" 
+                type="text" 
+                placeholder="Search customers..." 
+                class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                @input="debouncedSearch"
+              >
+              <button @click="refreshCustomers" class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                <RefreshIcon class="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -154,42 +166,46 @@
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Company</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Segment</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Sales</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Contact</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Spent</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Purchase</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr v-for="customer in customers" :key="customer.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+              <tr v-for="customer in filteredCustomers" :key="customer.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                      <span class="text-blue-600 font-medium text-sm">{{ getInitials(customer.name) }}</span>
+                      <span class="text-blue-600 font-medium text-sm">{{ getInitials(customer.fullName) }}</span>
                     </div>
                     <div class="ml-4">
-                      <div class="text-sm font-medium text-gray-900 dark:text-white">{{ customer.name }}</div>
+                      <div class="text-sm font-medium text-gray-900 dark:text-white">{{ customer.fullName }}</div>
                       <div class="text-sm text-gray-500 dark:text-gray-400">{{ customer.email }}</div>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ customer.company }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" :class="getSegmentColor(customer.segment)">
+                    {{ customer.segment }}
+                  </span>
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" :class="getStatusColor(customer.status)">
                     {{ customer.status }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                  R {{ formatCurrency(customer.totalSales) }}
+                  R {{ formatCurrency(customer.totalSpent) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                  {{ formatDate(customer.lastContact) }}
+                  {{ customer.lastPurchaseDate ? formatDate(new Date(customer.lastPurchaseDate)) : 'Never' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex space-x-2">
-                    <button class="text-blue-600 hover:text-blue-900">View</button>
-                    <button class="text-green-600 hover:text-green-900">Contact</button>
+                    <button @click="viewCustomer(customer)" class="text-blue-600 hover:text-blue-900">View</button>
+                    <button @click="contactCustomer(customer)" class="text-green-600 hover:text-green-900">Contact</button>
                   </div>
                 </td>
               </tr>
@@ -198,27 +214,143 @@
         </div>
       </div>
     </div>
+
+    <!-- Create Customer Modal -->
+    <div v-if="showCreateCustomerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create New Customer</h3>
+        <form @submit.prevent="createCustomer">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
+              <input v-model="newCustomer.firstName" type="text" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Name</label>
+              <input v-model="newCustomer.lastName" type="text" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+              <input v-model="newCustomer.email" type="email" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
+              <input v-model="newCustomer.phone" type="tel" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
+              <textarea v-model="newCustomer.address" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of Birth</label>
+              <input v-model="newCustomer.dateOfBirth" type="date" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+            </div>
+          </div>
+          <div class="flex justify-end space-x-3 mt-6">
+            <button type="button" @click="showCreateCustomerModal = false" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+              Cancel
+            </button>
+            <button type="submit" :disabled="creatingCustomer" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              {{ creatingCustomer ? 'Creating...' : 'Create Customer' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// Icons (would normally import from a proper icon library)
+import { ref, computed, onMounted } from 'vue'
+
+// Icons (simplified for demo - in real app would use proper icon library)
 const PlusIcon = 'svg'
 const UserPlusIcon = 'svg'
 const UsersIcon = 'svg'
 const ChartBarIcon = 'svg'
 const TrendingUpIcon = 'svg'
 const CurrencyDollarIcon = 'svg'
-const FunnelIcon = 'svg'
+const RefreshIcon = 'svg'
 
-// Sample data
-const stats = ref({
-  totalCustomers: 1247,
-  activeLeads: 89,
-  conversionRate: 24.5,
-  pipelineValue: 450000
+// Reactive data
+const searchTerm = ref('')
+const showCreateLeadModal = ref(false)
+const showCreateCustomerModal = ref(false)
+const creatingCustomer = ref(false)
+const loading = ref(false)
+
+const newCustomer = ref({
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  address: '',
+  dateOfBirth: ''
 })
 
+// Data
+const customers = ref<any[]>([])
+const analytics = ref<any>({
+  totalCustomers: 0,
+  activeLeads: 0,
+  conversionRate: 0,
+  pipelineValue: 0
+})
+
+const customersPending = ref(false)
+const analyticsPending = ref(false)
+
+const pending = computed(() => customersPending.value || analyticsPending.value)
+
+// Fetch data functions
+async function fetchCustomers() {
+  customersPending.value = true
+  try {
+    const response = await fetch('/api/customers')
+    const data = await response.json()
+    customers.value = data || []
+  } catch (error) {
+    console.error('Error fetching customers:', error)
+    customers.value = []
+  } finally {
+    customersPending.value = false
+  }
+}
+
+async function fetchAnalytics() {
+  analyticsPending.value = true
+  try {
+    const response = await fetch('/api/analytics')
+    const data = await response.json()
+    analytics.value = data || {
+      totalCustomers: 0,
+      activeLeads: 0,
+      conversionRate: 0,
+      pipelineValue: 0
+    }
+  } catch (error) {
+    console.error('Error fetching analytics:', error)
+    analytics.value = {
+      totalCustomers: 0,
+      activeLeads: 0,
+      conversionRate: 0,
+      pipelineValue: 0
+    }
+  } finally {
+    analyticsPending.value = false
+  }
+}
+
+async function refreshCustomers() {
+  await fetchCustomers()
+}
+
+// Load data on mount
+onMounted(async () => {
+  await Promise.all([fetchCustomers(), fetchAnalytics()])
+})
+
+// Sample pipeline data (would be fetched from API in real app)
 const pipelineStages = ref([
   {
     name: 'Prospecting',
@@ -259,38 +391,73 @@ const recentActivities = ref([
   { id: 4, type: 'note', description: 'Updated lead status for Local Store', date: new Date(Date.now() - 86400000) }
 ])
 
-const customers = ref([
-  {
-    id: 1,
-    name: 'John Smith',
-    email: 'john@abccorp.co.za',
-    company: 'ABC Corp',
-    status: 'Active',
-    totalSales: 125000,
-    lastContact: new Date(Date.now() - 86400000)
-  },
-  {
-    id: 2,
-    name: 'Sarah Johnson',
-    email: 'sarah@xyzltd.co.za',
-    company: 'XYZ Ltd',
-    status: 'Lead',
-    totalSales: 0,
-    lastContact: new Date(Date.now() - 172800000)
-  },
-  {
-    id: 3,
-    name: 'Mike Wilson',
-    email: 'mike@techsol.co.za',
-    company: 'Tech Solutions',
-    status: 'Prospect',
-    totalSales: 45000,
-    lastContact: new Date(Date.now() - 259200000)
-  }
-])
+// Computed properties
+const filteredCustomers = computed(() => {
+  if (!customers.value) return []
+  if (!searchTerm.value) return customers.value
+  
+  const term = searchTerm.value.toLowerCase()
+  return customers.value.filter((customer: any) => 
+    customer.fullName.toLowerCase().includes(term) ||
+    customer.email.toLowerCase().includes(term) ||
+    customer.phone.includes(term)
+  )
+})
 
-const showCreateLeadModal = ref(false)
-const showCreateCustomerModal = ref(false)
+// Methods
+const debouncedSearch = debounce(() => {
+  // Search is reactive through computed property
+}, 300)
+
+async function createCustomer() {
+  creatingCustomer.value = true
+  try {
+    const response = await fetch('/api/customers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newCustomer.value)
+    })
+    
+    if (!response.ok) {
+      throw new Error('Failed to create customer')
+    }
+    
+    // Reset form and close modal
+    newCustomer.value = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      address: '',
+      dateOfBirth: ''
+    }
+    showCreateCustomerModal.value = false
+    
+    // Refresh customer list
+    await refreshCustomers()
+    
+    // Show success message (would use toast in real app)
+    alert('Customer created successfully!')
+  } catch (error) {
+    console.error('Error creating customer:', error)
+    alert('Failed to create customer. Please try again.')
+  } finally {
+    creatingCustomer.value = false
+  }
+}
+
+function viewCustomer(customer: any) {
+  // Navigate to customer detail page (simplified for demo)
+  console.log('Viewing customer:', customer)
+  alert(`Viewing ${customer.fullName || customer.firstName + ' ' + customer.lastName}...`)
+}
+
+function contactCustomer(customer: any) {
+  // Open contact modal or navigate to communication
+  alert(`Contacting ${customer.fullName || customer.firstName + ' ' + customer.lastName}...`)
+}
 
 // Helper functions
 function formatCurrency(amount: number): string {
@@ -325,13 +492,7 @@ function getActivityColor(type: string): string {
 }
 
 function getActivityIcon(type: string) {
-  switch (type) {
-    case 'call': return 'svg'
-    case 'email': return 'svg'
-    case 'meeting': return 'svg'
-    case 'note': return 'svg'
-    default: return 'svg'
-  }
+  return 'svg' // Would return proper icon component
 }
 
 function getStatusColor(status: string): string {
@@ -343,11 +504,35 @@ function getStatusColor(status: string): string {
   }
 }
 
-// Page metadata
-useHead({
-  title: 'CRM - TOSS ERP',
-  meta: [
-    { name: 'description', content: 'Customer relationship management and sales pipeline in TOSS ERP' }
-  ]
-})
+function getSegmentColor(segment: string): string {
+  switch (segment) {
+    case 'Premium': return 'bg-purple-100 text-purple-800'
+    case 'Gold': return 'bg-yellow-100 text-yellow-800'
+    case 'Silver': return 'bg-gray-100 text-gray-800'
+    case 'Regular': return 'bg-blue-100 text-blue-800'
+    default: return 'bg-gray-100 text-gray-800'
+  }
+}
+
+// Utility function
+function debounce(func: Function, wait: number) {
+  let timeout: NodeJS.Timeout
+  return function executedFunction(...args: any[]) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
+// Page metadata (simplified for demo)
+// In a real Nuxt app, you would use useHead() composable
+// useHead({
+//   title: 'CRM - TOSS ERP',
+//   meta: [
+//     { name: 'description', content: 'Customer relationship management and sales pipeline in TOSS ERP' }
+//   ]
+// })
 </script>

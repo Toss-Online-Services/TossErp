@@ -30,8 +30,6 @@ public static class DependencyInjection
 
         // Register repositories
         services.AddScoped<ICustomerRepository, CustomerRepository>();
-        services.AddScoped<ICustomerInteractionRepository, CustomerInteractionRepository>();
-        services.AddScoped<ILoyaltyTransactionRepository, LoyaltyTransactionRepository>();
 
         return services;
     }

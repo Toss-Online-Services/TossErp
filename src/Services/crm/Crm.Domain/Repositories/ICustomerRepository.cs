@@ -1,3 +1,5 @@
+using Crm.Domain.Entities;
+
 namespace Crm.Domain.Repositories;
 
 public interface ICustomerRepository

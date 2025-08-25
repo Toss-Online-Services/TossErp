@@ -1,3 +1,5 @@
+using Crm.Domain.Common;
+
 namespace Crm.Domain.Entities;
 
 public class CustomerInteraction : Entity
@@ -24,7 +26,12 @@ public class CustomerInteraction : Entity
         FollowUpDate = followUpDate;
     }
 
-    private CustomerInteraction() { }
+    private CustomerInteraction() 
+    {
+        Description = string.Empty;
+        Notes = string.Empty;
+        CreatedBy = string.Empty;
+    }
 
     public void UpdateStatus(InteractionStatus status)
     {

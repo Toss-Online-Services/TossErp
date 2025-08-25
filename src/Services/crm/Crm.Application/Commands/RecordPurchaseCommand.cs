@@ -10,16 +10,13 @@ public record RecordPurchaseCommand : IRequest<Unit>
 public class RecordPurchaseCommandHandler : IRequestHandler<RecordPurchaseCommand, Unit>
 {
     private readonly ICustomerRepository _customerRepository;
-    private readonly ILoyaltyTransactionRepository _loyaltyTransactionRepository;
     private readonly ILogger<RecordPurchaseCommandHandler> _logger;
 
     public RecordPurchaseCommandHandler(
         ICustomerRepository customerRepository,
-        ILoyaltyTransactionRepository loyaltyTransactionRepository,
         ILogger<RecordPurchaseCommandHandler> logger)
     {
         _customerRepository = customerRepository;
-        _loyaltyTransactionRepository = loyaltyTransactionRepository;
         _logger = logger;
     }
 
@@ -44,16 +41,10 @@ public class RecordPurchaseCommandHandler : IRequestHandler<RecordPurchaseComman
         var loyaltyTransactions = customer.LoyaltyTransactions.ToList();
         var latestTransaction = loyaltyTransactions.LastOrDefault();
         
-        if (latestTransaction != null)
+        if (latestTransaction != null && request.OrderId.HasValue)
         {
-            // Update the transaction with the order ID if provided
-            if (request.OrderId.HasValue)
-            {
-                // Note: In a real implementation, you might need to update the transaction
-                // This is a simplified version
-                _logger.LogInformation("Loyalty points earned: {Points} for order {OrderId}", 
-                    latestTransaction.Points, request.OrderId);
-            }
+            _logger.LogInformation("Loyalty points earned: {Points} for order {OrderId}", 
+                latestTransaction.Points, request.OrderId);
         }
 
         _logger.LogInformation("Purchase recorded successfully for customer {CustomerId}", request.CustomerId);

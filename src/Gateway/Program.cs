@@ -2,12 +2,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using eShop.ServiceDefaults;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.AddServiceDefaults();
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer();
@@ -61,8 +59,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("Default");
 app.UseRateLimiter();
-app.UseCorrelationId();
-app.UseTenantResolution();
 
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { 
