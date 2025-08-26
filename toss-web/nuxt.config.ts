@@ -1,3 +1,4 @@
+// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-08-24',
@@ -52,10 +53,7 @@ export default defineNuxtConfig({
     devProxy: {
       '/api/crm': {
         target: 'http://localhost:5049/api',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api/crm': ''
-        }
+        changeOrigin: true
       },
       '/api/analytics': {
         target: 'http://localhost:8081/api/analytics',
