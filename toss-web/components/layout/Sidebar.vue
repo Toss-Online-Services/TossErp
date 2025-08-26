@@ -45,4 +45,8 @@
 
 <script setup>
 import { HomeIcon, UsersIcon, BriefcaseIcon, CurrencyDollarIcon, UserGroupIcon, ArchiveBoxIcon, ShoppingCartIcon, ShoppingBagIcon } from '@heroicons/vue/24/outline'
+
+// Ensure router is available
+const router = useRouter()
+const route = useRoute()
 </script>

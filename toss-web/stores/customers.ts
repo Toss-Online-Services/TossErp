@@ -1,17 +1,26 @@
+import { defineStore } from 'pinia'
+import { ref, computed, readonly } from 'vue'
+
 export interface Customer {
   id: number
   firstName: string
   lastName: string
+  fullName: string
   email: string
   phone: string
   company: string
-  jobTitle: string
+  jobTitle?: string
+  address?: string
+  dateOfBirth?: string
   createdAt: string
   updatedAt: string
-  status: string
-  source: string
-  lifetimeValue: number
-  lastContactDate: string
+  status: 'Active' | 'Lead' | 'Prospect' | 'Inactive'
+  segment?: 'Premium' | 'Gold' | 'Silver' | 'Regular'
+  source?: string
+  totalSpent: number
+  lifetimeValue?: number
+  lastPurchaseDate?: string | null
+  lastContactDate?: string
   notes: string
   subscriptions: Subscription[]
 }
@@ -41,15 +50,21 @@ export const useCustomerStore = defineStore('customers', () => {
       id: 1,
       firstName: "John",
       lastName: "Doe",
+      fullName: "John Doe",
       email: "john.doe@example.com",
       phone: "+1-555-1234",
       company: "Acme Corp",
       jobTitle: "Manager",
+      address: "123 Business St, Cape Town",
+      dateOfBirth: "1985-06-15",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      status: "Active",
+      status: "Active" as const,
+      segment: "Premium" as const,
       source: "Website",
+      totalSpent: 15000,
       lifetimeValue: 15000,
+      lastPurchaseDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
       lastContactDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
       notes: "VIP customer, prefers email communication",
       subscriptions: [
@@ -68,15 +83,21 @@ export const useCustomerStore = defineStore('customers', () => {
       id: 2,
       firstName: "Jane",
       lastName: "Smith",
+      fullName: "Jane Smith",
       email: "jane.smith@techco.com",
       phone: "+1-555-5678",
       company: "TechCo",
       jobTitle: "Director",
+      address: "456 Tech Ave, Johannesburg",
+      dateOfBirth: "1990-03-22",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      status: "Active",
+      status: "Active" as const,
+      segment: "Gold" as const,
       source: "Referral",
+      totalSpent: 25000,
       lifetimeValue: 25000,
+      lastPurchaseDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
       lastContactDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       notes: "Looking to expand services",
       subscriptions: [
@@ -95,16 +116,22 @@ export const useCustomerStore = defineStore('customers', () => {
       id: 3,
       firstName: "Mike",
       lastName: "Johnson",
+      fullName: "Mike Johnson",
       email: "mike.johnson@startup.co",
       phone: "+1-555-9999",
       company: "StartupCo",
       jobTitle: "CEO",
+      address: "789 Innovation Dr, Durban",
+      dateOfBirth: "1988-11-10",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      status: "Lead",
-      source: "Cold Call",
-      lifetimeValue: 0,
-      lastContactDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      status: "Lead" as const,
+      segment: "Regular" as const,
+      source: "Conference",
+      totalSpent: 0,
+      lifetimeValue: 5000,
+      lastPurchaseDate: null,
+      lastContactDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
       notes: "Interested in starter package",
       subscriptions: []
     },
@@ -112,27 +139,33 @@ export const useCustomerStore = defineStore('customers', () => {
       id: 4,
       firstName: "Sarah",
       lastName: "Williams",
+      fullName: "Sarah Williams",
       email: "sarah.williams@corp.com",
       phone: "+1-555-7777",
       company: "BigCorp",
       jobTitle: "VP Sales",
+      address: "321 Corporate Blvd, Pretoria",
+      dateOfBirth: "1982-07-08",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      status: "Inactive",
-      source: "Trade Show",
-      lifetimeValue: 50000,
+      status: "Inactive" as const,
+      segment: "Silver" as const,
+      source: "Cold Call",
+      totalSpent: 8000,
+      lifetimeValue: 8000,
+      lastPurchaseDate: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString(),
       lastContactDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-      notes: "Contract expired, needs follow-up",
+      notes: "Needs follow-up for renewal",
       subscriptions: [
         {
           id: 3,
           customerId: 4,
-          serviceName: "Enterprise Package",
+          serviceName: "Basic Package",
           status: "Expired",
-          monthlyFee: 1999.99,
-          startDate: new Date(Date.now() - 24 * 30 * 24 * 60 * 60 * 1000).toISOString(),
-          endDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-          billingCycle: "Annual"
+          monthlyFee: 199.99,
+          startDate: new Date(Date.now() - 18 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+          endDate: new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+          billingCycle: "Monthly"
         }
       ]
     }
@@ -151,7 +184,7 @@ export const useCustomerStore = defineStore('customers', () => {
     const active = customers.value.filter(c => c.status === 'Active').length
     const leads = customers.value.filter(c => c.status === 'Lead').length
     const inactive = customers.value.filter(c => c.status === 'Inactive').length
-    const totalValue = customers.value.reduce((sum, c) => sum + c.lifetimeValue, 0)
+    const totalValue = customers.value.reduce((sum, c) => sum + (c.lifetimeValue || 0), 0)
 
     return { total, active, leads, inactive, totalValue }
   })
@@ -280,6 +313,22 @@ export const useCustomerStore = defineStore('customers', () => {
     }
   }
 
+  const searchCustomers = (query: string) => {
+    if (!query.trim()) {
+      return customers.value
+    }
+    
+    const search = query.toLowerCase()
+    return customers.value.filter(c => 
+      c.firstName.toLowerCase().includes(search) ||
+      c.lastName.toLowerCase().includes(search) ||
+      c.fullName.toLowerCase().includes(search) ||
+      c.email.toLowerCase().includes(search) ||
+      c.company.toLowerCase().includes(search) ||
+      c.phone.includes(search)
+    )
+  }
+
   return {
     // State
     customers: readonly(customers),
@@ -295,6 +344,7 @@ export const useCustomerStore = defineStore('customers', () => {
     getCustomerById,
     createCustomer,
     updateCustomer,
-    deleteCustomer
+    deleteCustomer,
+    searchCustomers
   }
 })

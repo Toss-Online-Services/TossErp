@@ -44,7 +44,7 @@ export default defineNuxtConfig({
       apiBase: '/api'
     }
   },
-  ssr: true,
+  ssr: false,  // Disable SSR temporarily to fix router issues
   nitro: {
     experimental: {
       wasm: true
