@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TossErp.CRM.Domain.Aggregates;
 using TossErp.CRM.Domain.Enums;
-using Crm.Infrastructure.Interfaces;
+using TossErp.CRM.Domain.Repositories;
 using Crm.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -252,6 +252,88 @@ public class CustomerRepositoryEF : ICustomerRepository
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error checking if email exists: {Email}", email);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Customer>> GetLapsedCustomersAsync(int daysThreshold = 90, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var cutoffDate = DateTime.UtcNow.AddDays(-daysThreshold);
+            return await _context.Customers
+                .Where(c => c.Status != CustomerStatus.Churned)
+                .Where(c => c.ModifiedAt.HasValue && c.ModifiedAt.Value < cutoffDate)
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting lapsed customers with threshold {DaysThreshold}", daysThreshold);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Customer>> GetTopCustomersAsync(int count = 10, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // TODO: Implement proper sorting by annual revenue once Money property mapping is resolved
+            return await _context.Customers
+                .Where(c => c.Status != CustomerStatus.Churned)
+                .OrderByDescending(c => c.CreatedAt)
+                .Take(count)
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting top {Count} customers", count);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Customer>> GetHighValueCustomersAsync(decimal threshold = 5000, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // TODO: Implement proper filtering by annual revenue once Money property mapping is resolved
+            return await _context.Customers
+                .Where(c => c.Status != CustomerStatus.Churned)
+                .OrderByDescending(c => c.CreatedAt)
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting high value customers with threshold {Threshold}", threshold);
+            throw;
+        }
+    }
+
+    public async Task<int> GetCountAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _context.Customers
+                .Where(c => c.Status != CustomerStatus.Churned)
+                .CountAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting customer count");
+            throw;
+        }
+    }
+
+    public async Task<int> GetCountByStatusAsync(CustomerStatus status, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _context.Customers
+                .Where(c => c.Status == status)
+                .CountAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting customer count by status {Status}", status);
             throw;
         }
     }

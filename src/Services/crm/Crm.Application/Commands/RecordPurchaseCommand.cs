@@ -1,3 +1,5 @@
+using TossErp.CRM.Domain.Repositories;
+
 namespace Crm.Application.Commands;
 
 public record RecordPurchaseCommand : IRequest<Unit>

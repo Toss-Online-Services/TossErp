@@ -1,6 +1,7 @@
 using TossErp.CRM.Domain.Enums;
 using TossErp.CRM.Domain.SeedWork;
 using TossErp.CRM.Domain.ValueObjects;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TossErp.CRM.Domain.Entities;
 
@@ -11,14 +12,22 @@ public class Contact : Entity
 {
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
+    
+    [NotMapped]
     public EmailAddress Email { get; private set; }
+    
+    [NotMapped]
     public PhoneNumber? Phone { get; private set; }
+    
     public string? JobTitle { get; private set; }
     public string? Department { get; private set; }
     public ContactType ContactType { get; private set; }
     public bool IsPrimary { get; private set; }
     public bool IsActive { get; private set; }
+    
+    [NotMapped]
     public Address? Address { get; private set; }
+    
     public DateTime CreatedAt { get; private set; }
     public DateTime? LastContactedAt { get; private set; }
 

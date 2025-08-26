@@ -1,7 +1,7 @@
 using TossErp.CRM.Domain.Aggregates;
 using TossErp.CRM.Domain.Enums;
 using TossErp.CRM.Domain.ValueObjects;
-using Crm.Infrastructure.Interfaces;
+using TossErp.CRM.Domain.Repositories;
 using Crm.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -237,12 +237,13 @@ public class OpportunityRepository : IOpportunityRepository
         }
     }
 
-    public async Task AddAsync(Opportunity opportunity, CancellationToken cancellationToken = default)
+    public async Task<Opportunity> AddAsync(Opportunity opportunity, CancellationToken cancellationToken = default)
     {
         try
         {
             _context.Opportunities.Add(opportunity);
             await _context.SaveChangesAsync(cancellationToken);
+            return opportunity;
         }
         catch (Exception ex)
         {
@@ -345,6 +346,137 @@ public class OpportunityRepository : IOpportunityRepository
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving opportunities by assigned user: {UserId}", userId);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Opportunity>> GetOverdueOpportunitiesAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var today = DateTime.UtcNow.Date;
+            return await _context.Opportunities
+                .Where(o => o.ExpectedCloseDate < today && 
+                           o.Stage != OpportunityStage.ClosedWon && 
+                           o.Stage != OpportunityStage.ClosedLost && 
+                           !o.IsDeleted)
+                .OrderBy(o => o.ExpectedCloseDate)
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving overdue opportunities");
+            throw;
+        }
+    }
+
+    public async Task<int> GetCountAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _context.Opportunities
+                .CountAsync(o => !o.IsDeleted, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting opportunity count");
+            throw;
+        }
+    }
+
+    public async Task<int> GetCountByStageAsync(OpportunityStage stage, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _context.Opportunities
+                .CountAsync(o => o.Stage == stage && !o.IsDeleted, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting opportunity count by stage: {Stage}", stage);
+            throw;
+        }
+    }
+
+    public async Task<decimal> GetTotalValueAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _context.Opportunities
+                .Where(o => !o.IsDeleted)
+                .SumAsync(o => o.Value.EstimatedValue.Amount, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting total opportunity value");
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Opportunity>> GetByAssigneeAsync(string assignedTo, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _context.Opportunities
+                .Where(o => o.AssignedTo == assignedTo && !o.IsDeleted)
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting opportunities by assignee: {AssignedTo}", assignedTo);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Opportunity>> GetOpenOpportunitiesAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var openStages = new List<OpportunityStage>
+            {
+                OpportunityStage.Prospecting,
+                OpportunityStage.Qualification,
+                OpportunityStage.NeedsAnalysis,
+                OpportunityStage.Proposal,
+                OpportunityStage.Negotiation
+            };
+
+            return await _context.Opportunities
+                .Where(o => openStages.Contains(o.Stage) && !o.IsDeleted)
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting open opportunities");
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Opportunity>> GetByCampaignAsync(string campaignName, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _context.Opportunities
+                .Where(o => o.CampaignName == campaignName && !o.IsDeleted)
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting opportunities by campaign: {CampaignName}", campaignName);
+            throw;
+        }
+    }
+
+    public async Task DeleteAsync(Opportunity opportunity, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            opportunity.Delete("system");
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting opportunity: {OpportunityId}", opportunity.Id);
             throw;
         }
     }

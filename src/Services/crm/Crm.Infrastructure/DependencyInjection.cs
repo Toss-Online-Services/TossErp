@@ -1,4 +1,4 @@
-using Crm.Infrastructure.Interfaces;
+using TossErp.CRM.Domain.Repositories;
 using Crm.Infrastructure.Data;
 using Crm.Infrastructure.Data.Seeders;
 using Crm.Infrastructure.Persistence.Repositories;
@@ -36,7 +36,7 @@ public static class DependencyInjection
         // services.AddHealthChecks()
         //     .AddDbContextCheck<CrmDbContext>("crm-database");
 
-        // Register repositories - using full namespace paths
+        // Register repositories - using full namespace paths (EF only for now)
         services.AddScoped<ICustomerRepository, Crm.Infrastructure.Persistence.Repositories.CustomerRepositoryEF>();
         services.AddScoped<ILeadRepository, Crm.Infrastructure.Persistence.Repositories.LeadRepository>();
         services.AddScoped<IOpportunityRepository, Crm.Infrastructure.Persistence.Repositories.OpportunityRepository>();

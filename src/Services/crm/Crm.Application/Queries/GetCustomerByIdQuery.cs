@@ -1,5 +1,7 @@
 using Crm.Application.DTOs;
 
+using TossErp.CRM.Domain.Repositories;
+
 namespace Crm.Application.Queries;
 
 public record GetCustomerByIdQuery(Guid CustomerId) : IRequest<CustomerDto?>;
