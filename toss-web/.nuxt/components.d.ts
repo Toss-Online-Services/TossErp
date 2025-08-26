@@ -14,9 +14,15 @@ type LazyComponent<T> = (T & DefineComponent<HydrationStrategies, {}, {}, {}, {}
 interface _GlobalComponents {
       'AICopilotChat': typeof import("../components/AICopilotChat.vue")['default']
     'AppNavigation': typeof import("../components/AppNavigation.vue")['default']
+    'ContactDetailsModal': typeof import("../components/ContactDetailsModal.vue")['default']
+    'ContactModal': typeof import("../components/ContactModal.vue")['default']
     'ModuleCard': typeof import("../components/ModuleCard.vue")['default']
     'NotificationContainer': typeof import("../components/NotificationContainer.vue")['default']
+    'CommonThemeSwitcher': typeof import("../components/common/ThemeSwitcher.vue")['default']
+    'CommonUserMenu': typeof import("../components/common/UserMenu.vue")['default']
     'IconsIconBase': typeof import("../components/icons/IconBase.vue")['default']
+    'LayoutHeader': typeof import("../components/layout/Header.vue")['default']
+    'LayoutSidebar': typeof import("../components/layout/Sidebar.vue")['default']
     'NuxtWelcome': typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
     'NuxtLayout': typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
     'NuxtErrorBoundary': typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']
@@ -44,9 +50,15 @@ interface _GlobalComponents {
     'NuxtRouteAnnouncer': typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']
       'LazyAICopilotChat': LazyComponent<typeof import("../components/AICopilotChat.vue")['default']>
     'LazyAppNavigation': LazyComponent<typeof import("../components/AppNavigation.vue")['default']>
+    'LazyContactDetailsModal': LazyComponent<typeof import("../components/ContactDetailsModal.vue")['default']>
+    'LazyContactModal': LazyComponent<typeof import("../components/ContactModal.vue")['default']>
     'LazyModuleCard': LazyComponent<typeof import("../components/ModuleCard.vue")['default']>
     'LazyNotificationContainer': LazyComponent<typeof import("../components/NotificationContainer.vue")['default']>
+    'LazyCommonThemeSwitcher': LazyComponent<typeof import("../components/common/ThemeSwitcher.vue")['default']>
+    'LazyCommonUserMenu': LazyComponent<typeof import("../components/common/UserMenu.vue")['default']>
     'LazyIconsIconBase': LazyComponent<typeof import("../components/icons/IconBase.vue")['default']>
+    'LazyLayoutHeader': LazyComponent<typeof import("../components/layout/Header.vue")['default']>
+    'LazyLayoutSidebar': LazyComponent<typeof import("../components/layout/Sidebar.vue")['default']>
     'LazyNuxtWelcome': LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
     'LazyNuxtLayout': LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
     'LazyNuxtErrorBoundary': LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']>
@@ -80,9 +92,15 @@ declare module 'vue' {
 
 export const AICopilotChat: typeof import("../components/AICopilotChat.vue")['default']
 export const AppNavigation: typeof import("../components/AppNavigation.vue")['default']
+export const ContactDetailsModal: typeof import("../components/ContactDetailsModal.vue")['default']
+export const ContactModal: typeof import("../components/ContactModal.vue")['default']
 export const ModuleCard: typeof import("../components/ModuleCard.vue")['default']
 export const NotificationContainer: typeof import("../components/NotificationContainer.vue")['default']
+export const CommonThemeSwitcher: typeof import("../components/common/ThemeSwitcher.vue")['default']
+export const CommonUserMenu: typeof import("../components/common/UserMenu.vue")['default']
 export const IconsIconBase: typeof import("../components/icons/IconBase.vue")['default']
+export const LayoutHeader: typeof import("../components/layout/Header.vue")['default']
+export const LayoutSidebar: typeof import("../components/layout/Sidebar.vue")['default']
 export const NuxtWelcome: typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
 export const NuxtLayout: typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
 export const NuxtErrorBoundary: typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']
@@ -110,9 +128,15 @@ export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components
 export const NuxtRouteAnnouncer: typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']
 export const LazyAICopilotChat: LazyComponent<typeof import("../components/AICopilotChat.vue")['default']>
 export const LazyAppNavigation: LazyComponent<typeof import("../components/AppNavigation.vue")['default']>
+export const LazyContactDetailsModal: LazyComponent<typeof import("../components/ContactDetailsModal.vue")['default']>
+export const LazyContactModal: LazyComponent<typeof import("../components/ContactModal.vue")['default']>
 export const LazyModuleCard: LazyComponent<typeof import("../components/ModuleCard.vue")['default']>
 export const LazyNotificationContainer: LazyComponent<typeof import("../components/NotificationContainer.vue")['default']>
+export const LazyCommonThemeSwitcher: LazyComponent<typeof import("../components/common/ThemeSwitcher.vue")['default']>
+export const LazyCommonUserMenu: LazyComponent<typeof import("../components/common/UserMenu.vue")['default']>
 export const LazyIconsIconBase: LazyComponent<typeof import("../components/icons/IconBase.vue")['default']>
+export const LazyLayoutHeader: LazyComponent<typeof import("../components/layout/Header.vue")['default']>
+export const LazyLayoutSidebar: LazyComponent<typeof import("../components/layout/Sidebar.vue")['default']>
 export const LazyNuxtWelcome: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
 export const LazyNuxtLayout: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
 export const LazyNuxtErrorBoundary: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']>

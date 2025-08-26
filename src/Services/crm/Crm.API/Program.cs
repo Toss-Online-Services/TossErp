@@ -1,73 +1,41 @@
-using Crm.Application;
-using Crm.Infrastructure;
-using Crm.Infrastructure.Data.Seeders;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using Crm.Infrastructure.Data;
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo 
-    { 
-        Title = "TOSS ERP - CRM API", 
-        Version = "v1",
-        Description = "Customer Relationship Management API for TOSS ERP"
-    });
-});
-
-// Add Application and Infrastructure layers
-builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
-
-// Add CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
+// Add services to the container.
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CRM API v1"));
+    app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAll");
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
 
-// Ensure database is created and seed data
-using (var scope = app.Services.CreateScope())
+var summaries = new[]
 {
-    var context = scope.ServiceProvider.GetRequiredService<CrmDbContext>();
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger<CrmDataSeeder>>();
-    
-    try
-    {
-        await context.Database.EnsureCreatedAsync();
-        
-        var seeder = new CrmDataSeeder(context, logger);
-        await seeder.SeedAsync();
-    }
-    catch (Exception ex)
-    {
-        var appLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        appLogger.LogError(ex, "An error occurred while seeding the database");
-    }
-}
+    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+};
+
+app.MapGet("/weatherforecast", () =>
+{
+    var forecast =  Enumerable.Range(1, 5).Select(index =>
+        new WeatherForecast
+        (
+            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+            Random.Shared.Next(-20, 55),
+            summaries[Random.Shared.Next(summaries.Length)]
+        ))
+        .ToArray();
+    return forecast;
+})
+.WithName("GetWeatherForecast");
 
 app.Run();
+
+record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+{
+    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}

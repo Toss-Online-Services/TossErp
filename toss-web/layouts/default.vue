@@ -1,40 +1,18 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- Navigation -->
-    <AppNavigation />
-    
-    <!-- Main Content -->
-    <main class="flex-1">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <slot />
-      </div>
-    </main>
-    
-    <!-- AI Copilot Chat -->
-    <AICopilotChat />
-    
-    <!-- Global Notifications -->
-    <NotificationContainer />
+  <div class="flex h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <Sidebar />
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <Header />
+      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200 dark:bg-gray-800">
+        <div class="container mx-auto px-6 py-8">
+          <slot />
+        </div>
+      </main>
+    </div>
   </div>
 </template>
 
-<script setup lang="ts">
-// Layout setup
-useHead({
-  titleTemplate: '%s - TOSS ERP III',
-  meta: [
-    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-    { name: 'theme-color', content: '#1d4ed8' },
-  ],
-})
-
-// Initialize stores
-const userStore = useUserStore()
-const settingsStore = useSettingsStore()
-
-// Check authentication status
-onMounted(async () => {
-  await userStore.checkAuth()
-  await settingsStore.loadSettings()
-})
+<script setup>
+import Sidebar from '~/components/layout/Sidebar.vue'
+import Header from '~/components/layout/Header.vue'
 </script>
