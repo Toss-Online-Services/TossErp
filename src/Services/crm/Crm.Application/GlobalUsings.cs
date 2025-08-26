@@ -6,4 +6,4 @@ global using System.Threading.Tasks;
 global using MediatR;
 global using Microsoft.Extensions.Logging;
 global using Crm.Domain.Entities;
-global using Crm.Domain.Repositories;
+global using Crm.Application.Interfaces;

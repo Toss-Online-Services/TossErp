@@ -1,10 +1,9 @@
-using TossErp.CRM.Domain.Aggregates;
-using TossErp.CRM.Domain.Enums;
+using Crm.Domain.Entities;
 
-namespace TossErp.CRM.Domain.Repositories;
+namespace Crm.Domain.Repositories;
 
 /// <summary>
-/// Repository interface for Customer aggregate
+/// Repository interface for Customer entity
 /// </summary>
 public interface ICustomerRepository
 {
@@ -12,7 +11,7 @@ public interface ICustomerRepository
     Task<Customer?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
     Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<Customer>> GetByStatusAsync(CustomerStatus status, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Customer>> GetByTierAsync(CustomerTier tier, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Customer>> GetBySegmentAsync(CustomerSegment segment, CancellationToken cancellationToken = default);
     Task<IEnumerable<Customer>> GetLapsedCustomersAsync(int daysThreshold = 90, CancellationToken cancellationToken = default);
     Task<IEnumerable<Customer>> GetTopCustomersAsync(int count = 10, CancellationToken cancellationToken = default);
     Task<IEnumerable<Customer>> GetHighValueCustomersAsync(decimal threshold = 5000, CancellationToken cancellationToken = default);

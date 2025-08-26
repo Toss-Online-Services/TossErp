@@ -1,3 +1,5 @@
+using Crm.Domain.Entities;
+
 namespace Crm.Application.DTOs;
 
 public class CustomerDto
