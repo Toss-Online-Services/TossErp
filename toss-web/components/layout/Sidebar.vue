@@ -28,7 +28,7 @@
         HR
       </NuxtLink>
       <NuxtLink to="/stock" class="flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
-        <ArchiveIcon class="h-6 w-6 mr-3" />
+        <ArchiveBoxIcon class="h-6 w-6 mr-3" />
         Stock
       </NuxtLink>
       <NuxtLink to="/selling" class="flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -44,5 +44,5 @@
 </template>
 
 <script setup>
-import { HomeIcon, UsersIcon, BriefcaseIcon, CurrencyDollarIcon, UserGroupIcon, ArchiveIcon, ShoppingCartIcon, ShoppingBagIcon } from '@heroicons/vue/24/outline'
+import { HomeIcon, UsersIcon, BriefcaseIcon, CurrencyDollarIcon, UserGroupIcon, ArchiveBoxIcon, ShoppingCartIcon, ShoppingBagIcon } from '@heroicons/vue/24/outline'
 </script>
