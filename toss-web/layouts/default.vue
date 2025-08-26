@@ -1,12 +1,10 @@
 <template>
-  <div class="flex h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <div class="flex h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
     <Sidebar />
     <div class="flex-1 flex flex-col overflow-hidden">
       <Header />
-      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200 dark:bg-gray-800">
-        <div class="container mx-auto px-6 py-8">
-          <slot />
-        </div>
+      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 dark:bg-slate-900">
+        <slot />
       </main>
     </div>
   </div>

@@ -21,6 +21,7 @@ interface _GlobalComponents {
     'ModuleCard': typeof import("../components/ModuleCard.vue")['default']
     'NotificationContainer': typeof import("../components/NotificationContainer.vue")['default']
     'SubscriptionModal': typeof import("../components/SubscriptionModal.vue")['default']
+    'CommonPageHeader': typeof import("../components/common/PageHeader.vue")['default']
     'CommonThemeSwitcher': typeof import("../components/common/ThemeSwitcher.vue")['default']
     'CommonUserMenu': typeof import("../components/common/UserMenu.vue")['default']
     'CrmContactDetailsModal': typeof import("../components/crm/ContactDetailsModal.vue")['default']
@@ -65,6 +66,7 @@ interface _GlobalComponents {
     'LazyModuleCard': LazyComponent<typeof import("../components/ModuleCard.vue")['default']>
     'LazyNotificationContainer': LazyComponent<typeof import("../components/NotificationContainer.vue")['default']>
     'LazySubscriptionModal': LazyComponent<typeof import("../components/SubscriptionModal.vue")['default']>
+    'LazyCommonPageHeader': LazyComponent<typeof import("../components/common/PageHeader.vue")['default']>
     'LazyCommonThemeSwitcher': LazyComponent<typeof import("../components/common/ThemeSwitcher.vue")['default']>
     'LazyCommonUserMenu': LazyComponent<typeof import("../components/common/UserMenu.vue")['default']>
     'LazyCrmContactDetailsModal': LazyComponent<typeof import("../components/crm/ContactDetailsModal.vue")['default']>
@@ -115,6 +117,7 @@ export const CustomerModal: typeof import("../components/CustomerModal.vue")['de
 export const ModuleCard: typeof import("../components/ModuleCard.vue")['default']
 export const NotificationContainer: typeof import("../components/NotificationContainer.vue")['default']
 export const SubscriptionModal: typeof import("../components/SubscriptionModal.vue")['default']
+export const CommonPageHeader: typeof import("../components/common/PageHeader.vue")['default']
 export const CommonThemeSwitcher: typeof import("../components/common/ThemeSwitcher.vue")['default']
 export const CommonUserMenu: typeof import("../components/common/UserMenu.vue")['default']
 export const CrmContactDetailsModal: typeof import("../components/crm/ContactDetailsModal.vue")['default']
@@ -159,6 +162,7 @@ export const LazyCustomerModal: LazyComponent<typeof import("../components/Custo
 export const LazyModuleCard: LazyComponent<typeof import("../components/ModuleCard.vue")['default']>
 export const LazyNotificationContainer: LazyComponent<typeof import("../components/NotificationContainer.vue")['default']>
 export const LazySubscriptionModal: LazyComponent<typeof import("../components/SubscriptionModal.vue")['default']>
+export const LazyCommonPageHeader: LazyComponent<typeof import("../components/common/PageHeader.vue")['default']>
 export const LazyCommonThemeSwitcher: LazyComponent<typeof import("../components/common/ThemeSwitcher.vue")['default']>
 export const LazyCommonUserMenu: LazyComponent<typeof import("../components/common/UserMenu.vue")['default']>
 export const LazyCrmContactDetailsModal: LazyComponent<typeof import("../components/crm/ContactDetailsModal.vue")['default']>

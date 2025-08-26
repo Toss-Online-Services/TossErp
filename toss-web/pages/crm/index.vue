@@ -1,24 +1,22 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
     <!-- Page Header -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="py-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Customer Relationship Management</h1>
-              <p class="text-gray-600 dark:text-gray-400">Manage customers, leads, and sales opportunities</p>
-            </div>
-            <div class="flex space-x-3">
-              <button @click="showCreateLeadModal = true" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                <PlusIcon class="w-5 h-5 inline mr-2" />
-                New Lead
-              </button>
-              <button @click="showCreateCustomerModal = true" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                <UserPlusIcon class="w-5 h-5 inline mr-2" />
-                New Customer
-              </button>
-            </div>
+    <div class="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700">
+      <div class="max-w-7xl mx-auto px-6 py-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Customer Relationship Management</h1>
+            <p class="text-slate-600 dark:text-slate-400 mt-1">Manage customers, leads, and sales opportunities</p>
+          </div>
+          <div class="flex space-x-3">
+            <button @click="showCreateLeadModal = true" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center">
+              <PlusIcon class="w-5 h-5 mr-2" />
+              New Lead
+            </button>
+            <button @click="showCreateCustomerModal = true" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+              <UserPlusIcon class="w-5 h-5 mr-2" />
+              New Customer
+            </button>
           </div>
         </div>
       </div>
@@ -30,13 +28,13 @@
     </div>
 
     <!-- Main Content -->
-    <div v-else class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div v-else class="max-w-7xl mx-auto px-6 py-6">
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Total Customers</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Total Customers</p>
               <p class="text-2xl font-bold text-blue-600">{{ analytics?.totalCustomers || 0 }}</p>
             </div>
             <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
@@ -45,10 +43,10 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Active Leads</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Active Leads</p>
               <p class="text-2xl font-bold text-yellow-600">{{ analytics?.activeLeads || 0 }}</p>
             </div>
             <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
@@ -57,10 +55,10 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Conversion Rate</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Conversion Rate</p>
               <p class="text-2xl font-bold text-green-600">{{ analytics?.conversionRate || 0 }}%</p>
             </div>
             <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
@@ -69,10 +67,10 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Pipeline Value</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Pipeline Value</p>
               <p class="text-2xl font-bold text-purple-600">R {{ formatCurrency(analytics?.pipelineValue || 0) }}</p>
             </div>
             <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
