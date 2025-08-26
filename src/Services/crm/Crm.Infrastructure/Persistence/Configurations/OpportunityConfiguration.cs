@@ -34,26 +34,29 @@ public class OpportunityConfiguration : IEntityTypeConfiguration<Opportunity>
 
         builder.Property(o => o.LeadId);
 
-        // Value Objects
-        builder.OwnsOne(o => o.Value, valueBuilder =>
-        {
-            valueBuilder.OwnsOne(v => v.EstimatedValue, estimatedBuilder =>
-            {
-                estimatedBuilder.Property(e => e.Amount)
-                    .IsRequired()
-                    .HasColumnType("decimal(18,2)")
-                    .HasColumnName("EstimatedValueAmount");
-                estimatedBuilder.Property(e => e.Currency)
-                    .IsRequired()
-                    .HasMaxLength(3)
-                    .HasColumnName("EstimatedValueCurrency");
-            });
+        // Value Objects - Map individual properties to avoid constructor binding issues
+        builder.Ignore(o => o.Value);
+        
+        // Map Money EstimatedValue directly
+        builder.Property<decimal>("EstimatedValueAmount")
+            .IsRequired()
+            .HasColumnType("decimal(18,2)");
+        
+        builder.Property<string>("EstimatedValueCurrency")
+            .IsRequired()
+            .HasMaxLength(3)
+            .HasDefaultValue("USD");
             
-            valueBuilder.Property(v => v.Probability)
-                .IsRequired()
-                .HasColumnType("decimal(5,2)")
-                .HasColumnName("Probability");
-        });
+        builder.Property<decimal>("Probability")
+            .IsRequired()
+            .HasColumnType("decimal(5,2)");
+
+        // ActualValue Money property - use NotMapped attribute in domain model
+        builder.Property<decimal?>("ActualValueAmount")
+            .HasColumnType("decimal(18,2)");
+            
+        builder.Property<string?>("ActualValueCurrency")
+            .HasMaxLength(3);
 
         // Enum properties
         builder.Property(o => o.Stage)
@@ -121,13 +124,11 @@ public class OpportunityConfiguration : IEntityTypeConfiguration<Opportunity>
         builder.Property(o => o.Remarks)
             .HasMaxLength(2000);
 
-        // Computed fields
-        builder.Property(o => o.DaysToClose);
-
+        // StageProgressDays is a stored field
         builder.Property(o => o.StageProgressDays);
 
-        builder.Property(o => o.IsOverdue)
-            .HasDefaultValue(false);
+        // Computed/calculated properties are marked with [NotMapped] in domain model
+        // IsOverdue, IsDeleted are stored fields
 
         builder.Property(o => o.IsDeleted)
             .HasDefaultValue(false);
@@ -141,6 +142,12 @@ public class OpportunityConfiguration : IEntityTypeConfiguration<Opportunity>
         builder.Ignore(o => o.DaysInPipeline);
         builder.Ignore(o => o.DaysSinceLastActivity);
         builder.Ignore(o => o.DaysUntilExpectedClose);
+        builder.Ignore(o => o.DaysToClose);
+        builder.Ignore(o => o.TimeSinceLastActivity);
+        builder.Ignore(o => o.IsStale);
+        builder.Ignore(o => o.IsHighPriority);
+        builder.Ignore(o => o.IsClosingSoon);
+        builder.Ignore(o => o.IsOverdue);
 
         // Ignore collections for now (will be configured separately if needed)
         builder.Ignore(o => o.Activities);

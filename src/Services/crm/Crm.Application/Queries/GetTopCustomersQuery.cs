@@ -1,5 +1,7 @@
 using Crm.Application.DTOs;
 
+using TossErp.CRM.Domain.Repositories;
+
 namespace Crm.Application.Queries;
 
 public record GetTopCustomersQuery(int Count = 10) : IRequest<IEnumerable<CustomerDto>>;

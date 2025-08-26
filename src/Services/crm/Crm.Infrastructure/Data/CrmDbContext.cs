@@ -2,6 +2,7 @@ using Crm.Domain.Entities;
 using TossErp.CRM.Domain.SeedWork;
 using TossErp.CRM.Domain.Aggregates;
 using TossErp.CRM.Domain.Entities;
+using Crm.Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection;

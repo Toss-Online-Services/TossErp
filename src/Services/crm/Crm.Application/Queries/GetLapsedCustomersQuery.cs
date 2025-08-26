@@ -1,5 +1,7 @@
 using Crm.Application.DTOs;
 
+using TossErp.CRM.Domain.Repositories;
+
 namespace Crm.Application.Queries;
 
 public record GetLapsedCustomersQuery(int DaysThreshold = 90) : IRequest<IEnumerable<CustomerDto>>;

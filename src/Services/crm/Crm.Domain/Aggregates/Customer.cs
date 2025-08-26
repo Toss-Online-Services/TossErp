@@ -3,6 +3,7 @@ using TossErp.CRM.Domain.Enums;
 using TossErp.CRM.Domain.Events;
 using TossErp.CRM.Domain.SeedWork;
 using TossErp.CRM.Domain.ValueObjects;
+using System.ComponentModel.DataAnnotations.Schema;
 using CustomerStatus = TossErp.CRM.Domain.Enums.CustomerStatus;
 
 namespace TossErp.CRM.Domain.Aggregates;
@@ -21,7 +22,10 @@ public class Customer : AggregateRoot
 
     // Core properties
     public Guid TenantId { get; private set; }
+    
+    [NotMapped]
     public CustomerNumber CustomerNumber { get; private set; }
+    
     public string Name { get; private set; }
     public CustomerType Type { get; private set; }
     public CustomerStatus Status { get; private set; }
@@ -29,15 +33,25 @@ public class Customer : AggregateRoot
     public LeadSource? Source { get; private set; }
 
     // Contact information
+    [NotMapped]
     public EmailAddress? PrimaryEmail { get; private set; }
+    
+    [NotMapped]
     public PhoneNumber? PrimaryPhone { get; private set; }
+    
+    [NotMapped]
     public Address? BillingAddress { get; private set; }
+    
+    [NotMapped]
     public Address? ShippingAddress { get; private set; }
 
     // Business information
     public string? Industry { get; private set; }
     public int? EmployeeCount { get; private set; }
+    
+    [NotMapped]
     public Money? AnnualRevenue { get; private set; }
+    
     public string? Website { get; private set; }
     public string? TaxId { get; private set; }
 
@@ -52,8 +66,13 @@ public class Customer : AggregateRoot
     public SubscriptionStatus SubscriptionStatus { get; private set; }
     public DateTime? SubscriptionStartDate { get; private set; }
     public DateTime? SubscriptionEndDate { get; private set; }
+    
+    [NotMapped]
     public Money? MonthlyRecurringRevenue { get; private set; }
+    
     public DateTime? LastActivityDate { get; private set; }
+    
+    [NotMapped]
     public LeadScore CustomerScore { get; private set; }
 
     // Collections

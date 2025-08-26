@@ -1,5 +1,5 @@
-using Crm.Domain.Entities;
-using Crm.Domain.Repositories;
+using TossErp.CRM.Domain.Aggregates;
+using TossErp.CRM.Domain.Repositories;
 
 namespace Crm.Infrastructure.Repositories;
 

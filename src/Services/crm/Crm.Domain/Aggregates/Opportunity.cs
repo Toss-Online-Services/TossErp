@@ -3,6 +3,7 @@ using TossErp.CRM.Domain.Enums;
 using TossErp.CRM.Domain.Events;
 using TossErp.CRM.Domain.SeedWork;
 using TossErp.CRM.Domain.ValueObjects;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TossErp.CRM.Domain.Aggregates;
 
@@ -27,7 +28,10 @@ public class Opportunity : AggregateRoot
     // Opportunity details
     public OpportunityStage Stage { get; private set; }
     public OpportunityType Type { get; private set; }
+    
+    [NotMapped]
     public OpportunityValue Value { get; private set; }
+    
     public OpportunityPriority Priority { get; private set; }
     public LeadSource? Source { get; private set; }
 
@@ -52,6 +56,8 @@ public class Opportunity : AggregateRoot
     public string? WinReason { get; private set; }
     public string? LossReason { get; private set; }
     public string? CompetitorName { get; private set; }
+    
+    [NotMapped]
     public Money? ActualValue { get; private set; }
 
     // Campaign tracking
@@ -444,8 +450,10 @@ public class Opportunity : AggregateRoot
                                  Value.EstimatedValue.Amount >= 50000 ||
                                  IsClosingSoon;
 
+    [NotMapped]
     public int DaysToClose => (ExpectedCloseDate.Date - DateTime.UtcNow.Date).Days;
 
+    [NotMapped]
     public decimal WeightedValue => Value.WeightedValue.Amount;
 
     #endregion

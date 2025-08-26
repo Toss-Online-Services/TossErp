@@ -11,8 +11,11 @@ public interface IOpportunityRepository
     Task<Opportunity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IEnumerable<Opportunity>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<Opportunity>> GetByStageAsync(OpportunityStage stage, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Opportunity>> GetByCustomerAsync(Guid customerId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Opportunity>> GetByCustomerIdAsync(Guid customerId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Opportunity>> GetByAssigneeAsync(string assignedTo, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Opportunity>> GetByPriorityAsync(OpportunityPriority priority, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Opportunity>> GetByTypeAsync(OpportunityType type, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Opportunity>> GetActiveOpportunitiesAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<Opportunity>> GetOpenOpportunitiesAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<Opportunity>> GetClosedOpportunitiesAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<Opportunity>> GetOverdueOpportunitiesAsync(CancellationToken cancellationToken = default);
