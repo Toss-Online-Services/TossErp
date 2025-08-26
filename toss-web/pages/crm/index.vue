@@ -64,7 +64,7 @@
               <p class="text-2xl font-bold text-green-600">{{ analytics?.conversionRate || 0 }}%</p>
             </div>
             <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
-              <TrendingUpIcon class="w-6 h-6 text-green-600" />
+              <ArrowTrendingUpIcon class="w-6 h-6 text-green-600" />
             </div>
           </div>
         </div>
@@ -156,7 +156,7 @@
                 @input="debouncedSearch"
               >
               <button @click="refreshCustomers" class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                <RefreshIcon class="w-4 h-4" />
+                <ArrowPathIcon class="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -187,8 +187,8 @@
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" :class="getSegmentColor(customer.segment)">
-                    {{ customer.segment }}
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" :class="getSegmentColor(customer.segment || 'Regular')">
+                    {{ customer.segment || 'Regular' }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -262,15 +262,24 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { 
+  PlusIcon, 
+  UserPlusIcon, 
+  UsersIcon, 
+  ChartBarIcon, 
+  ArrowTrendingUpIcon, 
+  CurrencyDollarIcon, 
+  ArrowPathIcon,
+  PhoneIcon,
+  EnvelopeIcon,
+  CalendarIcon,
+  DocumentIcon
+} from '@heroicons/vue/24/outline'
+import { useCustomerStore } from '../../stores/customers'
+import { storeToRefs } from 'pinia'
 
-// Icons (simplified for demo - in real app would use proper icon library)
-const PlusIcon = 'svg'
-const UserPlusIcon = 'svg'
-const UsersIcon = 'svg'
-const ChartBarIcon = 'svg'
-const TrendingUpIcon = 'svg'
-const CurrencyDollarIcon = 'svg'
-const RefreshIcon = 'svg'
+// Initialize store
+const customersStore = useCustomerStore()
 
 // Reactive data
 const searchTerm = ref('')
@@ -288,196 +297,67 @@ const newCustomer = ref({
   dateOfBirth: ''
 })
 
-// Data
-const customers = ref<any[]>([])
-const leads = ref<any[]>([])
-const opportunities = ref<any[]>([])
-const crmAnalytics = ref<any>({})
-const analytics = ref<any>({
-  totalCustomers: 0,
-  activeLeads: 0,
-  conversionRate: 0,
-  pipelineValue: 0
-})
-
-const customersPending = ref(false)
-const analyticsPending = ref(false)
-const leadsPending = ref(false)
-const opportunitiesPending = ref(false)
-
-const pending = computed(() => 
-  customersPending.value || 
-  analyticsPending.value || 
-  leadsPending.value || 
-  opportunitiesPending.value
-)
-
-// Fetch data functions
-async function fetchCustomers() {
-  customersPending.value = true
-  try {
-    const response = await fetch('/api/crm/customers')
-    const data = await response.json()
-    customers.value = data || []
-  } catch (error) {
-    console.error('Error fetching customers:', error)
-    customers.value = []
-  } finally {
-    customersPending.value = false
-  }
-}
-
-async function fetchLeads() {
-  leadsPending.value = true
-  try {
-    const response = await fetch('/api/crm/leads')
-    const data = await response.json()
-    leads.value = data || []
-  } catch (error) {
-    console.error('Error fetching leads:', error)
-    leads.value = []
-  } finally {
-    leadsPending.value = false
-  }
-}
-
-async function fetchOpportunities() {
-  opportunitiesPending.value = true
-  try {
-    const response = await fetch('/api/crm/opportunities')
-    const data = await response.json()
-    opportunities.value = data || []
-  } catch (error) {
-    console.error('Error fetching opportunities:', error)
-    opportunities.value = []
-  } finally {
-    opportunitiesPending.value = false
-  }
-}
-
-async function fetchCrmAnalytics() {
-  analyticsPending.value = true
-  try {
-    const response = await fetch('/api/crm/analytics')
-    const data = await response.json()
-    crmAnalytics.value = data || {}
-    
-    // Update analytics for the dashboard
-    if (data.overview) {
-      analytics.value = {
-        totalCustomers: data.overview.totalCustomers || 0,
-        activeLeads: data.overview.activeLeads || 0,
-        conversionRate: data.overview.conversionRate || 0,
-        pipelineValue: data.overview.pipelineValue || 0
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching CRM analytics:', error)
-    crmAnalytics.value = {}
-    analytics.value = {
-      totalCustomers: 0,
-      activeLeads: 0,
-      conversionRate: 0,
-      pipelineValue: 0
-    }
-  } finally {
-    analyticsPending.value = false
-  }
-}
-
-async function fetchAnalytics() {
-  // This function is now handled by fetchCrmAnalytics
-  await fetchCrmAnalytics()
-}
-
-async function refreshCustomers() {
-  await fetchCustomers()
-}
-
 // Load data on mount
 onMounted(async () => {
-  await Promise.all([
-    fetchCustomers(), 
-    fetchLeads(), 
-    fetchOpportunities(), 
-    fetchCrmAnalytics()
-  ])
+  await customersStore.fetchCustomers()
 })
 
-// Enhanced pipeline data based on real opportunities
-const pipelineStages = computed(() => {
-  if (!crmAnalytics.value.pipeline?.stages) {
-    // Fallback pipeline data
-    return [
-      {
-        name: 'Prospecting',
-        count: 1,
-        opportunities: opportunities.value.filter(o => o.stage === 'Prospecting').slice(0, 3)
-      },
-      {
-        name: 'Qualification',
-        count: 1,
-        opportunities: opportunities.value.filter(o => o.stage === 'Qualification').slice(0, 3)
-      },
-      {
-        name: 'Proposal',
-        count: 1,
-        opportunities: opportunities.value.filter(o => o.stage === 'Proposal').slice(0, 3)
-      },
-      {
-        name: 'Negotiation',
-        count: 1,
-        opportunities: opportunities.value.filter(o => o.stage === 'Negotiation').slice(0, 3)
-      }
+// Computed properties from store
+const customers = computed(() => customersStore.customers)
+const customerStats = computed(() => customersStore.customerStats)
+const pending = computed(() => customersStore.loading)
+
+// Mock analytics data based on customer store
+const analytics = computed(() => ({
+  totalCustomers: customerStats.value.total,
+  activeLeads: customerStats.value.leads,
+  conversionRate: Math.round((customerStats.value.active / customerStats.value.total) * 100) || 0,
+  pipelineValue: customerStats.value.total * 15000 // Mock pipeline value
+}))
+
+// Mock pipeline data
+const pipelineStages = computed(() => [
+  {
+    name: 'Prospecting',
+    count: 2,
+    opportunities: [
+      { id: 1, customer: 'TechCorp Ltd', product: 'ERP Package', value: 45000 },
+      { id: 2, customer: 'NewCo Inc', product: 'CRM Solution', value: 25000 }
+    ]
+  },
+  {
+    name: 'Qualification',
+    count: 1,
+    opportunities: [
+      { id: 3, customer: 'StartupCo', product: 'Basic Package', value: 15000 }
+    ]
+  },
+  {
+    name: 'Proposal',
+    count: 1,
+    opportunities: [
+      { id: 4, customer: 'BigCorp', product: 'Enterprise Suite', value: 85000 }
+    ]
+  },
+  {
+    name: 'Negotiation',
+    count: 1,
+    opportunities: [
+      { id: 5, customer: 'MegaCorp', product: 'Full Integration', value: 120000 }
     ]
   }
-  
-  // Map real pipeline data to display format
-  return crmAnalytics.value.pipeline.stages.map((stage: any) => ({
-    name: stage.name,
-    count: stage.count,
-    opportunities: opportunities.value
-      .filter(o => o.stage === stage.name)
-      .slice(0, 3)
-      .map(o => ({
-        id: o.id,
-        customer: o.customerName || 'Unknown',
-        product: o.product || o.title,
-        value: o.value || 0
-      }))
-  }))
-})
+])
 
-const recentActivities = computed(() => {
-  if (crmAnalytics.value.recentActivities) {
-    return crmAnalytics.value.recentActivities.map((activity: any) => ({
-      id: activity.id,
-      type: activity.icon?.replace('-', '') || 'note',
-      description: activity.description,
-      date: new Date(activity.timestamp)
-    }))
-  }
-  
-  // Fallback activities
-  return [
-    { id: 1, type: 'call', description: 'New lead: Peter Parker from Daily Bugle', date: new Date() },
-    { id: 2, type: 'email', description: 'Stark Industries opportunity updated', date: new Date(Date.now() - 3600000) },
-    { id: 3, type: 'meeting', description: 'Demo scheduled with Banner Labs', date: new Date(Date.now() - 7200000) },
-    { id: 4, type: 'note', description: 'Rogers Communications contact updated', date: new Date(Date.now() - 86400000) }
-  ]
-})
+const recentActivities = computed(() => [
+  { id: 1, type: 'call', description: 'New lead: TechCorp Ltd interested in ERP solution', date: new Date() },
+  { id: 2, type: 'email', description: 'Follow-up sent to BigCorp for proposal review', date: new Date(Date.now() - 3600000) },
+  { id: 3, type: 'meeting', description: 'Demo scheduled with StartupCo next week', date: new Date(Date.now() - 7200000) },
+  { id: 4, type: 'note', description: 'Updated contact info for John Doe at Acme Corp', date: new Date(Date.now() - 86400000) }
+])
 
-// Computed properties
 const filteredCustomers = computed(() => {
-  if (!customers.value) return []
   if (!searchTerm.value) return customers.value
-  
-  const term = searchTerm.value.toLowerCase()
-  return customers.value.filter((customer: any) => 
-    customer.fullName.toLowerCase().includes(term) ||
-    customer.email.toLowerCase().includes(term) ||
-    customer.phone.includes(term)
-  )
+  return customersStore.searchCustomers(searchTerm.value)
 })
 
 // Methods
@@ -488,17 +368,18 @@ const debouncedSearch = debounce(() => {
 async function createCustomer() {
   creatingCustomer.value = true
   try {
-    const response = await fetch('/api/crm/customers', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newCustomer.value)
-    })
-    
-    if (!response.ok) {
-      throw new Error('Failed to create customer')
+    const customerData = {
+      ...newCustomer.value,
+      fullName: `${newCustomer.value.firstName} ${newCustomer.value.lastName}`,
+      status: 'Lead' as const,
+      company: '',
+      totalSpent: 0,
+      lastPurchaseDate: null,
+      notes: '',
+      subscriptions: []
     }
+    
+    await customersStore.createCustomer(customerData)
     
     // Reset form and close modal
     newCustomer.value = {
@@ -511,10 +392,7 @@ async function createCustomer() {
     }
     showCreateCustomerModal.value = false
     
-    // Refresh customer list
-    await refreshCustomers()
-    
-    // Show success message (would use toast in real app)
+    // Show success message
     alert('Customer created successfully!')
   } catch (error) {
     console.error('Error creating customer:', error)
@@ -524,15 +402,17 @@ async function createCustomer() {
   }
 }
 
+async function refreshCustomers() {
+  await customersStore.fetchCustomers()
+}
+
 function viewCustomer(customer: any) {
-  // Navigate to customer detail page (simplified for demo)
   console.log('Viewing customer:', customer)
-  alert(`Viewing ${customer.fullName || customer.firstName + ' ' + customer.lastName}...`)
+  alert(`Viewing ${customer.fullName}...`)
 }
 
 function contactCustomer(customer: any) {
-  // Open contact modal or navigate to communication
-  alert(`Contacting ${customer.fullName || customer.firstName + ' ' + customer.lastName}...`)
+  alert(`Contacting ${customer.fullName}...`)
 }
 
 // Helper functions
@@ -568,7 +448,13 @@ function getActivityColor(type: string): string {
 }
 
 function getActivityIcon(type: string) {
-  return 'svg' // Would return proper icon component
+  switch (type) {
+    case 'call': return PhoneIcon
+    case 'email': return EnvelopeIcon
+    case 'meeting': return CalendarIcon
+    case 'note': return DocumentIcon
+    default: return DocumentIcon
+  }
 }
 
 function getStatusColor(status: string): string {
@@ -576,6 +462,7 @@ function getStatusColor(status: string): string {
     case 'Active': return 'bg-green-100 text-green-800'
     case 'Lead': return 'bg-yellow-100 text-yellow-800'
     case 'Prospect': return 'bg-blue-100 text-blue-800'
+    case 'Inactive': return 'bg-gray-100 text-gray-800'
     default: return 'bg-gray-100 text-gray-800'
   }
 }
@@ -602,13 +489,4 @@ function debounce(func: Function, wait: number) {
     timeout = setTimeout(later, wait)
   }
 }
-
-// Page metadata (simplified for demo)
-// In a real Nuxt app, you would use useHead() composable
-// useHead({
-//   title: 'CRM - TOSS ERP',
-//   meta: [
-//     { name: 'description', content: 'Customer relationship management and sales pipeline in TOSS ERP' }
-//   ]
-// })
 </script>
