@@ -7,7 +7,9 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@vueuse/nuxt'
   ],
-  css: ['~/assets/css/main.scss'],
+  tailwindcss: {
+    cssPath: '~/assets/css/main.css'
+  },
   colorMode: {
     classSuffix: ''
   },
