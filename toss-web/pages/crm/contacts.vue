@@ -1,6 +1,8 @@
 <template>
   <div class="p-6 bg-white min-h-screen">
-    <!-- Header Section -->
+              <option value="">All Status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option> Header Section -->
     <div class="sm:flex sm:items-center sm:justify-between mb-8">
       <div>
         <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900 sm:text-4xl">
@@ -47,10 +49,9 @@
           class="rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
         >
           <option value="">All Types</option>
-          <option value="lead">Lead</option>
-          <option value="customer">Customer</option>
-          <option value="vendor">Vendor</option>
-          <option value="partner">Partner</option>
+          <option value="Lead">Lead</option>
+          <option value="Customer">Customer</option>
+          <option value="Prospect">Prospect</option>
         </select>
 
         <!-- Status Filter -->
@@ -516,12 +517,13 @@ const loadContacts = async () => {
   try {
     loading.value = true
     error.value = null
-    const data = await contactsApi.getContacts()
-    // Transform API data to match our interface
-    allContacts.value = data.map((contact: any) => ({
+    const response = await contactsApi.getContacts()
+    // The API returns a wrapper object with data, totalCount, etc.
+    allContacts.value = response.data.map((contact: any) => ({
       ...contact,
       name: `${contact.firstName} ${contact.lastName}`.trim() // Computed name from firstName + lastName
     }))
+    totalContacts.value = response.totalCount
   } catch (err) {
     error.value = 'Failed to load contacts'
     console.error('Error loading contacts:', err)
@@ -660,13 +662,12 @@ const sortedContacts = computed(() => {
   return sorted
 })
 
-const totalContacts = computed(() => sortedContacts.value.length)
+const totalContacts = ref(0)
 const totalPages = computed(() => Math.ceil(totalContacts.value / pageSize.value))
 
 const paginatedContacts = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  return sortedContacts.value.slice(start, end)
+  // Since the API handles pagination server-side, just return the contacts
+  return allContacts.value
 })
 
 const visiblePages = computed(() => {
@@ -693,19 +694,17 @@ const getInitials = (name: string): string => {
 
 const getTypeColor = (type: string): string => {
   const colors = {
-    lead: 'bg-yellow-50 text-yellow-800 ring-yellow-600/20',
-    customer: 'bg-green-50 text-green-800 ring-green-600/20',
-    vendor: 'bg-blue-50 text-blue-800 ring-blue-600/20',
-    partner: 'bg-purple-50 text-purple-800 ring-purple-600/20'
+    Lead: 'bg-yellow-50 text-yellow-800 ring-yellow-600/20',
+    Customer: 'bg-green-50 text-green-800 ring-green-600/20',
+    Prospect: 'bg-blue-50 text-blue-800 ring-blue-600/20'
   }
   return colors[type as keyof typeof colors] || 'bg-gray-50 text-gray-800 ring-gray-600/20'
 }
 
 const getStatusColor = (status: string): string => {
   const colors = {
-    active: 'bg-green-50 text-green-800 ring-green-600/20',
-    inactive: 'bg-gray-50 text-gray-800 ring-gray-600/20',
-    prospect: 'bg-yellow-50 text-yellow-800 ring-yellow-600/20'
+    Active: 'bg-green-50 text-green-800 ring-green-600/20',
+    Inactive: 'bg-gray-50 text-gray-800 ring-gray-600/20'
   }
   return colors[status as keyof typeof colors] || 'bg-gray-50 text-gray-800 ring-gray-600/20'
 }
@@ -790,35 +789,39 @@ const editContactFromDetails = (contact: Contact) => {
   editContact(contact)
 }
 
-const deleteContact = (contact: Contact) => {
-  if (confirm(`Are you sure you want to delete ${contact.name}?`)) {
-    const index = allContacts.value.findIndex(c => c.id === contact.id)
-    if (index > -1) {
-      allContacts.value.splice(index, 1)
+const deleteContact = async (contact: Contact) => {
+  if (confirm(`Are you sure you want to delete ${contact.name || `${contact.firstName} ${contact.lastName}`}?`)) {
+    try {
+      await contactsApi.deleteContact(contact.id)
+      // Reload contacts from API to get updated data
+      await loadContacts()
+      // Remove from selection if selected
+      selectedContacts.value = selectedContacts.value.filter(id => id !== contact.id)
+    } catch (error) {
+      console.error('Error deleting contact:', error)
+      // Could add a toast notification here
     }
-    // Remove from selection if selected
-    selectedContacts.value = selectedContacts.value.filter(id => id !== contact.id)
   }
 }
 
-const saveContact = (contact: Contact) => {
-  if (isEditMode.value) {
-    // Update existing contact
-    const index = allContacts.value.findIndex(c => c.id === contact.id)
-    if (index > -1) {
-      allContacts.value[index] = { ...contact }
+const saveContact = async (contact: Contact) => {
+  try {
+    if (isEditMode.value && contact.id) {
+      // Update existing contact via API
+      await contactsApi.updateContact(contact.id, contact)
+    } else {
+      // Create new contact via API
+      await contactsApi.createContact(contact)
     }
-  } else {
-    // Add new contact
-    const newContact: Contact = {
-      ...contact,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      lastActivity: new Date().toISOString()
-    }
-    allContacts.value.push(newContact)
+    
+    // Reload contacts from API to get updated data
+    await loadContacts()
+    
+    closeContactModal()
+  } catch (error) {
+    console.error('Error saving contact:', error)
+    // Could add a toast notification here
   }
-  closeContactModal()
 }
 
 const bulkEdit = () => {
@@ -841,7 +844,7 @@ const exportContacts = () => {
   const csv = [
     ['Name', 'Email', 'Phone', 'Company', 'Type', 'Status', 'Created'],
     ...data.map(contact => [
-      contact.name,
+      contact.name || `${contact.firstName} ${contact.lastName}`,
       contact.email,
       contact.phone || '',
       contact.company || '',
@@ -861,8 +864,8 @@ const exportContacts = () => {
 }
 
 // Watchers
-watch([searchQuery, selectedType, selectedStatus], () => {
-  currentPage.value = 1
+watch([searchQuery, selectedType, selectedStatus, currentPage, sortField, sortDirection], () => {
+  loadContacts()
 })
 
 watch(selectedContacts, (newSelection) => {
