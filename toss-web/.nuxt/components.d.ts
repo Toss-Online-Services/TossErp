@@ -16,10 +16,15 @@ interface _GlobalComponents {
     'AppNavigation': typeof import("../components/AppNavigation.vue")['default']
     'ContactDetailsModal': typeof import("../components/ContactDetailsModal.vue")['default']
     'ContactModal': typeof import("../components/ContactModal.vue")['default']
+    'CustomerDetailsModal': typeof import("../components/CustomerDetailsModal.vue")['default']
+    'CustomerModal': typeof import("../components/CustomerModal.vue")['default']
     'ModuleCard': typeof import("../components/ModuleCard.vue")['default']
     'NotificationContainer': typeof import("../components/NotificationContainer.vue")['default']
+    'SubscriptionModal': typeof import("../components/SubscriptionModal.vue")['default']
     'CommonThemeSwitcher': typeof import("../components/common/ThemeSwitcher.vue")['default']
     'CommonUserMenu': typeof import("../components/common/UserMenu.vue")['default']
+    'CrmContactDetailsModal': typeof import("../components/crm/ContactDetailsModal.vue")['default']
+    'CrmContactModal': typeof import("../components/crm/ContactModal.vue")['default']
     'IconsIconBase': typeof import("../components/icons/IconBase.vue")['default']
     'LayoutHeader': typeof import("../components/layout/Header.vue")['default']
     'LayoutSidebar': typeof import("../components/layout/Sidebar.vue")['default']
@@ -52,10 +57,15 @@ interface _GlobalComponents {
     'LazyAppNavigation': LazyComponent<typeof import("../components/AppNavigation.vue")['default']>
     'LazyContactDetailsModal': LazyComponent<typeof import("../components/ContactDetailsModal.vue")['default']>
     'LazyContactModal': LazyComponent<typeof import("../components/ContactModal.vue")['default']>
+    'LazyCustomerDetailsModal': LazyComponent<typeof import("../components/CustomerDetailsModal.vue")['default']>
+    'LazyCustomerModal': LazyComponent<typeof import("../components/CustomerModal.vue")['default']>
     'LazyModuleCard': LazyComponent<typeof import("../components/ModuleCard.vue")['default']>
     'LazyNotificationContainer': LazyComponent<typeof import("../components/NotificationContainer.vue")['default']>
+    'LazySubscriptionModal': LazyComponent<typeof import("../components/SubscriptionModal.vue")['default']>
     'LazyCommonThemeSwitcher': LazyComponent<typeof import("../components/common/ThemeSwitcher.vue")['default']>
     'LazyCommonUserMenu': LazyComponent<typeof import("../components/common/UserMenu.vue")['default']>
+    'LazyCrmContactDetailsModal': LazyComponent<typeof import("../components/crm/ContactDetailsModal.vue")['default']>
+    'LazyCrmContactModal': LazyComponent<typeof import("../components/crm/ContactModal.vue")['default']>
     'LazyIconsIconBase': LazyComponent<typeof import("../components/icons/IconBase.vue")['default']>
     'LazyLayoutHeader': LazyComponent<typeof import("../components/layout/Header.vue")['default']>
     'LazyLayoutSidebar': LazyComponent<typeof import("../components/layout/Sidebar.vue")['default']>
@@ -94,10 +104,15 @@ export const AICopilotChat: typeof import("../components/AICopilotChat.vue")['de
 export const AppNavigation: typeof import("../components/AppNavigation.vue")['default']
 export const ContactDetailsModal: typeof import("../components/ContactDetailsModal.vue")['default']
 export const ContactModal: typeof import("../components/ContactModal.vue")['default']
+export const CustomerDetailsModal: typeof import("../components/CustomerDetailsModal.vue")['default']
+export const CustomerModal: typeof import("../components/CustomerModal.vue")['default']
 export const ModuleCard: typeof import("../components/ModuleCard.vue")['default']
 export const NotificationContainer: typeof import("../components/NotificationContainer.vue")['default']
+export const SubscriptionModal: typeof import("../components/SubscriptionModal.vue")['default']
 export const CommonThemeSwitcher: typeof import("../components/common/ThemeSwitcher.vue")['default']
 export const CommonUserMenu: typeof import("../components/common/UserMenu.vue")['default']
+export const CrmContactDetailsModal: typeof import("../components/crm/ContactDetailsModal.vue")['default']
+export const CrmContactModal: typeof import("../components/crm/ContactModal.vue")['default']
 export const IconsIconBase: typeof import("../components/icons/IconBase.vue")['default']
 export const LayoutHeader: typeof import("../components/layout/Header.vue")['default']
 export const LayoutSidebar: typeof import("../components/layout/Sidebar.vue")['default']
@@ -130,10 +145,15 @@ export const LazyAICopilotChat: LazyComponent<typeof import("../components/AICop
 export const LazyAppNavigation: LazyComponent<typeof import("../components/AppNavigation.vue")['default']>
 export const LazyContactDetailsModal: LazyComponent<typeof import("../components/ContactDetailsModal.vue")['default']>
 export const LazyContactModal: LazyComponent<typeof import("../components/ContactModal.vue")['default']>
+export const LazyCustomerDetailsModal: LazyComponent<typeof import("../components/CustomerDetailsModal.vue")['default']>
+export const LazyCustomerModal: LazyComponent<typeof import("../components/CustomerModal.vue")['default']>
 export const LazyModuleCard: LazyComponent<typeof import("../components/ModuleCard.vue")['default']>
 export const LazyNotificationContainer: LazyComponent<typeof import("../components/NotificationContainer.vue")['default']>
+export const LazySubscriptionModal: LazyComponent<typeof import("../components/SubscriptionModal.vue")['default']>
 export const LazyCommonThemeSwitcher: LazyComponent<typeof import("../components/common/ThemeSwitcher.vue")['default']>
 export const LazyCommonUserMenu: LazyComponent<typeof import("../components/common/UserMenu.vue")['default']>
+export const LazyCrmContactDetailsModal: LazyComponent<typeof import("../components/crm/ContactDetailsModal.vue")['default']>
+export const LazyCrmContactModal: LazyComponent<typeof import("../components/crm/ContactModal.vue")['default']>
 export const LazyIconsIconBase: LazyComponent<typeof import("../components/icons/IconBase.vue")['default']>
 export const LazyLayoutHeader: LazyComponent<typeof import("../components/layout/Header.vue")['default']>
 export const LazyLayoutSidebar: LazyComponent<typeof import("../components/layout/Sidebar.vue")['default']>

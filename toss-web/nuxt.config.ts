@@ -49,8 +49,11 @@ export default defineNuxtConfig({
     },
     devProxy: {
       '/api/crm': {
-        target: 'http://localhost:8081/api/crm',
-        changeOrigin: true
+        target: 'http://localhost:5049/api',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/crm': ''
+        }
       },
       '/api/analytics': {
         target: 'http://localhost:8081/api/analytics',

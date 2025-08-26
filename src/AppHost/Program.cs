@@ -39,13 +39,12 @@ var setupApi = builder.AddProject("setup-api", "../Services/setup/Setup.API/Setu
     .WithEnvironment("Identity__Url", identityEndpoint)
     .WithEndpoint(port: 5010, name: "http-setup");
 
-// Temporarily disabled due to domain model conflicts
-// var crmApi = builder.AddProject("crm-api", "../Services/crm/Crm.API/Crm.API.csproj")
-//     .WithReference(crmDb)
-//     .WithReference(rabbitMq).WaitFor(rabbitMq)
-//     .WithReference(redis)
-//     .WithEnvironment("Identity__Url", identityEndpoint)
-//     .WithEndpoint(port: 5060, name: "http-crm");
+var crmApi = builder.AddProject("crm-api", "../Services/crm/Crm.API/Crm.API.csproj")
+    .WithReference(crmDb)
+    .WithReference(rabbitMq).WaitFor(rabbitMq)
+    .WithReference(redis)
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WithEndpoint(port: 5060, name: "http-crm");
 
 var hrApi = builder.AddProject("hr-api", "../Services/hr/HR.API/HR.API.csproj")
     .WithReference(hrDb)
@@ -117,7 +116,7 @@ var stockProcessor = builder.AddProject("stock-processor", "../Services/Stock/St
 var gateway = builder.AddProject("gateway", "../Gateway/Gateway.csproj")
     .WithExternalHttpEndpoints()
     .WithReference(identityApi)
-    // .WithReference(crmApi)  // Temporarily disabled
+    .WithReference(crmApi)
     .WithReference(hrApi)
     .WithReference(salesApi)
     .WithReference(stockApi)
@@ -147,7 +146,7 @@ if (useOllama)
 gateway.WithEnvironment("CallBackUrl", gateway.GetEndpoint("http-gateway"));
 
 // Identity has references to all APIs for callback URLs
-identityApi// .WithEnvironment("CrmApiClient", crmApi.GetEndpoint("http"))  // CRM temporarily disabled
+identityApi.WithEnvironment("CrmApiClient", crmApi.GetEndpoint("http"))
            .WithEnvironment("HrApiClient", hrApi.GetEndpoint("http"))
            .WithEnvironment("SalesApiClient", salesApi.GetEndpoint("http"))
            .WithEnvironment("StockApiClient", stockApi.GetEndpoint("http"))

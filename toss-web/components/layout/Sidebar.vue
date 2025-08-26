@@ -1,8 +1,10 @@
 <template>
   <aside class="w-64 flex-shrink-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
     <div class="h-16 flex items-center justify-center px-4">
-      <img src="/logo.svg" alt="TOSS ERP" class="h-8 w-auto">
-      <h1 class="text-2xl font-bold ml-2">TOSS ERP</h1>
+      <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-2">
+        <span class="text-white font-bold text-sm">T</span>
+      </div>
+      <h1 class="text-2xl font-bold">TOSS ERP</h1>
     </div>
     <nav class="flex-1 px-2 py-4 space-y-1">
       <NuxtLink to="/" class="flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
