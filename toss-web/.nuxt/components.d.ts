@@ -25,6 +25,7 @@ interface _GlobalComponents {
     'CommonUserMenu': typeof import("../components/common/UserMenu.vue")['default']
     'CrmContactDetailsModal': typeof import("../components/crm/ContactDetailsModal.vue")['default']
     'CrmContactModal': typeof import("../components/crm/ContactModal.vue")['default']
+    'CrmLeadDetailPanel': typeof import("../components/crm/LeadDetailPanel.vue")['default']
     'IconsIconBase': typeof import("../components/icons/IconBase.vue")['default']
     'LayoutHeader': typeof import("../components/layout/Header.vue")['default']
     'LayoutSidebar': typeof import("../components/layout/Sidebar.vue")['default']
@@ -66,6 +67,7 @@ interface _GlobalComponents {
     'LazyCommonUserMenu': LazyComponent<typeof import("../components/common/UserMenu.vue")['default']>
     'LazyCrmContactDetailsModal': LazyComponent<typeof import("../components/crm/ContactDetailsModal.vue")['default']>
     'LazyCrmContactModal': LazyComponent<typeof import("../components/crm/ContactModal.vue")['default']>
+    'LazyCrmLeadDetailPanel': LazyComponent<typeof import("../components/crm/LeadDetailPanel.vue")['default']>
     'LazyIconsIconBase': LazyComponent<typeof import("../components/icons/IconBase.vue")['default']>
     'LazyLayoutHeader': LazyComponent<typeof import("../components/layout/Header.vue")['default']>
     'LazyLayoutSidebar': LazyComponent<typeof import("../components/layout/Sidebar.vue")['default']>
@@ -113,6 +115,7 @@ export const CommonThemeSwitcher: typeof import("../components/common/ThemeSwitc
 export const CommonUserMenu: typeof import("../components/common/UserMenu.vue")['default']
 export const CrmContactDetailsModal: typeof import("../components/crm/ContactDetailsModal.vue")['default']
 export const CrmContactModal: typeof import("../components/crm/ContactModal.vue")['default']
+export const CrmLeadDetailPanel: typeof import("../components/crm/LeadDetailPanel.vue")['default']
 export const IconsIconBase: typeof import("../components/icons/IconBase.vue")['default']
 export const LayoutHeader: typeof import("../components/layout/Header.vue")['default']
 export const LayoutSidebar: typeof import("../components/layout/Sidebar.vue")['default']
@@ -154,6 +157,7 @@ export const LazyCommonThemeSwitcher: LazyComponent<typeof import("../components
 export const LazyCommonUserMenu: LazyComponent<typeof import("../components/common/UserMenu.vue")['default']>
 export const LazyCrmContactDetailsModal: LazyComponent<typeof import("../components/crm/ContactDetailsModal.vue")['default']>
 export const LazyCrmContactModal: LazyComponent<typeof import("../components/crm/ContactModal.vue")['default']>
+export const LazyCrmLeadDetailPanel: LazyComponent<typeof import("../components/crm/LeadDetailPanel.vue")['default']>
 export const LazyIconsIconBase: LazyComponent<typeof import("../components/icons/IconBase.vue")['default']>
 export const LazyLayoutHeader: LazyComponent<typeof import("../components/layout/Header.vue")['default']>
 export const LazyLayoutSidebar: LazyComponent<typeof import("../components/layout/Sidebar.vue")['default']>
