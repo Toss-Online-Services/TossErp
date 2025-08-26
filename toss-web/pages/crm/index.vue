@@ -290,6 +290,9 @@ const newCustomer = ref({
 
 // Data
 const customers = ref<any[]>([])
+const leads = ref<any[]>([])
+const opportunities = ref<any[]>([])
+const crmAnalytics = ref<any>({})
 const analytics = ref<any>({
   totalCustomers: 0,
   activeLeads: 0,
@@ -299,8 +302,15 @@ const analytics = ref<any>({
 
 const customersPending = ref(false)
 const analyticsPending = ref(false)
+const leadsPending = ref(false)
+const opportunitiesPending = ref(false)
 
-const pending = computed(() => customersPending.value || analyticsPending.value)
+const pending = computed(() => 
+  customersPending.value || 
+  analyticsPending.value || 
+  leadsPending.value || 
+  opportunitiesPending.value
+)
 
 // Fetch data functions
 async function fetchCustomers() {
@@ -317,19 +327,53 @@ async function fetchCustomers() {
   }
 }
 
-async function fetchAnalytics() {
+async function fetchLeads() {
+  leadsPending.value = true
+  try {
+    const response = await fetch('/api/crm/leads')
+    const data = await response.json()
+    leads.value = data || []
+  } catch (error) {
+    console.error('Error fetching leads:', error)
+    leads.value = []
+  } finally {
+    leadsPending.value = false
+  }
+}
+
+async function fetchOpportunities() {
+  opportunitiesPending.value = true
+  try {
+    const response = await fetch('/api/crm/opportunities')
+    const data = await response.json()
+    opportunities.value = data || []
+  } catch (error) {
+    console.error('Error fetching opportunities:', error)
+    opportunities.value = []
+  } finally {
+    opportunitiesPending.value = false
+  }
+}
+
+async function fetchCrmAnalytics() {
   analyticsPending.value = true
   try {
-    const response = await fetch('/api/analytics')
+    const response = await fetch('/api/crm/analytics')
     const data = await response.json()
-    analytics.value = data || {
-      totalCustomers: 0,
-      activeLeads: 0,
-      conversionRate: 0,
-      pipelineValue: 0
+    crmAnalytics.value = data || {}
+    
+    // Update analytics for the dashboard
+    if (data.overview) {
+      analytics.value = {
+        totalCustomers: data.overview.totalCustomers || 0,
+        activeLeads: data.overview.activeLeads || 0,
+        conversionRate: data.overview.conversionRate || 0,
+        pipelineValue: data.overview.pipelineValue || 0
+      }
     }
   } catch (error) {
-    console.error('Error fetching analytics:', error)
+    console.error('Error fetching CRM analytics:', error)
+    crmAnalytics.value = {}
     analytics.value = {
       totalCustomers: 0,
       activeLeads: 0,
@@ -341,55 +385,87 @@ async function fetchAnalytics() {
   }
 }
 
+async function fetchAnalytics() {
+  // This function is now handled by fetchCrmAnalytics
+  await fetchCrmAnalytics()
+}
+
 async function refreshCustomers() {
   await fetchCustomers()
 }
 
 // Load data on mount
 onMounted(async () => {
-  await Promise.all([fetchCustomers(), fetchAnalytics()])
+  await Promise.all([
+    fetchCustomers(), 
+    fetchLeads(), 
+    fetchOpportunities(), 
+    fetchCrmAnalytics()
+  ])
 })
 
-// Sample pipeline data (would be fetched from API in real app)
-const pipelineStages = ref([
-  {
-    name: 'Prospecting',
-    count: 12,
-    opportunities: [
-      { id: 1, customer: 'ABC Corp', product: 'ERP System', value: 25000 },
-      { id: 2, customer: 'XYZ Ltd', product: 'Inventory Management', value: 15000 }
-    ]
-  },
-  {
-    name: 'Qualification',
-    count: 8,
-    opportunities: [
-      { id: 3, customer: 'Tech Solutions', product: 'CRM Integration', value: 35000 },
-      { id: 4, customer: 'Local Store', product: 'POS System', value: 8000 }
-    ]
-  },
-  {
-    name: 'Proposal',
-    count: 5,
-    opportunities: [
-      { id: 5, customer: 'Manufacturing Co', product: 'Full ERP', value: 120000 }
-    ]
-  },
-  {
-    name: 'Negotiation',
-    count: 3,
-    opportunities: [
-      { id: 6, customer: 'Retail Chain', product: 'Multi-store System', value: 85000 }
+// Enhanced pipeline data based on real opportunities
+const pipelineStages = computed(() => {
+  if (!crmAnalytics.value.pipeline?.stages) {
+    // Fallback pipeline data
+    return [
+      {
+        name: 'Prospecting',
+        count: 1,
+        opportunities: opportunities.value.filter(o => o.stage === 'Prospecting').slice(0, 3)
+      },
+      {
+        name: 'Qualification',
+        count: 1,
+        opportunities: opportunities.value.filter(o => o.stage === 'Qualification').slice(0, 3)
+      },
+      {
+        name: 'Proposal',
+        count: 1,
+        opportunities: opportunities.value.filter(o => o.stage === 'Proposal').slice(0, 3)
+      },
+      {
+        name: 'Negotiation',
+        count: 1,
+        opportunities: opportunities.value.filter(o => o.stage === 'Negotiation').slice(0, 3)
+      }
     ]
   }
-])
+  
+  // Map real pipeline data to display format
+  return crmAnalytics.value.pipeline.stages.map((stage: any) => ({
+    name: stage.name,
+    count: stage.count,
+    opportunities: opportunities.value
+      .filter(o => o.stage === stage.name)
+      .slice(0, 3)
+      .map(o => ({
+        id: o.id,
+        customer: o.customerName || 'Unknown',
+        product: o.product || o.title,
+        value: o.value || 0
+      }))
+  }))
+})
 
-const recentActivities = ref([
-  { id: 1, type: 'call', description: 'Called ABC Corp about proposal follow-up', date: new Date() },
-  { id: 2, type: 'email', description: 'Sent quote to XYZ Ltd', date: new Date(Date.now() - 3600000) },
-  { id: 3, type: 'meeting', description: 'Demo scheduled with Tech Solutions', date: new Date(Date.now() - 7200000) },
-  { id: 4, type: 'note', description: 'Updated lead status for Local Store', date: new Date(Date.now() - 86400000) }
-])
+const recentActivities = computed(() => {
+  if (crmAnalytics.value.recentActivities) {
+    return crmAnalytics.value.recentActivities.map((activity: any) => ({
+      id: activity.id,
+      type: activity.icon?.replace('-', '') || 'note',
+      description: activity.description,
+      date: new Date(activity.timestamp)
+    }))
+  }
+  
+  // Fallback activities
+  return [
+    { id: 1, type: 'call', description: 'New lead: Peter Parker from Daily Bugle', date: new Date() },
+    { id: 2, type: 'email', description: 'Stark Industries opportunity updated', date: new Date(Date.now() - 3600000) },
+    { id: 3, type: 'meeting', description: 'Demo scheduled with Banner Labs', date: new Date(Date.now() - 7200000) },
+    { id: 4, type: 'note', description: 'Rogers Communications contact updated', date: new Date(Date.now() - 86400000) }
+  ]
+})
 
 // Computed properties
 const filteredCustomers = computed(() => {

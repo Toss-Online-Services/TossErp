@@ -1,5 +1,5 @@
-using TossErp.CRM.Domain.Aggregates;
-using TossErp.CRM.Domain.Repositories;
+using Crm.Domain.Entities;
+using Crm.Application.Interfaces;
 
 namespace Crm.Infrastructure.Repositories;
 
@@ -31,6 +31,15 @@ public class InMemoryCustomerRepository : ICustomerRepository
         lock (_lock)
         {
             return Task.FromResult(_customers.AsEnumerable());
+        }
+    }
+
+    public Task<IEnumerable<Customer>> GetByStatusAsync(CustomerStatus status, CancellationToken cancellationToken = default)
+    {
+        lock (_lock)
+        {
+            var customers = _customers.Where(c => c.Status == status);
+            return Task.FromResult(customers);
         }
     }
 
@@ -82,6 +91,23 @@ public class InMemoryCustomerRepository : ICustomerRepository
                 c.LastName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 c.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
             return Task.FromResult(customers);
+        }
+    }
+
+    public Task<int> GetCountAsync(CancellationToken cancellationToken = default)
+    {
+        lock (_lock)
+        {
+            return Task.FromResult(_customers.Count);
+        }
+    }
+
+    public Task<int> GetCountByStatusAsync(CustomerStatus status, CancellationToken cancellationToken = default)
+    {
+        lock (_lock)
+        {
+            var count = _customers.Count(c => c.Status == status);
+            return Task.FromResult(count);
         }
     }
 

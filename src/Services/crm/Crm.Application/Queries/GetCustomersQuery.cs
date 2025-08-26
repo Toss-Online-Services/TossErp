@@ -1,6 +1,5 @@
 using Crm.Application.DTOs;
-
-using TossErp.CRM.Domain.Repositories;
+using Crm.Application.Interfaces;
 
 namespace Crm.Application.Queries;
 
