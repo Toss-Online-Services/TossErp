@@ -33,6 +33,13 @@ public class Lead : AggregateRoot
     public string? Industry { get; private set; }
     public int? CompanySize { get; private set; }
     public Money? EstimatedValue { get; private set; }
+    
+    // Enhanced qualification and pipeline tracking
+    public LeadQualificationCriteria? QualificationCriteria { get; private set; }
+    public string PipelineStageName { get; private set; } = "New";
+    public int Priority { get; private set; } = 3; // 1=High, 2=Medium, 3=Low
+    public DateTime? ExpectedCloseDate { get; private set; }
+    public string? LossReason { get; private set; }
 
     // Assignment and tracking
     public string? AssignedTo { get; private set; }
@@ -113,6 +120,8 @@ public class Lead : AggregateRoot
         Score = new LeadScore(CalculateInitialScore(source, industry, companySize));
         Industry = industry?.Trim();
         CompanySize = companySize;
+        PipelineStageName = "New";
+        Priority = 3; // Default to Low priority
         CreatedAt = DateTime.UtcNow;
         CreatedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
         CampaignId = campaignId;
@@ -234,6 +243,110 @@ public class Lead : AggregateRoot
         // Decrease score for disqualification
         Score = Score.Decrease(30);
     }
+
+    #endregion
+
+    #region Enhanced Lead Qualification
+
+    public void SetQualificationCriteria(
+        bool hasBudget,
+        bool hasAuthority,
+        bool hasNeed,
+        bool hasTimeline,
+        string evaluatedBy,
+        string? notes = null)
+    {
+        QualificationCriteria = new LeadQualificationCriteria(
+            hasBudget, hasAuthority, hasNeed, hasTimeline, evaluatedBy, notes);
+
+        // Update score based on qualification
+        IncreaseScore(QualificationCriteria.ScoreWeight, evaluatedBy, "BANT qualification updated");
+
+        // Auto-qualify if fully qualified
+        if (QualificationCriteria.IsQualified && Status != LeadStatus.Qualified)
+        {
+            Qualify(evaluatedBy, "Auto-qualified based on BANT criteria");
+        }
+
+        UpdateModificationInfo(evaluatedBy);
+    }
+
+    public void UpdatePriority(int priority, string updatedBy)
+    {
+        if (priority < 1 || priority > 5)
+            throw new ArgumentOutOfRangeException(nameof(priority), "Priority must be between 1 (highest) and 5 (lowest)");
+
+        Priority = priority;
+        UpdateModificationInfo(updatedBy);
+    }
+
+    public void SetExpectedCloseDate(DateTime expectedCloseDate, string updatedBy)
+    {
+        if (expectedCloseDate < DateTime.UtcNow.Date)
+            throw new ArgumentException("Expected close date cannot be in the past");
+
+        ExpectedCloseDate = expectedCloseDate;
+        UpdateModificationInfo(updatedBy);
+    }
+
+    public void AdvancePipelineStage(string advancedBy, string? reason = null)
+    {
+        var currentStage = PipelineStageName;
+        var nextStage = currentStage switch
+        {
+            "New" => "Contacted",
+            "Contacted" => "Qualified",
+            "Qualified" => "Proposal",
+            "Proposal" => "Negotiation",
+            "Negotiation" => "Won",
+            _ => currentStage
+        };
+
+        if (nextStage != currentStage)
+        {
+            MoveToPipelineStage(nextStage, advancedBy, reason);
+        }
+    }
+
+    public void MoveToPipelineStage(string stageName, string movedBy, string? reason = null)
+    {
+        var previousStage = PipelineStageName;
+        PipelineStageName = stageName;
+        UpdateModificationInfo(movedBy);
+
+        // Update status based on stage
+        if (stageName == "Won" && Status != LeadStatus.Converted)
+        {
+            // Don't automatically convert, but allow manual conversion
+        }
+        else if (stageName == "Lost")
+        {
+            Disqualify(movedBy, reason ?? "Moved to Lost stage");
+            LossReason = reason;
+        }
+        else if (stageName == "Qualified" && Status == LeadStatus.Open)
+        {
+            Qualify(movedBy, reason);
+        }
+
+        AddDomainEvent(new LeadPipelineStageChangedEvent(
+            TenantId, Id, previousStage, stageName, movedBy, reason));
+    }
+
+    public string PriorityText => Priority switch
+    {
+        1 => "Critical",
+        2 => "High", 
+        3 => "Medium",
+        4 => "Low",
+        5 => "Very Low",
+        _ => "Unknown"
+    };
+
+    public bool IsHighPriority => Priority <= 2;
+    public bool IsQualificationComplete => QualificationCriteria?.IsQualified == true;
+    public bool HasQualificationData => QualificationCriteria != null;
+    public string QualificationStatus => QualificationCriteria?.QualificationLevel ?? "Not Evaluated";
 
     #endregion
 
