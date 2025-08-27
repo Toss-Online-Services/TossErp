@@ -1,141 +1,138 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-      <div class="px-6 py-4">
-        <div class="flex items-center justify-between">
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <!-- Mobile-First Page Container -->
+    <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
+      <!-- Page Header -->
+      <div class="text-center sm:text-left">
+        <div class="flex items-center justify-between flex-col sm:flex-row space-y-4 sm:space-y-0">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Customer Management</h1>
-            <p class="text-sm text-gray-600 mt-1">Manage customer relationships, subscriptions, and revenue</p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Customer Management</h1>
+            <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Manage customer relationships, subscriptions, and revenue</p>
           </div>
-          <div class="flex space-x-3">
-            <button @click="exportCustomers" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
+            <button @click="exportCustomers" class="w-full sm:w-auto px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
               <ArrowDownTrayIcon class="w-4 h-4 inline mr-2" />
               Export
             </button>
             <button @click="showCustomerModal = true; isEditMode = false; selectedCustomerForEdit = null" 
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+                    class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
               <PlusIcon class="w-4 h-4 inline mr-2" />
               New Customer
             </button>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Filters and Search -->
-    <div class="px-6 py-4 bg-white border-b border-gray-200">
-      <div class="flex flex-wrap gap-4 items-center">
-        <div class="flex-1 min-w-64">
-          <div class="relative">
-            <MagnifyingGlassIcon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Search customers by name, email, or company..."
-              class="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+      <!-- Filters and Search -->
+      <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center">
+          <div class="flex-1 min-w-0">
+            <div class="relative">
+              <MagnifyingGlassIcon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Search customers by name, email, or company..."
+                class="pl-10 pr-4 py-2 w-full border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
+              />
+            </div>
           </div>
-        </div>
-        
-        <div class="flex gap-3">
-          <select v-model="selectedType" class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-            <option value="">All Types</option>
-            <option value="Individual">Individual</option>
-            <option value="Business">Business</option>
-            <option value="Enterprise">Enterprise</option>
-          </select>
           
-          <select v-model="selectedStatus" class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-            <option value="">All Statuses</option>
-            <option value="Prospect">Prospect</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-            <option value="Churned">Churned</option>
-          </select>
-          
-          <select v-model="selectedTier" class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-            <option value="">All Tiers</option>
-            <option value="Standard">Standard</option>
-            <option value="Premium">Premium</option>
-            <option value="Enterprise">Enterprise</option>
-          </select>
-          
-          <select v-model="selectedSubscriptionStatus" class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-            <option value="">All Subscriptions</option>
-            <option value="Trial">Trial</option>
-            <option value="Active">Active</option>
-            <option value="Suspended">Suspended</option>
-            <option value="Expired">Expired</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-          
-          <button @click="clearFilters" class="px-3 py-2 text-gray-500 hover:text-gray-700">
-            <XMarkIcon class="w-5 h-5" />
-          </button>
+          <div class="flex flex-wrap gap-2 sm:gap-3">
+            <select v-model="selectedType" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
+              <option value="">All Types</option>
+              <option value="Individual">Individual</option>
+              <option value="Business">Business</option>
+              <option value="Enterprise">Enterprise</option>
+            </select>
+            
+            <select v-model="selectedStatus" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
+              <option value="">All Statuses</option>
+              <option value="Prospect">Prospect</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+              <option value="Churned">Churned</option>
+            </select>
+            
+            <select v-model="selectedTier" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
+              <option value="">All Tiers</option>
+              <option value="Standard">Standard</option>
+              <option value="Premium">Premium</option>
+              <option value="Enterprise">Enterprise</option>
+            </select>
+            
+            <select v-model="selectedSubscriptionStatus" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
+              <option value="">All Subscriptions</option>
+              <option value="Trial">Trial</option>
+              <option value="Active">Active</option>
+              <option value="Suspended">Suspended</option>
+              <option value="Expired">Expired</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+            
+            <button @click="clearFilters" class="px-3 py-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+              <XMarkIcon class="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Stats Cards -->
-    <div class="px-6 py-4 bg-gray-50">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
           <div class="flex items-center">
-            <div class="p-2 bg-blue-100 rounded-lg">
-              <UsersIcon class="w-6 h-6 text-blue-600" />
+            <div class="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+              <UsersIcon class="w-4 h-4 sm:w-6 sm:h-6 text-blue-600" />
             </div>
             <div class="ml-3">
-              <p class="text-sm font-medium text-gray-500">Total Customers</p>
-              <p class="text-2xl font-bold text-gray-900">{{ totalCustomers }}</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">Total Customers</p>
+              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ totalCustomers }}</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
           <div class="flex items-center">
-            <div class="p-2 bg-green-100 rounded-lg">
-              <BanknotesIcon class="w-6 h-6 text-green-600" />
+            <div class="p-2 sm:p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+              <BanknotesIcon class="w-4 h-4 sm:w-6 sm:h-6 text-green-600" />
             </div>
             <div class="ml-3">
-              <p class="text-sm font-medium text-gray-500">Monthly Recurring Revenue</p>
-              <p class="text-2xl font-bold text-gray-900">${{ totalMRR.toLocaleString() }}</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">Monthly Recurring Revenue</p>
+              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">${{ totalMRR.toLocaleString() }}</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
           <div class="flex items-center">
-            <div class="p-2 bg-yellow-100 rounded-lg">
-              <ClockIcon class="w-6 h-6 text-yellow-600" />
+            <div class="p-2 sm:p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+              <ClockIcon class="w-4 h-4 sm:w-6 sm:h-6 text-yellow-600" />
             </div>
             <div class="ml-3">
-              <p class="text-sm font-medium text-gray-500">Trial Customers</p>
-              <p class="text-2xl font-bold text-gray-900">{{ trialCustomers }}</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">Trial Customers</p>
+              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ trialCustomers }}</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
           <div class="flex items-center">
-            <div class="p-2 bg-red-100 rounded-lg">
-              <ExclamationTriangleIcon class="w-6 h-6 text-red-600" />
+            <div class="p-2 sm:p-3 bg-red-100 dark:bg-red-900 rounded-lg">
+              <ExclamationTriangleIcon class="w-4 h-4 sm:w-6 sm:h-6 text-red-600" />
             </div>
             <div class="ml-3">
-              <p class="text-sm font-medium text-gray-500">Expiring Soon</p>
-              <p class="text-2xl font-bold text-gray-900">{{ expiringCustomers }}</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">Expiring Soon</p>
+              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ expiringCustomers }}</p>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Customers Table -->
-    <div class="px-6 py-4">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <!-- Customers Table -->
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
         <!-- Bulk Actions -->
-        <div v-if="selectedCustomers.length > 0" class="px-6 py-3 bg-blue-50 border-b border-gray-200 flex items-center justify-between">
-          <span class="text-sm text-blue-800">{{ selectedCustomers.length }} customers selected</span>
+        <div v-if="selectedCustomers.length > 0" class="px-4 sm:px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+          <span class="text-sm text-blue-800 dark:text-blue-200">{{ selectedCustomers.length }} customers selected</span>
           <div class="space-x-2">
             <button @click="bulkUpdateStatus" class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
               Update Status
@@ -147,15 +144,15 @@
         </div>
 
         <!-- Table Header -->
-        <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+        <div class="px-4 sm:px-6 py-3 bg-slate-50 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600">
           <div class="flex items-center">
             <input
               type="checkbox"
               v-model="selectAll"
               @change="toggleSelectAll"
-              class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              class="rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 bg-white dark:bg-slate-700"
             />
-            <div class="ml-4 grid grid-cols-12 gap-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-full">
+            <div class="ml-4 grid grid-cols-12 gap-4 text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider w-full">
               <div class="col-span-3 cursor-pointer flex items-center" @click="sortBy('name')">
                 Customer
                 <ChevronUpDownIcon class="w-4 h-4 ml-1" />
@@ -186,29 +183,29 @@
         </div>
 
         <!-- Table Body -->
-        <div class="divide-y divide-gray-200">
+        <div class="divide-y divide-slate-200 dark:divide-slate-700">
           <div
             v-for="customer in paginatedCustomers"
             :key="customer.id"
-            class="px-6 py-4 hover:bg-gray-50"
+            class="px-4 sm:px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
           >
             <div class="flex items-center">
               <input
                 type="checkbox"
                 :value="customer.id"
                 v-model="selectedCustomers"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 bg-white dark:bg-slate-700"
               />
               <div class="ml-4 grid grid-cols-12 gap-4 items-center w-full">
                 <!-- Customer Info -->
                 <div class="col-span-3">
                   <div class="flex items-center">
-                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span class="text-sm font-medium text-blue-800">{{ getInitials(customer.name) }}</span>
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                      <span class="text-xs sm:text-sm font-medium text-blue-800 dark:text-blue-200">{{ getInitials(customer.name) }}</span>
                     </div>
-                    <div class="ml-3">
-                      <p class="text-sm font-medium text-gray-900">{{ customer.name }}</p>
-                      <p class="text-sm text-gray-500">{{ customer.primaryEmail || 'No email' }}</p>
+                    <div class="ml-3 min-w-0">
+                      <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ customer.name }}</p>
+                      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 truncate">{{ customer.primaryEmail || 'No email' }}</p>
                     </div>
                   </div>
                 </div>
@@ -232,7 +229,7 @@
                   <span :class="statusClass(customer.status)" class="inline-flex px-2 py-1 text-xs font-semibold rounded-full">
                     {{ customer.status }}
                   </span>
-                  <div class="text-xs text-gray-500 mt-1">
+                  <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     Score: {{ customer.customerScore }}/100
                   </div>
                 </div>
@@ -242,7 +239,7 @@
                   <span :class="subscriptionStatusClass(customer.subscriptionStatus)" class="inline-flex px-2 py-1 text-xs font-semibold rounded-full">
                     {{ customer.subscriptionStatus }}
                   </span>
-                  <div class="text-xs text-gray-500 mt-1">
+                  <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     <span v-if="customer.subscriptionEndDate">
                       Expires: {{ formatDate(customer.subscriptionEndDate) }}
                     </span>
@@ -251,14 +248,14 @@
 
                 <!-- MRR -->
                 <div class="col-span-1">
-                  <span class="text-sm font-medium text-gray-900">
+                  <span class="text-sm font-medium text-slate-900 dark:text-white">
                     ${{ customer.monthlyRecurringRevenue?.toLocaleString() || '0' }}
                   </span>
                 </div>
 
                 <!-- Last Activity -->
                 <div class="col-span-1">
-                  <span class="text-sm text-gray-500">
+                  <span class="text-sm text-slate-500 dark:text-slate-400">
                     {{ formatDate(customer.lastActivityDate) }}
                   </span>
                 </div>
@@ -266,35 +263,35 @@
                 <!-- Actions -->
                 <div class="col-span-1">
                   <div class="flex space-x-2">
-                    <button @click="viewCustomer(customer)" class="text-blue-600 hover:text-blue-900">
+                    <button @click="viewCustomer(customer)" class="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400">
                       <EyeIcon class="w-4 h-4" />
                     </button>
-                    <button @click="editCustomer(customer)" class="text-gray-600 hover:text-gray-900">
+                    <button @click="editCustomer(customer)" class="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200">
                       <PencilIcon class="w-4 h-4" />
                     </button>
                     <Menu as="div" class="relative inline-block text-left">
-                      <MenuButton class="text-gray-600 hover:text-gray-900">
+                      <MenuButton class="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200">
                         <EllipsisVerticalIcon class="w-4 h-4" />
                       </MenuButton>
-                      <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-lg bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black/5 dark:ring-white/5 focus:outline-none border border-slate-200 dark:border-slate-700">
                         <div class="py-1">
                           <MenuItem>
-                            <button @click="manageSubscription(customer)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+                            <button @click="manageSubscription(customer)" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 w-full text-left">
                               Manage Subscription
                             </button>
                           </MenuItem>
                           <MenuItem>
-                            <button @click="viewActivities(customer)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+                            <button @click="viewActivities(customer)" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 w-full text-left">
                               View Activities
                             </button>
                           </MenuItem>
                           <MenuItem>
-                            <button @click="addNote(customer)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+                            <button @click="addNote(customer)" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 w-full text-left">
                               Add Note
                             </button>
                           </MenuItem>
                           <MenuItem>
-                            <button @click="deleteCustomer(customer)" class="block px-4 py-2 text-sm text-red-700 hover:bg-red-50 w-full text-left">
+                            <button @click="deleteCustomer(customer)" class="block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 w-full text-left">
                               Delete Customer
                             </button>
                           </MenuItem>
@@ -309,38 +306,37 @@
         </div>
 
         <!-- Pagination -->
-        <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
-          <div class="flex items-center text-sm text-gray-700">
+        <div class="px-4 sm:px-6 py-3 bg-slate-50 dark:bg-slate-700 border-t border-slate-200 dark:border-slate-600 flex items-center justify-between">
+          <div class="flex items-center text-sm text-slate-700 dark:text-slate-300">
             <span>Showing {{ ((currentPage - 1) * pageSize) + 1 }} to {{ Math.min(currentPage * pageSize, totalCustomers) }} of {{ totalCustomers }} customers</span>
           </div>
           <div class="flex items-center space-x-2">
             <button
               @click="currentPage--"
               :disabled="currentPage === 1"
-              class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-sm hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
             >
               Previous
             </button>
-            <span class="px-3 py-1 text-sm">{{ currentPage }} of {{ totalPages }}</span>
+            <span class="px-3 py-1 text-sm text-slate-700 dark:text-slate-300">{{ currentPage }} of {{ totalPages }}</span>
             <button
               @click="currentPage++"
               :disabled="currentPage === totalPages"
-              class="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-sm hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
             >
               Next
             </button>
           </div>
         </div>
       </div>
-    </div>
 
     <!-- Customer Modal (placeholder for now) -->
-    <div v-if="showCustomerModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg p-6 w-full max-w-2xl">
-        <h3 class="text-lg font-medium mb-4">{{ isEditMode ? 'Edit Customer' : 'New Customer' }}</h3>
-        <p class="text-gray-600">Customer modal implementation coming soon...</p>
+    <div v-if="showCustomerModal" class="fixed inset-0 bg-slate-600/50 dark:bg-slate-900/75 flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-slate-800 rounded-xl p-6 w-full max-w-2xl mx-4 border border-slate-200 dark:border-slate-700">
+        <h3 class="text-lg font-medium mb-4 text-slate-900 dark:text-white">{{ isEditMode ? 'Edit Customer' : 'New Customer' }}</h3>
+        <p class="text-slate-600 dark:text-slate-400">Customer modal implementation coming soon...</p>
         <div class="mt-4">
-          <button @click="showCustomerModal = false" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+          <button @click="showCustomerModal = false" class="px-4 py-2 bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-400 dark:hover:bg-slate-500">
             Close
           </button>
         </div>
@@ -371,6 +367,7 @@
       @close="showCustomerModal = false; editingCustomer = null"
       @save="handleCustomerSave"
     />
+    </div>
   </div>
 </template>
 
