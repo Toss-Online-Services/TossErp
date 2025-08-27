@@ -6,7 +6,7 @@
         <div>
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Stock Dashboard</h1>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Overview of your inventory and stock management
+            AI-powered inventory management and collaborative supply chain
           </p>
         </div>
         <div class="flex space-x-3">
@@ -17,6 +17,45 @@
             <CubeIcon class="w-4 h-4 mr-2" />
             Manage Items
           </NuxtLink>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Co-Pilot Alerts -->
+    <div class="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 p-6 rounded-xl border border-green-200 dark:border-green-800">
+      <div class="flex items-center mb-4">
+        <div class="flex items-center justify-center w-10 h-10 mr-3 bg-green-100 rounded-lg dark:bg-green-900">
+          <SparklesIcon class="w-6 h-6 text-green-600 dark:text-green-400" />
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">AI Inventory Assistant</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Smart recommendations and alerts</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div class="flex items-center mb-2">
+            <ExclamationTriangleIcon class="w-5 h-5 mr-2 text-orange-500" />
+            <span class="font-medium text-gray-900 dark:text-white">Reorder Alert</span>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">5 items need restocking this week</p>
+          <button class="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700">Auto-Reorder</button>
+        </div>
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div class="flex items-center mb-2">
+            <UserGroupIcon class="w-5 h-5 mr-2 text-purple-500" />
+            <span class="font-medium text-gray-900 dark:text-white">Group Buy Opportunity</span>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Join 4 businesses for 15% savings</p>
+          <button class="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700">Join Group Order</button>
+        </div>
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div class="flex items-center mb-2">
+            <TruckIcon class="w-5 h-5 mr-2 text-blue-500" />
+            <span class="font-medium text-gray-900 dark:text-white">Shared Delivery</span>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Tomorrow's delivery has 2 empty slots</p>
+          <button class="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700">Book Slot</button>
         </div>
       </div>
     </div>
@@ -87,7 +126,7 @@
     <!-- Quick Actions -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <NuxtLink
           to="/stock/items"
           class="flex items-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -109,23 +148,143 @@
             <BuildingStorefrontIcon class="w-5 h-5 text-green-600 dark:text-green-400" />
           </div>
           <div>
-            <h4 class="font-medium text-gray-900 dark:text-white">Warehouses</h4>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Manage storage locations and facilities</p>
+            <h4 class="font-medium text-gray-900 dark:text-white">Shared Warehouses</h4>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Community storage & facilities</p>
           </div>
         </NuxtLink>
+
+        <button class="flex items-center p-4 border border-purple-200 dark:border-purple-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-700 transition-colors">
+          <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-4">
+            <UserGroupIcon class="w-5 h-5 text-purple-600 dark:text-purple-400" />
+          </div>
+          <div>
+            <h4 class="font-medium text-gray-900 dark:text-white">Group Purchasing</h4>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Join bulk orders for savings</p>
+          </div>
+        </button>
 
         <NuxtLink
           to="/stock/movements"
           class="flex items-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         >
-          <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-4">
-            <ArrowsRightLeftIcon class="w-5 h-5 text-purple-600 dark:text-purple-400" />
+          <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mr-4">
+            <ArrowsRightLeftIcon class="w-5 h-5 text-orange-600 dark:text-orange-400" />
           </div>
           <div>
             <h4 class="font-medium text-gray-900 dark:text-white">Stock Movements</h4>
             <p class="text-sm text-gray-500 dark:text-gray-400">Track inventory transactions and transfers</p>
           </div>
         </NuxtLink>
+      </div>
+    </div>
+
+    <!-- Collaborative Features -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Group Purchasing Opportunities -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Group Buying</h3>
+          <span class="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            Community
+          </span>
+        </div>
+        <div class="space-y-3">
+          <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+            <div class="flex justify-between items-start mb-2">
+              <h4 class="font-medium text-gray-900 dark:text-white">Cleaning Supplies</h4>
+              <span class="text-xs text-purple-600 dark:text-purple-400">15% savings</span>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">4/8 businesses joined • 2 days left</p>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+              <div class="bg-purple-600 h-2 rounded-full" style="width: 50%"></div>
+            </div>
+            <button class="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700">Join Group Order</button>
+          </div>
+          
+          <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+            <div class="flex justify-between items-start mb-2">
+              <h4 class="font-medium text-gray-900 dark:text-white">Maize Meal</h4>
+              <span class="text-xs text-green-600 dark:text-green-400">20% savings</span>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">6/6 businesses joined • Ready to order</p>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+              <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
+            </div>
+            <button class="text-sm text-green-600 dark:text-green-400 hover:text-green-700">View Details</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shared Logistics -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Shared Delivery</h3>
+          <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            Network
+          </span>
+        </div>
+        <div class="space-y-3">
+          <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div class="flex items-center mb-2">
+              <TruckIcon class="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
+              <h4 class="font-medium text-gray-900 dark:text-white">Tomorrow 9:00 AM</h4>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Route: City Center → Township</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">2 slots available • R50 per pallet</p>
+            <button class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700">Book Delivery Slot</button>
+          </div>
+          
+          <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+            <div class="flex items-center mb-2">
+              <TruckIcon class="w-4 h-4 text-gray-600 dark:text-gray-400 mr-2" />
+              <h4 class="font-medium text-gray-900 dark:text-white">Friday 2:00 PM</h4>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Route: Warehouse → Rural Areas</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Full • R75 per pallet</p>
+                        <button disabled class="text-sm text-gray-400 cursor-not-allowed">Fully Booked</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shared Warehouse Analytics -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Shared Facilities</h3>
+          <span class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            Community
+          </span>
+        </div>
+        <div class="space-y-3">
+          <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-medium text-gray-900 dark:text-white">Township Central Warehouse</h4>
+              <span class="text-xs text-green-600 dark:text-green-400">75% capacity</span>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">12 businesses sharing • R45/pallet/month</p>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+              <div class="bg-green-600 h-2 rounded-full" style="width: 75%"></div>
+            </div>
+            <div class="flex justify-between">
+              <button class="text-sm text-green-600 dark:text-green-400 hover:text-green-700">Book Space</button>
+              <span class="text-xs text-gray-500">3 pallets available</span>
+            </div>
+          </div>
+          
+          <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-medium text-gray-900 dark:text-white">Cold Storage Facility</h4>
+              <span class="text-xs text-blue-600 dark:text-blue-400">40% capacity</span>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">6 businesses sharing • R85/cubic meter/month</p>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+              <div class="bg-blue-600 h-2 rounded-full" style="width: 40%"></div>
+            </div>
+            <div class="flex justify-between">
+              <button class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700">Reserve Space</button>
+              <span class="text-xs text-gray-500">12 m³ available</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -158,8 +317,7 @@
                 :class="{
                   'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400': movement.movementType === 'IN',
                   'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400': movement.movementType === 'OUT',
-                  'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400': movement.movementType === 'TRANSFER',
-                  'bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-400': movement.movementType === 'ADJUSTMENT'
+                  'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400': movement.movementType === 'TRANSFER'
                 }"
               >
                 <ArrowUpIcon v-if="movement.movementType === 'IN'" class="w-4 h-4" />
@@ -168,15 +326,15 @@
                 <AdjustmentsHorizontalIcon v-else class="w-4 h-4" />
               </div>
               <div>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ movement.reference }}</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(movement.movementDate) }}</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ movement.voucherNo }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(movement.transactionDate) }}</p>
               </div>
             </div>
             <div class="text-right">
               <p class="text-sm font-medium text-gray-900 dark:text-white">
-                {{ movement.quantity }} {{ movement.item?.unit }}
+                {{ movement.quantity }} units
               </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">{{ movement.item?.name }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">{{ movement.itemName }}</p>
             </div>
           </div>
         </div>
@@ -236,18 +394,21 @@ import {
   ArrowUpIcon,
   ArrowDownIcon,
   AdjustmentsHorizontalIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  SparklesIcon,
+  UserGroupIcon,
+  TruckIcon
 } from '@heroicons/vue/24/outline'
-import { useStock } from '~/composables/useStock'
+import { useStock, type ItemDto, type WarehouseDto, type StockMovementDto } from '~/composables/useStock'
 
 // Composables
 const { getItems, getWarehouses, getStockMovements } = useStock()
 
 // State
 const loading = ref(true)
-const items = ref([])
-const warehouses = ref([])
-const movements = ref([])
+const items = ref<any[]>([])
+const warehouses = ref<any[]>([])
+const movements = ref<any[]>([])
 
 // Computed
 const stats = computed(() => {
@@ -271,7 +432,7 @@ const stats = computed(() => {
 
 const recentMovements = computed(() => {
   return movements.value
-    .sort((a, b) => new Date(b.movementDate).getTime() - new Date(a.movementDate).getTime())
+    .sort((a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime())
     .slice(0, 10)
 })
 
