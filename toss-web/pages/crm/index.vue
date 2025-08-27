@@ -6,6 +6,9 @@
       <div class="text-center sm:text-left">
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">CRM Dashboard</h1>
         <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Manage your customer relationships and sales pipeline.</p>
+        <div class="bg-yellow-100 border border-yellow-300 p-3 mt-4 rounded">
+          <p class="text-yellow-800">🔍 Debug: Page is loading properly. Store status: {{ pending ? 'Loading...' : 'Ready' }}</p>
+        </div>
       </div>
 
       <!-- Loading State -->
@@ -20,6 +23,7 @@
             <div>
               <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Total Customers</p>
               <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ analytics?.totalCustomers || 0 }}</p>
+              <p class="text-xs sm:text-sm text-red-500">Debug: Stats = {{ customerStats?.total || 'undefined' }}</p>
               <p class="text-xs sm:text-sm text-blue-600">+8.2%</p>
             </div>
             <div class="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
@@ -69,24 +73,129 @@
       </div>
 
       <!-- Main Content Grid - Mobile Responsive -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Recent Activity -->
-        <div class="lg:col-span-2">
+        <div>
           <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
             <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
               <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Recent CRM Activity</h3>
+              <p class="text-sm text-red-500">Debug: Activities count = {{ recentActivities.length }}</p>
             </div>
             <div class="p-4 sm:p-6">
               <div class="space-y-3 sm:space-y-4">
-                <div v-for="activity in recentActivities" :key="activity.id" class="flex items-start space-x-3 sm:space-x-4">
-                  <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center" :class="getActivityColor(activity.type)">
-                    <component :is="getActivityIcon(activity.type)" class="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                <!-- Test with static content first -->
+                <div class="flex items-start space-x-3 sm:space-x-4">
+                  <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-blue-500">
+                    <PhoneIcon class="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ activity.title }}</p>
-                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 truncate">{{ activity.description }}</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-500 mt-1">{{ formatDate(activity.date) }}</p>
+                    <h4 class="text-sm font-medium text-slate-900 dark:text-white">Test Static Activity</h4>
+                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">This is a test to see if templates are working</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Just now</p>
                   </div>
+                </div>
+                
+                <!-- Dynamic content with fallback -->
+                <div v-if="recentActivities && recentActivities.length > 0">
+                  <div v-for="activity in recentActivities" :key="activity.id" class="flex items-start space-x-3 sm:space-x-4">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center" :class="getActivityColor(activity.type)">
+                      <component :is="getActivityIcon(activity.type)" class="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ activity.title }}</p>
+                      <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 truncate">{{ activity.description }}</p>
+                      <p class="text-xs text-slate-500 dark:text-slate-500 mt-1">{{ formatDate(activity.date) }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Fallback for empty state -->
+                <div v-else class="text-center py-8">
+                  <p class="text-slate-500 dark:text-slate-400">No recent activities</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Co-Pilot Insights -->
+    <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-6 rounded-xl border border-blue-200 dark:border-blue-800">
+      <div class="flex items-center mb-4">
+        <div class="flex items-center justify-center w-10 h-10 mr-3 bg-blue-100 rounded-lg dark:bg-blue-900">
+          <SparklesIcon class="w-6 h-6 text-blue-600 dark:text-blue-400" />
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-slate-900 dark:text-white">AI Customer Insights</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400">Smart recommendations for your business</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center mb-2">
+            <BoltIcon class="w-5 h-5 mr-2 text-yellow-500" />
+            <span class="font-medium text-slate-900 dark:text-white">At-Risk Customers</span>
+          </div>
+          <p class="text-sm text-slate-600 dark:text-slate-400">3 customers haven't purchased in 30+ days</p>
+          <button class="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700">View & Follow Up</button>
+        </div>
+        <div class="p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center mb-2">
+            <UserGroupIcon class="w-5 h-5 mr-2 text-green-500" />
+            <span class="font-medium text-slate-900 dark:text-white">Group Opportunities</span>
+          </div>
+          <p class="text-sm text-slate-600 dark:text-slate-400">5 nearby businesses need similar products</p>
+          <button class="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700">Create Group Order</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Collaborative CRM Network -->
+        <div>
+          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
+              <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Network Collaboration</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Connect with other TOSS businesses</p>
+            </div>
+            <div class="p-4 sm:p-6">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <div class="flex items-center">
+                    <UserGroupIcon class="w-5 h-5 text-green-600 dark:text-green-400 mr-3" />
+                    <div>
+                      <p class="text-sm font-medium text-slate-900 dark:text-white">Customer Referrals</p>
+                      <p class="text-xs text-slate-600 dark:text-slate-400">Share customers within network</p>
+                    </div>
+                  </div>
+                  <button class="text-green-600 dark:text-green-400 hover:text-green-700">
+                    <ChevronRightIcon class="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div class="flex items-center">
+                    <ChartBarIcon class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3" />
+                    <div>
+                      <p class="text-sm font-medium text-slate-900 dark:text-white">Shared Analytics</p>
+                      <p class="text-xs text-slate-600 dark:text-slate-400">Compare with network benchmarks</p>
+                    </div>
+                  </div>
+                  <button class="text-blue-600 dark:text-blue-400 hover:text-blue-700">
+                    <ChevronRightIcon class="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div class="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                  <div class="flex items-center">
+                    <CurrencyDollarIcon class="w-5 h-5 text-purple-600 dark:text-purple-400 mr-3" />
+                    <div>
+                      <p class="text-sm font-medium text-slate-900 dark:text-white">Group Credit Sales</p>
+                      <p class="text-xs text-slate-600 dark:text-slate-400">Pooled credit for community</p>
+                    </div>
+                  </div>
+                  <button class="text-purple-600 dark:text-purple-400 hover:text-purple-700">
+                    <ChevronRightIcon class="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -185,6 +294,7 @@
           </div>
         </div>
       </div>
+    </div>
 
       <!-- Charts and Analytics - Mobile Responsive -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
@@ -301,7 +411,11 @@ import {
   PhoneIcon,
   EnvelopeIcon,
   CalendarIcon,
-  DocumentIcon
+  DocumentIcon,
+  SparklesIcon,
+  BoltIcon,
+  UserGroupIcon,
+  ChevronRightIcon
 } from '@heroicons/vue/24/outline'
 import { useCustomerStore } from '../../stores/customers'
 
@@ -325,12 +439,22 @@ const newCustomer = ref({
 
 // Mount lifecycle
 onMounted(async () => {
+  console.log('CRM page mounted')
+  console.log('Customer store:', customersStore)
   await customersStore.fetchCustomers()
+  console.log('Customers loaded:', customersStore.customers)
+  console.log('Customer stats:', customersStore.customerStats)
 })
 
 // Computed properties from store
-const customers = computed(() => customersStore.customers)
-const customerStats = computed(() => customersStore.customerStats)
+const customers = computed(() => {
+  console.log('Customers computed:', customersStore.customers)
+  return customersStore.customers
+})
+const customerStats = computed(() => {
+  console.log('Customer stats computed:', customersStore.customerStats)
+  return customersStore.customerStats
+})
 const pending = computed(() => customersStore.loading)
 
 // Mock analytics data based on customer store
