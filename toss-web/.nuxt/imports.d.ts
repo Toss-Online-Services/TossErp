@@ -33,6 +33,7 @@ export { defineLazyHydrationComponent } from '#app/composables/lazy-hydration';
 export { TOWNSHIP_AUTOMATION_TEMPLATES, useAutomationEngine, AutomationTrigger, AutomationCondition, AutomationAction, AutomationWorkflow, AutomationExecution, AutomationLog, LeadScoringRule, LeadScore, CommunicationTemplate, JourneyStage, CustomerJourney } from '../composables/useAutomationEngine';
 export { useEnterpriseConfig, EnterpriseConfig, CustomField, ContactType, ServiceOffering, DashboardWidget, BusinessHours, ContactStage, PricingTier } from '../composables/useEnterpriseConfig';
 export { useEnterpriseData, EnterpriseType } from '../composables/useEnterpriseData';
+export { useStock, useStockState, ItemDto, CreateItemRequest, UpdateItemRequest, WarehouseDto, StockMovementDto, StockLevelDto, StockOverviewDto, CategorySummaryDto, StockEntryRequest, PaginationParams } from '../composables/useStock';
 export { useCustomerStore, Customer, Subscription, CustomerFilters } from '../stores/customers';
 export { useNotificationStore, Notification, NotificationAction } from '../stores/notifications';
 export { useSettingsStore } from '../stores/settings';

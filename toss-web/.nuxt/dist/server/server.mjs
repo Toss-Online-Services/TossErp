@@ -1,1 +1,6 @@
-export { default } from "file:///C:/Users/PROBOOK/source/repos/Toss-Online-Services/TossErp/toss-web/node_modules/@nuxt/vite-builder/dist/runtime/vite-node.mjs"
+const entrySpa = () => {
+};
+export {
+  entrySpa as default
+};
+//# sourceMappingURL=server.mjs.map

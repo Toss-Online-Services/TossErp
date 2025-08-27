@@ -53,6 +53,9 @@ export interface WarehouseDto {
   isGroup: boolean
   address?: string
   isActive: boolean
+  type?: string
+  itemCount?: number
+  stockValue?: number
   createdAt: string
   updatedAt: string
 }
