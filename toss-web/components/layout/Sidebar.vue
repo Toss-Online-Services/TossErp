@@ -19,14 +19,76 @@
         Dashboard
       </NuxtLink>
       
-      <NuxtLink 
-        to="/crm" 
-        class="nav-link"
-        :class="{ 'nav-link-active': route.path.startsWith('/crm') }"
-      >
-        <UsersIcon class="h-5 w-5 mr-3" />
-        CRM
-      </NuxtLink>
+      <!-- CRM Dropdown -->
+      <div class="space-y-1">
+        <button 
+          @click="toggleCrmDropdown"
+          class="nav-link w-full justify-between"
+          :class="{ 'nav-link-active': route.path.startsWith('/crm') }"
+        >
+          <div class="flex items-center">
+            <UsersIcon class="h-5 w-5 mr-3" />
+            CRM
+          </div>
+          <ChevronDownIcon 
+            class="h-4 w-4 transition-transform duration-200"
+            :class="{ 'transform rotate-180': crmDropdownOpen }"
+          />
+        </button>
+        
+        <div 
+          v-show="crmDropdownOpen"
+          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+        >
+          <NuxtLink 
+            to="/crm" 
+            class="nav-sub-link"
+            :class="{ 'nav-sub-link-active': route.path === '/crm' }"
+          >
+            Dashboard
+          </NuxtLink>
+          
+          <NuxtLink 
+            to="/crm/customers" 
+            class="nav-sub-link"
+            :class="{ 'nav-sub-link-active': route.path === '/crm/customers' }"
+          >
+            Customers
+          </NuxtLink>
+          
+          <NuxtLink 
+            to="/crm/leads" 
+            class="nav-sub-link"
+            :class="{ 'nav-sub-link-active': route.path === '/crm/leads' }"
+          >
+            Leads
+          </NuxtLink>
+          
+          <NuxtLink 
+            to="/crm/opportunities" 
+            class="nav-sub-link"
+            :class="{ 'nav-sub-link-active': route.path === '/crm/opportunities' }"
+          >
+            Opportunities
+          </NuxtLink>
+          
+          <NuxtLink 
+            to="/crm/contacts" 
+            class="nav-sub-link"
+            :class="{ 'nav-sub-link-active': route.path === '/crm/contacts' }"
+          >
+            Contacts
+          </NuxtLink>
+          
+          <NuxtLink 
+            to="/crm/pipeline" 
+            class="nav-sub-link"
+            :class="{ 'nav-sub-link-active': route.path === '/crm/pipeline' }"
+          >
+            Pipeline
+          </NuxtLink>
+        </div>
+      </div>
       
       <NuxtLink 
         to="/projects" 
@@ -93,11 +155,26 @@
 </template>
 
 <script setup>
-import { HomeIcon, UsersIcon, BriefcaseIcon, CurrencyDollarIcon, UserGroupIcon, ArchiveBoxIcon, ShoppingCartIcon, ShoppingBagIcon } from '@heroicons/vue/24/outline'
+import { ref, watch } from 'vue'
+import { HomeIcon, UsersIcon, BriefcaseIcon, CurrencyDollarIcon, UserGroupIcon, ArchiveBoxIcon, ShoppingCartIcon, ShoppingBagIcon, ChevronDownIcon } from '@heroicons/vue/24/outline'
 
 // Ensure router is available
 const router = useRouter()
 const route = useRoute()
+
+// CRM dropdown state
+const crmDropdownOpen = ref(false)
+
+// Auto-open CRM dropdown if we're on a CRM page
+watch(() => route.path, (newPath) => {
+  if (newPath.startsWith('/crm')) {
+    crmDropdownOpen.value = true
+  }
+}, { immediate: true })
+
+const toggleCrmDropdown = () => {
+  crmDropdownOpen.value = !crmDropdownOpen.value
+}
 </script>
 
 <style scoped>
@@ -125,5 +202,30 @@ const route = useRoute()
 
 .nav-link-active:hover {
   background: linear-gradient(to right, rgb(37 99 235), rgb(126 34 206));
+}
+
+.nav-sub-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: rgb(148 163 184);
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+}
+
+.nav-sub-link:hover {
+  background-color: rgb(30 41 59);
+  color: rgb(203 213 225);
+}
+
+.nav-sub-link-active {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: rgb(147 197 253);
+  font-weight: 500;
+}
+
+.nav-sub-link-active:hover {
+  background-color: rgba(59, 130, 246, 0.3);
 }
 </style>
