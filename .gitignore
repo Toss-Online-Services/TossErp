@@ -43,3 +43,4 @@ node_modules/
 **/.nuxt/
 .output/
 .nuxt/
+toss-web/.nuxt/
