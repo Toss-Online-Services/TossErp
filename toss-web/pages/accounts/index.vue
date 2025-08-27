@@ -223,6 +223,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 // Icons (would normally import from a proper icon library)
 const PlusIcon = 'svg'
 const DocumentIcon = 'svg'
@@ -233,24 +235,32 @@ const ChartBarIcon = 'svg'
 
 // Sample data
 const stats = ref({
-  totalAssets: 245000,
-  totalLiabilities: 89000,
-  monthlyRevenue: 45000,
-  netProfit: 12000
+  totalAssets: 116300,  // Cash + Bank + Credit + Stock + Equipment
+  totalLiabilities: 26700,  // Supplier credits + Business loan
+  monthlyRevenue: 133500,  // Daily sales + Community events
+  netProfit: 18500
 })
 
 const accounts = ref([
-  { id: 1, name: 'Business Checking', type: 'Asset', number: '1001', balance: 25000, change: 5.2 },
-  { id: 2, name: 'Accounts Receivable', type: 'Asset', number: '1200', balance: 15000, change: -2.1 },
-  { id: 3, name: 'Inventory', type: 'Asset', number: '1300', balance: 85000, change: 8.3 },
-  { id: 4, name: 'Accounts Payable', type: 'Liability', number: '2001', balance: -12000, change: 3.1 },
-  { id: 5, name: 'Sales Revenue', type: 'Income', number: '4001', balance: 45000, change: 12.5 }
+  { id: 1, name: 'Spaza Shop Cash Till', type: 'Asset', number: '1001', balance: 8500, change: 12.3 },
+  { id: 2, name: 'FNB Business Account', type: 'Asset', number: '1002', balance: 35000, change: 8.7 },
+  { id: 3, name: 'Customer Store Credit', type: 'Asset', number: '1200', balance: 2800, change: -1.5 },
+  { id: 4, name: 'Stock on Hand', type: 'Asset', number: '1300', balance: 45000, change: 15.2 },
+  { id: 5, name: 'Shop Equipment', type: 'Asset', number: '1400', balance: 25000, change: 0 },
+  { id: 6, name: 'Supplier Credit (Shoprite)', type: 'Liability', number: '2001', balance: -8500, change: 2.1 },
+  { id: 7, name: 'Coca-Cola Credit Account', type: 'Liability', number: '2002', balance: -3200, change: -5.8 },
+  { id: 8, name: 'Township Business Loan', type: 'Liability', number: '2100', balance: -15000, change: -8.3 },
+  { id: 9, name: 'Daily Sales Revenue', type: 'Income', number: '4001', balance: 125000, change: 18.6 },
+  { id: 10, name: 'Community Event Sales', type: 'Income', number: '4002', balance: 8500, change: 25.4 }
 ])
 
 const recentTransactions = ref([
-  { id: 1, description: 'Payment from Customer ABC', type: 'income', amount: 2500, date: new Date() },
-  { id: 2, description: 'Office Supplies Purchase', type: 'expense', amount: -450, date: new Date(Date.now() - 86400000) },
-  { id: 3, description: 'Bank Transfer', type: 'transfer', amount: 1000, date: new Date(Date.now() - 172800000) }
+  { id: 1, description: 'Nomsa Community Kitchen - Grocery supplies', type: 'income', amount: 450, date: new Date() },
+  { id: 2, description: 'Shoprite Wholesale - Stock replenishment', type: 'expense', amount: -2800, date: new Date(Date.now() - 3600000) },
+  { id: 3, description: 'Coca-Cola delivery payment', type: 'expense', amount: -890, date: new Date(Date.now() - 7200000) },
+  { id: 4, description: 'Cash sales - Friday afternoon', type: 'income', amount: 1250, date: new Date(Date.now() - 86400000) },
+  { id: 5, description: 'Electricity payment - Municipality', type: 'expense', amount: -380, date: new Date(Date.now() - 172800000) },
+  { id: 6, description: 'Mobile money commission', type: 'income', amount: 125, date: new Date(Date.now() - 259200000) }
 ])
 
 const profitLoss = ref({
@@ -261,11 +271,11 @@ const profitLoss = ref({
 })
 
 const balanceSheet = ref({
-  currentAssets: 125000,
-  fixedAssets: 120000,
-  currentLiabilities: 45000,
-  longTermDebt: 44000,
-  equity: 156000
+  currentAssets: 91300,  // Cash Till + Bank + Store Credit + Stock
+  fixedAssets: 25000,    // Shop Equipment
+  currentLiabilities: 11700,  // Supplier credits
+  longTermDebt: 15000,   // Township Business Loan
+  equity: 89600          // Assets - Liabilities
 })
 
 const showCreateAccountModal = ref(false)

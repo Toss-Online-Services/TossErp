@@ -246,6 +246,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
+
 // Icons (would normally import from a proper icon library)
 const PlusIcon = 'svg'
 const CubeIcon = 'svg'
@@ -265,78 +267,144 @@ const stats = ref({
 const inventoryItems = ref([
   {
     id: 1,
-    name: 'Maize Meal 5kg',
-    category: 'Food & Beverages',
-    currentStock: 15,
-    minStock: 20,
-    unitPrice: 45.99,
+    name: 'Coca Cola 2L',
+    category: 'Beverages',
+    currentStock: 24,
+    minStock: 12,
+    unitPrice: 35.00,
     lastUpdated: new Date()
   },
   {
     id: 2,
-    name: 'Cooking Oil 2L',
-    category: 'Food & Beverages',
-    currentStock: 8,
-    minStock: 15,
-    unitPrice: 89.99,
+    name: 'White Bread 700g',
+    category: 'Groceries',
+    currentStock: 15,
+    minStock: 20,
+    unitPrice: 18.00,
     lastUpdated: new Date()
   },
   {
     id: 3,
-    name: 'Office Paper A4',
-    category: 'Office Supplies',
-    currentStock: 50,
-    minStock: 10,
-    unitPrice: 12.50,
+    name: 'Milk 1L',
+    category: 'Groceries',
+    currentStock: 12,
+    minStock: 15,
+    unitPrice: 22.00,
     lastUpdated: new Date()
   },
   {
     id: 4,
-    name: 'USB Flash Drive 32GB',
-    category: 'Electronics',
-    currentStock: 25,
-    minStock: 5,
-    unitPrice: 125.00,
+    name: 'Simba Chips 125g',
+    category: 'Snacks',
+    currentStock: 30,
+    minStock: 24,
+    unitPrice: 12.00,
+    lastUpdated: new Date()
+  },
+  {
+    id: 5,
+    name: 'Sunlight Soap 250g',
+    category: 'Household',
+    currentStock: 20,
+    minStock: 15,
+    unitPrice: 15.00,
+    lastUpdated: new Date()
+  },
+  {
+    id: 6,
+    name: 'Maggi 2-Minute Noodles',
+    category: 'Groceries',
+    currentStock: 48,
+    minStock: 30,
+    unitPrice: 8.00,
+    lastUpdated: new Date()
+  },
+  {
+    id: 7,
+    name: 'Castle Lager 440ml',
+    category: 'Beverages',
+    currentStock: 18,
+    minStock: 24,
+    unitPrice: 28.00,
+    lastUpdated: new Date()
+  },
+  {
+    id: 8,
+    name: 'Purity Baby Food',
+    category: 'Groceries',
+    currentStock: 10,
+    minStock: 12,
+    unitPrice: 25.00,
+    lastUpdated: new Date()
+  },
+  {
+    id: 9,
+    name: 'Colgate Toothpaste',
+    category: 'Personal Care',
+    currentStock: 8,
+    minStock: 10,
+    unitPrice: 32.00,
+    lastUpdated: new Date()
+  },
+  {
+    id: 10,
+    name: 'Frozen Chicken 1kg',
+    category: 'Frozen',
+    currentStock: 6,
+    minStock: 8,
+    unitPrice: 65.00,
     lastUpdated: new Date()
   }
 ])
 
 const stockAlerts = ref([
-  { id: 1, item: 'Maize Meal 5kg', current: 15, minimum: 20 },
-  { id: 2, item: 'Cooking Oil 2L', current: 8, minimum: 15 },
-  { id: 3, item: 'Sugar 2.5kg', current: 3, minimum: 10 }
+  { id: 1, item: 'White Bread 700g', current: 15, minimum: 20 },
+  { id: 2, item: 'Milk 1L', current: 12, minimum: 15 },
+  { id: 3, item: 'Castle Lager 440ml', current: 18, minimum: 24 },
+  { id: 4, item: 'Colgate Toothpaste', current: 8, minimum: 10 },
+  { id: 5, item: 'Frozen Chicken 1kg', current: 6, minimum: 8 }
 ])
 
 const recentMovements = ref([
-  { id: 1, item: 'Office Paper A4', type: 'IN', quantity: 20, date: new Date() },
-  { id: 2, item: 'USB Flash Drive', type: 'OUT', quantity: 5, date: new Date(Date.now() - 3600000) },
-  { id: 3, item: 'Maize Meal 5kg', type: 'OUT', quantity: 10, date: new Date(Date.now() - 7200000) }
+  { id: 1, item: 'Coca Cola 2L', type: 'OUT', quantity: 6, date: new Date() },
+  { id: 2, item: 'Simba Chips 125g', type: 'IN', quantity: 20, date: new Date(Date.now() - 1800000) },
+  { id: 3, item: 'White Bread 700g', type: 'OUT', quantity: 8, date: new Date(Date.now() - 3600000) },
+  { id: 4, item: 'Sunlight Soap 250g', type: 'IN', quantity: 15, date: new Date(Date.now() - 5400000) },
+  { id: 5, item: 'Milk 1L', type: 'OUT', quantity: 4, date: new Date(Date.now() - 7200000) }
 ])
 
 const groupPurchasingOpportunities = ref([
   {
     id: 1,
-    item: 'Bulk Maize Meal (50x 5kg)',
-    currentPrice: 45.99,
-    groupPrice: 35.99,
-    savings: 22,
+    item: 'Coca Cola 2L (24-pack case)',
+    currentPrice: 35.00,
+    groupPrice: 29.50,
+    savings: 16,
     participants: 8
   },
   {
     id: 2,
-    item: 'Cooking Oil Case (12x 2L)',
-    currentPrice: 89.99,
-    groupPrice: 74.99,
-    savings: 17,
-    participants: 5
+    item: 'Bread Bundle (20 loaves)',
+    currentPrice: 18.00,
+    groupPrice: 15.50,
+    savings: 14,
+    participants: 12
   },
   {
     id: 3,
-    item: 'Office Supplies Bundle',
-    currentPrice: 350.00,
-    groupPrice: 275.00,
-    savings: 21,
-    participants: 12
+    item: 'Household Supplies Bundle',
+    currentPrice: 89.00,
+    groupPrice: 75.00,
+    savings: 16,
+    participants: 6
+  },
+  {
+    id: 4,
+    item: 'Snack Variety Pack (48 units)',
+    currentPrice: 12.00,
+    groupPrice: 10.20,
+    savings: 15,
+    participants: 9
   }
 ])
 
