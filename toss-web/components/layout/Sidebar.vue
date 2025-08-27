@@ -74,7 +74,6 @@
           <div class="flex items-center">
             <ShoppingCartIcon class="w-5 h-5 mr-3" />
             Sales & Selling
-            <span class="ml-2 px-2 py-0.5 text-xs bg-blue-500 text-white rounded-full">AI</span>
           </div>
           <ChevronDownIcon 
             class="w-4 h-4 transition-transform duration-200"

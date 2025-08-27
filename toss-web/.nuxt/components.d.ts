@@ -22,6 +22,7 @@ interface _GlobalComponents {
     'NotificationContainer': typeof import("../components/NotificationContainer.vue")['default']
     'SubscriptionModal': typeof import("../components/SubscriptionModal.vue")['default']
     'AiGlobalAiAssistant': typeof import("../components/ai/GlobalAiAssistant.vue")['default']
+    'AiGlobalAiAssistantCLEAN': typeof import("../components/ai/GlobalAiAssistant_CLEAN.vue")['default']
     'CommonPageHeader': typeof import("../components/common/PageHeader.vue")['default']
     'CommonThemeSwitcher': typeof import("../components/common/ThemeSwitcher.vue")['default']
     'CommonUserMenu': typeof import("../components/common/UserMenu.vue")['default']
@@ -77,6 +78,7 @@ interface _GlobalComponents {
     'LazyNotificationContainer': LazyComponent<typeof import("../components/NotificationContainer.vue")['default']>
     'LazySubscriptionModal': LazyComponent<typeof import("../components/SubscriptionModal.vue")['default']>
     'LazyAiGlobalAiAssistant': LazyComponent<typeof import("../components/ai/GlobalAiAssistant.vue")['default']>
+    'LazyAiGlobalAiAssistantCLEAN': LazyComponent<typeof import("../components/ai/GlobalAiAssistant_CLEAN.vue")['default']>
     'LazyCommonPageHeader': LazyComponent<typeof import("../components/common/PageHeader.vue")['default']>
     'LazyCommonThemeSwitcher': LazyComponent<typeof import("../components/common/ThemeSwitcher.vue")['default']>
     'LazyCommonUserMenu': LazyComponent<typeof import("../components/common/UserMenu.vue")['default']>
@@ -138,6 +140,7 @@ export const ModuleCard: typeof import("../components/ModuleCard.vue")['default'
 export const NotificationContainer: typeof import("../components/NotificationContainer.vue")['default']
 export const SubscriptionModal: typeof import("../components/SubscriptionModal.vue")['default']
 export const AiGlobalAiAssistant: typeof import("../components/ai/GlobalAiAssistant.vue")['default']
+export const AiGlobalAiAssistantCLEAN: typeof import("../components/ai/GlobalAiAssistant_CLEAN.vue")['default']
 export const CommonPageHeader: typeof import("../components/common/PageHeader.vue")['default']
 export const CommonThemeSwitcher: typeof import("../components/common/ThemeSwitcher.vue")['default']
 export const CommonUserMenu: typeof import("../components/common/UserMenu.vue")['default']
@@ -193,6 +196,7 @@ export const LazyModuleCard: LazyComponent<typeof import("../components/ModuleCa
 export const LazyNotificationContainer: LazyComponent<typeof import("../components/NotificationContainer.vue")['default']>
 export const LazySubscriptionModal: LazyComponent<typeof import("../components/SubscriptionModal.vue")['default']>
 export const LazyAiGlobalAiAssistant: LazyComponent<typeof import("../components/ai/GlobalAiAssistant.vue")['default']>
+export const LazyAiGlobalAiAssistantCLEAN: LazyComponent<typeof import("../components/ai/GlobalAiAssistant_CLEAN.vue")['default']>
 export const LazyCommonPageHeader: LazyComponent<typeof import("../components/common/PageHeader.vue")['default']>
 export const LazyCommonThemeSwitcher: LazyComponent<typeof import("../components/common/ThemeSwitcher.vue")['default']>
 export const LazyCommonUserMenu: LazyComponent<typeof import("../components/common/UserMenu.vue")['default']>
