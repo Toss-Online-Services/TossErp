@@ -1,25 +1,25 @@
 <template>
-  <div class="lead-pipeline-container bg-gray-50 min-h-screen">
+  <div class="lead-pipeline-container bg-slate-50 dark:bg-slate-900 min-h-screen">
     <!-- Pipeline Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
-      <div class="flex justify-between items-center">
+    <div class="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700 px-4 sm:px-6 py-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Lead Pipeline</h1>
-          <p class="text-gray-600 mt-1">Visual sales pipeline management</p>
+          <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Lead Pipeline</h1>
+          <p class="text-slate-600 dark:text-slate-400 mt-1">Visual sales pipeline management</p>
         </div>
-        <div class="flex space-x-3">
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
           <button 
             @click="showFilters = !showFilters"
-            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            class="inline-flex items-center px-3 sm:px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50"
           >
-            <FunnelIcon class="h-4 w-4 mr-2" />
+            <FunnelIcon class="h-4 w-4 mr-1 sm:mr-2" />
             Filters
           </button>
           <button 
             @click="showMetrics = !showMetrics"
-            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            class="inline-flex items-center px-3 sm:px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50"
           >
-            <ChartBarIcon class="h-4 w-4 mr-2" />
+            <ChartBarIcon class="h-4 w-4 mr-1 sm:mr-2" />
             Metrics
           </button>
           <NuxtLink 
@@ -34,17 +34,17 @@
       
       <!-- Filters Bar -->
       <div v-if="showFilters" class="mt-4 flex flex-wrap gap-3">
-        <select v-model="filters.assignedTo" @change="applyFilters" class="border border-gray-300 rounded-md px-3 py-1 text-sm">
+        <select v-model="filters.assignedTo" @change="applyFilters" class="border border-slate-300 rounded-md px-3 py-1 text-sm">
           <option value="">All Users</option>
           <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
         </select>
-        <select v-model="filters.priority" @change="applyFilters" class="border border-gray-300 rounded-md px-3 py-1 text-sm">
+        <select v-model="filters.priority" @change="applyFilters" class="border border-slate-300 rounded-md px-3 py-1 text-sm">
           <option value="">All Priorities</option>
           <option value="1">Critical</option>
           <option value="2">High</option>
           <option value="3">Medium</option>
         </select>
-        <select v-model="filters.source" @change="applyFilters" class="border border-gray-300 rounded-md px-3 py-1 text-sm">
+        <select v-model="filters.source" @change="applyFilters" class="border border-slate-300 rounded-md px-3 py-1 text-sm">
           <option value="">All Sources</option>
           <option value="Website">Website</option>
           <option value="Referral">Referral</option>
@@ -56,27 +56,27 @@
       <div v-if="showMetrics && pipelineData.metrics" class="mt-4 grid grid-cols-2 md:grid-cols-6 gap-4">
         <div class="bg-blue-50 p-3 rounded-lg">
           <div class="text-2xl font-bold text-blue-600">{{ pipelineData.metrics.totalLeads }}</div>
-          <div class="text-sm text-gray-600">Total Leads</div>
+          <div class="text-sm text-slate-600">Total Leads</div>
         </div>
         <div class="bg-green-50 p-3 rounded-lg">
           <div class="text-2xl font-bold text-green-600">{{ pipelineData.metrics.qualifiedLeads }}</div>
-          <div class="text-sm text-gray-600">Qualified</div>
+          <div class="text-sm text-slate-600">Qualified</div>
         </div>
         <div class="bg-purple-50 p-3 rounded-lg">
           <div class="text-2xl font-bold text-purple-600">{{ pipelineData.metrics.conversionRate }}%</div>
-          <div class="text-sm text-gray-600">Conversion Rate</div>
+          <div class="text-sm text-slate-600">Conversion Rate</div>
         </div>
         <div class="bg-yellow-50 p-3 rounded-lg">
           <div class="text-2xl font-bold text-yellow-600">{{ formatCurrency(pipelineData.metrics.totalPipelineValue) }}</div>
-          <div class="text-sm text-gray-600">Pipeline Value</div>
+          <div class="text-sm text-slate-600">Pipeline Value</div>
         </div>
         <div class="bg-indigo-50 p-3 rounded-lg">
           <div class="text-2xl font-bold text-indigo-600">{{ Math.round(pipelineData.metrics.averageDaysInPipeline) }}</div>
-          <div class="text-sm text-gray-600">Avg Days</div>
+          <div class="text-sm text-slate-600">Avg Days</div>
         </div>
         <div class="bg-red-50 p-3 rounded-lg">
           <div class="text-2xl font-bold text-red-600">{{ overdueLeads.length }}</div>
-          <div class="text-sm text-gray-600">Overdue</div>
+          <div class="text-sm text-slate-600">Overdue</div>
         </div>
       </div>
     </div>
@@ -91,7 +91,7 @@
         >
           <!-- Stage Header -->
           <div 
-            class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4"
+            class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-4"
             :style="{ borderTopColor: stage.color, borderTopWidth: '4px' }"
           >
             <div class="flex items-center justify-between">
@@ -103,13 +103,13 @@
                   {{ stage.leadCount }}
                 </div>
                 <div class="ml-3">
-                  <h3 class="text-lg font-semibold text-gray-900">{{ stage.displayName }}</h3>
-                  <p class="text-sm text-gray-500">{{ formatCurrency(stage.totalValue) }} total value</p>
+                  <h3 class="text-lg font-semibold text-slate-900">{{ stage.displayName }}</h3>
+                  <p class="text-sm text-slate-500">{{ formatCurrency(stage.totalValue) }} total value</p>
                 </div>
               </div>
               <div class="text-right">
-                <div class="text-sm font-medium text-gray-900">Avg: {{ Math.round(stage.averageScore) }}</div>
-                <div class="text-xs text-gray-500">score</div>
+                <div class="text-sm font-medium text-slate-900">Avg: {{ Math.round(stage.averageScore) }}</div>
+                <div class="text-xs text-slate-500">score</div>
               </div>
             </div>
           </div>
@@ -124,7 +124,7 @@
             <div 
               v-for="lead in stage.leads" 
               :key="lead.id"
-              class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-shadow"
+              class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 cursor-pointer hover:shadow-md transition-shadow"
               :class="{
                 'border-red-300 bg-red-50': lead.isOverdue,
                 'border-orange-300 bg-orange-50': lead.isHighPriority && !lead.isOverdue,
@@ -137,9 +137,9 @@
               <!-- Lead Header -->
               <div class="flex justify-between items-start mb-3">
                 <div class="flex-1 min-w-0">
-                  <h4 class="text-sm font-semibold text-gray-900 truncate">{{ lead.fullName }}</h4>
-                  <p class="text-xs text-gray-600 truncate">{{ lead.company }}</p>
-                  <p v-if="lead.jobTitle" class="text-xs text-gray-500 truncate">{{ lead.jobTitle }}</p>
+                  <h4 class="text-sm font-semibold text-slate-900 truncate">{{ lead.fullName }}</h4>
+                  <p class="text-xs text-slate-600 truncate">{{ lead.company }}</p>
+                  <p v-if="lead.jobTitle" class="text-xs text-slate-500 truncate">{{ lead.jobTitle }}</p>
                 </div>
                 <div class="flex-shrink-0 ml-2">
                   <div 
@@ -168,7 +168,7 @@
 
                 <!-- Qualification Status -->
                 <div class="flex items-center justify-between">
-                  <span class="text-xs text-gray-500">Qualification:</span>
+                  <span class="text-xs text-slate-500">Qualification:</span>
                   <span 
                     class="text-xs font-medium"
                     :class="getQualificationColor(lead.qualificationStatus)"
@@ -178,7 +178,7 @@
                 </div>
 
                 <!-- Time Tracking -->
-                <div class="text-xs text-gray-500 space-y-1">
+                <div class="text-xs text-slate-500 space-y-1">
                   <div class="flex justify-between">
                     <span>In stage:</span>
                     <span :class="{ 'text-red-600 font-medium': lead.isOverdue }">
@@ -194,7 +194,7 @@
                 </div>
 
                 <!-- Expected Close Date -->
-                <div v-if="lead.expectedCloseDate" class="text-xs text-gray-500">
+                <div v-if="lead.expectedCloseDate" class="text-xs text-slate-500">
                   <div class="flex justify-between">
                     <span>Expected close:</span>
                     <span>{{ formatDate(lead.expectedCloseDate) }}</span>
@@ -202,7 +202,7 @@
                 </div>
 
                 <!-- Assigned User -->
-                <div v-if="lead.assignedTo" class="text-xs text-gray-500">
+                <div v-if="lead.assignedTo" class="text-xs text-slate-500">
                   <div class="flex items-center">
                     <UserIcon class="h-3 w-3 mr-1" />
                     <span>{{ lead.assignedTo }}</span>
@@ -220,7 +220,7 @@
                 </button>
                 <button 
                   @click.stop="editLead(lead)"
-                  class="flex-1 text-xs bg-gray-50 text-gray-700 hover:bg-gray-100 px-2 py-1 rounded"
+                  class="flex-1 text-xs bg-slate-50 text-slate-700 hover:bg-slate-100 px-2 py-1 rounded"
                 >
                   Edit
                 </button>
@@ -228,7 +228,7 @@
             </div>
 
             <!-- Empty State -->
-            <div v-if="stage.leads.length === 0" class="text-center py-12 text-gray-500">
+            <div v-if="stage.leads.length === 0" class="text-center py-12 text-slate-500">
               <div class="text-sm">No leads in this stage</div>
             </div>
           </div>
@@ -482,7 +482,7 @@ const getPriorityClass = (priority: string) => {
     case 'low':
       return 'bg-green-100 text-green-800'
     default:
-      return 'bg-gray-100 text-gray-800'
+      return 'bg-slate-100 text-slate-800'
   }
 }
 
@@ -495,7 +495,7 @@ const getQualificationColor = (status: string) => {
     case 'partially qualified':
       return 'text-yellow-600'
     default:
-      return 'text-gray-600'
+      return 'text-slate-600'
   }
 }
 

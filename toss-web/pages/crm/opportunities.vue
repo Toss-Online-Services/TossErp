@@ -1,21 +1,21 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
     <!-- Page Header -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <div class="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="py-4">
           <div class="flex items-center justify-between">
             <div>
-              <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Sales Opportunities</h1>
-              <p class="text-gray-600 dark:text-gray-400">Track and manage sales opportunities through your pipeline</p>
+              <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Sales Opportunities</h1>
+              <p class="text-slate-600 dark:text-slate-400">Track and manage sales opportunities through your pipeline</p>
             </div>
-            <div class="flex space-x-3">
-              <button @click="showCreateOpportunityModal = true" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                <PlusIcon class="w-5 h-5 inline mr-2" />
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <button @click="showCreateOpportunityModal = true" class="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base">
+                <PlusIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
                 New Opportunity
               </button>
-              <button @click="exportPipeline" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                <DownloadIcon class="w-5 h-5 inline mr-2" />
+              <button @click="exportPipeline" class="bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base">
+                <DownloadIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
                 Export Pipeline
               </button>
             </div>
@@ -32,26 +32,26 @@
     <!-- Main Content -->
     <div v-else class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <!-- Pipeline Summary -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+      <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Total Pipeline</p>
-              <p class="text-2xl font-bold text-blue-600">R {{ formatCurrency(analytics?.pipeline?.totalValue || 0) }}</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Total Pipeline</p>
+              <p class="text-xl sm:text-2xl font-bold text-blue-600">R {{ formatCurrency(analytics?.pipeline?.totalValue || 0) }}</p>
             </div>
-            <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-              <CurrencyDollarIcon class="w-6 h-6 text-blue-600" />
+            <div class="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
+              <CurrencyDollarIcon class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
             </div>
           </div>
           <div class="mt-2">
-            <span class="text-sm text-gray-600 dark:text-gray-400">{{ opportunities.length }} opportunities</span>
+            <span class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{{ opportunities.length }} opportunities</span>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Weighted Pipeline</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Weighted Pipeline</p>
               <p class="text-2xl font-bold text-green-600">R {{ formatCurrency(analytics?.pipeline?.weightedValue || 0) }}</p>
             </div>
             <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
@@ -59,14 +59,14 @@
             </div>
           </div>
           <div class="mt-2">
-            <span class="text-sm text-gray-600 dark:text-gray-400">Based on stage probability</span>
+            <span class="text-sm text-slate-600 dark:text-slate-400">Based on stage probability</span>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Average Deal Size</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Average Deal Size</p>
               <p class="text-2xl font-bold text-purple-600">R {{ formatCurrency(averageDealSize) }}</p>
             </div>
             <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
@@ -74,14 +74,14 @@
             </div>
           </div>
           <div class="mt-2">
-            <span class="text-sm text-gray-600 dark:text-gray-400">Across all stages</span>
+            <span class="text-sm text-slate-600 dark:text-slate-400">Across all stages</span>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Avg Cycle Length</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Avg Cycle Length</p>
               <p class="text-2xl font-bold text-yellow-600">{{ analytics?.pipeline?.averageCycleLength || 0 }} days</p>
             </div>
             <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
@@ -89,18 +89,18 @@
             </div>
           </div>
           <div class="mt-2">
-            <span class="text-sm text-gray-600 dark:text-gray-400">Time to close</span>
+            <span class="text-sm text-slate-600 dark:text-slate-400">Time to close</span>
           </div>
         </div>
       </div>
 
       <!-- Pipeline Kanban Board -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
-        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 mb-8">
+        <div class="p-6 border-b border-slate-200 dark:border-slate-700">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Sales Pipeline</h3>
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Sales Pipeline</h3>
             <div class="flex space-x-2">
-              <select v-model="viewMode" class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+              <select v-model="viewMode" class="text-sm border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-1 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
                 <option value="kanban">Kanban View</option>
                 <option value="table">Table View</option>
               </select>
@@ -111,29 +111,29 @@
         <!-- Kanban View -->
         <div v-if="viewMode === 'kanban'" class="p-6">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-            <div v-for="stage in pipelineStages" :key="stage.name" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+            <div v-for="stage in pipelineStages" :key="stage.name" class="bg-slate-50 dark:bg-slate-700 rounded-lg p-4">
               <div class="flex items-center justify-between mb-4">
-                <h4 class="font-medium text-gray-900 dark:text-white">{{ stage.name }}</h4>
+                <h4 class="font-medium text-slate-900 dark:text-white">{{ stage.name }}</h4>
                 <div class="flex items-center space-x-2">
-                  <span class="text-xs text-gray-500 dark:text-gray-400">{{ stage.count }}</span>
-                  <span class="text-xs text-gray-500 dark:text-gray-400">R {{ formatCurrency(stage.value) }}</span>
+                  <span class="text-xs text-slate-500 dark:text-slate-400">{{ stage.count }}</span>
+                  <span class="text-xs text-slate-500 dark:text-slate-400">R {{ formatCurrency(stage.value) }}</span>
                 </div>
               </div>
               <div class="space-y-3">
                 <div 
                   v-for="opportunity in getOpportunitiesByStage(stage.name)" 
                   :key="opportunity.id" 
-                  class="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-md transition-shadow"
+                  class="bg-white dark:bg-slate-800 p-3 rounded border border-slate-200 dark:border-slate-600 cursor-pointer hover:shadow-md transition-shadow"
                   @click="viewOpportunity(opportunity)"
                 >
-                  <p class="font-medium text-sm text-gray-900 dark:text-white">{{ opportunity.title }}</p>
-                  <p class="text-xs text-gray-600 dark:text-gray-400">{{ opportunity.customerName }}</p>
+                  <p class="font-medium text-sm text-slate-900 dark:text-white">{{ opportunity.title }}</p>
+                  <p class="text-xs text-slate-600 dark:text-slate-400">{{ opportunity.customerName }}</p>
                   <div class="flex items-center justify-between mt-2">
                     <span class="text-sm font-semibold text-green-600">R {{ formatCurrency(opportunity.value) }}</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ opportunity.probability }}%</span>
+                    <span class="text-xs text-slate-500 dark:text-slate-400">{{ opportunity.probability }}%</span>
                   </div>
                   <div class="flex items-center justify-between mt-1">
-                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(new Date(opportunity.expectedCloseDate)) }}</span>
+                    <span class="text-xs text-slate-500 dark:text-slate-400">{{ formatDate(new Date(opportunity.expectedCloseDate)) }}</span>
                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" :class="getPriorityColor(opportunity.priority)">
                       {{ opportunity.priority }}
                     </span>
@@ -147,30 +147,30 @@
         <!-- Table View -->
         <div v-else class="overflow-x-auto">
           <table class="w-full">
-            <thead class="bg-gray-50 dark:bg-gray-700">
+            <thead class="bg-slate-50 dark:bg-slate-700">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Opportunity</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Value</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stage</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Probability</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Expected Close</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Opportunity</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Customer</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Value</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Stage</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Probability</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Expected Close</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr v-for="opportunity in filteredOpportunities" :key="opportunity.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+              <tr v-for="opportunity in filteredOpportunities" :key="opportunity.id" class="hover:bg-slate-50 dark:hover:bg-slate-700">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div>
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ opportunity.title }}</div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ opportunity.description }}</div>
+                    <div class="text-sm font-medium text-slate-900 dark:text-white">{{ opportunity.title }}</div>
+                    <div class="text-sm text-slate-500 dark:text-slate-400">{{ opportunity.description }}</div>
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="text-sm text-gray-900 dark:text-white">{{ opportunity.customerName }}</span>
+                  <span class="text-sm text-slate-900 dark:text-white">{{ opportunity.customerName }}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="text-sm font-medium text-gray-900 dark:text-white">R {{ formatCurrency(opportunity.value) }}</span>
+                  <span class="text-sm font-medium text-slate-900 dark:text-white">R {{ formatCurrency(opportunity.value) }}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" :class="getStageColor(opportunity.stage)">
@@ -179,13 +179,13 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
-                    <span class="text-sm text-gray-900 dark:text-white mr-2">{{ opportunity.probability }}%</span>
-                    <div class="w-16 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                    <span class="text-sm text-slate-900 dark:text-white mr-2">{{ opportunity.probability }}%</span>
+                    <div class="w-16 bg-slate-200 dark:bg-slate-600 rounded-full h-2">
                       <div class="bg-blue-500 h-2 rounded-full" :style="{ width: opportunity.probability + '%' }"></div>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                   {{ formatDate(new Date(opportunity.expectedCloseDate)) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -203,19 +203,19 @@
 
       <!-- Forecasting -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-          <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Quarterly Forecast</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+          <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Quarterly Forecast</h3>
           </div>
           <div class="p-6">
             <div class="space-y-4">
-              <div v-for="quarter in quarterlyForecast" :key="quarter.period" class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div v-for="quarter in quarterlyForecast" :key="quarter.period" class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
                 <div>
-                  <p class="font-medium text-gray-900 dark:text-white">{{ quarter.period }}</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">{{ quarter.expectedDeals }} deals expected</p>
+                  <p class="font-medium text-slate-900 dark:text-white">{{ quarter.period }}</p>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">{{ quarter.expectedDeals }} deals expected</p>
                 </div>
                 <div class="text-right">
-                  <p class="font-semibold text-gray-900 dark:text-white">R {{ formatCurrency(quarter.projectedRevenue) }}</p>
+                  <p class="font-semibold text-slate-900 dark:text-white">R {{ formatCurrency(quarter.projectedRevenue) }}</p>
                   <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full" :class="getConfidenceColor(quarter.confidence)">
                     {{ quarter.confidence }}
                   </span>
@@ -225,22 +225,22 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-          <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Stage Performance</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+          <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Stage Performance</h3>
           </div>
           <div class="p-6">
             <div class="space-y-4">
               <div v-for="stage in stagePerformance" :key="stage.stage" class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                  <span class="text-sm font-medium text-gray-900 dark:text-white">{{ stage.stage }}</span>
+                  <span class="text-sm font-medium text-slate-900 dark:text-white">{{ stage.stage }}</span>
                 </div>
                 <div class="flex items-center space-x-4">
                   <div class="text-right">
-                    <p class="text-sm text-gray-900 dark:text-white">{{ stage.count }} opportunities</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-500">{{ stage.percentage }}% of pipeline</p>
+                    <p class="text-sm text-slate-900 dark:text-white">{{ stage.count }} opportunities</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-500">{{ stage.percentage }}% of pipeline</p>
                   </div>
-                  <div class="w-20 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                  <div class="w-20 bg-slate-200 dark:bg-slate-600 rounded-full h-2">
                     <div class="bg-blue-500 h-2 rounded-full" :style="{ width: stage.percentage + '%' }"></div>
                   </div>
                 </div>
@@ -253,32 +253,32 @@
 
     <!-- Create Opportunity Modal -->
     <div v-if="showCreateOpportunityModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-lg">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create New Opportunity</h3>
+      <div class="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-lg">
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Create New Opportunity</h3>
         <form @submit.prevent="createOpportunity">
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
-              <input v-model="newOpportunity.title" type="text" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Title</label>
+              <input v-model="newOpportunity.title" type="text" required class="mt-1 block w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-              <textarea v-model="newOpportunity.description" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"></textarea>
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Description</label>
+              <textarea v-model="newOpportunity.description" class="mt-1 block w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"></textarea>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Value (R)</label>
-                <input v-model.number="newOpportunity.value" type="number" required min="0" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Value (R)</label>
+                <input v-model.number="newOpportunity.value" type="number" required min="0" class="mt-1 block w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Probability (%)</label>
-                <input v-model.number="newOpportunity.probability" type="number" required min="0" max="100" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Probability (%)</label>
+                <input v-model.number="newOpportunity.probability" type="number" required min="0" max="100" class="mt-1 block w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
               </div>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Stage</label>
-                <select v-model="newOpportunity.stage" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Stage</label>
+                <select v-model="newOpportunity.stage" required class="mt-1 block w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
                   <option value="">Select Stage</option>
                   <option value="Prospecting">Prospecting</option>
                   <option value="Qualification">Qualification</option>
@@ -290,8 +290,8 @@
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
-                <select v-model="newOpportunity.priority" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Priority</label>
+                <select v-model="newOpportunity.priority" required class="mt-1 block w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
                   <option value="">Select Priority</option>
                   <option value="High">High</option>
                   <option value="Medium">Medium</option>
@@ -300,16 +300,16 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Expected Close Date</label>
-              <input v-model="newOpportunity.expectedCloseDate" type="date" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Expected Close Date</label>
+              <input v-model="newOpportunity.expectedCloseDate" type="date" required class="mt-1 block w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer Name</label>
-              <input v-model="newOpportunity.customerName" type="text" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Customer Name</label>
+              <input v-model="newOpportunity.customerName" type="text" required class="mt-1 block w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
             </div>
           </div>
           <div class="flex justify-end space-x-3 mt-6">
-            <button type="button" @click="showCreateOpportunityModal = false" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <button type="button" @click="showCreateOpportunityModal = false" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
               Cancel
             </button>
             <button type="submit" :disabled="creatingOpportunity" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
@@ -324,6 +324,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+
+// Types
+interface PipelineStage {
+  name: string
+  count: number
+  value: number
+}
 
 // Icons (simplified for demo)
 const PlusIcon = 'svg'
@@ -439,7 +446,7 @@ const quarterlyForecast = computed(() => {
 
 const stagePerformance = computed(() => {
   const total = opportunities.value.length || 1
-  return pipelineStages.value.map(stage => ({
+  return pipelineStages.value.map((stage: PipelineStage) => ({
     stage: stage.name,
     count: stage.count,
     percentage: Math.round((stage.count / total) * 100)
@@ -531,7 +538,7 @@ function getStageColor(stage: string): string {
     case 'Negotiation': return 'bg-green-100 text-green-800'
     case 'Closed Won': return 'bg-green-100 text-green-800'
     case 'Closed Lost': return 'bg-red-100 text-red-800'
-    default: return 'bg-gray-100 text-gray-800'
+    default: return 'bg-slate-100 text-slate-800'
   }
 }
 
@@ -540,7 +547,7 @@ function getPriorityColor(priority: string): string {
     case 'High': return 'bg-red-100 text-red-800'
     case 'Medium': return 'bg-yellow-100 text-yellow-800'
     case 'Low': return 'bg-green-100 text-green-800'
-    default: return 'bg-gray-100 text-gray-800'
+    default: return 'bg-slate-100 text-slate-800'
   }
 }
 
@@ -549,7 +556,7 @@ function getConfidenceColor(confidence: string): string {
     case 'High': return 'bg-green-100 text-green-800'
     case 'Medium': return 'bg-yellow-100 text-yellow-800'
     case 'Low': return 'bg-red-100 text-red-800'
-    default: return 'bg-gray-100 text-gray-800'
+    default: return 'bg-slate-100 text-slate-800'
   }
 }
 </script>

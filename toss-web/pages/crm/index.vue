@@ -131,6 +131,46 @@
                   </div>
                 </NuxtLink>
 
+                <NuxtLink to="/crm/leads" class="block w-full text-left p-3 rounded-lg border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors touch-manipulation">
+                  <div class="flex items-center space-x-3">
+                    <UserPlusIcon class="w-5 h-5 text-green-600 flex-shrink-0" />
+                    <div class="min-w-0">
+                      <p class="font-medium text-slate-900 dark:text-white text-sm">Manage Leads</p>
+                      <p class="text-xs text-slate-600 dark:text-slate-400 truncate">Track potential customers</p>
+                    </div>
+                  </div>
+                </NuxtLink>
+
+                <NuxtLink to="/crm/opportunities" class="block w-full text-left p-3 rounded-lg border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors touch-manipulation">
+                  <div class="flex items-center space-x-3">
+                    <CurrencyDollarIcon class="w-5 h-5 text-yellow-600 flex-shrink-0" />
+                    <div class="min-w-0">
+                      <p class="font-medium text-slate-900 dark:text-white text-sm">Sales Opportunities</p>
+                      <p class="text-xs text-slate-600 dark:text-slate-400 truncate">Track sales pipeline</p>
+                    </div>
+                  </div>
+                </NuxtLink>
+
+                <NuxtLink to="/crm/pipeline" class="block w-full text-left p-3 rounded-lg border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors touch-manipulation">
+                  <div class="flex items-center space-x-3">
+                    <ChartBarIcon class="w-5 h-5 text-blue-600 flex-shrink-0" />
+                    <div class="min-w-0">
+                      <p class="font-medium text-slate-900 dark:text-white text-sm">Pipeline View</p>
+                      <p class="text-xs text-slate-600 dark:text-slate-400 truncate">Visualize sales stages</p>
+                    </div>
+                  </div>
+                </NuxtLink>
+
+                <NuxtLink to="/crm/contacts" class="block w-full text-left p-3 rounded-lg border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors touch-manipulation">
+                  <div class="flex items-center space-x-3">
+                    <PhoneIcon class="w-5 h-5 text-indigo-600 flex-shrink-0" />
+                    <div class="min-w-0">
+                      <p class="font-medium text-slate-900 dark:text-white text-sm">Contact Management</p>
+                      <p class="text-xs text-slate-600 dark:text-slate-400 truncate">Manage contact details</p>
+                    </div>
+                  </div>
+                </NuxtLink>
+
                 <button @click="refreshCustomers" class="block w-full text-left p-3 rounded-lg border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors touch-manipulation">
                   <div class="flex items-center space-x-3">
                     <ArrowPathIcon class="w-5 h-5 text-yellow-600 flex-shrink-0" />
