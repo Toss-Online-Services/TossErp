@@ -212,6 +212,7 @@ declare global {
   const useElementHover: typeof import('@vueuse/core')['useElementHover']
   const useElementSize: typeof import('@vueuse/core')['useElementSize']
   const useElementVisibility: typeof import('@vueuse/core')['useElementVisibility']
+  const useEnterpriseConfig: typeof import('../../composables/useEnterpriseConfig')['useEnterpriseConfig']
   const useEnterpriseData: typeof import('../../composables/useEnterpriseData')['useEnterpriseData']
   const useError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['useError']
   const useEventBus: typeof import('@vueuse/core')['useEventBus']
@@ -410,6 +411,9 @@ declare global {
   // @ts-ignore
   export type { AutomationTrigger, AutomationCondition, AutomationAction, AutomationWorkflow, AutomationExecution, AutomationLog, LeadScoringRule, LeadScore, CommunicationTemplate, JourneyStage, CustomerJourney } from '../../composables/useAutomationEngine'
   import('../../composables/useAutomationEngine')
+  // @ts-ignore
+  export type { EnterpriseConfig, CustomField, ContactType, ServiceOffering, DashboardWidget, BusinessHours, ContactStage, PricingTier } from '../../composables/useEnterpriseConfig'
+  import('../../composables/useEnterpriseConfig')
   // @ts-ignore
   export type { EnterpriseType } from '../../composables/useEnterpriseData'
   import('../../composables/useEnterpriseData')
@@ -638,6 +642,7 @@ declare module 'vue' {
     readonly useElementHover: UnwrapRef<typeof import('@vueuse/core')['useElementHover']>
     readonly useElementSize: UnwrapRef<typeof import('@vueuse/core')['useElementSize']>
     readonly useElementVisibility: UnwrapRef<typeof import('@vueuse/core')['useElementVisibility']>
+    readonly useEnterpriseConfig: UnwrapRef<typeof import('../../composables/useEnterpriseConfig')['useEnterpriseConfig']>
     readonly useEnterpriseData: UnwrapRef<typeof import('../../composables/useEnterpriseData')['useEnterpriseData']>
     readonly useError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['useError']>
     readonly useEventBus: UnwrapRef<typeof import('@vueuse/core')['useEventBus']>

@@ -2,10 +2,18 @@
   <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
     <!-- Mobile-First Page Container -->
     <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
+      
+      <!-- Enterprise Configuration -->
+      <EnterpriseSelector @enterprise-changed="handleEnterpriseChange" />
+
       <!-- Page Header -->
       <div class="text-center sm:text-left">
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Contacts</h1>
-        <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Manage your business contacts and customer relationships</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+          {{ enterpriseTitle }} Contacts
+        </h1>
+        <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">
+          {{ enterpriseSubtitle }}
+        </p>
       </div>
 
       <!-- Quick Actions -->
@@ -15,7 +23,7 @@
           class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
         >
           <PlusIcon class="w-4 h-4 mr-2" />
-          Add Contact
+          Add {{ getContactTypeLabel() }}
         </button>
         <NuxtLink
           to="/crm/automation"
@@ -24,6 +32,14 @@
           <CogIcon class="w-4 h-4 mr-2" />
           Automation
         </NuxtLink>
+        <button
+          v-if="currentEnterprise?.serviceOfferings?.length"
+          @click="showServicesModal = true"
+          class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors"
+        >
+          <WrenchScrewdriverIcon class="w-4 h-4 mr-2" />
+          Services
+        </button>
         <button
           @click="exportContacts"
           class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
@@ -63,10 +79,14 @@
             class="px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">All Types</option>
-          <option value="Lead">Lead</option>
-          <option value="Customer">Customer</option>
-          <option value="Prospect">Prospect</option>
-        </select>
+            <option
+              v-for="contactType in availableContactTypes"
+              :key="contactType.id"
+              :value="contactType.name"
+            >
+              {{ contactType.name }}
+            </option>
+          </select>
 
         <!-- Status Filter -->
         <select
@@ -386,17 +406,27 @@
       @close="closeDetailsModal"
       @edit="editContactFromDetails"
     />
+
+    <!-- Services Modal -->
+    <ServicesModal
+      v-if="showServicesModal"
+      :enterprise-name="currentEnterprise?.name || 'Business'"
+      @close="showServicesModal = false"
+      @service-booked="handleServiceBooked"
+    />
   </div> <!-- End Main Container -->
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
+import { useEnterpriseConfig } from '../composables/useEnterpriseConfig'
 import {
   PlusIcon,
   MagnifyingGlassIcon,
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   CogIcon,
+  WrenchScrewdriverIcon,
   ChevronUpIcon,
   ChevronDownIcon,
   ChevronUpDownIcon,
@@ -448,6 +478,70 @@ const showDetailsModal = ref(false)
 const selectedContactForEdit = ref<Contact | null>(null)
 const selectedContactForView = ref<Contact | null>(null)
 const isEditMode = ref(false)
+const showServicesModal = ref(false)
+
+// Enterprise Configuration
+const {
+  currentEnterprise,
+  loadEnterpriseFromStorage,
+  getContactTypesForEnterprise,
+  getServiceOfferingsForEnterprise
+} = useEnterpriseConfig()
+
+// Load enterprise config on mount
+onMounted(() => {
+  loadEnterpriseFromStorage()
+})
+
+// Enterprise-specific computed properties
+const enterpriseTitle = computed(() => {
+  if (!currentEnterprise.value) return 'Business'
+  return currentEnterprise.value.name
+})
+
+const enterpriseSubtitle = computed(() => {
+  if (!currentEnterprise.value) return 'Manage your business contacts and customer relationships'
+  
+  const descriptions: Record<string, string> = {
+    beauty_salon: 'Manage your salon clients, appointments, and beauty service customers',
+    plumbing_service: 'Track your plumbing service customers, emergency calls, and maintenance contracts',
+    spaza_shop: 'Manage your shop customers, credit accounts, and regular shoppers'
+  }
+  
+  return descriptions[currentEnterprise.value.id] || `Manage your ${currentEnterprise.value.type.toLowerCase()} customers and relationships`
+})
+
+const getContactTypeLabel = () => {
+  if (!currentEnterprise.value) return 'Contact'
+  
+  const labels: Record<string, string> = {
+    beauty_salon: 'Client',
+    plumbing_service: 'Customer',
+    spaza_shop: 'Customer'
+  }
+  
+  return labels[currentEnterprise.value.id] || 'Contact'
+}
+
+const handleEnterpriseChange = (enterpriseType: string) => {
+  // Reload contacts when enterprise changes
+  loadContacts()
+}
+
+const handleServiceBooked = (service: any) => {
+  console.log('Service booked:', service)
+  showServicesModal.value = false
+  // You could create a new lead/opportunity here
+}
+
+// Available contact types based on enterprise
+const availableContactTypes = computed(() => {
+  return getContactTypesForEnterprise.value || [
+    { id: 'lead', name: 'Lead' },
+    { id: 'customer', name: 'Customer' },
+    { id: 'prospect', name: 'Prospect' }
+  ]
+})
 
 // Table columns
 const columns: Column[] = [
