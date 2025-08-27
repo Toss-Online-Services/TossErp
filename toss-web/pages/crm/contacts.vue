@@ -8,6 +8,38 @@
         <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Manage your business contacts and customer relationships</p>
       </div>
 
+      <!-- Quick Actions -->
+      <div class="flex flex-wrap gap-3">
+        <button
+          @click="openCreateModal"
+          class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+        >
+          <PlusIcon class="w-4 h-4 mr-2" />
+          Add Contact
+        </button>
+        <NuxtLink
+          to="/crm/automation"
+          class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium rounded-lg transition-colors"
+        >
+          <CogIcon class="w-4 h-4 mr-2" />
+          Automation
+        </NuxtLink>
+        <button
+          @click="exportContacts"
+          class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
+        >
+          <ArrowDownTrayIcon class="w-4 h-4 mr-2" />
+          Export
+        </button>
+        <button
+          @click="importContacts"
+          class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
+        >
+          <ArrowUpTrayIcon class="w-4 h-4 mr-2" />
+          Import
+        </button>
+      </div>
+
       <!-- Search and Actions Bar - Mobile First -->
       <div class="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
         <!-- Search -->
@@ -363,6 +395,8 @@ import {
   PlusIcon,
   MagnifyingGlassIcon,
   ArrowDownTrayIcon,
+  ArrowUpTrayIcon,
+  CogIcon,
   ChevronUpIcon,
   ChevronDownIcon,
   ChevronUpDownIcon,
@@ -845,6 +879,22 @@ const exportContacts = () => {
   a.download = 'contacts.csv'
   a.click()
   URL.revokeObjectURL(url)
+}
+
+const importContacts = () => {
+  // Create file input
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = '.csv,.xlsx,.json'
+  input.onchange = (event) => {
+    const file = (event.target as HTMLInputElement).files?.[0]
+    if (file) {
+      // TODO: Implement file parsing and contact import
+      console.log('Importing file:', file.name)
+      alert('Import functionality will be implemented soon!')
+    }
+  }
+  input.click()
 }
 
 // Watchers
