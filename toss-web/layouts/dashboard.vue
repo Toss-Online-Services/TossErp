@@ -57,6 +57,9 @@
         </main>
       </div>
     </div>
+
+    <!-- Global AI Assistant - Available on all screens -->
+    <GlobalAiAssistant />
   </div>
 </template>
 
@@ -68,6 +71,7 @@ import Header from '~/components/layout/Header.vue'
 import MobileSidebar from '~/components/layout/MobileSidebar.vue'
 import MobileBottomNav from '~/components/layout/MobileBottomNav.vue'
 import MobileUserMenu from '~/components/layout/MobileUserMenu.vue'
+import GlobalAiAssistant from '~/components/ai/GlobalAiAssistant.vue'
 
 // Mobile menu state
 const mobileMenuOpen = ref(false)

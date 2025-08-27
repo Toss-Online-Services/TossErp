@@ -104,12 +104,6 @@
           <NuxtLink to="/sales/analytics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/analytics' }">
             Sales Analytics
           </NuxtLink>
-          <NuxtLink to="/sales/ai-assistant" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/ai-assistant' }">
-            <span class="flex items-center gap-2">
-              AI Assistant
-              <span class="px-1.5 py-0.5 text-xs bg-blue-500 text-white rounded-full">New</span>
-            </span>
-          </NuxtLink>
         </div>
       </div>
 
