@@ -26,9 +26,11 @@ interface _GlobalComponents {
     'CommonUserMenu': typeof import("../components/common/UserMenu.vue")['default']
     'CrmContactDetailsModal': typeof import("../components/crm/ContactDetailsModal.vue")['default']
     'CrmContactModal': typeof import("../components/crm/ContactModal.vue")['default']
+    'CrmEnterpriseSelector': typeof import("../components/crm/EnterpriseSelector.vue")['default']
     'CrmLeadDetailPanel': typeof import("../components/crm/LeadDetailPanel.vue")['default']
     'CrmOpportunityCard': typeof import("../components/crm/OpportunityCard.vue")['default']
     'CrmOpportunityDetailModal': typeof import("../components/crm/OpportunityDetailModal.vue")['default']
+    'CrmServicesModal': typeof import("../components/crm/ServicesModal.vue")['default']
     'CrmTemplateLibrary': typeof import("../components/crm/TemplateLibrary.vue")['default']
     'CrmWorkflowBuilder': typeof import("../components/crm/WorkflowBuilder.vue")['default']
     'IconsIconBase': typeof import("../components/icons/IconBase.vue")['default']
@@ -76,9 +78,11 @@ interface _GlobalComponents {
     'LazyCommonUserMenu': LazyComponent<typeof import("../components/common/UserMenu.vue")['default']>
     'LazyCrmContactDetailsModal': LazyComponent<typeof import("../components/crm/ContactDetailsModal.vue")['default']>
     'LazyCrmContactModal': LazyComponent<typeof import("../components/crm/ContactModal.vue")['default']>
+    'LazyCrmEnterpriseSelector': LazyComponent<typeof import("../components/crm/EnterpriseSelector.vue")['default']>
     'LazyCrmLeadDetailPanel': LazyComponent<typeof import("../components/crm/LeadDetailPanel.vue")['default']>
     'LazyCrmOpportunityCard': LazyComponent<typeof import("../components/crm/OpportunityCard.vue")['default']>
     'LazyCrmOpportunityDetailModal': LazyComponent<typeof import("../components/crm/OpportunityDetailModal.vue")['default']>
+    'LazyCrmServicesModal': LazyComponent<typeof import("../components/crm/ServicesModal.vue")['default']>
     'LazyCrmTemplateLibrary': LazyComponent<typeof import("../components/crm/TemplateLibrary.vue")['default']>
     'LazyCrmWorkflowBuilder': LazyComponent<typeof import("../components/crm/WorkflowBuilder.vue")['default']>
     'LazyIconsIconBase': LazyComponent<typeof import("../components/icons/IconBase.vue")['default']>
@@ -132,9 +136,11 @@ export const CommonThemeSwitcher: typeof import("../components/common/ThemeSwitc
 export const CommonUserMenu: typeof import("../components/common/UserMenu.vue")['default']
 export const CrmContactDetailsModal: typeof import("../components/crm/ContactDetailsModal.vue")['default']
 export const CrmContactModal: typeof import("../components/crm/ContactModal.vue")['default']
+export const CrmEnterpriseSelector: typeof import("../components/crm/EnterpriseSelector.vue")['default']
 export const CrmLeadDetailPanel: typeof import("../components/crm/LeadDetailPanel.vue")['default']
 export const CrmOpportunityCard: typeof import("../components/crm/OpportunityCard.vue")['default']
 export const CrmOpportunityDetailModal: typeof import("../components/crm/OpportunityDetailModal.vue")['default']
+export const CrmServicesModal: typeof import("../components/crm/ServicesModal.vue")['default']
 export const CrmTemplateLibrary: typeof import("../components/crm/TemplateLibrary.vue")['default']
 export const CrmWorkflowBuilder: typeof import("../components/crm/WorkflowBuilder.vue")['default']
 export const IconsIconBase: typeof import("../components/icons/IconBase.vue")['default']
@@ -182,9 +188,11 @@ export const LazyCommonThemeSwitcher: LazyComponent<typeof import("../components
 export const LazyCommonUserMenu: LazyComponent<typeof import("../components/common/UserMenu.vue")['default']>
 export const LazyCrmContactDetailsModal: LazyComponent<typeof import("../components/crm/ContactDetailsModal.vue")['default']>
 export const LazyCrmContactModal: LazyComponent<typeof import("../components/crm/ContactModal.vue")['default']>
+export const LazyCrmEnterpriseSelector: LazyComponent<typeof import("../components/crm/EnterpriseSelector.vue")['default']>
 export const LazyCrmLeadDetailPanel: LazyComponent<typeof import("../components/crm/LeadDetailPanel.vue")['default']>
 export const LazyCrmOpportunityCard: LazyComponent<typeof import("../components/crm/OpportunityCard.vue")['default']>
 export const LazyCrmOpportunityDetailModal: LazyComponent<typeof import("../components/crm/OpportunityDetailModal.vue")['default']>
+export const LazyCrmServicesModal: LazyComponent<typeof import("../components/crm/ServicesModal.vue")['default']>
 export const LazyCrmTemplateLibrary: LazyComponent<typeof import("../components/crm/TemplateLibrary.vue")['default']>
 export const LazyCrmWorkflowBuilder: LazyComponent<typeof import("../components/crm/WorkflowBuilder.vue")['default']>
 export const LazyIconsIconBase: LazyComponent<typeof import("../components/icons/IconBase.vue")['default']>
