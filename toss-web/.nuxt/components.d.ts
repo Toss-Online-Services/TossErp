@@ -31,6 +31,9 @@ interface _GlobalComponents {
     'CrmOpportunityDetailModal': typeof import("../components/crm/OpportunityDetailModal.vue")['default']
     'IconsIconBase': typeof import("../components/icons/IconBase.vue")['default']
     'LayoutHeader': typeof import("../components/layout/Header.vue")['default']
+    'LayoutMobileBottomNav': typeof import("../components/layout/MobileBottomNav.vue")['default']
+    'LayoutMobileSidebar': typeof import("../components/layout/MobileSidebar.vue")['default']
+    'LayoutMobileUserMenu': typeof import("../components/layout/MobileUserMenu.vue")['default']
     'LayoutSidebar': typeof import("../components/layout/Sidebar.vue")['default']
     'NuxtWelcome': typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
     'NuxtLayout': typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
@@ -76,6 +79,9 @@ interface _GlobalComponents {
     'LazyCrmOpportunityDetailModal': LazyComponent<typeof import("../components/crm/OpportunityDetailModal.vue")['default']>
     'LazyIconsIconBase': LazyComponent<typeof import("../components/icons/IconBase.vue")['default']>
     'LazyLayoutHeader': LazyComponent<typeof import("../components/layout/Header.vue")['default']>
+    'LazyLayoutMobileBottomNav': LazyComponent<typeof import("../components/layout/MobileBottomNav.vue")['default']>
+    'LazyLayoutMobileSidebar': LazyComponent<typeof import("../components/layout/MobileSidebar.vue")['default']>
+    'LazyLayoutMobileUserMenu': LazyComponent<typeof import("../components/layout/MobileUserMenu.vue")['default']>
     'LazyLayoutSidebar': LazyComponent<typeof import("../components/layout/Sidebar.vue")['default']>
     'LazyNuxtWelcome': LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
     'LazyNuxtLayout': LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
@@ -127,6 +133,9 @@ export const CrmOpportunityCard: typeof import("../components/crm/OpportunityCar
 export const CrmOpportunityDetailModal: typeof import("../components/crm/OpportunityDetailModal.vue")['default']
 export const IconsIconBase: typeof import("../components/icons/IconBase.vue")['default']
 export const LayoutHeader: typeof import("../components/layout/Header.vue")['default']
+export const LayoutMobileBottomNav: typeof import("../components/layout/MobileBottomNav.vue")['default']
+export const LayoutMobileSidebar: typeof import("../components/layout/MobileSidebar.vue")['default']
+export const LayoutMobileUserMenu: typeof import("../components/layout/MobileUserMenu.vue")['default']
 export const LayoutSidebar: typeof import("../components/layout/Sidebar.vue")['default']
 export const NuxtWelcome: typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
 export const NuxtLayout: typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
@@ -172,6 +181,9 @@ export const LazyCrmOpportunityCard: LazyComponent<typeof import("../components/
 export const LazyCrmOpportunityDetailModal: LazyComponent<typeof import("../components/crm/OpportunityDetailModal.vue")['default']>
 export const LazyIconsIconBase: LazyComponent<typeof import("../components/icons/IconBase.vue")['default']>
 export const LazyLayoutHeader: LazyComponent<typeof import("../components/layout/Header.vue")['default']>
+export const LazyLayoutMobileBottomNav: LazyComponent<typeof import("../components/layout/MobileBottomNav.vue")['default']>
+export const LazyLayoutMobileSidebar: LazyComponent<typeof import("../components/layout/MobileSidebar.vue")['default']>
+export const LazyLayoutMobileUserMenu: LazyComponent<typeof import("../components/layout/MobileUserMenu.vue")['default']>
 export const LazyLayoutSidebar: LazyComponent<typeof import("../components/layout/Sidebar.vue")['default']>
 export const LazyNuxtWelcome: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
 export const LazyNuxtLayout: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
