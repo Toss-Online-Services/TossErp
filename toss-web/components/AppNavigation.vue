@@ -122,28 +122,30 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
+
 const showModules = ref(false)
 const showUserMenu = ref(false)
 const showMobileMenu = ref(false)
+
+// Initialize dark mode state
 const isDark = ref(false)
 
-function toggleAI() {
-  // Toggle AI copilot visibility
-  console.log('Toggle AI Assistant')
-}
-
-function toggleDarkMode() {
-  isDark.value = !isDark.value
-  // Implement dark mode toggle logic
-}
-
-function logout() {
-  // Implement logout logic
-  console.log('Logout')
-}
-
-// Close dropdowns when clicking outside
+// Check if we're on client side and get initial theme
 onMounted(() => {
+  // Check for saved theme preference or default to system preference
+  const savedTheme = localStorage.getItem('theme')
+  const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  
+  if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+    isDark.value = true
+    document.documentElement.classList.add('dark')
+  } else {
+    isDark.value = false
+    document.documentElement.classList.remove('dark')
+  }
+  
+  // Close dropdowns when clicking outside
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement
     if (!target.closest('.relative')) {
@@ -152,6 +154,28 @@ onMounted(() => {
     }
   })
 })
+
+function toggleAI() {
+  // Toggle AI copilot visibility
+  console.log('Toggle AI Assistant')
+}
+
+function toggleDarkMode() {
+  isDark.value = !isDark.value
+  
+  if (isDark.value) {
+    document.documentElement.classList.add('dark')
+    localStorage.setItem('theme', 'dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+    localStorage.setItem('theme', 'light')
+  }
+}
+
+function logout() {
+  // Implement logout logic
+  console.log('Logout')
+}
 </script>
 
 <style scoped>

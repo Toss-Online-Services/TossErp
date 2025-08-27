@@ -1,54 +1,36 @@
 <template>
-  <div class="p-6 bg-white min-h-screen">
-              <option value="">All Status</option>
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option> Header Section -->
-    <div class="sm:flex sm:items-center sm:justify-between mb-8">
-      <div>
-        <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900 sm:text-4xl">
-          Contacts
-        </h1>
-        <p class="mt-2 text-sm text-gray-700">
-          Manage your business contacts and customer relationships
-        </p>
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <!-- Mobile-First Page Container -->
+    <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
+      <!-- Page Header -->
+      <div class="text-center sm:text-left">
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Contacts</h1>
+        <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Manage your business contacts and customer relationships</p>
       </div>
-      <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <button
-          @click="openCreateModal"
-          type="button"
-          class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        >
-          <PlusIcon class="w-4 h-4 inline mr-2" />
-          Add Contact
-        </button>
-      </div>
-    </div>
 
-    <!-- Filters and Search -->
-    <div class="mb-6 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:space-x-4">
-      <!-- Search -->
-      <div class="flex-1 max-w-lg">
-        <div class="relative">
-          <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" />
+      <!-- Search and Actions Bar - Mobile First -->
+      <div class="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+        <!-- Search -->
+        <div class="relative flex-1 max-w-lg">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <MagnifyingGlassIcon class="h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
           </div>
           <input
             v-model="searchQuery"
             type="text"
-            class="block w-full rounded-md border-0 py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            class="block w-full pl-9 sm:pl-10 pr-3 py-2 sm:py-2.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Search contacts..."
           />
         </div>
-      </div>
 
-      <!-- Filters -->
-      <div class="flex space-x-4">
-        <!-- Type Filter -->
-        <select
-          v-model="selectedType"
-          class="rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-        >
-          <option value="">All Types</option>
+        <!-- Filters and Actions -->
+        <div class="flex flex-wrap gap-2 sm:gap-3 sm:ml-4">
+          <!-- Type Filter -->
+          <select
+            v-model="selectedType"
+            class="px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">All Types</option>
           <option value="Lead">Lead</option>
           <option value="Customer">Customer</option>
           <option value="Prospect">Prospect</option>
@@ -57,7 +39,7 @@
         <!-- Status Filter -->
         <select
           v-model="selectedStatus"
-          class="rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          class="px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           <option value="">All Statuses</option>
           <option value="active">Active</option>
@@ -69,28 +51,28 @@
         <button
           @click="exportContacts"
           type="button"
-          class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          class="inline-flex items-center rounded-lg bg-white dark:bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-900 dark:text-white shadow-sm border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
         >
           <ArrowDownTrayIcon class="w-4 h-4 mr-2" />
           Export
         </button>
+        </div>
       </div>
-    </div>
 
     <!-- Contacts Table -->
     <div class="mt-8 flow-root">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <div class="relative overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-            <table class="min-w-full table-fixed divide-y divide-gray-300">
-              <thead class="bg-gray-50">
+          <div class="relative overflow-hidden shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 sm:rounded-lg">
+            <table class="min-w-full table-fixed divide-y divide-slate-200 dark:divide-slate-700">
+              <thead class="bg-slate-50 dark:bg-slate-800">
                 <tr>
                   <th scope="col" class="relative px-7 sm:w-12 sm:px-6">
                     <input
                       v-model="selectAll"
                       @change="toggleSelectAll"
                       type="checkbox"
-                      class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                      class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500"
                     />
                   </th>
                   <th
@@ -98,7 +80,7 @@
                     :key="column.key"
                     scope="col"
                     :class="[
-                      'min-w-0 py-3.5 pr-3 text-left text-sm font-semibold text-gray-900 cursor-pointer hover:bg-gray-100',
+                      'min-w-0 py-3.5 pr-3 text-left text-sm font-semibold text-slate-900 dark:text-slate-100 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700',
                       column.sortable ? 'select-none' : ''
                     ]"
                     @click="column.sortable ? sortBy(column.key) : null"
@@ -114,7 +96,7 @@
                           v-else-if="sortField === column.key && sortDirection === 'desc'"
                           class="w-4 h-4"
                         />
-                        <ChevronUpDownIcon v-else class="w-4 h-4 text-gray-400" />
+                        <ChevronUpDownIcon v-else class="w-4 h-4 text-slate-400 dark:text-slate-500" />
                       </template>
                     </div>
                   </th>
@@ -123,12 +105,12 @@
                   </th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-200 bg-white">
+              <tbody class="divide-y divide-slate-200 dark:divide-slate-700 bg-white dark:bg-slate-900">
                 <tr
                   v-for="contact in paginatedContacts"
                   :key="contact.id"
                   :class="[
-                    selectedContacts.includes(contact.id) ? 'bg-gray-50' : 'hover:bg-gray-50'
+                    selectedContacts.includes(contact.id) ? 'bg-slate-50 dark:bg-slate-800' : 'hover:bg-slate-50 dark:hover:bg-slate-800'
                   ]"
                 >
                   <td class="relative px-7 sm:w-12 sm:px-6">
@@ -136,29 +118,29 @@
                       v-model="selectedContacts"
                       :value="contact.id"
                       type="checkbox"
-                      class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                      class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500"
                     />
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm">
                     <div class="flex items-center">
                       <div class="h-10 w-10 flex-shrink-0">
-                        <div class="h-10 w-10 rounded-full bg-indigo-600 flex items-center justify-center">
+                        <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
                           <span class="text-sm font-medium text-white">
                             {{ getInitials(contact.name || `${contact.firstName} ${contact.lastName}`) }}
                           </span>
                         </div>
                       </div>
                       <div class="ml-4">
-                        <div class="font-medium text-gray-900">{{ contact.name || `${contact.firstName} ${contact.lastName}` }}</div>
-                        <div class="text-gray-500">{{ contact.company || 'No company' }}</div>
+                        <div class="font-medium text-slate-900 dark:text-slate-100">{{ contact.name || `${contact.firstName} ${contact.lastName}` }}</div>
+                        <div class="text-slate-500 dark:text-slate-400">{{ contact.company || 'No company' }}</div>
                       </div>
                     </div>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-900 dark:text-slate-100">
                     <div>{{ contact.email }}</div>
-                    <div class="text-gray-500">{{ contact.phone || 'No phone' }}</div>
+                    <div class="text-slate-500 dark:text-slate-400">{{ contact.phone || 'No phone' }}</div>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 dark:text-slate-400">
                     <span
                       :class="[
                         'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset',
@@ -168,7 +150,7 @@
                       {{ contact.type }}
                     </span>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 dark:text-slate-400">
                     <span
                       :class="[
                         'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset',
@@ -178,31 +160,31 @@
                       {{ contact.status }}
                     </span>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 dark:text-slate-400">
                     {{ formatDate(contact.createdAt) }}
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 dark:text-slate-400">
                     {{ formatDate(contact.lastActivity) }}
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <div class="flex items-center justify-end space-x-2">
                       <button
                         @click="viewContact(contact)"
-                        class="text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50 p-2 rounded-md"
+                        class="text-blue-600 hover:text-blue-900 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-md"
                         title="View Contact"
                       >
                         <EyeIcon class="w-4 h-4" />
                       </button>
                       <button
                         @click="editContact(contact)"
-                        class="text-gray-600 hover:text-gray-900 hover:bg-gray-50 p-2 rounded-md"
+                        class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700 p-2 rounded-md"
                         title="Edit Contact"
                       >
                         <PencilIcon class="w-4 h-4" />
                       </button>
                       <button
                         @click="deleteContact(contact)"
-                        class="text-red-600 hover:text-red-900 hover:bg-red-50 p-2 rounded-md"
+                        class="text-red-600 hover:text-red-900 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-md"
                         title="Delete Contact"
                       >
                         <TrashIcon class="w-4 h-4" />
@@ -215,9 +197,9 @@
 
             <!-- Empty State -->
             <div v-if="paginatedContacts.length === 0" class="text-center py-12">
-              <UserIcon class="mx-auto h-12 w-12 text-gray-400" />
-              <h3 class="mt-2 text-sm font-semibold text-gray-900">No contacts found</h3>
-              <p class="mt-1 text-sm text-gray-500">
+              <UserIcon class="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500" />
+              <h3 class="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">No contacts found</h3>
+              <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 {{ searchQuery ? 'Try adjusting your search criteria.' : 'Get started by creating your first contact.' }}
               </p>
               <div class="mt-6">
@@ -225,7 +207,7 @@
                   v-if="!searchQuery"
                   @click="openCreateModal"
                   type="button"
-                  class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+                  class="inline-flex items-center rounded-md bg-slate-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500 dark:bg-slate-700 dark:hover:bg-slate-600"
                 >
                   <PlusIcon class="w-4 h-4 mr-2" />
                   Add Contact
@@ -240,27 +222,27 @@
     <!-- Pagination -->
     <nav
       v-if="totalPages > 1"
-      class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-6"
+      class="flex items-center justify-between border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 sm:px-6 mt-6"
     >
       <div class="flex flex-1 justify-between sm:hidden">
         <button
           @click="previousPage"
           :disabled="currentPage === 1"
-          class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          class="relative inline-flex items-center rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50"
         >
           Previous
         </button>
         <button
           @click="nextPage"
           :disabled="currentPage === totalPages"
-          class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          class="relative ml-3 inline-flex items-center rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50"
         >
           Next
         </button>
       </div>
       <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
-          <p class="text-sm text-gray-700">
+          <p class="text-sm text-slate-700 dark:text-slate-300">
             Showing
             {{ ' ' }}
             <span class="font-medium">{{ (currentPage - 1) * pageSize + 1 }}</span>
@@ -281,7 +263,7 @@
             <button
               @click="previousPage"
               :disabled="currentPage === 1"
-              class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+              class="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-400 dark:text-slate-500 ring-1 ring-inset ring-slate-300 dark:ring-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
             >
               <ChevronLeftIcon class="h-5 w-5" />
             </button>
@@ -293,8 +275,8 @@
               :class="[
                 'relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0',
                 page === currentPage
-                  ? 'z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
-                  : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
+                  ? 'z-10 bg-blue-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
+                  : 'text-slate-900 dark:text-slate-100 ring-1 ring-inset ring-slate-300 dark:ring-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700'
               ]"
             >
               {{ page }}
@@ -303,7 +285,7 @@
             <button
               @click="nextPage"
               :disabled="currentPage === totalPages"
-              class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+              class="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-400 dark:text-slate-500 ring-1 ring-inset ring-slate-300 dark:ring-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
             >
               <ChevronRightIcon class="h-5 w-5" />
             </button>
@@ -323,15 +305,15 @@
     >
       <div
         v-if="selectedContacts.length > 0"
-        class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg border border-gray-200 px-6 py-4 flex items-center space-x-4 z-50"
+        class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center space-x-4 z-50"
       >
-        <span class="text-sm text-gray-700">
+        <span class="text-sm text-slate-700 dark:text-slate-300">
           {{ selectedContacts.length }} selected
         </span>
         <div class="flex space-x-2">
           <button
             @click="bulkEdit"
-            class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            class="inline-flex items-center rounded-md bg-white dark:bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-900 dark:text-slate-100 shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
           >
             <PencilIcon class="w-4 h-4 mr-2" />
             Edit
@@ -345,7 +327,7 @@
           </button>
           <button
             @click="clearSelection"
-            class="inline-flex items-center rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500"
+            class="inline-flex items-center rounded-md bg-slate-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500"
           >
             <XMarkIcon class="w-4 h-4 mr-2" />
             Clear
@@ -353,6 +335,8 @@
         </div>
       </div>
     </Transition>
+    
+    </div> <!-- End Page Container -->
 
     <!-- Contact Modal (Create/Edit) -->
     <ContactModal
@@ -370,7 +354,7 @@
       @close="closeDetailsModal"
       @edit="editContactFromDetails"
     />
-  </div>
+  </div> <!-- End Main Container -->
 </template>
 
 <script setup lang="ts">
