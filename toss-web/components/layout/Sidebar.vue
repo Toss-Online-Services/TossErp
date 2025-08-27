@@ -81,6 +81,14 @@
           </NuxtLink>
           
           <NuxtLink 
+            to="/crm/automation" 
+            class="nav-sub-link"
+            :class="{ 'nav-sub-link-active': route.path === '/crm/automation' }"
+          >
+            Automation
+          </NuxtLink>
+          
+          <NuxtLink 
             to="/crm/pipeline" 
             class="nav-sub-link"
             :class="{ 'nav-sub-link-active': route.path === '/crm/pipeline' }"
