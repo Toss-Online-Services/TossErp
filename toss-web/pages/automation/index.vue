@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+    <div class="pb-4 border-b border-gray-200 dark:border-gray-700">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Automation Hub</h1>
@@ -10,7 +10,7 @@
           </p>
         </div>
         <div class="flex space-x-3">
-          <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700">
+          <button class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700">
             <PlusIcon class="w-4 h-4 mr-2" />
             Create Workflow
           </button>
@@ -19,9 +19,9 @@
     </div>
 
     <!-- AI Assistant Quick Actions -->
-    <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
+    <div class="p-6 border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl dark:border-blue-800">
       <div class="flex items-center mb-4">
-        <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-3">
+        <div class="flex items-center justify-center w-10 h-10 mr-3 bg-blue-100 rounded-lg dark:bg-blue-900">
           <SparklesIcon class="w-6 h-6 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
@@ -29,24 +29,24 @@
           <p class="text-sm text-gray-600 dark:text-gray-400">Let AI help automate your workflows</p>
         </div>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <button class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <button class="p-4 text-left transition-shadow bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700 hover:shadow-md">
           <div class="flex items-center mb-2">
-            <BoltIcon class="w-5 h-5 text-yellow-500 mr-2" />
+            <BoltIcon class="w-5 h-5 mr-2 text-yellow-500" />
             <span class="font-medium text-gray-900 dark:text-white">Smart Triggers</span>
           </div>
           <p class="text-sm text-gray-600 dark:text-gray-400">Automatically trigger actions based on data changes</p>
         </button>
-        <button class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
+        <button class="p-4 text-left transition-shadow bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700 hover:shadow-md">
           <div class="flex items-center mb-2">
-            <DocumentTextIcon class="w-5 h-5 text-green-500 mr-2" />
+            <DocumentTextIcon class="w-5 h-5 mr-2 text-green-500" />
             <span class="font-medium text-gray-900 dark:text-white">Document AI</span>
           </div>
           <p class="text-sm text-gray-600 dark:text-gray-400">Extract data from documents automatically</p>
         </button>
-        <button class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow text-left">
+        <button class="p-4 text-left transition-shadow bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700 hover:shadow-md">
           <div class="flex items-center mb-2">
-            <ChartBarIcon class="w-5 h-5 text-purple-500 mr-2" />
+            <ChartBarIcon class="w-5 h-5 mr-2 text-purple-500" />
             <span class="font-medium text-gray-900 dark:text-white">Predictive Analytics</span>
           </div>
           <p class="text-sm text-gray-600 dark:text-gray-400">Forecast trends and automate decisions</p>
@@ -55,10 +55,10 @@
     </div>
 
     <!-- Automation Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
         <div class="flex items-center">
-          <div class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+          <div class="flex items-center justify-center w-10 h-10 bg-green-100 rounded-lg dark:bg-green-900">
             <CheckCircleIcon class="w-6 h-6 text-green-600 dark:text-green-400" />
           </div>
           <div class="ml-4">
@@ -68,9 +68,9 @@
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
         <div class="flex items-center">
-          <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+          <div class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg dark:bg-blue-900">
             <ClockIcon class="w-6 h-6 text-blue-600 dark:text-blue-400" />
           </div>
           <div class="ml-4">
@@ -80,9 +80,9 @@
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
         <div class="flex items-center">
-          <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+          <div class="flex items-center justify-center w-10 h-10 bg-purple-100 rounded-lg dark:bg-purple-900">
             <PlayIcon class="w-6 h-6 text-purple-600 dark:text-purple-400" />
           </div>
           <div class="ml-4">
@@ -92,9 +92,9 @@
         </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
         <div class="flex items-center">
-          <div class="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center">
+          <div class="flex items-center justify-center w-10 h-10 bg-red-100 rounded-lg dark:bg-red-900">
             <ExclamationTriangleIcon class="w-6 h-6 text-red-600 dark:text-red-400" />
           </div>
           <div class="ml-4">
@@ -106,9 +106,9 @@
     </div>
 
     <!-- Active Workflows -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <!-- Workflow List -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Active Workflows</h3>
           <NuxtLink to="/automation/workflows" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700">
@@ -116,9 +116,9 @@
           </NuxtLink>
         </div>
         <div class="space-y-3">
-          <div v-for="workflow in activeWorkflows" :key="workflow.id" class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <div v-for="workflow in activeWorkflows" :key="workflow.id" class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
             <div class="flex items-center">
-              <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-3">
+              <div class="flex items-center justify-center w-8 h-8 mr-3 bg-blue-100 rounded-lg dark:bg-blue-900">
                 <component :is="workflow.icon" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
@@ -139,7 +139,7 @@
       </div>
 
       <!-- Recent Activity -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Activity</h3>
           <NuxtLink to="/automation/reports" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700">
@@ -148,7 +148,7 @@
         </div>
         <div class="space-y-3">
           <div v-for="activity in recentActivity" :key="activity.id" class="flex items-start space-x-3">
-            <div class="w-2 h-2 rounded-full mt-2" :class="activity.statusColor"></div>
+            <div class="w-2 h-2 mt-2 rounded-full" :class="activity.statusColor"></div>
             <div class="flex-1 min-w-0">
               <p class="text-sm text-gray-900 dark:text-white">{{ activity.message }}</p>
               <p class="text-xs text-gray-500 dark:text-gray-400">{{ activity.time }}</p>
@@ -159,12 +159,12 @@
     </div>
 
     <!-- Automation Templates -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Automation Templates</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div v-for="template in automationTemplates" :key="template.id" class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+      <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Automation Templates</h3>
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div v-for="template in automationTemplates" :key="template.id" class="p-4 transition-shadow border border-gray-200 rounded-lg cursor-pointer dark:border-gray-600 hover:shadow-md">
           <div class="flex items-center mb-3">
-            <div class="w-10 h-10 rounded-lg flex items-center justify-center mr-3" :class="template.iconBg">
+            <div class="flex items-center justify-center w-10 h-10 mr-3 rounded-lg" :class="template.iconBg">
               <component :is="template.icon" class="w-5 h-5" :class="template.iconColor" />
             </div>
             <div>
@@ -172,10 +172,10 @@
               <p class="text-xs text-gray-500 dark:text-gray-400">{{ template.category }}</p>
             </div>
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">{{ template.description }}</p>
+          <p class="mb-3 text-sm text-gray-600 dark:text-gray-400">{{ template.description }}</p>
           <div class="flex items-center justify-between">
             <span class="text-xs text-gray-500 dark:text-gray-400">{{ template.uses }} uses</span>
-            <button class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 font-medium">
+            <button class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700">
               Use Template
             </button>
           </div>
