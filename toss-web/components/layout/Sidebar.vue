@@ -1,9 +1,9 @@
 <template>
-  <aside class="w-64 flex-shrink-0 bg-slate-900 border-r border-slate-800 flex flex-col">
+  <aside class="flex flex-col flex-shrink-0 w-64 border-r bg-slate-900 border-slate-800">
     <!-- Logo Section -->
-    <div class="h-16 flex items-center justify-center px-4 border-b border-slate-800">
-      <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-        <span class="text-white font-bold text-sm">T</span>
+    <div class="flex items-center justify-center h-16 px-4 border-b border-slate-800">
+      <div class="flex items-center justify-center w-8 h-8 mr-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600">
+        <span class="text-sm font-bold text-white">T</span>
       </div>
       <h1 class="text-xl font-bold text-white">TOSS ERP</h1>
     </div>
@@ -15,7 +15,7 @@
         class="nav-link"
         :class="{ 'nav-link-active': route.path === '/' }"
       >
-        <HomeIcon class="h-5 w-5 mr-3" />
+        <HomeIcon class="w-5 h-5 mr-3" />
         Dashboard
       </NuxtLink>
       
@@ -23,22 +23,22 @@
       <div class="space-y-1">
         <button 
           @click="toggleCrmDropdown"
-          class="nav-link w-full justify-between"
+          class="justify-between w-full nav-link"
           :class="{ 'nav-link-active': route.path.startsWith('/crm') }"
         >
           <div class="flex items-center">
-            <UsersIcon class="h-5 w-5 mr-3" />
+            <UsersIcon class="w-5 h-5 mr-3" />
             CRM
           </div>
           <ChevronDownIcon 
-            class="h-4 w-4 transition-transform duration-200"
+            class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': crmDropdownOpen }"
           />
         </button>
         
         <div 
           v-show="crmDropdownOpen"
-          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/crm" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/crm' }">
             Dashboard
@@ -68,27 +68,28 @@
       <div class="space-y-1">
         <button 
           @click="toggleSalesDropdown"
-          class="nav-link w-full justify-between"
+          class="justify-between w-full nav-link"
           :class="{ 'nav-link-active': route.path.startsWith('/sales') || route.path.startsWith('/selling') }"
         >
           <div class="flex items-center">
-            <ShoppingCartIcon class="h-5 w-5 mr-3" />
+            <ShoppingCartIcon class="w-5 h-5 mr-3" />
             Sales & Selling
+            <span class="ml-2 px-2 py-0.5 text-xs bg-blue-500 text-white rounded-full">AI</span>
           </div>
           <ChevronDownIcon 
-            class="h-4 w-4 transition-transform duration-200"
+            class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': salesDropdownOpen }"
           />
         </button>
         
         <div 
           v-show="salesDropdownOpen"
-          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/sales" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales' }">
             Sales Dashboard
           </NuxtLink>
-          <NuxtLink to="/sales/quotes" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/quotes' }">
+          <NuxtLink to="/sales/quotations" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/quotationss' }">
             Quotations
           </NuxtLink>
           <NuxtLink to="/sales/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/orders' }">
@@ -103,6 +104,12 @@
           <NuxtLink to="/sales/analytics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/analytics' }">
             Sales Analytics
           </NuxtLink>
+          <NuxtLink to="/sales/ai-assistant" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/ai-assistant' }">
+            <span class="flex items-center gap-2">
+              AI Assistant
+              <span class="px-1.5 py-0.5 text-xs bg-blue-500 text-white rounded-full">New</span>
+            </span>
+          </NuxtLink>
         </div>
       </div>
 
@@ -110,22 +117,22 @@
       <div class="space-y-1">
         <button 
           @click="togglePurchasingDropdown"
-          class="nav-link w-full justify-between"
+          class="justify-between w-full nav-link"
           :class="{ 'nav-link-active': route.path.startsWith('/purchasing') || route.path.startsWith('/buying') }"
         >
           <div class="flex items-center">
-            <ShoppingBagIcon class="h-5 w-5 mr-3" />
+            <ShoppingBagIcon class="w-5 h-5 mr-3" />
             Purchasing
           </div>
           <ChevronDownIcon 
-            class="h-4 w-4 transition-transform duration-200"
+            class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': purchasingDropdownOpen }"
           />
         </button>
         
         <div 
           v-show="purchasingDropdownOpen"
-          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/purchasing" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing' }">
             Purchase Dashboard
@@ -152,22 +159,22 @@
       <div class="space-y-1">
         <button 
           @click="toggleStockDropdown"
-          class="nav-link w-full justify-between"
+          class="justify-between w-full nav-link"
           :class="{ 'nav-link-active': route.path.startsWith('/stock') }"
         >
           <div class="flex items-center">
-            <ArchiveBoxIcon class="h-5 w-5 mr-3" />
+            <ArchiveBoxIcon class="w-5 h-5 mr-3" />
             Stock & Inventory
           </div>
           <ChevronDownIcon 
-            class="h-4 w-4 transition-transform duration-200"
+            class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': stockDropdownOpen }"
           />
         </button>
         
         <div 
           v-show="stockDropdownOpen"
-          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/stock" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock' }">
             Stock Dashboard
@@ -194,22 +201,22 @@
       <div class="space-y-1">
         <button 
           @click="toggleAccountingDropdown"
-          class="nav-link w-full justify-between"
+          class="justify-between w-full nav-link"
           :class="{ 'nav-link-active': route.path.startsWith('/accounting') || route.path.startsWith('/accounts') }"
         >
           <div class="flex items-center">
-            <CurrencyDollarIcon class="h-5 w-5 mr-3" />
+            <CurrencyDollarIcon class="w-5 h-5 mr-3" />
             Accounting
           </div>
           <ChevronDownIcon 
-            class="h-4 w-4 transition-transform duration-200"
+            class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': accountingDropdownOpen }"
           />
         </button>
         
         <div 
           v-show="accountingDropdownOpen"
-          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/accounting" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting' }">
             Accounting Dashboard
@@ -236,22 +243,22 @@
       <div class="space-y-1">
         <button 
           @click="toggleHrDropdown"
-          class="nav-link w-full justify-between"
+          class="justify-between w-full nav-link"
           :class="{ 'nav-link-active': route.path.startsWith('/hr') }"
         >
           <div class="flex items-center">
-            <UserGroupIcon class="h-5 w-5 mr-3" />
+            <UserGroupIcon class="w-5 h-5 mr-3" />
             HR & Payroll
           </div>
           <ChevronDownIcon 
-            class="h-4 w-4 transition-transform duration-200"
+            class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': hrDropdownOpen }"
           />
         </button>
         
         <div 
           v-show="hrDropdownOpen"
-          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/hr" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr' }">
             HR Dashboard
@@ -278,22 +285,22 @@
       <div class="space-y-1">
         <button 
           @click="toggleProjectsDropdown"
-          class="nav-link w-full justify-between"
+          class="justify-between w-full nav-link"
           :class="{ 'nav-link-active': route.path.startsWith('/projects') }"
         >
           <div class="flex items-center">
-            <BriefcaseIcon class="h-5 w-5 mr-3" />
+            <BriefcaseIcon class="w-5 h-5 mr-3" />
             Projects
           </div>
           <ChevronDownIcon 
-            class="h-4 w-4 transition-transform duration-200"
+            class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': projectsDropdownOpen }"
           />
         </button>
         
         <div 
           v-show="projectsDropdownOpen"
-          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/projects" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/projects' }">
             Projects Dashboard
@@ -317,23 +324,23 @@
       <div class="space-y-1">
         <button 
           @click="toggleAutomationDropdown"
-          class="nav-link w-full justify-between"
+          class="justify-between w-full nav-link"
           :class="{ 'nav-link-active': route.path.startsWith('/automation') }"
         >
           <div class="flex items-center">
-            <CogIcon class="h-5 w-5 mr-3" />
+            <CogIcon class="w-5 h-5 mr-3" />
             Automation
             <span class="ml-2 px-2 py-0.5 text-xs bg-blue-500 text-white rounded-full">AI</span>
           </div>
           <ChevronDownIcon 
-            class="h-4 w-4 transition-transform duration-200"
+            class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': automationDropdownOpen }"
           />
         </button>
         
         <div 
           v-show="automationDropdownOpen"
-          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/automation" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/automation' }">
             Automation Hub
@@ -357,23 +364,23 @@
       <div class="space-y-1">
         <button 
           @click="toggleCollaborationDropdown"
-          class="nav-link w-full justify-between"
+          class="justify-between w-full nav-link"
           :class="{ 'nav-link-active': route.path.startsWith('/collaboration') }"
         >
           <div class="flex items-center">
-            <ChatBubbleLeftRightIcon class="h-5 w-5 mr-3" />
+            <ChatBubbleLeftRightIcon class="w-5 h-5 mr-3" />
             Collaboration
             <span class="ml-2 px-2 py-0.5 text-xs bg-green-500 text-white rounded-full">Team</span>
           </div>
           <ChevronDownIcon 
-            class="h-4 w-4 transition-transform duration-200"
+            class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': collaborationDropdownOpen }"
           />
         </button>
         
         <div 
           v-show="collaborationDropdownOpen"
-          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/collaboration" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/collaboration' }">
             Collaboration Hub
@@ -400,22 +407,22 @@
       <div class="space-y-1">
         <button 
           @click="toggleManufacturingDropdown"
-          class="nav-link w-full justify-between"
+          class="justify-between w-full nav-link"
           :class="{ 'nav-link-active': route.path.startsWith('/manufacturing') }"
         >
           <div class="flex items-center">
-            <WrenchScrewdriverIcon class="h-5 w-5 mr-3" />
+            <WrenchScrewdriverIcon class="w-5 h-5 mr-3" />
             Manufacturing
           </div>
           <ChevronDownIcon 
-            class="h-4 w-4 transition-transform duration-200"
+            class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': manufacturingDropdownOpen }"
           />
         </button>
         
         <div 
           v-show="manufacturingDropdownOpen"
-          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/manufacturing" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/manufacturing' }">
             Manufacturing Dashboard
@@ -439,22 +446,22 @@
       <div class="space-y-1">
         <button 
           @click="toggleReportsDropdown"
-          class="nav-link w-full justify-between"
+          class="justify-between w-full nav-link"
           :class="{ 'nav-link-active': route.path.startsWith('/reports') }"
         >
           <div class="flex items-center">
-            <ChartBarIcon class="h-5 w-5 mr-3" />
+            <ChartBarIcon class="w-5 h-5 mr-3" />
             Reports & Analytics
           </div>
           <ChevronDownIcon 
-            class="h-4 w-4 transition-transform duration-200"
+            class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': reportsDropdownOpen }"
           />
         </button>
         
         <div 
           v-show="reportsDropdownOpen"
-          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/reports" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/reports' }">
             Reports Dashboard
@@ -478,22 +485,22 @@
       <div class="space-y-1">
         <button 
           @click="toggleSettingsDropdown"
-          class="nav-link w-full justify-between"
+          class="justify-between w-full nav-link"
           :class="{ 'nav-link-active': route.path.startsWith('/settings') || route.path.startsWith('/admin') }"
         >
           <div class="flex items-center">
-            <Cog6ToothIcon class="h-5 w-5 mr-3" />
+            <Cog6ToothIcon class="w-5 h-5 mr-3" />
             Settings
           </div>
           <ChevronDownIcon 
-            class="h-4 w-4 transition-transform duration-200"
+            class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': settingsDropdownOpen }"
           />
         </button>
         
         <div 
           v-show="settingsDropdownOpen"
-          class="ml-6 space-y-1 border-l border-slate-700 pl-3"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/settings" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/settings' }">
             General Settings
@@ -516,7 +523,7 @@
     
     <!-- Footer -->
     <div class="p-4 border-t border-slate-800">
-      <div class="text-xs text-slate-400 text-center">
+      <div class="text-xs text-center text-slate-400">
         TOSS ERP v1.0.0
       </div>
     </div>

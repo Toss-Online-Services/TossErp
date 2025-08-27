@@ -486,14 +486,55 @@ const newLead = ref({
 
 // Mock analytics data
 const analytics = ref({
-  totalCustomers: 342,
-  activeLeads: 47,
-  conversionRate: 23.5,
-  pipelineValue: 125000
+  totalCustomers: 89,
+  activeLeads: 23,
+  conversionRate: 68.2,
+  pipelineValue: 347850
 })
 
-// Mock recent activities
-const recentActivities = ref([])
+// Mock recent activities for Thabo's Spaza Shop
+const recentActivities = ref([
+  {
+    id: 1,
+    type: 'customer',
+    title: 'New customer registered',
+    description: 'Nomsa Community Kitchen joined as regular customer',
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    user: 'System'
+  },
+  {
+    id: 2,
+    type: 'opportunity',
+    title: 'Large order opportunity',
+    description: 'Mandla Construction requesting bulk supplies quote',
+    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
+    user: 'Thabo'
+  },
+  {
+    id: 3,
+    type: 'call',
+    title: 'Follow-up call completed',
+    description: 'Spoke with Grace Catering about weekly delivery schedule',
+    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
+    user: 'Thabo'
+  },
+  {
+    id: 4,
+    type: 'lead',
+    title: 'New lead from referral',
+    description: 'Beauty salon referred by Lerato Hair Studio',
+    timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000),
+    user: 'System'
+  },
+  {
+    id: 5,
+    type: 'email',
+    title: 'Payment reminder sent',
+    description: 'Outstanding invoice reminder to Sipho Auto Repair',
+    timestamp: new Date(Date.now() - 10 * 60 * 60 * 1000),
+    user: 'System'
+  }
+])
 
 // Computed properties
 const formatCurrency = (value) => {
