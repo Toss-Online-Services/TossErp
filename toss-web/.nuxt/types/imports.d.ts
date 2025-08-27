@@ -343,6 +343,8 @@ declare global {
   const useSpeechSynthesis: typeof import('@vueuse/core')['useSpeechSynthesis']
   const useState: typeof import('../../node_modules/nuxt/dist/app/composables/state')['useState']
   const useStepper: typeof import('@vueuse/core')['useStepper']
+  const useStock: typeof import('../../composables/useStock')['useStock']
+  const useStockState: typeof import('../../composables/useStock')['useStockState']
   const useStorageAsync: typeof import('@vueuse/core')['useStorageAsync']
   const useStyleTag: typeof import('@vueuse/core')['useStyleTag']
   const useSupported: typeof import('@vueuse/core')['useSupported']
@@ -417,6 +419,9 @@ declare global {
   // @ts-ignore
   export type { EnterpriseType } from '../../composables/useEnterpriseData'
   import('../../composables/useEnterpriseData')
+  // @ts-ignore
+  export type { ItemDto, CreateItemRequest, UpdateItemRequest, WarehouseDto, StockMovementDto, StockLevelDto, StockOverviewDto, CategorySummaryDto, StockEntryRequest, PaginationParams } from '../../composables/useStock'
+  import('../../composables/useStock')
   // @ts-ignore
   export type { Customer, Subscription, CustomerFilters } from '../../stores/customers'
   import('../../stores/customers')
@@ -773,6 +778,8 @@ declare module 'vue' {
     readonly useSpeechSynthesis: UnwrapRef<typeof import('@vueuse/core')['useSpeechSynthesis']>
     readonly useState: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/state')['useState']>
     readonly useStepper: UnwrapRef<typeof import('@vueuse/core')['useStepper']>
+    readonly useStock: UnwrapRef<typeof import('../../composables/useStock')['useStock']>
+    readonly useStockState: UnwrapRef<typeof import('../../composables/useStock')['useStockState']>
     readonly useStorageAsync: UnwrapRef<typeof import('@vueuse/core')['useStorageAsync']>
     readonly useStyleTag: UnwrapRef<typeof import('@vueuse/core')['useStyleTag']>
     readonly useSupported: UnwrapRef<typeof import('@vueuse/core')['useSupported']>
