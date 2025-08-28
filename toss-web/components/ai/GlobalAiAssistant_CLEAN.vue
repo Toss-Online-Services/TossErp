@@ -5,10 +5,10 @@
       <button
         v-if="!isOpen"
         @click="toggleAssistant"
-        class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
+        class="fixed z-50 flex items-center justify-center text-white transition-all duration-300 rounded-full shadow-lg bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:shadow-xl group"
       >
-        <SparklesIcon class="w-6 h-6 group-hover:scale-110 transition-transform" />
-        <div v-if="unreadCount > 0" class="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+        <SparklesIcon class="w-6 h-6 transition-transform group-hover:scale-110" />
+        <div v-if="unreadCount > 0" class="absolute flex items-center justify-center w-4 h-4 bg-red-500 rounded-full -top-2 -right-2">
           <span class="text-xs text-white">{{ unreadCount }}</span>
         </div>
       </button>
@@ -24,7 +24,7 @@
         <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-500 to-purple-600">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+              <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white/20">
                 <SparklesIcon class="w-4 h-4 text-white" />
               </div>
               <div>
@@ -35,13 +35,13 @@
             <div class="flex items-center gap-2">
               <button
                 @click="minimizeAssistant"
-                class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+                class="flex items-center justify-center w-8 h-8 transition-colors rounded-full bg-white/20 hover:bg-white/30"
               >
                 <MinusIcon class="w-4 h-4 text-white" />
               </button>
               <button
                 @click="toggleAssistant"
-                class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+                class="flex items-center justify-center w-8 h-8 transition-colors rounded-full bg-white/20 hover:bg-white/30"
               >
                 <XMarkIcon class="w-4 h-4 text-white" />
               </button>
@@ -50,11 +50,11 @@
         </div>
 
         <!-- Context Indicator -->
-        <div class="px-4 py-2 bg-slate-50 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600">
+        <div class="px-4 py-2 border-b bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600">
           <div class="flex items-center gap-2 text-xs">
             <component :is="getModuleIcon()" class="w-4 h-4 text-slate-600 dark:text-slate-400" />
             <span class="text-slate-600 dark:text-slate-400">Currently in: {{ currentModule }}</span>
-            <div class="ml-auto flex gap-1">
+            <div class="flex gap-1 ml-auto">
               <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span class="text-green-600 dark:text-green-400">AI Online</span>
             </div>
@@ -62,21 +62,21 @@
         </div>
 
         <!-- Chat Messages -->
-        <div class="flex-1 p-4 overflow-y-auto space-y-3" ref="chatContainer">
+        <div class="flex-1 p-4 space-y-3 overflow-y-auto" ref="chatContainer">
           <!-- Messages -->
           <div v-for="message in messages" :key="message.id" class="space-y-3">
             <!-- Assistant Message -->
             <div v-if="message.type === 'assistant'" class="flex items-start gap-3">
-              <div class="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+              <div class="flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
                 <SparklesIcon class="w-3 h-3 text-white" />
               </div>
               <div class="flex-1">
-                <div class="bg-slate-50 dark:bg-slate-700 p-3 rounded-lg rounded-tl-none text-sm">
+                <div class="p-3 text-sm rounded-lg rounded-tl-none bg-slate-50 dark:bg-slate-700">
                   <p class="text-slate-900 dark:text-white">{{ message.content }}</p>
                   
                   <!-- Data metrics if available -->
-                  <div v-if="message.data?.metrics" class="mt-3 grid grid-cols-2 gap-2">
-                    <div v-for="metric in message.data.metrics" :key="metric.label" class="bg-white dark:bg-slate-600 p-2 rounded text-center">
+                  <div v-if="message.data?.metrics" class="grid grid-cols-2 gap-2 mt-3">
+                    <div v-for="metric in message.data.metrics" :key="metric.label" class="p-2 text-center bg-white rounded dark:bg-slate-600">
                       <div class="text-xs text-slate-600 dark:text-slate-400">{{ metric.label }}</div>
                       <div class="font-semibold text-slate-900 dark:text-white">{{ metric.value }}</div>
                     </div>
@@ -88,26 +88,26 @@
                       v-for="action in message.data.actions"
                       :key="action.title"
                       @click="handleAction(action)"
-                      class="w-full text-left p-2 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded text-xs transition-colors flex items-center gap-2"
+                      class="flex items-center w-full gap-2 p-2 text-xs text-left transition-colors rounded bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40"
                     >
                       <ArrowRightIcon class="w-3 h-3 text-blue-600 dark:text-blue-400" />
                       <span class="text-blue-900 dark:text-blue-100">{{ action.title }}</span>
                     </button>
                   </div>
                 </div>
-                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
                   {{ formatTime(message.timestamp) }}
                 </div>
               </div>
             </div>
 
             <!-- User Message -->
-            <div v-else class="flex items-start gap-3 justify-end">
+            <div v-else class="flex items-start justify-end gap-3">
               <div class="flex-1 text-right">
                 <div class="inline-block bg-blue-600 text-white p-3 rounded-lg rounded-tr-none text-sm max-w-[80%]">
                   {{ message.content }}
                 </div>
-                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
                   {{ formatTime(message.timestamp) }}
                 </div>
               </div>
@@ -116,14 +116,14 @@
 
           <!-- Typing indicator -->
           <div v-if="isTyping" class="flex items-start gap-3">
-            <div class="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+            <div class="flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
               <SparklesIcon class="w-3 h-3 text-white" />
             </div>
-            <div class="bg-slate-50 dark:bg-slate-700 p-3 rounded-lg rounded-tl-none">
+            <div class="p-3 rounded-lg rounded-tl-none bg-slate-50 dark:bg-slate-700">
               <div class="flex gap-1">
-                <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
-                <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
-                <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                <div class="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 0ms"></div>
+                <div class="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 150ms"></div>
+                <div class="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style="animation-delay: 300ms"></div>
               </div>
             </div>
           </div>
@@ -136,13 +136,13 @@
               v-model="newMessage"
               type="text"
               placeholder="Ask me anything about your business..."
-              class="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white text-sm"
+              class="flex-1 px-3 py-2 text-sm border rounded-lg border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white"
               :disabled="isTyping"
             >
             <button
               type="submit"
               :disabled="!newMessage.trim() || isTyping"
-              class="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 dark:disabled:bg-slate-600 text-white rounded-lg transition-colors flex items-center justify-center"
+              class="flex items-center justify-center px-3 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-slate-300 dark:disabled:bg-slate-600"
             >
               <PaperAirplaneIcon class="w-4 h-4" />
             </button>
@@ -156,7 +156,7 @@
       <div
         v-if="isMinimized"
         @click="expandAssistant"
-        class="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full shadow-lg cursor-pointer hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+        class="fixed z-50 flex items-center gap-2 px-4 py-2 text-white transition-all duration-300 rounded-full shadow-lg cursor-pointer bottom-6 right-6 bg-gradient-to-r from-blue-500 to-purple-600 hover:shadow-xl"
       >
         <ChatBubbleLeftRightIcon class="w-4 h-4" />
         <span class="text-sm">AI Assistant</span>
