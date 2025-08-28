@@ -21,6 +21,11 @@ public class JournalEntryLine : Entity
     public string? Reference { get; private set; }
     public new DateTime CreatedAt { get; private set; }
 
+    // Application layer compatibility properties
+    public string? AccountCode { get; private set; }
+    public Money? DebitAmount => Amount.Type == DebitCredit.Debit ? Amount.ToMoney() : null;
+    public Money? CreditAmount => Amount.Type == DebitCredit.Credit ? Amount.ToMoney() : null;
+
     private JournalEntryLine()
     {
         AccountName = null!;
@@ -35,7 +40,8 @@ public class JournalEntryLine : Entity
         SignedMoney amount,
         string? description = null,
         Guid? costCenterId = null,
-        string? reference = null)
+        string? reference = null,
+        string? accountCode = null)
     {
         Id = id;
         JournalEntryId = journalEntryId;
@@ -45,6 +51,7 @@ public class JournalEntryLine : Entity
         Description = description?.Trim();
         CostCenterId = costCenterId;
         Reference = reference?.Trim();
+        AccountCode = accountCode?.Trim();
         CreatedAt = DateTime.UtcNow;
     }
 

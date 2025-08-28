@@ -1,3 +1,9 @@
+using System.Linq.Expressions;
+using TossErp.Accounts.Domain.Entities;
+using TossErp.Accounts.Domain.Enums;
+using AggregateInvoice = TossErp.Accounts.Domain.Aggregates.Invoice;
+using TossErp.Accounts.Domain.Aggregates;
+
 namespace TossErp.Accounts.Application.Common.Interfaces;
 
 /// <summary>
@@ -8,17 +14,20 @@ public interface ICustomerRepository
     Task<Customer?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Customer?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
     Task<Customer?> GetByCustomerNumberAsync(string customerNumber, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Customer>> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Customer>> GetByEmailDomainAsync(string emailDomain, CancellationToken cancellationToken = default);
     Task<IEnumerable<Customer>> GetActiveCustomersAsync(CancellationToken cancellationToken = default);
     Task<bool> CustomerNumberExistsAsync(string customerNumber, Guid? excludeId = null, CancellationToken cancellationToken = default);
     Task<Customer> AddAsync(Customer customer, CancellationToken cancellationToken = default);
     Customer Update(Customer customer);
+    Task<Customer> UpdateAsync(Customer customer, CancellationToken cancellationToken = default);
     void Delete(Customer customer);
     Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<Customer>> FindAsync(Expression<Func<Customer, bool>> predicate, CancellationToken cancellationToken = default);
     Task<Customer?> FirstOrDefaultAsync(Expression<Func<Customer, bool>> predicate, CancellationToken cancellationToken = default);
     Task<bool> ExistsAsync(Expression<Func<Customer, bool>> predicate, CancellationToken cancellationToken = default);
     Task<int> CountAsync(Expression<Func<Customer, bool>>? predicate = null, CancellationToken cancellationToken = default);
+    Task<(IEnumerable<Customer> Customers, int TotalCount)> GetPagedAsync(CustomerFilter filter, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
+    Task<DTOs.CustomerSummaryDto> GetSummaryAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -46,20 +55,22 @@ public interface IVendorRepository
 /// </summary>
 public interface IInvoiceRepository
 {
-    Task<Invoice?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<Invoice?> GetByInvoiceNumberAsync(string invoiceNumber, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Invoice>> GetByCustomerIdAsync(Guid customerId, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Invoice>> GetOverdueInvoicesAsync(CancellationToken cancellationToken = default);
+    Task<AggregateInvoice?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<AggregateInvoice?> GetByInvoiceNumberAsync(string invoiceNumber, CancellationToken cancellationToken = default);
+    Task<IEnumerable<AggregateInvoice>> GetByCustomerIdAsync(Guid customerId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<AggregateInvoice>> GetOverdueInvoicesAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<AggregateInvoice>> GetOutstandingInvoicesAsync(CancellationToken cancellationToken = default);
     Task<bool> InvoiceNumberExistsAsync(string invoiceNumber, Guid? excludeId = null, CancellationToken cancellationToken = default);
     Task<decimal> GetTotalOutstandingAsync(CancellationToken cancellationToken = default);
-    Task<Invoice> AddAsync(Invoice invoice, CancellationToken cancellationToken = default);
-    Invoice Update(Invoice invoice);
-    void Delete(Invoice invoice);
-    Task<IEnumerable<Invoice>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<IEnumerable<Invoice>> FindAsync(Expression<Func<Invoice, bool>> predicate, CancellationToken cancellationToken = default);
-    Task<Invoice?> FirstOrDefaultAsync(Expression<Func<Invoice, bool>> predicate, CancellationToken cancellationToken = default);
-    Task<bool> ExistsAsync(Expression<Func<Invoice, bool>> predicate, CancellationToken cancellationToken = default);
-    Task<int> CountAsync(Expression<Func<Invoice, bool>>? predicate = null, CancellationToken cancellationToken = default);
+    Task<AggregateInvoice> AddAsync(AggregateInvoice invoice, CancellationToken cancellationToken = default);
+    Task<AggregateInvoice> UpdateAsync(AggregateInvoice invoice, CancellationToken cancellationToken = default);
+    AggregateInvoice Update(AggregateInvoice invoice);
+    void Delete(AggregateInvoice invoice);
+    Task<IEnumerable<AggregateInvoice>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<AggregateInvoice>> FindAsync(Expression<Func<AggregateInvoice, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<AggregateInvoice?> FirstOrDefaultAsync(Expression<Func<AggregateInvoice, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(Expression<Func<AggregateInvoice, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<int> CountAsync(Expression<Func<AggregateInvoice, bool>>? predicate = null, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -92,8 +103,10 @@ public interface IPaymentRepository
     Task<Payment?> GetByPaymentNumberAsync(string paymentNumber, CancellationToken cancellationToken = default);
     Task<IEnumerable<Payment>> GetByDateRangeAsync(DateTime fromDate, DateTime toDate, CancellationToken cancellationToken = default);
     Task<IEnumerable<Payment>> GetByPaymentMethodAsync(PaymentMethod paymentMethod, CancellationToken cancellationToken = default);
+    Task<Payment?> GetLastPaymentByCustomerAsync(Guid customerId, CancellationToken cancellationToken = default);
     Task<bool> PaymentNumberExistsAsync(string paymentNumber, Guid? excludeId = null, CancellationToken cancellationToken = default);
     Task<Payment> AddAsync(Payment payment, CancellationToken cancellationToken = default);
+    Task<Payment> UpdateAsync(Payment payment, CancellationToken cancellationToken = default);
     Payment Update(Payment payment);
     void Delete(Payment payment);
     Task<IEnumerable<Payment>> GetAllAsync(CancellationToken cancellationToken = default);
@@ -108,20 +121,29 @@ public interface IPaymentRepository
 /// </summary>
 public interface IChartOfAccountsRepository
 {
-    Task<ChartOfAccount?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<ChartOfAccount?> GetByCodeAsync(string accountCode, CancellationToken cancellationToken = default);
-    Task<IEnumerable<ChartOfAccount>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken = default);
-    Task<IEnumerable<ChartOfAccount>> GetByAccountTypeAsync(AccountType accountType, CancellationToken cancellationToken = default);
-    Task<IEnumerable<ChartOfAccount>> GetActiveAccountsAsync(CancellationToken cancellationToken = default);
+    Task<ChartOfAccounts?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<ChartOfAccounts?> GetByCodeAsync(string accountCode, CancellationToken cancellationToken = default);
+    Task<ChartOfAccounts?> GetByAccountCodeAsync(string accountCode, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ChartOfAccounts>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ChartOfAccounts>> GetByAccountTypeAsync(AccountType accountType, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ChartOfAccounts>> GetActiveAccountsAsync(CancellationToken cancellationToken = default);
     Task<bool> AccountCodeExistsAsync(string accountCode, Guid? excludeId = null, CancellationToken cancellationToken = default);
-    Task<ChartOfAccount> AddAsync(ChartOfAccount account, CancellationToken cancellationToken = default);
-    ChartOfAccount Update(ChartOfAccount account);
-    void Delete(ChartOfAccount account);
-    Task<IEnumerable<ChartOfAccount>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<IEnumerable<ChartOfAccount>> FindAsync(Expression<Func<ChartOfAccount, bool>> predicate, CancellationToken cancellationToken = default);
-    Task<ChartOfAccount?> FirstOrDefaultAsync(Expression<Func<ChartOfAccount, bool>> predicate, CancellationToken cancellationToken = default);
-    Task<bool> ExistsAsync(Expression<Func<ChartOfAccount, bool>> predicate, CancellationToken cancellationToken = default);
-    Task<int> CountAsync(Expression<Func<ChartOfAccount, bool>>? predicate = null, CancellationToken cancellationToken = default);
+    Task<(IEnumerable<ChartOfAccounts> Accounts, int TotalCount)> GetPagedAsync(
+        AccountType? accountType = null,
+        Guid? parentAccountId = null,
+        bool? isActive = null,
+        string? searchTerm = null,
+        int pageNumber = 1,
+        int pageSize = 50,
+        CancellationToken cancellationToken = default);
+    Task<ChartOfAccounts> AddAsync(ChartOfAccounts account, CancellationToken cancellationToken = default);
+    ChartOfAccounts Update(ChartOfAccounts account);
+    void Delete(ChartOfAccounts account);
+    Task<IEnumerable<ChartOfAccounts>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<ChartOfAccounts>> FindAsync(Expression<Func<ChartOfAccounts, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<ChartOfAccounts?> FirstOrDefaultAsync(Expression<Func<ChartOfAccounts, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(Expression<Func<ChartOfAccounts, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<int> CountAsync(Expression<Func<ChartOfAccounts, bool>>? predicate = null, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -173,6 +195,49 @@ public interface ICashbookRepository
     Task<Cashbook?> FirstOrDefaultAsync(Expression<Func<Cashbook, bool>> predicate, CancellationToken cancellationToken = default);
     Task<bool> ExistsAsync(Expression<Func<Cashbook, bool>> predicate, CancellationToken cancellationToken = default);
     Task<int> CountAsync(Expression<Func<Cashbook, bool>>? predicate = null, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Repository interface for JournalEntry operations
+/// </summary>
+public interface IJournalEntryRepository
+{
+    Task<JournalEntry?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<JournalEntry?> GetByNumberAsync(string entryNumber, CancellationToken cancellationToken = default);
+    Task<JournalEntry?> GetByReferenceAsync(string reference, CancellationToken cancellationToken = default);
+    Task<IEnumerable<JournalEntry>> GetByDateRangeAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
+    Task<IEnumerable<JournalEntry>> GetByStatusAsync(JournalEntryStatus status, CancellationToken cancellationToken = default);
+    Task<bool> EntryNumberExistsAsync(string entryNumber, Guid? excludeId = null, CancellationToken cancellationToken = default);
+    Task<JournalEntry> AddAsync(JournalEntry journalEntry, CancellationToken cancellationToken = default);
+    JournalEntry Update(JournalEntry journalEntry);
+    Task<JournalEntry> UpdateAsync(JournalEntry journalEntry, CancellationToken cancellationToken = default);
+    void Delete(JournalEntry journalEntry);
+    Task<IEnumerable<JournalEntry>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<JournalEntry>> FindAsync(Expression<Func<JournalEntry, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<JournalEntry?> FirstOrDefaultAsync(Expression<Func<JournalEntry, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(Expression<Func<JournalEntry, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<int> CountAsync(Expression<Func<JournalEntry, bool>>? predicate = null, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Repository interface for Subscription operations
+/// </summary>
+public interface ISubscriptionRepository
+{
+    Task<Subscription?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Subscription?> GetByNameAsync(string subscriptionName, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Subscription>> GetByCustomerIdAsync(Guid customerId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Subscription>> GetByStatusAsync(SubscriptionStatus status, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Subscription>> GetExpiringSubscriptionsAsync(DateOnly beforeDate, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Subscription>> GetActiveSubscriptionsAsync(CancellationToken cancellationToken = default);
+    Task<Subscription> AddAsync(Subscription subscription, CancellationToken cancellationToken = default);
+    Subscription Update(Subscription subscription);
+    void Delete(Subscription subscription);
+    Task<IEnumerable<Subscription>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<Subscription>> FindAsync(Expression<Func<Subscription, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<Subscription?> FirstOrDefaultAsync(Expression<Func<Subscription, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(Expression<Func<Subscription, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<int> CountAsync(Expression<Func<Subscription, bool>>? predicate = null, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -243,6 +308,7 @@ public interface INotificationService
 {
     Task SendInvoiceNotificationAsync(Guid invoiceId, string customerEmail, NotificationType type, CancellationToken cancellationToken = default);
     Task SendPaymentConfirmationAsync(Guid paymentId, string customerEmail, CancellationToken cancellationToken = default);
+    Task SendPaymentNotificationAsync(Guid paymentId, string customerEmail, NotificationType type, CancellationToken cancellationToken = default);
     Task SendSubscriptionNotificationAsync(Guid subscriptionId, string customerEmail, SubscriptionNotificationType type, CancellationToken cancellationToken = default);
     Task SendBulkNotificationAsync(List<string> emails, string subject, string message, CancellationToken cancellationToken = default);
 }
@@ -263,11 +329,11 @@ public interface IFileService
 /// </summary>
 public interface IFinancialReportingService
 {
-    Task<FinancialSummaryDto> GetFinancialSummaryAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
-    Task<TrialBalanceDto> GetTrialBalanceAsync(DateOnly asOfDate, CancellationToken cancellationToken = default);
-    Task<ProfitAndLossDto> GetProfitAndLossAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
-    Task<BalanceSheetDto> GetBalanceSheetAsync(DateOnly asOfDate, CancellationToken cancellationToken = default);
-    Task<CashFlowDto> GetCashFlowAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
+    Task<DTOs.FinancialSummaryDto> GetFinancialSummaryAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
+    Task<DTOs.TrialBalanceDto> GetTrialBalanceAsync(DateOnly asOfDate, CancellationToken cancellationToken = default);
+    Task<DTOs.ProfitAndLossDto> GetProfitAndLossAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
+    Task<DTOs.BalanceSheetDto> GetBalanceSheetAsync(DateOnly asOfDate, CancellationToken cancellationToken = default);
+    Task<DTOs.CashFlowDto> GetCashFlowAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -279,7 +345,9 @@ public enum NotificationType
     InvoiceOverdue,
     PaymentReminder,
     InvoicePaid,
-    InvoiceCancelled
+    InvoiceCancelled,
+    PaymentReceived,
+    PaymentRefunded
 }
 
 /// <summary>
@@ -343,4 +411,16 @@ public class RefundResult
     public string? ProviderResponse { get; set; }
     public string? ErrorMessage { get; set; }
     public Dictionary<string, string> Metadata { get; set; } = new();
+}
+
+/// <summary>
+/// Customer filter for queries
+/// </summary>
+public class CustomerFilter
+{
+    public string? SearchTerm { get; set; }
+    public bool? IsActive { get; set; }
+    public string? Country { get; set; }
+    public decimal? MinCreditLimit { get; set; }
+    public decimal? MaxCreditLimit { get; set; }
 }

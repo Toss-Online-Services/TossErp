@@ -13,13 +13,17 @@ public class CustomerDto
     public string? Phone { get; set; }
     public CustomerStatus Status { get; set; }
     public CustomerType Type { get; set; }
+    public CustomerType CustomerType { get; set; } // Application layer compatibility
     public string? CompanyName { get; set; }
     public string? TaxId { get; set; }
+    public string? TaxNumber { get; set; } // Application layer compatibility
     public string? Website { get; set; }
     public CustomerAddressDto? BillingAddress { get; set; }
     public CustomerAddressDto? ShippingAddress { get; set; }
     public CustomerContactDto? PrimaryContact { get; set; }
     public List<CustomerContactDto> AdditionalContacts { get; set; } = new();
+    public List<CustomerAddressDto> Addresses { get; set; } = new(); // Application layer compatibility
+    public List<CustomerContactDto> Contacts { get; set; } = new(); // Application layer compatibility
     public string? PreferredCurrency { get; set; }
     public string? PreferredLanguage { get; set; }
     public PaymentTerms PaymentTerms { get; set; }
@@ -31,6 +35,10 @@ public class CustomerDto
     public string? CreatedBy { get; set; }
     public DateTime? LastModified { get; set; }
     public string? LastModifiedBy { get; set; }
+    // Application layer compatibility properties for financial reports
+    public int TotalInvoices { get; set; }
+    public decimal TotalOutstanding { get; set; }
+    public DateOnly? LastInvoiceDate { get; set; }
 }
 
 /// <summary>
@@ -50,6 +58,25 @@ public class CustomerSummaryDto
     public DateOnly? LastPaymentDate { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? LastModified { get; set; }
+    // Application layer compatibility properties for reports
+    public int TotalCustomers { get; set; }
+    public int ActiveCustomers { get; set; }
+    public int NewCustomersThisMonth { get; set; }
+    public List<CountryStatisticDto> TopCountries { get; set; } = new();
+    public int TotalInvoices { get; set; }
+    public decimal TotalPaidAmount { get; set; }
+    public decimal TotalOutstandingAmount { get; set; }
+    public decimal OverdueAmount { get; set; }
+    public int ActiveSubscriptions { get; set; }
+}
+
+/// <summary>
+/// Country Statistics DTO for customer reports
+/// </summary>
+public class CountryStatisticDto
+{
+    public string Country { get; set; } = string.Empty;
+    public int CustomerCount { get; set; }
 }
 
 /// <summary>
@@ -63,6 +90,9 @@ public class CustomerAddressDto
     public string? State { get; set; }
     public string PostalCode { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
+    // Application layer compatibility properties
+    public string Type { get; set; } = string.Empty; // Billing, Shipping, etc.
+    public bool IsPrimary { get; set; }
 }
 
 /// <summary>
@@ -74,6 +104,7 @@ public class CustomerContactDto
     public string Email { get; set; } = string.Empty;
     public string? Phone { get; set; }
     public string? Position { get; set; }
+    public string? Title { get; set; } // Application layer compatibility
     public bool IsPrimary { get; set; }
 }
 
@@ -180,6 +211,12 @@ public class PaymentDto
     public string? CreatedBy { get; set; }
     public DateTime? LastModified { get; set; }
     public string? LastModifiedBy { get; set; }
+    // Application layer compatibility properties
+    public string? ExternalTransactionId { get; set; }
+    public decimal? RefundAmount { get; set; }
+    public string? RefundReason { get; set; }
+    public decimal AllocatedAmount { get; set; }
+    public decimal UnallocatedAmount { get; set; }
 }
 
 /// <summary>
@@ -244,6 +281,8 @@ public class SubscriptionDto
     public string? CreatedBy { get; set; }
     public DateTime? LastModified { get; set; }
     public string? LastModifiedBy { get; set; }
+    // Application layer compatibility properties
+    public int DaysUntilRenewal { get; set; }
 }
 
 /// <summary>
@@ -280,6 +319,7 @@ public class ChartOfAccountsDto
     public string? Description { get; set; }
     public Guid? ParentAccountId { get; set; }
     public string? ParentAccountName { get; set; }
+    public string? ParentAccountCode { get; set; }
     public bool IsActive { get; set; }
     public bool AllowTransactions { get; set; }
     public string? TaxCode { get; set; }
@@ -289,6 +329,8 @@ public class ChartOfAccountsDto
     public string? CreatedBy { get; set; }
     public DateTime? LastModified { get; set; }
     public string? LastModifiedBy { get; set; }
+    // Application layer compatibility properties
+    public List<ChartOfAccountsDto> ChildAccounts { get; set; } = new();
 }
 
 /// <summary>
@@ -313,6 +355,13 @@ public class JournalEntryDto
     public string? CreatedBy { get; set; }
     public DateTime? LastModified { get; set; }
     public string? LastModifiedBy { get; set; }
+    // Application layer compatibility properties
+    public string Status { get; set; } = string.Empty;
+    public string? Notes { get; set; }
+    public Guid? ReversalEntryId { get; set; }
+    public string? ReversalReason { get; set; }
+    public string? AccountName { get; set; }
+    public string? AccountCode { get; set; }
 }
 
 /// <summary>
