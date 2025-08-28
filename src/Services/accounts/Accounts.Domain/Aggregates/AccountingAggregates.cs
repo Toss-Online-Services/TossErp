@@ -137,8 +137,8 @@ public class ChartOfAccounts : AggregateRoot
             throw new InvalidOperationException($"Currency mismatch. Expected {DefaultCurrency}, got {amount.Currency}");
 
         var newBalance = amount.Type == DebitCredit.Debit
-            ? CurrentBalance.Add(amount.Amount)
-            : CurrentBalance.Subtract(amount.Amount);
+            ? CurrentBalance.Add(amount.ToMoney())
+            : CurrentBalance.Subtract(amount.ToMoney());
 
         CurrentBalance = newBalance;
 
@@ -315,8 +315,8 @@ public class FinancialTransaction : AggregateRoot
         if (!_journalLines.Any())
             throw new InvalidOperationException("Transaction must have at least one journal line");
 
-        var totalDebits = _journalLines.Where(l => l.IsDebit).Sum(l => l.Amount.Amount.Amount);
-        var totalCredits = _journalLines.Where(l => l.IsCredit).Sum(l => l.Amount.Amount.Amount);
+        var totalDebits = _journalLines.Where(l => l.IsDebit).Sum(l => l.Amount.Amount);
+        var totalCredits = _journalLines.Where(l => l.IsCredit).Sum(l => l.Amount.Amount);
 
         if (Math.Abs(totalDebits - totalCredits) > 0.01m) // Allow for rounding differences
             throw new InvalidOperationException("Transaction is not balanced. Debits must equal credits.");
@@ -324,7 +324,7 @@ public class FinancialTransaction : AggregateRoot
 
     private void RecalculateTotal()
     {
-        var total = _journalLines.Sum(l => Math.Abs(l.Amount.Amount.Amount));
+        var total = _journalLines.Sum(l => Math.Abs(l.Amount.Amount));
         TotalAmount = new Money(total / 2, Currency); // Divide by 2 because we count both debits and credits
     }
 
@@ -332,8 +332,8 @@ public class FinancialTransaction : AggregateRoot
     {
         get
         {
-            var totalDebits = _journalLines.Where(l => l.IsDebit).Sum(l => l.Amount.Amount.Amount);
-            var totalCredits = _journalLines.Where(l => l.IsCredit).Sum(l => l.Amount.Amount.Amount);
+            var totalDebits = _journalLines.Where(l => l.IsDebit).Sum(l => l.Amount.Amount);
+            var totalCredits = _journalLines.Where(l => l.IsCredit).Sum(l => l.Amount.Amount);
             return Math.Abs(totalDebits - totalCredits) <= 0.01m;
         }
     }
@@ -543,7 +543,7 @@ public class Invoice : AggregateRoot
 
     private void RecalculateAmounts()
     {
-        SubTotal = _lines.Aggregate(new Money(0, Currency), (sum, line) => sum.Add(line.LineTotal));
+        SubTotal = _lines.Aggregate(new Money(0, Currency), (sum, line) => sum.Add(line.LineTotal ?? Money.Zero(Currency)));
         TotalTax = _lines.Where(l => l.TaxAmount != null)
                         .Aggregate(new Money(0, Currency), (sum, line) => sum.Add(line.TaxAmount!));
         TotalAmount = SubTotal.Add(TotalTax);

@@ -410,3 +410,146 @@ public class PaymentRepository : AccountsRepository<Payment>, IPaymentRepository
         return await query.AnyAsync(cancellationToken);
     }
 }
+
+/// <summary>
+/// Repository implementation for Company entities
+/// </summary>
+public class CompanyRepository : AccountsRepository<Company>, ICompanyRepository
+{
+    public CompanyRepository(AccountsDbContext context) : base(context)
+    {
+    }
+
+    public async Task<Company?> GetByNameAsync(string tenantId, string name, CancellationToken cancellationToken = default)
+    {
+        return await _context.Companies
+            .FirstOrDefaultAsync(c => c.TenantId == tenantId && c.Name == name, cancellationToken);
+    }
+
+    public async Task<Company?> GetByAbbreviationAsync(string tenantId, string abbreviation, CancellationToken cancellationToken = default)
+    {
+        return await _context.Companies
+            .FirstOrDefaultAsync(c => c.TenantId == tenantId && c.Abbreviation == abbreviation, cancellationToken);
+    }
+
+    public async Task<IEnumerable<Company>> GetChildCompaniesAsync(Guid parentCompanyId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Companies
+            .Where(c => c.ParentCompanyId == parentCompanyId)
+            .OrderBy(c => c.Name)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Company>> GetGroupCompaniesAsync(string tenantId, bool? isActive = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.Companies
+            .Where(c => c.TenantId == tenantId && c.IsGroup);
+
+        if (isActive.HasValue)
+        {
+            query = query.Where(c => c.IsActive == isActive.Value);
+        }
+
+        return await query
+            .OrderBy(c => c.Name)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Company>> GetAllAsync(string tenantId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Companies
+            .Where(c => c.TenantId == tenantId)
+            .OrderBy(c => c.Name)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<(IEnumerable<Company> Companies, int TotalCount)> GetPagedAsync(
+        string tenantId,
+        string? searchTerm = null,
+        bool? isActive = null,
+        bool? isGroup = null,
+        string? currency = null,
+        string? country = null,
+        Guid? parentCompanyId = null,
+        int page = 1,
+        int pageSize = 50,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.Companies
+            .Where(c => c.TenantId == tenantId);
+
+        // Apply filters
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            var searchLower = searchTerm.ToLower();
+            query = query.Where(c => 
+                c.Name.ToLower().Contains(searchLower) ||
+                c.Abbreviation.ToLower().Contains(searchLower) ||
+                (c.Domain != null && c.Domain.ToLower().Contains(searchLower)));
+        }
+
+        if (isActive.HasValue)
+        {
+            query = query.Where(c => c.IsActive == isActive.Value);
+        }
+
+        if (isGroup.HasValue)
+        {
+            query = query.Where(c => c.IsGroup == isGroup.Value);
+        }
+
+        if (!string.IsNullOrEmpty(currency))
+        {
+            query = query.Where(c => c.Currency == currency);
+        }
+
+        if (!string.IsNullOrEmpty(country))
+        {
+            query = query.Where(c => c.Country == country);
+        }
+
+        if (parentCompanyId.HasValue)
+        {
+            query = query.Where(c => c.ParentCompanyId == parentCompanyId.Value);
+        }
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var companies = await query
+            .OrderBy(c => c.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (companies, totalCount);
+    }
+
+    public async Task<Company> UpdateAsync(Company company, CancellationToken cancellationToken = default)
+    {
+        _context.Entry(company).State = EntityState.Modified;
+        await _context.SaveChangesAsync(cancellationToken);
+        return company;
+    }
+
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var company = await GetByIdAsync(id, cancellationToken);
+        if (company == null)
+        {
+            return false;
+        }
+
+        // Soft delete by deactivating
+        company.Deactivate("system");
+        await UpdateAsync(company, cancellationToken);
+        return true;
+    }
+
+    public override async Task<Company?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.Companies
+            .Include(c => c.ParentCompany)
+            .Include(c => c.ChildCompanies)
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+    }
+}
