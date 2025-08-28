@@ -63,6 +63,9 @@ public class AccountsDbContext : DbContext, IUnitOfWork
     // Cashbook Management (from merged accounting service)
     public DbSet<Cashbook> Cashbooks => Set<Cashbook>();
     public DbSet<CashbookEntry> CashbookEntries => Set<CashbookEntry>();
+    
+    // Company Management (from merged accounting service)
+    public DbSet<Company> Companies => Set<Company>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -174,6 +177,10 @@ public class AccountsDbContext : DbContext, IUnitOfWork
             .HasQueryFilter(e => e.TenantId == tenantId);
         
         modelBuilder.Entity<CashbookEntry>()
+            .HasQueryFilter(e => e.TenantId == tenantId);
+        
+        // Company Management
+        modelBuilder.Entity<Company>()
             .HasQueryFilter(e => e.TenantId == tenantId);
     }
 

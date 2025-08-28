@@ -35,6 +35,7 @@ public static class DependencyInjection
         // Repositories
         services.AddScoped(typeof(IAccountsRepository<>), typeof(AccountsRepository<>));
         services.AddScoped<IChartOfAccountsRepository, ChartOfAccountsRepository>();
+        services.AddScoped<ICompanyRepository, CompanyRepository>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IVendorRepository, VendorRepository>();
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();

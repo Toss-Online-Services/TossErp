@@ -88,7 +88,7 @@ jobs:
     needs: code-quality
     strategy:
       matrix:
-        service: [gateway, identity, ai, stock, sales, buying, accounting, crm, notifications, collaboration, hr, logistics, pooledcredit, creditengine, assetsharing]
+        service: [gateway, identity, ai, stock, sales, buying, accounts, crm, notifications, collaboration, hr, logistics, pooledcredit, creditengine, assetsharing]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

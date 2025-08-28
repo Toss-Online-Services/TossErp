@@ -476,3 +476,111 @@ public class PagedResult<T>
     public bool HasPreviousPage => PageNumber > 1;
     public bool HasNextPage => PageNumber < TotalPages;
 }
+
+/// <summary>
+/// Company Data Transfer Object
+/// </summary>
+public class CompanyDto
+{
+    public Guid Id { get; set; }
+    public string TenantId { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Abbreviation { get; set; } = string.Empty;
+    public string? Domain { get; set; }
+    public string Currency { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public string? TaxId { get; set; }
+    public Guid? ParentCompanyId { get; set; }
+    public string? ParentCompanyName { get; set; }
+    public bool IsGroup { get; set; }
+    public bool IsActive { get; set; }
+    public string? Description { get; set; }
+    public string? Logo { get; set; }
+    public DateTime RegistrationDate { get; set; }
+    public int FiscalYearStartMonth { get; set; }
+    public DateTime? DateOfIncorporation { get; set; }
+    public DateTime? DateOfCommencement { get; set; }
+    public string? RegistrationNumber { get; set; }
+    public string? Website { get; set; }
+    public string? Phone { get; set; }
+    public string? Email { get; set; }
+    public string? Address { get; set; }
+    public string? City { get; set; }
+    public string? State { get; set; }
+    public string? PostalCode { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime ModifiedAt { get; set; }
+    public string? CreatedBy { get; set; }
+    public string? ModifiedBy { get; set; }
+    public List<CompanySummaryDto> ChildCompanies { get; set; } = new();
+}
+
+/// <summary>
+/// Company Summary Data Transfer Object for lists and child references
+/// </summary>
+public class CompanySummaryDto
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Abbreviation { get; set; } = string.Empty;
+    public string? Domain { get; set; }
+    public string Currency { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public bool IsGroup { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
+/// <summary>
+/// Create Company Request DTO
+/// </summary>
+public class CreateCompanyDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Abbreviation { get; set; } = string.Empty;
+    public string? Domain { get; set; }
+    public string Currency { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public string? TaxId { get; set; }
+    public Guid? ParentCompanyId { get; set; }
+    public bool IsGroup { get; set; } = false;
+    public string? Description { get; set; }
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
+    public string? Website { get; set; }
+    public string? Address { get; set; }
+    public string? City { get; set; }
+    public string? State { get; set; }
+    public string? PostalCode { get; set; }
+    public DateTime? DateOfIncorporation { get; set; }
+    public DateTime? DateOfCommencement { get; set; }
+    public string? RegistrationNumber { get; set; }
+    public int FiscalYearStartMonth { get; set; } = 1;
+}
+
+/// <summary>
+/// Update Company Request DTO
+/// </summary>
+public class UpdateCompanyDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Abbreviation { get; set; } = string.Empty;
+    public string? Domain { get; set; }
+    public string Currency { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public string? TaxId { get; set; }
+    public Guid? ParentCompanyId { get; set; }
+    public bool IsGroup { get; set; } = false;
+    public string? Description { get; set; }
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
+    public string? Website { get; set; }
+    public string? Address { get; set; }
+    public string? City { get; set; }
+    public string? State { get; set; }
+    public string? PostalCode { get; set; }
+    public DateTime? DateOfIncorporation { get; set; }
+    public DateTime? DateOfCommencement { get; set; }
+    public string? RegistrationNumber { get; set; }
+    public int FiscalYearStartMonth { get; set; } = 1;
+}

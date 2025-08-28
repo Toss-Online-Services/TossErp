@@ -67,7 +67,8 @@ public enum TransactionStatus
     Approved = 3,
     Posted = 4,
     Cancelled = 5,
-    Rejected = 6
+    Rejected = 6,
+    Pending = 7
 }
 
 /// <summary>
@@ -90,7 +91,10 @@ public enum InvoiceStatus
     Partially_Paid = 4,
     Overdue = 5,
     Cancelled = 6,
-    Voided = 7
+    Voided = 7,
+    Pending = 8,
+    Approved = 9,
+    PartiallyPaid = 10  // Alternative naming
 }
 
 /// <summary>
@@ -136,6 +140,22 @@ public enum PaymentStatus
     Refunded = 5,
     PartiallyRefunded = 6,
     Disputed = 7
+}
+
+/// <summary>
+/// Payment type classification
+/// </summary>
+public enum PaymentType
+{
+    CustomerPayment = 1,
+    VendorPayment = 2,
+    EmployeePayment = 3,
+    Refund = 4,
+    Adjustment = 5,
+    Internal = 6,
+    Interest = 7,
+    Fee = 8,
+    Other = 9
 }
 
 /// <summary>
@@ -208,7 +228,10 @@ public enum BudgetStatus
     Exceeded = 3,
     Completed = 4,
     Cancelled = 5,
-    Revised = 6
+    Revised = 6,
+    PendingApproval = 7,
+    Approved = 8,
+    Closed = 9
 }
 
 /// <summary>

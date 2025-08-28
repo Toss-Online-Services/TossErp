@@ -1,6 +1,9 @@
 using TossErp.Accounts.Domain.Enums;
 using TossErp.Accounts.Domain.SeedWork;
 using TossErp.Accounts.Domain.ValueObjects;
+using TossErp.Accounts.Domain.Aggregates;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TossErp.Accounts.Domain.Entities;
 
@@ -16,7 +19,7 @@ public class JournalEntryLine : Entity
     public string? Description { get; private set; }
     public Guid? CostCenterId { get; private set; }
     public string? Reference { get; private set; }
-    public DateTime CreatedAt { get; private set; }
+    public new DateTime CreatedAt { get; private set; }
 
     private JournalEntryLine()
     {
@@ -110,7 +113,7 @@ public class InvoiceLine : Entity
     public string? Description { get; private set; }
     public int Quantity { get; private set; }
     public Money UnitPrice { get; private set; }
-    public Money LineTotal { get; private set; }
+    public Money? LineTotal { get; private set; }
     public TaxRate? TaxRate { get; private set; }
     public Money? TaxAmount { get; private set; }
     public Guid? ProductId { get; private set; }
@@ -171,7 +174,9 @@ public class InvoiceLine : Entity
         TaxAmount = TaxRate?.CalculateTax(LineTotal);
     }
 
-    public Money TotalWithTax => TaxAmount != null ? LineTotal.Add(TaxAmount) : LineTotal;
+    public Money TotalWithTax => LineTotal != null 
+        ? (TaxAmount != null ? LineTotal.Add(TaxAmount) : LineTotal) 
+        : Money.Zero(CurrencyCode.USD);
 }
 
 /// <summary>
@@ -311,8 +316,8 @@ public class RecurringTransactionTemplate : Entity
     public DateTime NextProcessDate { get; private set; }
     public bool IsActive { get; private set; }
     public TransactionType TransactionType { get; private set; }
-    public string CreatedBy { get; private set; }
-    public DateTime CreatedAt { get; private set; }
+    public new string CreatedBy { get; private set; }
+    public new DateTime CreatedAt { get; private set; }
     public int ProcessedCount { get; private set; }
 
     private readonly List<RecurringTransactionLine> _lines;
@@ -463,7 +468,7 @@ public class Cashbook : AggregateRoot
 
     public string Name { get; private set; } = string.Empty;
     public string? Description { get; private set; }
-    public Money OpeningBalance { get; private set; } = Money.Zero();
+    public Money OpeningBalance { get; private set; } = Money.Zero(CurrencyCode.USD);
     public DateTime OpeningBalanceDate { get; private set; }
     public bool IsActive { get; private set; }
 
@@ -583,7 +588,7 @@ public class CashbookEntry : Entity
     public DateTime TransactionDate { get; private set; }
     public string Reference { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
-    public Money Amount { get; private set; } = Money.Zero();
+    public Money Amount { get; private set; } = Money.Zero(CurrencyCode.USD);
     public CashbookEntryType Type { get; private set; }
     public CashbookEntryCategory Category { get; private set; }
     public Guid AccountId { get; private set; }
@@ -594,7 +599,7 @@ public class CashbookEntry : Entity
     public string? RelatedEntityType { get; private set; }
 
     // Navigation properties
-    public Account? Account { get; private set; }
+    public ChartOfAccounts? Account { get; private set; }
 
     private CashbookEntry() : base() { } // For EF Core
 
@@ -646,5 +651,339 @@ public class CashbookEntry : Entity
     public void UpdateDescription(string description)
     {
         Description = description?.Trim() ?? throw new ArgumentException("Description cannot be empty");
+    }
+}
+
+/// <summary>
+/// Company entity representing a company in the ERP system.
+/// Based on ERPNext Company doctype specifications.
+/// </summary>
+[Table("Companies")]
+public class Company : Entity
+{
+    /// <summary>
+    /// Company name (required, unique)
+    /// </summary>
+    [Required]
+    [StringLength(200)]
+    public string Name { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Company abbreviation for short references
+    /// </summary>
+    [Required]
+    [StringLength(10)]
+    public string Abbreviation { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Business domain/industry
+    /// </summary>
+    [StringLength(100)]
+    public string? Domain { get; private set; }
+
+    /// <summary>
+    /// Default currency for the company
+    /// </summary>
+    [Required]
+    [StringLength(3)]
+    public string Currency { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Country where company is registered
+    /// </summary>
+    [Required]
+    [StringLength(100)]
+    public string Country { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Tax identification number
+    /// </summary>
+    [StringLength(50)]
+    public string? TaxId { get; private set; }
+
+    /// <summary>
+    /// Parent company ID for subsidiary relationships
+    /// </summary>
+    public Guid? ParentCompanyId { get; private set; }
+
+    /// <summary>
+    /// Navigation property for parent company
+    /// </summary>
+    [ForeignKey(nameof(ParentCompanyId))]
+    public virtual Company? ParentCompany { get; private set; }
+
+    /// <summary>
+    /// Child companies (subsidiaries)
+    /// </summary>
+    public virtual ICollection<Company> ChildCompanies { get; private set; } = new List<Company>();
+
+    /// <summary>
+    /// Indicates if this is a group company (has subsidiaries)
+    /// </summary>
+    public bool IsGroup { get; private set; } = false;
+
+    /// <summary>
+    /// Whether the company is active
+    /// </summary>
+    public bool IsActive { get; private set; } = true;
+
+    /// <summary>
+    /// Company description
+    /// </summary>
+    [StringLength(1000)]
+    public string? Description { get; private set; }
+
+    /// <summary>
+    /// Company logo URL or path
+    /// </summary>
+    [StringLength(500)]
+    public string? Logo { get; private set; }
+
+    /// <summary>
+    /// Registration date
+    /// </summary>
+    public DateTime RegistrationDate { get; private set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Financial year start month (1-12)
+    /// </summary>
+    public int FiscalYearStartMonth { get; private set; } = 1;
+
+    /// <summary>
+    /// Date of incorporation
+    /// </summary>
+    public DateTime? DateOfIncorporation { get; private set; }
+
+    /// <summary>
+    /// Date of commencement of business
+    /// </summary>
+    public DateTime? DateOfCommencement { get; private set; }
+
+    /// <summary>
+    /// Company registration number
+    /// </summary>
+    [StringLength(100)]
+    public string? RegistrationNumber { get; private set; }
+
+    /// <summary>
+    /// Website URL
+    /// </summary>
+    [StringLength(200)]
+    public string? Website { get; private set; }
+
+    /// <summary>
+    /// Phone number
+    /// </summary>
+    [StringLength(20)]
+    public string? Phone { get; private set; }
+
+    /// <summary>
+    /// Email address
+    /// </summary>
+    [StringLength(100)]
+    public string? Email { get; private set; }
+
+    /// <summary>
+    /// Complete address
+    /// </summary>
+    [StringLength(500)]
+    public string? Address { get; private set; }
+
+    /// <summary>
+    /// City
+    /// </summary>
+    [StringLength(100)]
+    public string? City { get; private set; }
+
+    /// <summary>
+    /// State/Province
+    /// </summary>
+    [StringLength(100)]
+    public string? State { get; private set; }
+
+    /// <summary>
+    /// Postal/ZIP code
+    /// </summary>
+    [StringLength(20)]
+    public string? PostalCode { get; private set; }
+
+    /// <summary>
+    /// Created timestamp
+    /// </summary>
+    public new DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Last modified timestamp
+    /// </summary>
+    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// User who created the record
+    /// </summary>
+    [StringLength(100)]
+    public new string? CreatedBy { get; private set; }
+
+    /// <summary>
+    /// User who last modified the record
+    /// </summary>
+    [StringLength(100)]
+    public string? ModifiedBy { get; private set; }
+
+    private Company() : base() { } // EF Core
+
+    public Company(
+        Guid id,
+        string tenantId,
+        string name,
+        string abbreviation,
+        string currency,
+        string country,
+        string createdBy,
+        string? domain = null,
+        string? taxId = null,
+        Guid? parentCompanyId = null,
+        bool isGroup = false,
+        string? description = null) : base(id, tenantId)
+    {
+        Name = name?.Trim() ?? throw new ArgumentException("Company name cannot be empty");
+        Abbreviation = abbreviation?.Trim() ?? throw new ArgumentException("Abbreviation cannot be empty");
+        Currency = currency?.Trim() ?? throw new ArgumentException("Currency cannot be empty");
+        Country = country?.Trim() ?? throw new ArgumentException("Country cannot be empty");
+        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        Domain = domain?.Trim();
+        TaxId = taxId?.Trim();
+        ParentCompanyId = parentCompanyId;
+        IsGroup = isGroup;
+        Description = description?.Trim();
+        CreatedAt = DateTime.UtcNow;
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy;
+    }
+
+    public static Company Create(
+        string tenantId,
+        string name,
+        string abbreviation,
+        string currency,
+        string country,
+        string createdBy,
+        string? domain = null,
+        string? taxId = null,
+        Guid? parentCompanyId = null,
+        bool isGroup = false,
+        string? description = null)
+    {
+        return new Company(Guid.NewGuid(), tenantId, name, abbreviation, currency, country, createdBy, 
+            domain, taxId, parentCompanyId, isGroup, description);
+    }
+
+    public void UpdateBasicInfo(
+        string name,
+        string abbreviation,
+        string currency,
+        string country,
+        string modifiedBy,
+        string? domain = null,
+        string? description = null)
+    {
+        Name = name?.Trim() ?? throw new ArgumentException("Company name cannot be empty");
+        Abbreviation = abbreviation?.Trim() ?? throw new ArgumentException("Abbreviation cannot be empty");
+        Currency = currency?.Trim() ?? throw new ArgumentException("Currency cannot be empty");
+        Country = country?.Trim() ?? throw new ArgumentException("Country cannot be empty");
+        Domain = domain?.Trim();
+        Description = description?.Trim();
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
+    }
+
+    public void UpdateContactInfo(
+        string? email,
+        string? phone,
+        string? website,
+        string modifiedBy)
+    {
+        Email = email?.Trim();
+        Phone = phone?.Trim();
+        Website = website?.Trim();
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
+    }
+
+    public void UpdateAddress(
+        string? address,
+        string? city,
+        string? state,
+        string? postalCode,
+        string modifiedBy)
+    {
+        Address = address?.Trim();
+        City = city?.Trim();
+        State = state?.Trim();
+        PostalCode = postalCode?.Trim();
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
+    }
+
+    public void UpdateTaxInfo(
+        string? taxId,
+        string? registrationNumber,
+        DateTime? dateOfIncorporation,
+        DateTime? dateOfCommencement,
+        string modifiedBy)
+    {
+        TaxId = taxId?.Trim();
+        RegistrationNumber = registrationNumber?.Trim();
+        DateOfIncorporation = dateOfIncorporation;
+        DateOfCommencement = dateOfCommencement;
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
+    }
+
+    public void SetParentCompany(Guid? parentCompanyId, string modifiedBy)
+    {
+        ParentCompanyId = parentCompanyId;
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
+    }
+
+    public void SetAsGroup(bool isGroup, string modifiedBy)
+    {
+        IsGroup = isGroup;
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
+    }
+
+    public void SetFiscalYearStartMonth(int month, string modifiedBy)
+    {
+        if (month < 1 || month > 12)
+            throw new ArgumentException("Fiscal year start month must be between 1 and 12");
+
+        FiscalYearStartMonth = month;
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
+    }
+
+    public void SetLogo(string? logoUrl, string modifiedBy)
+    {
+        Logo = logoUrl?.Trim();
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
+    }
+
+    public void Activate(string modifiedBy)
+    {
+        IsActive = true;
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
+    }
+
+    public void Deactivate(string modifiedBy)
+    {
+        if (ChildCompanies.Any(c => c.IsActive))
+            throw new InvalidOperationException("Cannot deactivate company with active subsidiaries");
+
+        IsActive = false;
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
     }
 }

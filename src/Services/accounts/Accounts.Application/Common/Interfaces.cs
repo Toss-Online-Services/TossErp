@@ -125,6 +125,37 @@ public interface IChartOfAccountsRepository
 }
 
 /// <summary>
+/// Repository interface for Company operations
+/// </summary>
+public interface ICompanyRepository
+{
+    Task<Company?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Company?> GetByNameAsync(string tenantId, string name, CancellationToken cancellationToken = default);
+    Task<Company?> GetByAbbreviationAsync(string tenantId, string abbreviation, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Company>> GetChildCompaniesAsync(Guid parentCompanyId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Company>> GetGroupCompaniesAsync(string tenantId, bool? isActive = null, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Company>> GetAllAsync(string tenantId, CancellationToken cancellationToken = default);
+    Task<(IEnumerable<Company> Companies, int TotalCount)> GetPagedAsync(
+        string tenantId,
+        string? searchTerm = null,
+        bool? isActive = null,
+        bool? isGroup = null,
+        string? currency = null,
+        string? country = null,
+        Guid? parentCompanyId = null,
+        int page = 1,
+        int pageSize = 50,
+        CancellationToken cancellationToken = default);
+    Task<Company> AddAsync(Company company, CancellationToken cancellationToken = default);
+    Task<Company> UpdateAsync(Company company, CancellationToken cancellationToken = default);
+    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Company>> FindAsync(Expression<Func<Company, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<Company?> FirstOrDefaultAsync(Expression<Func<Company, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(Expression<Func<Company, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<int> CountAsync(Expression<Func<Company, bool>>? predicate = null, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
 /// Repository interface for Cashbook operations
 /// </summary>
 public interface ICashbookRepository

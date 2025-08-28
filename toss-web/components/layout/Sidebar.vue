@@ -229,6 +229,34 @@
           <NuxtLink to="/accounting/reports" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/reports' }">
             Financial Reports
           </NuxtLink>
+          <!-- ERPNext Accounting Masters -->
+          <NuxtLink to="/accounting/company" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/company' }">
+            Company Setup
+          </NuxtLink>
+          <NuxtLink to="/accounting/currency" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/currency' }">
+            Currency Management
+          </NuxtLink>
+          <NuxtLink to="/accounting/country" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/country' }">
+            Country Management
+          </NuxtLink>
+          <NuxtLink to="/accounting/periods" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/periods' }">
+            Accounting Periods
+          </NuxtLink>
+          <NuxtLink to="/accounting/fiscal-year" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/fiscal-year' }">
+            Fiscal Year
+          </NuxtLink>
+          <NuxtLink to="/accounting/finance-book" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/finance-book' }">
+            Finance Book
+          </NuxtLink>
+          <NuxtLink to="/accounting/mode-of-payment" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/mode-of-payment' }">
+            Mode of Payment
+          </NuxtLink>
+          <NuxtLink to="/accounting/payment-terms" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/payment-terms' }">
+            Payment Terms
+          </NuxtLink>
+          <NuxtLink to="/accounting/loyalty-program" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/loyalty-program' }">
+            Loyalty Program
+          </NuxtLink>
         </div>
       </div>
 

@@ -232,12 +232,13 @@ public class ExchangeRate : ValueObject
 /// <summary>
 /// Budget allocation value object
 /// </summary>
-public class BudgetAllocation : ValueObject
+public class BudgetAllocation : Entity
 {
     public Money AllocatedAmount { get; private set; }
     public Money SpentAmount { get; private set; }
     public DateTime PeriodStart { get; private set; }
     public DateTime PeriodEnd { get; private set; }
+    public CurrencyCode Currency => AllocatedAmount.Currency;
 
     public BudgetAllocation(Money allocatedAmount, DateTime periodStart, DateTime periodEnd)
     {
@@ -258,27 +259,39 @@ public class BudgetAllocation : ValueObject
         PeriodEnd = periodEnd;
     }
 
-    public BudgetAllocation SpendAmount(Money amount)
+    public void RecordExpense(Money amount)
     {
         if (amount.Currency != AllocatedAmount.Currency)
             throw new InvalidOperationException("Currency mismatch for budget spending");
 
-        var newSpentAmount = SpentAmount.Add(amount);
-        return new BudgetAllocation(AllocatedAmount, newSpentAmount, PeriodStart, PeriodEnd);
+        SpentAmount = SpentAmount.Add(amount);
+    }
+
+    public void CommitFunds(Money amount)
+    {
+        // Alias for RecordExpense
+        RecordExpense(amount);
+    }
+
+    public void ReleaseFunds(Money amount)
+    {
+        if (amount.Currency != AllocatedAmount.Currency)
+            throw new InvalidOperationException("Currency mismatch for budget release");
+
+        // Release funds by reducing spent amount
+        SpentAmount = SpentAmount.Subtract(amount);
+    }
+
+    public void SpendAmount(Money amount)
+    {
+        // Alias for RecordExpense to maintain compatibility
+        RecordExpense(amount);
     }
 
     public Money RemainingAmount => AllocatedAmount.Subtract(SpentAmount);
     public decimal UtilizationPercentage => AllocatedAmount.Amount == 0 ? 0 : (SpentAmount.Amount / AllocatedAmount.Amount) * 100;
     public bool IsOverBudget => SpentAmount.Amount > AllocatedAmount.Amount;
     public bool IsInCurrentPeriod => DateTime.UtcNow >= PeriodStart && DateTime.UtcNow <= PeriodEnd;
-
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return AllocatedAmount;
-        yield return SpentAmount;
-        yield return PeriodStart;
-        yield return PeriodEnd;
-    }
 
     public override string ToString() => $"Budget: {AllocatedAmount}, Spent: {SpentAmount}, Remaining: {RemainingAmount}";
 }
