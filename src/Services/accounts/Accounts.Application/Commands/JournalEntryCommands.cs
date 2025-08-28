@@ -1,4 +1,7 @@
 using FluentValidation;
+using TossErp.Accounts.Domain.Aggregates;
+using TossErp.Accounts.Domain.Enums;
+using TossErp.Accounts.Domain.ValueObjects;
 
 namespace TossErp.Accounts.Application.Commands;
 
@@ -141,7 +144,7 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
         {
             Id = journalEntry.Id,
             TenantId = journalEntry.TenantId,
-            EntryNumber = journalEntry.EntryNumber.Value,
+            EntryNumber = journalEntry.EntryNumber,
             EntryDate = journalEntry.EntryDate,
             Reference = journalEntry.Reference,
             Description = journalEntry.Description,
@@ -152,7 +155,7 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
             Notes = journalEntry.Notes,
             PostedAt = journalEntry.PostedAt,
             PostedBy = journalEntry.PostedBy,
-            CreatedAt = journalEntry.CreatedAt,
+            CreatedAt = DateOnly.FromDateTime(journalEntry.CreatedAt),
             CreatedBy = journalEntry.CreatedBy,
             LastModified = journalEntry.LastModified,
             LastModifiedBy = journalEntry.LastModifiedBy
@@ -351,7 +354,7 @@ public class PostJournalEntryCommandHandler : IRequestHandler<PostJournalEntryCo
         {
             Id = journalEntry.Id,
             TenantId = journalEntry.TenantId,
-            EntryNumber = journalEntry.EntryNumber.Value,
+            EntryNumber = journalEntry.EntryNumber,
             EntryDate = journalEntry.EntryDate,
             Reference = journalEntry.Reference,
             Description = journalEntry.Description,
@@ -362,7 +365,7 @@ public class PostJournalEntryCommandHandler : IRequestHandler<PostJournalEntryCo
             Notes = journalEntry.Notes,
             PostedAt = journalEntry.PostedAt,
             PostedBy = journalEntry.PostedBy,
-            CreatedAt = journalEntry.CreatedAt,
+            CreatedAt = DateOnly.FromDateTime(journalEntry.CreatedAt),
             CreatedBy = journalEntry.CreatedBy,
             LastModified = journalEntry.LastModified,
             LastModifiedBy = journalEntry.LastModifiedBy
@@ -475,7 +478,7 @@ public class ReverseJournalEntryCommandHandler : IRequestHandler<ReverseJournalE
             reference: $"REV-{originalEntry.Reference}",
             description: $"Reversal of {originalEntry.Reference}: {request.Reason}",
             lines: reversalLines,
-            notes: $"Reversal of journal entry {originalEntry.EntryNumber.Value}. Reason: {request.Reason}",
+            notes: $"Reversal of journal entry {originalEntry.EntryNumber}. Reason: {request.Reason}",
             createdBy: currentUserId);
 
         // Post the reversal entry immediately
@@ -519,7 +522,7 @@ public class ReverseJournalEntryCommandHandler : IRequestHandler<ReverseJournalE
         {
             Id = journalEntry.Id,
             TenantId = journalEntry.TenantId,
-            EntryNumber = journalEntry.EntryNumber.Value,
+            EntryNumber = journalEntry.EntryNumber,
             EntryDate = journalEntry.EntryDate,
             Reference = journalEntry.Reference,
             Description = journalEntry.Description,
@@ -532,7 +535,7 @@ public class ReverseJournalEntryCommandHandler : IRequestHandler<ReverseJournalE
             PostedBy = journalEntry.PostedBy,
             ReversalEntryId = journalEntry.ReversalEntryId,
             ReversalReason = journalEntry.ReversalReason,
-            CreatedAt = journalEntry.CreatedAt,
+            CreatedAt = DateOnly.FromDateTime(journalEntry.CreatedAt),
             CreatedBy = journalEntry.CreatedBy,
             LastModified = journalEntry.LastModified,
             LastModifiedBy = journalEntry.LastModifiedBy

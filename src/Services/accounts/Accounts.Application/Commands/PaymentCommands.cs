@@ -1,4 +1,13 @@
 using FluentValidation;
+using TossErp.Accounts.Domain.Entities;
+using TossErp.Accounts.Domain.Enums;
+using TossErp.Accounts.Domain.ValueObjects;
+using TossErp.Accounts.Application.DTOs;
+using TossErp.Accounts.Application.Common.Interfaces;
+using TossErp.Accounts.Application.Models;
+using TossErp.Accounts.Domain.Aggregates;
+using TossErp.Accounts.Domain.SeedWork;
+using AggregateInvoice = TossErp.Accounts.Domain.Aggregates.Invoice;
 
 namespace TossErp.Accounts.Application.Commands;
 
@@ -79,10 +88,10 @@ public class ProcessPaymentCommandHandler : IRequestHandler<ProcessPaymentComman
         }
 
         // Validate allocations if provided
-        List<Invoice>? invoicesToAllocate = null;
+        List<AggregateInvoice>? invoicesToAllocate = null;
         if (request.Allocations?.Any() == true)
         {
-            invoicesToAllocate = new List<Invoice>();
+            invoicesToAllocate = new List<AggregateInvoice>();
             var totalAllocationAmount = request.Allocations.Sum(a => a.Amount);
             
             if (totalAllocationAmount > request.Amount)
@@ -112,22 +121,37 @@ public class ProcessPaymentCommandHandler : IRequestHandler<ProcessPaymentComman
             }
         }
 
+        // Create payment first
+        var paymentNumber = $"PAY-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString()[..8].ToUpper()}";
+        var payment = Payment.Create(
+            tenantId: tenantId,
+            paymentNumber: paymentNumber,
+            paymentDate: request.PaymentDate.ToDateTime(TimeOnly.MinValue),
+            amount: new Money(request.Amount, CurrencyCode.ZAR),
+            paymentMethod: request.Method,
+            paymentType: PaymentType.CustomerPayment,
+            createdBy: currentUserId,
+            customerId: request.CustomerId,
+            description: request.Notes);
+
         // Process payment through payment service if required
         PaymentProcessingResult? processingResult = null;
         if (request.Method == PaymentMethod.CreditCard || request.Method == PaymentMethod.BankTransfer)
         {
-            var processingRequest = new PaymentProcessingRequest
+            var processingRequest = new ProcessPaymentRequest
             {
-                TenantId = tenantId,
-                CustomerId = request.CustomerId,
+                PaymentId = payment.Id,
                 Amount = request.Amount,
                 Currency = request.Currency,
-                PaymentMethod = request.Method,
-                Reference = request.Reference,
-                ExternalTransactionId = request.ExternalTransactionId
+                Method = request.Method,
+                PaymentDetails = request.Reference ?? string.Empty
             };
 
-            processingResult = await _paymentProcessingService.ProcessPaymentAsync(processingRequest, cancellationToken);
+            var paymentResult = await _paymentProcessingService.ProcessPaymentAsync(processingRequest, cancellationToken);
+            
+            processingResult = paymentResult.IsSuccess 
+                ? PaymentProcessingResult.Success(paymentResult.TransactionId ?? string.Empty)
+                : PaymentProcessingResult.Failure(paymentResult.ErrorMessage ?? "Payment processing failed");
             
             if (!processingResult.IsSuccessful)
             {
@@ -142,29 +166,19 @@ public class ProcessPaymentCommandHandler : IRequestHandler<ProcessPaymentComman
             for (int i = 0; i < invoicesToAllocate.Count; i++)
             {
                 var allocation = PaymentAllocation.Create(
-                    invoiceId: invoicesToAllocate[i].Id,
-                    amount: request.Allocations[i].Amount);
+                    tenantId: tenantId,
+                    paymentId: payment.Id,
+                    amount: new Money(request.Allocations[i].Amount, CurrencyCode.ZAR),
+                    allocatedBy: currentUserId,
+                    invoiceId: invoicesToAllocate[i].Id);
                 allocations.Add(allocation);
             }
         }
 
-        // Create payment
-        var payment = Payment.Create(
-            tenantId: tenantId,
-            customerId: request.CustomerId,
-            amount: request.Amount,
-            currency: request.Currency,
-            method: request.Method,
-            reference: request.Reference,
-            notes: request.Notes,
-            paymentDate: request.PaymentDate,
-            externalTransactionId: processingResult?.TransactionId ?? request.ExternalTransactionId,
-            createdBy: currentUserId);
-
         // Add allocations
         foreach (var allocation in allocations)
         {
-            payment.AddAllocation(allocation, currentUserId);
+            payment.AddAllocation(allocation);
         }
 
         // Save payment
@@ -178,7 +192,7 @@ public class ProcessPaymentCommandHandler : IRequestHandler<ProcessPaymentComman
                 var invoice = invoicesToAllocate[i];
                 var allocation = request.Allocations[i];
                 
-                invoice.ApplyPayment(allocation.Amount, payment.Id, currentUserId);
+                invoice.ApplyPayment(new Money(allocation.Amount, CurrencyCode.ZAR), payment.Id, currentUserId);
                 await _invoiceRepository.UpdateAsync(invoice, cancellationToken);
             }
         }
@@ -209,7 +223,7 @@ public class ProcessPaymentCommandHandler : IRequestHandler<ProcessPaymentComman
             TenantId = payment.TenantId,
             CustomerId = payment.CustomerId,
             CustomerName = customer.Name,
-            PaymentNumber = payment.PaymentNumber.Value,
+            PaymentNumber = payment.PaymentNumber,
             Amount = payment.Amount.Amount,
             Currency = payment.Currency,
             Method = payment.Method,
@@ -432,7 +446,7 @@ public class RefundPaymentCommandHandler : IRequestHandler<RefundPaymentCommand,
             TenantId = payment.TenantId,
             CustomerId = payment.CustomerId,
             CustomerName = customer.Name,
-            PaymentNumber = payment.PaymentNumber.Value,
+            PaymentNumber = payment.PaymentNumber,
             Amount = payment.Amount.Amount,
             Currency = payment.Currency,
             Method = payment.Method,
@@ -610,7 +624,7 @@ public class AllocatePaymentCommandHandler : IRequestHandler<AllocatePaymentComm
             TenantId = payment.TenantId,
             CustomerId = payment.CustomerId,
             CustomerName = customer.Name,
-            PaymentNumber = payment.PaymentNumber.Value,
+            PaymentNumber = payment.PaymentNumber,
             Amount = payment.Amount.Amount,
             Currency = payment.Currency,
             Method = payment.Method,

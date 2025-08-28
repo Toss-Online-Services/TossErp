@@ -94,15 +94,15 @@ public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerComman
         }
 
         // Set payment terms
-        if (request.PaymentTerms.HasValue)
+        if (request.PaymentTerms ?? PaymentTerms.Net30.HasValue)
         {
-            customer.SetPaymentTerms(request.PaymentTerms.Value, currentUserId);
+            customer.SetPaymentTerms(request.PaymentTerms ?? PaymentTerms.Net30, currentUserId);
         }
 
         // Set credit limit
-        if (request.CreditLimit.HasValue)
+        if (Money.Create(request.CreditLimit ?? 0, "ZAR").HasValue)
         {
-            customer.SetCreditLimit(request.CreditLimit.Value, currentUserId);
+            customer.SetCreditLimit(Money.Create(request.CreditLimit ?? 0, "ZAR"), currentUserId);
         }
 
         // Save customer
@@ -124,7 +124,7 @@ public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerComman
         {
             Id = customer.Id,
             TenantId = customer.TenantId,
-            CustomerNumber = customer.CustomerNumber.Value,
+            CustomerNumber = customer.CustomerNumber,
             Name = customer.Name,
             Email = customer.Email,
             Phone = customer.Phone,
@@ -140,9 +140,9 @@ public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerComman
             PreferredCurrency = customer.PreferredCurrency,
             PreferredLanguage = customer.PreferredLanguage,
             PaymentTerms = customer.PaymentTerms,
-            CreditLimit = customer.CreditLimit,
-            CurrentBalance = customer.CurrentBalance,
-            LastPaymentDate = customer.LastPaymentDate,
+            CreditLimit = customer.CreditLimit.Amount,
+            CurrentBalance = customer.CurrentBalance.Amount,
+            LastPaymentDate = customer.LastPaymentDate.HasValue ? DateOnly.FromDateTime(customer.LastPaymentDate.Value) : null,
             Notes = customer.Notes,
             CreatedAt = customer.CreatedAt,
             CreatedBy = customer.CreatedBy,
@@ -319,15 +319,15 @@ public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerComman
         }
 
         // Update payment terms
-        if (request.PaymentTerms.HasValue)
+        if (request.PaymentTerms ?? PaymentTerms.Net30.HasValue)
         {
-            customer.SetPaymentTerms(request.PaymentTerms.Value, currentUserId);
+            customer.SetPaymentTerms(request.PaymentTerms ?? PaymentTerms.Net30, currentUserId);
         }
 
         // Update credit limit
-        if (request.CreditLimit.HasValue)
+        if (Money.Create(request.CreditLimit ?? 0, "ZAR").HasValue)
         {
-            customer.SetCreditLimit(request.CreditLimit.Value, currentUserId);
+            customer.SetCreditLimit(Money.Create(request.CreditLimit ?? 0, "ZAR"), currentUserId);
         }
 
         // Save changes
@@ -349,7 +349,7 @@ public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerComman
         {
             Id = customer.Id,
             TenantId = customer.TenantId,
-            CustomerNumber = customer.CustomerNumber.Value,
+            CustomerNumber = customer.CustomerNumber,
             Name = customer.Name,
             Email = customer.Email,
             Phone = customer.Phone,
@@ -365,9 +365,9 @@ public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerComman
             PreferredCurrency = customer.PreferredCurrency,
             PreferredLanguage = customer.PreferredLanguage,
             PaymentTerms = customer.PaymentTerms,
-            CreditLimit = customer.CreditLimit,
-            CurrentBalance = customer.CurrentBalance,
-            LastPaymentDate = customer.LastPaymentDate,
+            CreditLimit = customer.CreditLimit.Amount,
+            CurrentBalance = customer.CurrentBalance.Amount,
+            LastPaymentDate = customer.LastPaymentDate.HasValue ? DateOnly.FromDateTime(customer.LastPaymentDate.Value) : null,
             Notes = customer.Notes,
             CreatedAt = customer.CreatedAt,
             CreatedBy = customer.CreatedBy,
@@ -482,7 +482,7 @@ public class ChangeCustomerStatusCommandHandler : IRequestHandler<ChangeCustomer
         var oldStatus = customer.Status;
 
         // Change status
-        customer.ChangeStatus(request.NewStatus, request.Reason, currentUserId);
+        customer.ChangeStatus(request.NewStatus, currentUserId);
 
         // Save changes
         await _customerRepository.UpdateAsync(customer, cancellationToken);
@@ -511,7 +511,7 @@ public class ChangeCustomerStatusCommandHandler : IRequestHandler<ChangeCustomer
         {
             Id = customer.Id,
             TenantId = customer.TenantId,
-            CustomerNumber = customer.CustomerNumber.Value,
+            CustomerNumber = customer.CustomerNumber,
             Name = customer.Name,
             Email = customer.Email,
             Phone = customer.Phone,
@@ -527,9 +527,9 @@ public class ChangeCustomerStatusCommandHandler : IRequestHandler<ChangeCustomer
             PreferredCurrency = customer.PreferredCurrency,
             PreferredLanguage = customer.PreferredLanguage,
             PaymentTerms = customer.PaymentTerms,
-            CreditLimit = customer.CreditLimit,
-            CurrentBalance = customer.CurrentBalance,
-            LastPaymentDate = customer.LastPaymentDate,
+            CreditLimit = customer.CreditLimit.Amount,
+            CurrentBalance = customer.CurrentBalance.Amount,
+            LastPaymentDate = customer.LastPaymentDate.HasValue ? DateOnly.FromDateTime(customer.LastPaymentDate.Value) : null,
             Notes = customer.Notes,
             CreatedAt = customer.CreatedAt,
             CreatedBy = customer.CreatedBy,

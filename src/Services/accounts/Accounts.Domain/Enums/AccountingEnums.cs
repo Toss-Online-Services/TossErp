@@ -205,6 +205,34 @@ public enum BillingFrequency
 }
 
 /// <summary>
+/// Vendor types for supplier classification
+/// </summary>
+public enum VendorType
+{
+    Individual = 1,
+    Company = 2,
+    Cooperative = 3,
+    NonProfit = 4,
+    Government = 5,
+    Contractor = 6,
+    Consultant = 7,
+    Supplier = 8,
+    ServiceProvider = 9
+}
+
+/// <summary>
+/// Vendor status for supplier management
+/// </summary>
+public enum VendorStatus
+{
+    Active = 1,
+    Inactive = 2,
+    Pending = 3,
+    Suspended = 4,
+    Blacklisted = 5
+}
+
+/// <summary>
 /// Budget types for financial planning
 /// </summary>
 public enum BudgetType
@@ -346,4 +374,129 @@ public enum CashbookEntryCategory
     Expense = 9,
     Income = 10,
     Other = 11
+}
+
+/// <summary>
+/// Customer types for TOSS ERP - township SMME context
+/// </summary>
+public enum CustomerType
+{
+    Individual = 1,
+    Business = 2,
+    Organization = 3,
+    Government = 4,
+    Cooperative = 5,
+    CommunityGroup = 6,
+    Household = 7
+}
+
+/// <summary>
+/// Customer status in the system
+/// </summary>
+public enum CustomerStatus
+{
+    Active = 1,
+    Inactive = 2,
+    Suspended = 3,
+    Blocked = 4,
+    Prospective = 5,
+    Lead = 6
+}
+
+/// <summary>
+/// Payment terms for customer credit management
+/// </summary>
+public enum PaymentTerms
+{
+    Net15 = 1,
+    Net30 = 2,
+    Net45 = 3,
+    Net60 = 4,
+    Net90 = 5,
+    CashOnDelivery = 6,
+    Prepaid = 7,
+    DueOnReceipt = 8,
+    Custom = 9
+}
+
+/// <summary>
+/// Subscription status for recurring billing
+/// </summary>
+public enum SubscriptionStatus
+{
+    Active = 1,
+    Inactive = 2,
+    Cancelled = 3,
+    Expired = 4,
+    Trial = 5,
+    PastDue = 6,
+    Suspended = 7,
+    PendingActivation = 8
+}
+
+/// <summary>
+/// Journal entry status for posting workflow
+/// </summary>
+public enum JournalEntryStatus
+{
+    Draft = 1,
+    Submitted = 2,
+    Posted = 3,
+    Cancelled = 4,
+    Reversed = 5
+}
+
+/// <summary>
+/// Bill status enumeration
+/// </summary>
+public enum BillStatus
+{
+    Draft = 0,
+    Pending = 1,
+    Approved = 2,
+    PartiallyPaid = 3,
+    Paid = 4,
+    Overdue = 5,
+    Cancelled = 6
+}
+
+/// <summary>
+/// Bill type enumeration
+/// </summary>
+public enum BillType
+{
+    Standard = 0,
+    Recurring = 1,
+    Adjustment = 2,
+    Credit = 3,
+    Prepayment = 4
+}
+
+/// <summary>
+/// Contact type enumeration for township communication preferences
+/// </summary>
+public enum ContactType
+{
+    Phone = 0,
+    Email = 1,
+    SMS = 2,
+    WhatsApp = 3,
+    InPerson = 4,
+    CommunityBoard = 5,
+    SocialMedia = 6,
+    Other = 7
+}
+
+/// <summary>
+/// Billing cycle enumeration for subscription billing
+/// </summary>
+public enum BillingCycle
+{
+    Monthly = 0,
+    Quarterly = 1,
+    SemiAnnually = 2,
+    Annually = 3,
+    Biennial = 4,
+    Daily = 5,
+    Weekly = 6
 }

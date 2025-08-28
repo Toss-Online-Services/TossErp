@@ -1,4 +1,7 @@
 using FluentValidation;
+using TossErp.Accounts.Domain.Aggregates;
+using TossErp.Accounts.Domain.Enums;
+using TossErp.Accounts.Domain.ValueObjects;
 
 namespace TossErp.Accounts.Application.Commands;
 
@@ -73,15 +76,18 @@ public class CreateChartOfAccountsCommandHandler : IRequestHandler<CreateChartOf
         }
 
         // Create chart of accounts entry
-        var chartOfAccounts = ChartOfAccounts.Create(
+        var accountNumber = new AccountNumber(request.AccountCode);
+        var chartOfAccounts = new ChartOfAccounts(
+            id: Guid.NewGuid(),
             tenantId: tenantId,
-            accountCode: request.AccountCode,
+            accountNumber: accountNumber,
             accountName: request.AccountName,
             accountType: request.AccountType,
-            parentAccountId: request.ParentAccountId,
+            defaultCurrency: CurrencyCode.ZAR,
+            createdBy: currentUserId,
+            accountSubType: null, // Will be determined by AccountType
             description: request.Description,
-            isActive: request.IsActive,
-            createdBy: currentUserId);
+            parentAccountId: request.ParentAccountId);
 
         // Save entry
         await _chartOfAccountsRepository.AddAsync(chartOfAccounts, cancellationToken);
@@ -103,25 +109,19 @@ public class CreateChartOfAccountsCommandHandler : IRequestHandler<CreateChartOf
         return (childType, parentType) switch
         {
             // Assets can have Asset parents
-            (AccountType.CurrentAssets, AccountType.Assets) => true,
-            (AccountType.FixedAssets, AccountType.Assets) => true,
-            (AccountType.OtherAssets, AccountType.Assets) => true,
+            (AccountType.Asset, AccountType.Asset) => true,
             
             // Liabilities can have Liability parents
-            (AccountType.CurrentLiabilities, AccountType.Liabilities) => true,
-            (AccountType.LongTermLiabilities, AccountType.Liabilities) => true,
+            (AccountType.Liability, AccountType.Liability) => true,
             
             // Equity accounts can have Equity parents
             (AccountType.Equity, AccountType.Equity) => true,
             
             // Income accounts can have Income parents
-            (AccountType.Revenue, AccountType.Income) => true,
-            (AccountType.OtherIncome, AccountType.Income) => true,
+            (AccountType.Income, AccountType.Income) => true,
             
             // Expense accounts can have Expense parents
-            (AccountType.CostOfGoodsSold, AccountType.Expenses) => true,
-            (AccountType.OperatingExpenses, AccountType.Expenses) => true,
-            (AccountType.OtherExpenses, AccountType.Expenses) => true,
+            (AccountType.Expense, AccountType.Expense) => true,
             
             // Same type relationships
             _ when childType == parentType => true,
@@ -555,8 +555,8 @@ public class InitializeDefaultChartOfAccountsCommandHandler : IRequestHandler<In
             new("2110", "Accounts Payable", AccountType.CurrentLiabilities, "2100", "Money owed to suppliers", 3),
             new("2120", "Accrued Expenses", AccountType.CurrentLiabilities, "2100", "Expenses incurred but not yet paid", 3),
             new("2130", "Short-term Debt", AccountType.CurrentLiabilities, "2100", "Loans and debt due within one year", 3),
-            new("2200", "Long-term Liabilities", AccountType.LongTermLiabilities, "2000", "Debts due after one year", 2),
-            new("2210", "Long-term Debt", AccountType.LongTermLiabilities, "2200", "Loans and debt due after one year", 3),
+            new("2200", "Long-term Liabilities", AccountType.Liability, "2000", "Debts due after one year", 2),
+            new("2210", "Long-term Debt", AccountType.Liability, "2200", "Loans and debt due after one year", 3),
 
             // Equity
             new("3000", "Equity", AccountType.Equity, null, "Owner's equity in the company", 1),
@@ -565,22 +565,22 @@ public class InitializeDefaultChartOfAccountsCommandHandler : IRequestHandler<In
 
             // Income
             new("4000", "Income", AccountType.Income, null, "All company income", 1),
-            new("4100", "Revenue", AccountType.Revenue, "4000", "Income from primary business activities", 2),
-            new("4110", "Sales Revenue", AccountType.Revenue, "4100", "Revenue from sales of goods or services", 3),
-            new("4200", "Other Income", AccountType.OtherIncome, "4000", "Income from non-primary activities", 2),
-            new("4210", "Interest Income", AccountType.OtherIncome, "4200", "Income from interest on investments", 3),
+            new("4100", "Revenue", AccountType.Income, "4000", "Income from primary business activities", 2),
+            new("4110", "Sales Revenue", AccountType.Income, "4100", "Revenue from sales of goods or services", 3),
+            new("4200", "Other Income", AccountType.Income, "4000", "Income from non-primary activities", 2),
+            new("4210", "Interest Income", AccountType.Income, "4200", "Income from interest on investments", 3),
 
             // Expenses
-            new("5000", "Expenses", AccountType.Expenses, null, "All company expenses", 1),
-            new("5100", "Cost of Goods Sold", AccountType.CostOfGoodsSold, "5000", "Direct costs of producing goods or services", 2),
-            new("5110", "Materials and Supplies", AccountType.CostOfGoodsSold, "5100", "Cost of materials used in production", 3),
-            new("5200", "Operating Expenses", AccountType.OperatingExpenses, "5000", "Expenses from normal business operations", 2),
-            new("5210", "Salaries and Wages", AccountType.OperatingExpenses, "5200", "Employee compensation", 3),
-            new("5220", "Rent Expense", AccountType.OperatingExpenses, "5200", "Cost of renting facilities", 3),
-            new("5230", "Utilities", AccountType.OperatingExpenses, "5200", "Electricity, water, gas, internet", 3),
-            new("5240", "Insurance", AccountType.OperatingExpenses, "5200", "Business insurance premiums", 3),
-            new("5300", "Other Expenses", AccountType.OtherExpenses, "5000", "Non-operating expenses", 2),
-            new("5310", "Interest Expense", AccountType.OtherExpenses, "5300", "Interest paid on loans and debt", 3)
+            new("5000", "Expenses", AccountType.Expense, null, "All company expenses", 1),
+            new("5100", "Cost of Goods Sold", AccountType.Expense, "5000", "Direct costs of producing goods or services", 2),
+            new("5110", "Materials and Supplies", AccountType.Expense, "5100", "Cost of materials used in production", 3),
+            new("5200", "Operating Expenses", AccountType.Expense, "5000", "Expenses from normal business operations", 2),
+            new("5210", "Salaries and Wages", AccountType.Expense, "5200", "Employee compensation", 3),
+            new("5220", "Rent Expense", AccountType.Expense, "5200", "Cost of renting facilities", 3),
+            new("5230", "Utilities", AccountType.Expense, "5200", "Electricity, water, gas, internet", 3),
+            new("5240", "Insurance", AccountType.Expense, "5200", "Business insurance premiums", 3),
+            new("5300", "Other Expenses", AccountType.Expense, "5000", "Non-operating expenses", 2),
+            new("5310", "Interest Expense", AccountType.Expense, "5300", "Interest paid on loans and debt", 3)
         };
     }
 

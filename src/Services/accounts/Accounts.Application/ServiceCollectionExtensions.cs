@@ -1,5 +1,7 @@
 using FluentValidation;
 using System.Reflection;
+using System.Diagnostics;
+using ValidationException = FluentValidation.ValidationException;
 
 namespace TossErp.Accounts.Application;
 

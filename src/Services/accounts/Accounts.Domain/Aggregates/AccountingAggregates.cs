@@ -28,6 +28,11 @@ public class ChartOfAccounts : AggregateRoot
     public DateTime? ModifiedAt { get; private set; }
     public string? ModifiedBy { get; private set; }
 
+    // Convenience properties for application layer compatibility
+    public string AccountCode => AccountNumber.Value;
+    public DateTime? LastModified => ModifiedAt;
+    public string? LastModifiedBy => ModifiedBy;
+
     private readonly List<ChartOfAccounts> _childAccounts;
     public IReadOnlyList<ChartOfAccounts> ChildAccounts => _childAccounts.AsReadOnly();
 
@@ -362,6 +367,9 @@ public class Invoice : AggregateRoot
     public Money TotalAmount { get; private set; }
     public Money PaidAmount { get; private set; }
     public Money OutstandingAmount { get; private set; }
+    
+    // Application layer compatibility property
+    public Money BalanceAmount => OutstandingAmount;
     public string? Notes { get; private set; }
     public string? Terms { get; private set; }
     public BillingPeriod? BillingPeriod { get; private set; }
@@ -516,6 +524,12 @@ public class Invoice : AggregateRoot
         {
             AddDomainEvent(new InvoicePaidEvent(Id, TenantId, InvoiceNumber, TotalAmount, paymentDate));
         }
+    }
+
+    // Application layer compatibility method
+    public void ApplyPayment(Money amount, Guid paymentId, string appliedBy)
+    {
+        MarkAsPaid(amount, DateTime.UtcNow, paymentId.ToString());
     }
 
     public void MarkAsOverdue()

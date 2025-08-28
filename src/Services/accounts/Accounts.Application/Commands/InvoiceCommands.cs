@@ -1,4 +1,11 @@
 using FluentValidation;
+using MediatR;
+using TossErp.Accounts.Application.Common.Interfaces;
+using TossErp.Accounts.Application.DTOs;
+using TossErp.Accounts.Domain.Entities;
+using TossErp.Accounts.Domain.Enums;
+using TossErp.Accounts.Domain.ValueObjects;
+using AggregateInvoice = TossErp.Accounts.Domain.Entities.Invoice;
 
 namespace TossErp.Accounts.Application.Commands;
 
@@ -141,14 +148,14 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
         {
             Id = invoice.Id,
             TenantId = invoice.TenantId,
-            InvoiceNumber = invoice.InvoiceNumber.Value,
+            InvoiceNumber = invoice.InvoiceNumber,
             CustomerId = invoice.CustomerId,
             CustomerName = customer.Name,
             CustomerEmail = customer.Email ?? string.Empty,
             Status = invoice.Status,
-            IssueDate = invoice.IssueDate,
-            DueDate = invoice.DueDate,
-            PaidDate = invoice.PaidDate,
+            IssueDate = DateOnly.FromDateTime(invoice.IssueDate),
+            DueDate = DateOnly.FromDateTime(invoice.DueDate),
+            PaidDate = invoice.PaidDate.HasValue ? DateOnly.FromDateTime(invoice.PaidDate.Value) : null,
             SubtotalAmount = invoice.SubtotalAmount.Amount,
             TaxAmount = invoice.TaxAmount.Amount,
             DiscountAmount = invoice.DiscountAmount.Amount,
@@ -380,14 +387,14 @@ public class UpdateInvoiceCommandHandler : IRequestHandler<UpdateInvoiceCommand,
         {
             Id = invoice.Id,
             TenantId = invoice.TenantId,
-            InvoiceNumber = invoice.InvoiceNumber.Value,
+            InvoiceNumber = invoice.InvoiceNumber,
             CustomerId = invoice.CustomerId,
             CustomerName = customer.Name,
             CustomerEmail = customer.Email ?? string.Empty,
             Status = invoice.Status,
-            IssueDate = invoice.IssueDate,
-            DueDate = invoice.DueDate,
-            PaidDate = invoice.PaidDate,
+            IssueDate = DateOnly.FromDateTime(invoice.IssueDate),
+            DueDate = DateOnly.FromDateTime(invoice.DueDate),
+            PaidDate = invoice.PaidDate.HasValue ? DateOnly.FromDateTime(invoice.PaidDate.Value) : null,
             SubtotalAmount = invoice.SubtotalAmount.Amount,
             TaxAmount = invoice.TaxAmount.Amount,
             DiscountAmount = invoice.DiscountAmount.Amount,
@@ -576,14 +583,14 @@ public class ChangeInvoiceStatusCommandHandler : IRequestHandler<ChangeInvoiceSt
         {
             Id = invoice.Id,
             TenantId = invoice.TenantId,
-            InvoiceNumber = invoice.InvoiceNumber.Value,
+            InvoiceNumber = invoice.InvoiceNumber,
             CustomerId = invoice.CustomerId,
             CustomerName = customer.Name,
             CustomerEmail = customer.Email ?? string.Empty,
             Status = invoice.Status,
-            IssueDate = invoice.IssueDate,
-            DueDate = invoice.DueDate,
-            PaidDate = invoice.PaidDate,
+            IssueDate = DateOnly.FromDateTime(invoice.IssueDate),
+            DueDate = DateOnly.FromDateTime(invoice.DueDate),
+            PaidDate = invoice.PaidDate.HasValue ? DateOnly.FromDateTime(invoice.PaidDate.Value) : null,
             SubtotalAmount = invoice.SubtotalAmount.Amount,
             TaxAmount = invoice.TaxAmount.Amount,
             DiscountAmount = invoice.DiscountAmount.Amount,
