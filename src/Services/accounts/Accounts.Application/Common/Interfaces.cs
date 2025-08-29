@@ -59,7 +59,16 @@ public interface IInvoiceRepository
     Task<AggregateInvoice?> GetByInvoiceNumberAsync(string invoiceNumber, CancellationToken cancellationToken = default);
     Task<IEnumerable<AggregateInvoice>> GetByCustomerIdAsync(Guid customerId, CancellationToken cancellationToken = default);
     Task<IEnumerable<AggregateInvoice>> GetOverdueInvoicesAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<AggregateInvoice>> GetOverdueInvoicesAsync(DateTime? asOfDate, CancellationToken cancellationToken = default);
     Task<IEnumerable<AggregateInvoice>> GetOutstandingInvoicesAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<AggregateInvoice>> GetOutstandingInvoicesAsync(DateTime asOfDate, CancellationToken cancellationToken = default);
+    Task<(IEnumerable<AggregateInvoice> Invoices, int TotalCount)> GetPagedAsync(
+        DTOs.InvoiceFilter filter,
+        int pageNumber,
+        int pageSize,
+        string? sortBy = null,
+        bool sortDescending = false,
+        CancellationToken cancellationToken = default);
     Task<bool> InvoiceNumberExistsAsync(string invoiceNumber, Guid? excludeId = null, CancellationToken cancellationToken = default);
     Task<decimal> GetTotalOutstandingAsync(CancellationToken cancellationToken = default);
     Task<AggregateInvoice> AddAsync(AggregateInvoice invoice, CancellationToken cancellationToken = default);
@@ -104,6 +113,14 @@ public interface IPaymentRepository
     Task<IEnumerable<Payment>> GetByDateRangeAsync(DateTime fromDate, DateTime toDate, CancellationToken cancellationToken = default);
     Task<IEnumerable<Payment>> GetByPaymentMethodAsync(PaymentMethod paymentMethod, CancellationToken cancellationToken = default);
     Task<Payment?> GetLastPaymentByCustomerAsync(Guid customerId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Payment>> GetUnallocatedPaymentsAsync(DateTime? asOfDate = null, CancellationToken cancellationToken = default);
+    Task<(IEnumerable<Payment> Payments, int TotalCount)> GetPagedAsync(
+        DTOs.PaymentFilter filter,
+        int pageNumber,
+        int pageSize,
+        string? sortBy = null,
+        bool sortDescending = false,
+        CancellationToken cancellationToken = default);
     Task<bool> PaymentNumberExistsAsync(string paymentNumber, Guid? excludeId = null, CancellationToken cancellationToken = default);
     Task<Payment> AddAsync(Payment payment, CancellationToken cancellationToken = default);
     Task<Payment> UpdateAsync(Payment payment, CancellationToken cancellationToken = default);
@@ -208,6 +225,13 @@ public interface IJournalEntryRepository
     Task<IEnumerable<JournalEntry>> GetByDateRangeAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
     Task<IEnumerable<JournalEntry>> GetByStatusAsync(JournalEntryStatus status, CancellationToken cancellationToken = default);
     Task<bool> EntryNumberExistsAsync(string entryNumber, Guid? excludeId = null, CancellationToken cancellationToken = default);
+    Task<(IEnumerable<JournalEntry> Entries, int TotalCount)> GetPagedAsync(
+        DTOs.JournalEntryFilter filter,
+        int pageNumber,
+        int pageSize,
+        string? sortBy = null,
+        bool sortDescending = false,
+        CancellationToken cancellationToken = default);
     Task<JournalEntry> AddAsync(JournalEntry journalEntry, CancellationToken cancellationToken = default);
     JournalEntry Update(JournalEntry journalEntry);
     Task<JournalEntry> UpdateAsync(JournalEntry journalEntry, CancellationToken cancellationToken = default);
@@ -230,6 +254,18 @@ public interface ISubscriptionRepository
     Task<IEnumerable<Subscription>> GetByStatusAsync(SubscriptionStatus status, CancellationToken cancellationToken = default);
     Task<IEnumerable<Subscription>> GetExpiringSubscriptionsAsync(DateOnly beforeDate, CancellationToken cancellationToken = default);
     Task<IEnumerable<Subscription>> GetActiveSubscriptionsAsync(CancellationToken cancellationToken = default);
+    Task<Subscription?> GetActiveByCustomerIdAsync(Guid customerId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Subscription>> GetSubscriptionsForMRRAnalysisAsync(
+        DateTime fromDate,
+        DateTime toDate,
+        CancellationToken cancellationToken = default);
+    Task<(IEnumerable<Subscription> Subscriptions, int TotalCount)> GetPagedAsync(
+        DTOs.SubscriptionFilter filter,
+        int pageNumber,
+        int pageSize,
+        string? sortBy = null,
+        bool sortDescending = false,
+        CancellationToken cancellationToken = default);
     Task<Subscription> AddAsync(Subscription subscription, CancellationToken cancellationToken = default);
     Subscription Update(Subscription subscription);
     void Delete(Subscription subscription);
@@ -329,11 +365,11 @@ public interface IFileService
 /// </summary>
 public interface IFinancialReportingService
 {
-    Task<DTOs.FinancialSummaryDto> GetFinancialSummaryAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
-    Task<DTOs.TrialBalanceDto> GetTrialBalanceAsync(DateOnly asOfDate, CancellationToken cancellationToken = default);
-    Task<DTOs.ProfitAndLossDto> GetProfitAndLossAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
-    Task<DTOs.BalanceSheetDto> GetBalanceSheetAsync(DateOnly asOfDate, CancellationToken cancellationToken = default);
-    Task<DTOs.CashFlowDto> GetCashFlowAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
+    Task<DTOs.FinancialSummaryDto> GetFinancialSummaryAsync(DateOnly fromDate, DateOnly toDate, string? currency = null, CancellationToken cancellationToken = default);
+    Task<DTOs.TrialBalanceDto> GetTrialBalanceAsync(DateOnly asOfDate, string? currency = null, CancellationToken cancellationToken = default);
+    Task<DTOs.ProfitAndLossDto> GetProfitAndLossAsync(DateOnly fromDate, DateOnly toDate, string? currency = null, CancellationToken cancellationToken = default);
+    Task<DTOs.BalanceSheetDto> GetBalanceSheetAsync(DateOnly asOfDate, string? currency = null, CancellationToken cancellationToken = default);
+    Task<DTOs.CashFlowDto> GetCashFlowAsync(DateOnly fromDate, DateOnly toDate, string? currency = null, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

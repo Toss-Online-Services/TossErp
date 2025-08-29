@@ -75,11 +75,11 @@ public class GetJournalEntriesQueryHandler : IRequestHandler<GetJournalEntriesQu
         {
             Id = journalEntry.Id,
             TenantId = journalEntry.TenantId,
-            EntryNumber = journalEntry.EntryNumber.Value,
-            EntryDate = journalEntry.EntryDate,
+            EntryNumber = journalEntry.EntryNumber,
+            EntryDate = DateOnly.FromDateTime(journalEntry.EntryDate),
             Reference = journalEntry.Reference,
             Description = journalEntry.Description,
-            Status = journalEntry.Status,
+            Status = journalEntry.Status.ToString(),
             TotalDebitAmount = journalEntry.TotalDebitAmount.Amount,
             TotalCreditAmount = journalEntry.TotalCreditAmount.Amount,
             Lines = journalEntry.Lines.Select(MapLineToDto).ToList(),
@@ -151,11 +151,11 @@ public class GetJournalEntryByIdQueryHandler : IRequestHandler<GetJournalEntryBy
         {
             Id = journalEntry.Id,
             TenantId = journalEntry.TenantId,
-            EntryNumber = journalEntry.EntryNumber.Value,
-            EntryDate = journalEntry.EntryDate,
+            EntryNumber = journalEntry.EntryNumber,
+            EntryDate = DateOnly.FromDateTime(journalEntry.EntryDate),
             Reference = journalEntry.Reference,
             Description = journalEntry.Description,
-            Status = journalEntry.Status,
+            Status = journalEntry.Status.ToString(),
             TotalDebitAmount = journalEntry.TotalDebitAmount.Amount,
             TotalCreditAmount = journalEntry.TotalCreditAmount.Amount,
             Lines = journalEntry.Lines.Select(MapLineToDto).ToList(),
@@ -186,3 +186,4 @@ public class GetJournalEntryByIdQueryHandler : IRequestHandler<GetJournalEntryBy
         };
     }
 }
+

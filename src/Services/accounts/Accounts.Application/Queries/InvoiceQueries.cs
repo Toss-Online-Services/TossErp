@@ -1,3 +1,5 @@
+using TossErp.Accounts.Application.Common;
+
 namespace TossErp.Accounts.Application.Queries;
 
 /// <summary>
@@ -97,14 +99,14 @@ public class GetInvoicesQueryHandler : IRequestHandler<GetInvoicesQuery, Paginat
         {
             Id = invoice.Id,
             TenantId = invoice.TenantId,
-            InvoiceNumber = invoice.InvoiceNumber.Value,
+            InvoiceNumber = invoice.InvoiceNumber,
             CustomerId = invoice.CustomerId,
             CustomerName = customer?.Name ?? "Unknown Customer",
             CustomerEmail = customer?.Email ?? string.Empty,
             Status = invoice.Status,
-            IssueDate = invoice.IssueDate,
-            DueDate = invoice.DueDate,
-            PaidDate = invoice.PaidDate,
+            IssueDate = DateOnly.FromDateTime(invoice.IssueDate),
+            DueDate = DateOnly.FromDateTime(invoice.DueDate),
+            PaidDate = invoice.PaidDate.HasValue ? DateOnly.FromDateTime(invoice.PaidDate.Value) : null,
             SubtotalAmount = invoice.SubtotalAmount.Amount,
             TaxAmount = invoice.TaxAmount.Amount,
             DiscountAmount = invoice.DiscountAmount.Amount,
@@ -138,7 +140,7 @@ public class GetInvoicesQueryHandler : IRequestHandler<GetInvoicesQuery, Paginat
             LineTotal = lineItem.LineTotal.Amount,
             DiscountPercentage = lineItem.DiscountPercentage,
             DiscountAmount = lineItem.DiscountAmount?.Amount,
-            TaxRate = lineItem.TaxRate,
+            TaxRate = lineItem.TaxRate?.Rate,
             TaxAmount = lineItem.TaxAmount?.Amount,
             ProductCode = lineItem.ProductCode,
             Unit = lineItem.Unit
@@ -155,6 +157,21 @@ public class GetInvoicesQueryHandler : IRequestHandler<GetInvoicesQuery, Paginat
             State = address.State,
             PostalCode = address.PostalCode,
             Country = address.Country
+        };
+    }
+
+    private static CustomerAddressDto MapAddressToDto(Address address)
+    {
+        return new CustomerAddressDto
+        {
+            Street = address.Street,
+            Street2 = null, // Address value object doesn't have Street2
+            City = address.City,
+            State = address.Province, // Map Province to State
+            PostalCode = address.PostalCode,
+            Country = address.Country,
+            Type = "General", // Default type for value object addresses
+            IsPrimary = false
         };
     }
 }
@@ -195,7 +212,7 @@ public class GetInvoiceByIdQueryHandler : IRequestHandler<GetInvoiceByIdQuery, I
 
         var customer = await _customerRepository.GetByIdAsync(invoice.CustomerId, cancellationToken);
 
-        return MapToDto(invoice, customer);
+        return InvoiceMappingHelper.MapToDto(invoice, customer);
     }
 
     private static InvoiceDto MapToDto(Invoice invoice, Customer? customer)
@@ -204,14 +221,14 @@ public class GetInvoiceByIdQueryHandler : IRequestHandler<GetInvoiceByIdQuery, I
         {
             Id = invoice.Id,
             TenantId = invoice.TenantId,
-            InvoiceNumber = invoice.InvoiceNumber.Value,
+            InvoiceNumber = invoice.InvoiceNumber,
             CustomerId = invoice.CustomerId,
             CustomerName = customer?.Name ?? "Unknown Customer",
             CustomerEmail = customer?.Email ?? string.Empty,
             Status = invoice.Status,
-            IssueDate = invoice.IssueDate,
-            DueDate = invoice.DueDate,
-            PaidDate = invoice.PaidDate,
+            IssueDate = DateOnly.FromDateTime(invoice.IssueDate),
+            DueDate = DateOnly.FromDateTime(invoice.DueDate),
+            PaidDate = invoice.PaidDate.HasValue ? DateOnly.FromDateTime(invoice.PaidDate.Value) : null,
             SubtotalAmount = invoice.SubtotalAmount.Amount,
             TaxAmount = invoice.TaxAmount.Amount,
             DiscountAmount = invoice.DiscountAmount.Amount,
@@ -245,7 +262,7 @@ public class GetInvoiceByIdQueryHandler : IRequestHandler<GetInvoiceByIdQuery, I
             LineTotal = lineItem.LineTotal.Amount,
             DiscountPercentage = lineItem.DiscountPercentage,
             DiscountAmount = lineItem.DiscountAmount?.Amount,
-            TaxRate = lineItem.TaxRate,
+            TaxRate = lineItem.TaxRate?.Rate,
             TaxAmount = lineItem.TaxAmount?.Amount,
             ProductCode = lineItem.ProductCode,
             Unit = lineItem.Unit
@@ -262,6 +279,21 @@ public class GetInvoiceByIdQueryHandler : IRequestHandler<GetInvoiceByIdQuery, I
             State = address.State,
             PostalCode = address.PostalCode,
             Country = address.Country
+        };
+    }
+
+    private static CustomerAddressDto MapAddressToDto(Address address)
+    {
+        return new CustomerAddressDto
+        {
+            Street = address.Street,
+            Street2 = null, // Address value object doesn't have Street2
+            City = address.City,
+            State = address.Province, // Map Province to State
+            PostalCode = address.PostalCode,
+            Country = address.Country,
+            Type = "General", // Default type for value object addresses
+            IsPrimary = false
         };
     }
 }
@@ -333,14 +365,14 @@ public class GetOverdueInvoicesQueryHandler : IRequestHandler<GetOverdueInvoices
         {
             Id = invoice.Id,
             TenantId = invoice.TenantId,
-            InvoiceNumber = invoice.InvoiceNumber.Value,
+            InvoiceNumber = invoice.InvoiceNumber,
             CustomerId = invoice.CustomerId,
             CustomerName = customer?.Name ?? "Unknown Customer",
             CustomerEmail = customer?.Email ?? string.Empty,
             Status = invoice.Status,
-            IssueDate = invoice.IssueDate,
-            DueDate = invoice.DueDate,
-            PaidDate = invoice.PaidDate,
+            IssueDate = DateOnly.FromDateTime(invoice.IssueDate),
+            DueDate = DateOnly.FromDateTime(invoice.DueDate),
+            PaidDate = invoice.PaidDate.HasValue ? DateOnly.FromDateTime(invoice.PaidDate.Value) : null,
             SubtotalAmount = invoice.SubtotalAmount.Amount,
             TaxAmount = invoice.TaxAmount.Amount,
             DiscountAmount = invoice.DiscountAmount.Amount,
@@ -374,7 +406,7 @@ public class GetOverdueInvoicesQueryHandler : IRequestHandler<GetOverdueInvoices
             LineTotal = lineItem.LineTotal.Amount,
             DiscountPercentage = lineItem.DiscountPercentage,
             DiscountAmount = lineItem.DiscountAmount?.Amount,
-            TaxRate = lineItem.TaxRate,
+            TaxRate = lineItem.TaxRate?.Rate,
             TaxAmount = lineItem.TaxAmount?.Amount,
             ProductCode = lineItem.ProductCode,
             Unit = lineItem.Unit
@@ -391,6 +423,21 @@ public class GetOverdueInvoicesQueryHandler : IRequestHandler<GetOverdueInvoices
             State = address.State,
             PostalCode = address.PostalCode,
             Country = address.Country
+        };
+    }
+
+    private static CustomerAddressDto MapAddressToDto(Address address)
+    {
+        return new CustomerAddressDto
+        {
+            Street = address.Street,
+            Street2 = null, // Address value object doesn't have Street2
+            City = address.City,
+            State = address.Province, // Map Province to State
+            PostalCode = address.PostalCode,
+            Country = address.Country,
+            Type = "General", // Default type for value object addresses
+            IsPrimary = false
         };
     }
 }
