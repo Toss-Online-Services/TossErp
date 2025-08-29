@@ -134,18 +134,18 @@ public interface IPaymentRepository
 }
 
 /// <summary>
-/// Repository interface for ChartOfAccounts operations
+/// Repository interface for ChartOfAccount operations
 /// </summary>
 public interface IChartOfAccountsRepository
 {
-    Task<ChartOfAccounts?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<ChartOfAccounts?> GetByCodeAsync(string accountCode, CancellationToken cancellationToken = default);
-    Task<ChartOfAccounts?> GetByAccountCodeAsync(string accountCode, CancellationToken cancellationToken = default);
-    Task<IEnumerable<ChartOfAccounts>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken = default);
-    Task<IEnumerable<ChartOfAccounts>> GetByAccountTypeAsync(AccountType accountType, CancellationToken cancellationToken = default);
-    Task<IEnumerable<ChartOfAccounts>> GetActiveAccountsAsync(CancellationToken cancellationToken = default);
+    Task<ChartOfAccount?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<ChartOfAccount?> GetByCodeAsync(string accountCode, CancellationToken cancellationToken = default);
+    Task<ChartOfAccount?> GetByAccountCodeAsync(string accountCode, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ChartOfAccount>> GetByParentIdAsync(Guid parentId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ChartOfAccount>> GetByAccountTypeAsync(AccountType accountType, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ChartOfAccount>> GetActiveAccountsAsync(CancellationToken cancellationToken = default);
     Task<bool> AccountCodeExistsAsync(string accountCode, Guid? excludeId = null, CancellationToken cancellationToken = default);
-    Task<(IEnumerable<ChartOfAccounts> Accounts, int TotalCount)> GetPagedAsync(
+    Task<(IEnumerable<ChartOfAccount> Accounts, int TotalCount)> GetPagedAsync(
         AccountType? accountType = null,
         Guid? parentAccountId = null,
         bool? isActive = null,
@@ -153,16 +153,16 @@ public interface IChartOfAccountsRepository
         int pageNumber = 1,
         int pageSize = 50,
         CancellationToken cancellationToken = default);
-    Task<ChartOfAccounts> AddAsync(ChartOfAccounts account, CancellationToken cancellationToken = default);
-    Task<ChartOfAccounts> UpdateAsync(ChartOfAccounts account, CancellationToken cancellationToken = default);
-    Task<IEnumerable<ChartOfAccounts>> GetChildAccountsAsync(Guid parentAccountId, CancellationToken cancellationToken = default);
-    ChartOfAccounts Update(ChartOfAccounts account);
-    void Delete(ChartOfAccounts account);
-    Task<IEnumerable<ChartOfAccounts>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<IEnumerable<ChartOfAccounts>> FindAsync(Expression<Func<ChartOfAccounts, bool>> predicate, CancellationToken cancellationToken = default);
-    Task<ChartOfAccounts?> FirstOrDefaultAsync(Expression<Func<ChartOfAccounts, bool>> predicate, CancellationToken cancellationToken = default);
-    Task<bool> ExistsAsync(Expression<Func<ChartOfAccounts, bool>> predicate, CancellationToken cancellationToken = default);
-    Task<int> CountAsync(Expression<Func<ChartOfAccounts, bool>>? predicate = null, CancellationToken cancellationToken = default);
+    Task<ChartOfAccount> AddAsync(ChartOfAccount account, CancellationToken cancellationToken = default);
+    Task<ChartOfAccount> UpdateAsync(ChartOfAccount account, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ChartOfAccount>> GetChildAccountsAsync(Guid parentAccountId, CancellationToken cancellationToken = default);
+    ChartOfAccount Update(ChartOfAccount account);
+    void Delete(ChartOfAccount account);
+    Task<IEnumerable<ChartOfAccount>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<ChartOfAccount>> FindAsync(Expression<Func<ChartOfAccount, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<ChartOfAccount?> FirstOrDefaultAsync(Expression<Func<ChartOfAccount, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(Expression<Func<ChartOfAccount, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<int> CountAsync(Expression<Func<ChartOfAccount, bool>>? predicate = null, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

@@ -1,4 +1,4 @@
-using TossErp.Accounts.Domain.SeedWork;
+using TossErp.Shared.SeedWork;
 using TossErp.Accounts.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,6 +11,16 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("ChartOfAccounts")]
 public class ChartOfAccount : AggregateRoot
 {
+    // Implement abstract properties from Entity<Guid>
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; } = string.Empty;
+
+    // Additional audit properties
+    public DateTime? UpdatedAt { get; private set; }
+    public string? UpdatedBy { get; private set; }
+    public Guid TenantId { get; private set; }
+
     [Required]
     [StringLength(20)]
     public string AccountCode { get; private set; } = string.Empty;
@@ -41,28 +51,31 @@ public class ChartOfAccount : AggregateRoot
     public virtual ChartOfAccount? ParentAccount { get; private set; }
     public virtual ICollection<ChartOfAccount> ChildAccounts { get; private set; } = new List<ChartOfAccount>();
 
-    private ChartOfAccount() : base() { }
+    private ChartOfAccount() { }
 
     public ChartOfAccount(
         Guid id,
-        string tenantId,
+        Guid tenantId,
         string accountCode,
         string accountName,
         AccountType accountType,
         string? description = null,
         Guid? parentAccountId = null,
-        string? createdBy = null) : base(id, tenantId)
+        string? createdBy = null)
     {
+        Id = id;
+        TenantId = tenantId;
         AccountCode = accountCode ?? throw new ArgumentNullException(nameof(accountCode));
         AccountName = accountName ?? throw new ArgumentNullException(nameof(accountName));
         AccountType = accountType;
         Description = description;
         ParentAccountId = parentAccountId;
-        CreatedBy = createdBy;
+        CreatedAt = DateTime.UtcNow;
+        CreatedBy = createdBy ?? string.Empty;
     }
 
     public static ChartOfAccount Create(
-        string tenantId,
+        Guid tenantId,
         string accountCode,
         string accountName,
         AccountType accountType,
@@ -79,6 +92,12 @@ public class ChartOfAccount : AggregateRoot
             description,
             parentAccountId,
             createdBy);
+    }
+
+    private void MarkAsUpdated(string? updatedBy = null)
+    {
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = updatedBy;
     }
 
     public void UpdateBasicInfo(

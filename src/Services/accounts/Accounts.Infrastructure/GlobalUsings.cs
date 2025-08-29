@@ -34,19 +34,13 @@ global using MediatR;
 global using TossErp.Accounts.Domain.Entities;
 global using TossErp.Accounts.Domain.Enums;
 global using TossErp.Accounts.Domain.ValueObjects;
-global using TossErp.Accounts.Domain.Interfaces;
-global using TossErp.Accounts.Domain.Specifications;
 
 // Application Layer
 global using TossErp.Accounts.Application.Common.Interfaces;
 
-// Infrastructure Layer
+// Infrastructure Layer - only existing namespaces
 global using TossErp.Accounts.Infrastructure.Data;
-global using TossErp.Accounts.Infrastructure.Repositories;
-global using TossErp.Accounts.Infrastructure.Services;
-global using TossErp.Accounts.Infrastructure.BackgroundServices;
-global using TossErp.Accounts.Infrastructure.Migrations;
 
-// Shared Kernel
+// Shared Kernel and SeedWork - prefer shared over domain versions
+global using TossErp.Shared.SeedWork;
 global using TossErp.SharedKernel.Interfaces;
-global using TossErp.SharedKernel.Common;

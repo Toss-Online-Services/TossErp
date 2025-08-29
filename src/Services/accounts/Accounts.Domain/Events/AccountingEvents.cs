@@ -2,6 +2,7 @@ using MediatR;
 using TossErp.Accounts.Domain.Entities;
 using TossErp.Accounts.Domain.Enums;
 using TossErp.Accounts.Domain.ValueObjects;
+using TossErp.Shared.SeedWork;
 
 namespace TossErp.Accounts.Domain.Events;
 
@@ -11,68 +12,112 @@ public record AccountCreatedEvent(
     string TenantId,
     string AccountNumber,
     string AccountName,
-    AccountType AccountType) : INotification;
+    AccountType AccountType) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record AccountUpdatedEvent(
     Guid AccountId,
     string TenantId,
     string AccountNumber,
-    string NewAccountName) : INotification;
+    string NewAccountName) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record AccountActivatedEvent(
     Guid AccountId,
     string TenantId,
-    string AccountNumber) : INotification;
+    string AccountNumber) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record AccountDeactivatedEvent(
     Guid AccountId,
     string TenantId,
-    string AccountNumber) : INotification;
+    string AccountNumber) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record AccountBalanceUpdatedEvent(
     Guid AccountId,
     string TenantId,
     string AccountNumber,
-    Money NewBalance) : INotification;
+    Money NewBalance) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 // Financial Transaction Events
 public record TransactionCreatedEvent(
     Guid TransactionId,
     string TenantId,
     string TransactionNumber,
-    TransactionType TransactionType) : INotification;
+    TransactionType TransactionType) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record TransactionSubmittedEvent(
     Guid TransactionId,
     string TenantId,
     string TransactionNumber,
-    string SubmittedBy) : INotification;
+    string SubmittedBy) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record TransactionApprovedEvent(
     Guid TransactionId,
     string TenantId,
     string TransactionNumber,
-    string ApprovedBy) : INotification;
+    string ApprovedBy) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record TransactionRejectedEvent(
     Guid TransactionId,
     string TenantId,
     string TransactionNumber,
     string RejectedBy,
-    string Reason) : INotification;
+    string Reason) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record TransactionPostedEvent(
     Guid TransactionId,
     string TenantId,
     string TransactionNumber,
-    List<JournalEntryLine> JournalLines) : INotification;
+    List<JournalEntryLine> JournalLines) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record TransactionCancelledEvent(
     Guid TransactionId,
     string TenantId,
     string TransactionNumber,
     string CancelledBy,
-    string Reason) : INotification;
+    string Reason) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 // Invoice Events
 public record InvoiceCreatedEvent(
@@ -80,19 +125,31 @@ public record InvoiceCreatedEvent(
     string TenantId,
     string InvoiceNumber,
     Guid CustomerId,
-    InvoiceType InvoiceType) : INotification;
+    InvoiceType InvoiceType) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record InvoiceSubmittedEvent(
     Guid InvoiceId,
     string TenantId,
     string InvoiceNumber,
-    Money TotalAmount) : INotification;
+    Money TotalAmount) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record InvoiceApprovedEvent(
     Guid InvoiceId,
     string TenantId,
     string InvoiceNumber,
-    string ApprovedBy) : INotification;
+    string ApprovedBy) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record InvoiceSentEvent(
     Guid InvoiceId,
@@ -100,7 +157,11 @@ public record InvoiceSentEvent(
     string InvoiceNumber,
     Guid CustomerId,
     Money TotalAmount,
-    DateTime DueDate) : INotification;
+    DateTime DueDate) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record InvoicePaymentReceivedEvent(
     Guid InvoiceId,
@@ -108,27 +169,43 @@ public record InvoicePaymentReceivedEvent(
     string InvoiceNumber,
     Money PaymentAmount,
     DateTime PaymentDate,
-    string PaymentReference) : INotification;
+    string PaymentReference) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record InvoicePaidEvent(
     Guid InvoiceId,
     string TenantId,
     string InvoiceNumber,
     Money TotalAmount,
-    DateTime PaymentDate) : INotification;
+    DateTime PaymentDate) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record InvoiceOverdueEvent(
     Guid InvoiceId,
     string TenantId,
     string InvoiceNumber,
     Money OutstandingAmount,
-    DateTime DueDate) : INotification;
+    DateTime DueDate) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record InvoiceCancelledEvent(
     Guid InvoiceId,
     string TenantId,
     string InvoiceNumber,
-    string Reason) : INotification;
+    string Reason) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 // Budget Events
 public record BudgetCreatedEvent(
@@ -136,51 +213,83 @@ public record BudgetCreatedEvent(
     string TenantId,
     string BudgetName,
     BudgetType BudgetType,
-    Money TotalBudget) : INotification;
+    Money TotalBudget) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record BudgetSubmittedEvent(
     Guid BudgetId,
     string TenantId,
-    string BudgetName) : INotification;
+    string BudgetName) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record BudgetApprovedEvent(
     Guid BudgetId,
     string TenantId,
     string BudgetName,
-    string ApprovedBy) : INotification;
+    string ApprovedBy) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record BudgetActivatedEvent(
     Guid BudgetId,
     string TenantId,
-    string BudgetName) : INotification;
+    string BudgetName) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record BudgetExpenseRecordedEvent(
     Guid BudgetId,
     string TenantId,
     string BudgetName,
     Money ExpenseAmount,
-    string Description) : INotification;
+    string Description) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record BudgetFundsCommittedEvent(
     Guid BudgetId,
     string TenantId,
     string BudgetName,
     Money CommittedAmount,
-    string Description) : INotification;
+    string Description) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record BudgetThresholdExceededEvent(
     Guid BudgetId,
     string TenantId,
     string BudgetName,
     decimal CurrentUtilization,
-    decimal ThresholdPercentage) : INotification;
+    decimal ThresholdPercentage) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 public record BudgetClosedEvent(
     Guid BudgetId,
     string TenantId,
     string BudgetName,
     Money ActualSpent,
-    Money TotalBudget) : INotification;
+    Money TotalBudget) : IDomainEvent, INotification
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+}
 
 // Payment Events
 public record PaymentCreatedEvent(
