@@ -1,3 +1,6 @@
+using TossErp.Shared.SeedWork;
+using Notifications.Domain.Entities;
+
 namespace Notifications.Domain.Repositories;
 
 public interface INotificationAuditLogRepository

@@ -1,5 +1,5 @@
 using TossErp.Accounts.Domain.Enums;
-using TossErp.Accounts.Domain.SeedWork;
+using TossErp.Shared.SeedWork;
 using TossErp.Accounts.Domain.ValueObjects;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,6 +13,10 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("Bills")]
 public class Bill : AggregateRoot
 {
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; }
+    
     [Required]
     [StringLength(50)]
     public string BillNumber { get; private set; } = string.Empty;
@@ -97,12 +101,7 @@ public class Bill : AggregateRoot
     public string? ApprovedBy { get; private set; }
 
     // Audit fields
-    public new DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
-
     public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
-
-    [StringLength(100)]
-    public new string? CreatedBy { get; private set; }
 
     [StringLength(100)]
     public string? ModifiedBy { get; private set; }
@@ -129,16 +128,17 @@ public class Bill : AggregateRoot
         string? description = null,
         string? supplierInvoiceNumber = null) : base(id, tenantId)
     {
+        Id = id;
+        CreatedAt = DateTime.UtcNow;
+        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         BillNumber = billNumber?.Trim() ?? throw new ArgumentException("Bill number cannot be empty");
         SupplierId = supplierId;
         SupplierName = supplierName?.Trim();
         SupplierInvoiceNumber = supplierInvoiceNumber?.Trim();
         BillDate = billDate.Date;
         DueDate = dueDate.Date;
-        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         BillType = billType;
         Description = description?.Trim();
-        CreatedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
         OutstandingAmount = TotalAmount;

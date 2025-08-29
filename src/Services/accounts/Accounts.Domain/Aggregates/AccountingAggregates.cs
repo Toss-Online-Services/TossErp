@@ -2,9 +2,8 @@ using MediatR;
 using TossErp.Accounts.Domain.Entities;
 using TossErp.Accounts.Domain.Enums;
 using TossErp.Accounts.Domain.Events;
-using TossErp.Accounts.Domain.SeedWork;
-using TossErp.Accounts.Domain.ValueObjects;
 using TossErp.Shared.SeedWork;
+using TossErp.Accounts.Domain.ValueObjects;
 
 namespace TossErp.Accounts.Domain.Aggregates;
 
@@ -177,6 +176,10 @@ public class ChartOfAccounts : TossErp.Shared.SeedWork.AggregateRoot
 /// </summary>
 public class FinancialTransaction : AggregateRoot
 {
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; }
+    
     public string TenantId { get; private set; }
     public string TransactionNumber { get; private set; }
     public DateTime TransactionDate { get; private set; }
@@ -186,8 +189,6 @@ public class FinancialTransaction : AggregateRoot
     public string? Reference { get; private set; }
     public Money TotalAmount { get; private set; }
     public CurrencyCode Currency { get; private set; }
-    public string CreatedBy { get; private set; }
-    public DateTime CreatedAt { get; private set; }
     public string? ApprovedBy { get; private set; }
     public DateTime? ApprovedAt { get; private set; }
     public string? PostedBy { get; private set; }
@@ -356,6 +357,10 @@ public class FinancialTransaction : AggregateRoot
 /// </summary>
 public class Invoice : AggregateRoot
 {
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; }
+    
     public string TenantId { get; private set; }
     public string InvoiceNumber { get; private set; }
     public InvoiceType InvoiceType { get; private set; }
@@ -377,8 +382,6 @@ public class Invoice : AggregateRoot
     public string? Terms { get; private set; }
     public BillingPeriod? BillingPeriod { get; private set; }
     public Guid? SubscriptionId { get; private set; }
-    public string CreatedBy { get; private set; }
-    public DateTime CreatedAt { get; private set; }
 
     private readonly List<InvoiceLine> _lines;
     public IReadOnlyList<InvoiceLine> Lines => _lines.AsReadOnly();
@@ -578,6 +581,10 @@ public class Invoice : AggregateRoot
 /// </summary>
 public class Budget : AggregateRoot
 {
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; }
+    
     public string TenantId { get; private set; }
     public string BudgetName { get; private set; }
     public string? Description { get; private set; }
@@ -590,8 +597,6 @@ public class Budget : AggregateRoot
     public Money ActualSpent { get; private set; }
     public Money Committed { get; private set; }
     public Money Available { get; private set; }
-    public string CreatedBy { get; private set; }
-    public DateTime CreatedAt { get; private set; }
     public string? ApprovedBy { get; private set; }
     public DateTime? ApprovedAt { get; private set; }
 

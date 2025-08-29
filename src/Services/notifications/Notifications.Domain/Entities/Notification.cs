@@ -1,7 +1,12 @@
+using TossErp.Shared.SeedWork;
+
 namespace Notifications.Domain.Entities;
 
 public class Notification : Entity
 {
+    public override Guid Id { get; protected set; }
+    public DateTime CreatedAt { get; private set; }
+    public string CreatedBy { get; private set; }
     public string Title { get; private set; }
     public string Message { get; private set; }
     public NotificationType Type { get; private set; }
@@ -13,7 +18,6 @@ public class Notification : Entity
     public NotificationChannel Channel { get; private set; }
     public string TemplateId { get; private set; }
     public Dictionary<string, object> TemplateVariables { get; private set; }
-    public DateTime CreatedAt { get; private set; }
     public DateTime? ScheduledAt { get; private set; }
     public DateTime? SentAt { get; private set; }
     public DateTime? DeliveredAt { get; private set; }
@@ -39,6 +43,8 @@ public class Notification : Entity
         bool requiresConsent = false)
     {
         Id = Guid.NewGuid();
+        CreatedAt = DateTime.UtcNow;
+        CreatedBy = "system"; // TODO: Get from context
         Title = title ?? throw new ArgumentNullException(nameof(title));
         Message = message ?? throw new ArgumentNullException(nameof(message));
         Type = type;
@@ -50,7 +56,6 @@ public class Notification : Entity
         Channel = channel;
         TemplateId = templateId ?? string.Empty;
         TemplateVariables = templateVariables ?? new Dictionary<string, object>();
-        CreatedAt = DateTime.UtcNow;
         ScheduledAt = scheduledAt;
         RetryCount = 0;
         MaxRetries = 3;
@@ -60,6 +65,13 @@ public class Notification : Entity
 
     private Notification() 
     {
+        Title = string.Empty;
+        Message = string.Empty;
+        CreatedBy = string.Empty;
+        RecipientId = string.Empty;
+        RecipientEmail = string.Empty;
+        RecipientPhone = string.Empty;
+        TemplateId = string.Empty;
         TemplateVariables = new Dictionary<string, object>();
     }
 

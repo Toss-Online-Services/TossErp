@@ -1,3 +1,5 @@
+using TossErp.Shared.SeedWork;
+
 namespace TossErp.CRM.Domain.Events;
 
 /// <summary>
