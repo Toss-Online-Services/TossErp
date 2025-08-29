@@ -431,7 +431,8 @@ public enum SubscriptionStatus
     Trial = 5,
     PastDue = 6,
     Suspended = 7,
-    PendingActivation = 8
+    PendingActivation = 8,
+    PendingCancellation = 9
 }
 
 /// <summary>

@@ -69,7 +69,7 @@ public class GetTrialBalanceQueryHandler : IRequestHandler<GetTrialBalanceQuery,
         _logger.LogInformation("Getting trial balance as of {AsOfDate}", request.AsOfDate);
 
         var trialBalance = await _financialReportingService.GetTrialBalanceAsync(
-            request.AsOfDate, request.IncludeZeroBalances, cancellationToken);
+            request.AsOfDate, null, cancellationToken);
 
         return trialBalance;
     }
@@ -272,7 +272,7 @@ public class GetAccountsReceivableAgingQueryHandler : IRequestHandler<GetAccount
             foreach (var invoice in customerInvoices)
             {
                 var daysOverdue = (request.AsOfDate.DayNumber - invoice.DueDate.DayNumber);
-                var amount = invoice.BalanceAmount.Amount;
+                var amount = invoice.BalanceAmount;
 
                 agingDto.TotalOutstanding += amount;
 
@@ -431,9 +431,9 @@ public class GetMonthlyRecurringRevenueQueryHandler : IRequestHandler<GetMonthly
     {
         return subscription.BillingFrequency switch
         {
-            BillingFrequency.Monthly => subscription.PlanPrice.Amount,
-            BillingFrequency.Quarterly => subscription.PlanPrice.Amount / 3,
-            BillingFrequency.Annually => subscription.PlanPrice.Amount / 12,
+            BillingFrequency.Monthly => subscription.MonthlyAmount,
+            BillingFrequency.Quarterly => subscription.MonthlyAmount / 3,
+            BillingFrequency.Annually => subscription.MonthlyAmount / 12,
             _ => 0
         };
     }

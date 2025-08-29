@@ -172,6 +172,7 @@ public class InvoiceSummaryDto
 public class InvoiceLineItemDto
 {
     public Guid Id { get; set; }
+    public string ProductName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public decimal Quantity { get; set; }
     public decimal UnitPrice { get; set; }
@@ -267,6 +268,10 @@ public class SubscriptionDto
     public decimal YearlyAmount { get; set; }
     public string Currency { get; set; } = string.Empty;
     public BillingCycle BillingCycle { get; set; }
+    public BillingFrequency BillingFrequency { get; set; }
+    public decimal PlanPrice { get; set; }
+    public int? BillingCycleDay { get; set; }
+    public int? TrialDays { get; set; }
     public DateOnly StartDate { get; set; }
     public DateOnly? EndDate { get; set; }
     public DateOnly? TrialEndDate { get; set; }
@@ -276,6 +281,7 @@ public class SubscriptionDto
     public Dictionary<string, object> Features { get; set; } = new();
     public string? CancellationReason { get; set; }
     public DateTime? CancelledAt { get; set; }
+    public string? CancelledBy { get; set; }
     public string? Notes { get; set; }
     public DateTime CreatedAt { get; set; }
     public string? CreatedBy { get; set; }
@@ -358,7 +364,7 @@ public class JournalEntryDto
     // Application layer compatibility properties
     public string Status { get; set; } = string.Empty;
     public string? Notes { get; set; }
-    public Guid? ReversalEntryId { get; set; }
+    public Guid? ReversalJournalId { get; set; }
     public string? ReversalReason { get; set; }
     public string? AccountName { get; set; }
     public string? AccountCode { get; set; }

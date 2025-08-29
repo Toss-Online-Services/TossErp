@@ -390,6 +390,58 @@ public class Subscription : Entity
         ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
     }
 
+    public void Renew(string modifiedBy)
+    {
+        if (Status != SubscriptionStatus.Active && Status != SubscriptionStatus.PastDue)
+            throw new InvalidOperationException($"Cannot renew subscription with status {Status}");
+
+        Status = SubscriptionStatus.Active;
+        LastBillingDate = DateTime.UtcNow.Date;
+        CalculateNextBillingDate();
+        GracePeriodEndDate = null;
+        
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
+    }
+
+    public void CancelImmediately(string reason, string cancelledBy)
+    {
+        Status = SubscriptionStatus.Cancelled;
+        CancelledDate = DateTime.UtcNow;
+        CancelledBy = cancelledBy?.Trim() ?? throw new ArgumentException("CancelledBy cannot be empty");
+        CancellationReason = reason?.Trim();
+        EndDate = DateTime.UtcNow.Date;
+        
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = cancelledBy;
+    }
+
+    public void CancelAtPeriodEnd(string reason, string cancelledBy)
+    {
+        Status = SubscriptionStatus.PendingCancellation;
+        CancelledBy = cancelledBy?.Trim() ?? throw new ArgumentException("CancelledBy cannot be empty");
+        CancellationReason = reason?.Trim();
+        EndDate = NextBillingDate;
+        
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = cancelledBy;
+    }
+
+    public void Renew(DateTime newEndDate, string modifiedBy)
+    {
+        if (Status != SubscriptionStatus.Active && Status != SubscriptionStatus.PastDue)
+            throw new InvalidOperationException($"Cannot renew subscription with status {Status}");
+
+        Status = SubscriptionStatus.Active;
+        LastBillingDate = DateTime.UtcNow.Date;
+        EndDate = newEndDate;
+        CalculateNextBillingDate();
+        GracePeriodEndDate = null;
+        
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = modifiedBy?.Trim() ?? throw new ArgumentException("ModifiedBy cannot be empty");
+    }
+
     private void CalculateNextBillingDate()
     {
         var baseDate = LastBillingDate ?? StartDate;

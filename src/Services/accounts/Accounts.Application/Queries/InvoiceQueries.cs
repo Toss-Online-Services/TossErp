@@ -60,7 +60,7 @@ public class GetInvoicesQueryHandler : IRequestHandler<GetInvoicesQuery, Paginat
             Currency = request.Currency
         };
 
-        var invoices = await _invoiceRepository.GetPagedAsync(
+        var (invoiceList, totalCount) = await _invoiceRepository.GetPagedAsync(
             filter,
             request.PageNumber,
             request.PageSize,
@@ -69,7 +69,7 @@ public class GetInvoicesQueryHandler : IRequestHandler<GetInvoicesQuery, Paginat
             cancellationToken);
 
         // Get customer information for mapping
-        var customerIds = invoices.Items.Select(i => i.CustomerId).Distinct().ToList();
+        var customerIds = invoiceList.Select(i => i.CustomerId).Distinct().ToList();
         var customers = new Dictionary<Guid, Customer>();
         
         foreach (var customerId in customerIds)
@@ -81,15 +81,15 @@ public class GetInvoicesQueryHandler : IRequestHandler<GetInvoicesQuery, Paginat
             }
         }
 
-        var invoiceDtos = invoices.Items.Select(invoice => MapToDto(invoice, customers.GetValueOrDefault(invoice.CustomerId))).ToList();
+        var invoiceDtos = invoiceList.Select(invoice => InvoiceMappingHelper.MapToDto(invoice, customers.GetValueOrDefault(invoice.CustomerId))).ToList();
 
         return new PaginatedResult<InvoiceDto>
         {
             Items = invoiceDtos,
-            TotalCount = invoices.TotalCount,
-            PageNumber = invoices.PageNumber,
-            PageSize = invoices.PageSize,
-            TotalPages = invoices.TotalPages
+            TotalCount = totalCount,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize)
         };
     }
 
@@ -329,13 +329,17 @@ public class GetOverdueInvoicesQueryHandler : IRequestHandler<GetOverdueInvoices
     {
         _logger.LogInformation("Getting overdue invoices");
 
-        var overdueInvoices = await _invoiceRepository.GetOverdueInvoicesAsync(
-            request.PageNumber,
-            request.PageSize,
-            cancellationToken);
+        var allOverdueInvoices = await _invoiceRepository.GetOverdueInvoicesAsync(cancellationToken);
+        var totalCount = allOverdueInvoices.Count();
+        
+        // Manual pagination
+        var pagedInvoices = allOverdueInvoices
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToList();
 
         // Get customer information for mapping
-        var customerIds = overdueInvoices.Items.Select(i => i.CustomerId).Distinct().ToList();
+        var customerIds = pagedInvoices.Select(i => i.CustomerId).Distinct().ToList();
         var customers = new Dictionary<Guid, Customer>();
         
         foreach (var customerId in customerIds)
@@ -347,15 +351,15 @@ public class GetOverdueInvoicesQueryHandler : IRequestHandler<GetOverdueInvoices
             }
         }
 
-        var invoiceDtos = overdueInvoices.Items.Select(invoice => MapToDto(invoice, customers.GetValueOrDefault(invoice.CustomerId))).ToList();
+        var invoiceDtos = pagedInvoices.Select(invoice => InvoiceMappingHelper.MapToDto(invoice, customers.GetValueOrDefault(invoice.CustomerId))).ToList();
 
         return new PaginatedResult<InvoiceDto>
         {
             Items = invoiceDtos,
-            TotalCount = overdueInvoices.TotalCount,
-            PageNumber = overdueInvoices.PageNumber,
-            PageSize = overdueInvoices.PageSize,
-            TotalPages = overdueInvoices.TotalPages
+            TotalCount = totalCount,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize)
         };
     }
 

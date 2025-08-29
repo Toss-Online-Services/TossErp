@@ -70,19 +70,10 @@ public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerComman
         var customer = Customer.Create(
             tenantId: tenantId,
             name: request.Name,
+            createdBy: currentUserId,
+            customerType: request.Type,
             email: request.Email,
-            phone: request.Phone,
-            type: request.Type,
-            companyName: request.CompanyName,
-            taxId: request.TaxId,
-            website: request.Website,
-            billingAddress: request.BillingAddress,
-            shippingAddress: request.ShippingAddress,
-            primaryContact: request.PrimaryContact,
-            preferredCurrency: request.PreferredCurrency,
-            preferredLanguage: request.PreferredLanguage,
-            notes: request.Notes,
-            createdBy: currentUserId);
+            phone: request.Phone);
 
         // Add additional contacts
         if (request.AdditionalContacts?.Any() == true)
@@ -284,9 +275,9 @@ public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerComman
             name: request.Name,
             email: request.Email,
             phone: request.Phone,
-            companyName: request.CompanyName,
-            taxId: request.TaxId,
-            website: request.Website,
+            
+            // // taxId: request.TaxId, // Parameter not available // Parameter not available
+            // website: request.Website, // Parameter not available
             notes: request.Notes,
             updatedBy: currentUserId);
 

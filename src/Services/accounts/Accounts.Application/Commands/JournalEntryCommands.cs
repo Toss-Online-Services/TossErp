@@ -106,7 +106,7 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
         var journalEntry = JournalEntry.Create(
             tenantId: tenantId,
             entryDate: request.EntryDate.ToDateTime(TimeOnly.MinValue),
-            reference: request.Reference,
+            referenceNumber: request.Reference,
             description: request.Description,
             lines: lines,
             notes: request.Notes,
@@ -145,7 +145,7 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
             Id = journalEntry.Id,
             TenantId = journalEntry.TenantId,
             EntryNumber = journalEntry.EntryNumber,
-            EntryDate = DateOnly.FromDateTime(journalEntry.EntryDate),
+            EntryDate = journalEntry.EntryDate,
             Reference = journalEntry.Reference,
             Description = journalEntry.Description,
             Status = journalEntry.Status.ToString(),
@@ -171,8 +171,8 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
             AccountCode = line.AccountCode,
             AccountName = line.AccountName,
             Description = line.Description,
-            DebitAmount = line.DebitAmount?.Amount,
-            CreditAmount = line.CreditAmount?.Amount,
+            DebitAmount = line.DebitAmount?.Amount ?? 0,
+            CreditAmount = line.CreditAmount?.Amount ?? 0,
             Reference = line.Reference
         };
     }
@@ -355,7 +355,7 @@ public class PostJournalEntryCommandHandler : IRequestHandler<PostJournalEntryCo
             Id = journalEntry.Id,
             TenantId = journalEntry.TenantId,
             EntryNumber = journalEntry.EntryNumber,
-            EntryDate = DateOnly.FromDateTime(journalEntry.EntryDate),
+            EntryDate = journalEntry.EntryDate,
             Reference = journalEntry.Reference,
             Description = journalEntry.Description,
             Status = journalEntry.Status.ToString(),
@@ -381,8 +381,8 @@ public class PostJournalEntryCommandHandler : IRequestHandler<PostJournalEntryCo
             AccountCode = line.AccountCode,
             AccountName = line.AccountName,
             Description = line.Description,
-            DebitAmount = line.DebitAmount?.Amount,
-            CreditAmount = line.CreditAmount?.Amount,
+            DebitAmount = line.DebitAmount?.Amount ?? 0,
+            CreditAmount = line.CreditAmount?.Amount ?? 0,
             Reference = line.Reference
         };
     }
@@ -498,7 +498,7 @@ public class ReverseJournalEntryCommandHandler : IRequestHandler<ReverseJournalE
         reversalEntry.ClearDomainEvents();
         originalEntry.ClearDomainEvents();
 
-        _logger.LogInformation("Successfully created reversal entry {ReversalEntryId} for original entry {OriginalEntryId}", 
+        _logger.LogInformation("Successfully created reversal entry {ReversalJournalId} for original entry {OriginalEntryId}", 
             reversalEntry.Id, request.JournalEntryId);
 
         // Get accounts for DTO mapping
@@ -523,7 +523,7 @@ public class ReverseJournalEntryCommandHandler : IRequestHandler<ReverseJournalE
             Id = journalEntry.Id,
             TenantId = journalEntry.TenantId,
             EntryNumber = journalEntry.EntryNumber,
-            EntryDate = DateOnly.FromDateTime(journalEntry.EntryDate),
+            EntryDate = journalEntry.EntryDate,
             Reference = journalEntry.Reference,
             Description = journalEntry.Description,
             Status = journalEntry.Status.ToString(),
@@ -533,7 +533,7 @@ public class ReverseJournalEntryCommandHandler : IRequestHandler<ReverseJournalE
             Notes = journalEntry.Notes,
             PostedAt = journalEntry.PostedAt,
             PostedBy = journalEntry.PostedBy,
-            ReversalEntryId = journalEntry.ReversalEntryId,
+            ReversalJournalId = journalEntry.ReversalJournalId,
             ReversalReason = journalEntry.ReversalReason,
             CreatedAt = DateOnly.FromDateTime(journalEntry.CreatedAt),
             CreatedBy = journalEntry.CreatedBy,
@@ -551,8 +551,8 @@ public class ReverseJournalEntryCommandHandler : IRequestHandler<ReverseJournalE
             AccountCode = line.AccountCode,
             AccountName = line.AccountName,
             Description = line.Description,
-            DebitAmount = line.DebitAmount?.Amount,
-            CreditAmount = line.CreditAmount?.Amount,
+            DebitAmount = line.DebitAmount?.Amount ?? 0,
+            CreditAmount = line.CreditAmount?.Amount ?? 0,
             Reference = line.Reference
         };
     }

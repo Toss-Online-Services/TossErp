@@ -47,16 +47,17 @@ public class GetChartOfAccountsQueryHandler : IRequestHandler<GetChartOfAccounts
             SearchTerm = request.SearchTerm
         };
 
-        var accounts = await _chartOfAccountsRepository.GetPagedAsync(
-            filter,
+        var (accountsList, totalCount) = await _chartOfAccountsRepository.GetPagedAsync(
+            filter.AccountType,
+            filter.ParentAccountId,
+            filter.IsActive,
+            filter.SearchTerm,
             request.PageNumber,
             request.PageSize,
-            request.SortBy,
-            request.SortDescending,
             cancellationToken);
 
         // Get parent account information for mapping
-        var parentAccountIds = accounts.Items
+        var parentAccountIds = accountsList
             .Where(a => a.ParentAccountId.HasValue)
             .Select(a => a.ParentAccountId!.Value)
             .Distinct()
@@ -72,15 +73,15 @@ public class GetChartOfAccountsQueryHandler : IRequestHandler<GetChartOfAccounts
             }
         }
 
-        var accountDtos = accounts.Items.Select(account => MapToDto(account, parentAccounts.GetValueOrDefault(account.ParentAccountId ?? Guid.Empty))).ToList();
+        var accountDtos = accountsList.Select(account => MapToDto(account, parentAccounts.GetValueOrDefault(account.ParentAccountId ?? Guid.Empty))).ToList();
 
         return new PaginatedResult<ChartOfAccountsDto>
         {
             Items = accountDtos,
-            TotalCount = accounts.TotalCount,
-            PageNumber = accounts.PageNumber,
-            PageSize = accounts.PageSize,
-            TotalPages = accounts.TotalPages
+            TotalCount = totalCount,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize)
         };
     }
 
