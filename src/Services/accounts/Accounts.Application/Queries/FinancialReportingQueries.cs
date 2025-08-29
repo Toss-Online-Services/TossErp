@@ -239,7 +239,7 @@ public class GetAccountsReceivableAgingQueryHandler : IRequestHandler<GetAccount
         _logger.LogInformation("Getting accounts receivable aging as of {AsOfDate}", request.AsOfDate);
 
         // Get all outstanding invoices
-        var outstandingInvoices = await _invoiceRepository.GetOutstandingInvoicesAsync(request.AsOfDate, cancellationToken);
+        var outstandingInvoices = await _invoiceRepository.GetOutstandingInvoicesAsync(request.AsOfDate.ToDateTime(TimeOnly.MinValue), cancellationToken);
         
         // Group by customer
         var customerGroups = outstandingInvoices.GroupBy(i => i.CustomerId).ToList();
@@ -263,16 +263,16 @@ public class GetAccountsReceivableAgingQueryHandler : IRequestHandler<GetAccount
             {
                 CustomerId = customerId,
                 CustomerName = customer.Name,
-                Currency = customerInvoices.First().Currency,
-                LastPaymentDate = lastPayment?.PaymentDate.ToDateTime(TimeOnly.MinValue) ?? DateTime.MinValue,
+                Currency = customerInvoices.First().Currency.ToString(),
+                LastPaymentDate = lastPayment?.PaymentDate ?? DateTime.MinValue,
                 ContactEmail = customer.Email ?? string.Empty,
                 ContactPhone = customer.Phone ?? string.Empty
             };
 
             foreach (var invoice in customerInvoices)
             {
-                var daysOverdue = (request.AsOfDate.DayNumber - invoice.DueDate.DayNumber);
-                var amount = invoice.BalanceAmount;
+                var daysOverdue = (request.AsOfDate.ToDateTime(TimeOnly.MinValue) - invoice.DueDate).Days;
+                var amount = invoice.BalanceAmount.Amount;
 
                 agingDto.TotalOutstanding += amount;
 
@@ -372,7 +372,7 @@ public class GetMonthlyRecurringRevenueQueryHandler : IRequestHandler<GetMonthly
             request.FromDate, request.ToDate);
 
         var subscriptions = await _subscriptionRepository.GetSubscriptionsForMRRAnalysisAsync(
-            request.FromDate, request.ToDate, request.Currency, cancellationToken);
+            request.FromDate.ToDateTime(TimeOnly.MinValue), request.ToDate.ToDateTime(TimeOnly.MinValue), cancellationToken);
 
         var mrrData = new List<MonthlyRecurringRevenueDto>();
         var currentDate = new DateOnly(request.FromDate.Year, request.FromDate.Month, 1);
@@ -381,22 +381,24 @@ public class GetMonthlyRecurringRevenueQueryHandler : IRequestHandler<GetMonthly
         while (currentDate <= endDate)
         {
             var monthEndDate = currentDate.AddMonths(1).AddDays(-1);
+            var monthEndDateTime = monthEndDate.ToDateTime(TimeOnly.MaxValue);
+            var currentDateTime = currentDate.ToDateTime(TimeOnly.MinValue);
             
             // Active subscriptions at month end
             var activeSubscriptions = subscriptions.Where(s => 
-                s.StartDate <= monthEndDate && 
-                (s.EndDate == null || s.EndDate >= monthEndDate) &&
+                s.StartDate <= monthEndDateTime && 
+                (s.EndDate == null || s.EndDate >= monthEndDateTime) &&
                 s.Status == SubscriptionStatus.Active).ToList();
 
             // New subscriptions in this month
             var newSubscriptions = subscriptions.Where(s => 
-                s.StartDate >= currentDate && 
-                s.StartDate <= monthEndDate).ToList();
+                s.StartDate >= currentDateTime && 
+                s.StartDate <= monthEndDateTime).ToList();
 
             // Churned subscriptions in this month
             var churnedSubscriptions = subscriptions.Where(s => 
-                s.EndDate >= currentDate && 
-                s.EndDate <= monthEndDate && 
+                s.EndDate >= currentDateTime && 
+                s.EndDate <= monthEndDateTime && 
                 s.Status == SubscriptionStatus.Cancelled).ToList();
 
             // Calculate MRR
@@ -431,9 +433,9 @@ public class GetMonthlyRecurringRevenueQueryHandler : IRequestHandler<GetMonthly
     {
         return subscription.BillingFrequency switch
         {
-            BillingFrequency.Monthly => subscription.MonthlyAmount,
-            BillingFrequency.Quarterly => subscription.MonthlyAmount / 3,
-            BillingFrequency.Annually => subscription.MonthlyAmount / 12,
+            BillingFrequency.Monthly => subscription.MonthlyAmount.Amount,
+            BillingFrequency.Quarterly => subscription.MonthlyAmount.Divide(3).Amount,
+            BillingFrequency.Annually => subscription.MonthlyAmount.Divide(12).Amount,
             _ => 0
         };
     }

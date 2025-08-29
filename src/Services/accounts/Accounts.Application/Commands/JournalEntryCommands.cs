@@ -105,12 +105,18 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
         // Create journal entry
         var journalEntry = JournalEntry.Create(
             tenantId: tenantId,
+            journalNumber: GenerateJournalNumber(),
             entryDate: request.EntryDate.ToDateTime(TimeOnly.MinValue),
-            referenceNumber: request.Reference,
             description: request.Description,
-            lines: lines,
-            notes: request.Notes,
-            createdBy: currentUserId);
+            transactionType: TransactionType.JournalEntry,
+            createdBy: currentUserId,
+            referenceNumber: request.Reference);
+
+        // Add lines to journal entry
+        foreach (var line in lines)
+        {
+            journalEntry.AddJournalLine(line);
+        }
 
         // Save journal entry
         await _journalEntryRepository.AddAsync(journalEntry, cancellationToken);
@@ -128,14 +134,22 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
 
     private static JournalEntryLine CreateJournalEntryLine(CreateJournalEntryLineDto dto, ChartOfAccounts account)
     {
-        return JournalEntryLine.Create(
+        // Determine if this is a debit or credit entry
+        var isDebit = dto.DebitAmount > 0;
+        var amount = isDebit ? dto.DebitAmount : dto.CreditAmount;
+        var debitCredit = isDebit ? DebitCredit.Debit : DebitCredit.Credit;
+        
+        var signedMoney = new SignedMoney(amount, CurrencyCode.ZAR, debitCredit);
+        
+        return new JournalEntryLine(
+            id: Guid.NewGuid(),
+            journalEntryId: Guid.Empty, // Will be set when added to journal entry
             accountId: dto.AccountId,
-            accountCode: account.AccountCode,
             accountName: account.AccountName,
+            amount: signedMoney,
             description: dto.Description,
-            debitAmount: dto.DebitAmount,
-            creditAmount: dto.CreditAmount,
-            reference: dto.Reference);
+            reference: dto.Reference,
+            accountCode: account.AccountCode);
     }
 
     private static JournalEntryDto MapToDto(JournalEntry journalEntry, Dictionary<Guid, ChartOfAccounts> accounts)
@@ -145,7 +159,7 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
             Id = journalEntry.Id,
             TenantId = journalEntry.TenantId,
             EntryNumber = journalEntry.EntryNumber,
-            EntryDate = journalEntry.EntryDate,
+            EntryDate = DateOnly.FromDateTime(journalEntry.EntryDate),
             Reference = journalEntry.Reference,
             Description = journalEntry.Description,
             Status = journalEntry.Status.ToString(),
@@ -155,7 +169,7 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
             Notes = journalEntry.Notes,
             PostedAt = journalEntry.PostedAt,
             PostedBy = journalEntry.PostedBy,
-            CreatedAt = DateOnly.FromDateTime(journalEntry.CreatedAt),
+            CreatedAt = journalEntry.CreatedAt,
             CreatedBy = journalEntry.CreatedBy,
             LastModified = journalEntry.LastModified,
             LastModifiedBy = journalEntry.LastModifiedBy
@@ -168,13 +182,18 @@ public class CreateJournalEntryCommandHandler : IRequestHandler<CreateJournalEnt
         {
             Id = line.Id,
             AccountId = line.AccountId,
-            AccountCode = line.AccountCode,
+            AccountCode = line.AccountCode ?? string.Empty,
             AccountName = line.AccountName,
-            Description = line.Description,
+            Description = line.Description ?? string.Empty,
             DebitAmount = line.DebitAmount?.Amount ?? 0,
             CreditAmount = line.CreditAmount?.Amount ?? 0,
             Reference = line.Reference
         };
+    }
+
+    private static string GenerateJournalNumber()
+    {
+        return $"JE-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..8].ToUpper()}";
     }
 }
 
@@ -355,7 +374,7 @@ public class PostJournalEntryCommandHandler : IRequestHandler<PostJournalEntryCo
             Id = journalEntry.Id,
             TenantId = journalEntry.TenantId,
             EntryNumber = journalEntry.EntryNumber,
-            EntryDate = journalEntry.EntryDate,
+            EntryDate = DateOnly.FromDateTime(journalEntry.EntryDate),
             Reference = journalEntry.Reference,
             Description = journalEntry.Description,
             Status = journalEntry.Status.ToString(),
@@ -365,7 +384,7 @@ public class PostJournalEntryCommandHandler : IRequestHandler<PostJournalEntryCo
             Notes = journalEntry.Notes,
             PostedAt = journalEntry.PostedAt,
             PostedBy = journalEntry.PostedBy,
-            CreatedAt = DateOnly.FromDateTime(journalEntry.CreatedAt),
+            CreatedAt = journalEntry.CreatedAt,
             CreatedBy = journalEntry.CreatedBy,
             LastModified = journalEntry.LastModified,
             LastModifiedBy = journalEntry.LastModifiedBy
@@ -378,9 +397,9 @@ public class PostJournalEntryCommandHandler : IRequestHandler<PostJournalEntryCo
         {
             Id = line.Id,
             AccountId = line.AccountId,
-            AccountCode = line.AccountCode,
+            AccountCode = line.AccountCode ?? string.Empty,
             AccountName = line.AccountName,
-            Description = line.Description,
+            Description = line.Description ?? string.Empty,
             DebitAmount = line.DebitAmount?.Amount ?? 0,
             CreditAmount = line.CreditAmount?.Amount ?? 0,
             Reference = line.Reference
@@ -459,33 +478,48 @@ public class ReverseJournalEntryCommandHandler : IRequestHandler<ReverseJournalE
         var reversalLines = new List<JournalEntryLine>();
         foreach (var originalLine in originalEntry.Lines)
         {
-            var reversalLine = JournalEntryLine.Create(
+            // For reversal, we swap debit and credit amounts
+            var originalAmount = originalLine.DebitAmount ?? originalLine.CreditAmount;
+            var reversalType = originalLine.DebitAmount != null ? DebitCredit.Credit : DebitCredit.Debit;
+            var signedMoney = new SignedMoney(originalAmount?.Amount ?? 0, CurrencyCode.ZAR, reversalType);
+            
+            var reversalLine = new JournalEntryLine(
+                id: Guid.NewGuid(),
+                journalEntryId: Guid.Empty, // Will be set when added to journal entry
                 accountId: originalLine.AccountId,
-                accountCode: originalLine.AccountCode,
-                accountName: originalLine.AccountName,
+                accountName: originalLine.AccountName ?? string.Empty,
+                amount: signedMoney,
                 description: $"Reversal: {originalLine.Description}",
-                debitAmount: originalLine.CreditAmount?.Amount ?? 0,
-                creditAmount: originalLine.DebitAmount?.Amount ?? 0,
-                reference: originalLine.Reference);
+                reference: originalLine.Reference,
+                accountCode: originalLine.AccountCode);
             
             reversalLines.Add(reversalLine);
         }
 
         // Create reversal journal entry
+        // Generate journal number for reversal
+        var reversalJournalNumber = $"REV-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..8].ToUpper()}";
+        
         var reversalEntry = JournalEntry.Create(
             tenantId: originalEntry.TenantId,
-            entryDate: request.ReversalDate,
-            reference: $"REV-{originalEntry.Reference}",
+            journalNumber: reversalJournalNumber,
+            entryDate: request.ReversalDate.ToDateTime(TimeOnly.MinValue),
             description: $"Reversal of {originalEntry.Reference}: {request.Reason}",
-            lines: reversalLines,
-            notes: $"Reversal of journal entry {originalEntry.EntryNumber}. Reason: {request.Reason}",
-            createdBy: currentUserId);
+            transactionType: TransactionType.JournalEntry,
+            createdBy: currentUserId,
+            referenceNumber: $"REV-{originalEntry.Reference}");
+
+        // Add reversal lines to the journal entry
+        foreach (var line in reversalLines)
+        {
+            reversalEntry.AddJournalLine(line);
+        }
 
         // Post the reversal entry immediately
         reversalEntry.Post(currentUserId);
 
-        // Mark original entry as reversed
-        originalEntry.Reverse(reversalEntry.Id, request.Reason, currentUserId);
+        // Mark original entry as reversed  
+        originalEntry.Reverse(request.Reason, currentUserId);
 
         // Save both entries
         await _journalEntryRepository.AddAsync(reversalEntry, cancellationToken);
@@ -523,7 +557,7 @@ public class ReverseJournalEntryCommandHandler : IRequestHandler<ReverseJournalE
             Id = journalEntry.Id,
             TenantId = journalEntry.TenantId,
             EntryNumber = journalEntry.EntryNumber,
-            EntryDate = journalEntry.EntryDate,
+            EntryDate = DateOnly.FromDateTime(journalEntry.EntryDate),
             Reference = journalEntry.Reference,
             Description = journalEntry.Description,
             Status = journalEntry.Status.ToString(),
@@ -535,7 +569,7 @@ public class ReverseJournalEntryCommandHandler : IRequestHandler<ReverseJournalE
             PostedBy = journalEntry.PostedBy,
             ReversalJournalId = journalEntry.ReversalJournalId,
             ReversalReason = journalEntry.ReversalReason,
-            CreatedAt = DateOnly.FromDateTime(journalEntry.CreatedAt),
+            CreatedAt = journalEntry.CreatedAt,
             CreatedBy = journalEntry.CreatedBy,
             LastModified = journalEntry.LastModified,
             LastModifiedBy = journalEntry.LastModifiedBy
@@ -548,9 +582,9 @@ public class ReverseJournalEntryCommandHandler : IRequestHandler<ReverseJournalE
         {
             Id = line.Id,
             AccountId = line.AccountId,
-            AccountCode = line.AccountCode,
+            AccountCode = line.AccountCode ?? string.Empty,
             AccountName = line.AccountName,
-            Description = line.Description,
+            Description = line.Description ?? string.Empty,
             DebitAmount = line.DebitAmount?.Amount ?? 0,
             CreditAmount = line.CreditAmount?.Amount ?? 0,
             Reference = line.Reference

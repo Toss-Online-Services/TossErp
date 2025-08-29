@@ -666,7 +666,7 @@ public class CashbookEntry : Entity
 /// Based on ERPNext Company doctype specifications.
 /// </summary>
 [Table("Companies")]
-public class Company : Entity
+public class Company : AggregateRoot
 {
     /// <summary>
     /// Company name (required, unique)

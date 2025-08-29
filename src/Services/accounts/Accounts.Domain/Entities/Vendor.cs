@@ -7,7 +7,7 @@ namespace TossErp.Accounts.Domain.Entities;
 /// <summary>
 /// Vendor entity for supplier management with township SMME features
 /// </summary>
-public class Vendor : Entity
+public class Vendor : AggregateRoot
 {
     private readonly List<VendorContact> _contacts = [];
 
@@ -78,9 +78,7 @@ public class Vendor : Entity
     public bool OffersStoreCredit { get; private set; }
     public bool SupportsGroupPurchasing { get; private set; } = true; // Community purchasing
     
-    // Audit fields
-    public DateTime CreatedAt { get; private set; }
-    public string CreatedBy { get; private set; }
+    // Audit fields - UpdatedAt and UpdatedBy already in base AggregateRoot
     public DateTime ModifiedAt { get; private set; }
     public string ModifiedBy { get; private set; }
     
@@ -295,8 +293,6 @@ public class VendorContact : Entity
     public string? WhatsAppNumber { get; private set; }
     public string? PreferredLanguage { get; private set; } = "English"; // Support local languages
 
-    public DateTime CreatedAt { get; private set; }
-    public string CreatedBy { get; private set; }
     public DateTime ModifiedAt { get; private set; }
     public string ModifiedBy { get; private set; }
 
