@@ -240,11 +240,10 @@ public class UpdateChartOfAccountsCommandHandler : IRequestHandler<UpdateChartOf
         }
 
         // Update account
-        chartOfAccounts.UpdateAccount(
+        chartOfAccounts.UpdateAccountDetails(
             accountName: request.AccountName,
             description: request.Description,
-            isActive: request.IsActive,
-            updatedBy: currentUserId);
+            modifiedBy: currentUserId);
 
         // Save changes
         await _chartOfAccountsRepository.UpdateAsync(chartOfAccounts, cancellationToken);
@@ -373,8 +372,8 @@ public class DeactivateChartOfAccountsCommandHandler : IRequestHandler<Deactivat
         }
 
         // Check for recent transactions (last 30 days)
-        var recentTransactions = await _journalEntryRepository.GetByAccountIdAsync(
-            request.AccountId, DateTime.UtcNow.AddDays(-30), DateTime.UtcNow, cancellationToken);
+        var allTransactions = await _journalEntryRepository.GetByAccountIdAsync(request.AccountId, cancellationToken);
+        var recentTransactions = allTransactions.Where(t => t.CreatedAt >= DateTime.UtcNow.AddDays(-30));
         
         if (recentTransactions.Any())
         {
@@ -392,7 +391,7 @@ public class DeactivateChartOfAccountsCommandHandler : IRequestHandler<Deactivat
         }
 
         // Deactivate account
-        chartOfAccounts.Deactivate(request.Reason, currentUserId);
+        chartOfAccounts.Deactivate(currentUserId);
 
         // Save changes
         await _chartOfAccountsRepository.UpdateAsync(chartOfAccounts, cancellationToken);
@@ -505,15 +504,17 @@ public class InitializeDefaultChartOfAccountsCommandHandler : IRequestHandler<In
                 ? createdAccounts.FirstOrDefault(a => a.AccountCode == accountData.ParentCode)
                 : null;
 
-            var account = ChartOfAccounts.Create(
-                tenantId: tenantId,
-                accountCode: accountData.Code,
-                accountName: accountData.Name,
-                accountType: accountData.Type,
-                parentAccountId: parentAccount?.Id,
-                description: accountData.Description,
-                isActive: true,
-                createdBy: currentUserId);
+            var account = new ChartOfAccounts(
+                Guid.NewGuid(),
+                tenantId,
+                new AccountNumber(accountData.Code),
+                accountData.Name,
+                accountData.Type,
+                CurrencyCode.ZAR,
+                currentUserId,
+                null, // accountSubType
+                accountData.Description,
+                parentAccount?.Id);
 
             await _chartOfAccountsRepository.AddAsync(account, cancellationToken);
             createdAccounts.Add(account);
@@ -539,22 +540,22 @@ public class InitializeDefaultChartOfAccountsCommandHandler : IRequestHandler<In
         return new List<DefaultAccountData>
         {
             // Assets
-            new("1000", "Assets", AccountType.Assets, null, "All company assets", 1),
-            new("1100", "Current Assets", AccountType.CurrentAssets, "1000", "Assets expected to be converted to cash within one year", 2),
-            new("1110", "Cash and Cash Equivalents", AccountType.CurrentAssets, "1100", "Cash on hand and in bank accounts", 3),
-            new("1120", "Accounts Receivable", AccountType.CurrentAssets, "1100", "Money owed by customers", 3),
-            new("1130", "Inventory", AccountType.CurrentAssets, "1100", "Goods held for sale", 3),
-            new("1140", "Prepaid Expenses", AccountType.CurrentAssets, "1100", "Expenses paid in advance", 3),
-            new("1200", "Fixed Assets", AccountType.FixedAssets, "1000", "Long-term tangible assets", 2),
-            new("1210", "Property, Plant & Equipment", AccountType.FixedAssets, "1200", "Buildings, equipment, and vehicles", 3),
-            new("1220", "Accumulated Depreciation", AccountType.FixedAssets, "1200", "Accumulated depreciation on fixed assets", 3),
+            new("1000", "Assets", AccountType.Asset, null, "All company assets", 1),
+            new("1100", "Current Assets", AccountType.Asset, "1000", "Assets expected to be converted to cash within one year", 2),
+            new("1110", "Cash and Cash Equivalents", AccountType.Asset, "1100", "Cash on hand and in bank accounts", 3),
+            new("1120", "Accounts Receivable", AccountType.Asset, "1100", "Money owed by customers", 3),
+            new("1130", "Inventory", AccountType.Asset, "1100", "Goods held for sale", 3),
+            new("1140", "Prepaid Expenses", AccountType.Asset, "1100", "Expenses paid in advance", 3),
+            new("1200", "Fixed Assets", AccountType.Asset, "1000", "Long-term tangible assets", 2),
+            new("1210", "Property, Plant & Equipment", AccountType.Asset, "1200", "Buildings, equipment, and vehicles", 3),
+            new("1220", "Accumulated Depreciation", AccountType.Asset, "1200", "Accumulated depreciation on fixed assets", 3),
 
             // Liabilities
-            new("2000", "Liabilities", AccountType.Liabilities, null, "All company liabilities", 1),
-            new("2100", "Current Liabilities", AccountType.CurrentLiabilities, "2000", "Debts due within one year", 2),
-            new("2110", "Accounts Payable", AccountType.CurrentLiabilities, "2100", "Money owed to suppliers", 3),
-            new("2120", "Accrued Expenses", AccountType.CurrentLiabilities, "2100", "Expenses incurred but not yet paid", 3),
-            new("2130", "Short-term Debt", AccountType.CurrentLiabilities, "2100", "Loans and debt due within one year", 3),
+            new("2000", "Liabilities", AccountType.Liability, null, "All company liabilities", 1),
+            new("2100", "Current Liabilities", AccountType.Liability, "2000", "Debts due within one year", 2),
+            new("2110", "Accounts Payable", AccountType.Liability, "2100", "Money owed to suppliers", 3),
+            new("2120", "Accrued Expenses", AccountType.Liability, "2100", "Expenses incurred but not yet paid", 3),
+            new("2130", "Short-term Debt", AccountType.Liability, "2100", "Loans and debt due within one year", 3),
             new("2200", "Long-term Liabilities", AccountType.Liability, "2000", "Debts due after one year", 2),
             new("2210", "Long-term Debt", AccountType.Liability, "2200", "Loans and debt due after one year", 3),
 

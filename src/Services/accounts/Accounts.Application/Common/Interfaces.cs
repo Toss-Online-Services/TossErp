@@ -154,6 +154,8 @@ public interface IChartOfAccountsRepository
         int pageSize = 50,
         CancellationToken cancellationToken = default);
     Task<ChartOfAccounts> AddAsync(ChartOfAccounts account, CancellationToken cancellationToken = default);
+    Task<ChartOfAccounts> UpdateAsync(ChartOfAccounts account, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ChartOfAccounts>> GetChildAccountsAsync(Guid parentAccountId, CancellationToken cancellationToken = default);
     ChartOfAccounts Update(ChartOfAccounts account);
     void Delete(ChartOfAccounts account);
     Task<IEnumerable<ChartOfAccounts>> GetAllAsync(CancellationToken cancellationToken = default);
@@ -223,6 +225,7 @@ public interface IJournalEntryRepository
     Task<JournalEntry?> GetByNumberAsync(string entryNumber, CancellationToken cancellationToken = default);
     Task<JournalEntry?> GetByReferenceAsync(string reference, CancellationToken cancellationToken = default);
     Task<IEnumerable<JournalEntry>> GetByDateRangeAsync(DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
+    Task<IEnumerable<JournalEntry>> GetByAccountIdAsync(Guid accountId, CancellationToken cancellationToken = default);
     Task<IEnumerable<JournalEntry>> GetByStatusAsync(JournalEntryStatus status, CancellationToken cancellationToken = default);
     Task<bool> EntryNumberExistsAsync(string entryNumber, Guid? excludeId = null, CancellationToken cancellationToken = default);
     Task<(IEnumerable<JournalEntry> Entries, int TotalCount)> GetPagedAsync(
@@ -254,6 +257,7 @@ public interface ISubscriptionRepository
     Task<IEnumerable<Subscription>> GetByStatusAsync(SubscriptionStatus status, CancellationToken cancellationToken = default);
     Task<IEnumerable<Subscription>> GetExpiringSubscriptionsAsync(DateOnly beforeDate, CancellationToken cancellationToken = default);
     Task<IEnumerable<Subscription>> GetActiveSubscriptionsAsync(CancellationToken cancellationToken = default);
+    Task<(IEnumerable<Subscription> Subscriptions, int TotalCount)> GetSubscriptionsDueForRenewalAsync(DateOnly renewalDate, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
     Task<Subscription?> GetActiveByCustomerIdAsync(Guid customerId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Subscription>> GetSubscriptionsForMRRAnalysisAsync(
         DateTime fromDate,
@@ -267,6 +271,7 @@ public interface ISubscriptionRepository
         bool sortDescending = false,
         CancellationToken cancellationToken = default);
     Task<Subscription> AddAsync(Subscription subscription, CancellationToken cancellationToken = default);
+    Task<Subscription> UpdateAsync(Subscription subscription, CancellationToken cancellationToken = default);
     Subscription Update(Subscription subscription);
     void Delete(Subscription subscription);
     Task<IEnumerable<Subscription>> GetAllAsync(CancellationToken cancellationToken = default);
@@ -383,7 +388,10 @@ public enum NotificationType
     InvoicePaid,
     InvoiceCancelled,
     PaymentReceived,
-    PaymentRefunded
+    PaymentRefunded,
+    SubscriptionRenewed,
+    SubscriptionCancelled,
+    SubscriptionCreated
 }
 
 /// <summary>

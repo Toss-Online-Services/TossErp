@@ -56,7 +56,7 @@ public class GetPaymentsQueryHandler : IRequestHandler<GetPaymentsQuery, Paginat
             Reference = request.Reference
         };
 
-        var payments = await _paymentRepository.GetPagedAsync(
+        var (paymentList, totalCount) = await _paymentRepository.GetPagedAsync(
             filter,
             request.PageNumber,
             request.PageSize,
@@ -65,7 +65,7 @@ public class GetPaymentsQueryHandler : IRequestHandler<GetPaymentsQuery, Paginat
             cancellationToken);
 
         // Get customer information for mapping
-        var customerIds = payments.Items.Select(p => p.CustomerId).Distinct().ToList();
+        var customerIds = paymentList.Where(p => p.CustomerId.HasValue).Select(p => p.CustomerId!.Value).Distinct().ToList();
         var customers = new Dictionary<Guid, Customer>();
         
         foreach (var customerId in customerIds)
@@ -77,15 +77,15 @@ public class GetPaymentsQueryHandler : IRequestHandler<GetPaymentsQuery, Paginat
             }
         }
 
-        var paymentDtos = payments.Items.Select(payment => MapToDto(payment, customers.GetValueOrDefault(payment.CustomerId))).ToList();
+        var paymentDtos = paymentList.Select(payment => MapToDto(payment, payment.CustomerId.HasValue ? customers.GetValueOrDefault(payment.CustomerId.Value) : null)).ToList();
 
         return new PaginatedResult<PaymentDto>
         {
             Items = paymentDtos,
-            TotalCount = payments.TotalCount,
-            PageNumber = payments.PageNumber,
-            PageSize = payments.PageSize,
-            TotalPages = payments.TotalPages
+            TotalCount = totalCount,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize)
         };
     }
 
@@ -163,7 +163,9 @@ public class GetPaymentByIdQueryHandler : IRequestHandler<GetPaymentByIdQuery, P
             return null;
         }
 
-        var customer = await _customerRepository.GetByIdAsync(payment.CustomerId, cancellationToken);
+        var customer = payment.CustomerId.HasValue 
+            ? await _customerRepository.GetByIdAsync(payment.CustomerId.Value, cancellationToken) 
+            : null;
 
         return MapToDto(payment, customer);
     }

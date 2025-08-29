@@ -87,18 +87,15 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
         // Create subscription
         var subscription = Subscription.Create(
             tenantId: tenantId,
+            subscriptionNumber: $"SUB-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..8].ToUpper()}",
             customerId: request.CustomerId,
+            customerName: customer.Name,
             planName: request.PlanName,
-            planPrice: request.PlanPrice,
-            currency: request.Currency,
+            monthlyAmount: new Money(request.PlanPrice, CurrencyCode.ZAR),
             billingFrequency: request.BillingFrequency,
-            startDate: request.StartDate,
-            endDate: request.EndDate,
-            billingCycleDay: billingCycleDay,
-            trialDays: request.TrialDays,
-            autoRenew: request.AutoRenew,
-            notes: request.Notes,
-            createdBy: currentUserId);
+            startDate: request.StartDate.ToDateTime(TimeOnly.MinValue),
+            createdBy: currentUserId,
+            planDescription: request.Notes);
 
         // Save subscription
         await _subscriptionRepository.AddAsync(subscription, cancellationToken);
@@ -108,7 +105,7 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
         if (!string.IsNullOrEmpty(customer.Email))
         {
             await _notificationService.SendSubscriptionNotificationAsync(
-                subscription.Id, customer.Email, NotificationType.SubscriptionCreated, cancellationToken);
+                subscription.Id, customer.Email, SubscriptionNotificationType.SubscriptionCreated, cancellationToken);
         }
 
         // Publish domain events
@@ -129,25 +126,25 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
             CustomerId = subscription.CustomerId,
             CustomerName = customer.Name,
             PlanName = subscription.PlanName,
-            PlanPrice = subscription.PlanPrice.Amount,
+            PlanPrice = subscription.MonthlyAmount.Amount,
             Currency = subscription.Currency,
             BillingFrequency = subscription.BillingFrequency,
             Status = subscription.Status,
-            StartDate = subscription.StartDate,
-            EndDate = subscription.EndDate,
-            NextBillingDate = subscription.NextBillingDate,
-            BillingCycleDay = subscription.BillingCycleDay,
+            StartDate = DateOnly.FromDateTime(subscription.StartDate),
+            EndDate = subscription.EndDate.HasValue ? DateOnly.FromDateTime(subscription.EndDate.Value) : null,
+            NextBillingDate = DateOnly.FromDateTime(subscription.NextBillingDate),
+            BillingCycleDay = subscription.BillingCycle,
             TrialDays = subscription.TrialDays,
-            TrialEndDate = subscription.TrialEndDate,
+            TrialEndDate = subscription.TrialEndDate.HasValue ? DateOnly.FromDateTime(subscription.TrialEndDate.Value) : null,
             AutoRenew = subscription.AutoRenew,
-            Notes = subscription.Notes,
+            Notes = null,
             CancellationReason = subscription.CancellationReason,
-            CancelledAt = subscription.CancelledAt,
+            CancelledAt = subscription.CancelledDate,
             CancelledBy = subscription.CancelledBy,
             CreatedAt = subscription.CreatedAt,
             CreatedBy = subscription.CreatedBy,
-            LastModified = subscription.LastModified,
-            LastModifiedBy = subscription.LastModifiedBy
+            LastModified = subscription.ModifiedAt,
+            LastModifiedBy = subscription.ModifiedBy
         };
     }
 }
@@ -272,13 +269,9 @@ public class UpdateSubscriptionCommandHandler : IRequestHandler<UpdateSubscripti
         // Update subscription
         subscription.UpdatePlan(
             planName: request.PlanName,
-            planPrice: request.PlanPrice,
-            billingFrequency: request.BillingFrequency,
-            billingCycleDay: request.BillingCycleDay,
-            autoRenew: request.AutoRenew,
-            endDate: request.EndDate,
-            notes: request.Notes,
-            updatedBy: currentUserId);
+            newMonthlyAmount: new Money(request.PlanPrice, CurrencyCode.ZAR),
+            planDescription: request.Notes,
+            modifiedBy: currentUserId);
 
         // Save changes
         await _subscriptionRepository.UpdateAsync(subscription, cancellationToken);
@@ -302,25 +295,25 @@ public class UpdateSubscriptionCommandHandler : IRequestHandler<UpdateSubscripti
             CustomerId = subscription.CustomerId,
             CustomerName = customer.Name,
             PlanName = subscription.PlanName,
-            PlanPrice = subscription.PlanPrice.Amount,
+            PlanPrice = subscription.MonthlyAmount.Amount,
             Currency = subscription.Currency,
             BillingFrequency = subscription.BillingFrequency,
             Status = subscription.Status,
-            StartDate = subscription.StartDate,
-            EndDate = subscription.EndDate,
-            NextBillingDate = subscription.NextBillingDate,
-            BillingCycleDay = subscription.BillingCycleDay,
+            StartDate = DateOnly.FromDateTime(subscription.StartDate),
+            EndDate = subscription.EndDate.HasValue ? DateOnly.FromDateTime(subscription.EndDate.Value) : null,
+            NextBillingDate = DateOnly.FromDateTime(subscription.NextBillingDate),
+            BillingCycleDay = subscription.BillingCycle,
             TrialDays = subscription.TrialDays,
-            TrialEndDate = subscription.TrialEndDate,
+            TrialEndDate = subscription.TrialEndDate.HasValue ? DateOnly.FromDateTime(subscription.TrialEndDate.Value) : null,
             AutoRenew = subscription.AutoRenew,
-            Notes = subscription.Notes,
+            Notes = null,
             CancellationReason = subscription.CancellationReason,
-            CancelledAt = subscription.CancelledAt,
+            CancelledAt = subscription.CancelledDate,
             CancelledBy = subscription.CancelledBy,
             CreatedAt = subscription.CreatedAt,
             CreatedBy = subscription.CreatedBy,
-            LastModified = subscription.LastModified,
-            LastModifiedBy = subscription.LastModifiedBy
+            LastModified = subscription.ModifiedAt,
+            LastModifiedBy = subscription.ModifiedBy
         };
     }
 }
@@ -438,7 +431,7 @@ public class CancelSubscriptionCommandHandler : IRequestHandler<CancelSubscripti
         if (!string.IsNullOrEmpty(customer.Email))
         {
             await _notificationService.SendSubscriptionNotificationAsync(
-                subscription.Id, customer.Email, NotificationType.SubscriptionCancelled, cancellationToken);
+                subscription.Id, customer.Email, SubscriptionNotificationType.SubscriptionCancelled, cancellationToken);
         }
 
         // Publish domain events
@@ -459,25 +452,25 @@ public class CancelSubscriptionCommandHandler : IRequestHandler<CancelSubscripti
             CustomerId = subscription.CustomerId,
             CustomerName = customer.Name,
             PlanName = subscription.PlanName,
-            PlanPrice = subscription.PlanPrice.Amount,
+            PlanPrice = subscription.MonthlyAmount.Amount,
             Currency = subscription.Currency,
             BillingFrequency = subscription.BillingFrequency,
             Status = subscription.Status,
-            StartDate = subscription.StartDate,
-            EndDate = subscription.EndDate,
-            NextBillingDate = subscription.NextBillingDate,
-            BillingCycleDay = subscription.BillingCycleDay,
+            StartDate = DateOnly.FromDateTime(subscription.StartDate),
+            EndDate = subscription.EndDate.HasValue ? DateOnly.FromDateTime(subscription.EndDate.Value) : null,
+            NextBillingDate = DateOnly.FromDateTime(subscription.NextBillingDate),
+            BillingCycleDay = subscription.BillingCycle,
             TrialDays = subscription.TrialDays,
-            TrialEndDate = subscription.TrialEndDate,
+            TrialEndDate = subscription.TrialEndDate.HasValue ? DateOnly.FromDateTime(subscription.TrialEndDate.Value) : null,
             AutoRenew = subscription.AutoRenew,
-            Notes = subscription.Notes,
+            Notes = null,
             CancellationReason = subscription.CancellationReason,
-            CancelledAt = subscription.CancelledAt,
+            CancelledAt = subscription.CancelledDate,
             CancelledBy = subscription.CancelledBy,
             CreatedAt = subscription.CreatedAt,
             CreatedBy = subscription.CreatedBy,
-            LastModified = subscription.LastModified,
-            LastModifiedBy = subscription.LastModifiedBy
+            LastModified = subscription.ModifiedAt,
+            LastModifiedBy = subscription.ModifiedBy
         };
     }
 }
@@ -564,7 +557,7 @@ public class RenewSubscriptionCommandHandler : IRequestHandler<RenewSubscription
         var currentUserId = _currentUserService.UserId ?? "system";
 
         // Renew subscription
-        subscription.Renew(request.NewEndDate, currentUserId);
+        subscription.Renew(request.NewEndDate?.ToDateTime(TimeOnly.MinValue) ?? DateTime.UtcNow.AddYears(1), currentUserId);
 
         // Save changes
         await _subscriptionRepository.UpdateAsync(subscription, cancellationToken);
@@ -574,7 +567,7 @@ public class RenewSubscriptionCommandHandler : IRequestHandler<RenewSubscription
         if (!string.IsNullOrEmpty(customer.Email))
         {
             await _notificationService.SendSubscriptionNotificationAsync(
-                subscription.Id, customer.Email, NotificationType.SubscriptionRenewed, cancellationToken);
+                subscription.Id, customer.Email, SubscriptionNotificationType.SubscriptionRenewed, cancellationToken);
         }
 
         // Publish domain events
@@ -595,25 +588,25 @@ public class RenewSubscriptionCommandHandler : IRequestHandler<RenewSubscription
             CustomerId = subscription.CustomerId,
             CustomerName = customer.Name,
             PlanName = subscription.PlanName,
-            PlanPrice = subscription.PlanPrice.Amount,
+            PlanPrice = subscription.MonthlyAmount.Amount,
             Currency = subscription.Currency,
             BillingFrequency = subscription.BillingFrequency,
             Status = subscription.Status,
-            StartDate = subscription.StartDate,
-            EndDate = subscription.EndDate,
-            NextBillingDate = subscription.NextBillingDate,
-            BillingCycleDay = subscription.BillingCycleDay,
+            StartDate = DateOnly.FromDateTime(subscription.StartDate),
+            EndDate = subscription.EndDate.HasValue ? DateOnly.FromDateTime(subscription.EndDate.Value) : null,
+            NextBillingDate = DateOnly.FromDateTime(subscription.NextBillingDate),
+            BillingCycleDay = subscription.BillingCycle,
             TrialDays = subscription.TrialDays,
-            TrialEndDate = subscription.TrialEndDate,
+            TrialEndDate = subscription.TrialEndDate.HasValue ? DateOnly.FromDateTime(subscription.TrialEndDate.Value) : null,
             AutoRenew = subscription.AutoRenew,
-            Notes = subscription.Notes,
+            Notes = null,
             CancellationReason = subscription.CancellationReason,
-            CancelledAt = subscription.CancelledAt,
+            CancelledAt = subscription.CancelledDate,
             CancelledBy = subscription.CancelledBy,
             CreatedAt = subscription.CreatedAt,
             CreatedBy = subscription.CreatedBy,
-            LastModified = subscription.LastModified,
-            LastModifiedBy = subscription.LastModifiedBy
+            LastModified = subscription.ModifiedAt,
+            LastModifiedBy = subscription.ModifiedBy
         };
     }
 }

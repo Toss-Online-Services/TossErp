@@ -57,7 +57,7 @@ public static class InvoiceMappingHelper
             Status = invoice.Status,
             IssueDate = DateOnly.FromDateTime(invoice.IssueDate),
             DueDate = DateOnly.FromDateTime(invoice.DueDate),
-            SubtotalAmount = invoice.SubTotal.Amount,
+            SubtotalAmount = invoice.SubtotalAmount.Amount,
             TaxAmount = invoice.TaxAmount.Amount,
             DiscountAmount = invoice.DiscountAmount?.Amount ?? 0,
             TotalAmount = invoice.TotalAmount.Amount,
@@ -107,11 +107,11 @@ public static class InvoiceMappingHelper
         return new InvoiceLineItemDto
         {
             Id = lineItem.Id,
-            ProductName = lineItem.ProductName,
-            Description = lineItem.Description,
+            ProductName = lineItem.ItemName,
+            Description = lineItem.Description ?? string.Empty,
             Quantity = lineItem.Quantity,
             UnitPrice = lineItem.UnitPrice.Amount,
-            LineTotal = lineItem.LineTotal.Amount,
+            LineTotal = lineItem.LineTotal?.Amount ?? 0,
             TaxRate = lineItem.TaxRate?.Rate ?? 0,
             TaxAmount = lineItem.TaxAmount?.Amount ?? 0
         };

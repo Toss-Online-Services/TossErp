@@ -224,7 +224,8 @@ public static class MappingExtensions
     /// </summary>
     public static Money MapToMoney(decimal amount, string currency)
     {
-        return new Money(amount, currency);
+        var currencyCode = Enum.TryParse<CurrencyCode>(currency, true, out var result) ? result : CurrencyCode.ZAR;
+        return new Money(amount, currencyCode);
     }
 
     /// <summary>
@@ -237,7 +238,7 @@ public static class MappingExtensions
         return new Address(
             addressDto.Street,
             addressDto.City,
-            addressDto.State,
+            addressDto.Province,
             addressDto.PostalCode,
             addressDto.Country);
     }

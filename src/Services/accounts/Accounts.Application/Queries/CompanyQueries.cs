@@ -307,7 +307,7 @@ public class CompanyStatisticsDto
 public class CountryStatisticDto
 {
     public string Country { get; set; } = string.Empty;
-    public int Count { get; set; }
+    public int CustomerCount { get; set; }
 }
 
 /// <summary>
@@ -348,15 +348,15 @@ public class GetCompanyStatisticsQueryHandler : IRequestHandler<GetCompanyStatis
 
         var statistics = new CompanyStatisticsDto
         {
-            TotalCompanies = companies.Count,
+            TotalCompanies = companies.Count(),
             ActiveCompanies = companies.Count(c => c.IsActive),
             InactiveCompanies = companies.Count(c => !c.IsActive),
             GroupCompanies = companies.Count(c => c.IsGroup),
             SubsidiaryCompanies = companies.Count(c => c.ParentCompanyId.HasValue),
             CompaniesByCountry = companies
                 .GroupBy(c => c.Country)
-                .Select(g => new CountryStatisticDto { Country = g.Key, Count = g.Count() })
-                .OrderByDescending(x => x.Count)
+                .Select(g => new CountryStatisticDto { Country = g.Key, CustomerCount = g.Count() })
+                .OrderByDescending(x => x.CustomerCount)
                 .ToList(),
             CompaniesByCurrency = companies
                 .GroupBy(c => c.Currency)

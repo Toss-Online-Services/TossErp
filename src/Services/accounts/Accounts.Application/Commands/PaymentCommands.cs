@@ -221,7 +221,7 @@ public class ProcessPaymentCommandHandler : IRequestHandler<ProcessPaymentComman
         {
             Id = payment.Id,
             TenantId = payment.TenantId,
-            CustomerId = payment.CustomerId,
+            CustomerId = payment.CustomerId ?? Guid.Empty,
             CustomerName = customer.Name,
             PaymentNumber = payment.PaymentNumber,
             Amount = payment.Amount.Amount,
@@ -380,7 +380,7 @@ public class RefundPaymentCommandHandler : IRequestHandler<RefundPaymentCommand,
             var refundRequest = new PaymentProcessingRequest
             {
                 TenantId = payment.TenantId,
-                CustomerId = payment.CustomerId,
+                CustomerId = payment.CustomerId ?? Guid.Empty,
                 Amount = request.RefundAmount,
                 Currency = payment.Currency,
                 PaymentMethod = payment.Method,
@@ -447,7 +447,7 @@ public class RefundPaymentCommandHandler : IRequestHandler<RefundPaymentCommand,
         {
             Id = payment.Id,
             TenantId = payment.TenantId,
-            CustomerId = payment.CustomerId,
+            CustomerId = payment.CustomerId ?? Guid.Empty,
             CustomerName = customer.Name,
             PaymentNumber = payment.PaymentNumber,
             Amount = payment.Amount.Amount,
@@ -628,7 +628,7 @@ public class AllocatePaymentCommandHandler : IRequestHandler<AllocatePaymentComm
         {
             Id = payment.Id,
             TenantId = payment.TenantId,
-            CustomerId = payment.CustomerId,
+            CustomerId = payment.CustomerId ?? Guid.Empty,
             CustomerName = customer.Name,
             PaymentNumber = payment.PaymentNumber,
             Amount = payment.Amount.Amount,

@@ -44,12 +44,12 @@ public class GetJournalEntriesQueryHandler : IRequestHandler<GetJournalEntriesQu
             Reference = request.Reference,
             EntryDateFrom = request.EntryDateFrom,
             EntryDateTo = request.EntryDateTo,
-            AccountId = request.AccountId,
+            // AccountId = request.AccountId, // Not available in filter
             MinAmount = request.MinAmount,
             MaxAmount = request.MaxAmount
         };
 
-        var journalEntries = await _journalEntryRepository.GetPagedAsync(
+        var (entriesList, totalCount) = await _journalEntryRepository.GetPagedAsync(
             filter,
             request.PageNumber,
             request.PageSize,
@@ -57,15 +57,15 @@ public class GetJournalEntriesQueryHandler : IRequestHandler<GetJournalEntriesQu
             request.SortDescending,
             cancellationToken);
 
-        var journalEntryDtos = journalEntries.Items.Select(MapToDto).ToList();
+        var journalEntryDtos = entriesList.Select(MapToDto).ToList();
 
         return new PaginatedResult<JournalEntryDto>
         {
             Items = journalEntryDtos,
-            TotalCount = journalEntries.TotalCount,
-            PageNumber = journalEntries.PageNumber,
-            PageSize = journalEntries.PageSize,
-            TotalPages = journalEntries.TotalPages
+            TotalCount = totalCount,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize)
         };
     }
 
@@ -86,7 +86,7 @@ public class GetJournalEntriesQueryHandler : IRequestHandler<GetJournalEntriesQu
             Notes = journalEntry.Notes,
             PostedAt = journalEntry.PostedAt,
             PostedBy = journalEntry.PostedBy,
-            ReversalEntryId = journalEntry.ReversalEntryId,
+            ReversalJournalId = journalEntry.ReversalJournalId,
             ReversalReason = journalEntry.ReversalReason,
             CreatedAt = journalEntry.CreatedAt,
             CreatedBy = journalEntry.CreatedBy,
@@ -104,8 +104,8 @@ public class GetJournalEntriesQueryHandler : IRequestHandler<GetJournalEntriesQu
             AccountCode = line.AccountCode,
             AccountName = line.AccountName,
             Description = line.Description,
-            DebitAmount = line.DebitAmount?.Amount,
-            CreditAmount = line.CreditAmount?.Amount,
+            DebitAmount = line.DebitAmount?.Amount ?? 0,
+            CreditAmount = line.CreditAmount?.Amount ?? 0,
             Reference = line.Reference
         };
     }
@@ -162,7 +162,7 @@ public class GetJournalEntryByIdQueryHandler : IRequestHandler<GetJournalEntryBy
             Notes = journalEntry.Notes,
             PostedAt = journalEntry.PostedAt,
             PostedBy = journalEntry.PostedBy,
-            ReversalEntryId = journalEntry.ReversalEntryId,
+            ReversalJournalId = journalEntry.ReversalJournalId,
             ReversalReason = journalEntry.ReversalReason,
             CreatedAt = journalEntry.CreatedAt,
             CreatedBy = journalEntry.CreatedBy,
@@ -180,8 +180,8 @@ public class GetJournalEntryByIdQueryHandler : IRequestHandler<GetJournalEntryBy
             AccountCode = line.AccountCode,
             AccountName = line.AccountName,
             Description = line.Description,
-            DebitAmount = line.DebitAmount?.Amount,
-            CreditAmount = line.CreditAmount?.Amount,
+            DebitAmount = line.DebitAmount?.Amount ?? 0,
+            CreditAmount = line.CreditAmount?.Amount ?? 0,
             Reference = line.Reference
         };
     }

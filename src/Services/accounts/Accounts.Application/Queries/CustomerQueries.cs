@@ -39,29 +39,27 @@ public class GetCustomersQueryHandler : IRequestHandler<GetCustomersQuery, Pagin
         var filter = new CustomerFilter
         {
             SearchTerm = request.SearchTerm,
-            Status = request.Status,
+            // Status = request.Status, // Not available in filter
             Country = request.Country,
-            CreatedAfter = request.CreatedAfter,
-            CreatedBefore = request.CreatedBefore
+            // CreatedAfter = request.CreatedAfter, // Not available in filter
+            // CreatedBefore = request.CreatedBefore // Not available in filter
         };
 
-        var customers = await _customerRepository.GetPagedAsync(
+        var (customersList, totalCount) = await _customerRepository.GetPagedAsync(
             filter,
             request.PageNumber,
             request.PageSize,
-            request.SortBy,
-            request.SortDescending,
             cancellationToken);
 
-        var customerDtos = customers.Items.Select(MapToDto).ToList();
+        var customerDtos = customersList.Select(MapToDto).ToList();
 
         return new PaginatedResult<CustomerDto>
         {
             Items = customerDtos,
-            TotalCount = customers.TotalCount,
-            PageNumber = customers.PageNumber,
-            PageSize = customers.PageSize,
-            TotalPages = customers.TotalPages
+            TotalCount = totalCount,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize)
         };
     }
 
@@ -79,7 +77,7 @@ public class GetCustomersQueryHandler : IRequestHandler<GetCustomersQuery, Pagin
             TaxNumber = customer.TaxNumber,
             Website = customer.Website,
             PreferredCurrency = customer.PreferredCurrency,
-            CreditLimit = customer.CreditLimit?.Amount,
+            CreditLimit = customer.CreditLimit?.Amount ?? 0,
             PaymentTerms = customer.PaymentTerms,
             Notes = customer.Notes,
             Addresses = customer.Addresses.Select(MapAddressToDto).ToList(),
@@ -167,7 +165,7 @@ public class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerByIdQuery,
             TaxNumber = customer.TaxNumber,
             Website = customer.Website,
             PreferredCurrency = customer.PreferredCurrency,
-            CreditLimit = customer.CreditLimit?.Amount,
+            CreditLimit = customer.CreditLimit?.Amount ?? 0,
             PaymentTerms = customer.PaymentTerms,
             Notes = customer.Notes,
             Addresses = customer.Addresses.Select(MapAddressToDto).ToList(),
@@ -239,7 +237,7 @@ public class GetCustomerSummaryQueryHandler : IRequestHandler<GetCustomerSummary
             TotalCustomers = summary.TotalCustomers,
             ActiveCustomers = summary.ActiveCustomers,
             NewCustomersThisMonth = summary.NewCustomersThisMonth,
-            TopCountries = summary.TopCountries.Select(c => new CountryStatisticDto
+            TopCountries = summary.TopCountries.Select(c => new TossErp.Accounts.Application.DTOs.CountryStatisticDto
             {
                 Country = c.Country,
                 CustomerCount = c.CustomerCount

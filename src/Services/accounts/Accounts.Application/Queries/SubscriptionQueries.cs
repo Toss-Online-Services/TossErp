@@ -48,14 +48,14 @@ public class GetSubscriptionsQueryHandler : IRequestHandler<GetSubscriptionsQuer
         {
             CustomerId = request.CustomerId,
             Status = request.Status,
-            BillingFrequency = request.BillingFrequency,
-            StartDateFrom = request.StartDateFrom,
-            StartDateTo = request.StartDateTo,
-            EndDateFrom = request.EndDateFrom,
-            EndDateTo = request.EndDateTo,
-            MinPrice = request.MinPrice,
-            MaxPrice = request.MaxPrice,
-            Currency = request.Currency
+            // BillingFrequency = request.BillingFrequency, // Not available in filter
+            StartDateFrom = request.StartDateFrom?.ToDateTime(TimeOnly.MinValue),
+            StartDateTo = request.StartDateTo?.ToDateTime(TimeOnly.MaxValue),
+            EndDateFrom = request.EndDateFrom?.ToDateTime(TimeOnly.MinValue),
+            EndDateTo = request.EndDateTo?.ToDateTime(TimeOnly.MaxValue),
+            // MinPrice = request.MinPrice, // Not available in filter
+            // MaxPrice = request.MaxPrice, // Not available in filter
+            // Currency = request.Currency // Not available in filter
         };
 
         var subscriptions = await _subscriptionRepository.GetPagedAsync(
@@ -67,7 +67,7 @@ public class GetSubscriptionsQueryHandler : IRequestHandler<GetSubscriptionsQuer
             cancellationToken);
 
         // Get customer information for mapping
-        var customerIds = subscriptions.Items.Select(s => s.CustomerId).Distinct().ToList();
+        var customerIds = subscriptions.Subscriptions.Select(s => s.CustomerId).Distinct().ToList();
         var customers = new Dictionary<Guid, Customer>();
         
         foreach (var customerId in customerIds)
@@ -79,15 +79,15 @@ public class GetSubscriptionsQueryHandler : IRequestHandler<GetSubscriptionsQuer
             }
         }
 
-        var subscriptionDtos = subscriptions.Items.Select(subscription => MapToDto(subscription, customers.GetValueOrDefault(subscription.CustomerId))).ToList();
+        var subscriptionDtos = subscriptions.Subscriptions.Select(subscription => MapToDto(subscription, customers.GetValueOrDefault(subscription.CustomerId))).ToList();
 
         return new PaginatedResult<SubscriptionDto>
         {
             Items = subscriptionDtos,
             TotalCount = subscriptions.TotalCount,
-            PageNumber = subscriptions.PageNumber,
-            PageSize = subscriptions.PageSize,
-            TotalPages = subscriptions.TotalPages
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling((double)subscriptions.TotalCount / request.PageSize)
         };
     }
 
@@ -100,25 +100,25 @@ public class GetSubscriptionsQueryHandler : IRequestHandler<GetSubscriptionsQuer
             CustomerId = subscription.CustomerId,
             CustomerName = customer?.Name ?? "Unknown Customer",
             PlanName = subscription.PlanName,
-            PlanPrice = subscription.PlanPrice.Amount,
+            PlanPrice = subscription.MonthlyAmount.Amount,
             Currency = subscription.Currency,
             BillingFrequency = subscription.BillingFrequency,
             Status = subscription.Status,
-            StartDate = subscription.StartDate,
-            EndDate = subscription.EndDate,
-            NextBillingDate = subscription.NextBillingDate,
-            BillingCycleDay = subscription.BillingCycleDay,
+            StartDate = DateOnly.FromDateTime(subscription.StartDate),
+            EndDate = subscription.EndDate.HasValue ? DateOnly.FromDateTime(subscription.EndDate.Value) : null,
+            NextBillingDate = DateOnly.FromDateTime(subscription.NextBillingDate),
+            BillingCycleDay = 1, // Default billing cycle day
             TrialDays = subscription.TrialDays,
-            TrialEndDate = subscription.TrialEndDate,
+            TrialEndDate = subscription.TrialEndDate.HasValue ? DateOnly.FromDateTime(subscription.TrialEndDate.Value) : null,
             AutoRenew = subscription.AutoRenew,
-            Notes = subscription.Notes,
+            Notes = null, // Notes not available in domain entity
             CancellationReason = subscription.CancellationReason,
-            CancelledAt = subscription.CancelledAt,
+            CancelledAt = null, // CancelledAt not available in domain entity
             CancelledBy = subscription.CancelledBy,
             CreatedAt = subscription.CreatedAt,
             CreatedBy = subscription.CreatedBy,
-            LastModified = subscription.LastModified,
-            LastModifiedBy = subscription.LastModifiedBy
+            LastModified = subscription.UpdatedAt,
+            LastModifiedBy = subscription.UpdatedBy
         };
     }
 }
@@ -171,25 +171,25 @@ public class GetSubscriptionByIdQueryHandler : IRequestHandler<GetSubscriptionBy
             CustomerId = subscription.CustomerId,
             CustomerName = customer?.Name ?? "Unknown Customer",
             PlanName = subscription.PlanName,
-            PlanPrice = subscription.PlanPrice.Amount,
+            PlanPrice = subscription.MonthlyAmount.Amount,
             Currency = subscription.Currency,
             BillingFrequency = subscription.BillingFrequency,
             Status = subscription.Status,
-            StartDate = subscription.StartDate,
-            EndDate = subscription.EndDate,
-            NextBillingDate = subscription.NextBillingDate,
-            BillingCycleDay = subscription.BillingCycleDay,
+            StartDate = DateOnly.FromDateTime(subscription.StartDate),
+            EndDate = subscription.EndDate.HasValue ? DateOnly.FromDateTime(subscription.EndDate.Value) : null,
+            NextBillingDate = DateOnly.FromDateTime(subscription.NextBillingDate),
+            BillingCycleDay = 1, // Default billing cycle day
             TrialDays = subscription.TrialDays,
-            TrialEndDate = subscription.TrialEndDate,
+            TrialEndDate = subscription.TrialEndDate.HasValue ? DateOnly.FromDateTime(subscription.TrialEndDate.Value) : null,
             AutoRenew = subscription.AutoRenew,
-            Notes = subscription.Notes,
+            Notes = null, // Notes not available in domain entity
             CancellationReason = subscription.CancellationReason,
-            CancelledAt = subscription.CancelledAt,
+            CancelledAt = null, // CancelledAt not available in domain entity
             CancelledBy = subscription.CancelledBy,
             CreatedAt = subscription.CreatedAt,
             CreatedBy = subscription.CreatedBy,
-            LastModified = subscription.LastModified,
-            LastModifiedBy = subscription.LastModifiedBy
+            LastModified = subscription.UpdatedAt,
+            LastModifiedBy = subscription.UpdatedBy
         };
     }
 }
@@ -235,7 +235,7 @@ public class GetSubscriptionsDueForRenewalQueryHandler : IRequestHandler<GetSubs
             cancellationToken);
 
         // Get customer information for mapping
-        var customerIds = subscriptions.Items.Select(s => s.CustomerId).Distinct().ToList();
+        var customerIds = subscriptions.Subscriptions.Select(s => s.CustomerId).Distinct().ToList();
         var customers = new Dictionary<Guid, Customer>();
         
         foreach (var customerId in customerIds)
@@ -247,15 +247,15 @@ public class GetSubscriptionsDueForRenewalQueryHandler : IRequestHandler<GetSubs
             }
         }
 
-        var subscriptionDtos = subscriptions.Items.Select(subscription => MapToDto(subscription, customers.GetValueOrDefault(subscription.CustomerId))).ToList();
+        var subscriptionDtos = subscriptions.Subscriptions.Select(subscription => MapToDto(subscription, customers.GetValueOrDefault(subscription.CustomerId))).ToList();
 
         return new PaginatedResult<SubscriptionDto>
         {
             Items = subscriptionDtos,
             TotalCount = subscriptions.TotalCount,
-            PageNumber = subscriptions.PageNumber,
-            PageSize = subscriptions.PageSize,
-            TotalPages = subscriptions.TotalPages
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalPages = (int)Math.Ceiling((double)subscriptions.TotalCount / request.PageSize)
         };
     }
 
@@ -268,25 +268,25 @@ public class GetSubscriptionsDueForRenewalQueryHandler : IRequestHandler<GetSubs
             CustomerId = subscription.CustomerId,
             CustomerName = customer?.Name ?? "Unknown Customer",
             PlanName = subscription.PlanName,
-            PlanPrice = subscription.PlanPrice.Amount,
+            PlanPrice = subscription.MonthlyAmount.Amount,
             Currency = subscription.Currency,
             BillingFrequency = subscription.BillingFrequency,
             Status = subscription.Status,
-            StartDate = subscription.StartDate,
-            EndDate = subscription.EndDate,
-            NextBillingDate = subscription.NextBillingDate,
-            BillingCycleDay = subscription.BillingCycleDay,
+            StartDate = DateOnly.FromDateTime(subscription.StartDate),
+            EndDate = subscription.EndDate.HasValue ? DateOnly.FromDateTime(subscription.EndDate.Value) : null,
+            NextBillingDate = DateOnly.FromDateTime(subscription.NextBillingDate),
+            BillingCycleDay = 1, // Default billing cycle day
             TrialDays = subscription.TrialDays,
-            TrialEndDate = subscription.TrialEndDate,
+            TrialEndDate = subscription.TrialEndDate.HasValue ? DateOnly.FromDateTime(subscription.TrialEndDate.Value) : null,
             AutoRenew = subscription.AutoRenew,
-            Notes = subscription.Notes,
+            Notes = null, // Notes not available in domain entity
             CancellationReason = subscription.CancellationReason,
-            CancelledAt = subscription.CancelledAt,
+            CancelledAt = null, // CancelledAt not available in domain entity
             CancelledBy = subscription.CancelledBy,
             CreatedAt = subscription.CreatedAt,
             CreatedBy = subscription.CreatedBy,
-            LastModified = subscription.LastModified,
-            LastModifiedBy = subscription.LastModifiedBy
+            LastModified = subscription.UpdatedAt,
+            LastModifiedBy = subscription.UpdatedBy
         };
     }
 }
