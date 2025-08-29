@@ -9,7 +9,7 @@ namespace TossErp.Accounts.Infrastructure.Data;
 /// <summary>
 /// Multi-tenant DbContext for Accounts service with EF Core 9 optimizations
 /// </summary>
-public class AccountsDbContext : DbContext, IUnitOfWork
+public class AccountsDbContext : DbContext, TossErp.Shared.SeedWork.IUnitOfWork
 {
     private readonly ICurrentTenantService _currentTenantService;
 
@@ -22,7 +22,6 @@ public class AccountsDbContext : DbContext, IUnitOfWork
 
     // Chart of Accounts
     public DbSet<ChartOfAccount> ChartOfAccounts => Set<ChartOfAccount>();
-    public DbSet<AccountType> AccountTypes => Set<AccountType>();
     
     // Journal Entries and Transactions
     public DbSet<JournalEntry> JournalEntries => Set<JournalEntry>();
@@ -49,7 +48,6 @@ public class AccountsDbContext : DbContext, IUnitOfWork
     public DbSet<BankAccount> BankAccounts => Set<BankAccount>();
     public DbSet<BankTransaction> BankTransactions => Set<BankTransaction>();
     public DbSet<Payment> Payments => Set<Payment>();
-    public DbSet<PaymentMethod> PaymentMethods => Set<PaymentMethod>();
     
     // Financial Reports
     public DbSet<FinancialPeriod> FinancialPeriods => Set<FinancialPeriod>();
@@ -59,6 +57,22 @@ public class AccountsDbContext : DbContext, IUnitOfWork
     // Audit and Documents
     public DbSet<AccountingDocument> AccountingDocuments => Set<AccountingDocument>();
     public DbSet<AccountingAuditLog> AccountingAuditLogs => Set<AccountingAuditLog>();
+
+    // IUnitOfWork implementation
+    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        return await Database.BeginTransactionAsync(cancellationToken);
+    }
+
+    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        await Database.CommitTransactionAsync(cancellationToken);
+    }
+
+    public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        await Database.RollbackTransactionAsync(cancellationToken);
+    }
     
     // Cashbook Management (from merged accounting service)
     public DbSet<Cashbook> Cashbooks => Set<Cashbook>();
@@ -74,13 +88,6 @@ public class AccountsDbContext : DbContext, IUnitOfWork
         // Apply all configurations from assembly
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AccountsDbContext).Assembly);
 
-        // Apply migration helper configurations
-        AccountsMigrationHelper.SeedAccountTypes(modelBuilder);
-        AccountsMigrationHelper.SeedChartOfAccounts(modelBuilder);
-        AccountsMigrationHelper.SeedPaymentMethods(modelBuilder);
-        AccountsMigrationHelper.ConfigureDatabaseOptimizations(modelBuilder);
-        AccountsMigrationHelper.ConfigureTriggers(modelBuilder);
-
         // Configure multi-tenant global query filters
         ConfigureGlobalQueryFilters(modelBuilder);
 
@@ -92,11 +99,8 @@ public class AccountsDbContext : DbContext, IUnitOfWork
     {
         var tenantId = _currentTenantService.TenantId;
 
-        // Chart of Accounts and Types
+        // Chart of Accounts
         modelBuilder.Entity<ChartOfAccount>()
-            .HasQueryFilter(e => e.TenantId == tenantId || e.TenantId == "system");
-        
-        modelBuilder.Entity<AccountType>()
             .HasQueryFilter(e => e.TenantId == tenantId || e.TenantId == "system");
 
         // Journal Entries and GL

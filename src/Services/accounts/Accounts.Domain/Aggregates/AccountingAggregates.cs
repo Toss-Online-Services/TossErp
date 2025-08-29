@@ -4,14 +4,19 @@ using TossErp.Accounts.Domain.Enums;
 using TossErp.Accounts.Domain.Events;
 using TossErp.Accounts.Domain.SeedWork;
 using TossErp.Accounts.Domain.ValueObjects;
+using TossErp.Shared.SeedWork;
 
 namespace TossErp.Accounts.Domain.Aggregates;
 
 /// <summary>
 /// Chart of Accounts aggregate managing the hierarchical account structure
 /// </summary>
-public class ChartOfAccounts : AggregateRoot
+public class ChartOfAccounts : TossErp.Shared.SeedWork.AggregateRoot
 {
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; } = null!;
+    
     public string TenantId { get; private set; }
     public AccountNumber AccountNumber { get; private set; }
     public string AccountName { get; private set; }
@@ -23,8 +28,6 @@ public class ChartOfAccounts : AggregateRoot
     public Guid? ParentAccountId { get; private set; }
     public CurrencyCode DefaultCurrency { get; private set; }
     public Money CurrentBalance { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public string CreatedBy { get; private set; }
     public DateTime? ModifiedAt { get; private set; }
     public string? ModifiedBy { get; private set; }
 

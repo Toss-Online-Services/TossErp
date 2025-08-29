@@ -49,12 +49,50 @@ public abstract class Entity : IEntity
 /// <summary>
 /// Base abstract entity class with typed ID
 /// </summary>
-public abstract class Entity<T> : Entity, IEntity<T>
+public abstract class Entity<T> : IEntity<T>
 {
-    public abstract new T Id { get; protected set; }
+    public abstract T Id { get; protected set; }
 
     public abstract DateTime CreatedAt { get; protected set; }
     public abstract string CreatedBy { get; protected set; }
 
     Guid IEntity.Id => Id is Guid guid ? guid : Guid.Empty;
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Entity<T> other)
+            return false;
+
+        if (ReferenceEquals(this, other))
+            return true;
+
+        if (GetType() != other.GetType())
+            return false;
+
+        if (Id == null || other.Id == null)
+            return false;
+
+        return Id.Equals(other.Id);
+    }
+
+    public static bool operator ==(Entity<T>? a, Entity<T>? b)
+    {
+        if (a is null && b is null)
+            return true;
+
+        if (a is null || b is null)
+            return false;
+
+        return a.Equals(b);
+    }
+
+    public static bool operator !=(Entity<T>? a, Entity<T>? b)
+    {
+        return !(a == b);
+    }
+
+    public override int GetHashCode()
+    {
+        return (GetType().ToString() + Id?.ToString()).GetHashCode();
+    }
 }

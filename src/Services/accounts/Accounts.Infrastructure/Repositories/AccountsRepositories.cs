@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using TossErp.Accounts.Domain.Entities;
+using TossErp.Accounts.Domain.Aggregates;
 using TossErp.Accounts.Domain.Enums;
-using TossErp.Accounts.Domain.SeedWork;
 using TossErp.Accounts.Application.Common.Interfaces;
 using TossErp.Accounts.Infrastructure.Data;
 using TossErp.Shared.SeedWork;
@@ -13,7 +13,7 @@ namespace TossErp.Accounts.Infrastructure.Repositories;
 /// Generic repository implementation for Accounts domain entities
 /// </summary>
 /// <typeparam name="T">Entity type</typeparam>
-public class AccountsRepository<T> : IRepository<T> where T : class, IAggregateRoot
+public class AccountsRepository<T> : IRepository<T> where T : class, TossErp.Shared.SeedWork.IAggregateRoot
 {
     protected readonly AccountsDbContext _context;
 
@@ -22,7 +22,7 @@ public class AccountsRepository<T> : IRepository<T> where T : class, IAggregateR
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public IUnitOfWork UnitOfWork => _context;
+    public TossErp.Shared.SeedWork.IUnitOfWork UnitOfWork => _context;
 
     public virtual async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
