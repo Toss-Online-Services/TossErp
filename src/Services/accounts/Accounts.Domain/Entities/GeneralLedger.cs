@@ -43,14 +43,14 @@ public class GeneralLedger : AggregateRoot
         Guid chartOfAccountId,
         DateOnly periodDate,
         Money openingBalance,
-        string? createdBy = null) : base(id, tenantId)
+        string? ModifiedBy = null)
     {
         ChartOfAccountId = chartOfAccountId;
         PeriodDate = periodDate;
         OpeningBalance = openingBalance;
         ClosingBalance = openingBalance;
         NetBalance = openingBalance;
-        CreatedBy = createdBy;
+        ModifiedBy = createdBy;
     }
 
     public static GeneralLedger Create(
@@ -58,7 +58,7 @@ public class GeneralLedger : AggregateRoot
         Guid chartOfAccountId,
         DateOnly periodDate,
         Money openingBalance,
-        string? createdBy = null)
+        string? ModifiedBy = null)
     {
         return new GeneralLedger(
             Guid.NewGuid(),

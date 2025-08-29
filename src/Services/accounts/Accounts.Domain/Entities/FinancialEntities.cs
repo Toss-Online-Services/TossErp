@@ -63,12 +63,12 @@ public class Expense : AggregateRoot
         string? taxCode = null,
         decimal taxRate = 0,
         string? notes = null,
-        string? createdBy = null)
+        string? ModifiedBy = null)
     {
         Id = id;
-        CreatedAt = DateTime.UtcNow;
-        CreatedBy = createdBy ?? "system";
-        TenantId = tenantId;
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy ?? "system";
+        
         
         Description = description ?? throw new ArgumentNullException(nameof(description));
         Amount = amount;
@@ -93,7 +93,7 @@ public class Expense : AggregateRoot
         string? taxCode = null,
         decimal taxRate = 0,
         string? notes = null,
-        string? createdBy = null)
+        string? ModifiedBy = null)
     {
         return new Expense(
             Guid.NewGuid(),
@@ -171,12 +171,12 @@ public class FinancialPeriod : AggregateRoot
         DateOnly startDate,
         DateOnly endDate,
         string? description = null,
-        string? createdBy = null)
+        string? ModifiedBy = null)
     {
         Id = id;
-        CreatedAt = DateTime.UtcNow;
-        CreatedBy = createdBy ?? "system";
-        TenantId = tenantId;
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy ?? "system";
+        
         
         Name = name ?? throw new ArgumentNullException(nameof(name));
         StartDate = startDate;
@@ -193,7 +193,7 @@ public class FinancialPeriod : AggregateRoot
         DateOnly startDate,
         DateOnly endDate,
         string? description = null,
-        string? createdBy = null)
+        string? ModifiedBy = null)
     {
         return new FinancialPeriod(
             Guid.NewGuid(),
@@ -264,14 +264,14 @@ public class BudgetEntry : Entity
         Guid chartOfAccountId,
         Money budgetedAmount,
         string? notes = null,
-        string? createdBy = null) : base(id, tenantId)
+        string? ModifiedBy = null)
     {
         FinancialPeriodId = financialPeriodId;
         ChartOfAccountId = chartOfAccountId;
         BudgetedAmount = budgetedAmount;
         Notes = notes;
         CalculateVariance();
-        CreatedBy = createdBy;
+        ModifiedBy = createdBy;
     }
 
     public static BudgetEntry Create(
@@ -280,7 +280,7 @@ public class BudgetEntry : Entity
         Guid chartOfAccountId,
         Money budgetedAmount,
         string? notes = null,
-        string? createdBy = null)
+        string? ModifiedBy = null)
     {
         return new BudgetEntry(
             Guid.NewGuid(),

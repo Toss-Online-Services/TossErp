@@ -9,6 +9,9 @@ namespace TossErp.Accounts.Domain.Entities;
 /// </summary>
 public class Vendor : AggregateRoot
 {
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; }
     private readonly List<VendorContact> _contacts = [];
 
     public Vendor(
@@ -17,14 +20,14 @@ public class Vendor : AggregateRoot
         string vendorNumber,
         string name,
         VendorType vendorType,
-        string createdBy) : base(id, tenantId)
+        string createdBy)
     {
         VendorNumber = vendorNumber?.Trim() ?? throw new ArgumentException("Vendor number cannot be empty");
         Name = name?.Trim() ?? throw new ArgumentException("Vendor name cannot be empty");
         VendorType = vendorType;
         Status = VendorStatus.Active;
-        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
-        CreatedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        ModifiedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
         Currency = "ZAR"; // Default to South African Rand for township vendors
@@ -259,19 +262,20 @@ public class Vendor : AggregateRoot
 /// </summary>
 public class VendorContact : Entity
 {
+    public override Guid Id { get; protected set; }
     public VendorContact(
         Guid id,
         string tenantId,
         Guid vendorId,
         ContactType contactType,
         string name,
-        string createdBy) : base(id, tenantId)
+        string createdBy)
     {
         VendorId = vendorId;
         ContactType = contactType;
         Name = name?.Trim() ?? throw new ArgumentException("Contact name cannot be empty");
-        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
-        CreatedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        ModifiedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
     }

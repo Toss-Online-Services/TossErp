@@ -61,17 +61,17 @@ public class ChartOfAccount : AggregateRoot
         AccountType accountType,
         string? description = null,
         Guid? parentAccountId = null,
-        string? createdBy = null)
+        string? ModifiedBy = null)
     {
         Id = id;
-        TenantId = tenantId;
+        
         AccountCode = accountCode ?? throw new ArgumentNullException(nameof(accountCode));
         AccountName = accountName ?? throw new ArgumentNullException(nameof(accountName));
         AccountType = accountType;
         Description = description;
         ParentAccountId = parentAccountId;
-        CreatedAt = DateTime.UtcNow;
-        CreatedBy = createdBy ?? string.Empty;
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy ?? string.Empty;
     }
 
     public static ChartOfAccount Create(
@@ -81,7 +81,7 @@ public class ChartOfAccount : AggregateRoot
         AccountType accountType,
         string? description = null,
         Guid? parentAccountId = null,
-        string? createdBy = null)
+        string? ModifiedBy = null)
     {
         return new ChartOfAccount(
             Guid.NewGuid(),

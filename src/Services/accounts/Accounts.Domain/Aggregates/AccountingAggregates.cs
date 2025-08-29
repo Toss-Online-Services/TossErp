@@ -41,11 +41,11 @@ public class ChartOfAccounts : TossErp.Shared.SeedWork.AggregateRoot
     private ChartOfAccounts()
     {
         _childAccounts = new List<ChartOfAccounts>();
-        TenantId = null!;
+        
         AccountNumber = null!;
         AccountName = null!;
         CurrentBalance = null!;
-        CreatedBy = null!;
+        ModifiedBy = null!;
     } // EF Core
 
     public ChartOfAccounts(
@@ -61,7 +61,7 @@ public class ChartOfAccounts : TossErp.Shared.SeedWork.AggregateRoot
         Guid? parentAccountId = null)
     {
         Id = id;
-        TenantId = tenantId ?? throw new ArgumentNullException(nameof(tenantId));
+        
         AccountNumber = accountNumber ?? throw new ArgumentNullException(nameof(accountNumber));
         AccountName = accountName?.Trim() ?? throw new ArgumentException("Account name cannot be empty");
         AccountType = accountType;
@@ -72,8 +72,8 @@ public class ChartOfAccounts : TossErp.Shared.SeedWork.AggregateRoot
         CurrentBalance = new Money(0, defaultCurrency);
         IsActive = true;
         AllowPosting = true;
-        CreatedAt = DateTime.UtcNow;
-        CreatedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
         _childAccounts = new List<ChartOfAccounts>();
 
         AddDomainEvent(new AccountCreatedEvent(Id, TenantId, AccountNumber.Value, AccountName, AccountType));
@@ -200,11 +200,11 @@ public class FinancialTransaction : AggregateRoot
     private FinancialTransaction()
     {
         _journalLines = new List<JournalEntryLine>();
-        TenantId = null!;
+        
         TransactionNumber = null!;
         Description = null!;
         TotalAmount = null!;
-        CreatedBy = null!;
+        ModifiedBy = null!;
     } // EF Core
 
     public FinancialTransaction(
@@ -219,7 +219,7 @@ public class FinancialTransaction : AggregateRoot
         string? reference = null)
     {
         Id = id;
-        TenantId = tenantId ?? throw new ArgumentNullException(nameof(tenantId));
+        
         TransactionNumber = transactionNumber?.Trim() ?? throw new ArgumentException("Transaction number cannot be empty");
         TransactionDate = transactionDate.Date;
         TransactionType = transactionType;
@@ -228,8 +228,8 @@ public class FinancialTransaction : AggregateRoot
         Currency = currency;
         TotalAmount = new Money(0, currency);
         Status = TransactionStatus.Draft;
-        CreatedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
-        CreatedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
+        ModifiedAt = DateTime.UtcNow;
         _journalLines = new List<JournalEntryLine>();
 
         AddDomainEvent(new TransactionCreatedEvent(Id, TenantId, TransactionNumber, TransactionType));
@@ -393,7 +393,7 @@ public class Invoice : AggregateRoot
     {
         _lines = new List<InvoiceLine>();
         _payments = new List<PaymentLine>();
-        TenantId = null!;
+        
         InvoiceNumber = null!;
         CustomerName = null!;
         SubTotal = null!;
@@ -401,7 +401,7 @@ public class Invoice : AggregateRoot
         TotalAmount = null!;
         PaidAmount = null!;
         OutstandingAmount = null!;
-        CreatedBy = null!;
+        ModifiedBy = null!;
     } // EF Core
 
     public Invoice(
@@ -421,7 +421,7 @@ public class Invoice : AggregateRoot
         Guid? subscriptionId = null)
     {
         Id = id;
-        TenantId = tenantId ?? throw new ArgumentNullException(nameof(tenantId));
+        
         InvoiceNumber = invoiceNumber?.Trim() ?? throw new ArgumentException("Invoice number cannot be empty");
         InvoiceType = invoiceType;
         CustomerId = customerId;
@@ -433,8 +433,8 @@ public class Invoice : AggregateRoot
         Terms = terms?.Trim();
         BillingPeriod = billingPeriod;
         SubscriptionId = subscriptionId;
-        CreatedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
-        CreatedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
+        ModifiedAt = DateTime.UtcNow;
         Status = InvoiceStatus.Draft;
 
         SubTotal = new Money(0, currency);
@@ -606,13 +606,13 @@ public class Budget : AggregateRoot
     private Budget()
     {
         _allocations = new List<BudgetAllocation>();
-        TenantId = null!;
+        
         BudgetName = null!;
         TotalBudget = null!;
         ActualSpent = null!;
         Committed = null!;
         Available = null!;
-        CreatedBy = null!;
+        ModifiedBy = null!;
     } // EF Core
 
     public Budget(
@@ -628,7 +628,7 @@ public class Budget : AggregateRoot
         string? description = null)
     {
         Id = id;
-        TenantId = tenantId ?? throw new ArgumentNullException(nameof(tenantId));
+        
         BudgetName = budgetName?.Trim() ?? throw new ArgumentException("Budget name cannot be empty");
         Description = description?.Trim();
         BudgetType = budgetType;
@@ -640,8 +640,8 @@ public class Budget : AggregateRoot
         Committed = new Money(0, currency);
         Available = totalBudget;
         Status = BudgetStatus.Draft;
-        CreatedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
-        CreatedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
+        ModifiedAt = DateTime.UtcNow;
         _allocations = new List<BudgetAllocation>();
 
         if (endDate <= startDate)

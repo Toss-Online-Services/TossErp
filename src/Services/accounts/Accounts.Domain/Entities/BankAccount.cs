@@ -56,11 +56,11 @@ public class BankAccount : AggregateRoot
         string? branchCode = null,
         string? swiftCode = null,
         string? description = null,
-        string? createdBy = null) : base(id, tenantId)
+        string? ModifiedBy = null)
     {
         Id = id;
-        CreatedAt = DateTime.UtcNow;
-        CreatedBy = createdBy ?? "system";
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy ?? "system";
         AccountName = accountName ?? throw new ArgumentNullException(nameof(accountName));
         AccountNumber = accountNumber ?? throw new ArgumentNullException(nameof(accountNumber));
         BankName = bankName ?? throw new ArgumentNullException(nameof(bankName));
@@ -77,7 +77,7 @@ public class BankAccount : AggregateRoot
         string? branchCode = null,
         string? swiftCode = null,
         string? description = null,
-        string? createdBy = null)
+        string? ModifiedBy = null)
     {
         return new BankAccount(
             Guid.NewGuid(),
