@@ -20,7 +20,7 @@ public class JournalEntryLine : Entity
     public string? Description { get; private set; }
     public Guid? CostCenterId { get; private set; }
     public string? Reference { get; private set; }
-    public new DateTime CreatedAt { get; private set; }
+    public DateTime ModifiedAt { get; private set; }
 
     // Application layer compatibility properties
     public string? AccountCode { get; private set; }
@@ -53,7 +53,7 @@ public class JournalEntryLine : Entity
         CostCenterId = costCenterId;
         Reference = reference?.Trim();
         AccountCode = accountCode?.Trim();
-        CreatedAt = DateTime.UtcNow;
+        ModifiedAt = DateTime.UtcNow;
     }
 
     public void UpdateDescription(string? description)
@@ -329,8 +329,8 @@ public class RecurringTransactionTemplate : Entity
     public DateTime NextProcessDate { get; private set; }
     public bool IsActive { get; private set; }
     public TransactionType TransactionType { get; private set; }
-    public new string CreatedBy { get; private set; }
-    public new DateTime CreatedAt { get; private set; }
+    public string ModifiedBy { get; private set; }
+    public DateTime ModifiedAt { get; private set; }
     public int ProcessedCount { get; private set; }
 
     private readonly List<RecurringTransactionLine> _lines;
@@ -340,7 +340,7 @@ public class RecurringTransactionTemplate : Entity
     {
         _lines = new List<RecurringTransactionLine>();
         Name = null!;
-        CreatedBy = null!;
+        ModifiedBy = null!;
     } // EF Core
 
     public RecurringTransactionTemplate(
@@ -360,8 +360,8 @@ public class RecurringTransactionTemplate : Entity
         StartDate = startDate.Date;
         EndDate = endDate?.Date;
         TransactionType = transactionType;
-        CreatedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
-        CreatedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
+        ModifiedAt = DateTime.UtcNow;
         IsActive = true;
         ProcessedCount = 0;
         _lines = new List<RecurringTransactionLine>();
@@ -504,9 +504,9 @@ public class Cashbook : AggregateRoot
         string? description = null)
     {
         Id = id;
-        CreatedAt = DateTime.UtcNow;
-        CreatedBy = "system";
-        TenantId = tenantId;
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = "system";
+        
         
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Cashbook name cannot be empty", nameof(name));
@@ -640,7 +640,7 @@ public class CashbookEntry : Entity
         Guid accountId,
         string tenantId,
         string? relatedEntityId = null,
-        string? relatedEntityType = null) : base(id, tenantId)
+        string? relatedEntityType = null)
     {
         CashbookId = cashbookId;
         TransactionDate = transactionDate;
@@ -866,9 +866,9 @@ public class Company : AggregateRoot
         string? description = null)
     {
         Id = id;
-        CreatedAt = DateTime.UtcNow;
-        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
-        TenantId = tenantId;
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        
         
         Name = name?.Trim() ?? throw new ArgumentException("Company name cannot be empty");
         Abbreviation = abbreviation?.Trim() ?? throw new ArgumentException("Abbreviation cannot be empty");

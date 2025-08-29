@@ -126,11 +126,11 @@ public class Bill : AggregateRoot
         string createdBy,
         BillType billType = BillType.Standard,
         string? description = null,
-        string? supplierInvoiceNumber = null) : base(id, tenantId)
+        string? supplierInvoiceNumber = null)
     {
         Id = id;
-        CreatedAt = DateTime.UtcNow;
-        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         BillNumber = billNumber?.Trim() ?? throw new ArgumentException("Bill number cannot be empty");
         SupplierId = supplierId;
         SupplierName = supplierName?.Trim();
@@ -346,6 +346,7 @@ public class Bill : AggregateRoot
 [Table("BillLineItems")]
 public class BillLineItem : Entity
 {
+    public override Guid Id { get; protected set; }
     public Guid BillId { get; private set; }
 
     [Required]
@@ -404,7 +405,7 @@ public class BillLineItem : Entity
         TaxRate? taxRate = null,
         Guid? productId = null,
         string? productCode = null,
-        string? unit = null) : base(id, tenantId)
+        string? unit = null)
     {
         BillId = billId;
         ItemName = itemName?.Trim() ?? throw new ArgumentException("Item name cannot be empty");

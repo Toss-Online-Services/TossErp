@@ -13,6 +13,7 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("Subscriptions")]
 public class Subscription : Entity
 {
+    public override Guid Id { get; protected set; }
     [Required]
     [StringLength(50)]
     public string SubscriptionNumber { get; private set; } = string.Empty;
@@ -132,12 +133,7 @@ public class Subscription : Entity
     public string? TermsAndConditions { get; private set; }
 
     // Audit fields
-    public new DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
-
     public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
-
-    [StringLength(100)]
-    public new string? CreatedBy { get; private set; }
 
     [StringLength(100)]
     public string? ModifiedBy { get; private set; }
@@ -168,7 +164,7 @@ public class Subscription : Entity
         DateTime startDate,
         string createdBy,
         string? planDescription = null,
-        PaymentMethod preferredPaymentMethod = PaymentMethod.BankTransfer) : base(id, tenantId)
+        PaymentMethod preferredPaymentMethod = PaymentMethod.BankTransfer)
     {
         SubscriptionNumber = subscriptionNumber?.Trim() ?? throw new ArgumentException("Subscription number cannot be empty");
         CustomerId = customerId;
@@ -178,9 +174,9 @@ public class Subscription : Entity
         MonthlyAmount = monthlyAmount ?? throw new ArgumentNullException(nameof(monthlyAmount));
         BillingFrequency = billingFrequency;
         StartDate = startDate.Date;
-        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         PreferredPaymentMethod = preferredPaymentMethod;
-        CreatedAt = DateTime.UtcNow;
+        ModifiedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
         Currency = monthlyAmount.Currency.ToString();

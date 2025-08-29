@@ -10,6 +10,7 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("Contacts")]
 public class Contact : Entity
 {
+    public override Guid Id { get; protected set; }
     [Required]
     [StringLength(100)]
     public string FirstName { get; private set; } = string.Empty;
@@ -64,7 +65,7 @@ public class Contact : Entity
         string? notes = null,
         Guid? customerId = null,
         Guid? vendorId = null,
-        string? createdBy = null) : base(id, tenantId)
+        string? ModifiedBy = null)
     {
         FirstName = firstName ?? throw new ArgumentNullException(nameof(firstName));
         LastName = lastName ?? throw new ArgumentNullException(nameof(lastName));
@@ -77,7 +78,7 @@ public class Contact : Entity
         Notes = notes;
         CustomerId = customerId;
         VendorId = vendorId;
-        CreatedBy = createdBy;
+        ModifiedBy = createdBy;
     }
 
     public static Contact Create(
@@ -93,7 +94,7 @@ public class Contact : Entity
         string? notes = null,
         Guid? customerId = null,
         Guid? vendorId = null,
-        string? createdBy = null)
+        string? ModifiedBy = null)
     {
         return new Contact(
             Guid.NewGuid(),

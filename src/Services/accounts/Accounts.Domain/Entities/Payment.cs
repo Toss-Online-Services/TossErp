@@ -13,6 +13,9 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("Payments")]
 public class Payment : AggregateRoot
 {
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; }
     [Required]
     [StringLength(50)]
     public string PaymentNumber { get; private set; } = string.Empty;
@@ -113,12 +116,7 @@ public class Payment : AggregateRoot
                                    .Subtract(BankCharges ?? Money.Zero(CurrencyCode.ZAR));
 
     // Audit fields
-    public new DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
-
     public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
-
-    [StringLength(100)]
-    public new string? CreatedBy { get; private set; }
 
     [StringLength(100)]
     public string? ModifiedBy { get; private set; }
@@ -158,20 +156,20 @@ public class Payment : AggregateRoot
         string? customerName = null,
         Guid? invoiceId = null,
         string? invoiceNumber = null,
-        string? description = null) : base(id, tenantId)
+        string? description = null)
     {
         PaymentNumber = paymentNumber?.Trim() ?? throw new ArgumentException("Payment number cannot be empty");
         PaymentDate = paymentDate.Date;
         Amount = amount ?? throw new ArgumentNullException(nameof(amount));
         PaymentMethod = paymentMethod;
         PaymentType = paymentType;
-        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         CustomerId = customerId;
         CustomerName = customerName?.Trim();
         InvoiceId = invoiceId;
         InvoiceNumber = invoiceNumber?.Trim();
         Description = description?.Trim();
-        CreatedAt = DateTime.UtcNow;
+        ModifiedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
         Currency = amount.Currency.ToString();
@@ -386,6 +384,7 @@ public class Payment : AggregateRoot
 [Table("PaymentAllocations")]
 public class PaymentAllocation : Entity
 {
+    public override Guid Id { get; protected set; }
     public Guid PaymentId { get; private set; }
 
     public Guid? InvoiceId { get; private set; }
@@ -425,7 +424,7 @@ public class PaymentAllocation : Entity
         string? invoiceNumber = null,
         Guid? accountId = null,
         string? accountName = null,
-        string? description = null) : base(id, tenantId)
+        string? description = null)
     {
         PaymentId = paymentId;
         Amount = amount ?? throw new ArgumentNullException(nameof(amount));

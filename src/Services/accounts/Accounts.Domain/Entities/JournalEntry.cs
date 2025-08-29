@@ -13,6 +13,9 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("JournalEntries")]
 public class JournalEntry : AggregateRoot
 {
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; }
     [Required]
     [StringLength(50)]
     public string JournalNumber { get; private set; } = string.Empty;
@@ -103,12 +106,7 @@ public class JournalEntry : AggregateRoot
     public string? ReversalReason { get; private set; }
 
     // Audit fields
-    public new DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
-
     public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
-
-    [StringLength(100)]
-    public new string? CreatedBy { get; private set; }
 
     [StringLength(100)]
     public string? ModifiedBy { get; private set; }
@@ -141,16 +139,16 @@ public class JournalEntry : AggregateRoot
         TransactionType transactionType,
         string createdBy,
         DateTime? postingDate = null,
-        string? referenceNumber = null) : base(id, tenantId)
+        string? referenceNumber = null)
     {
         JournalNumber = journalNumber?.Trim() ?? throw new ArgumentException("Journal number cannot be empty");
         EntryDate = entryDate.Date;
         PostingDate = postingDate?.Date ?? entryDate.Date;
         Description = description?.Trim() ?? throw new ArgumentException("Description cannot be empty");
         TransactionType = transactionType;
-        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         ReferenceNumber = referenceNumber?.Trim();
-        CreatedAt = DateTime.UtcNow;
+        ModifiedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
     }
