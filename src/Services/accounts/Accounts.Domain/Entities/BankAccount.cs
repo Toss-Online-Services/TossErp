@@ -1,4 +1,4 @@
-using TossErp.Accounts.Domain.SeedWork;
+using TossErp.Shared.SeedWork;
 using TossErp.Accounts.Domain.ValueObjects;
 using TossErp.Accounts.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
@@ -12,6 +12,10 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("BankAccounts")]
 public class BankAccount : AggregateRoot
 {
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; }
+    
     [Required]
     [StringLength(100)]
     public string AccountName { get; private set; } = string.Empty;
@@ -54,13 +58,15 @@ public class BankAccount : AggregateRoot
         string? description = null,
         string? createdBy = null) : base(id, tenantId)
     {
+        Id = id;
+        CreatedAt = DateTime.UtcNow;
+        CreatedBy = createdBy ?? "system";
         AccountName = accountName ?? throw new ArgumentNullException(nameof(accountName));
         AccountNumber = accountNumber ?? throw new ArgumentNullException(nameof(accountNumber));
         BankName = bankName ?? throw new ArgumentNullException(nameof(bankName));
         BranchCode = branchCode;
         SwiftCode = swiftCode;
         Description = description;
-        CreatedBy = createdBy;
     }
 
     public static BankAccount Create(

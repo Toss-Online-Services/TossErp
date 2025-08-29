@@ -1,4 +1,4 @@
-using TossErp.Accounts.Domain.SeedWork;
+using TossErp.Shared.SeedWork;
 using TossErp.Accounts.Domain.ValueObjects;
 using TossErp.Accounts.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
@@ -12,6 +12,12 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("GeneralLedger")]
 public class GeneralLedger : AggregateRoot
 {
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; }
+
+    public string TenantId { get; private set; } = string.Empty;
+
     public Guid ChartOfAccountId { get; private set; }
 
     public DateOnly PeriodDate { get; private set; }

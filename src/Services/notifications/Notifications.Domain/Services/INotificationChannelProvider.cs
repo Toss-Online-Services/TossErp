@@ -1,3 +1,6 @@
+using TossErp.Shared.SeedWork;
+using Notifications.Domain.Entities;
+
 namespace Notifications.Domain.Services;
 
 public interface INotificationChannelProvider

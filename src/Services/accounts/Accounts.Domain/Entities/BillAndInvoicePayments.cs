@@ -1,4 +1,4 @@
-using TossErp.Accounts.Domain.SeedWork;
+using TossErp.Shared.SeedWork;
 using TossErp.Accounts.Domain.ValueObjects;
 using TossErp.Accounts.Domain.Enums;
 using System.ComponentModel.DataAnnotations;

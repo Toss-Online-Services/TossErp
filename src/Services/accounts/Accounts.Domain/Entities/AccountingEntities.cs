@@ -1,5 +1,5 @@
 using TossErp.Accounts.Domain.Enums;
-using TossErp.Accounts.Domain.SeedWork;
+using TossErp.Shared.SeedWork;
 using TossErp.Accounts.Domain.ValueObjects;
 using TossErp.Accounts.Domain.Aggregates;
 using System.ComponentModel.DataAnnotations;
@@ -12,6 +12,7 @@ namespace TossErp.Accounts.Domain.Entities;
 /// </summary>
 public class JournalEntryLine : Entity
 {
+    public override Guid Id { get; protected set; }
     public Guid JournalEntryId { get; private set; }
     public Guid AccountId { get; private set; }
     public string AccountName { get; private set; }
@@ -74,6 +75,7 @@ public class JournalEntryLine : Entity
 /// </summary>
 public class PaymentLine : Entity
 {
+    public override Guid Id { get; protected set; }
     public Guid PaymentId { get; private set; }
     public Guid InvoiceId { get; private set; }
     public string InvoiceNumber { get; private set; }
@@ -115,6 +117,7 @@ public class PaymentLine : Entity
 /// </summary>
 public class InvoiceLine : Entity
 {
+    public override Guid Id { get; protected set; }
     public Guid InvoiceId { get; private set; }
     public string ItemName { get; private set; }
     public string? Description { get; private set; }
@@ -191,6 +194,7 @@ public class InvoiceLine : Entity
 /// </summary>
 public class BankTransaction : Entity
 {
+    public override Guid Id { get; protected set; }
     public Guid BankAccountId { get; private set; }
     public DateTime TransactionDate { get; private set; }
     public string Description { get; private set; }
@@ -261,6 +265,7 @@ public class BankTransaction : Entity
 /// </summary>
 public class TaxEntry : Entity
 {
+    public override Guid Id { get; protected set; }
     public Guid TransactionId { get; private set; }
     public TransactionType TransactionType { get; private set; }
     public TaxType TaxType { get; private set; }
@@ -315,6 +320,7 @@ public class TaxEntry : Entity
 /// </summary>
 public class RecurringTransactionTemplate : Entity
 {
+    public override Guid Id { get; protected set; }
     public string Name { get; private set; }
     public string? Description { get; private set; }
     public BillingFrequency Frequency { get; private set; }
@@ -424,6 +430,7 @@ public class RecurringTransactionTemplate : Entity
 /// </summary>
 public class RecurringTransactionLine : Entity
 {
+    public override Guid Id { get; protected set; }
     public Guid TemplateId { get; private set; }
     public Guid AccountId { get; private set; }
     public string AccountName { get; private set; }
@@ -471,6 +478,11 @@ public class RecurringTransactionLine : Entity
 /// </summary>
 public class Cashbook : AggregateRoot
 {
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; }
+
+    public string TenantId { get; private set; } = string.Empty;
     private readonly List<CashbookEntry> _entries = new();
 
     public string Name { get; private set; } = string.Empty;
@@ -482,15 +494,20 @@ public class Cashbook : AggregateRoot
     // Navigation properties
     public IReadOnlyList<CashbookEntry> Entries => _entries.AsReadOnly();
 
-    private Cashbook() : base() { } // For EF Core
+    private Cashbook() { } // For EF Core
 
     public Cashbook(
         Guid id,
         string name,
         string tenantId,
         Money openingBalance,
-        string? description = null) : base(id, tenantId)
+        string? description = null)
     {
+        Id = id;
+        CreatedAt = DateTime.UtcNow;
+        CreatedBy = "system";
+        TenantId = tenantId;
+        
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Cashbook name cannot be empty", nameof(name));
 
@@ -591,6 +608,7 @@ public class Cashbook : AggregateRoot
 /// </summary>
 public class CashbookEntry : Entity
 {
+    public override Guid Id { get; protected set; }
     public Guid CashbookId { get; private set; }
     public DateTime TransactionDate { get; private set; }
     public string Reference { get; private set; } = string.Empty;
@@ -668,6 +686,12 @@ public class CashbookEntry : Entity
 [Table("Companies")]
 public class Company : AggregateRoot
 {
+    public override Guid Id { get; protected set; }
+    public override DateTime CreatedAt { get; protected set; }
+    public override string CreatedBy { get; protected set; }
+
+    public string TenantId { get; private set; } = string.Empty;
+
     /// <summary>
     /// Company name (required, unique)
     /// </summary>
@@ -815,20 +839,9 @@ public class Company : AggregateRoot
     public string? PostalCode { get; private set; }
 
     /// <summary>
-    /// Created timestamp
-    /// </summary>
-    public new DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
-
-    /// <summary>
     /// Last modified timestamp
     /// </summary>
     public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
-
-    /// <summary>
-    /// User who created the record
-    /// </summary>
-    [StringLength(100)]
-    public new string? CreatedBy { get; private set; }
 
     /// <summary>
     /// User who last modified the record
@@ -850,19 +863,22 @@ public class Company : AggregateRoot
         string? taxId = null,
         Guid? parentCompanyId = null,
         bool isGroup = false,
-        string? description = null) : base(id, tenantId)
+        string? description = null)
     {
+        Id = id;
+        CreatedAt = DateTime.UtcNow;
+        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        TenantId = tenantId;
+        
         Name = name?.Trim() ?? throw new ArgumentException("Company name cannot be empty");
         Abbreviation = abbreviation?.Trim() ?? throw new ArgumentException("Abbreviation cannot be empty");
         Currency = currency?.Trim() ?? throw new ArgumentException("Currency cannot be empty");
         Country = country?.Trim() ?? throw new ArgumentException("Country cannot be empty");
-        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         Domain = domain?.Trim();
         TaxId = taxId?.Trim();
         ParentCompanyId = parentCompanyId;
         IsGroup = isGroup;
         Description = description?.Trim();
-        CreatedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
     }

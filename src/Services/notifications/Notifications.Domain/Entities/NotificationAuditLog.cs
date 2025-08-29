@@ -1,7 +1,12 @@
+using TossErp.Shared.SeedWork;
+
 namespace Notifications.Domain.Entities;
 
 public class NotificationAuditLog : Entity
 {
+    public override Guid Id { get; protected set; }
+    public DateTime CreatedAt { get; private set; }
+    public string CreatedBy { get; private set; }
     public Guid NotificationId { get; private set; }
     public string RecipientId { get; private set; }
     public NotificationChannel Channel { get; private set; }
@@ -35,6 +40,8 @@ public class NotificationAuditLog : Entity
         string? consentReason = null)
     {
         Id = Guid.NewGuid();
+        CreatedAt = DateTime.UtcNow;
+        CreatedBy = userId ?? "system";
         NotificationId = notificationId;
         RecipientId = recipientId ?? throw new ArgumentNullException(nameof(recipientId));
         Channel = channel;
@@ -54,6 +61,9 @@ public class NotificationAuditLog : Entity
 
     private NotificationAuditLog()
     {
+        CreatedBy = string.Empty;
+        RecipientId = string.Empty;
+        Description = string.Empty;
         Metadata = new Dictionary<string, object>();
     }
 

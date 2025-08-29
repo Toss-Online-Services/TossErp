@@ -1,7 +1,12 @@
+using TossErp.Shared.SeedWork;
+
 namespace Notifications.Domain.Entities;
 
 public class NotificationTemplate : Entity
 {
+    public override Guid Id { get; protected set; }
+    public DateTime CreatedAt { get; private set; }
+    public string CreatedBy { get; private set; }
     public string Name { get; private set; }
     public string Description { get; private set; }
     public NotificationType Type { get; private set; }
@@ -10,9 +15,7 @@ public class NotificationTemplate : Entity
     public string Body { get; private set; }
     public string Language { get; private set; }
     public bool IsActive { get; private set; }
-    public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
-    public string CreatedBy { get; private set; }
     public string? UpdatedBy { get; private set; }
     public List<string> RequiredVariables { get; private set; }
     public List<string> OptionalVariables { get; private set; }
@@ -46,6 +49,12 @@ public class NotificationTemplate : Entity
 
     private NotificationTemplate()
     {
+        Name = string.Empty;
+        Description = string.Empty;
+        Subject = string.Empty;
+        Body = string.Empty;
+        Language = string.Empty;
+        CreatedBy = string.Empty;
         RequiredVariables = new List<string>();
         OptionalVariables = new List<string>();
     }

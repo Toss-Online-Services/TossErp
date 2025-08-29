@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-  <PackageReference Include="Temporalio.Worker" Version="1.5.0" />
-  <PackageReference Include="Temporalio.Client" Version="1.5.0" />
+      <PackageReference Include="Temporalio.Worker" />
+    <PackageReference Include="Temporalio.Client" />
   </ItemGroup>
 
 </Project>
