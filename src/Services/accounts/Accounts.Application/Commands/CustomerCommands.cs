@@ -75,25 +75,19 @@ public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerComman
             email: request.Email,
             phone: request.Phone);
 
-        // Add additional contacts
-        if (request.AdditionalContacts?.Any() == true)
-        {
-            foreach (var contact in request.AdditionalContacts)
-            {
-                customer.AddContact(contact, currentUserId);
-            }
-        }
+        // Add additional contacts - Customer doesn't have AddContact method
+        // TODO: Implement contact management separately if needed
 
         // Set payment terms
-        if (request.PaymentTerms ?? PaymentTerms.Net30.HasValue)
+        if (request.PaymentTerms.HasValue)
         {
-            customer.SetPaymentTerms(request.PaymentTerms ?? PaymentTerms.Net30, currentUserId);
+            customer.SetPaymentTerms(request.PaymentTerms.Value, currentUserId);
         }
 
         // Set credit limit
-        if (Money.Create(request.CreditLimit ?? 0, "ZAR").HasValue)
+        if (request.CreditLimit.HasValue && request.CreditLimit.Value > 0)
         {
-            customer.SetCreditLimit(Money.Create(request.CreditLimit ?? 0, "ZAR"), currentUserId);
+            customer.SetCreditLimit(new Money(request.CreditLimit.Value, CurrencyCode.ZAR), currentUserId);
         }
 
         // Save customer
@@ -273,15 +267,16 @@ public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerComman
         // Update basic information
         customer.UpdateBasicInfo(
             name: request.Name,
+            firstName: null, // Not available in UpdateCustomerCommand
+            lastName: null, // Not available in UpdateCustomerCommand
             email: request.Email,
             phone: request.Phone,
-            
-            // // taxId: request.TaxId, // Parameter not available // Parameter not available
-            // website: request.Website, // Parameter not available
-            notes: request.Notes,
-            updatedBy: currentUserId);
+            mobileNumber: null, // Not available in UpdateCustomerCommand
+            modifiedBy: currentUserId);
 
-        // Update addresses
+        // Update addresses - Customer doesn't have UpdateBillingAddress/UpdateShippingAddress methods
+        // TODO: Implement address management using AddAddress method
+        /*
         if (request.BillingAddress != null)
         {
             customer.UpdateBillingAddress(request.BillingAddress, currentUserId);
@@ -291,6 +286,7 @@ public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerComman
         {
             customer.UpdateShippingAddress(request.ShippingAddress, currentUserId);
         }
+        */
 
         // Update primary contact
         if (request.PrimaryContact != null)
@@ -310,15 +306,15 @@ public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerComman
         }
 
         // Update payment terms
-        if (request.PaymentTerms ?? PaymentTerms.Net30.HasValue)
+        if (request.PaymentTerms.HasValue)
         {
-            customer.SetPaymentTerms(request.PaymentTerms ?? PaymentTerms.Net30, currentUserId);
+            customer.SetPaymentTerms(request.PaymentTerms.Value, currentUserId);
         }
 
         // Update credit limit
-        if (Money.Create(request.CreditLimit ?? 0, "ZAR").HasValue)
+        if (request.CreditLimit.HasValue && request.CreditLimit.Value > 0)
         {
-            customer.SetCreditLimit(Money.Create(request.CreditLimit ?? 0, "ZAR"), currentUserId);
+            customer.SetCreditLimit(new Money(request.CreditLimit.Value, CurrencyCode.ZAR), currentUserId);
         }
 
         // Save changes

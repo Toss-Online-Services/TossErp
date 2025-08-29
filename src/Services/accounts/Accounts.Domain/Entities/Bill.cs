@@ -11,7 +11,7 @@ namespace TossErp.Accounts.Domain.Entities;
 /// Designed for South African township SMME context
 /// </summary>
 [Table("Bills")]
-public class Bill : Entity
+public class Bill : AggregateRoot
 {
     [Required]
     [StringLength(50)]
