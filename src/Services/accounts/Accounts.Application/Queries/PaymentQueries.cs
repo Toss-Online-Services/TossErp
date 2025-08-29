@@ -47,9 +47,9 @@ public class GetPaymentsQueryHandler : IRequestHandler<GetPaymentsQuery, Paginat
         {
             CustomerId = request.CustomerId,
             Status = request.Status,
-            Method = request.Method,
-            PaymentDateFrom = request.PaymentDateFrom,
-            PaymentDateTo = request.PaymentDateTo,
+            PaymentMethod = request.Method,
+            PaymentDateFrom = request.PaymentDateFrom?.ToDateTime(TimeOnly.MinValue),
+            PaymentDateTo = request.PaymentDateTo?.ToDateTime(TimeOnly.MaxValue),
             MinAmount = request.MinAmount,
             MaxAmount = request.MaxAmount,
             Currency = request.Currency,
@@ -95,14 +95,14 @@ public class GetPaymentsQueryHandler : IRequestHandler<GetPaymentsQuery, Paginat
         {
             Id = payment.Id,
             TenantId = payment.TenantId,
-            CustomerId = payment.CustomerId,
+            CustomerId = payment.CustomerId ?? Guid.Empty,
             CustomerName = customer?.Name ?? "Unknown Customer",
-            PaymentNumber = payment.PaymentNumber.Value,
+            PaymentNumber = payment.PaymentNumber,
             Amount = payment.Amount.Amount,
             Currency = payment.Currency,
             Method = payment.Method,
             Status = payment.Status,
-            PaymentDate = payment.PaymentDate,
+            PaymentDate = DateOnly.FromDateTime(payment.PaymentDate),
             Reference = payment.Reference,
             Notes = payment.Notes,
             ExternalTransactionId = payment.ExternalTransactionId,
@@ -120,8 +120,11 @@ public class GetPaymentsQueryHandler : IRequestHandler<GetPaymentsQuery, Paginat
     {
         return new PaymentAllocationDto
         {
-            InvoiceId = allocation.InvoiceId,
-            Amount = allocation.Amount.Amount
+            Id = allocation.Id,
+            InvoiceId = allocation.InvoiceId ?? Guid.Empty,
+            InvoiceNumber = allocation.InvoiceNumber ?? string.Empty,
+            AllocatedAmount = allocation.Amount.Amount,
+            AllocatedAt = allocation.AllocationDate
         };
     }
 }
@@ -171,14 +174,14 @@ public class GetPaymentByIdQueryHandler : IRequestHandler<GetPaymentByIdQuery, P
         {
             Id = payment.Id,
             TenantId = payment.TenantId,
-            CustomerId = payment.CustomerId,
+            CustomerId = payment.CustomerId ?? Guid.Empty,
             CustomerName = customer?.Name ?? "Unknown Customer",
-            PaymentNumber = payment.PaymentNumber.Value,
+            PaymentNumber = payment.PaymentNumber,
             Amount = payment.Amount.Amount,
             Currency = payment.Currency,
             Method = payment.Method,
             Status = payment.Status,
-            PaymentDate = payment.PaymentDate,
+            PaymentDate = DateOnly.FromDateTime(payment.PaymentDate),
             Reference = payment.Reference,
             Notes = payment.Notes,
             ExternalTransactionId = payment.ExternalTransactionId,
@@ -196,8 +199,11 @@ public class GetPaymentByIdQueryHandler : IRequestHandler<GetPaymentByIdQuery, P
     {
         return new PaymentAllocationDto
         {
-            InvoiceId = allocation.InvoiceId,
-            Amount = allocation.Amount.Amount
+            Id = allocation.Id,
+            InvoiceId = allocation.InvoiceId ?? Guid.Empty,
+            InvoiceNumber = allocation.InvoiceNumber ?? string.Empty,
+            AllocatedAmount = allocation.Amount.Amount,
+            AllocatedAt = allocation.AllocationDate
         };
     }
 }
@@ -235,16 +241,24 @@ public class GetUnallocatedPaymentsQueryHandler : IRequestHandler<GetUnallocated
         _logger.LogInformation("Getting unallocated payments for customer: {CustomerId}", request.CustomerId);
 
         var unallocatedPayments = await _paymentRepository.GetUnallocatedPaymentsAsync(
-            request.CustomerId,
-            request.PageNumber,
-            request.PageSize,
-            cancellationToken);
+            cancellationToken: cancellationToken);
+
+        // Filter by customer if specified
+        var filteredPayments = request.CustomerId.HasValue 
+            ? unallocatedPayments.Where(p => p.CustomerId == request.CustomerId.Value)
+            : unallocatedPayments;
+
+        // Apply manual paging
+        var pagedPayments = filteredPayments
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToList();
 
         // Get customer information for mapping
-        var customerIds = unallocatedPayments.Items.Select(p => p.CustomerId).Distinct().ToList();
+        var customerIds = pagedPayments.Select(p => p.CustomerId).Distinct().ToList();
         var customers = new Dictionary<Guid, Customer>();
         
-        foreach (var customerId in customerIds)
+        foreach (var customerId in customerIds.Where(id => id.HasValue).Select(id => id!.Value))
         {
             var customer = await _customerRepository.GetByIdAsync(customerId, cancellationToken);
             if (customer != null)
@@ -253,15 +267,18 @@ public class GetUnallocatedPaymentsQueryHandler : IRequestHandler<GetUnallocated
             }
         }
 
-        var paymentDtos = unallocatedPayments.Items.Select(payment => MapToDto(payment, customers.GetValueOrDefault(payment.CustomerId))).ToList();
+        var paymentDtos = pagedPayments.Select(payment => MapToDto(payment, customers.GetValueOrDefault(payment.CustomerId ?? Guid.Empty))).ToList();
+
+        var totalCount = filteredPayments.Count();
+        var totalPages = (int)Math.Ceiling((double)totalCount / request.PageSize);
 
         return new PaginatedResult<PaymentDto>
         {
             Items = paymentDtos,
-            TotalCount = unallocatedPayments.TotalCount,
-            PageNumber = unallocatedPayments.PageNumber,
-            PageSize = unallocatedPayments.PageSize,
-            TotalPages = unallocatedPayments.TotalPages
+            TotalCount = totalCount,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalPages = totalPages
         };
     }
 
@@ -271,14 +288,14 @@ public class GetUnallocatedPaymentsQueryHandler : IRequestHandler<GetUnallocated
         {
             Id = payment.Id,
             TenantId = payment.TenantId,
-            CustomerId = payment.CustomerId,
+            CustomerId = payment.CustomerId ?? Guid.Empty,
             CustomerName = customer?.Name ?? "Unknown Customer",
-            PaymentNumber = payment.PaymentNumber.Value,
+            PaymentNumber = payment.PaymentNumber,
             Amount = payment.Amount.Amount,
             Currency = payment.Currency,
             Method = payment.Method,
             Status = payment.Status,
-            PaymentDate = payment.PaymentDate,
+            PaymentDate = DateOnly.FromDateTime(payment.PaymentDate),
             Reference = payment.Reference,
             Notes = payment.Notes,
             ExternalTransactionId = payment.ExternalTransactionId,
@@ -296,8 +313,13 @@ public class GetUnallocatedPaymentsQueryHandler : IRequestHandler<GetUnallocated
     {
         return new PaymentAllocationDto
         {
-            InvoiceId = allocation.InvoiceId,
-            Amount = allocation.Amount.Amount
+            Id = allocation.Id,
+            InvoiceId = allocation.InvoiceId ?? Guid.Empty,
+            InvoiceNumber = allocation.InvoiceNumber ?? string.Empty,
+            AllocatedAmount = allocation.Amount.Amount,
+            AllocatedAt = allocation.AllocationDate
         };
     }
 }
+
+

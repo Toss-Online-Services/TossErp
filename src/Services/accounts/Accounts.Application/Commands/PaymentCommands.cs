@@ -228,7 +228,7 @@ public class ProcessPaymentCommandHandler : IRequestHandler<ProcessPaymentComman
             Currency = payment.Currency,
             Method = payment.Method,
             Status = payment.Status,
-            PaymentDate = payment.PaymentDate,
+            PaymentDate = DateOnly.FromDateTime(payment.PaymentDate),
             Reference = payment.Reference,
             Notes = payment.Notes,
             ExternalTransactionId = payment.ExternalTransactionId,
@@ -240,12 +240,15 @@ public class ProcessPaymentCommandHandler : IRequestHandler<ProcessPaymentComman
         };
     }
 
-    private static PaymentAllocationDto MapAllocationToDto(PaymentAllocation allocation)
+    private static DTOs.PaymentAllocationDto MapAllocationToDto(PaymentAllocation allocation)
     {
-        return new PaymentAllocationDto
+        return new DTOs.PaymentAllocationDto
         {
-            InvoiceId = allocation.InvoiceId,
-            Amount = allocation.Amount.Amount
+            Id = allocation.Id,
+            InvoiceId = allocation.InvoiceId ?? Guid.Empty,
+            InvoiceNumber = allocation.InvoiceNumber ?? string.Empty,
+            AllocatedAmount = allocation.Amount.Amount,
+            AllocatedAt = allocation.AllocationDate
         };
     }
 }
@@ -451,7 +454,7 @@ public class RefundPaymentCommandHandler : IRequestHandler<RefundPaymentCommand,
             Currency = payment.Currency,
             Method = payment.Method,
             Status = payment.Status,
-            PaymentDate = payment.PaymentDate,
+            PaymentDate = DateOnly.FromDateTime(payment.PaymentDate),
             Reference = payment.Reference,
             Notes = payment.Notes,
             ExternalTransactionId = payment.ExternalTransactionId,
@@ -465,12 +468,15 @@ public class RefundPaymentCommandHandler : IRequestHandler<RefundPaymentCommand,
         };
     }
 
-    private static PaymentAllocationDto MapAllocationToDto(PaymentAllocation allocation)
+    private static DTOs.PaymentAllocationDto MapAllocationToDto(PaymentAllocation allocation)
     {
-        return new PaymentAllocationDto
+        return new DTOs.PaymentAllocationDto
         {
-            InvoiceId = allocation.InvoiceId,
-            Amount = allocation.Amount.Amount
+            Id = allocation.Id,
+            InvoiceId = allocation.InvoiceId ?? Guid.Empty,
+            InvoiceNumber = allocation.InvoiceNumber ?? string.Empty,
+            AllocatedAmount = allocation.Amount.Amount,
+            AllocatedAt = allocation.AllocationDate
         };
     }
 }
@@ -629,7 +635,7 @@ public class AllocatePaymentCommandHandler : IRequestHandler<AllocatePaymentComm
             Currency = payment.Currency,
             Method = payment.Method,
             Status = payment.Status,
-            PaymentDate = payment.PaymentDate,
+            PaymentDate = DateOnly.FromDateTime(payment.PaymentDate),
             Reference = payment.Reference,
             Notes = payment.Notes,
             ExternalTransactionId = payment.ExternalTransactionId,
@@ -643,12 +649,15 @@ public class AllocatePaymentCommandHandler : IRequestHandler<AllocatePaymentComm
         };
     }
 
-    private static PaymentAllocationDto MapAllocationToDto(PaymentAllocation allocation)
+    private static DTOs.PaymentAllocationDto MapAllocationToDto(PaymentAllocation allocation)
     {
-        return new PaymentAllocationDto
+        return new DTOs.PaymentAllocationDto
         {
-            InvoiceId = allocation.InvoiceId,
-            Amount = allocation.Amount.Amount
+            Id = allocation.Id,
+            InvoiceId = allocation.InvoiceId ?? Guid.Empty,
+            InvoiceNumber = allocation.InvoiceNumber ?? string.Empty,
+            AllocatedAmount = allocation.Amount.Amount,
+            AllocatedAt = allocation.AllocationDate
         };
     }
 }

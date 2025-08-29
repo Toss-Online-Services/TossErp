@@ -26,7 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\\Stock.Domain\\Stock.Domain.csproj" />
     <ProjectReference Include="..\\Stock.Application\\Stock.Application.csproj" />
-    <!-- <ProjectReference Include="..\\Stock.Agent\\Stock.Agent.csproj" /> -->
+    <ProjectReference Include="..\\Stock.Agent\\Stock.Agent.csproj" />
   </ItemGroup>
 
 </Project>
