@@ -419,8 +419,9 @@ public class CustomerAddress : Entity
         string addressType,
         string? addressLine1 = null,
         string? city = null,
-        string? country = "South Africa") : base(id, tenantId)
+        string? country = "South Africa")
     {
+        Id = id;
         CustomerId = customerId;
         AddressType = addressType?.Trim() ?? throw new ArgumentException("Address type cannot be empty");
         AddressLine1 = addressLine1?.Trim();
@@ -496,14 +497,12 @@ public class CustomerContact : Entity
         Guid customerId,
         ContactType contactType,
         string name,
-        string createdBy) : base(id, tenantId)
+        string createdBy)
     {
+        Id = id;
         CustomerId = customerId;
         ContactType = contactType;
         Name = name?.Trim() ?? throw new ArgumentException("Contact name cannot be empty");
-        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
-        CreatedAt = DateTime.UtcNow;
-        MarkAsUpdated(createdBy);
     }
 
     public Guid CustomerId { get; private set; }

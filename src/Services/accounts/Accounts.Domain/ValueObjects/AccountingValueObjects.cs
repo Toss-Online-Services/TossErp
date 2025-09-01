@@ -232,8 +232,9 @@ public class ExchangeRate : ValueObject
 /// <summary>
 /// Budget allocation value object
 /// </summary>
-public class BudgetAllocation : ValueObject
+public class BudgetAllocation : Entity
 {
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
     public Money AllocatedAmount { get; private set; }
     public Money SpentAmount { get; private set; }
     public DateTime PeriodStart { get; private set; }
@@ -294,14 +295,6 @@ public class BudgetAllocation : ValueObject
     public bool IsInCurrentPeriod => DateTime.UtcNow >= PeriodStart && DateTime.UtcNow <= PeriodEnd;
 
     public override string ToString() => $"Budget: {AllocatedAmount}, Spent: {SpentAmount}, Remaining: {RemainingAmount}";
-
-    protected override IEnumerable<object?> GetEqualityComponents()
-    {
-        yield return AllocatedAmount;
-        yield return SpentAmount;
-        yield return PeriodStart;
-        yield return PeriodEnd;
-    }
 }
 
 /// <summary>

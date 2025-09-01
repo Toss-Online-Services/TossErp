@@ -1,9 +1,4 @@
-import { defineEventHandler, deleteCookie } from 'h3'
-
-export default defineEventHandler(async (event) => {
-  deleteCookie(event, 'auth-token', { path: '/' })
-  return { success: true }
-})
+import { defineEventHandler, setCookie } from 'h3'
 
 export default defineEventHandler(async (event) => {
   // Clear the auth cookie

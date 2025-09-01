@@ -191,6 +191,8 @@ public class FinancialTransaction : TossErp.Shared.SeedWork.AggregateRoot
     public CurrencyCode Currency { get; private set; }
     public string? PostedBy { get; private set; }
     public DateTime? PostedAt { get; private set; }
+    public string? ApprovedBy { get; private set; }
+    public DateTime? ApprovedAt { get; private set; }
 
     private readonly List<JournalEntryLine> _journalLines;
     public IReadOnlyList<JournalEntryLine> JournalLines => _journalLines.AsReadOnly();

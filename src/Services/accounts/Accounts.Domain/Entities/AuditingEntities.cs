@@ -50,8 +50,9 @@ public class AccountingDocument : Entity
         Guid? relatedEntityId = null,
         string? relatedEntityType = null,
         string? description = null,
-        string? createdBy = null) : base(id, tenantId)
+        string? createdBy = null)
     {
+        Id = id;
         DocumentName = documentName ?? throw new ArgumentNullException(nameof(documentName));
         DocumentType = documentType ?? throw new ArgumentNullException(nameof(documentType));
         DocumentPath = documentPath;
@@ -60,7 +61,6 @@ public class AccountingDocument : Entity
         RelatedEntityId = relatedEntityId;
         RelatedEntityType = relatedEntityType;
         Description = description;
-        CreatedBy = createdBy;
     }
 
     public static AccountingDocument Create(
@@ -134,8 +134,9 @@ public class AccountingAuditLog : Entity
         string? actionBy = null,
         DateTime? actionDate = null,
         string? description = null,
-        string? createdBy = null) : base(id, tenantId)
+        string? createdBy = null)
     {
+        Id = id;
         EntityType = entityType ?? throw new ArgumentNullException(nameof(entityType));
         EntityId = entityId;
         Action = action ?? throw new ArgumentNullException(nameof(action));
@@ -144,7 +145,6 @@ public class AccountingAuditLog : Entity
         ActionBy = actionBy;
         ActionDate = actionDate ?? DateTime.UtcNow;
         Description = description;
-        CreatedBy = createdBy;
     }
 
     public static AccountingAuditLog Create(
