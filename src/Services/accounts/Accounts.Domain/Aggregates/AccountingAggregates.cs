@@ -27,8 +27,7 @@ public class ChartOfAccounts : TossErp.Shared.SeedWork.AggregateRoot
     public Guid? ParentAccountId { get; private set; }
     public CurrencyCode DefaultCurrency { get; private set; }
     public Money CurrentBalance { get; private set; }
-    public DateTime? ModifiedAt { get; private set; }
-    public string? ModifiedBy { get; private set; }
+    public DateTime? ModifiedAt { get; private set; }    public override string? ModifiedBy { get; protected set; }
 
     // Convenience properties for application layer compatibility
     public string AccountCode => AccountNumber.Value;

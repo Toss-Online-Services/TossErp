@@ -91,12 +91,9 @@ public class Customer : AggregateRoot
     [StringLength(500)]
     public string? Notes { get; private set; }
 
-    public bool IsActive { get; private set; } = true;
+    public bool IsActive { get; private set; } = true;    public override DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
 
-    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
-
-    [StringLength(100)]
-    public string? ModifiedBy { get; private set; }
+    [StringLength(100)]    public override string? ModifiedBy { get; protected set; }
 
     // Application layer compatibility properties
     [StringLength(100)]

@@ -100,11 +100,9 @@ public class Bill : AggregateRoot
     [StringLength(100)]
     public string? ApprovedBy { get; private set; }
 
-    // Audit fields
-    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
+    // Audit fields    public override DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
 
-    [StringLength(100)]
-    public string? ModifiedBy { get; private set; }
+    [StringLength(100)]    public override string? ModifiedBy { get; protected set; }
 
     // Navigation properties
     private readonly List<BillLineItem> _lineItems = new();

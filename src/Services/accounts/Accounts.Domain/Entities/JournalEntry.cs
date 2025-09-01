@@ -105,11 +105,9 @@ public class JournalEntry : AggregateRoot
     [StringLength(500)]
     public string? ReversalReason { get; private set; }
 
-    // Audit fields
-    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
+    // Audit fields    public override DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
 
-    [StringLength(100)]
-    public string? ModifiedBy { get; private set; }
+    [StringLength(100)]    public override string? ModifiedBy { get; protected set; }
 
     // Navigation properties
     private readonly List<JournalEntryLine> _journalLines = new();

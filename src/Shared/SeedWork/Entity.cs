@@ -6,6 +6,19 @@ namespace TossErp.Shared.SeedWork;
 public abstract class Entity : IEntity
 {
     public abstract Guid Id { get; protected set; }
+    public virtual DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
+    public virtual string? ModifiedBy { get; protected set; }
+
+    public virtual void MarkAsUpdated(string updatedBy)
+    {
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = updatedBy;
+    }
+
+    public virtual void MarkAsUpdated()
+    {
+        ModifiedAt = DateTime.UtcNow;
+    }
 
     public override bool Equals(object? obj)
     {
@@ -55,6 +68,19 @@ public abstract class Entity<T> : IEntity<T>
 
     public abstract DateTime CreatedAt { get; protected set; }
     public abstract string CreatedBy { get; protected set; }
+    public virtual DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
+    public virtual string? ModifiedBy { get; protected set; }
+
+    public virtual void MarkAsUpdated(string updatedBy)
+    {
+        ModifiedAt = DateTime.UtcNow;
+        ModifiedBy = updatedBy;
+    }
+
+    public virtual void MarkAsUpdated()
+    {
+        ModifiedAt = DateTime.UtcNow;
+    }
 
     Guid IEntity.Id => Id is Guid guid ? guid : Guid.Empty;
 
