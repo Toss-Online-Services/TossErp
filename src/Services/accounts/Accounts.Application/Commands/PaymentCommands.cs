@@ -6,7 +6,7 @@ using TossErp.Accounts.Application.DTOs;
 using TossErp.Accounts.Application.Common.Interfaces;
 using TossErp.Accounts.Application.Models;
 using TossErp.Accounts.Domain.Aggregates;
-using TossErp.Accounts.Domain.SeedWork;
+using TossErp.Shared.SeedWork;
 using AggregateInvoice = TossErp.Accounts.Domain.Aggregates.Invoice;
 
 namespace TossErp.Accounts.Application.Commands;

@@ -13,7 +13,8 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("Subscriptions")]
 public class Subscription : Entity
 {
-    public override Guid Id { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+
     [Required]
     [StringLength(50)]
     public string SubscriptionNumber { get; private set; } = string.Empty;
@@ -132,9 +133,16 @@ public class Subscription : Entity
     [StringLength(1000)]
     public string? TermsAndConditions { get; private set; }
 
-    // Audit fields    public override DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
+    // Audit fields
+    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-    [StringLength(100)]    public override string? ModifiedBy { get; protected set; }
+    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
+
+    [StringLength(100)]
+    public string? CreatedBy { get; private set; }
+
+    [StringLength(100)]
+    public string? ModifiedBy { get; private set; }
 
     [StringLength(100)]
     public string? CancelledBy { get; private set; }
@@ -162,7 +170,7 @@ public class Subscription : Entity
         DateTime startDate,
         string createdBy,
         string? planDescription = null,
-        PaymentMethod preferredPaymentMethod = PaymentMethod.BankTransfer)
+        PaymentMethod preferredPaymentMethod = PaymentMethod.BankTransfer) : base(id, tenantId)
     {
         SubscriptionNumber = subscriptionNumber?.Trim() ?? throw new ArgumentException("Subscription number cannot be empty");
         CustomerId = customerId;
@@ -172,9 +180,9 @@ public class Subscription : Entity
         MonthlyAmount = monthlyAmount ?? throw new ArgumentNullException(nameof(monthlyAmount));
         BillingFrequency = billingFrequency;
         StartDate = startDate.Date;
-        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         PreferredPaymentMethod = preferredPaymentMethod;
-        ModifiedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
         Currency = monthlyAmount.Currency.ToString();

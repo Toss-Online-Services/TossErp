@@ -13,9 +13,10 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("JournalEntries")]
 public class JournalEntry : AggregateRoot
 {
-    public override Guid Id { get; protected set; }
-    public override DateTime CreatedAt { get; protected set; }
-    public override string CreatedBy { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+    public override DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+    public override string CreatedBy { get; protected set; } = string.Empty;
+
     [Required]
     [StringLength(50)]
     public string JournalNumber { get; private set; } = string.Empty;
@@ -105,9 +106,11 @@ public class JournalEntry : AggregateRoot
     [StringLength(500)]
     public string? ReversalReason { get; private set; }
 
-    // Audit fields    public override DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
+    // Audit fields
+    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
 
-    [StringLength(100)]    public override string? ModifiedBy { get; protected set; }
+    [StringLength(100)]
+    public string? ModifiedBy { get; private set; }
 
     // Navigation properties
     private readonly List<JournalEntryLine> _journalLines = new();
@@ -137,16 +140,16 @@ public class JournalEntry : AggregateRoot
         TransactionType transactionType,
         string createdBy,
         DateTime? postingDate = null,
-        string? referenceNumber = null)
+        string? referenceNumber = null) : base(id, tenantId)
     {
         JournalNumber = journalNumber?.Trim() ?? throw new ArgumentException("Journal number cannot be empty");
         EntryDate = entryDate.Date;
         PostingDate = postingDate?.Date ?? entryDate.Date;
         Description = description?.Trim() ?? throw new ArgumentException("Description cannot be empty");
         TransactionType = transactionType;
-        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         ReferenceNumber = referenceNumber?.Trim();
-        ModifiedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
     }

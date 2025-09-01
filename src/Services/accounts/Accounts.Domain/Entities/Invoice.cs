@@ -13,9 +13,10 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("Invoices")]
 public class Invoice : AggregateRoot
 {
-    public override Guid Id { get; protected set; }
-    public override DateTime CreatedAt { get; protected set; }
-    public override string CreatedBy { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+    public override DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+    public override string CreatedBy { get; protected set; } = string.Empty;
+
     [Required]
     [StringLength(50)]
     public string InvoiceNumber { get; private set; } = string.Empty;
@@ -95,9 +96,11 @@ public class Invoice : AggregateRoot
     [StringLength(1000)]
     public string? TermsAndConditions { get; private set; }
 
-    // Audit fields    public override DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
+    // Audit fields
+    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
 
-    [StringLength(100)]    public override string? ModifiedBy { get; protected set; }
+    [StringLength(100)]
+    public string? ModifiedBy { get; private set; }
 
     public DateTime? SentDate { get; private set; }
 
@@ -125,17 +128,17 @@ public class Invoice : AggregateRoot
         DateTime dueDate,
         string createdBy,
         InvoiceType invoiceType = InvoiceType.Standard,
-        string? description = null)
+        string? description = null) : base(id, tenantId)
     {
         InvoiceNumber = invoiceNumber?.Trim() ?? throw new ArgumentException("Invoice number cannot be empty");
         CustomerId = customerId;
         CustomerName = customerName?.Trim();
         InvoiceDate = invoiceDate.Date;
         DueDate = dueDate.Date;
-        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         InvoiceType = invoiceType;
         Description = description?.Trim();
-        ModifiedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
         OutstandingAmount = TotalAmount;
@@ -418,7 +421,7 @@ public class Invoice : AggregateRoot
 [Table("InvoiceLineItems")]
 public class InvoiceLineItem : Entity
 {
-    public override Guid Id { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
     public Guid InvoiceId { get; private set; }
 
     [Required]
@@ -466,7 +469,7 @@ public class InvoiceLineItem : Entity
         TaxRate? taxRate = null,
         Guid? productId = null,
         string? productCode = null,
-        string? unit = null)
+        string? unit = null) : base(id, tenantId)
     {
         InvoiceId = invoiceId;
         ItemName = itemName?.Trim() ?? throw new ArgumentException("Item name cannot be empty");

@@ -13,9 +13,10 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("Payments")]
 public class Payment : AggregateRoot
 {
-    public override Guid Id { get; protected set; }
-    public override DateTime CreatedAt { get; protected set; }
-    public override string CreatedBy { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+    public override DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+    public override string CreatedBy { get; protected set; } = string.Empty;
+
     [Required]
     [StringLength(50)]
     public string PaymentNumber { get; private set; } = string.Empty;
@@ -115,9 +116,11 @@ public class Payment : AggregateRoot
     public Money NetAmount => Amount.Subtract(ProcessingFee ?? Money.Zero(CurrencyCode.ZAR))
                                    .Subtract(BankCharges ?? Money.Zero(CurrencyCode.ZAR));
 
-    // Audit fields    public override DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
+    // Audit fields
+    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
 
-    [StringLength(100)]    public override string? ModifiedBy { get; protected set; }
+    [StringLength(100)]
+    public string? ModifiedBy { get; private set; }
 
     // Application layer compatibility properties
     public DateTime LastModified => ModifiedAt;
@@ -154,20 +157,20 @@ public class Payment : AggregateRoot
         string? customerName = null,
         Guid? invoiceId = null,
         string? invoiceNumber = null,
-        string? description = null)
+        string? description = null) : base(id, tenantId)
     {
         PaymentNumber = paymentNumber?.Trim() ?? throw new ArgumentException("Payment number cannot be empty");
         PaymentDate = paymentDate.Date;
         Amount = amount ?? throw new ArgumentNullException(nameof(amount));
         PaymentMethod = paymentMethod;
         PaymentType = paymentType;
-        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         CustomerId = customerId;
         CustomerName = customerName?.Trim();
         InvoiceId = invoiceId;
         InvoiceNumber = invoiceNumber?.Trim();
         Description = description?.Trim();
-        ModifiedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
         Currency = amount.Currency.ToString();
@@ -382,7 +385,7 @@ public class Payment : AggregateRoot
 [Table("PaymentAllocations")]
 public class PaymentAllocation : Entity
 {
-    public override Guid Id { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
     public Guid PaymentId { get; private set; }
 
     public Guid? InvoiceId { get; private set; }
@@ -422,7 +425,7 @@ public class PaymentAllocation : Entity
         string? invoiceNumber = null,
         Guid? accountId = null,
         string? accountName = null,
-        string? description = null)
+        string? description = null) : base(id, tenantId)
     {
         PaymentId = paymentId;
         Amount = amount ?? throw new ArgumentNullException(nameof(amount));

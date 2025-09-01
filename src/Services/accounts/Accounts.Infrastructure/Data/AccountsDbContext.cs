@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using TossErp.Accounts.Domain.Entities;
-using TossErp.Accounts.Domain.SeedWork;
 using TossErp.Accounts.Infrastructure.Data.Configurations;
 using TossErp.Shared.SeedWork;
 

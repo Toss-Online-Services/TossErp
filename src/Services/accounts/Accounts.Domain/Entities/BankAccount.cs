@@ -12,10 +12,10 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("BankAccounts")]
 public class BankAccount : AggregateRoot
 {
-    public override Guid Id { get; protected set; }
-    public override DateTime CreatedAt { get; protected set; }
-    public override string CreatedBy { get; protected set; }
-    
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+    public override DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+    public override string CreatedBy { get; protected set; } = string.Empty;
+
     [Required]
     [StringLength(100)]
     public string AccountName { get; private set; } = string.Empty;
@@ -56,17 +56,15 @@ public class BankAccount : AggregateRoot
         string? branchCode = null,
         string? swiftCode = null,
         string? description = null,
-        string? ModifiedBy = null)
+        string? createdBy = null) : base(id, tenantId)
     {
-        Id = id;
-        ModifiedAt = DateTime.UtcNow;
-        ModifiedBy = createdBy ?? "system";
         AccountName = accountName ?? throw new ArgumentNullException(nameof(accountName));
         AccountNumber = accountNumber ?? throw new ArgumentNullException(nameof(accountNumber));
         BankName = bankName ?? throw new ArgumentNullException(nameof(bankName));
         BranchCode = branchCode;
         SwiftCode = swiftCode;
         Description = description;
+        CreatedBy = createdBy;
     }
 
     public static BankAccount Create(
@@ -77,7 +75,7 @@ public class BankAccount : AggregateRoot
         string? branchCode = null,
         string? swiftCode = null,
         string? description = null,
-        string? ModifiedBy = null)
+        string? createdBy = null)
     {
         return new BankAccount(
             Guid.NewGuid(),

@@ -12,11 +12,9 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("Expenses")]
 public class Expense : AggregateRoot
 {
-    public override Guid Id { get; protected set; }
-    public override DateTime CreatedAt { get; protected set; }
-    public override string CreatedBy { get; protected set; }
-
-    public string TenantId { get; private set; } = string.Empty;
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+    public override DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+    public override string CreatedBy { get; protected set; } = string.Empty;
 
     [Required]
     [StringLength(200)]
@@ -49,7 +47,7 @@ public class Expense : AggregateRoot
     public virtual Vendor? Vendor { get; private set; }
     public virtual ChartOfAccount? ChartOfAccount { get; private set; }
 
-    private Expense() { }
+    private Expense() : base() { }
 
     public Expense(
         Guid id,
@@ -63,13 +61,8 @@ public class Expense : AggregateRoot
         string? taxCode = null,
         decimal taxRate = 0,
         string? notes = null,
-        string? ModifiedBy = null)
+        string? createdBy = null) : base(id, tenantId)
     {
-        Id = id;
-        ModifiedAt = DateTime.UtcNow;
-        ModifiedBy = createdBy ?? "system";
-        
-        
         Description = description ?? throw new ArgumentNullException(nameof(description));
         Amount = amount;
         ExpenseDate = expenseDate;
@@ -80,6 +73,7 @@ public class Expense : AggregateRoot
         TaxRate = taxRate;
         Notes = notes;
         CalculateTax();
+        CreatedBy = createdBy;
     }
 
     public static Expense Create(
@@ -93,7 +87,7 @@ public class Expense : AggregateRoot
         string? taxCode = null,
         decimal taxRate = 0,
         string? notes = null,
-        string? ModifiedBy = null)
+        string? createdBy = null)
     {
         return new Expense(
             Guid.NewGuid(),
@@ -141,11 +135,9 @@ public class Expense : AggregateRoot
 [Table("FinancialPeriods")]
 public class FinancialPeriod : AggregateRoot
 {
-    public override Guid Id { get; protected set; }
-    public override DateTime CreatedAt { get; protected set; }
-    public override string CreatedBy { get; protected set; }
-
-    public string TenantId { get; private set; } = string.Empty;
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+    public override DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+    public override string CreatedBy { get; protected set; } = string.Empty;
 
     [Required]
     [StringLength(100)]
@@ -162,7 +154,7 @@ public class FinancialPeriod : AggregateRoot
     [StringLength(500)]
     public string? Description { get; private set; }
 
-    private FinancialPeriod() { }
+    private FinancialPeriod() : base() { }
 
     public FinancialPeriod(
         Guid id,
@@ -171,17 +163,13 @@ public class FinancialPeriod : AggregateRoot
         DateOnly startDate,
         DateOnly endDate,
         string? description = null,
-        string? ModifiedBy = null)
+        string? createdBy = null) : base(id, tenantId)
     {
-        Id = id;
-        ModifiedAt = DateTime.UtcNow;
-        ModifiedBy = createdBy ?? "system";
-        
-        
         Name = name ?? throw new ArgumentNullException(nameof(name));
         StartDate = startDate;
         EndDate = endDate;
         Description = description;
+        CreatedBy = createdBy;
 
         if (startDate >= endDate)
             throw new ArgumentException("Start date must be before end date");
@@ -193,7 +181,7 @@ public class FinancialPeriod : AggregateRoot
         DateOnly startDate,
         DateOnly endDate,
         string? description = null,
-        string? ModifiedBy = null)
+        string? createdBy = null)
     {
         return new FinancialPeriod(
             Guid.NewGuid(),
@@ -236,8 +224,7 @@ public class FinancialPeriod : AggregateRoot
 [Table("BudgetEntries")]
 public class BudgetEntry : Entity
 {
-    public override Guid Id { get; protected set; }
-
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
     public Guid FinancialPeriodId { get; private set; }
 
     public Guid ChartOfAccountId { get; private set; }
@@ -264,14 +251,14 @@ public class BudgetEntry : Entity
         Guid chartOfAccountId,
         Money budgetedAmount,
         string? notes = null,
-        string? ModifiedBy = null)
+        string? createdBy = null) : base(id, tenantId)
     {
         FinancialPeriodId = financialPeriodId;
         ChartOfAccountId = chartOfAccountId;
         BudgetedAmount = budgetedAmount;
         Notes = notes;
         CalculateVariance();
-        ModifiedBy = createdBy;
+        CreatedBy = createdBy;
     }
 
     public static BudgetEntry Create(
@@ -280,7 +267,7 @@ public class BudgetEntry : Entity
         Guid chartOfAccountId,
         Money budgetedAmount,
         string? notes = null,
-        string? ModifiedBy = null)
+        string? createdBy = null)
     {
         return new BudgetEntry(
             Guid.NewGuid(),

@@ -13,10 +13,10 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("Bills")]
 public class Bill : AggregateRoot
 {
-    public override Guid Id { get; protected set; }
-    public override DateTime CreatedAt { get; protected set; }
-    public override string CreatedBy { get; protected set; }
-    
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+    public override DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+    public override string CreatedBy { get; protected set; } = string.Empty;
+
     [Required]
     [StringLength(50)]
     public string BillNumber { get; private set; } = string.Empty;
@@ -100,9 +100,11 @@ public class Bill : AggregateRoot
     [StringLength(100)]
     public string? ApprovedBy { get; private set; }
 
-    // Audit fields    public override DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
+    // Audit fields
+    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
 
-    [StringLength(100)]    public override string? ModifiedBy { get; protected set; }
+    [StringLength(100)]
+    public string? ModifiedBy { get; private set; }
 
     // Navigation properties
     private readonly List<BillLineItem> _lineItems = new();
@@ -124,19 +126,18 @@ public class Bill : AggregateRoot
         string createdBy,
         BillType billType = BillType.Standard,
         string? description = null,
-        string? supplierInvoiceNumber = null)
+        string? supplierInvoiceNumber = null) : base(id, tenantId)
     {
-        Id = id;
-        ModifiedAt = DateTime.UtcNow;
-        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         BillNumber = billNumber?.Trim() ?? throw new ArgumentException("Bill number cannot be empty");
         SupplierId = supplierId;
         SupplierName = supplierName?.Trim();
         SupplierInvoiceNumber = supplierInvoiceNumber?.Trim();
         BillDate = billDate.Date;
         DueDate = dueDate.Date;
+        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         BillType = billType;
         Description = description?.Trim();
+        CreatedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
         OutstandingAmount = TotalAmount;
@@ -344,7 +345,7 @@ public class Bill : AggregateRoot
 [Table("BillLineItems")]
 public class BillLineItem : Entity
 {
-    public override Guid Id { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
     public Guid BillId { get; private set; }
 
     [Required]
@@ -403,7 +404,7 @@ public class BillLineItem : Entity
         TaxRate? taxRate = null,
         Guid? productId = null,
         string? productCode = null,
-        string? unit = null)
+        string? unit = null) : base(id, tenantId)
     {
         BillId = billId;
         ItemName = itemName?.Trim() ?? throw new ArgumentException("Item name cannot be empty");
