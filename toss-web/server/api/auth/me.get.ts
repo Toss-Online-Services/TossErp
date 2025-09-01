@@ -1,3 +1,40 @@
+import { defineEventHandler, getCookie, createError } from 'h3'
+
+export default defineEventHandler(async (event) => {
+  const token = getCookie(event, 'auth-token')
+  if (!token) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  }
+
+  // In dev, return a consistent user for any token
+  const user = {
+    id: 'user-dev-1',
+    email: 'user@toss.dev',
+    firstName: 'Test',
+    lastName: 'User',
+    avatar: undefined,
+    businessId: 'tenant1',
+    businessName: "Thabo's Spaza Shop",
+    role: 'owner',
+    status: 'active' as const,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+
+  const permissions = [
+    'dashboard:view',
+    'inventory:*',
+    'sales:*',
+    'purchasing:*',
+    'logistics:*',
+    'crm:*',
+    'reports:view',
+    'admin',
+  ]
+
+  return { user, permissions }
+})
+
 export default defineEventHandler(async (event) => {
   // Get the auth token from cookie
   const token = getCookie(event, 'auth-token')

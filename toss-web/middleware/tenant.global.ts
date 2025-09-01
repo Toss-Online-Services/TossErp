@@ -1,4 +1,10 @@
 export default defineNuxtRouteMiddleware((to) => {
+  // Attach a default tenantId for dev to route meta if needed
+  const tenantId = useCookie('tenant-id')
+  if (!tenantId.value) tenantId.value = 'tenant1'
+})
+
+export default defineNuxtRouteMiddleware((to) => {
   // Global tenant middleware
   // This runs on every route change
   

@@ -1,85 +1,59 @@
+import { defineEventHandler, readBody, setCookie, createError } from 'h3'
+
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-  
-  // Validate required fields
-  const { email, password } = body
-  
-  if (!email || !password) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Email and password are required'
-    })
-  }
+  try {
+    const body = await readBody<{ email?: string; password?: string; rememberMe?: boolean }>(event)
 
-  // Demo authentication - replace with real authentication
-  const demoUsers = [
-    {
-      id: '1',
-      email: 'owner@demo.toss.co.za',
-      password: 'password123',
-      firstName: 'Thabo',
-      lastName: 'Molefe',
-      businessName: 'Thabo\'s Spaza Shop',
-      businessId: 'business_1',
-      role: 'owner',
-      status: 'active'
-    },
-    {
-      id: '2',
-      email: 'manager@demo.toss.co.za',
-      password: 'password123',
-      firstName: 'Nomsa',
-      lastName: 'Dlamini',
-      businessName: 'Thabo\'s Spaza Shop',
-      businessId: 'business_1',
-      role: 'manager',
-      status: 'active'
-    },
-    {
-      id: '3',
-      email: 'employee@demo.toss.co.za',
-      password: 'password123',
-      firstName: 'Sipho',
-      lastName: 'Mthembu',
-      businessName: 'Thabo\'s Spaza Shop',
-      businessId: 'business_1',
-      role: 'employee',
-      status: 'active'
+    if (!body?.email || !body?.password) {
+      throw createError({ statusCode: 400, statusMessage: 'Email and password are required' })
     }
-  ]
 
-  // Find user
-  const user = demoUsers.find(u => u.email === email && u.password === password)
-  
-  if (!user) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Invalid email or password'
+    // In development, accept any credentials and issue a fake token
+    const fakeToken = `dev-${Math.random().toString(36).slice(2)}`
+
+    // Set cookie (httpOnly disabled in dev so client can read if needed)
+    setCookie(event, 'auth-token', fakeToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: false,
+      path: '/',
+      maxAge: body.rememberMe ? 60 * 60 * 24 * 7 : 60 * 60 * 4,
     })
-  }
 
-  // Generate session token (in real app, use JWT or proper session management)
-  const token = Buffer.from(`${user.id}:${Date.now()}`).toString('base64')
-  
-  // Set session cookie
-  setCookie(event, 'auth-token', token, {
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    httpOnly: true
-  })
+    const user = {
+      id: 'user-dev-1',
+      email: body.email,
+      firstName: 'Test',
+      lastName: 'User',
+      avatar: undefined,
+      businessId: 'tenant1',
+      businessName: "Thabo's Spaza Shop",
+      role: 'owner',
+      status: 'active' as const,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
 
-  // Return user data (excluding password)
-  const { password: _, ...userWithoutPassword } = user
-  
-  return {
-    success: true,
-    user: {
-      ...userWithoutPassword,
-      createdAt: '2024-01-01T00:00:00Z',
-      updatedAt: new Date().toISOString()
-    },
-    token,
-    permissions: user.role === 'owner' ? ['admin'] : [user.role]
+    const permissions = [
+      'dashboard:view',
+      'inventory:*',
+      'sales:*',
+      'purchasing:*',
+      'logistics:*',
+      'crm:*',
+      'reports:view',
+      'admin',
+    ]
+
+    return {
+      token: fakeToken,
+      user,
+      permissions,
+    }
+  } catch (err) {
+    if ((err as any)?.statusCode) throw err
+    throw createError({ statusCode: 500, statusMessage: 'Login failed' })
   }
 })
+
+// (Removed duplicate default export block)

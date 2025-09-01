@@ -1,4 +1,14 @@
 export default defineNuxtRouteMiddleware((to) => {
+  // Simple dev guard for protected routes
+  const token = useCookie('auth-token')
+  const publicPaths = ['/login', '/register', '/getting-started', '/']
+  if (publicPaths.includes(to.path)) return
+  if (!token.value) {
+    return navigateTo('/login')
+  }
+})
+
+export default defineNuxtRouteMiddleware((to) => {
   const userStore = useUserStore()
   
   // If user is not authenticated, redirect to login
