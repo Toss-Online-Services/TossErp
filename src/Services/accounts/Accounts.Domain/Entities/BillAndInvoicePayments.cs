@@ -51,8 +51,9 @@ public class BillLine : Entity
         Guid? chartOfAccountId = null,
         string? taxCode = null,
         decimal taxRate = 0,
-        string? createdBy = null) : base(id, tenantId)
+        string? createdBy = null)
     {
+        Id = id;
         BillId = billId;
         Description = description ?? throw new ArgumentNullException(nameof(description));
         Quantity = quantity;
@@ -61,7 +62,6 @@ public class BillLine : Entity
         TaxCode = taxCode;
         TaxRate = taxRate;
         CalculateAmounts();
-        CreatedBy = createdBy;
     }
 
     public static BillLine Create(
@@ -136,14 +136,14 @@ public class BillPayment : Entity
         Money amountAllocated,
         DateTime allocationDate,
         string? notes = null,
-        string? createdBy = null) : base(id, tenantId)
+        string? createdBy = null)
     {
+        Id = id;
         BillId = billId;
         PaymentId = paymentId;
         AmountAllocated = amountAllocated;
         AllocationDate = allocationDate;
         Notes = notes;
-        CreatedBy = createdBy;
     }
 
     public static BillPayment Create(
@@ -199,14 +199,14 @@ public class InvoicePayment : Entity
         Money amountAllocated,
         DateTime allocationDate,
         string? notes = null,
-        string? createdBy = null) : base(id, tenantId)
+        string? createdBy = null)
     {
+        Id = id;
         InvoiceId = invoiceId;
         PaymentId = paymentId;
         AmountAllocated = amountAllocated;
         AllocationDate = allocationDate;
         Notes = notes;
-        CreatedBy = createdBy;
     }
 
     public static InvoicePayment Create(

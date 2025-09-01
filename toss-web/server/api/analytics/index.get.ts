@@ -1,26 +1,4 @@
 import { defineEventHandler, createError } from 'h3'
-import { defineEventHandler } from 'h3'
-
-export default defineEventHandler(async () => {
-  return {
-    sales: {
-      daily: 2450,
-      weekly: 19600,
-      monthly: 89450,
-      growthPct: 12.5,
-    },
-    inventory: {
-      totalItems: 156,
-      lowStockAlerts: 3,
-      totalValue: 62500,
-    },
-    customers: {
-      total: 234,
-      activeToday: 23,
-      repeatRate: 68,
-    },
-  }
-})
 
 export default defineEventHandler(async (event) => {
   try {

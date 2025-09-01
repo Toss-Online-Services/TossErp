@@ -487,6 +487,8 @@ public class Cashbook : AggregateRoot
     public override Guid Id { get; protected set; } = Guid.NewGuid();
     public override DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
     public override string CreatedBy { get; protected set; } = string.Empty;
+    
+    public string TenantId { get; private set; } = string.Empty;
 
     private readonly List<CashbookEntry> _entries = new();
 
@@ -506,8 +508,10 @@ public class Cashbook : AggregateRoot
         string name,
         string tenantId,
         Money openingBalance,
-        string? description = null) : base(id, tenantId)
+        string? description = null)
     {
+        Id = id;
+        TenantId = tenantId ?? throw new ArgumentNullException(nameof(tenantId));
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Cashbook name cannot be empty", nameof(name));
 
@@ -640,8 +644,9 @@ public class CashbookEntry : Entity
         Guid accountId,
         string tenantId,
         string? relatedEntityId = null,
-        string? relatedEntityType = null) : base(id, tenantId)
+        string? relatedEntityType = null)
     {
+        Id = id;
         CashbookId = cashbookId;
         TransactionDate = transactionDate;
         Reference = reference?.Trim() ?? throw new ArgumentException("Reference cannot be empty");
@@ -689,6 +694,8 @@ public class Company : AggregateRoot
     public override Guid Id { get; protected set; } = Guid.NewGuid();
     public override DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
     public override string CreatedBy { get; protected set; } = string.Empty;
+    
+    public string TenantId { get; private set; } = string.Empty;
 
     /// <summary>
     /// Company name (required, unique)
@@ -861,19 +868,21 @@ public class Company : AggregateRoot
         string? taxId = null,
         Guid? parentCompanyId = null,
         bool isGroup = false,
-        string? description = null) : base(id, tenantId)
+        string? description = null)
     {
+        Id = id;
+        TenantId = tenantId ?? throw new ArgumentNullException(nameof(tenantId));
         Name = name?.Trim() ?? throw new ArgumentException("Company name cannot be empty");
         Abbreviation = abbreviation?.Trim() ?? throw new ArgumentException("Abbreviation cannot be empty");
         Currency = currency?.Trim() ?? throw new ArgumentException("Currency cannot be empty");
         Country = country?.Trim() ?? throw new ArgumentException("Country cannot be empty");
         CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        CreatedAt = DateTime.UtcNow;
         Domain = domain?.Trim();
         TaxId = taxId?.Trim();
         ParentCompanyId = parentCompanyId;
         IsGroup = isGroup;
         Description = description?.Trim();
-        CreatedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
     }

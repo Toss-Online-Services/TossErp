@@ -2,8 +2,8 @@ import { defineEventHandler, getRouterParam, createError } from 'h3'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
-  const all = await (await import('../index.get')).default({} as any)
-  // fallback simple lookup on the static mock
+  
+  // Static mock data for individual item lookup
   const items = [
     {
       id: '1', tenantId: 'tenant1', sku: 'BREAD-001', name: 'White Bread Loaf', description: 'Fresh white bread loaf',
@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
       category: 'Dairy', unit: 'liter', sellingPrice: 25.0, costPrice: 18.0, reorderLevel: 25, reorderQty: 30,
       isActive: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-15T08:15:00Z', quantityOnHand: 15 },
   ]
+  
   const item = items.find(i => i.id === id)
   if (!item) throw createError({ statusCode: 404, statusMessage: 'Item not found' })
   return item
