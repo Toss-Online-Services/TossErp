@@ -13,9 +13,9 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("Customers")]
 public class Customer : AggregateRoot
 {
-    public override Guid Id { get; protected set; }
-    public override DateTime CreatedAt { get; protected set; }
-    public override string CreatedBy { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+    public override DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+    public override string CreatedBy { get; protected set; } = string.Empty;
 
     [Required]
     [StringLength(200)]
@@ -91,9 +91,12 @@ public class Customer : AggregateRoot
     [StringLength(500)]
     public string? Notes { get; private set; }
 
-    public bool IsActive { get; private set; } = true;    public override DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
+    public bool IsActive { get; private set; } = true;
 
-    [StringLength(100)]    public override string? ModifiedBy { get; protected set; }
+    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
+
+    [StringLength(100)]
+    public string? ModifiedBy { get; private set; }
 
     // Application layer compatibility properties
     [StringLength(100)]
@@ -152,17 +155,16 @@ public class Customer : AggregateRoot
         string? email = null,
         string? phone = null,
         string? mobileNumber = null,
-        string? customerCode = null)
+        string? customerCode = null) : base(id, tenantId)
     {
-        Id = id;
         Name = name?.Trim() ?? throw new ArgumentException("Customer name cannot be empty");
-        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
         CustomerType = customerType;
         Email = email?.Trim();
         Phone = phone?.Trim();
         MobileNumber = mobileNumber?.Trim();
         CustomerCode = customerCode?.Trim();
-        ModifiedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
     }
@@ -357,7 +359,7 @@ public class Customer : AggregateRoot
 [Table("CustomerAddresses")]
 public class CustomerAddress : Entity
 {
-    public override Guid Id { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
     public Guid CustomerId { get; private set; }
 
     [Required]
@@ -417,7 +419,7 @@ public class CustomerAddress : Entity
         string addressType,
         string? addressLine1 = null,
         string? city = null,
-        string? country = "South Africa")
+        string? country = "South Africa") : base(id, tenantId)
     {
         CustomerId = customerId;
         AddressType = addressType?.Trim() ?? throw new ArgumentException("Address type cannot be empty");
@@ -487,20 +489,20 @@ public class CustomerAddress : Entity
 /// </summary>
 public class CustomerContact : Entity
 {
-    public override Guid Id { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
     public CustomerContact(
         Guid id,
         string tenantId,
         Guid customerId,
         ContactType contactType,
         string name,
-        string createdBy)
+        string createdBy) : base(id, tenantId)
     {
         CustomerId = customerId;
         ContactType = contactType;
         Name = name?.Trim() ?? throw new ArgumentException("Contact name cannot be empty");
-        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
-        ModifiedAt = DateTime.UtcNow;
+        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        CreatedAt = DateTime.UtcNow;
         MarkAsUpdated(createdBy);
     }
 

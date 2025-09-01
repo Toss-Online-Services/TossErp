@@ -9,9 +9,10 @@ namespace TossErp.Accounts.Domain.Entities;
 /// </summary>
 public class Vendor : AggregateRoot
 {
-    public override Guid Id { get; protected set; }
-    public override DateTime CreatedAt { get; protected set; }
-    public override string CreatedBy { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+    public override DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+    public override string CreatedBy { get; protected set; } = string.Empty;
+
     private readonly List<VendorContact> _contacts = [];
 
     public Vendor(
@@ -22,12 +23,13 @@ public class Vendor : AggregateRoot
         VendorType vendorType,
         string createdBy)
     {
+        Id = id;
         VendorNumber = vendorNumber?.Trim() ?? throw new ArgumentException("Vendor number cannot be empty");
         Name = name?.Trim() ?? throw new ArgumentException("Vendor name cannot be empty");
         VendorType = vendorType;
         Status = VendorStatus.Active;
-        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
-        ModifiedAt = DateTime.UtcNow;
+        CreatedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
+        CreatedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
         Currency = "ZAR"; // Default to South African Rand for township vendors
@@ -262,7 +264,7 @@ public class Vendor : AggregateRoot
 /// </summary>
 public class VendorContact : Entity
 {
-    public override Guid Id { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
     public VendorContact(
         Guid id,
         string tenantId,
@@ -271,11 +273,10 @@ public class VendorContact : Entity
         string name,
         string createdBy)
     {
+        Id = id;
         VendorId = vendorId;
         ContactType = contactType;
         Name = name?.Trim() ?? throw new ArgumentException("Contact name cannot be empty");
-        ModifiedBy = createdBy?.Trim() ?? throw new ArgumentException("CreatedBy cannot be empty");
-        ModifiedAt = DateTime.UtcNow;
         ModifiedAt = DateTime.UtcNow;
         ModifiedBy = createdBy;
     }

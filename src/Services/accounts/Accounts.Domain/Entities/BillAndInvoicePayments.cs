@@ -12,7 +12,8 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("BillLines")]
 public class BillLine : Entity
 {
-    public override Guid Id { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+
     public Guid BillId { get; private set; }
 
     [Required]
@@ -50,7 +51,7 @@ public class BillLine : Entity
         Guid? chartOfAccountId = null,
         string? taxCode = null,
         decimal taxRate = 0,
-        string? ModifiedBy = null)
+        string? createdBy = null) : base(id, tenantId)
     {
         BillId = billId;
         Description = description ?? throw new ArgumentNullException(nameof(description));
@@ -60,7 +61,7 @@ public class BillLine : Entity
         TaxCode = taxCode;
         TaxRate = taxRate;
         CalculateAmounts();
-        ModifiedBy = createdBy;
+        CreatedBy = createdBy;
     }
 
     public static BillLine Create(
@@ -72,7 +73,7 @@ public class BillLine : Entity
         Guid? chartOfAccountId = null,
         string? taxCode = null,
         decimal taxRate = 0,
-        string? ModifiedBy = null)
+        string? createdBy = null)
     {
         return new BillLine(
             Guid.NewGuid(),
@@ -108,7 +109,8 @@ public class BillLine : Entity
 [Table("BillPayments")]
 public class BillPayment : Entity
 {
-    public override Guid Id { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+
     public Guid BillId { get; private set; }
 
     public Guid PaymentId { get; private set; }
@@ -134,14 +136,14 @@ public class BillPayment : Entity
         Money amountAllocated,
         DateTime allocationDate,
         string? notes = null,
-        string? ModifiedBy = null)
+        string? createdBy = null) : base(id, tenantId)
     {
         BillId = billId;
         PaymentId = paymentId;
         AmountAllocated = amountAllocated;
         AllocationDate = allocationDate;
         Notes = notes;
-        ModifiedBy = createdBy;
+        CreatedBy = createdBy;
     }
 
     public static BillPayment Create(
@@ -151,7 +153,7 @@ public class BillPayment : Entity
         Money amountAllocated,
         DateTime allocationDate,
         string? notes = null,
-        string? ModifiedBy = null)
+        string? createdBy = null)
     {
         return new BillPayment(
             Guid.NewGuid(),
@@ -171,7 +173,7 @@ public class BillPayment : Entity
 [Table("InvoicePayments")]
 public class InvoicePayment : Entity
 {
-    public override Guid Id { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
     public Guid InvoiceId { get; private set; }
 
     public Guid PaymentId { get; private set; }
@@ -197,14 +199,14 @@ public class InvoicePayment : Entity
         Money amountAllocated,
         DateTime allocationDate,
         string? notes = null,
-        string? ModifiedBy = null)
+        string? createdBy = null) : base(id, tenantId)
     {
         InvoiceId = invoiceId;
         PaymentId = paymentId;
         AmountAllocated = amountAllocated;
         AllocationDate = allocationDate;
         Notes = notes;
-        ModifiedBy = createdBy;
+        CreatedBy = createdBy;
     }
 
     public static InvoicePayment Create(
@@ -214,7 +216,7 @@ public class InvoicePayment : Entity
         Money amountAllocated,
         DateTime allocationDate,
         string? notes = null,
-        string? ModifiedBy = null)
+        string? createdBy = null)
     {
         return new InvoicePayment(
             Guid.NewGuid(),

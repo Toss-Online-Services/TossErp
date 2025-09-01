@@ -12,7 +12,7 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("AccountingDocuments")]
 public class AccountingDocument : Entity
 {
-    public override Guid Id { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
     [Required]
     [StringLength(200)]
     public string DocumentName { get; private set; } = string.Empty;
@@ -50,7 +50,7 @@ public class AccountingDocument : Entity
         Guid? relatedEntityId = null,
         string? relatedEntityType = null,
         string? description = null,
-        string? ModifiedBy = null)
+        string? createdBy = null) : base(id, tenantId)
     {
         DocumentName = documentName ?? throw new ArgumentNullException(nameof(documentName));
         DocumentType = documentType ?? throw new ArgumentNullException(nameof(documentType));
@@ -60,7 +60,7 @@ public class AccountingDocument : Entity
         RelatedEntityId = relatedEntityId;
         RelatedEntityType = relatedEntityType;
         Description = description;
-        ModifiedBy = createdBy;
+        CreatedBy = createdBy;
     }
 
     public static AccountingDocument Create(
@@ -73,7 +73,7 @@ public class AccountingDocument : Entity
         Guid? relatedEntityId = null,
         string? relatedEntityType = null,
         string? description = null,
-        string? ModifiedBy = null)
+        string? createdBy = null)
     {
         return new AccountingDocument(
             Guid.NewGuid(),
@@ -96,7 +96,7 @@ public class AccountingDocument : Entity
 [Table("AccountingAuditLogs")]
 public class AccountingAuditLog : Entity
 {
-    public override Guid Id { get; protected set; }
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
     [Required]
     [StringLength(100)]
     public string EntityType { get; private set; } = string.Empty;
@@ -134,7 +134,7 @@ public class AccountingAuditLog : Entity
         string? actionBy = null,
         DateTime? actionDate = null,
         string? description = null,
-        string? ModifiedBy = null)
+        string? createdBy = null) : base(id, tenantId)
     {
         EntityType = entityType ?? throw new ArgumentNullException(nameof(entityType));
         EntityId = entityId;
@@ -144,7 +144,7 @@ public class AccountingAuditLog : Entity
         ActionBy = actionBy;
         ActionDate = actionDate ?? DateTime.UtcNow;
         Description = description;
-        ModifiedBy = createdBy;
+        CreatedBy = createdBy;
     }
 
     public static AccountingAuditLog Create(
@@ -157,7 +157,7 @@ public class AccountingAuditLog : Entity
         string? actionBy = null,
         DateTime? actionDate = null,
         string? description = null,
-        string? ModifiedBy = null)
+        string? createdBy = null)
     {
         return new AccountingAuditLog(
             Guid.NewGuid(),

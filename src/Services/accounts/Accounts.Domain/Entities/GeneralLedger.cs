@@ -12,11 +12,9 @@ namespace TossErp.Accounts.Domain.Entities;
 [Table("GeneralLedger")]
 public class GeneralLedger : AggregateRoot
 {
-    public override Guid Id { get; protected set; }
-    public override DateTime CreatedAt { get; protected set; }
-    public override string CreatedBy { get; protected set; }
-
-    public string TenantId { get; private set; } = string.Empty;
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+    public override DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+    public override string CreatedBy { get; protected set; } = string.Empty;
 
     public Guid ChartOfAccountId { get; private set; }
 
@@ -43,14 +41,14 @@ public class GeneralLedger : AggregateRoot
         Guid chartOfAccountId,
         DateOnly periodDate,
         Money openingBalance,
-        string? ModifiedBy = null)
+        string? createdBy = null) : base(id, tenantId)
     {
         ChartOfAccountId = chartOfAccountId;
         PeriodDate = periodDate;
         OpeningBalance = openingBalance;
         ClosingBalance = openingBalance;
         NetBalance = openingBalance;
-        ModifiedBy = createdBy;
+        CreatedBy = createdBy;
     }
 
     public static GeneralLedger Create(
@@ -58,7 +56,7 @@ public class GeneralLedger : AggregateRoot
         Guid chartOfAccountId,
         DateOnly periodDate,
         Money openingBalance,
-        string? ModifiedBy = null)
+        string? createdBy = null)
     {
         return new GeneralLedger(
             Guid.NewGuid(),

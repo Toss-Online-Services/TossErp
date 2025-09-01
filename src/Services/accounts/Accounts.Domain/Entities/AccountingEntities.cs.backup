@@ -7,8 +7,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TossErp.Accounts.Domain.Entities;
 
-/// <summary>
-/// Journal Entry Line entity representing individual accounting entries
+/// <summ/// Recurring Transaction Template entity for automated transaction generation
+/// </summary>
+public class RecurringTransactionTemplate : Entity
+{
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+
+    public string Name { get; private set; }
+    public string? Description { get; private set; }
+    public FrequencyType Frequency { get; private set; }
+    public DateTime StartDate { get; private set; }
+    public DateTime? EndDate { get; private set; }
+    public DateTime NextProcessDate { get; private set; }
+    public bool IsActive { get; private set; }
+    public TransactionType TransactionType { get; private set; }
+    public string CreatedBy { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public int ProcessedCount { get; private set; }al Entry Line entity representing individual accounting entries
 /// </summary>
 public class JournalEntryLine : Entity
 {
@@ -119,8 +134,6 @@ public class PaymentLine : Entity
 /// </summary>
 public class InvoiceLine : Entity
 {
-    public override Guid Id { get; protected set; } = Guid.NewGuid();
-
     public Guid InvoiceId { get; private set; }
     public string ItemName { get; private set; }
     public string? Description { get; private set; }
@@ -197,8 +210,6 @@ public class InvoiceLine : Entity
 /// </summary>
 public class BankTransaction : Entity
 {
-    public override Guid Id { get; protected set; } = Guid.NewGuid();
-
     public Guid BankAccountId { get; private set; }
     public DateTime TransactionDate { get; private set; }
     public string Description { get; private set; }
@@ -269,8 +280,6 @@ public class BankTransaction : Entity
 /// </summary>
 public class TaxEntry : Entity
 {
-    public override Guid Id { get; protected set; } = Guid.NewGuid();
-
     public Guid TransactionId { get; private set; }
     public TransactionType TransactionType { get; private set; }
     public TaxType TaxType { get; private set; }
@@ -325,8 +334,6 @@ public class TaxEntry : Entity
 /// </summary>
 public class RecurringTransactionTemplate : Entity
 {
-    public override Guid Id { get; protected set; } = Guid.NewGuid();
-
     public string Name { get; private set; }
     public string? Description { get; private set; }
     public BillingFrequency Frequency { get; private set; }
@@ -335,8 +342,8 @@ public class RecurringTransactionTemplate : Entity
     public DateTime NextProcessDate { get; private set; }
     public bool IsActive { get; private set; }
     public TransactionType TransactionType { get; private set; }
-    public string CreatedBy { get; private set; }
-    public DateTime CreatedAt { get; private set; }
+    public new string CreatedBy { get; private set; }
+    public new DateTime CreatedAt { get; private set; }
     public int ProcessedCount { get; private set; }
 
     private readonly List<RecurringTransactionLine> _lines;
@@ -436,7 +443,6 @@ public class RecurringTransactionTemplate : Entity
 /// </summary>
 public class RecurringTransactionLine : Entity
 {
-    public override Guid Id { get; protected set; } = Guid.NewGuid();
     public Guid TemplateId { get; private set; }
     public Guid AccountId { get; private set; }
     public string AccountName { get; private set; }
@@ -608,7 +614,6 @@ public class Cashbook : AggregateRoot
 /// </summary>
 public class CashbookEntry : Entity
 {
-    public override Guid Id { get; protected set; } = Guid.NewGuid();
     public Guid CashbookId { get; private set; }
     public DateTime TransactionDate { get; private set; }
     public string Reference { get; private set; } = string.Empty;
