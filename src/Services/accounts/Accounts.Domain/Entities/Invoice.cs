@@ -95,11 +95,9 @@ public class Invoice : AggregateRoot
     [StringLength(1000)]
     public string? TermsAndConditions { get; private set; }
 
-    // Audit fields
-    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
+    // Audit fields    public override DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
 
-    [StringLength(100)]
-    public string? ModifiedBy { get; private set; }
+    [StringLength(100)]    public override string? ModifiedBy { get; protected set; }
 
     public DateTime? SentDate { get; private set; }
 

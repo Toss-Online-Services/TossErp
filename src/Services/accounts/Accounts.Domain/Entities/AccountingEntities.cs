@@ -840,14 +840,12 @@ public class Company : AggregateRoot
 
     /// <summary>
     /// Last modified timestamp
-    /// </summary>
-    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
+    /// </summary>    public override DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
 
     /// <summary>
     /// User who last modified the record
     /// </summary>
-    [StringLength(100)]
-    public string? ModifiedBy { get; private set; }
+    [StringLength(100)]    public override string? ModifiedBy { get; protected set; }
 
     private Company() : base() { } // EF Core
 

@@ -115,11 +115,9 @@ public class Payment : AggregateRoot
     public Money NetAmount => Amount.Subtract(ProcessingFee ?? Money.Zero(CurrencyCode.ZAR))
                                    .Subtract(BankCharges ?? Money.Zero(CurrencyCode.ZAR));
 
-    // Audit fields
-    public DateTime ModifiedAt { get; private set; } = DateTime.UtcNow;
+    // Audit fields    public override DateTime ModifiedAt { get; protected set; } = DateTime.UtcNow;
 
-    [StringLength(100)]
-    public string? ModifiedBy { get; private set; }
+    [StringLength(100)]    public override string? ModifiedBy { get; protected set; }
 
     // Application layer compatibility properties
     public DateTime LastModified => ModifiedAt;
