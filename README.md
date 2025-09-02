@@ -2,6 +2,9 @@
 
 A comprehensive Flutter mobile application for Point of Sale (POS) and Store Management, integrated with the TOSS ERP system. This application provides offline-first functionality with real-time synchronization capabilities.
 
+## Functional Specification & Platform Scope
+- See docs/TOSS_Functional_Spec.md for a concise, source-backed overview of TOSS ERP III vision, MVP modules, AI Business Co-Pilots, and collaborative economy features, with acceptance criteria and security/compliance notes.
+
 ## Features
 
 ### 🛒 POS (Point of Sale)
