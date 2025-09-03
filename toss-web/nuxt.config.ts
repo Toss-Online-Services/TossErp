@@ -1,6 +1,4 @@
-// @ts-nocheck
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { defineNuxtConfig } from 'nuxt/config'
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-08-24',
@@ -75,6 +73,10 @@ export default defineNuxtConfig({
       },
       '/api/stock': {
         target: 'http://localhost:8081/api/stock',
+        changeOrigin: true
+      },
+      '/api/inventory': {
+        target: 'http://localhost:8081/api/inventory',
         changeOrigin: true
       },
       '/api/financial': {
