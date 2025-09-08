@@ -14,8 +14,26 @@ class AuthService implements AuthBase {
     GoogleSignIn? googleSignIn,
   }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
        _googleSignIn = googleSignIn ?? GoogleSignIn.instance {
+    // Initialize Google Sign-In with proper client configuration
+    _initializeGoogleSignIn();
+  }
+
+  void _initializeGoogleSignIn() {
+    // On Android, serverClientId is REQUIRED and must be the Web OAuth client ID
+    // Create a .env file with GOOGLE_SERVER_CLIENT_ID=your_web_oauth_client_id
+    final String? serverClientId = dotenv.env['GOOGLE_SERVER_CLIENT_ID'];
+
+    if (kIsWeb) {
+      // Web does not require initialization here
+      return;
+    }
+
+    // iOS optionally uses clientId; Android ignores clientId and requires serverClientId
+    final String? iosClientId = DefaultFirebaseOptions.ios.iosClientId;
+
     GoogleSignIn.instance.initialize(
-      serverClientId: '909932522243-706sc9fd4a1g6nlhrc6b4ehaac2of2lk.apps.googleusercontent.com',
+      clientId: defaultTargetPlatform == TargetPlatform.iOS ? iosClientId : null,
+      serverClientId: serverClientId,
     );
   }
 
@@ -61,7 +79,7 @@ class AuthService implements AuthBase {
       // First, authenticate the user
       final googleSignInAccount = await _googleSignIn.authenticate();
       if (googleSignInAccount == null) {
-        return Result.error(ServiceError(message: 'Sign in cancelled'));
+        return Result.error(ServiceError(message: 'Sign in cancelled by user.'));
       }
 
       // Get the ID token for Firebase authentication
@@ -79,6 +97,13 @@ class AuthService implements AuthBase {
 
       final userCredential = await _firebaseAuth.signInWithCredential(credential);
       return Result.success(userCredential);
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        debugPrint('Google Sign-In cancelled by user.');
+        return Result.error(ServiceError(message: 'Google Sign-In was cancelled by the user.'));
+      }
+      debugPrint('Google Sign-In error: ${e.toString()}');
+      return Result.error(ServiceError(message: e.toString()));
     } catch (e) {
       debugPrint('Sign in error: $e');
       return Result.error(ServiceError(message: e.toString()));
