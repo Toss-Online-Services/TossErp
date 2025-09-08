@@ -54,10 +54,11 @@ This application uses an offline-first approach, where data will be stored in th
     - Create a new project on [Firebase](https://firebase.google.com/).
     - Follow the instructions to add Firebase to your Flutter app [here](https://firebase.google.com/docs/flutter/setup).
     - Enable google authentication provider
-    - Update cloud firestore rules to allow read write operation
+    - **✅ COMPLETED**: Cloud firestore rules have been configured to allow read/write operations for authenticated users
     <br/>
 
     ```
+    rules_version = '2';
     service cloud.firestore {
       match /databases/{database}/documents {
         match /{document=**} {
@@ -66,16 +67,25 @@ This application uses an offline-first approach, where data will be stored in th
       }
     }
     ```
-    - Add cloud firestore indexes to enable query
+    
+    **Firestore Setup Status:**
+    - ✅ Firestore rules file created: `firestore.rules`
+    - ✅ Firestore indexes file created: `firestore.indexes.json`  
+    - ✅ Firebase.json updated with Firestore configuration
+    - ✅ Rules deployed to Firebase project 'toss-77ad7'
+    - ✅ Firestore database created and active
+    
+    - Add cloud firestore indexes to enable query (if needed for your specific queries)
     <br/>
     <img src="indexes.png" alt="Cloud Firestore Indexes" width=800px>
     <br/>
     <br/>
     
-    - Update firebase storage rules to allow read write operation
+    - **Optional**: Update firebase storage rules to allow read write operation (requires Firebase Storage setup)
     <br/>
 
     ```
+    rules_version = '2';
     service firebase.storage {
       match /b/{bucket}/o {
         match /{allPaths=**} {
