@@ -1,182 +1,111 @@
-# [Material Kit Pro Flutter](https://creativetimofficial.github.io/material-kit-pro-flutter) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?text=Start%20Your%20Development%20With%20A%20Badass%20Flutter%20app%20inspired%20by%20Material%20Design.%0Ahttps%3A//demos.creative-tim.com/material-kit-pro-flutter/)
+# Flutter POS
+[![License: MIT](https://img.shields.io/badge/license-MIT-orange)](./LICENSE)
+[![Made with Flutter](https://img.shields.io/badge/made%20with-Flutter-blue)](https://flutter.dev/)
+
+A simple Point of Sale (POS) application built with Flutter with clean architecture design. The application is designed to be used both online and offline. The application's local data (sqflite) will be automatically synchronized with the cloud data (firestore) when the application detects an internet connection.
+
+This application uses an offline-first approach, where data will be stored in the local database first and then in the cloud database if there is an internet connection. If there is no internet connection, all actions performed by the user (create, update, delete) will be recorded as 'QueuedActions' in local database and will be executed automatically when the internet connection available.
+<br/>
+<br/>
+<p align="left">
+  <img src="1.jpeg" alt="Image 1" height="350" style="margin-right: 10px;">
+  <img src="2.jpeg" alt="Image 2" height="350" style="margin-right: 10px;">
+  <img src="3.jpeg" alt="Image 2" height="350" style="margin-right: 10px;">
+  <img src="4.jpeg" alt="Image 2" height="350" style="margin-right: 10px;">
+  <img src="5.jpeg" alt="Image 2" height="350">
+</p>
+
+## Demo APK
+[Download Demo APK](https://github.com/elrizwiraswara/flutter_pos/releases)
+
+## Features
+
+- **Product Management**: Add, update, and delete products.
+- **Sales Tracking**: Record and manage sales transactions.
+- **User Authentication**: Secure login and user management.
+- **Responsive UI**: Used Material UI 3, support dark & light mode, and user-friendly error handler UI.
+- **Customizeable Theme**: Customizeable & adaptive theme colors, text-style, etc.
+
+## Architecture
+<img src="6.png" alt="Architecture">
+
+## Getting Started
+
+### Prerequisites
+
+- [Flutter](https://flutter.dev/docs/get-started/install)
+- [Dart](https://dart.dev/get-dart)
+- Firebase account for backend services
+
+### Installation
+
+1. **Clone the repository:**
+    ```sh
+    git clone https://github.com/elrizwiraswara/flutter_pos.git
+    cd flutter_pos
+    ```
+
+2. **Install dependencies:**
+    ```sh
+    flutter pub get
+    ```
+
+3. **Set up Firebase:**
+    - Create a new project on [Firebase](https://firebase.google.com/).
+    - Follow the instructions to add Firebase to your Flutter app [here](https://firebase.google.com/docs/flutter/setup).
+    - Enable google authentication provider
+    - Update cloud firestore rules to allow read write operation
+    <br/>
+
+    ```
+    service cloud.firestore {
+      match /databases/{database}/documents {
+        match /{document=**} {
+          allow read, write: if request.auth != null;
+        }
+      }
+    }
+    ```
+    - Add cloud firestore indexes to enable query
+    <br/>
+    <img src="indexes.png" alt="Cloud Firestore Indexes" width=800px>
+    <br/>
+    <br/>
+    
+    - Update firebase storage rules to allow read write operation
+    <br/>
+
+    ```
+    service firebase.storage {
+      match /b/{bucket}/o {
+        match /{allPaths=**} {
+          allow read, write: if request.auth != null;
+        }
+      }
+    }
+    ```
 
 
- ![version](https://img.shields.io/badge/version-1.0.0-blue.svg)  [![GitHub issues open](https://img.shields.io/github/issues/creativetimofficial/ct-material-kit-pro-flutter.svg?style=flat)](https://github.com/creativetimofficial/ct-material-kit-pro-flutter/issues?q=is%3Aopen+is%3Aissue) [![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/creativetimofficial/ct-material-kit-pro-flutter.svg?maxAge=2592000)](https://github.com/creativetimofficial/ct-material-kit-pro-flutter/issues?q=is%3Aissue+is%3Aclosed)
+4. **Run the application:**
+    ```sh
+    flutter run
+    ```
 
+### Test
 
-![Product Gif](https://raw.githubusercontent.com/creativetimofficial/public-assets/master/material-pro-flutter/opt_mkp_flutter_thumbnail.jpg)
-
-Material Kit Pro Flutter is a premium mobile UI template built with Google's [Flutter](https://flutter.dev/) allowing you to create powerful and beautiful mobile applications.. We have redesigned all the usual components in order to make it look like Argon's Design System, minimalistic and easy to use.
-
-Start your development with a badass material UI Kit for Flutter inspired by Material Design. If you like Google's Material Design, you will love this flutter kit! It features a huge number of components and screens built to fit together and look amazing. 
-
-### FULLY CODED COMPONENTS
-
-Material Kit PRO Flutter features over 200 variations of components like buttons, inputs, cards, navigations etc, giving you the freedom of choosing and combining. All components can take variations in colour, that you can easily modify inside our theme file.
-
-You will save a lot of time going from prototyping to full-functional code, because all elements are implemented. We wanted the design process to be seamless, so switching from image to the real page is very easy to do.
-
-### Components & Cards
-Material Kit PRO Flutter comes packed with a large number of components and cards. Putting together a mobile app has never been easier than matching together different components. From the profile screen to a fully working shopping cart, you can easily customise and build your screens. We have created multiple options for you to put together and customise into pixel perfect screens. 
-
-View [ all components/cards here](https://demos.creative-tim.com/material-kit-pro-flutter/presentation.html#cards).
-
-### Example Screens
-If you want to get inspiration or just show something directly to your clients, you can jump start your development with our pre-built example screens. From onboarding screens to e-commerce or discover screen, you will be able to quickly set up the basic structure for your Flutter mobile project. 
-
-View [all screens here](https://demos.creative-tim.com/material-kit-pro-flutter/presentation.html#screens).
-
-
-Let us know your thoughts below. And good luck with development!
-
-
-## Table of Contents
-
-* [Versions](#versions) 
-* [Demo](#demo)
-* [Quick Start](#quick-start)
-* [Documentation](#documentation)
-* [File Structure](#file-structure)
-* [OS Support](#os-support)
-* [Resources](#resources)
-* [Reporting Issues](#reporting-issues)
-* [Technical Support or Questions](#technical-support-or-questions)
-* [Licensing](#licensing)
-* [Useful Links](#useful-links)
-
-
-
-## Demo
-
-- [Start page](https://demos.creative-tim.com/material-kit-pro-flutter)
-
-
-
-## Quick start
-
-- Buy from [Creative Tim](https://www.creative-tim.com/product/material-kit-pro-flutter)
-
-
-## Documentation
-The documentation for the Material Kit PRO Flutter is hosted at our [website](https://demos.creative-tim.com/material-kit-pro-flutter/docs/).
-
-
-## File Structure
-Within the download you'll find the following directories and files:
-
-```
-.
-├── README.md
-├── android
-├── assets
-├── build
-├── ios
-├── lib
-│   ├── constants
-│   │   ├── Images.dart
-│   │   └── Theme.dart
-│   ├── main.dart
-│   ├── screens
-│   │   ├── about.dart
-│   │   ├── agreement.dart
-│   │   ├── best-deals.dart
-│   │   ├── cart.dart
-│   │   ├── categories.dart
-│   │   ├── category.dart
-│   │   ├── chat.dart
-│   │   ├── components.dart
-│   │   ├── home.dart
-│   │   ├── kids.dart
-│   │   ├── man.dart
-│   │   ├── new-collection.dart
-│   │   ├── notifications-settings.dart
-│   │   ├── onboarding.dart
-│   │   ├── privacy.dart
-│   │   ├── product.dart
-│   │   ├── profile.dart
-│   │   ├── search.dart
-│   │   ├── settings.dart
-│   │   ├── signin.dart
-│   │   ├── signup.dart
-│   │   └── woman.dart
-│   └── widgets
-│       ├── card-category.dart
-│       ├── card-horizontal.dart
-│       ├── card-shopping-cart.dart
-│       ├── card-shopping.dart
-│       ├── card-small.dart
-│       ├── card-square.dart
-│       ├── drawer-tile.dart
-│       ├── drawer.dart
-│       ├── input.dart
-│       ├── navbar.dart
-│       ├── photo-album.dart
-│       ├── product-size-picker.dart
-│       ├── slider-product.dart
-│       ├── slider.dart
-│       └── table-cell.dart
-├── material_kit_pro_flutter.iml
-├── pubspec.lock
-└── pubspec.yaml
+To test the application, run the following command:
+```sh
+flutter test
 ```
 
+## Contributing
 
-## OS Support
+Contributions are welcome! Please open an issue or submit a pull request for any bugs, feature requests, or improvements.
 
-At present, we officially aim to support the last two versions of the following operating systems:
+## License
 
-[<img src="https://raw.githubusercontent.com/creativetimofficial/ct-material-kit-pro-react-native/master/assets/android-logo.png" width="60" height="60" />](https://www.creative-tim.com/product/material-kit-pro-flutter)[<img src="https://raw.githubusercontent.com/creativetimofficial/ct-material-kit-pro-react-native/master/assets/apple-logo.png" width="60" height="60" />](https://www.creative-tim.com/product/material-kit-pro-flutter)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Support
 
-
-## Resources
-- Demo: <https://demos.creative-tim.com/material-kit-pro-flutter>
-- Download Page: <https://www.creative-tim.com/product/material-kit-pro-flutter>
-- Documentation: <https://demos.creative-tim.com/material-kit-pro-flutter/docs>
-- License Agreement: <https://www.creative-tim.com/license>
-- Support: <https://www.creative-tim.com/contact-us>
-- Issues: [Github Issues Page](https://github.com/creativetimofficial/ct-material-kit-pro-flutter/issues)
-- [Material Kit](https://www.creative-tim.com/product/material-kit?ref=mkprn-readme) - For Front End Development
-
-## Reporting Issues
-
-We use GitHub Issues as the official bug tracker for the Material Kit Flutter. Here are some advices for our users that want to report an issue:
-
-1. Make sure that you are using the latest version of the Material Kit Flutter.
-2. Providing us reproducible steps for the issue will shorten the time it takes for it to be fixed.
-3. Some issues may be browser specific, so specifying in what browser you encountered the issue might help.
-
-
-## Technical Support or Questions
-
-If you have questions or need help integrating the product please [contact us](https://www.creative-tim.com/contact-us) instead of opening an issue.
-
-
-
-## Licensing
-
-- Copyright 2018 Creative Tim (https://www.creative-tim.com/)
-
-- Creative Tim [license](https://www.creative-tim.com/license)
-
-
-
-## Useful Links
-
-- [More products](https://www.creative-tim.com/bootstrap-themes) from Creative Tim
-- [Tutorials](https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w)
-- [Freebies](https://www.creative-tim.com/bootstrap-themes/free) from Creative Tim
-- [Affiliate Program](https://www.creative-tim.com/affiliates/new) (earn money)
-
-##### Social Media
-
-Twitter: <https://twitter.com/CreativeTim>
-
-Facebook: <https://www.facebook.com/CreativeTim>
-
-Dribbble: <https://dribbble.com/creativetim>
-
-Google+: <https://plus.google.com/+CreativetimPage>
-
-Instagram: <https://www.instagram.com/CreativeTimOfficial>
-
+<a href="https://trakteer.id/elrizwiraswara/tip" target="_blank"><img id="wse-buttons-preview" src="https://cdn.trakteer.id/images/embed/trbtn-red-6.png?date=18-11-2023" height="40" style="border:0px;height:40px;margin-top:14px" alt="Trakteer Saya"></a>

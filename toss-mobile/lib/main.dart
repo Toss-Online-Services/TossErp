@@ -1,39 +1,81 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
 
-// screens
-import 'package:material_kit_pro_flutter/screens/home.dart';
-import 'package:material_kit_pro_flutter/screens/woman.dart';
-import 'package:material_kit_pro_flutter/screens/man.dart';
-import 'package:material_kit_pro_flutter/screens/kids.dart';
-import 'package:material_kit_pro_flutter/screens/new-collection.dart';
-import 'package:material_kit_pro_flutter/screens/profile.dart';
-import 'package:material_kit_pro_flutter/screens/settings.dart';
-import 'package:material_kit_pro_flutter/screens/components.dart';
-import 'package:material_kit_pro_flutter/screens/onboarding.dart';
-import 'package:material_kit_pro_flutter/screens/signin.dart';
-import 'package:material_kit_pro_flutter/screens/signup.dart';
+import 'app/database/app_database.dart';
+import 'app/locale/app_locale.dart';
+import 'app/routes/app_routes.dart';
+import 'firebase_options.dart';
+import 'presentation/providers/theme/theme_provider.dart';
+import 'presentation/screens/error_handler_screen.dart';
+import 'service_locator.dart';
 
-void main() => runApp(MaterialKitPROFlutter());
+void main() async {
+  // Initialize binding
+  WidgetsFlutterBinding.ensureInitialized();
 
-class MaterialKitPROFlutter extends StatelessWidget {
+  // Initialize Firebase (use `flutterfire configure` to generate the options)
+  await Firebase.initializeApp(
+    name: DefaultFirebaseOptions.currentPlatform.projectId,
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Initialize app local db
+  await AppDatabase().init();
+
+  // Ensure persistence is cleared
+  await FirebaseFirestore.instance.clearPersistence();
+
+  // Initialize flutter_dotenv
+  await dotenv.load();
+
+  // Initialize date formatting
+  initializeDateFormatting();
+
+  // Setup service locator
+  setupServiceLocator();
+
+  // Set/lock screen orientation
+  SystemChrome.setPreferredOrientations([]);
+
+  // Set Default SystemUIOverlayStyle
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      statusBarColor: Colors.transparent,
+    ),
+  );
+
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: "Material Kit PRO Flutter",
-        debugShowCheckedModeBanner: false,
-        initialRoute: "/onboarding",
-        routes: <String, WidgetBuilder>{
-          "/onboarding": (BuildContext context) => new Onboarding(),
-          "/home": (BuildContext context) => new Home(),
-          "/woman": (BuildContext context) => new Woman(),
-          "/man": (BuildContext context) => new Man(),
-          "/kids": (BuildContext context) => new Kids(),
-          "/components": (BuildContext context) => new Components(),
-          "/newcollection": (BuildContext context) => new NewCollection(),
-          "/profile": (BuildContext context) => new Profile(),
-          "/settings": (BuildContext context) => new Settings(),
-          "/signin": (BuildContext context) => new SignIn(),
-          "/signup": (BuildContext context) => new SignUp(),
-        });
+    return MultiProvider(
+      providers: providers,
+      child: Selector<ThemeProvider, ThemeData>(
+        selector: (context, provider) => provider.theme,
+        builder: (context, theme, _) {
+          return MaterialApp.router(
+            title: 'Flutter POS',
+            theme: theme,
+            debugShowCheckedModeBanner: kDebugMode,
+            routerConfig: AppRoutes.router,
+            locale: AppLocale.defaultLocale,
+            supportedLocales: AppLocale.supportedLocales,
+            localizationsDelegates: AppLocale.localizationsDelegates,
+            builder: (context, child) => ErrorHandlerBuilder(child: child),
+          );
+        },
+      ),
+    );
   }
 }
