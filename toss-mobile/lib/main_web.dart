@@ -7,13 +7,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
-import 'app/database/app_database.dart';
-import 'app/locale/app_locale.dart';
-import 'app/routes/app_routes.dart';
 import 'firebase_options.dart';
 import 'presentation/providers/theme/theme_provider.dart';
 import 'presentation/screens/error_handler_screen.dart';
-import 'service_locator.dart';
+import 'service_locator_web.dart';
 
 void main() async {
   // Initialize binding
@@ -32,18 +29,10 @@ void main() async {
   }
 
   try {
-    // Initialize Firebase (use `flutterfire configure` to generate the options)
+    // Initialize Firebase
     await Firebase.initializeApp(
-      name: kIsWeb ? null : DefaultFirebaseOptions.currentPlatform.projectId,
       options: DefaultFirebaseOptions.currentPlatform,
     );
-
-    // Initialize app local db (skip for web to avoid issues)
-    if (!kIsWeb) {
-      await AppDatabase().init();
-      // Ensure persistence is cleared
-      await FirebaseFirestore.instance.clearPersistence();
-    }
 
     // Initialize flutter_dotenv
     try {
@@ -56,29 +45,14 @@ void main() async {
     // Initialize date formatting
     initializeDateFormatting();
 
-    // Setup service locator (skip complex setup for web)
-    if (!kIsWeb) {
-      setupServiceLocator();
-    }
-
-    // Set/lock screen orientation (skip for web)
-    if (!kIsWeb) {
-      SystemChrome.setPreferredOrientations([]);
-
-      // Set Default SystemUIOverlayStyle
-      SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(
-          systemNavigationBarColor: Colors.transparent,
-          statusBarColor: Colors.transparent,
-        ),
-      );
-    }
+    // Setup service locator
+    setupServiceLocatorWeb();
   } catch (e) {
     debugPrint('Initialization error: $e');
     // Continue with app launch even if some initialization fails
   }
 
-  runApp(kIsWeb ? const MyWebApp() : const MyApp());
+  runApp(const MyWebApp());
 }
 
 class MyWebApp extends StatelessWidget {
@@ -86,13 +60,14 @@ class MyWebApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, _) {
+    return MultiProvider(
+      providers: webProviders,
+      child: Selector<ThemeProvider, ThemeData>(
+        selector: (context, provider) => provider.theme,
+        builder: (context, theme, _) {
           return MaterialApp(
             title: 'TOSS ERP - Web Demo',
-            theme: themeProvider.theme,
+            theme: theme,
             debugShowCheckedModeBanner: kDebugMode,
             home: const WebDemoScreen(),
             builder: (context, child) => ErrorHandlerBuilder(child: child),
@@ -195,32 +170,6 @@ class WebDemoScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: providers,
-      child: Selector<ThemeProvider, ThemeData>(
-        selector: (context, provider) => provider.theme,
-        builder: (context, theme, _) {
-          return MaterialApp.router(
-            title: 'Flutter POS',
-            theme: theme,
-            debugShowCheckedModeBanner: kDebugMode,
-            routerConfig: AppRoutes.router,
-            locale: AppLocale.defaultLocale,
-            supportedLocales: AppLocale.supportedLocales,
-            localizationsDelegates: AppLocale.localizationsDelegates,
-            builder: (context, child) => ErrorHandlerBuilder(child: child),
-          );
-        },
       ),
     );
   }

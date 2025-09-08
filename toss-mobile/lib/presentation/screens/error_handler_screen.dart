@@ -32,6 +32,19 @@ class ErrorHandlerBuilderState extends State<ErrorHandlerBuilder> {
     // Add your error handling logic here, e.g., logging, reporting to a server, etc.
     cl('[ErrorHandlerBuilder].error = ${errorDetails.exception}');
 
+    // Web-specific error handling
+    if (kIsWeb) {
+      // Log additional context for web debugging
+      cl('[Web] Error context: ${errorDetails.context}');
+      cl('[Web] Library: ${errorDetails.library}');
+      
+      // Check if it's a JavaScript interop error
+      if (errorDetails.exception.toString().contains('JS') || 
+          errorDetails.exception.toString().contains('javascript')) {
+        cl('[Web] JavaScript interop error detected');
+      }
+    }
+
     // Prevent to push to ErrorScreen multiple times
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (kDebugMode) return;

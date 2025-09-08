@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -30,80 +31,101 @@ final GetIt sl = GetIt.instance;
 
 // Service Locator
 void setupServiceLocator() async {
-  sl.registerSingleton<AppDatabase>(AppDatabase());
+  // For web, skip database initialization to avoid SQLite issues
+  if (!kIsWeb) {
+    sl.registerSingleton<AppDatabase>(AppDatabase());
+  }
   sl.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
 
   // Datasources
-  // Local Datasources
-  sl.registerLazySingleton(() => ProductLocalDatasourceImpl(sl<AppDatabase>()));
-  sl.registerLazySingleton(() => TransactionLocalDatasourceImpl(sl<AppDatabase>()));
-  sl.registerLazySingleton(() => UserLocalDatasourceImpl(sl<AppDatabase>()));
-  sl.registerLazySingleton(() => QueuedActionLocalDatasourceImpl(sl<AppDatabase>()));
+  // Local Datasources (skip for web since they use SQLite)
+  if (!kIsWeb) {
+    sl.registerLazySingleton(() => ProductLocalDatasourceImpl(sl<AppDatabase>()));
+    sl.registerLazySingleton(() => TransactionLocalDatasourceImpl(sl<AppDatabase>()));
+    sl.registerLazySingleton(() => UserLocalDatasourceImpl(sl<AppDatabase>()));
+    sl.registerLazySingleton(() => QueuedActionLocalDatasourceImpl(sl<AppDatabase>()));
+  }
+  
   // Remote Datasources
   sl.registerLazySingleton(() => ProductRemoteDatasourceImpl(sl<FirebaseFirestore>()));
   sl.registerLazySingleton(() => TransactionRemoteDatasourceImpl(sl<FirebaseFirestore>()));
   sl.registerLazySingleton(() => UserRemoteDatasourceImpl(sl<FirebaseFirestore>()));
 
-  // Repositories
-  sl.registerLazySingleton(
-    () => ProductRepositoryImpl(
-      productLocalDatasource: sl<ProductLocalDatasourceImpl>(),
-      productRemoteDatasource: sl<ProductRemoteDatasourceImpl>(),
-      queuedActionLocalDatasource: sl<QueuedActionLocalDatasourceImpl>(),
-    ),
-  );
-  sl.registerLazySingleton(
-    () => TransactionRepositoryImpl(
-      transactionLocalDatasource: sl<TransactionLocalDatasourceImpl>(),
-      transactionRemoteDatasource: sl<TransactionRemoteDatasourceImpl>(),
-      queuedActionLocalDatasource: sl<QueuedActionLocalDatasourceImpl>(),
-    ),
-  );
-  sl.registerLazySingleton(
-    () => UserRepositoryImpl(
-      userLocalDatasource: sl<UserLocalDatasourceImpl>(),
-      userRemoteDatasource: sl<UserRemoteDatasourceImpl>(),
-      queuedActionLocalDatasource: sl<QueuedActionLocalDatasourceImpl>(),
-    ),
-  );
-  sl.registerLazySingleton(
-    () => QueuedActionRepositoryImpl(
-      queuedActionLocalDatasource: sl<QueuedActionLocalDatasourceImpl>(),
-      userRemoteDatasource: sl<UserRemoteDatasourceImpl>(),
-      transactionRemoteDatasource: sl<TransactionRemoteDatasourceImpl>(),
-      productRemoteDatasource: sl<ProductRemoteDatasourceImpl>(),
-    ),
-  );
+  // Repositories (simplified - use mock/minimal implementations for web)
+  if (!kIsWeb) {
+    sl.registerLazySingleton(
+      () => ProductRepositoryImpl(
+        productLocalDatasource: sl<ProductLocalDatasourceImpl>(),
+        productRemoteDatasource: sl<ProductRemoteDatasourceImpl>(),
+        queuedActionLocalDatasource: sl<QueuedActionLocalDatasourceImpl>(),
+      ),
+    );
+    sl.registerLazySingleton(
+      () => TransactionRepositoryImpl(
+        transactionLocalDatasource: sl<TransactionLocalDatasourceImpl>(),
+        transactionRemoteDatasource: sl<TransactionRemoteDatasourceImpl>(),
+        queuedActionLocalDatasource: sl<QueuedActionLocalDatasourceImpl>(),
+      ),
+    );
+    sl.registerLazySingleton(
+      () => UserRepositoryImpl(
+        userLocalDatasource: sl<UserLocalDatasourceImpl>(),
+        userRemoteDatasource: sl<UserRemoteDatasourceImpl>(),
+        queuedActionLocalDatasource: sl<QueuedActionLocalDatasourceImpl>(),
+      ),
+    );
+    sl.registerLazySingleton(
+      () => QueuedActionRepositoryImpl(
+        queuedActionLocalDatasource: sl<QueuedActionLocalDatasourceImpl>(),
+        userRemoteDatasource: sl<UserRemoteDatasourceImpl>(),
+        transactionRemoteDatasource: sl<TransactionRemoteDatasourceImpl>(),
+        productRemoteDatasource: sl<ProductRemoteDatasourceImpl>(),
+      ),
+    );
+  }
 
-  // Providers
-  sl.registerLazySingleton(
-    () => MainProvider(
-      userRepository: sl<UserRepositoryImpl>(),
-      productRepository: sl<ProductRepositoryImpl>(),
-      transactionRepository: sl<TransactionRepositoryImpl>(),
-      queuedActionRepository: sl<QueuedActionRepositoryImpl>(),
-    ),
-  );
-  sl.registerLazySingleton(() => AuthProvider(userRepository: sl<UserRepositoryImpl>()));
-  sl.registerLazySingleton(() => HomeProvider(transactionRepository: sl<TransactionRepositoryImpl>()));
-  sl.registerLazySingleton(() => ProductsProvider(productRepository: sl<ProductRepositoryImpl>()));
-  sl.registerLazySingleton(() => TransactionsProvider(transactionRepository: sl<TransactionRepositoryImpl>()));
-  sl.registerLazySingleton(() => AccountProvider(userRepository: sl<UserRepositoryImpl>()));
-  sl.registerLazySingleton(() => ProductFormProvider(productRepository: sl<ProductRepositoryImpl>()));
-  sl.registerLazySingleton(() => ProductDetailProvider(productRepository: sl<ProductRepositoryImpl>()));
-  sl.registerLazySingleton(() => TransactionDetailProvider(transactionRepository: sl<TransactionRepositoryImpl>()));
-  sl.registerLazySingleton(() => ThemeProvider());
+  // Providers (web-compatible versions)
+  try {
+    if (!kIsWeb) {
+      sl.registerLazySingleton(
+        () => MainProvider(
+          userRepository: sl<UserRepositoryImpl>(),
+          productRepository: sl<ProductRepositoryImpl>(),
+          transactionRepository: sl<TransactionRepositoryImpl>(),
+          queuedActionRepository: sl<QueuedActionRepositoryImpl>(),
+        ),
+      );
+      sl.registerLazySingleton(() => AuthProvider(userRepository: sl<UserRepositoryImpl>()));
+      sl.registerLazySingleton(() => HomeProvider(transactionRepository: sl<TransactionRepositoryImpl>()));
+      sl.registerLazySingleton(() => ProductsProvider(productRepository: sl<ProductRepositoryImpl>()));
+      sl.registerLazySingleton(() => TransactionsProvider(transactionRepository: sl<TransactionRepositoryImpl>()));
+      sl.registerLazySingleton(() => AccountProvider(userRepository: sl<UserRepositoryImpl>()));
+      sl.registerLazySingleton(() => ProductFormProvider(productRepository: sl<ProductRepositoryImpl>()));
+      sl.registerLazySingleton(() => ProductDetailProvider(productRepository: sl<ProductRepositoryImpl>()));
+      sl.registerLazySingleton(() => TransactionDetailProvider(transactionRepository: sl<TransactionRepositoryImpl>()));
+    }
+    
+    // Always register theme provider
+    sl.registerLazySingleton(() => ThemeProvider());
+  } catch (e) {
+    debugPrint('Service locator setup error: $e');
+  }
 }
 
-// All providers
+// All providers (web-compatible version)
 final List<SingleChildWidget> providers = [
-  ChangeNotifierProvider(create: (_) => sl<AuthProvider>()),
-  ChangeNotifierProvider(create: (_) => sl<MainProvider>()),
-  ChangeNotifierProvider(create: (_) => sl<HomeProvider>()),
-  ChangeNotifierProvider(create: (_) => sl<ProductsProvider>()),
-  ChangeNotifierProvider(create: (_) => sl<TransactionsProvider>()),
-  ChangeNotifierProvider(create: (_) => sl<AccountProvider>()),
-  ChangeNotifierProvider(create: (_) => sl<ProductFormProvider>()),
-  ChangeNotifierProvider(create: (_) => sl<ProductDetailProvider>()),
+  // Only include providers that work on web
   ChangeNotifierProvider(create: (_) => sl<ThemeProvider>()),
+  
+  // Skip other providers for web since they depend on SQLite repositories
+  if (!kIsWeb) ...[
+    ChangeNotifierProvider(create: (_) => sl<AuthProvider>()),
+    ChangeNotifierProvider(create: (_) => sl<MainProvider>()),
+    ChangeNotifierProvider(create: (_) => sl<HomeProvider>()),
+    ChangeNotifierProvider(create: (_) => sl<ProductsProvider>()),
+    ChangeNotifierProvider(create: (_) => sl<TransactionsProvider>()),
+    ChangeNotifierProvider(create: (_) => sl<AccountProvider>()),
+    ChangeNotifierProvider(create: (_) => sl<ProductFormProvider>()),
+    ChangeNotifierProvider(create: (_) => sl<ProductDetailProvider>()),
+  ]
 ];
