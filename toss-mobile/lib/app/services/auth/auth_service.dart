@@ -13,7 +13,11 @@ class AuthService implements AuthBase {
     FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
   }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-       _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
+       _googleSignIn = googleSignIn ?? GoogleSignIn.instance {
+    GoogleSignIn.instance.initialize(
+      serverClientId: '909932522243-706sc9fd4a1g6nlhrc6b4ehaac2of2lk.apps.googleusercontent.com',
+    );
+  }
 
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
