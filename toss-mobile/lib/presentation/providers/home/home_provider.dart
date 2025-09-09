@@ -25,6 +25,12 @@ class HomeProvider extends ChangeNotifier {
   List<OrderedProductEntity> orderedProducts = [];
   int receivedAmount = 0;
   String selectedPaymentMethod = 'cash';
+  // Split payment amounts
+  int cashAmount = 0;
+  int bankAmount = 0;
+  // Cart-level discount
+  int discountAmount = 0;
+  double? discountPercent;
   String? customerName;
   String? description;
 
@@ -33,23 +39,40 @@ class HomeProvider extends ChangeNotifier {
     orderedProducts = [];
     receivedAmount = 0;
     selectedPaymentMethod = 'cash';
+    cashAmount = 0;
+    bankAmount = 0;
+    discountAmount = 0;
+    discountPercent = null;
     customerName = null;
     description = null;
   }
 
   Future<Result<int>> createTransaction() async {
     try {
+      // Determine payment method and received based on split inputs
+      final int calculatedReceived = (cashAmount + bankAmount) > 0 ? (cashAmount + bankAmount) : receivedAmount;
+      final bool isSplit = cashAmount > 0 && bankAmount > 0;
+      final String method = isSplit
+          ? 'split'
+          : (cashAmount > 0
+              ? 'cash'
+              : (bankAmount > 0
+                  ? 'bank'
+                  : selectedPaymentMethod));
+
+      final int discountedTotal = getDiscountedTotalAmount();
+
       var transaction = TransactionEntity(
         id: DateTime.now().millisecondsSinceEpoch,
-        paymentMethod: selectedPaymentMethod,
+        paymentMethod: method,
         customerName: customerName,
-        description: description,
+        description: _buildPaymentDescription(),
         orderedProducts: orderedProducts,
         createdById: AuthService().getAuthData()!.uid,
-        receivedAmount: receivedAmount,
-        returnAmount: receivedAmount - getTotalAmount(),
+        receivedAmount: calculatedReceived,
+        returnAmount: calculatedReceived - discountedTotal,
         totalOrderedProduct: orderedProducts.length,
-        totalAmount: getTotalAmount(),
+        totalAmount: discountedTotal,
       );
 
       var res = await CreateTransactionUsecase(transactionRepository).call(transaction);
@@ -131,8 +154,66 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void onChangedCashAmount(int value) {
+    cashAmount = value;
+    notifyListeners();
+  }
+
+  void onChangedBankAmount(int value) {
+    bankAmount = value;
+    notifyListeners();
+  }
+
+  void onChangedDiscountAmount(int value) {
+    discountAmount = value;
+    notifyListeners();
+  }
+
+  void onChangedDiscountPercent(double? value) {
+    discountPercent = value;
+    notifyListeners();
+  }
+
   int getTotalAmount() {
     if (orderedProducts.isEmpty) return 0;
     return orderedProducts.map((e) => e.price * e.quantity).reduce((a, b) => a + b);
+  }
+
+  int getDiscountedTotalAmount() {
+    final int subtotal = getTotalAmount();
+    int total = subtotal;
+    if (discountPercent != null) {
+      final double pct = discountPercent!.clamp(0.0, 100.0);
+      total = subtotal - ((subtotal * pct) / 100).round();
+    } else if (discountAmount > 0) {
+      total = subtotal - discountAmount;
+    }
+    if (total < 0) return 0;
+    return total;
+  }
+
+  String? getUpsellSuggestion() {
+    if (orderedProducts.isEmpty) return null;
+    final names = orderedProducts.map((e) => e.name.toLowerCase()).toList();
+    if (names.any((n) => n.contains('beer') || n.contains('lager'))) {
+      return 'Consider offering chips or nuts as a combo.';
+    }
+    if (names.any((n) => n.contains('shampoo') || n.contains('hair'))) {
+      return 'Upsell conditioner or hair oil for better care.';
+    }
+    if (names.any((n) => n.contains('car wash') || n.contains('wax'))) {
+      return 'Suggest interior cleaning at a small discount.';
+    }
+    return null;
+  }
+
+  String _buildPaymentDescription() {
+    final parts = <String>[];
+    if (cashAmount > 0) parts.add('cash=${cashAmount}');
+    if (bankAmount > 0) parts.add('bank=${bankAmount}');
+    if (discountPercent != null) parts.add('discountPct=${discountPercent!.toStringAsFixed(2)}');
+    if (discountAmount > 0) parts.add('discountAmt=$discountAmount');
+    if (description != null && description!.isNotEmpty) parts.add('note=${description!}');
+    return parts.isEmpty ? '' : parts.join('; ');
   }
 }
