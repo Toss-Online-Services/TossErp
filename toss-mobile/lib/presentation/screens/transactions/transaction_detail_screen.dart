@@ -13,7 +13,7 @@ import '../../providers/transactions/transaction_detail_provider.dart';
 import '../../widgets/app_empty_state.dart';
 import '../../widgets/app_progress_indicator.dart';
 import '../error_handler_screen.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../widgets/app_dialog.dart';
 
 class TransactionDetailScreen extends StatelessWidget {
   final int id;
@@ -160,6 +160,20 @@ class TransactionDetailScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
+                'Customer Phone',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              Text(
+                transaction.customerPhone ?? '-',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSizes.padding),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
                 'Description',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
@@ -258,20 +272,40 @@ class TransactionDetailScreen extends StatelessWidget {
         Expanded(
           child: ElevatedButton.icon(
             onPressed: () {
-              final phone = dotenv.env['WHATSAPP_DEFAULT_PHONE'] ?? '';
+              final phone = transaction.customerPhone ?? '';
               if (phone.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Set WHATSAPP_DEFAULT_PHONE in .env to enable WhatsApp sharing.')),
-                );
-                return;
+                _promptPhoneAndShare(context, message);
+              } else {
+                ExternalLauncher.openWhatsApp(phone: phone, message: message);
               }
-              ExternalLauncher.openWhatsApp(phone: phone, message: message);
             },
             icon: Icon(Icons.share, color: Theme.of(context).colorScheme.onPrimary),
             label: const Text('Share via WhatsApp'),
           ),
         ),
       ],
+    );
+  }
+
+  void _promptPhoneAndShare(BuildContext context, String message) {
+    final controller = TextEditingController();
+    AppDialog.show(
+      title: 'Enter customer phone',
+      child: TextField(
+        controller: controller,
+        keyboardType: TextInputType.phone,
+        decoration: const InputDecoration(hintText: '+27XXXXXXXXX'),
+      ),
+      leftButtonText: 'Cancel',
+      rightButtonText: 'Send',
+      onTapLeftButton: () => Navigator.of(context).pop(),
+      onTapRightButton: () {
+        final phone = controller.text.trim();
+        if (phone.isEmpty) return;
+        Navigator.of(context).pop();
+        ExternalLauncher.openWhatsApp(phone: phone, message: message);
+      },
+      enableRightButton: true,
     );
   }
 

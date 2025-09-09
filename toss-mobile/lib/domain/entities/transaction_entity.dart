@@ -7,6 +7,7 @@ class TransactionEntity extends Equatable {
   final int? id;
   final String paymentMethod;
   final String? customerName;
+  final String? customerPhone;
   final String? description;
   final String createdById;
   final UserEntity? createdBy;
@@ -22,6 +23,7 @@ class TransactionEntity extends Equatable {
     this.id,
     required this.paymentMethod,
     this.customerName,
+    this.customerPhone,
     this.description,
     required this.createdById,
     this.createdBy,
@@ -38,6 +40,7 @@ class TransactionEntity extends Equatable {
     int? id,
     String? paymentMethod,
     String? customerName,
+    String? customerPhone,
     String? description,
     String? createdById,
     UserEntity? createdBy,
@@ -53,6 +56,7 @@ class TransactionEntity extends Equatable {
       id: id ?? this.id,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       customerName: customerName ?? this.customerName,
+      customerPhone: customerPhone ?? this.customerPhone,
       description: description ?? this.description,
       createdById: createdById ?? this.createdById,
       createdBy: createdBy ?? this.createdBy,
@@ -71,6 +75,7 @@ class TransactionEntity extends Equatable {
     id,
     paymentMethod,
     customerName,
+    customerPhone,
     description,
     createdById,
     createdBy,

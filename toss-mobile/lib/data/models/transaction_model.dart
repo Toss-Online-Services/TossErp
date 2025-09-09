@@ -6,6 +6,7 @@ class TransactionModel {
   int id;
   String paymentMethod;
   String? customerName;
+  String? customerPhone;
   String? description;
   String createdById;
   UserModel? createdBy;
@@ -21,6 +22,7 @@ class TransactionModel {
     required this.id,
     required this.paymentMethod,
     this.customerName,
+    this.customerPhone,
     this.description,
     required this.createdById,
     this.createdBy,
@@ -38,6 +40,7 @@ class TransactionModel {
       id: json['id'],
       paymentMethod: json['paymentMethod'],
       customerName: json['customerName'],
+      customerPhone: json['customerPhone'],
       description: json['description'],
       createdById: json['createdById'],
       createdBy: json['createdBy'],
@@ -58,6 +61,7 @@ class TransactionModel {
       'id': id,
       'paymentMethod': paymentMethod,
       'customerName': customerName,
+      'customerPhone': customerPhone,
       'description': description,
       'createdById': createdById,
       'createdBy': createdBy,
@@ -76,6 +80,7 @@ class TransactionModel {
       id: entity.id ?? DateTime.now().millisecondsSinceEpoch,
       paymentMethod: entity.paymentMethod,
       customerName: entity.customerName,
+      customerPhone: entity.customerPhone,
       description: entity.description,
       createdById: entity.createdById,
       createdBy: entity.createdBy != null ? UserModel.fromEntity(entity.createdBy!) : null,
@@ -94,6 +99,7 @@ class TransactionModel {
       id: id,
       paymentMethod: paymentMethod,
       customerName: customerName,
+      customerPhone: customerPhone,
       description: description,
       createdBy: createdBy?.toEntity(),
       createdById: createdById,

@@ -42,6 +42,30 @@ class AppDatabase {
       database.execute(AppDatabaseConfig.createOrderedProductTable),
       database.execute(AppDatabaseConfig.createQueuedActionTable),
     ]);
+
+    // Lightweight migration: ensure newly added columns exist
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.transactionTableName,
+      column: 'customerPhone',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.transactionTableName}' ADD COLUMN 'customerPhone' TEXT",
+    );
+  }
+
+  Future<void> _ensureColumnExists({
+    required String table,
+    required String column,
+    required String addColumnSql,
+  }) async {
+    try {
+      final res = await database.rawQuery("PRAGMA table_info('$table')");
+      final hasColumn = res.any((row) => (row['name'] as String?) == column);
+      if (!hasColumn) {
+        await database.execute(addColumnSql);
+        cl('[AppDatabase] Added missing column $column to $table');
+      }
+    } catch (e) {
+      cl('[AppDatabase] Column check failed for $table.$column: $e');
+    }
   }
 
   // Only for testing
@@ -132,6 +156,7 @@ CREATE TABLE IF NOT EXISTS '$transactionTableName' (
     'id' INTEGER NOT NULL,
     'paymentMethod' TEXT,
     'customerName' TEXT,
+    'customerPhone' TEXT,
     'description' TEXT,
     'createdById' TEXT,
     'receivedAmount' INTEGER,

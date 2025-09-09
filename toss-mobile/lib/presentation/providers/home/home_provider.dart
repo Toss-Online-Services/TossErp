@@ -32,6 +32,7 @@ class HomeProvider extends ChangeNotifier {
   int discountAmount = 0;
   double? discountPercent;
   String? customerName;
+  String? customerPhone;
   String? description;
 
   void resetStates() {
@@ -44,6 +45,7 @@ class HomeProvider extends ChangeNotifier {
     discountAmount = 0;
     discountPercent = null;
     customerName = null;
+    customerPhone = null;
     description = null;
   }
 
@@ -66,6 +68,7 @@ class HomeProvider extends ChangeNotifier {
         id: DateTime.now().millisecondsSinceEpoch,
         paymentMethod: method,
         customerName: customerName,
+        customerPhone: customerPhone,
         description: _buildPaymentDescription(),
         orderedProducts: orderedProducts,
         createdById: AuthService().getAuthData()!.uid,
@@ -146,6 +149,11 @@ class HomeProvider extends ChangeNotifier {
 
   void onChangedCustomerName(String value) {
     customerName = value;
+    notifyListeners();
+  }
+
+  void onChangedCustomerPhone(String value) {
+    customerPhone = value;
     notifyListeners();
   }
 
