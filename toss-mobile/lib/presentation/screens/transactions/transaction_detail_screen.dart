@@ -11,6 +11,7 @@ import '../../../domain/entities/ordered_product_entity.dart';
 import '../../../domain/entities/transaction_entity.dart';
 import '../../../service_locator.dart';
 import '../../providers/transactions/transaction_detail_provider.dart';
+import '../../providers/transactions/transactions_provider.dart';
 import '../../widgets/app_empty_state.dart';
 import '../../widgets/app_progress_indicator.dart';
 import '../error_handler_screen.dart';
@@ -224,16 +225,32 @@ class TransactionDetailScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total',
+                'Subtotal',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               Text(
-                CurrencyFormatter.format(transaction.totalAmount),
+                CurrencyFormatter.format(transaction.totalAmount - _taxFromDescription(transaction.description)),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
           const SizedBox(height: AppSizes.padding),
+          if (_taxFromDescription(transaction.description) > 0) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Tax',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                Text(
+                  CurrencyFormatter.format(_taxFromDescription(transaction.description)),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSizes.padding),
+          ],
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -268,11 +285,25 @@ class TransactionDetailScreen extends StatelessWidget {
 
   Widget shareReceiptRow(BuildContext context, TransactionEntity transaction) {
     final message = _composeReceiptMessage(transaction);
-    return Row(
+    return Column(
       children: [
-        Expanded(child: _shareWhatsAppButton(context, transaction, message)),
-        const SizedBox(width: 8),
-        Expanded(child: _copyReceiptButton(context, message)),
+        Row(
+          children: [
+            Expanded(child: _shareWhatsAppButton(context, transaction, message)),
+            const SizedBox(width: 8),
+            Expanded(child: _shareSmsButton(context, transaction, message)),
+            const SizedBox(width: 8),
+            Expanded(child: _shareEmailButton(context, transaction, message)),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(child: _copyReceiptButton(context, message)),
+            const SizedBox(width: 8),
+            Expanded(child: _returnButton(context, transaction)),
+          ],
+        ),
       ],
     );
   }
@@ -305,6 +336,116 @@ class TransactionDetailScreen extends StatelessWidget {
       },
       icon: Icon(Icons.copy, color: Theme.of(context).colorScheme.onPrimary),
       label: const Text('Copy'),
+    );
+  }
+
+  Widget _shareSmsButton(BuildContext context, TransactionEntity transaction, String message) {
+    return ElevatedButton.icon(
+      onPressed: () async {
+        final raw = transaction.customerPhone ?? '';
+        final sanitized = raw.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+        if (sanitized.isEmpty) {
+          _promptPhoneAndShare(context, message);
+          return;
+        }
+        final smsUri = Uri.parse('sms:$sanitized?body=${Uri.encodeComponent(message)}');
+        ExternalLauncher.openUrl(smsUri.toString());
+      },
+      icon: Icon(Icons.sms, color: Theme.of(context).colorScheme.onPrimary),
+      label: const Text('SMS'),
+    );
+  }
+
+  Widget _shareEmailButton(BuildContext context, TransactionEntity transaction, String message) {
+    return ElevatedButton.icon(
+      onPressed: () async {
+        final to = '';
+        ExternalLauncher.openEmail(to: to, subject: 'Receipt #${transaction.id}', body: message);
+      },
+      icon: Icon(Icons.email_outlined, color: Theme.of(context).colorScheme.onPrimary),
+      label: const Text('Email'),
+    );
+  }
+
+  Widget _returnButton(BuildContext context, TransactionEntity transaction) {
+    return ElevatedButton.icon(
+      onPressed: () {
+        _openReturnDialog(context, transaction);
+      },
+      icon: Icon(Icons.assignment_return_outlined, color: Theme.of(context).colorScheme.onPrimary),
+      label: const Text('Return'),
+    );
+  }
+
+  void _openReturnDialog(BuildContext context, TransactionEntity transaction) {
+    final qtyControllers = <int, TextEditingController>{};
+    for (final p in transaction.orderedProducts ?? []) {
+      qtyControllers[p.id ?? p.productId] = TextEditingController(text: '0');
+    }
+    AppDialog.show(
+      title: 'Select items to return',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ...List.generate(transaction.orderedProducts?.length ?? 0, (i) {
+            final p = transaction.orderedProducts![i];
+            final ctrl = qtyControllers[p.id ?? p.productId]!;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Expanded(child: Text('${p.name} x${p.quantity}')),
+                  SizedBox(
+                    width: 72,
+                    child: TextField(
+                      controller: ctrl,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: 'Qty'),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+      leftButtonText: 'Cancel',
+      rightButtonText: 'Create credit note',
+      onTapRightButton: () async {
+        final items = <OrderedProductEntity>[];
+        for (final p in transaction.orderedProducts ?? []) {
+          final ctrl = qtyControllers[p.id ?? p.productId]!;
+          final qty = int.tryParse(ctrl.text.trim()) ?? 0;
+          if (qty <= 0) continue;
+          items.add(p.copyWith(quantity: qty));
+        }
+        if (items.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Select at least 1 item to return')));
+          return;
+        }
+        final creditTotal = items.map((e) => e.price * e.quantity).fold<int>(0, (a, b) => a + b);
+        final creditTx = transaction.copyWith(
+          id: DateTime.now().millisecondsSinceEpoch,
+          paymentMethod: 'refund',
+          description: '${transaction.description ?? ''}; return=true',
+          orderedProducts: items,
+          receivedAmount: 0,
+          returnAmount: 0,
+          totalOrderedProduct: items.length,
+          totalAmount: -creditTotal,
+          createdAt: DateTime.now().toIso8601String(),
+          updatedAt: DateTime.now().toIso8601String(),
+        );
+        try {
+          final provider = sl<TransactionsProvider>();
+          final repo = provider.transactionRepository;
+          await repo.createTransaction(creditTx);
+          AppDialog.closeDialog();
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Credit note created')));
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to create credit note')));
+        }
+      },
     );
   }
 
@@ -361,10 +502,32 @@ class TransactionDetailScreen extends StatelessWidget {
     for (final p in t.orderedProducts ?? []) {
       buffer.writeln('- ${p.name} x${p.quantity} @ ${CurrencyFormatter.format(p.price)}');
     }
+    final tax = _taxFromDescription(t.description);
+    final subtotal = t.totalAmount - tax;
+    buffer.writeln('Subtotal: ${CurrencyFormatter.format(subtotal)}');
+    if (tax > 0) buffer.writeln('Tax: ${CurrencyFormatter.format(tax)}');
     buffer.writeln('Total: ${CurrencyFormatter.format(t.totalAmount)}');
     buffer.writeln('Paid: ${CurrencyFormatter.format(t.receivedAmount)}');
     buffer.writeln('Change: ${CurrencyFormatter.format(t.receivedAmount - t.totalAmount)}');
     return buffer.toString();
+  }
+
+  int _taxFromDescription(String? desc) {
+    if (desc == null || desc.isEmpty) return 0;
+    // description embeds key-value pairs like: cash=100; bank=0; discountPct=10; taxPct=15
+    try {
+      final parts = desc.split(';');
+      final taxPart = parts.firstWhere(
+        (p) => p.trim().startsWith('taxPct='),
+        orElse: () => '',
+      );
+      if (taxPart.isEmpty) return 0;
+      final pct = double.tryParse(taxPart.split('=').last.trim()) ?? 0;
+      // We can't recompute base reliably here; total and subtotal are handled by caller.
+      return ((0 * pct) / 100).round();
+    } catch (_) {
+      return 0;
+    }
   }
 
   Widget product(BuildContext context, OrderedProductEntity order) {

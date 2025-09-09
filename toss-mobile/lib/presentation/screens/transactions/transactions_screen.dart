@@ -62,6 +62,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             icon: const Icon(Icons.calculate_outlined),
             onPressed: () => _showCashUpDialog(context),
           ),
+          IconButton(
+            tooltip: 'Return/Refund',
+            icon: const Icon(Icons.assignment_return_outlined),
+            onPressed: () => _showReturnInfo(context),
+          ),
+          // Placeholder for Returns screen entry (future step)
         ],
       ),
       body: Consumer<TransactionsProvider>(
@@ -205,6 +211,17 @@ class _DailyTotalsSummary extends StatelessWidget {
       },
     );
   }
+}
+
+void _showReturnInfo(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Returns & Refunds'),
+      content: const Text('Open a transaction detail to process a return (feature stub).'),
+      actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('OK'))],
+    ),
+  );
 }
 
 void _showCashUpDialog(BuildContext context) {

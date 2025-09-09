@@ -23,6 +23,7 @@ class TransactionLocalDatasourceImpl extends TransactionDatasource {
       );
       if (transaction.orderedProducts?.isNotEmpty ?? false) {
         var batch = trx.batch();
+        final bool isReturnTx = (transaction.description ?? '').contains('return=true') || (transaction.totalAmount < 0);
         for (var orderedProduct in transaction.orderedProducts!) {
           orderedProduct.transactionId = transaction.id;
           batch.insert(
@@ -37,8 +38,8 @@ class TransactionLocalDatasourceImpl extends TransactionDatasource {
           );
           if (rawProduct.isEmpty) continue;
           var product = ProductModel.fromJson(rawProduct.first);
-          int stock = product.stock - orderedProduct.quantity;
-          int sold = product.sold + orderedProduct.quantity;
+          int stock = isReturnTx ? product.stock + orderedProduct.quantity : product.stock - orderedProduct.quantity;
+          int sold = isReturnTx ? product.sold - orderedProduct.quantity : product.sold + orderedProduct.quantity;
           batch.update(
             AppDatabaseConfig.productTableName,
             {'stock': stock, 'sold': sold},

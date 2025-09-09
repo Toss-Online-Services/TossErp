@@ -31,6 +31,8 @@ class HomeProvider extends ChangeNotifier {
   // Cart-level discount
   int discountAmount = 0;
   double? discountPercent;
+  // Tax percent to add after discounts
+  double? taxPercent;
   String? customerName;
   String? customerPhone;
   String? description;
@@ -44,6 +46,7 @@ class HomeProvider extends ChangeNotifier {
     bankAmount = 0;
     discountAmount = 0;
     discountPercent = null;
+    taxPercent = null;
     customerName = null;
     customerPhone = null;
     description = null;
@@ -62,7 +65,7 @@ class HomeProvider extends ChangeNotifier {
                   ? 'bank'
                   : selectedPaymentMethod));
 
-      final int discountedTotal = getDiscountedTotalAmount();
+      final int finalTotal = getFinalTotalAmount();
 
       var transaction = TransactionEntity(
         id: DateTime.now().millisecondsSinceEpoch,
@@ -72,10 +75,10 @@ class HomeProvider extends ChangeNotifier {
         description: _buildPaymentDescription(),
         orderedProducts: orderedProducts,
         createdById: AuthService().getAuthData()!.uid,
-        receivedAmount: calculatedReceived,
-        returnAmount: calculatedReceived - discountedTotal,
+        receivedAmount: method == 'invoice' ? 0 : calculatedReceived,
+        returnAmount: method == 'invoice' ? 0 : (calculatedReceived - finalTotal),
         totalOrderedProduct: orderedProducts.length,
-        totalAmount: discountedTotal,
+        totalAmount: finalTotal,
       );
 
       var res = await CreateTransactionUsecase(transactionRepository).call(transaction);
@@ -182,6 +185,11 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void onChangedTaxPercent(double? value) {
+    taxPercent = value;
+    notifyListeners();
+  }
+
   int getTotalAmount() {
     if (orderedProducts.isEmpty) return 0;
     return orderedProducts.map((e) => e.price * e.quantity).reduce((a, b) => a + b);
@@ -198,6 +206,38 @@ class HomeProvider extends ChangeNotifier {
     }
     if (total < 0) return 0;
     return total;
+  }
+
+  int getTaxAmount() {
+    final int base = getDiscountedTotalAmount();
+    if (taxPercent == null) return 0;
+    final double pct = taxPercent!.clamp(0.0, 100.0);
+    return ((base * pct) / 100).round();
+  }
+
+  int getFinalTotalAmount() {
+    final int base = getDiscountedTotalAmount();
+    return base + getTaxAmount();
+  }
+
+  bool isPaymentCovered() {
+    if (selectedPaymentMethod == 'invoice') return true;
+    final int payable = getFinalTotalAmount();
+    return (cashAmount + bankAmount) >= payable;
+  }
+
+  void addCustomService({required String name, required int price, int quantity = 1}) {
+    final order = OrderedProductEntity(
+      id: DateTime.now().millisecondsSinceEpoch,
+      productId: 0,
+      quantity: quantity,
+      stock: 0,
+      name: name,
+      imageUrl: '',
+      price: price,
+    );
+    orderedProducts.add(order);
+    notifyListeners();
   }
 
   String? getUpsellSuggestion() {
@@ -221,6 +261,10 @@ class HomeProvider extends ChangeNotifier {
     if (bankAmount > 0) parts.add('bank=${bankAmount}');
     if (discountPercent != null) parts.add('discountPct=${discountPercent!.toStringAsFixed(2)}');
     if (discountAmount > 0) parts.add('discountAmt=$discountAmount');
+    if (taxPercent != null) {
+      parts.add('taxPct=${taxPercent!.toStringAsFixed(2)}');
+      parts.add('taxAmt=${getTaxAmount()}');
+    }
     if (description != null && description!.isNotEmpty) parts.add('note=${description!}');
     return parts.isEmpty ? '' : parts.join('; ');
   }
