@@ -12,6 +12,7 @@ import '../../../domain/entities/transaction_entity.dart';
 import '../../../service_locator.dart';
 import '../../providers/transactions/transaction_detail_provider.dart';
 import '../../providers/transactions/transactions_provider.dart';
+import '../../../app/services/auth/auth_service.dart';
 import '../../widgets/app_empty_state.dart';
 import '../../widgets/app_progress_indicator.dart';
 import '../error_handler_screen.dart';
@@ -432,6 +433,30 @@ class TransactionDetailScreen extends StatelessWidget {
       leftButtonText: 'Cancel',
       rightButtonText: 'Create credit note',
       onTapRightButton: () async {
+        // Manager PIN gate
+        final pinCtrl = TextEditingController();
+        bool authorized = false;
+        await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Manager approval'),
+            content: TextField(controller: pinCtrl, keyboardType: TextInputType.number, obscureText: true, decoration: const InputDecoration(labelText: 'Enter manager PIN')),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
+              TextButton(
+                onPressed: () {
+                  authorized = ManagerPinValidator.validateManagerPin(pinCtrl.text);
+                  Navigator.of(ctx).pop();
+                },
+                child: const Text('Approve'),
+              ),
+            ],
+          ),
+        );
+        if (!authorized) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Manager PIN required or invalid')));
+          return;
+        }
         final items = <OrderedProductEntity>[];
         for (final p in transaction.orderedProducts ?? []) {
           final ctrl = qtyControllers[p.id ?? p.productId]!;
