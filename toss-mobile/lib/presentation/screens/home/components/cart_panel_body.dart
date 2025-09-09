@@ -117,7 +117,7 @@ class _CartPanelBodyState extends State<CartPanelBody> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Total (${provider.orderedProducts.length})',
+                    'Subtotal (${provider.orderedProducts.length})',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   Text(
@@ -142,12 +142,25 @@ class _CartPanelBodyState extends State<CartPanelBody> {
                 ),
                 const SizedBox(height: 6),
               ],
+              if (provider.taxPercent != null && provider.taxPercent! > 0) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Tax (${provider.taxPercent!.toStringAsFixed(0)}%)', style: Theme.of(context).textTheme.bodyMedium),
+                    Text(
+                      '+${CurrencyFormatter.format(provider.getTaxAmount())}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+              ],
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Payable', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
                   Text(
-                    CurrencyFormatter.format(provider.getDiscountedTotalAmount()),
+                    CurrencyFormatter.format(provider.getFinalTotalAmount()),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],

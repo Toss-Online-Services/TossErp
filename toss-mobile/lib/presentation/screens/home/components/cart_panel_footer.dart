@@ -161,8 +161,22 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
                   value: 'split',
                   child: Text('Split (Cash + Bank)'),
                 ),
+                DropdownMenuItem(
+                  value: 'invoice',
+                  child: Text('Invoice (Pay later)'),
+                ),
               ],
               onChanged: provider.onChangedPaymentMethod,
+            ),
+            const SizedBox(height: AppSizes.padding),
+            AppTextField(
+              keyboardType: TextInputType.number,
+              labelText: 'Tax % (optional)',
+              hintText: '0-100',
+              onChanged: (val) {
+                final parsed = double.tryParse(val);
+                provider.onChangedTaxPercent(parsed);
+              },
             ),
             const SizedBox(height: AppSizes.padding),
             Row(
@@ -231,8 +245,8 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
                 Expanded(
                   flex: 2,
                   child: AppButton(
-                    text: 'Pay',
-                    enabled: (provider.cashAmount + provider.bankAmount) >= provider.getDiscountedTotalAmount(),
+                    text: provider.selectedPaymentMethod == 'invoice' ? 'Create Invoice' : 'Pay',
+                    enabled: provider.isPaymentCovered(),
                     onTap: () {
                       context.pop();
                       onPay();

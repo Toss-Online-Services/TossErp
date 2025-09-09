@@ -46,4 +46,9 @@ class ExternalLauncher {
       throw Exception('Could open map url $googleUrl');
     }
   }
+
+  static void openEmail({required String to, required String subject, required String body}) async {
+    final uri = Uri.parse('mailto:$to?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}');
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
 }

@@ -115,7 +115,7 @@ void setupServiceLocator() async {
 // All providers (web-compatible version)
 final List<SingleChildWidget> providers = [
   // Only include providers that work on web
-  ChangeNotifierProvider(create: (_) => sl<ThemeProvider>()),
+  ChangeNotifierProvider(create: (_) => ThemeProvider()),
   
   // Skip other providers for web since they depend on SQLite repositories
   if (!kIsWeb) ...[

@@ -69,7 +69,7 @@ class _CartPanelHeaderState extends State<CartPanelHeader> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '${provider.orderedProducts.length} Products',
+              '${provider.orderedProducts.length} Items',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -111,6 +111,113 @@ class _CartPanelHeaderState extends State<CartPanelHeader> {
                 ],
               ),
             ),
+            AppButton(
+              height: 26,
+              borderRadius: BorderRadius.circular(4),
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding / 2),
+              buttonColor: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.32),
+              onTap: () {
+                AppDialog.show(
+                  title: 'Add service item',
+                  child: _ServiceItemForm(),
+                  showButtons: false,
+                );
+              },
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.add,
+                    size: 12,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: AppSizes.padding / 4),
+                  Text(
+                    'Add Service',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ServiceItemForm extends StatefulWidget {
+  @override
+  State<_ServiceItemForm> createState() => _ServiceItemFormState();
+}
+
+class _ServiceItemFormState extends State<_ServiceItemForm> {
+  final nameCtrl = TextEditingController();
+  final priceCtrl = TextEditingController();
+  final qtyCtrl = TextEditingController(text: '1');
+
+  @override
+  void dispose() {
+    nameCtrl.dispose();
+    priceCtrl.dispose();
+    qtyCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<HomeProvider>(
+      builder: (context, provider, _) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameCtrl,
+              decoration: const InputDecoration(labelText: 'Service name', hintText: 'e.g. Car Wash - Exterior'),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: priceCtrl,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Price', hintText: 'e.g. 5000'),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: qtyCtrl,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Quantity', hintText: '1'),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton(
+                    text: 'Cancel',
+                    buttonColor: Theme.of(context).colorScheme.surface,
+                    borderColor: Theme.of(context).colorScheme.primary,
+                    textColor: Theme.of(context).colorScheme.primary,
+                    onTap: () => AppDialog.closeDialog(),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: AppButton(
+                    text: 'Add',
+                    onTap: () {
+                      final name = nameCtrl.text.trim();
+                      final price = int.tryParse(priceCtrl.text.trim()) ?? 0;
+                      final qty = int.tryParse(qtyCtrl.text.trim()) ?? 1;
+                      if (name.isEmpty || price <= 0) return;
+                      provider.addCustomService(name: name, price: price, quantity: qty);
+                      AppDialog.closeDialog();
+                    },
+                  ),
+                ),
+              ],
+            )
           ],
         );
       },
