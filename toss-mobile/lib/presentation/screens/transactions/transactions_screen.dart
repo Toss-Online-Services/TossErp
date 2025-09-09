@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../../app/themes/app_sizes.dart';
 import '../../../service_locator.dart';
 import '../../providers/transactions/transactions_provider.dart';
 import '../../widgets/app_empty_state.dart';
 import '../../../app/utilities/currency_formatter.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../../widgets/app_loading_more_indicator.dart';
 import '../../widgets/app_progress_indicator.dart';
 import '../../widgets/app_text_field.dart';
@@ -55,6 +56,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         title: const Text('Transactions'),
         elevation: 0,
         shadowColor: Colors.transparent,
+        actions: [
+          IconButton(
+            tooltip: 'Cash-up',
+            icon: const Icon(Icons.calculate_outlined),
+            onPressed: () => _showCashUpDialog(context),
+          ),
+        ],
       ),
       body: Consumer<TransactionsProvider>(
         builder: (context, provider, _) {
@@ -155,10 +163,12 @@ class _DailyTotalsSummary extends StatelessWidget {
         int totalSales = 0;
         int cash = 0;
         int bank = 0;
+        int txCount = 0;
         for (final t in data) {
           final createdAt = DateTime.tryParse(t.createdAt ?? '');
           if (createdAt != null && createdAt.year == today.year && createdAt.month == today.month && createdAt.day == today.day) {
             totalSales += t.totalAmount;
+            txCount += 1;
             if (t.paymentMethod.toLowerCase() == 'cash') cash += t.totalAmount;
             if (t.paymentMethod.toLowerCase() == 'bank') bank += t.totalAmount;
             if (t.paymentMethod.toLowerCase() == 'split') {
@@ -166,6 +176,7 @@ class _DailyTotalsSummary extends StatelessWidget {
             }
           }
         }
+        final avg = txCount == 0 ? 0 : (totalSales / txCount).round();
         return Container(
           padding: const EdgeInsets.all(AppSizes.padding),
           decoration: BoxDecoration(
@@ -175,7 +186,7 @@ class _DailyTotalsSummary extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Today', style: Theme.of(context).textTheme.labelLarge),
+              Text('Today ($txCount tx, avg ${CurrencyFormatter.format(avg)})', style: Theme.of(context).textTheme.labelLarge),
               Row(
                 children: [
                   Text('Cash: '),
@@ -194,4 +205,60 @@ class _DailyTotalsSummary extends StatelessWidget {
       },
     );
   }
+}
+
+void _showCashUpDialog(BuildContext context) {
+  final provider = Provider.of<TransactionsProvider>(context, listen: false);
+  final today = DateTime.now();
+  final data = provider.allTransactions ?? [];
+  int cash = 0;
+  int bank = 0;
+  int totalSales = 0;
+  int txCount = 0;
+  for (final t in data) {
+    final createdAt = DateTime.tryParse(t.createdAt ?? '');
+    if (createdAt != null && createdAt.year == today.year && createdAt.month == today.month && createdAt.day == today.day) {
+      totalSales += t.totalAmount;
+      txCount += 1;
+      if (t.paymentMethod.toLowerCase() == 'cash') cash += t.totalAmount;
+      if (t.paymentMethod.toLowerCase() == 'bank') bank += t.totalAmount;
+    }
+  }
+  final avg = txCount == 0 ? 0 : (totalSales / txCount).round();
+  final note = 'Cash-up ${today.toIso8601String()}\n'
+      'Transactions: $txCount\n'
+      'Average: ${CurrencyFormatter.format(avg)}\n'
+      'Cash: ${CurrencyFormatter.format(cash)}\n'
+      'Bank: ${CurrencyFormatter.format(bank)}\n'
+      'Total: ${CurrencyFormatter.format(totalSales)}';
+
+  showDialog(
+    context: context,
+    builder: (ctx) {
+      return AlertDialog(
+        title: const Text('Cash-up Summary'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(note),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Close'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: note));
+              Navigator.of(ctx).pop();
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cash-up copied')));
+            },
+            child: const Text('Copy'),
+          ),
+        ],
+      );
+    },
+  );
 }

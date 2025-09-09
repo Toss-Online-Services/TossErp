@@ -24,14 +24,15 @@ class ExternalLauncher {
     required String phone,
     required String message,
   }) async {
-    var androidUrl = "whatsapp://send?phone=$phone&text=$message";
-    var iosUrl = "https://wa.me/$phone?text=${Uri.parse(message)}";
+    final encoded = Uri.encodeComponent(message);
+    var androidUrl = "whatsapp://send?phone=$phone&text=$encoded";
+    var iosUrl = "https://wa.me/$phone?text=$encoded";
 
     try {
       if (Platform.isIOS) {
-        await launchUrl(Uri.parse(iosUrl));
+        await launchUrl(Uri.parse(iosUrl), mode: LaunchMode.externalApplication);
       } else {
-        await launchUrl(Uri.parse(androidUrl));
+        await launchUrl(Uri.parse(androidUrl), mode: LaunchMode.externalApplication);
       }
     } on Exception {
       throw Exception('WhatsApp is not installed.');
