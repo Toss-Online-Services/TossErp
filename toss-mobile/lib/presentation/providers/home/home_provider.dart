@@ -35,6 +35,7 @@ class HomeProvider extends ChangeNotifier {
   double? taxPercent;
   String? customerName;
   String? customerPhone;
+  String? customerEmail;
   String? description;
 
   void resetStates() {
@@ -49,6 +50,7 @@ class HomeProvider extends ChangeNotifier {
     taxPercent = null;
     customerName = null;
     customerPhone = null;
+    customerEmail = null;
     description = null;
   }
 
@@ -157,6 +159,11 @@ class HomeProvider extends ChangeNotifier {
 
   void onChangedCustomerPhone(String value) {
     customerPhone = value;
+    notifyListeners();
+  }
+
+  void onChangedCustomerEmail(String value) {
+    customerEmail = value;
     notifyListeners();
   }
 

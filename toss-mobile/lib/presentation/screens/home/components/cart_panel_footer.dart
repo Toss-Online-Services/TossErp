@@ -25,6 +25,7 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
   final _amountControlller = TextEditingController();
   final _customerControlller = TextEditingController();
   final _customerPhoneController = TextEditingController();
+  final _customerEmailController = TextEditingController();
   final _descriptionControlller = TextEditingController();
 
   @override
@@ -32,6 +33,7 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
     _amountControlller.dispose();
     _customerControlller.dispose();
     _customerPhoneController.dispose();
+    _customerEmailController.dispose();
     _descriptionControlller.dispose();
     super.dispose();
   }
@@ -219,6 +221,14 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
               labelText: 'Customer Phone (Optional)',
               hintText: '+27XXXXXXXXX',
               onChanged: provider.onChangedCustomerPhone,
+            ),
+            const SizedBox(height: AppSizes.padding),
+            AppTextField(
+              controller: _customerEmailController,
+              keyboardType: TextInputType.emailAddress,
+              labelText: 'Customer Email (Optional)',
+              hintText: 'name@example.com',
+              onChanged: provider.onChangedCustomerEmail,
             ),
             const SizedBox(height: AppSizes.padding),
             AppTextField(

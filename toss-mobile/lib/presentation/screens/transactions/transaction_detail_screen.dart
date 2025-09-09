@@ -360,6 +360,26 @@ class TransactionDetailScreen extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: () async {
         final to = '';
+        if (to.isEmpty && (transaction.customerName?.isNotEmpty ?? false)) {
+          // prompt email inline if missing
+          final ctrl = TextEditingController();
+          AppDialog.show(
+            title: 'Enter customer email',
+            child: TextField(controller: ctrl, keyboardType: TextInputType.emailAddress, decoration: const InputDecoration(hintText: 'name@example.com')),
+            leftButtonText: 'Cancel',
+            rightButtonText: 'Send',
+            onTapRightButton: () {
+              final email = ctrl.text.trim();
+              if (email.isEmpty || !email.contains('@')) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter a valid email')));
+                return;
+              }
+              AppDialog.closeDialog();
+              ExternalLauncher.openEmail(to: email, subject: 'Receipt #${transaction.id}', body: message);
+            },
+          );
+          return;
+        }
         ExternalLauncher.openEmail(to: to, subject: 'Receipt #${transaction.id}', body: message);
       },
       icon: Icon(Icons.email_outlined, color: Theme.of(context).colorScheme.onPrimary),
