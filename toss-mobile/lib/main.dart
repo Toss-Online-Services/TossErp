@@ -14,6 +14,10 @@ import 'firebase_options.dart';
 import 'presentation/providers/theme/theme_provider.dart';
 import 'presentation/screens/error_handler_screen.dart';
 import 'service_locator.dart';
+import 'data/datasources/local/user_local_datasource_impl.dart';
+import 'data/datasources/local/product_local_datasource_impl.dart';
+import 'data/datasources/local/transaction_local_datasource_impl.dart';
+import 'data/datasources/local/queued_action_local_datasource_impl.dart';
 
 void main() async {
   // Initialize binding
@@ -43,6 +47,21 @@ void main() async {
       await AppDatabase().init();
       // Ensure persistence is cleared
       await FirebaseFirestore.instance.clearPersistence();
+        // Seed sample data for all repositories
+        final appDatabase = AppDatabase();
+        final userLocalDatasource = UserLocalDatasourceImpl(appDatabase);
+        final productLocalDatasource = ProductLocalDatasourceImpl(appDatabase);
+        final transactionLocalDatasource = TransactionLocalDatasourceImpl(appDatabase);
+        final queuedActionLocalDatasource = QueuedActionLocalDatasourceImpl(appDatabase);
+
+        Future<void> seedAllSampleData() async {
+          await userLocalDatasource.seedSampleUser();
+          await productLocalDatasource.seedSampleProducts();
+          await transactionLocalDatasource.seedSampleTransactions();
+          await queuedActionLocalDatasource.seedSampleQueuedActions();
+        }
+
+        await seedAllSampleData();
     }
 
     // Initialize flutter_dotenv

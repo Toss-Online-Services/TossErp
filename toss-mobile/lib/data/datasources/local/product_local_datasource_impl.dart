@@ -85,4 +85,36 @@ class ProductLocalDatasourceImpl extends ProductDatasource {
 
     return res.map((e) => ProductModel.fromJson(e)).toList();
   }
+    /// Seeds the local database with realistic sample products for testing
+    Future<void> seedSampleProducts() async {
+      final sampleProducts = [
+        ProductModel(
+          id: 1001,
+          createdById: 'e51VrUAK7WdXpa75V641428qX0u2',
+          name: 'Wireless Mouse',
+          imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8',
+          stock: 50,
+          sold: 10,
+          price: 2999,
+          description: 'Ergonomic wireless mouse with adjustable DPI.',
+          createdAt: '2025-09-08T10:05:00Z',
+          updatedAt: '2025-09-08T10:05:00Z',
+        ),
+        ProductModel(
+          id: 1002,
+          createdById: 'e51VrUAK7WdXpa75V641428qX0u2',
+          name: 'Mechanical Keyboard',
+          imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
+          stock: 30,
+          sold: 5,
+          price: 7999,
+          description: 'RGB backlit mechanical keyboard, blue switches.',
+          createdAt: '2025-09-08T10:06:00Z',
+          updatedAt: '2025-09-08T10:06:00Z',
+        ),
+      ];
+      for (final product in sampleProducts) {
+        await createProduct(product);
+      }
+    }
 }

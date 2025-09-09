@@ -53,4 +53,19 @@ class UserLocalDatasourceImpl extends UserDatasource {
 
     return UserModel.fromJson(res.first);
   }
+    /// Seeds the local database with a realistic sample user for testing
+    Future<void> seedSampleUser() async {
+      final sampleUser = UserModel(
+        id: 'e51VrUAK7WdXpa75V641428qX0u2',
+        email: 'john.doe@example.com',
+        phone: '+1234567890',
+        name: 'John Doe',
+        gender: 'male',
+        birthdate: '1990-01-01',
+        imageUrl: 'https://randomuser.me/api/portraits/men/1.jpg',
+        createdAt: '2025-09-08T10:00:00Z',
+        updatedAt: '2025-09-08T10:00:00Z',
+      );
+      await createUser(sampleUser);
+    }
 }
