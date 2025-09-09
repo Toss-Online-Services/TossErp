@@ -78,9 +78,7 @@ class AuthService implements AuthBase {
     try {
       // First, authenticate the user
       final googleSignInAccount = await _googleSignIn.authenticate();
-      if (googleSignInAccount == null) {
-        return Result.error(ServiceError(message: 'Sign in cancelled by user.'));
-      }
+      // googleSignInAccount is non-null when authenticate completes successfully
 
       // Get the ID token for Firebase authentication
       final googleSignInAuthentication = await googleSignInAccount.authentication;
@@ -119,5 +117,13 @@ class AuthService implements AuthBase {
     } catch (e) {
       return false;
     }
+  }
+}
+
+extension ManagerPinValidator on AuthService {
+  static bool validateManagerPin(String input) {
+    final configured = dotenv.env['MANAGER_PIN']?.trim();
+    final expected = (configured != null && configured.isNotEmpty) ? configured : '0000';
+    return input.trim() == expected;
   }
 }
