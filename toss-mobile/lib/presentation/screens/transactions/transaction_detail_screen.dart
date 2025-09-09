@@ -4,6 +4,7 @@ import '../../../app/themes/app_colors.dart';
 import '../../../app/themes/app_sizes.dart';
 import '../../../app/utilities/currency_formatter.dart';
 import '../../../app/utilities/date_formatter.dart';
+import '../../../app/utilities/external_launcher.dart';
 import '../../../core/extensions/string_casing_extension.dart';
 import '../../../domain/entities/ordered_product_entity.dart';
 import '../../../domain/entities/transaction_entity.dart';
@@ -12,6 +13,7 @@ import '../../providers/transactions/transaction_detail_provider.dart';
 import '../../widgets/app_empty_state.dart';
 import '../../widgets/app_progress_indicator.dart';
 import '../error_handler_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TransactionDetailScreen extends StatelessWidget {
   final int id;
@@ -47,6 +49,7 @@ class TransactionDetailScreen extends StatelessWidget {
                 const SizedBox(height: AppSizes.padding),
                 paymentDetail(context, snapshot.data!),
                 const SizedBox(height: AppSizes.padding),
+                shareReceiptRow(context, snapshot.data!),
               ],
             ),
           );
@@ -246,6 +249,46 @@ class TransactionDetailScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget shareReceiptRow(BuildContext context, TransactionEntity transaction) {
+    final message = _composeReceiptMessage(transaction);
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: () {
+              final phone = dotenv.env['WHATSAPP_DEFAULT_PHONE'] ?? '';
+              if (phone.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Set WHATSAPP_DEFAULT_PHONE in .env to enable WhatsApp sharing.')),
+                );
+                return;
+              }
+              ExternalLauncher.openWhatsApp(phone: phone, message: message);
+            },
+            icon: Icon(Icons.share, color: Theme.of(context).colorScheme.onPrimary),
+            label: const Text('Share via WhatsApp'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _composeReceiptMessage(TransactionEntity t) {
+    final buffer = StringBuffer();
+    buffer.writeln('Receipt #${t.id}');
+    buffer.writeln('Date: ${DateFormatter.normalWithClock(t.createdAt ?? '')}');
+    buffer.writeln('Payment: ${t.paymentMethod.toTitleCase()}');
+    if ((t.customerName ?? '').isNotEmpty) buffer.writeln('Customer: ${t.customerName}');
+    buffer.writeln('Items:');
+    for (final p in t.orderedProducts ?? []) {
+      buffer.writeln('- ${p.name} x${p.quantity} @ ${CurrencyFormatter.format(p.price)}');
+    }
+    buffer.writeln('Total: ${CurrencyFormatter.format(t.totalAmount)}');
+    buffer.writeln('Paid: ${CurrencyFormatter.format(t.receivedAmount)}');
+    buffer.writeln('Change: ${CurrencyFormatter.format(t.receivedAmount - t.totalAmount)}');
+    return buffer.toString();
   }
 
   Widget product(BuildContext context, OrderedProductEntity order) {

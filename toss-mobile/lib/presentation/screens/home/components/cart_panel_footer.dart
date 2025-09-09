@@ -115,15 +115,32 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AppTextField(
-              autofocus: true,
-              keyboardType: TextInputType.number,
-              controller: _amountControlller,
-              labelText: 'Received Amount',
-              hintText: 'Received amount...',
-              onChanged: (val) {
-                provider.onChangedReceivedAmount(int.tryParse(val) ?? 0);
-              },
+            Row(
+              children: [
+                Expanded(
+                  child: AppTextField(
+                    autofocus: true,
+                    keyboardType: TextInputType.number,
+                    controller: _amountControlller,
+                    labelText: 'Cash Received',
+                    hintText: '0',
+                    onChanged: (val) {
+                      provider.onChangedCashAmount(int.tryParse(val) ?? 0);
+                    },
+                  ),
+                ),
+                const SizedBox(width: AppSizes.padding / 2),
+                Expanded(
+                  child: AppTextField(
+                    keyboardType: TextInputType.number,
+                    labelText: 'Bank Received',
+                    hintText: '0',
+                    onChanged: (val) {
+                      provider.onChangedBankAmount(int.tryParse(val) ?? 0);
+                    },
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: AppSizes.padding),
             AppDropDown(
@@ -138,8 +155,39 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
                   value: 'cash',
                   child: Text('Cash'),
                 ),
+                DropdownMenuItem(
+                  value: 'split',
+                  child: Text('Split (Cash + Bank)'),
+                ),
               ],
               onChanged: provider.onChangedPaymentMethod,
+            ),
+            const SizedBox(height: AppSizes.padding),
+            Row(
+              children: [
+                Expanded(
+                  child: AppTextField(
+                    keyboardType: TextInputType.number,
+                    labelText: 'Discount Amount (optional)',
+                    hintText: '0',
+                    onChanged: (val) {
+                      provider.onChangedDiscountAmount(int.tryParse(val) ?? 0);
+                    },
+                  ),
+                ),
+                const SizedBox(width: AppSizes.padding / 2),
+                Expanded(
+                  child: AppTextField(
+                    keyboardType: TextInputType.number,
+                    labelText: 'Discount % (optional)',
+                    hintText: '0-100',
+                    onChanged: (val) {
+                      final parsed = double.tryParse(val);
+                      provider.onChangedDiscountPercent(parsed);
+                    },
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: AppSizes.padding),
             AppTextField(
@@ -174,7 +222,7 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
                   flex: 2,
                   child: AppButton(
                     text: 'Pay',
-                    enabled: (int.tryParse(_amountControlller.text) ?? 0) >= provider.getTotalAmount(),
+                    enabled: (provider.cashAmount + provider.bankAmount) >= provider.getDiscountedTotalAmount(),
                     onTap: () {
                       context.pop();
                       onPay();

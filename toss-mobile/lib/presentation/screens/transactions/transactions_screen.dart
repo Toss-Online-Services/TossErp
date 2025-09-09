@@ -5,6 +5,7 @@ import '../../../app/themes/app_sizes.dart';
 import '../../../service_locator.dart';
 import '../../providers/transactions/transactions_provider.dart';
 import '../../widgets/app_empty_state.dart';
+import '../../../app/utilities/currency_formatter.dart';
 import '../../widgets/app_loading_more_indicator.dart';
 import '../../widgets/app_progress_indicator.dart';
 import '../../widgets/app_text_field.dart';
@@ -77,6 +78,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       child: searchField(),
                     ),
                   ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding, vertical: 8),
+                      child: _DailyTotalsSummary(),
+                    ),
+                  ),
                   SliverLayoutBuilder(
                     builder: (context, constraint) {
                       if (provider.allTransactions == null) {
@@ -133,6 +140,57 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       },
       onTapClearButton: () {
         transactionProvider.getAllTransactions(contains: searchFieldController.text);
+      },
+    );
+  }
+}
+
+class _DailyTotalsSummary extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<TransactionsProvider>(
+      builder: (context, provider, _) {
+        final today = DateTime.now();
+        final data = provider.allTransactions ?? [];
+        int totalSales = 0;
+        int cash = 0;
+        int bank = 0;
+        for (final t in data) {
+          final createdAt = DateTime.tryParse(t.createdAt ?? '');
+          if (createdAt != null && createdAt.year == today.year && createdAt.month == today.month && createdAt.day == today.day) {
+            totalSales += t.totalAmount;
+            if (t.paymentMethod.toLowerCase() == 'cash') cash += t.totalAmount;
+            if (t.paymentMethod.toLowerCase() == 'bank') bank += t.totalAmount;
+            if (t.paymentMethod.toLowerCase() == 'split') {
+              // When split, we cannot parse exact split here; count all to total only
+            }
+          }
+        }
+        return Container(
+          padding: const EdgeInsets.all(AppSizes.padding),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Today', style: Theme.of(context).textTheme.labelLarge),
+              Row(
+                children: [
+                  Text('Cash: '),
+                  Text(CurrencyFormatter.format(cash), style: Theme.of(context).textTheme.labelLarge),
+                  const SizedBox(width: 12),
+                  Text('Bank: '),
+                  Text(CurrencyFormatter.format(bank), style: Theme.of(context).textTheme.labelLarge),
+                  const SizedBox(width: 12),
+                  Text('Total: '),
+                  Text(CurrencyFormatter.format(totalSales), style: Theme.of(context).textTheme.labelLarge),
+                ],
+              ),
+            ],
+          ),
+        );
       },
     );
   }
