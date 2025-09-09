@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../app/themes/app_colors.dart';
 import '../../../app/themes/app_sizes.dart';
@@ -269,21 +270,41 @@ class TransactionDetailScreen extends StatelessWidget {
     final message = _composeReceiptMessage(transaction);
     return Row(
       children: [
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: () {
-              final phone = transaction.customerPhone ?? '';
-              if (phone.isEmpty) {
-                _promptPhoneAndShare(context, message);
-              } else {
-                ExternalLauncher.openWhatsApp(phone: phone, message: message);
-              }
-            },
-            icon: Icon(Icons.share, color: Theme.of(context).colorScheme.onPrimary),
-            label: const Text('Share via WhatsApp'),
-          ),
-        ),
+        Expanded(child: _shareWhatsAppButton(context, transaction, message)),
+        const SizedBox(width: 8),
+        Expanded(child: _copyReceiptButton(context, message)),
       ],
+    );
+  }
+
+  Widget _shareWhatsAppButton(BuildContext context, TransactionEntity transaction, String message) {
+    return ElevatedButton.icon(
+      onPressed: () {
+        final raw = transaction.customerPhone ?? '';
+        final sanitized = raw.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+        if (sanitized.isEmpty) {
+          _promptPhoneAndShare(context, message);
+        } else if (!_isLikelyPhone(sanitized)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Enter a valid phone incl. country code, e.g. +27XXXXXXXXX')),
+          );
+        } else {
+          ExternalLauncher.openWhatsApp(phone: sanitized, message: message);
+        }
+      },
+      icon: Icon(Icons.share, color: Theme.of(context).colorScheme.onPrimary),
+      label: const Text('WhatsApp'),
+    );
+  }
+
+  Widget _copyReceiptButton(BuildContext context, String message) {
+    return ElevatedButton.icon(
+      onPressed: () async {
+        await Clipboard.setData(ClipboardData(text: message));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Receipt copied')));
+      },
+      icon: Icon(Icons.copy, color: Theme.of(context).colorScheme.onPrimary),
+      label: const Text('Copy'),
     );
   }
 
@@ -291,22 +312,43 @@ class TransactionDetailScreen extends StatelessWidget {
     final controller = TextEditingController();
     AppDialog.show(
       title: 'Enter customer phone',
-      child: TextField(
-        controller: controller,
-        keyboardType: TextInputType.phone,
-        decoration: const InputDecoration(hintText: '+27XXXXXXXXX'),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: controller,
+            keyboardType: TextInputType.phone,
+            decoration: const InputDecoration(hintText: '+27XXXXXXXXX'),
+          ),
+          const SizedBox(height: 8),
+          Text('We will only use this to send the receipt.',
+              style: Theme.of(context).textTheme.labelSmall),
+        ],
       ),
       leftButtonText: 'Cancel',
       rightButtonText: 'Send',
-      onTapLeftButton: () => Navigator.of(context).pop(),
+      onTapLeftButton: () => AppDialog.closeDialog(),
       onTapRightButton: () {
         final phone = controller.text.trim();
-        if (phone.isEmpty) return;
-        Navigator.of(context).pop();
-        ExternalLauncher.openWhatsApp(phone: phone, message: message);
+        final sanitized = phone.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+        if (sanitized.isEmpty || !_isLikelyPhone(sanitized)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Enter a valid phone incl. country code, e.g. +27XXXXXXXXX')),
+          );
+          return;
+        }
+        AppDialog.closeDialog();
+        ExternalLauncher.openWhatsApp(phone: sanitized, message: message);
       },
       enableRightButton: true,
     );
+  }
+
+  bool _isLikelyPhone(String input) {
+    final trimmed = input.trim();
+    // E.164-lite: optional '+', first digit 1-9, total length 8-15
+    final regex = RegExp(r'^\+?[1-9]\d{7,14}$');
+    return regex.hasMatch(trimmed);
   }
 
   String _composeReceiptMessage(TransactionEntity t) {
