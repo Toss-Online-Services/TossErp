@@ -79,14 +79,23 @@ class ProductRepositoryImpl extends ProductRepository {
         int syncedToLocalCount = res.$1;
         int syncedToRemoteCount = res.$2;
 
-        // If more data was synced to the local, return the remote data
-        if (syncedToLocalCount > syncedToRemoteCount) {
-          // Return remote data
-          return Result.success(remote.map((e) => e.toEntity()).toList());
-        } else {
-          // Return local data
-          return Result.success(local.map((e) => e.toEntity()).toList());
+        // Prefer remote when we synced more down; otherwise local.
+        List<ProductModel> base = syncedToLocalCount > syncedToRemoteCount ? remote : local;
+        var list = base.map((e) => e.toEntity()).toList();
+        // Fallback local filter for substring (case-insensitive) when 'contains' is set but remote
+        // returned prefix-based matches only. This narrows results client-side.
+        if ((contains != null) && contains.trim().isNotEmpty) {
+          final term = contains.trim().toLowerCase();
+          list = list
+              .where((p) =>
+                  (p.name.toLowerCase().contains(term)) ||
+                  (p.description?.toLowerCase().contains(term) ?? false) ||
+                  (p.id?.toString().contains(term) ?? false) ||
+                  (p.price.toString().contains(term)) ||
+                  (p.stock.toString().contains(term)))
+              .toList();
         }
+        return Result.success(list);
       }
 
       return Result.success(local.map((e) => e.toEntity()).toList());

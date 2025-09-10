@@ -47,16 +47,24 @@ class ProductRemoteDatasourceImpl extends ProductDatasource {
     int? offset,
     String? contains,
   }) async {
-    // Because firestore doesn't suppport numeric offset
-    // Instead, use query cursors. Get last document snapshot then pass it to startAfterDocument
-    // https://firebase.google.com/docs/firestore/query-data/query-cursors
+    // Because Firestore doesn't support LIKE queries, implement simple prefix search using
+    // startAt/endAt on an ordered field. For general listing, fall back to orderBy parameter.
+    // Also, Firestore doesn't support numeric offsets – use query cursors instead.
 
-    var query = _firebaseFirestore
+    Query<Map<String, dynamic>> query = _firebaseFirestore
         .collection('Product')
-        .where('createdById', isEqualTo: userId)
-        .where('name', arrayContains: contains)
-        .orderBy(orderBy, descending: sortBy == 'DESC')
+        .where('createdById', isEqualTo: userId);
+
+    if (contains != null && contains.trim().isNotEmpty) {
+      final term = contains.trim();
+      // Prefix search on name
+      query = query.orderBy('name')
+        .startAt([term])
+        .endAt(["$term\uf8ff"])
         .limit(limit);
+    } else {
+      query = query.orderBy(orderBy, descending: sortBy == 'DESC').limit(limit);
+    }
 
     if (offset != null) {
       DocumentSnapshot<Object?>? lastSnapshot;
