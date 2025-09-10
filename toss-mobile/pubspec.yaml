@@ -65,7 +65,6 @@ dependencies:
   url_launcher: ^6.3.0
   flutter_dotenv: ^5.2.1
   mobile_scanner: ^6.0.2
-  blue_thermal_printer: ^1.2.3
 
 
 dev_dependencies:

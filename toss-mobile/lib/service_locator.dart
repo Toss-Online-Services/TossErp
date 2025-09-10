@@ -37,6 +37,8 @@ import 'data/datasources/local/cash_movement_local_datasource_impl.dart';
 import 'data/datasources/local/z_report_local_datasource_impl.dart';
 import 'data/datasources/local/appointment_local_datasource_impl.dart';
 import 'presentation/providers/shifts/shift_provider.dart';
+import 'data/datasources/local/customer_local_datasource_impl.dart';
+import 'data/repositories/customer_repository_impl.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -61,6 +63,7 @@ void setupServiceLocator() async {
     sl.registerLazySingleton(() => CashMovementLocalDatasourceImpl(sl<AppDatabase>()));
     sl.registerLazySingleton(() => ZReportLocalDatasourceImpl(sl<AppDatabase>()));
     sl.registerLazySingleton(() => AppointmentLocalDatasourceImpl(sl<AppDatabase>()));
+    sl.registerLazySingleton(() => CustomerLocalDatasourceImpl(sl<AppDatabase>()));
   }
   
   // Remote Datasources
@@ -107,6 +110,7 @@ void setupServiceLocator() async {
           zReportLocalDatasource: sl<ZReportLocalDatasourceImpl>(),
         ));
     sl.registerLazySingleton(() => AppointmentRepositoryImpl(appointmentLocalDatasource: sl<AppointmentLocalDatasourceImpl>()));
+    sl.registerLazySingleton(() => CustomerRepositoryImpl(local: sl<CustomerLocalDatasourceImpl>()));
   }
 
   // Providers (web-compatible versions)
