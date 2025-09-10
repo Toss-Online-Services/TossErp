@@ -55,8 +55,8 @@ class _MainScreenState extends State<MainScreen> {
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.dashboard_customize_outlined),
-                label: 'Products',
+                icon: Icon(Icons.category_outlined),
+                label: 'Items',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.receipt_long_rounded),
