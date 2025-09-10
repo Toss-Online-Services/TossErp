@@ -6,6 +6,10 @@ class QueuedActionModel {
   String method;
   String param;
   bool isCritical;
+  String? status; // pending, processing, failed
+  int? retryCount;
+  String? lastError;
+  String? nextRetryAt;
   String createdAt;
 
   QueuedActionModel({
@@ -14,6 +18,10 @@ class QueuedActionModel {
     required this.method,
     required this.param,
     required this.isCritical,
+    this.status,
+    this.retryCount,
+    this.lastError,
+    this.nextRetryAt,
     required this.createdAt,
   });
 
@@ -24,6 +32,10 @@ class QueuedActionModel {
       method: json['method'],
       param: json['param'],
       isCritical: json['isCritical'] == 1 ? true : false,
+      status: json['status'],
+      retryCount: json['retryCount'],
+      lastError: json['lastError'],
+      nextRetryAt: json['nextRetryAt'],
       createdAt: json['createdAt'],
     );
   }
@@ -35,6 +47,10 @@ class QueuedActionModel {
       'method': method,
       'param': param,
       'isCritical': isCritical ? 1 : 0,
+      'status': status,
+      'retryCount': retryCount,
+      'lastError': lastError,
+      'nextRetryAt': nextRetryAt,
       'createdAt': createdAt,
     };
   }
@@ -46,6 +62,8 @@ class QueuedActionModel {
       method: entity.method,
       param: entity.param,
       isCritical: entity.isCritical,
+      status: 'pending',
+      retryCount: 0,
       createdAt: entity.createdAt ?? DateTime.now().toIso8601String(),
     );
   }

@@ -18,6 +18,7 @@ import 'data/datasources/local/user_local_datasource_impl.dart';
 import 'data/datasources/local/product_local_datasource_impl.dart';
 import 'data/datasources/local/transaction_local_datasource_impl.dart';
 import 'data/datasources/local/queued_action_local_datasource_impl.dart';
+import 'app/services/sync/sync_service.dart';
 
 void main() async {
   // Initialize binding
@@ -98,6 +99,11 @@ void main() async {
   }
 
   runApp(kIsWeb ? const MyWebApp() : const MyApp());
+
+  if (!kIsWeb) {
+    // Start background sync after app is up
+    SyncService().start();
+  }
 }
 
 class MyWebApp extends StatelessWidget {

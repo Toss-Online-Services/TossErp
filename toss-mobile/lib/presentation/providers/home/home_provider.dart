@@ -9,6 +9,10 @@ import '../../../domain/entities/ordered_product_entity.dart';
 import '../../../domain/entities/product_entity.dart';
 import '../../../domain/entities/transaction_entity.dart';
 import '../../../domain/repositories/transaction_repository.dart';
+import '../../../domain/entities/payment_entity.dart';
+import '../../../domain/entities/discount_entity.dart';
+import '../../../data/repositories/payment_repository_impl.dart';
+import '../../../data/repositories/discount_repository_impl.dart';
 import '../../../domain/usecases/transaction_usecases.dart';
 import '../../../service_locator.dart';
 import '../products/products_provider.dart';
@@ -84,6 +88,37 @@ class HomeProvider extends ChangeNotifier {
       );
 
       var res = await CreateTransactionUsecase(transactionRepository).call(transaction);
+
+      if (res.isSuccess && res.data != null) {
+        final txnId = res.data!;
+        // Persist split payments (cash/bank) if present and not invoice
+        if (method != 'invoice') {
+          try {
+            if (cashAmount > 0) {
+              await sl<PaymentRepositoryImpl>()
+                  .createPayment(PaymentEntity(transactionId: txnId, method: 'cash', amount: cashAmount));
+            }
+            if (bankAmount > 0) {
+              await sl<PaymentRepositoryImpl>()
+                  .createPayment(PaymentEntity(transactionId: txnId, method: 'bank', amount: bankAmount));
+            }
+          } catch (e) {
+            cl('[payments.save].error $e');
+          }
+        }
+
+        // Persist cart-level discount if present
+        try {
+          if ((discountPercent != null && discountPercent! > 0) || (discountAmount > 0)) {
+            final bool isPct = (discountPercent != null && discountPercent! > 0);
+            final int value = isPct ? discountPercent!.round() : discountAmount;
+            await sl<DiscountRepositoryImpl>()
+                .createDiscount(DiscountEntity(transactionId: txnId, scope: 'cart', type: isPct ? 'percentage' : 'fixed', value: value));
+          }
+        } catch (e) {
+          cl('[discount.save].error $e');
+        }
+      }
 
       resetStates();
       panelController.close();
