@@ -254,6 +254,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           Expanded(child: searchField()),
                           const SizedBox(width: 8),
                           _scanIconInline(context),
+                          const SizedBox(width: 4),
+                          _serviceIconInline(context),
                         ],
                       ),
                     ),
@@ -358,6 +360,58 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       },
       icon: Icon(Icons.qr_code_scanner, color: Theme.of(context).colorScheme.primary),
+    );
+  }
+
+  Widget _serviceIconInline(BuildContext context) {
+    return IconButton(
+      tooltip: 'Add service',
+      visualDensity: VisualDensity.compact,
+      constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+      padding: EdgeInsets.zero,
+      iconSize: 20,
+      onPressed: () async {
+        String? name;
+        int? price;
+        final nameCtl = TextEditingController();
+        final priceCtl = TextEditingController();
+        await showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              title: const Text('Add Custom Service'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(controller: nameCtl, decoration: const InputDecoration(labelText: 'Service name')),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: priceCtl,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: 'Price (cents)'),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                ElevatedButton(
+                  onPressed: () {
+                    name = nameCtl.text.trim();
+                    price = int.tryParse(priceCtl.text.trim());
+                    if ((name?.isEmpty ?? true) || price == null) return;
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Add'),
+                ),
+              ],
+            );
+          },
+        );
+        if ((name?.isNotEmpty ?? false) && (price != null)) {
+          homeProvider.addCustomService(name: name!, price: price!);
+        }
+      },
+      icon: Icon(Icons.design_services, color: Theme.of(context).colorScheme.primary),
     );
   }
 

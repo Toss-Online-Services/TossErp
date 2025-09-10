@@ -126,20 +126,90 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               );
                             }
 
-                            return SliverPadding(
-                              padding: const EdgeInsets.fromLTRB(AppSizes.padding, 2, AppSizes.padding, AppSizes.padding),
-                              sliver: SliverGrid.builder(
-                                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 200,
-                                  childAspectRatio: 1 / 1.5,
-                                  crossAxisSpacing: AppSizes.padding / 2,
-                                  mainAxisSpacing: AppSizes.padding / 2,
+                            final width = MediaQuery.of(context).size.width;
+                            final double extent = width >= 1280
+                                ? 260
+                                : width >= 1024
+                                    ? 240
+                                    : width >= 800
+                                        ? 220
+                                        : width >= 600
+                                            ? 200
+                                            : 170;
+
+                            // Build most-used chips (by sold)
+                            final topCount = width >= 1280
+                                ? 18
+                                : width >= 1024
+                                    ? 14
+                                    : width >= 800
+                                        ? 12
+                                        : width >= 600
+                                            ? 10
+                                            : 6;
+                            final mostUsed = [...provider.allProducts!]
+                              ..sort((a, b) => (b.sold ?? 0).compareTo(a.sold ?? 0));
+                            final chips = mostUsed.take(topCount).toList();
+
+                            return SliverList(
+                              delegate: SliverChildListDelegate([
+                                if (chips.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(AppSizes.padding, 8, AppSizes.padding, 4),
+                                    child: width < 600
+                                        ? SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Row(
+                                              children: [
+                                                for (final p in chips)
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(right: 8),
+                                                    child: ActionChip(
+                                                      label: Text(p.name, overflow: TextOverflow.ellipsis),
+                                                      onPressed: () {
+                                                        searchFieldController.text = p.name;
+                                                        productProvider.allProducts = null;
+                                                        productProvider.getAllProducts(contains: p.name);
+                                                      },
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          )
+                                        : Wrap(
+                                            spacing: 8,
+                                            runSpacing: 8,
+                                            children: [
+                                              for (final p in chips)
+                                                ActionChip(
+                                                  label: Text(p.name, overflow: TextOverflow.ellipsis),
+                                                  onPressed: () {
+                                                    searchFieldController.text = p.name;
+                                                    productProvider.allProducts = null;
+                                                    productProvider.getAllProducts(contains: p.name);
+                                                  },
+                                                ),
+                                            ],
+                                          ),
+                                  ),
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(AppSizes.padding, 2, AppSizes.padding, AppSizes.padding),
+                                  child: GridView.builder(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: extent,
+                                      childAspectRatio: 0.72,
+                                      crossAxisSpacing: AppSizes.padding / 2,
+                                      mainAxisSpacing: AppSizes.padding / 2,
+                                    ),
+                                    itemCount: provider.allProducts!.length,
+                                    itemBuilder: (context, i) {
+                                      return productCard(provider.allProducts![i]);
+                                    },
+                                  ),
                                 ),
-                                itemCount: provider.allProducts!.length,
-                                itemBuilder: (context, i) {
-                                  return productCard(provider.allProducts![i]);
-                                },
-                              ),
+                              ]),
                             );
                           },
                         ),
