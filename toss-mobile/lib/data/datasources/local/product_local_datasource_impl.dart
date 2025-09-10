@@ -74,10 +74,19 @@ class ProductLocalDatasourceImpl extends ProductDatasource {
     int? offset,
     String? contains,
   }) async {
+    String where = 'createdById = ?';
+    List<Object?> args = [userId];
+    if (contains != null && contains.trim().isNotEmpty) {
+      final term = "%${contains.trim()}%";
+      where +=
+          ' AND (name LIKE ? OR description LIKE ? OR CAST(id AS TEXT) LIKE ? OR CAST(price AS TEXT) LIKE ? OR CAST(stock AS TEXT) LIKE ?)';
+      args.addAll([term, term, term, term, term]);
+    }
+
     var res = await _appDatabase.database.query(
       AppDatabaseConfig.productTableName,
-      where: 'createdById = ? AND name LIKE ?',
-      whereArgs: [userId, "%${contains ?? ''}%"],
+      where: where,
+      whereArgs: args,
       orderBy: '$orderBy $sortBy',
       limit: limit,
       offset: offset,

@@ -1,4 +1,5 @@
 import '../../widgets/app_image.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -38,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final scrollController = ScrollController();
 
   final searchFieldController = TextEditingController();
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -51,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
     scrollController.removeListener(scrollListener);
     scrollController.dispose();
     searchFieldController.dispose();
+    _searchDebounce?.cancel();
     super.dispose();
   }
 
@@ -321,6 +324,13 @@ class _HomeScreenState extends State<HomeScreen> {
       hintText: 'Search Products...',
       type: AppTextFieldType.search,
       textInputAction: TextInputAction.search,
+      onChanged: (val) {
+        _searchDebounce?.cancel();
+        _searchDebounce = Timer(const Duration(milliseconds: 300), () async {
+          productProvider.allProducts = null;
+          await productProvider.getAllProducts(contains: val.trim());
+        });
+      },
       onEditingComplete: () {
         FocusScope.of(context).unfocus();
         productProvider.allProducts = null;
@@ -351,41 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _pluIconInline(BuildContext context) {
-    return IconButton(
-      tooltip: 'PLU',
-      visualDensity: VisualDensity.compact,
-      constraints: const BoxConstraints.tightFor(width: 36, height: 36),
-      padding: EdgeInsets.zero,
-      iconSize: 20,
-      onPressed: () async {
-        final code = await showDialog<String>(
-          context: context,
-          builder: (_) {
-            final pluController = TextEditingController();
-            return AlertDialog(
-              title: const Text('Enter PLU Code'),
-              content: TextField(
-                controller: pluController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(hintText: 'e.g. 1001'),
-              ),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                ElevatedButton(onPressed: () => Navigator.pop(context, pluController.text), child: const Text('Add')),
-              ],
-            );
-          },
-        );
-        if (code != null && code.isNotEmpty) {
-          searchFieldController.text = code;
-          productProvider.allProducts = null;
-          await productProvider.getAllProducts(contains: code);
-        }
-      },
-      icon: Icon(Icons.dialpad, color: Theme.of(context).colorScheme.primary),
-    );
-  }
+  // Removed PLU icon inline per request (search box handles PLU)
 
   Widget productCard(ProductEntity product) {
     return ProductsCard(
