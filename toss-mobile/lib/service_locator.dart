@@ -18,6 +18,10 @@ import 'data/repositories/product_repository_impl.dart';
 import 'data/repositories/queued_action_repository_impl.dart';
 import 'data/repositories/transaction_repository_impl.dart';
 import 'data/repositories/user_repository_impl.dart';
+import 'data/repositories/payment_repository_impl.dart';
+import 'data/repositories/discount_repository_impl.dart';
+import 'data/repositories/shift_repository_impl.dart';
+import 'data/repositories/appointment_repository_impl.dart';
 import 'presentation/providers/account/account_provider.dart';
 import 'presentation/providers/auth/auth_provider.dart';
 import 'presentation/providers/home/home_provider.dart';
@@ -94,6 +98,14 @@ void setupServiceLocator() async {
         productRemoteDatasource: sl<ProductRemoteDatasourceImpl>(),
       ),
     );
+    sl.registerLazySingleton(() => PaymentRepositoryImpl(paymentLocalDatasource: sl<PaymentLocalDatasourceImpl>()));
+    sl.registerLazySingleton(() => DiscountRepositoryImpl(discountLocalDatasource: sl<DiscountLocalDatasourceImpl>()));
+    sl.registerLazySingleton(() => ShiftRepositoryImpl(
+          shiftLocalDatasource: sl<ShiftLocalDatasourceImpl>(),
+          cashMovementLocalDatasource: sl<CashMovementLocalDatasourceImpl>(),
+          zReportLocalDatasource: sl<ZReportLocalDatasourceImpl>(),
+        ));
+    sl.registerLazySingleton(() => AppointmentRepositoryImpl(appointmentLocalDatasource: sl<AppointmentLocalDatasourceImpl>()));
   }
 
   // Providers (web-compatible versions)
