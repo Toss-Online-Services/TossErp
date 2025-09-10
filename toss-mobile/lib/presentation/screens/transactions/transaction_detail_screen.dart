@@ -286,118 +286,122 @@ class TransactionDetailScreen extends StatelessWidget {
 
   Widget shareReceiptRow(BuildContext context, TransactionEntity transaction) {
     final message = _composeReceiptMessage(transaction);
-    return Column(
+    return Row(
       children: [
-        Row(
-          children: [
-            // _printButton(context, message), // temporarily disabled until compatible plugin chosen
-            _shareWhatsAppButton(context, transaction, message),
-            const SizedBox(width: 8),
-            _shareSmsButton(context, transaction, message),
-            const SizedBox(width: 8),
-            _shareEmailButton(context, transaction, message),
-          ],
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: () => _showShareSheet(context, transaction, message),
+            icon: Icon(Icons.ios_share, color: Theme.of(context).colorScheme.onPrimary),
+            label: const Text('Share'),
+          ),
         ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(child: _copyReceiptButton(context, message)),
-            const SizedBox(width: 8),
-            Expanded(child: _returnButton(context, transaction)),
-          ],
-        ),
+        const SizedBox(width: 8),
+        Expanded(child: _returnButton(context, transaction)),
       ],
     );
   }
 
-  Widget _printButton(BuildContext context, String message) {
-    return ElevatedButton.icon(
-      onPressed: () async {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Printing not configured')),
+  // Print button intentionally removed until a compatible plugin is added
+
+  void _shareViaWhatsApp(BuildContext context, TransactionEntity transaction, String message) {
+    final raw = transaction.customerPhone ?? '';
+    final sanitized = raw.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+    if (sanitized.isEmpty) {
+      _promptPhoneAndShare(context, message);
+    } else if (!_isLikelyPhone(sanitized)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a valid phone incl. country code, e.g. +27XXXXXXXXX')),
+      );
+    } else {
+      ExternalLauncher.openWhatsApp(phone: sanitized, message: message);
+    }
+  }
+
+  Future<void> _copyReceipt(BuildContext context, String message) async {
+    await Clipboard.setData(ClipboardData(text: message));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Receipt copied')));
+  }
+
+  void _shareViaSms(BuildContext context, TransactionEntity transaction, String message) {
+    final raw = transaction.customerPhone ?? '';
+    final sanitized = raw.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+    if (sanitized.isEmpty) {
+      _promptPhoneAndShare(context, message);
+      return;
+    }
+    final smsUri = Uri.parse('sms:$sanitized?body=${Uri.encodeComponent(message)}');
+    ExternalLauncher.openUrl(smsUri.toString());
+  }
+
+  void _shareViaEmail(BuildContext context, TransactionEntity transaction, String message) {
+    final to = '';
+    if (to.isEmpty && (transaction.customerName?.isNotEmpty ?? false)) {
+      final ctrl = TextEditingController();
+      AppDialog.show(
+        title: 'Enter customer email',
+        child: TextField(controller: ctrl, keyboardType: TextInputType.emailAddress, decoration: const InputDecoration(hintText: 'name@example.com')),
+        leftButtonText: 'Cancel',
+        rightButtonText: 'Send',
+        onTapRightButton: () {
+          final email = ctrl.text.trim();
+          if (email.isEmpty || !email.contains('@')) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter a valid email')));
+            return;
+          }
+          AppDialog.closeDialog();
+          ExternalLauncher.openEmail(to: email, subject: 'Receipt #${transaction.id}', body: message);
+        },
+      );
+      return;
+    }
+    ExternalLauncher.openEmail(to: to, subject: 'Receipt #${transaction.id}', body: message);
+  }
+
+  void _showShareSheet(BuildContext context, TransactionEntity transaction, String message) {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.share),
+                title: const Text('WhatsApp'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  _shareViaWhatsApp(context, transaction, message);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.sms_outlined),
+                title: const Text('SMS'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  _shareViaSms(context, transaction, message);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.email_outlined),
+                title: const Text('Email'),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  _shareViaEmail(context, transaction, message);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.copy_all_outlined),
+                title: const Text('Copy to clipboard'),
+                onTap: () async {
+                  Navigator.of(ctx).pop();
+                  await _copyReceipt(context, message);
+                },
+              ),
+            ],
+          ),
         );
       },
-      icon: Icon(Icons.print, color: Theme.of(context).colorScheme.onPrimary),
-      label: const Text('Print'),
-    );
-  }
-
-  Widget _shareWhatsAppButton(BuildContext context, TransactionEntity transaction, String message) {
-    return ElevatedButton.icon(
-      onPressed: () {
-        final raw = transaction.customerPhone ?? '';
-        final sanitized = raw.replaceAll(RegExp(r'[\s\-\(\)]'), '');
-        if (sanitized.isEmpty) {
-          _promptPhoneAndShare(context, message);
-        } else if (!_isLikelyPhone(sanitized)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Enter a valid phone incl. country code, e.g. +27XXXXXXXXX')),
-          );
-        } else {
-          ExternalLauncher.openWhatsApp(phone: sanitized, message: message);
-        }
-      },
-      icon: Icon(Icons.share, color: Theme.of(context).colorScheme.onPrimary),
-      label: const Text('WhatsApp'),
-    );
-  }
-
-  Widget _copyReceiptButton(BuildContext context, String message) {
-    return ElevatedButton.icon(
-      onPressed: () async {
-        await Clipboard.setData(ClipboardData(text: message));
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Receipt copied')));
-      },
-      icon: Icon(Icons.copy, color: Theme.of(context).colorScheme.onPrimary),
-      label: const Text('Copy'),
-    );
-  }
-
-  Widget _shareSmsButton(BuildContext context, TransactionEntity transaction, String message) {
-    return ElevatedButton.icon(
-      onPressed: () async {
-        final raw = transaction.customerPhone ?? '';
-        final sanitized = raw.replaceAll(RegExp(r'[\s\-\(\)]'), '');
-        if (sanitized.isEmpty) {
-          _promptPhoneAndShare(context, message);
-          return;
-        }
-        final smsUri = Uri.parse('sms:$sanitized?body=${Uri.encodeComponent(message)}');
-        ExternalLauncher.openUrl(smsUri.toString());
-      },
-      icon: Icon(Icons.sms, color: Theme.of(context).colorScheme.onPrimary),
-      label: const Text('SMS'),
-    );
-  }
-
-  Widget _shareEmailButton(BuildContext context, TransactionEntity transaction, String message) {
-    return ElevatedButton.icon(
-      onPressed: () async {
-        final to = '';
-        if (to.isEmpty && (transaction.customerName?.isNotEmpty ?? false)) {
-          // prompt email inline if missing
-          final ctrl = TextEditingController();
-          AppDialog.show(
-            title: 'Enter customer email',
-            child: TextField(controller: ctrl, keyboardType: TextInputType.emailAddress, decoration: const InputDecoration(hintText: 'name@example.com')),
-            leftButtonText: 'Cancel',
-            rightButtonText: 'Send',
-            onTapRightButton: () {
-              final email = ctrl.text.trim();
-              if (email.isEmpty || !email.contains('@')) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter a valid email')));
-                return;
-              }
-              AppDialog.closeDialog();
-              ExternalLauncher.openEmail(to: email, subject: 'Receipt #${transaction.id}', body: message);
-            },
-          );
-          return;
-        }
-        ExternalLauncher.openEmail(to: to, subject: 'Receipt #${transaction.id}', body: message);
-      },
-      icon: Icon(Icons.email_outlined, color: Theme.of(context).colorScheme.onPrimary),
-      label: const Text('Email'),
     );
   }
 
