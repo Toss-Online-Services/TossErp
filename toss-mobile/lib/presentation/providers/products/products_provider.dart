@@ -13,6 +13,10 @@ class ProductsProvider extends ChangeNotifier {
 
   List<ProductEntity>? allProducts;
 
+  // Low stock detection state
+  final int lowStockThreshold = 5; // default threshold; could be made configurable
+  List<ProductEntity> lowStockProducts = [];
+
   bool isLoadingMore = false;
 
   Future<void> getAllProducts({int? offset, String? contains}) async {
@@ -36,10 +40,20 @@ class ProductsProvider extends ChangeNotifier {
         allProducts?.addAll(res.data ?? []);
       }
 
+      // Update low stock list on refresh loads
+      if (offset == null) {
+        _computeLowStock();
+      }
+
       isLoadingMore = false;
       notifyListeners();
     } else {
       throw res.error?.message ?? 'Failed to load data';
     }
+  }
+
+  void _computeLowStock() {
+    final list = allProducts ?? [];
+    lowStockProducts = list.where((p) => p.stock <= lowStockThreshold).toList();
   }
 }

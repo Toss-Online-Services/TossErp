@@ -65,71 +65,93 @@ class _ProductsScreenState extends State<ProductsScreen> {
       ),
       body: Consumer<ProductsProvider>(
         builder: (context, provider, _) {
-          return RefreshIndicator(
-            onRefresh: () => productProvider.getAllProducts(),
-            displacement: 60,
-            child: Scrollbar(
-              child: CustomScrollView(
-                controller: scrollController,
-                // Disable scroll when data is null or empty
-                physics: (provider.allProducts?.isEmpty ?? true) ? const NeverScrollableScrollPhysics() : null,
-                slivers: [
-                  SliverAppBar(
-                    floating: true,
-                    snap: true,
-                    automaticallyImplyLeading: false,
-                    collapsedHeight: 70,
-                    titleSpacing: 0,
-                    title: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding),
-                      child: searchField(),
-                    ),
-                  ),
-                  SliverLayoutBuilder(
-                    builder: (context, constraint) {
-                      if (provider.allProducts == null) {
-                        return const SliverFillRemaining(
-                          hasScrollBody: false,
-                          fillOverscroll: true,
-                          child: AppProgressIndicator(),
+          final hasLow = provider.lowStockProducts.isNotEmpty;
+          return Column(
+            children: [
+              if (hasLow)
+                MaterialBanner(
+                  content: Text('Low stock on ${provider.lowStockProducts.length} item(s).'),
+                  leading: const Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        final names = provider.lowStockProducts.take(5).map((e) => e.name).join(', ');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Low stock: $names')),
                         );
-                      }
-
-                      if (provider.allProducts!.isEmpty) {
-                        return SliverFillRemaining(
-                          hasScrollBody: false,
-                          fillOverscroll: true,
-                          child: AppEmptyState(
-                            subtitle: 'No products available, add product to continue',
-                            buttonText: 'Add Product',
-                            onTapButton: () => context.push('/products/product-create'),
+                      },
+                      child: const Text('VIEW'),
+                    )
+                  ],
+                ),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () => productProvider.getAllProducts(),
+                  displacement: 60,
+                  child: Scrollbar(
+                    child: CustomScrollView(
+                      controller: scrollController,
+                      physics: (provider.allProducts?.isEmpty ?? true) ? const NeverScrollableScrollPhysics() : null,
+                      slivers: [
+                        SliverAppBar(
+                          floating: true,
+                          snap: true,
+                          automaticallyImplyLeading: false,
+                          collapsedHeight: 70,
+                          titleSpacing: 0,
+                          title: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding),
+                            child: searchField(),
                           ),
-                        );
-                      }
+                        ),
+                        SliverLayoutBuilder(
+                          builder: (context, constraint) {
+                            if (provider.allProducts == null) {
+                              return const SliverFillRemaining(
+                                hasScrollBody: false,
+                                fillOverscroll: true,
+                                child: AppProgressIndicator(),
+                              );
+                            }
 
-                      return SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(AppSizes.padding, 2, AppSizes.padding, AppSizes.padding),
-                        sliver: SliverGrid.builder(
-                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
-                            childAspectRatio: 1 / 1.5,
-                            crossAxisSpacing: AppSizes.padding / 2,
-                            mainAxisSpacing: AppSizes.padding / 2,
-                          ),
-                          itemCount: provider.allProducts!.length,
-                          itemBuilder: (context, i) {
-                            return productCard(provider.allProducts![i]);
+                            if (provider.allProducts!.isEmpty) {
+                              return SliverFillRemaining(
+                                hasScrollBody: false,
+                                fillOverscroll: true,
+                                child: AppEmptyState(
+                                  subtitle: 'No products available, add product to continue',
+                                  buttonText: 'Add Product',
+                                  onTapButton: () => context.push('/products/product-create'),
+                                ),
+                              );
+                            }
+
+                            return SliverPadding(
+                              padding: const EdgeInsets.fromLTRB(AppSizes.padding, 2, AppSizes.padding, AppSizes.padding),
+                              sliver: SliverGrid.builder(
+                                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 200,
+                                  childAspectRatio: 1 / 1.5,
+                                  crossAxisSpacing: AppSizes.padding / 2,
+                                  mainAxisSpacing: AppSizes.padding / 2,
+                                ),
+                                itemCount: provider.allProducts!.length,
+                                itemBuilder: (context, i) {
+                                  return productCard(provider.allProducts![i]);
+                                },
+                              ),
+                            );
                           },
                         ),
-                      );
-                    },
+                        SliverToBoxAdapter(
+                          child: AppLoadingMoreIndicator(isLoading: provider.isLoadingMore),
+                        ),
+                      ],
+                    ),
                   ),
-                  SliverToBoxAdapter(
-                    child: AppLoadingMoreIndicator(isLoading: provider.isLoadingMore),
-                  ),
-                ],
+                ),
               ),
-            ),
+            ],
           );
         },
       ),
