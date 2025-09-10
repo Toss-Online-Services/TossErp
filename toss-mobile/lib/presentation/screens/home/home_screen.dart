@@ -224,6 +224,46 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         shadowColor: Colors.transparent,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner),
+            onPressed: () async {
+              final code = await context.push<String>('/scan');
+              if (code != null && code.isNotEmpty) {
+                searchFieldController.text = code;
+                productProvider.allProducts = null;
+                await productProvider.getAllProducts(contains: code);
+              }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.dialpad),
+            onPressed: () async {
+              // Simple PLU input: reuse search field for quick code add
+              final code = await showDialog<String>(
+                context: context,
+                builder: (_) {
+                  final pluController = TextEditingController();
+                  return AlertDialog(
+                    title: const Text('Enter PLU Code'),
+                    content: TextField(
+                      controller: pluController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(hintText: 'e.g. 1001'),
+                    ),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                      ElevatedButton(onPressed: () => Navigator.pop(context, pluController.text), child: const Text('Add')),
+                    ],
+                  );
+                },
+              );
+              if (code != null && code.isNotEmpty) {
+                searchFieldController.text = code;
+                productProvider.allProducts = null;
+                await productProvider.getAllProducts(contains: code);
+              }
+            },
+          ),
           syncButton(),
           networkInfo(),
         ],
