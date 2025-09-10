@@ -12,6 +12,8 @@ import 'data/datasources/local/user_local_datasource_impl.dart';
 import 'data/datasources/remote/product_remote_datasource_impl.dart';
 import 'data/datasources/remote/transaction_remote_datasource_impl.dart';
 import 'data/datasources/remote/user_remote_datasource_impl.dart';
+import 'data/datasources/local/payment_local_datasource_impl.dart';
+import 'data/datasources/local/discount_local_datasource_impl.dart';
 import 'data/repositories/product_repository_impl.dart';
 import 'data/repositories/queued_action_repository_impl.dart';
 import 'data/repositories/transaction_repository_impl.dart';
@@ -26,6 +28,10 @@ import 'presentation/providers/products/products_provider.dart';
 import 'presentation/providers/theme/theme_provider.dart';
 import 'presentation/providers/transactions/transaction_detail_provider.dart';
 import 'presentation/providers/transactions/transactions_provider.dart';
+import 'data/datasources/local/shift_local_datasource_impl.dart';
+import 'data/datasources/local/cash_movement_local_datasource_impl.dart';
+import 'data/datasources/local/z_report_local_datasource_impl.dart';
+import 'data/datasources/local/appointment_local_datasource_impl.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -44,6 +50,12 @@ void setupServiceLocator() async {
     sl.registerLazySingleton(() => TransactionLocalDatasourceImpl(sl<AppDatabase>()));
     sl.registerLazySingleton(() => UserLocalDatasourceImpl(sl<AppDatabase>()));
     sl.registerLazySingleton(() => QueuedActionLocalDatasourceImpl(sl<AppDatabase>()));
+    sl.registerLazySingleton(() => PaymentLocalDatasourceImpl(sl<AppDatabase>()));
+    sl.registerLazySingleton(() => DiscountLocalDatasourceImpl(sl<AppDatabase>()));
+    sl.registerLazySingleton(() => ShiftLocalDatasourceImpl(sl<AppDatabase>()));
+    sl.registerLazySingleton(() => CashMovementLocalDatasourceImpl(sl<AppDatabase>()));
+    sl.registerLazySingleton(() => ZReportLocalDatasourceImpl(sl<AppDatabase>()));
+    sl.registerLazySingleton(() => AppointmentLocalDatasourceImpl(sl<AppDatabase>()));
   }
   
   // Remote Datasources
