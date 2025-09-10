@@ -13,6 +13,9 @@ import '../../../domain/entities/payment_entity.dart';
 import '../../../domain/entities/discount_entity.dart';
 import '../../../data/repositories/payment_repository_impl.dart';
 import '../../../data/repositories/discount_repository_impl.dart';
+import '../../../data/repositories/appointment_repository_impl.dart';
+import '../../../data/repositories/customer_repository_impl.dart';
+import '../../../domain/entities/customer_entity.dart';
 import '../../../domain/usecases/transaction_usecases.dart';
 import '../../../service_locator.dart';
 import '../products/products_provider.dart';
@@ -41,6 +44,10 @@ class HomeProvider extends ChangeNotifier {
   String? customerPhone;
   String? customerEmail;
   String? description;
+  int? appointmentId;
+  String? selectedCustomerId;
+  int selectedCustomerPointsBalance = 0;
+  int pointsToRedeem = 0;
 
   void resetStates() {
     isPanelExpanded = false;
@@ -56,6 +63,10 @@ class HomeProvider extends ChangeNotifier {
     customerPhone = null;
     customerEmail = null;
     description = null;
+    appointmentId = null;
+    selectedCustomerId = null;
+    selectedCustomerPointsBalance = 0;
+    pointsToRedeem = 0;
   }
 
   Future<Result<int>> createTransaction() async {
@@ -117,6 +128,31 @@ class HomeProvider extends ChangeNotifier {
           }
         } catch (e) {
           cl('[discount.save].error $e');
+        }
+
+        // Link appointment if provided
+        try {
+          if (appointmentId != null) {
+            await sl<AppointmentRepositoryImpl>().linkAppointmentToTransaction(appointmentId!, txnId);
+          }
+        } catch (e) {
+          cl('[appointment.link].error $e');
+        }
+
+        // Loyalty: update points (earn minus redeemed)
+        try {
+          if (selectedCustomerId != null) {
+            final repo = sl<CustomerRepositoryImpl>();
+            final int redeemed = pointsToRedeem.clamp(0, selectedCustomerPointsBalance);
+            final int netTotal = getFinalTotalAmount();
+            final int earn = (netTotal / 100).floor();
+            final int delta = earn - redeemed;
+            if (delta != 0) {
+              await repo.addPoints(selectedCustomerId!, delta);
+            }
+          }
+        } catch (e) {
+          cl('[loyalty.points].error $e');
         }
       }
 
@@ -232,6 +268,35 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<Result<CustomerEntity>> findAndAttachCustomerByPhone(String phone, {String? name}) async {
+    try {
+      final repo = sl<CustomerRepositoryImpl>();
+      final getRes = await repo.get(phone);
+      CustomerEntity customer;
+      if (getRes.isSuccess && getRes.data != null) {
+        customer = getRes.data!;
+      } else {
+        final create = CustomerEntity(id: phone, phone: phone, name: name);
+        final upsert = await repo.upsert(create);
+        if (!upsert.isSuccess || upsert.data == null) return Result.error(UnknownError(message: 'Failed to attach'));
+        customer = upsert.data!;
+      }
+      selectedCustomerId = customer.id;
+      customerName = customer.name;
+      customerPhone = customer.phone;
+      selectedCustomerPointsBalance = customer.pointsBalance;
+      notifyListeners();
+      return Result.success(customer);
+    } catch (e) {
+      return Result.error(UnknownError(message: e.toString()));
+    }
+  }
+
+  void onChangedPointsToRedeem(int value) {
+    pointsToRedeem = value < 0 ? 0 : value;
+    notifyListeners();
+  }
+
   int getTotalAmount() {
     if (orderedProducts.isEmpty) return 0;
     return orderedProducts.map((e) => e.price * e.quantity).reduce((a, b) => a + b);
@@ -245,6 +310,10 @@ class HomeProvider extends ChangeNotifier {
       total = subtotal - ((subtotal * pct) / 100).round();
     } else if (discountAmount > 0) {
       total = subtotal - discountAmount;
+    }
+    if (pointsToRedeem > 0 && selectedCustomerPointsBalance > 0) {
+      final redeemable = pointsToRedeem.clamp(0, selectedCustomerPointsBalance);
+      total = total - redeemable;
     }
     if (total < 0) return 0;
     return total;

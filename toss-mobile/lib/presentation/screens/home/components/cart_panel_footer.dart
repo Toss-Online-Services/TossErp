@@ -147,6 +147,34 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
               ],
             ),
             const SizedBox(height: AppSizes.padding),
+            // AI suggestion banner (rules-based, local)
+            Builder(builder: (context) {
+              final tip = provider.getUpsellSuggestion();
+              if (tip == null) return const SizedBox.shrink();
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(bottom: AppSizes.padding),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.lightbulb_outline, color: Theme.of(context).colorScheme.onSecondaryContainer),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Suggestion: $tip',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+            
             AppDropDown(
               labelText: 'Payment Method',
               selectedValue: _homeProvider.selectedPaymentMethod,
@@ -222,6 +250,43 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
               hintText: '+27XXXXXXXXX',
               onChanged: provider.onChangedCustomerPhone,
             ),
+            const SizedBox(height: AppSizes.padding / 2),
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton(
+                    text: 'Attach Customer',
+                    onTap: () async {
+                      final phone = _customerPhoneController.text.trim();
+                      if (phone.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter phone to attach customer')));
+                        return;
+                      }
+                      await provider.findAndAttachCustomerByPhone(phone, name: _customerControlller.text.trim());
+                    },
+                  ),
+                ),
+              ],
+            ),
+            if (provider.selectedCustomerId != null) ...[
+              const SizedBox(height: AppSizes.padding / 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Points Balance', style: Theme.of(context).textTheme.bodySmall),
+                  Text('${provider.selectedCustomerPointsBalance}', style: Theme.of(context).textTheme.bodyMedium),
+                ],
+              ),
+              const SizedBox(height: AppSizes.padding / 2),
+              AppTextField(
+                keyboardType: TextInputType.number,
+                labelText: 'Redeem Points (optional)',
+                hintText: '0',
+                onChanged: (val) {
+                  provider.onChangedPointsToRedeem(int.tryParse(val) ?? 0);
+                },
+              ),
+            ],
             const SizedBox(height: AppSizes.padding),
             AppTextField(
               controller: _customerEmailController,

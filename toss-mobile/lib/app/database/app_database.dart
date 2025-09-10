@@ -47,6 +47,7 @@ class AppDatabase {
       database.execute(AppDatabaseConfig.createCashMovementTable),
       database.execute(AppDatabaseConfig.createZReportTable),
       database.execute(AppDatabaseConfig.createAppointmentTable),
+      database.execute(AppDatabaseConfig.createCustomerTable),
     ]);
 
     // Lightweight migration: ensure newly added columns exist
@@ -147,6 +148,7 @@ class AppDatabaseConfig {
   static const String cashMovementTableName = 'CashMovement';
   static const String zReportTableName = 'ZReport';
   static const String appointmentTableName = 'Appointment';
+  static const String customerTableName = 'Customer';
 
   static String createUserTable =
       '''
@@ -332,6 +334,19 @@ CREATE TABLE IF NOT EXISTS '$appointmentTableName' (
     'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ('id'),
     FOREIGN KEY ('linkedTransactionId') REFERENCES 'Transaction' ('id')
+);
+''';
+
+  static String createCustomerTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$customerTableName' (
+    'id' TEXT NOT NULL,
+    'name' TEXT,
+    'phone' TEXT,
+    'pointsBalance' INTEGER,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id')
 );
 ''';
 }
