@@ -38,6 +38,22 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
     super.dispose();
   }
 
+  Widget _summaryRow(BuildContext context, String label, String value, {bool isBold = false, Color? color}) {
+    final style = isBold
+        ? Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: color)
+        : Theme.of(context).textTheme.bodyMedium?.copyWith(color: color);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: Theme.of(context).textTheme.bodySmall),
+          Text(value, style: style),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -199,6 +215,39 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
               onChanged: provider.onChangedPaymentMethod,
             ),
             const SizedBox(height: AppSizes.padding),
+            // Order summary: Subtotal, Tax, Total, Due/Change
+            Builder(builder: (context) {
+              final subtotal = provider.getTotalAmount();
+              final tax = provider.getTaxAmount();
+              final total = provider.getFinalTotalAmount();
+              final received = provider.cashAmount + provider.bankAmount;
+              final due = (total - received).clamp(0, 1 << 30);
+              final change = (received - total).clamp(0, 1 << 30);
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  children: [
+                    _summaryRow(context, 'Subtotal', CurrencyFormatter.format(subtotal)),
+                    if (tax > 0) _summaryRow(context, 'Tax', CurrencyFormatter.format(tax)),
+                    const Divider(height: 16),
+                    _summaryRow(context, 'Total to Pay', CurrencyFormatter.format(total), isBold: true),
+                    const SizedBox(height: 4),
+                    _summaryRow(
+                      context,
+                      received >= total ? 'Change' : 'Amount Due',
+                      CurrencyFormatter.format(received >= total ? change : due),
+                      color: received >= total ? Colors.green : Colors.red,
+                    ),
+                  ],
+                ),
+              );
+            }),
+            const SizedBox(height: AppSizes.padding),
             AppTextField(
               keyboardType: TextInputType.number,
               labelText: 'Tax % (optional)',
@@ -320,7 +369,15 @@ class _CartPanelFooterState extends State<CartPanelFooter> {
                 Expanded(
                   flex: 2,
                   child: AppButton(
-                    text: provider.selectedPaymentMethod == 'invoice' ? 'Create Invoice' : 'Pay',
+                    text: () {
+                      final total = provider.getFinalTotalAmount();
+                      final received = provider.cashAmount + provider.bankAmount;
+                      final due = (total - received).clamp(0, 1 << 30);
+                      if (provider.selectedPaymentMethod == 'invoice') return 'Create Invoice';
+                      return provider.isPaymentCovered()
+                          ? 'Pay ${CurrencyFormatter.format(total)}'
+                          : 'Pay ${CurrencyFormatter.format(total)} (Due ${CurrencyFormatter.format(due)})';
+                    }(),
                     enabled: provider.isPaymentCovered(),
                     onTap: () {
                       context.pop();
