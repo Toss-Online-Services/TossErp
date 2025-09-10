@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../app/services/connectivity/connectivity_service.dart';
+import '../../app/services/notifications/notification_service.dart';
 import '../../app/utilities/console_log.dart';
 import '../../core/errors/errors.dart';
 import '../../core/usecase/usecase.dart';
@@ -79,6 +80,16 @@ class QueuedActionRepositoryImpl extends QueuedActionRepository {
         return Result.success(true);
       } else {
         cl("[executeQueuedAction].error = ${res.error}");
+        // Surface a user notification about the failure
+        try {
+          final title = 'Sync failed: ${queue.repository}.${queue.method}';
+          final body = res.error?.message ?? 'Unknown error while syncing queued action.';
+          await NotificationService().show(
+            id: 2000 + (queue.id ?? 0),
+            title: title,
+            body: body,
+          );
+        } catch (_) {}
         return Result.error(res.error);
       }
     } catch (e) {
