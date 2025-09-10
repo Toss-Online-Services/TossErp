@@ -36,6 +36,7 @@ import 'data/datasources/local/shift_local_datasource_impl.dart';
 import 'data/datasources/local/cash_movement_local_datasource_impl.dart';
 import 'data/datasources/local/z_report_local_datasource_impl.dart';
 import 'data/datasources/local/appointment_local_datasource_impl.dart';
+import 'presentation/providers/shifts/shift_provider.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -127,6 +128,7 @@ void setupServiceLocator() async {
       sl.registerLazySingleton(() => ProductFormProvider(productRepository: sl<ProductRepositoryImpl>()));
       sl.registerLazySingleton(() => ProductDetailProvider(productRepository: sl<ProductRepositoryImpl>()));
       sl.registerLazySingleton(() => TransactionDetailProvider(transactionRepository: sl<TransactionRepositoryImpl>()));
+      sl.registerLazySingleton(() => ShiftProvider(shiftRepository: sl<ShiftRepositoryImpl>()));
     }
     
     // Always register theme provider

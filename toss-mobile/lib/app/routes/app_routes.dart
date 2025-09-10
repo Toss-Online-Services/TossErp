@@ -13,6 +13,7 @@ import '../../presentation/screens/products/product_form_screen.dart';
 import '../../presentation/screens/products/products_screen.dart';
 import '../../presentation/screens/transactions/transaction_detail_screen.dart';
 import '../../presentation/screens/transactions/transactions_screen.dart';
+import '../../presentation/screens/shifts/shift_screen.dart';
 import '../services/auth/auth_service.dart';
 
 // App routes
@@ -96,6 +97,7 @@ class AppRoutes {
       _home,
       _products,
       _transactions,
+      _shifts,
       _account,
     ],
   );
@@ -192,6 +194,15 @@ class AppRoutes {
       }
 
       return TransactionDetailScreen(id: id);
+    },
+  );
+
+  static final _shifts = GoRoute(
+    path: '/shifts',
+    pageBuilder: (context, state) {
+      return const NoTransitionPage<void>(
+        child: ShiftScreen(),
+      );
     },
   );
 
