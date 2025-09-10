@@ -17,6 +17,7 @@ import '../../widgets/app_empty_state.dart';
 import '../../widgets/app_progress_indicator.dart';
 import '../error_handler_screen.dart';
 import '../../widgets/app_dialog.dart';
+import '../../../app/services/printing/printing_service.dart';
 
 class TransactionDetailScreen extends StatelessWidget {
   final int id;
@@ -290,6 +291,7 @@ class TransactionDetailScreen extends StatelessWidget {
       children: [
         Row(
           children: [
+            Expanded(child: _printButton(context, message)),
             Expanded(child: _shareWhatsAppButton(context, transaction, message)),
             const SizedBox(width: 8),
             Expanded(child: _shareSmsButton(context, transaction, message)),
@@ -306,6 +308,29 @@ class TransactionDetailScreen extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _printButton(BuildContext context, String message) {
+    return ElevatedButton.icon(
+      onPressed: () async {
+        final printing = PrintingService();
+        final devices = await printing.getBondedDevices();
+        if (devices.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No paired printers')));
+          return;
+        }
+        // Pick first for MVP; later add a device picker
+        final ok = await printing.connect(devices.first);
+        if (!ok) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to connect printer')));
+          return;
+        }
+        await printing.printReceipt(message);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sent to printer')));
+      },
+      icon: Icon(Icons.print, color: Theme.of(context).colorScheme.onPrimary),
+      label: const Text('Print'),
     );
   }
 

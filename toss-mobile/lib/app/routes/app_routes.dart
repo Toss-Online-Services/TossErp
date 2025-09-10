@@ -14,6 +14,7 @@ import '../../presentation/screens/products/products_screen.dart';
 import '../../presentation/screens/transactions/transaction_detail_screen.dart';
 import '../../presentation/screens/transactions/transactions_screen.dart';
 import '../../presentation/screens/shifts/shift_screen.dart';
+import '../../presentation/screens/home/barcode_scanner_screen.dart';
 import '../services/auth/auth_service.dart';
 
 // App routes
@@ -98,6 +99,7 @@ class AppRoutes {
       _products,
       _transactions,
       _shifts,
+      _scan,
       _account,
     ],
   );
@@ -194,6 +196,15 @@ class AppRoutes {
       }
 
       return TransactionDetailScreen(id: id);
+    },
+  );
+
+  static final _scan = GoRoute(
+    path: '/scan',
+    pageBuilder: (context, state) {
+      return const NoTransitionPage<void>(
+        child: BarcodeScannerScreen(),
+      );
     },
   );
 
