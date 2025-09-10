@@ -41,6 +41,12 @@ class AppDatabase {
       database.execute(AppDatabaseConfig.createTransactionTable),
       database.execute(AppDatabaseConfig.createOrderedProductTable),
       database.execute(AppDatabaseConfig.createQueuedActionTable),
+      database.execute(AppDatabaseConfig.createPaymentTable),
+      database.execute(AppDatabaseConfig.createDiscountTable),
+      database.execute(AppDatabaseConfig.createShiftTable),
+      database.execute(AppDatabaseConfig.createCashMovementTable),
+      database.execute(AppDatabaseConfig.createZReportTable),
+      database.execute(AppDatabaseConfig.createAppointmentTable),
     ]);
 
     // Lightweight migration: ensure newly added columns exist
@@ -48,6 +54,26 @@ class AppDatabase {
       table: AppDatabaseConfig.transactionTableName,
       column: 'customerPhone',
       addColumnSql: "ALTER TABLE '${AppDatabaseConfig.transactionTableName}' ADD COLUMN 'customerPhone' TEXT",
+    );
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.queuedActionTableName,
+      column: 'status',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.queuedActionTableName}' ADD COLUMN 'status' TEXT DEFAULT 'pending'",
+    );
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.queuedActionTableName,
+      column: 'retryCount',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.queuedActionTableName}' ADD COLUMN 'retryCount' INTEGER DEFAULT 0",
+    );
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.queuedActionTableName,
+      column: 'lastError',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.queuedActionTableName}' ADD COLUMN 'lastError' TEXT",
+    );
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.queuedActionTableName,
+      column: 'nextRetryAt',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.queuedActionTableName}' ADD COLUMN 'nextRetryAt' DATETIME",
     );
   }
 
@@ -115,6 +141,12 @@ class AppDatabaseConfig {
   static const String transactionTableName = 'Transaction';
   static const String orderedProductTableName = 'OrderedProduct';
   static const String queuedActionTableName = 'QueuedAction';
+  static const String paymentTableName = 'Payment';
+  static const String discountTableName = 'Discount';
+  static const String shiftTableName = 'Shift';
+  static const String cashMovementTableName = 'CashMovement';
+  static const String zReportTableName = 'ZReport';
+  static const String appointmentTableName = 'Appointment';
 
   static String createUserTable =
       '''
@@ -197,7 +229,109 @@ CREATE TABLE IF NOT EXISTS '$queuedActionTableName' (
     'method' TEXT,
     'param' TEXT,
     'isCritical' INTEGER,
+    'status' TEXT DEFAULT 'pending',
+    'retryCount' INTEGER DEFAULT 0,
+    'lastError' TEXT,
+    'nextRetryAt' DATETIME,
     'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+''';
+
+  static String createPaymentTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$paymentTableName' (
+    'id' INTEGER NOT NULL,
+    'transactionId' INTEGER,
+    'method' TEXT,
+    'amount' INTEGER,
+    'reference' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('transactionId') REFERENCES 'Transaction' ('id')
+);
+''';
+
+  static String createDiscountTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$discountTableName' (
+    'id' INTEGER NOT NULL,
+    'transactionId' INTEGER,
+    'orderedProductId' INTEGER,
+    'scope' TEXT,
+    'type' TEXT,
+    'value' INTEGER,
+    'code' TEXT,
+    'reason' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('transactionId') REFERENCES 'Transaction' ('id'),
+    FOREIGN KEY ('orderedProductId') REFERENCES 'OrderedProduct' ('id')
+);
+''';
+
+  static String createShiftTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$shiftTableName' (
+    'id' INTEGER NOT NULL,
+    'userId' TEXT,
+    'startedAt' DATETIME,
+    'openingFloat' INTEGER,
+    'endedAt' DATETIME,
+    'closingCash' INTEGER,
+    'expectedCash' INTEGER,
+    'variance' INTEGER,
+    'status' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('userId') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createCashMovementTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$cashMovementTableName' (
+    'id' INTEGER NOT NULL,
+    'shiftId' INTEGER,
+    'type' TEXT,
+    'amount' INTEGER,
+    'note' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('shiftId') REFERENCES 'Shift' ('id')
+);
+''';
+
+  static String createZReportTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$zReportTableName' (
+    'id' INTEGER NOT NULL,
+    'shiftId' INTEGER,
+    'summaryJson' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('shiftId') REFERENCES 'Shift' ('id')
+);
+''';
+
+  static String createAppointmentTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$appointmentTableName' (
+    'id' INTEGER NOT NULL,
+    'customerName' TEXT,
+    'customerPhone' TEXT,
+    'serviceName' TEXT,
+    'staffName' TEXT,
+    'scheduledAt' DATETIME,
+    'status' TEXT,
+    'note' TEXT,
+    'linkedTransactionId' INTEGER,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('linkedTransactionId') REFERENCES 'Transaction' ('id')
 );
 ''';
 }
