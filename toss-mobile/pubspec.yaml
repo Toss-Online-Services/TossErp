@@ -64,6 +64,24 @@ dependencies:
   package_info_plus: ^8.0.0
   url_launcher: ^6.3.0
   flutter_dotenv: ^5.2.1
+  
+  # POS Feature Dependencies
+  mobile_scanner: ^4.0.1  # Barcode/QR code scanning
+  local_auth: ^2.1.8  # Biometric authentication
+  crypto: ^3.0.3  # Encryption utilities
+  fl_chart: ^0.66.2  # Charts and analytics
+  pdf: ^3.10.8  # PDF generation for receipts
+  printing: ^5.12.0  # Thermal receipt printing
+  permission_handler: ^11.3.0  # Permissions management
+  device_info_plus: ^10.1.0  # Device information
+  battery_plus: ^5.0.3  # Battery status for offline mode
+  vibration: ^1.8.4  # Haptic feedback
+  share_plus: ^7.2.2  # Sharing capabilities
+  csv: ^6.0.0  # CSV import/export
+  qr_flutter: ^4.1.0  # QR code generation
+  geolocator: ^10.1.1  # Location services
+  geocoding: ^2.1.1  # Location geocoding
+  uuid: ^4.3.3  # UUID generation
 
 
 dev_dependencies:
