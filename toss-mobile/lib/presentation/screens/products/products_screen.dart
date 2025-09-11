@@ -10,7 +10,8 @@ import '../../widgets/app_button.dart';
 import '../../widgets/app_empty_state.dart';
 import '../../widgets/app_loading_more_indicator.dart';
 import '../../widgets/app_progress_indicator.dart';
-import '../../widgets/app_text_field.dart';
+import '../../widgets/product_search_field.dart';
+import '../../widgets/most_used_product_chips.dart';
 import 'components/products_card.dart';
 
 class ProductsScreen extends StatefulWidget {
@@ -101,7 +102,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           titleSpacing: 0,
                           title: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding),
-                            child: searchField(),
+                            child: ProductSearchField(controller: searchFieldController),
+                          ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: MostUsedProductChips(
+                            onSelect: (p) {
+                              searchFieldController.text = p.name;
+                              productProvider.allProducts = null;
+                              productProvider.getAllProducts(contains: p.name);
+                            },
                           ),
                         ),
                         SliverLayoutBuilder(
@@ -259,22 +269,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
-  Widget searchField() {
-    return AppTextField(
-      controller: searchFieldController,
-      hintText: 'Search Products...',
-      type: AppTextFieldType.search,
-      textInputAction: TextInputAction.search,
-      onEditingComplete: () {
-        FocusScope.of(context).unfocus();
-        productProvider.allProducts = null;
-        productProvider.getAllProducts(contains: searchFieldController.text);
-      },
-      onTapClearButton: () {
-        productProvider.getAllProducts(contains: searchFieldController.text);
-      },
-    );
-  }
+  // Search field now reused via ProductSearchField
 
   Widget productCard(ProductEntity product) {
     return ProductsCard(
