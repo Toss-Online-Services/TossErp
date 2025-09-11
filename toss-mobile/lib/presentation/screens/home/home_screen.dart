@@ -17,7 +17,8 @@ import '../../widgets/app_dialog.dart';
 import '../../widgets/app_empty_state.dart';
 import '../../widgets/app_loading_more_indicator.dart';
 import '../../widgets/app_progress_indicator.dart';
-import '../../widgets/app_text_field.dart';
+import '../../widgets/product_search_field.dart';
+import '../../widgets/most_used_product_chips.dart';
 import '../products/components/products_card.dart';
 import 'components/cart_panel_body.dart';
 import 'components/cart_panel_footer.dart';
@@ -249,15 +250,69 @@ class _HomeScreenState extends State<HomeScreen> {
                     titleSpacing: 0,
                     title: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding),
-                      child: Row(
-                        children: [
-                          Expanded(child: searchField()),
-                          const SizedBox(width: 8),
-                          _scanIconInline(context),
-                          const SizedBox(width: 4),
-                          _serviceIconInline(context),
-                        ],
+                      child: ProductSearchField(
+                        controller: searchFieldController,
+                        showScanButton: true,
+                        showAddServiceButton: true,
+                        onScan: () async {
+                          final code = await context.push<String>('/scan');
+                          if (code != null && code.isNotEmpty) {
+                            searchFieldController.text = code;
+                            productProvider.allProducts = null;
+                            await productProvider.getAllProducts(contains: code);
+                          }
+                        },
+                        onAddService: () async {
+                          String? name;
+                          int? price;
+                          final nameCtl = TextEditingController();
+                          final priceCtl = TextEditingController();
+                          await showDialog(
+                            context: context,
+                            builder: (_) {
+                              return AlertDialog(
+                                title: const Text('Add Custom Service'),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextField(controller: nameCtl, decoration: const InputDecoration(labelText: 'Service name')),
+                                    const SizedBox(height: 8),
+                                    TextField(
+                                      controller: priceCtl,
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(labelText: 'Price (cents)'),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      name = nameCtl.text.trim();
+                                      price = int.tryParse(priceCtl.text.trim());
+                                      if ((name?.isEmpty ?? true) || price == null) return;
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Add'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          if ((name?.isNotEmpty ?? false) && (price != null)) {
+                            homeProvider.addCustomService(name: name!, price: price!);
+                          }
+                        },
                       ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: MostUsedProductChips(
+                      onSelect: (p) async {
+                        searchFieldController.text = p.name;
+                        productProvider.allProducts = null;
+                        await productProvider.getAllProducts(contains: p.name);
+                      },
                     ),
                   ),
                   SliverLayoutBuilder(
@@ -317,101 +372,6 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-    );
-  }
-
-  Widget searchField() {
-    return AppTextField(
-      controller: searchFieldController,
-      hintText: 'Search Products...',
-      type: AppTextFieldType.search,
-      textInputAction: TextInputAction.search,
-      onChanged: (val) {
-        _searchDebounce?.cancel();
-        _searchDebounce = Timer(const Duration(milliseconds: 300), () async {
-          productProvider.allProducts = null;
-          await productProvider.getAllProducts(contains: val.trim());
-        });
-      },
-      onEditingComplete: () {
-        FocusScope.of(context).unfocus();
-        productProvider.allProducts = null;
-        productProvider.getAllProducts(contains: searchFieldController.text);
-      },
-      onTapClearButton: () {
-        productProvider.getAllProducts(contains: searchFieldController.text);
-      },
-    );
-  }
-
-  Widget _scanIconInline(BuildContext context) {
-    return IconButton(
-      tooltip: 'Scan',
-      visualDensity: VisualDensity.compact,
-      constraints: const BoxConstraints.tightFor(width: 36, height: 36),
-      padding: EdgeInsets.zero,
-      iconSize: 20,
-      onPressed: () async {
-        final code = await context.push<String>('/scan');
-        if (code != null && code.isNotEmpty) {
-          searchFieldController.text = code;
-          productProvider.allProducts = null;
-          await productProvider.getAllProducts(contains: code);
-        }
-      },
-      icon: Icon(Icons.qr_code_scanner, color: Theme.of(context).colorScheme.primary),
-    );
-  }
-
-  Widget _serviceIconInline(BuildContext context) {
-    return IconButton(
-      tooltip: 'Add service',
-      visualDensity: VisualDensity.compact,
-      constraints: const BoxConstraints.tightFor(width: 36, height: 36),
-      padding: EdgeInsets.zero,
-      iconSize: 20,
-      onPressed: () async {
-        String? name;
-        int? price;
-        final nameCtl = TextEditingController();
-        final priceCtl = TextEditingController();
-        await showDialog(
-          context: context,
-          builder: (_) {
-            return AlertDialog(
-              title: const Text('Add Custom Service'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(controller: nameCtl, decoration: const InputDecoration(labelText: 'Service name')),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: priceCtl,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Price (cents)'),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                ElevatedButton(
-                  onPressed: () {
-                    name = nameCtl.text.trim();
-                    price = int.tryParse(priceCtl.text.trim());
-                    if ((name?.isEmpty ?? true) || price == null) return;
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Add'),
-                ),
-              ],
-            );
-          },
-        );
-        if ((name?.isNotEmpty ?? false) && (price != null)) {
-          homeProvider.addCustomService(name: name!, price: price!);
-        }
-      },
-      icon: Icon(Icons.design_services, color: Theme.of(context).colorScheme.primary),
     );
   }
 
