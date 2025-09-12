@@ -423,31 +423,7 @@ class AccountScreen extends StatelessWidget {
           ],
         ),
         onTap: () {
-          AppDialog.show(
-            title: 'Theme',
-            leftButtonText: 'Close',
-            child: Consumer<ThemeProvider>(
-              builder: (context, provider, _) {
-                return Row(
-                  children: [
-                    Switch(
-                      value: !provider.isLight(),
-                      onChanged: (val) {
-                        provider.changeBrightness(!val);
-                      },
-                    ),
-                    const SizedBox(width: AppSizes.padding),
-                    Text(
-                      'Dark Mode',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          );
+          context.go('/themes');
         },
       ),
     );

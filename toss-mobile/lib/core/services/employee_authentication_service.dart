@@ -44,11 +44,11 @@ enum AuthenticationMethod {
 
 class EmployeeAuthenticationService {
   final LocalAuthentication _localAuth = LocalAuthentication();
-  static EmployeeEntity? _currentEmployee;
+  static domain.EmployeeEntity? _currentEmployee;
   static WorkShift? _currentShift;
 
   // Current session
-  static EmployeeEntity? get currentEmployee => _currentEmployee;
+  static domain.EmployeeEntity? get currentEmployee => _currentEmployee;
   static WorkShift? get currentShift => _currentShift;
   static bool get isLoggedIn => _currentEmployee != null;
 
@@ -138,7 +138,7 @@ class EmployeeAuthenticationService {
           );
         }
 
-        if (employee.biometricType == BiometricType.none || employee.biometricId == null) {
+        if (employee.biometricType == domain.BiometricType.none || employee.biometricId == null) {
           return AuthenticationResult.failure(
             'Biometric authentication not setup for this employee',
             AuthenticationMethod.biometric,
@@ -151,14 +151,14 @@ class EmployeeAuthenticationService {
 
       // TODO: Match biometric with employee database
       // For now, return a mock successful authentication
-      final mockEmployee = EmployeeEntity(
+      final mockEmployee = domain.EmployeeEntity(
         id: '1',
         employeeNumber: 'EMP001',
         name: 'John Doe',
         phone: '+1234567890',
         role: UserRole.cashier,
         permissions: PermissionSet.forRole(UserRole.cashier),
-        biometricType: BiometricType.fingerprint,
+        biometricType: domain.BiometricType.fingerprint,
         biometricId: 'bio_123',
         hireDate: DateTime.now().subtract(const Duration(days: 30)),
         createdAt: DateTime.now(),
@@ -381,10 +381,10 @@ class EmployeeAuthenticationService {
 
   // Private helper methods
 
-  Future<EmployeeEntity?> _getEmployeeByNumber(String employeeNumber) async {
+  Future<domain.EmployeeEntity?> _getEmployeeByNumber(String employeeNumber) async {
     // TODO: Implement database query
     // Mock data for now
-    return EmployeeEntity(
+    return domain.EmployeeEntity(
       id: '1',
       employeeNumber: employeeNumber,
       name: 'John Doe',
@@ -398,10 +398,10 @@ class EmployeeAuthenticationService {
     );
   }
 
-  Future<EmployeeEntity?> _getEmployeeById(String employeeId) async {
+  Future<domain.EmployeeEntity?> _getEmployeeById(String employeeId) async {
     // TODO: Implement database query
     // Mock data for now
-    return EmployeeEntity(
+    return domain.EmployeeEntity(
       id: employeeId,
       employeeNumber: 'EMP001',
       name: 'John Doe',
@@ -414,7 +414,7 @@ class EmployeeAuthenticationService {
     );
   }
 
-  Future<void> _setCurrentEmployee(EmployeeEntity employee) async {
+  Future<void> _setCurrentEmployee(domain.EmployeeEntity employee) async {
     _currentEmployee = employee;
     // TODO: Log authentication event
   }

@@ -49,8 +49,15 @@ class MainProvider extends ChangeNotifier {
   }
 
   Future<void> initMainProvider(BuildContext context) async {
-    ConnectivityService.initNetworkChecker(onHasInternet: (value) => onHasInternet(context, value));
+    ConnectivityService.initNetworkChecker(onHasInternet: (value) => _onHasInternet(context, value));
     await getAndSyncAllUserData();
+  }
+
+  @override
+  void dispose() {
+    // Cancel connectivity subscription to prevent callbacks on disposed widgets
+    ConnectivityService.cancelSubs();
+    super.dispose();
   }
 
   Future<void> checkAndSyncAllData(BuildContext context) async {
@@ -158,11 +165,19 @@ class MainProvider extends ChangeNotifier {
     return res.data ?? [];
   }
 
-  Future<void> onHasInternet(BuildContext context, bool value) async {
+  Future<void> _onHasInternet(BuildContext context, bool value) async {
     isHasInternet = value;
     notifyListeners();
 
-    if (isHasInternet) checkAndSyncAllData(context);
+    // Only proceed if the context is still mounted and valid
+    if (isHasInternet && context.mounted) {
+      try {
+        await checkAndSyncAllData(context);
+      } catch (e) {
+        // Handle any errors silently to prevent crashes
+        debugPrint('Error in _onHasInternet: $e');
+      }
+    }
   }
 
   Future<void> checkIsHasQueuedActions() async {

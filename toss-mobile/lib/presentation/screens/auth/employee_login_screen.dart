@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../../../core/services/employee_authentication_service.dart';
+import '../../../core/services/employee_authentication_service_stub.dart';
 import '../../../domain/entities/employee_entity.dart';
 
 class EmployeeLoginScreen extends StatefulWidget {
