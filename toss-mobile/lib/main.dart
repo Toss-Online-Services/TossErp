@@ -11,6 +11,7 @@ import 'app/database/app_database.dart';
 import 'app/locale/app_locale.dart';
 import 'app/routes/app_routes.dart';
 import 'app/themes/theme_manager.dart';
+import 'simple_dashboard_manager.dart';
 import 'firebase_options.dart';
 import 'presentation/providers/theme/theme_provider.dart';
 import 'presentation/screens/error_handler_screen.dart';
@@ -235,9 +236,14 @@ class MyApp extends StatelessWidget {
             return themeManager;
           },
         ),
+        ChangeNotifierProvider<SimpleDashboardManager>(
+          create: (context) {
+            return SimpleDashboardManager();
+          },
+        ),
       ],
-      child: Consumer2<ThemeProvider, ThemeManager>(
-        builder: (context, themeProvider, themeManager, _) {
+      child: Consumer3<ThemeProvider, ThemeManager, SimpleDashboardManager>(
+        builder: (context, themeProvider, themeManager, dashboardManager, _) {
           // Use ThemeManager if available, otherwise fall back to ThemeProvider
           final theme = themeManager.currentThemeData;
           

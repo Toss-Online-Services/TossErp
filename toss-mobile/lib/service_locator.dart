@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 import 'app/database/app_database.dart';
+import 'simple_dashboard_manager.dart';
 import 'data/datasources/local/product_local_datasource_impl.dart';
 import 'data/datasources/local/queued_action_local_datasource_impl.dart';
 import 'data/datasources/local/transaction_local_datasource_impl.dart';
@@ -135,8 +136,9 @@ void setupServiceLocator() async {
       sl.registerLazySingleton(() => ShiftProvider(shiftRepository: sl<ShiftRepositoryImpl>()));
     }
     
-    // Always register theme provider
-    sl.registerLazySingleton(() => ThemeProvider());
+    // Always register theme provider and dashboard manager
+  sl.registerLazySingleton(() => ThemeProvider());
+  sl.registerLazySingleton(() => SimpleDashboardManager());
   } catch (e) {
     debugPrint('Service locator setup error: $e');
   }
@@ -144,8 +146,9 @@ void setupServiceLocator() async {
 
 // All providers (web-compatible version)
 final List<SingleChildWidget> providers = [
-  // Only include providers that work on web
-  ChangeNotifierProvider(create: (_) => ThemeProvider()),
+  // Always include theme and dashboard providers
+  ChangeNotifierProvider(create: (_) => sl<ThemeProvider>()),
+  ChangeNotifierProvider(create: (_) => sl<SimpleDashboardManager>()),
   
   // Skip other providers for web since they depend on SQLite repositories
   if (!kIsWeb) ...[

@@ -38,6 +38,7 @@ class AccountScreen extends StatelessWidget {
             sectionHeader(context, 'Account Settings'),
             profilButton(context),
             themeButton(context),
+            dashboardLayoutButton(context),
             aboutButton(context),
             signOutButton(context),
           ],
@@ -424,6 +425,43 @@ class AccountScreen extends StatelessWidget {
         ),
         onTap: () {
           context.go('/themes');
+        },
+      ),
+    );
+  }
+
+  Widget dashboardLayoutButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSizes.padding),
+      child: AppButton(
+        buttonColor: Theme.of(context).colorScheme.surface,
+        borderColor: Theme.of(context).colorScheme.surfaceContainer,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  Icons.dashboard_customize_outlined,
+                  size: 18,
+                ),
+                const SizedBox(width: AppSizes.padding / 1.5),
+                Text(
+                  'Dashboard Layout',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 18,
+            ),
+          ],
+        ),
+        onTap: () {
+          context.go('/dashboard-layout');
         },
       ),
     );

@@ -1,4 +1,6 @@
 import '../../widgets/app_image.dart';
+// import '../../widgets/customizable_dashboard.dart'; // Temporarily disabled
+import '../dashboard/simple_dashboard_widget.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +11,7 @@ import '../../../app/const/const.dart';
 import '../../../app/themes/app_sizes.dart';
 import '../../../domain/entities/product_entity.dart';
 import '../../../service_locator.dart';
+import '../../../simple_dashboard_manager.dart';
 import '../../providers/home/home_provider.dart';
 import '../../providers/main/main_provider.dart';
 import '../../providers/products/products_provider.dart';
@@ -32,18 +35,22 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final mainProvider = sl<MainProvider>();
   final homeProvider = sl<HomeProvider>();
   final productProvider = sl<ProductsProvider>();
+  final dashboardManager = sl<SimpleDashboardManager>();
 
   final scrollController = ScrollController();
 
   final searchFieldController = TextEditingController();
   Timer? _searchDebounce;
 
+  late TabController _tabController;
+
   @override
   void initState() {
+    _tabController = TabController(length: 2, vsync: this);
     scrollController.addListener(scrollListener);
     WidgetsBinding.instance.addPostFrameCallback((_) => onRefresh());
     super.initState();
@@ -51,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    _tabController.dispose();
     scrollController.removeListener(scrollListener);
     scrollController.dispose();
     searchFieldController.dispose();
@@ -231,147 +239,171 @@ class _HomeScreenState extends State<HomeScreen> {
           syncButton(),
           networkInfo(),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(
+              icon: Icon(Icons.dashboard),
+              text: 'Dashboard',
+            ),
+            Tab(
+              icon: Icon(Icons.shopping_cart),
+              text: 'Products',
+            ),
+          ],
+        ),
       ),
-      body: Consumer<ProductsProvider>(
-        builder: (context, provider, _) {
-          return RefreshIndicator(
-            onRefresh: () => onRefresh(),
-            child: Scrollbar(
-              child: CustomScrollView(
-                controller: scrollController,
-                // Disable scroll when data is null or empty
-                physics: (provider.allProducts?.isEmpty ?? true) ? const NeverScrollableScrollPhysics() : null,
-                slivers: [
-                  SliverAppBar(
-                    floating: true,
-                    snap: true,
-                    automaticallyImplyLeading: false,
-                    collapsedHeight: 70,
-                    titleSpacing: 0,
-                    title: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding),
-                      child: ProductSearchField(
-                        controller: searchFieldController,
-                        showScanButton: true,
-                        showAddServiceButton: true,
-                        onScan: () async {
-                          final code = await context.push<String>('/scan');
-                          if (code != null && code.isNotEmpty) {
-                            searchFieldController.text = code;
-                            productProvider.allProducts = null;
-                            await productProvider.getAllProducts(contains: code);
-                          }
-                        },
-                        onAddService: () async {
-                          String? name;
-                          int? price;
-                          final nameCtl = TextEditingController();
-                          final priceCtl = TextEditingController();
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // const CustomizableDashboard(), // Temporarily disabled
+          const SimpleDashboardWidget(),
+          _buildProductsView(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductsView() {
+    return Consumer<ProductsProvider>(
+      builder: (context, provider, _) {
+        return RefreshIndicator(
+          onRefresh: () => onRefresh(),
+          child: Scrollbar(
+            child: CustomScrollView(
+              controller: scrollController,
+              // Disable scroll when data is null or empty
+              physics: (provider.allProducts?.isEmpty ?? true) ? const NeverScrollableScrollPhysics() : null,
+              slivers: [
+                SliverAppBar(
+                  floating: true,
+                  snap: true,
+                  automaticallyImplyLeading: false,
+                  collapsedHeight: 70,
+                  titleSpacing: 0,
+                  title: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding),
+                    child: ProductSearchField(
+                      controller: searchFieldController,
+                      showScanButton: true,
+                      showAddServiceButton: true,
+                      onScan: () async {
+                        final code = await context.push<String>('/scan');
+                        if (code != null && code.isNotEmpty) {
+                          searchFieldController.text = code;
+                          productProvider.allProducts = null;
+                          await productProvider.getAllProducts(contains: code);
+                        }
+                      },
+                      onAddService: () async {
+                        String? name;
+                        int? price;
+                        final nameCtl = TextEditingController();
+                        final priceCtl = TextEditingController();
                           await showDialog(
-                            context: context,
-                            builder: (_) {
-                              return AlertDialog(
-                                title: const Text('Add Custom Service'),
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    TextField(controller: nameCtl, decoration: const InputDecoration(labelText: 'Service name')),
-                                    const SizedBox(height: 8),
-                                    TextField(
-                                      controller: priceCtl,
-                                      keyboardType: TextInputType.number,
-                                      decoration: const InputDecoration(labelText: 'Price (cents)'),
-                                    ),
-                                  ],
-                                ),
-                                actions: [
-                                  TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      name = nameCtl.text.trim();
-                                      price = int.tryParse(priceCtl.text.trim());
-                                      if ((name?.isEmpty ?? true) || price == null) return;
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('Add'),
+                          context: context,
+                          builder: (_) {
+                            return AlertDialog(
+                              title: const Text('Add Custom Service'),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextField(controller: nameCtl, decoration: const InputDecoration(labelText: 'Service name')),
+                                  const SizedBox(height: 8),
+                                  TextField(
+                                    controller: priceCtl,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(labelText: 'Price (cents)'),
                                   ),
                                 ],
-                              );
-                            },
-                          );
-                          if ((name?.isNotEmpty ?? false) && (price != null)) {
-                            homeProvider.addCustomService(name: name!, price: price!);
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: MostUsedProductChips(
-                      onSelect: (p) async {
-                        searchFieldController.text = p.name;
-                        productProvider.allProducts = null;
-                        await productProvider.getAllProducts(contains: p.name);
+                              ),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    name = nameCtl.text.trim();
+                                    price = int.tryParse(priceCtl.text.trim());
+                                    if ((name?.isEmpty ?? true) || price == null) return;
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Add'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        if ((name?.isNotEmpty ?? false) && (price != null)) {
+                          homeProvider.addCustomService(name: name!, price: price!);
+                        }
                       },
                     ),
                   ),
-                  SliverLayoutBuilder(
-                    builder: (context, constraint) {
-                      if (provider.allProducts == null) {
-                        return const SliverFillRemaining(
-                          hasScrollBody: false,
-                          fillOverscroll: true,
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 140),
-                            child: AppProgressIndicator(),
-                          ),
-                        );
-                      }
-
-                      if (provider.allProducts!.isEmpty) {
-                        return SliverFillRemaining(
-                          hasScrollBody: false,
-                          fillOverscroll: true,
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 140),
-                            child: AppEmptyState(
-                              subtitle: 'No products available, add product to continue',
-                              buttonText: 'Add Product',
-                              onTapButton: () => context.push('/products/product-create'),
-                            ),
-                          ),
-                        );
-                      }
-
-                      return SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(AppSizes.padding, 2, AppSizes.padding, AppSizes.padding),
-                        sliver: SliverGrid.builder(
-                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
-                            childAspectRatio: 1 / 1.5,
-                            crossAxisSpacing: AppSizes.padding / 2,
-                            mainAxisSpacing: AppSizes.padding / 2,
-                          ),
-                          itemCount: provider.allProducts!.length,
-                          itemBuilder: (context, i) {
-                            return productCard(provider.allProducts![i]);
-                          },
-                        ),
-                      );
+                ),
+                SliverToBoxAdapter(
+                  child: MostUsedProductChips(
+                    onSelect: (p) async {
+                      searchFieldController.text = p.name;
+                      productProvider.allProducts = null;
+                      await productProvider.getAllProducts(contains: p.name);
                     },
                   ),
-                  SliverPadding(
-                    padding: const EdgeInsets.only(bottom: 140),
-                    sliver: SliverToBoxAdapter(
-                      child: AppLoadingMoreIndicator(isLoading: provider.isLoadingMore),
-                    ),
+                ),
+                SliverLayoutBuilder(
+                  builder: (context, constraint) {
+                    if (provider.allProducts == null) {
+                      return const SliverFillRemaining(
+                        hasScrollBody: false,
+                        fillOverscroll: true,
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 140),
+                          child: AppProgressIndicator(),
+                        ),
+                      );
+                    }
+
+                    if (provider.allProducts!.isEmpty) {
+                      return SliverFillRemaining(
+                        hasScrollBody: false,
+                        fillOverscroll: true,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 140),
+                          child: AppEmptyState(
+                            subtitle: 'No products available, add product to continue',
+                            buttonText: 'Add Product',
+                            onTapButton: () => context.push('/products/product-create'),
+                          ),
+                        ),
+                      );
+                    }
+
+                    return SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(AppSizes.padding, 2, AppSizes.padding, AppSizes.padding),
+                      sliver: SliverGrid.builder(
+                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 200,
+                          childAspectRatio: 1 / 1.5,
+                          crossAxisSpacing: AppSizes.padding / 2,
+                          mainAxisSpacing: AppSizes.padding / 2,
+                        ),
+                        itemCount: provider.allProducts!.length,
+                        itemBuilder: (context, i) {
+                          return productCard(provider.allProducts![i]);
+                        },
+                      ),
+                    );
+                  },
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.only(bottom: 140),
+                  sliver: SliverToBoxAdapter(
+                    child: AppLoadingMoreIndicator(isLoading: provider.isLoadingMore),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
