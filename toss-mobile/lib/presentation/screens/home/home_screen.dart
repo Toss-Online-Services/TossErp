@@ -9,6 +9,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../../../app/const/const.dart';
 import '../../../app/themes/app_sizes.dart';
+import '../../../app/utilities/currency_formatter.dart';
 import '../../../domain/entities/product_entity.dart';
 import '../../../service_locator.dart';
 import '../../../simple_dashboard_manager.dart';
@@ -23,8 +24,8 @@ import '../../widgets/app_progress_indicator.dart';
 import '../../widgets/product_search_field.dart';
 import '../../widgets/most_used_product_chips.dart';
 import '../products/components/products_card.dart';
-import 'components/enhanced_cart_panel.dart';
-import 'components/enhanced_cart_header.dart';
+import 'components/simple_cart_panel.dart';
+import 'components/simple_cart_header.dart';
 import 'components/cart_panel_footer.dart';
 import 'components/order_card.dart';
 
@@ -80,35 +81,137 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final availableHeight = mediaQuery.size.height 
-        - mediaQuery.padding.top 
-        - mediaQuery.padding.bottom
-        - AppSizes.appBarHeight();
-    
     return Scaffold(
-      body: SlidingUpPanel(
-        controller: homeProvider.panelController,
-        minHeight: 88,
-        maxHeight: availableHeight * 0.9, // Use 90% of available height to ensure visibility
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.04),
-            offset: const Offset(0, -4),
-            blurRadius: 12,
+      body: Stack(
+        children: [
+          // Main body
+          body(),
+          
+          // Simple cart at bottom
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Consumer<HomeProvider>(
+              builder: (context, provider, child) {
+                if (provider.orderedProducts.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                
+                return GestureDetector(
+                  onTap: () {
+                    // Show full cart in bottom sheet
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(AppSizes.radius * 2),
+                          topRight: Radius.circular(AppSizes.radius * 2),
+                        ),
+                      ),
+                      builder: (context) => DraggableScrollableSheet(
+                        initialChildSize: 0.7,
+                        minChildSize: 0.3,
+                        maxChildSize: 0.9,
+                        builder: (context, scrollController) => const SimpleCartPanel(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 88,
+                    padding: const EdgeInsets.all(AppSizes.padding),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerLowest,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(AppSizes.radius * 2),
+                        topRight: Radius.circular(AppSizes.radius * 2),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
+                          offset: const Offset(0, -2),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        // Cart Icon with Badge
+                        Stack(
+                          children: [
+                            Icon(
+                              Icons.shopping_cart,
+                              color: Theme.of(context).colorScheme.primary,
+                              size: 28,
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.error,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 16,
+                                  minHeight: 16,
+                                ),
+                                child: Text(
+                                  provider.orderedProducts.length.toString(),
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.onError,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        
+                        const SizedBox(width: 12),
+                        
+                        // Cart Summary
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${provider.orderedProducts.length} item${provider.orderedProducts.length != 1 ? 's' : ''}',
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                CurrencyFormatter.format(provider.getTotalAmount()),
+                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        // Arrow indicator
+                        Icon(
+                          Icons.keyboard_arrow_up,
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ],
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(AppSizes.radius * 2),
-          topRight: Radius.circular(AppSizes.radius * 2),
-        ),
-        body: body(),
-        header: const EnhancedCartHeader(),
-        panel: const EnhancedCartPanel(),
-        footer: const CartPanelFooter(),
-        onPanelOpened: () => homeProvider.onChangedIsPanelExpanded(true),
-        onPanelClosed: () => homeProvider.onChangedIsPanelExpanded(false),
       ),
     );
   }
