@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/const/const.dart';
@@ -48,6 +49,22 @@ class MainProvider extends ChangeNotifier {
   }
 
   Future<void> initMainProvider(BuildContext context) async {
+    // For web, set up demo data immediately and skip connectivity/auth setup
+    if (kIsWeb) {
+      user = UserEntity(
+        id: 'demo-user',
+        name: 'Demo User',
+        email: 'demo@example.com',
+        phone: '+1234567890',
+        createdAt: DateTime.now().toIso8601String(),
+        updatedAt: DateTime.now().toIso8601String(),
+      );
+      isLoaded = true;
+      notifyListeners();
+      return;
+    }
+    
+    // For mobile/desktop, proceed with normal initialization
     ConnectivityService.initNetworkChecker(onHasInternet: (value) => _onHasInternet(context, value));
     await getAndSyncAllUserData();
   }
@@ -112,38 +129,80 @@ class MainProvider extends ChangeNotifier {
   }
 
   Future<void> getAndSyncAllUserData() async {
-    var auth = AuthService().getAuthData();
-    if (auth == null) throw 'Unauthenticated';
+    try {
+      var auth = AuthService().getAuthData();
+      
+      // For web demo or unauthenticated scenarios, create a demo user and skip sync
+      if (auth == null) {
+        if (kIsWeb) {
+          // Create a demo user for web
+          user = UserEntity(
+            id: 'demo-user',
+            name: 'Demo User',
+            email: 'demo@example.com',
+            phone: '+1234567890',
+            createdAt: DateTime.now().toIso8601String(),
+            updatedAt: DateTime.now().toIso8601String(),
+          );
+          
+          // Skip data syncing for web demo
+          isLoaded = true;
+          notifyListeners();
+          return;
+        } else {
+          throw 'Unauthenticated';
+        }
+      }
 
-    // Run multiple futures simultaneusly
-    // Because each repository has beed added data checker method
-    // The local db will automatically sync with cloud db or vice versa
-    var res = await Future.wait([
-      GetUserUsecase(userRepository).call(auth.uid),
-      SyncAllUserProductsUsecase(productRepository).call(auth.uid),
-      SyncAllUserTransactionsUsecase(transactionRepository).call(auth.uid),
-    ]);
+      // Run multiple futures simultaneusly
+      // Because each repository has beed added data checker method
+      // The local db will automatically sync with cloud db or vice versa
+      var res = await Future.wait([
+        GetUserUsecase(userRepository).call(auth.uid),
+        SyncAllUserProductsUsecase(productRepository).call(auth.uid),
+        SyncAllUserTransactionsUsecase(transactionRepository).call(auth.uid),
+      ]);
 
-    // Set and notify user state
-    if (res.isNotEmpty && res.first.isSuccess) {
-      user = res.first.data as UserEntity?;
+      // Set and notify user state
+      if (res.isNotEmpty && res.first.isSuccess) {
+        user = res.first.data as UserEntity?;
+        notifyListeners();
+      }
+
+      // Refresh products list
+      await sl<ProductsProvider>().getAllProducts();
+      // After products are loaded, check for low stock and notify once
+      await notifyLowStockIfAny();
+
+      // Check queued actions
+      checkIsHasQueuedActions();
+
+      // Schedule today's appointment reminders
+      await _scheduleTodayAppointments();
+
+      // Notify to MainScreen
+      isLoaded = true;
       notifyListeners();
+    } catch (e) {
+      debugPrint('Error in getAndSyncAllUserData: $e');
+      
+      // For web, still complete loading with demo data
+      if (kIsWeb) {
+        user = UserEntity(
+          id: 'demo-user',
+          name: 'Demo User',
+          email: 'demo@example.com',
+          phone: '+1234567890',
+          createdAt: DateTime.now().toIso8601String(),
+          updatedAt: DateTime.now().toIso8601String(),
+        );
+        isLoaded = true;
+        notifyListeners();
+      } else {
+        // For mobile, re-throw the error
+        rethrow;
+      }
     }
-
-    // Refresh products list
-    await sl<ProductsProvider>().getAllProducts();
-    // After products are loaded, check for low stock and notify once
-    await notifyLowStockIfAny();
-
-    // Check queued actions
-    checkIsHasQueuedActions();
-
-    // Schedule today's appointment reminders
-    await _scheduleTodayAppointments();
-
-    // Notify to MainScreen
-    isLoaded = true;
-    notifyListeners();
   }
 
   Future<int> executeAllQueuedActions() async {

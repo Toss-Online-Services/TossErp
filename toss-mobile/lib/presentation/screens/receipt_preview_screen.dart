@@ -72,33 +72,39 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Receipt Preview Card
-            Card(
-              elevation: 4,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.all(
+            MediaQuery.of(context).size.width < 400 ? 8.0 : 16.0,
+          ),
+          child: Column(
+            children: [
+              // Receipt Preview Card
+              Card(
+                elevation: 4,
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(
+                    MediaQuery.of(context).size.width < 400 ? 16.0 : 24.0,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white,
+                  ),
+                  child: _buildReceiptContent(),
                 ),
-                child: _buildReceiptContent(),
               ),
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Receipt Information
-            _buildReceiptInfo(),
-            
-            const SizedBox(height: 24),
-            
-            // Action Buttons
-            _buildActionButtons(),
-          ],
+              
+              const SizedBox(height: 24),
+              
+              // Receipt Information
+              _buildReceiptInfo(),
+              
+              const SizedBox(height: 24),
+              
+              // Action Buttons
+              _buildActionButtons(),
+            ],
+          ),
         ),
       ),
     );
@@ -120,6 +126,9 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.visible,
+                softWrap: true,
               ),
               if (receipt.settings.businessAddress != null) ...[
                 const SizedBox(height: 4),
@@ -127,6 +136,8 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                   receipt.settings.businessAddress!,
                   style: const TextStyle(fontSize: 14),
                   textAlign: TextAlign.center,
+                  overflow: TextOverflow.visible,
+                  softWrap: true,
                 ),
               ],
               if (receipt.settings.businessPhone != null) ...[
@@ -134,6 +145,9 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                 Text(
                   'Tel: ${receipt.settings.businessPhone}',
                   style: const TextStyle(fontSize: 14),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.visible,
+                  softWrap: true,
                 ),
               ],
               if (receipt.settings.taxNumber != null) ...[
@@ -141,6 +155,9 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                 Text(
                   'Tax ID: ${receipt.settings.taxNumber}',
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.visible,
+                  softWrap: true,
                 ),
               ],
             ],
@@ -152,42 +169,111 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
         const SizedBox(height: 16),
         
         // Transaction Details
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Receipt #: ${receipt.receiptNumber}'),
-                Text('Date: ${_formatDate(receipt.createdAt)}'),
-                Text('Time: ${_formatTime(receipt.createdAt)}'),
-                if (receipt.isReprint)
-                  const Text(
-                    'REPRINT',
-                    style: TextStyle(
-                      color: Colors.orange,
-                      fontWeight: FontWeight.bold,
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final screenWidth = MediaQuery.of(context).size.width;
+            final isNarrowScreen = screenWidth < 400;
+            
+            if (isNarrowScreen) {
+              // Vertical layout for narrow screens
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Receipt #: ${receipt.receiptNumber}'),
+                      Text('Date: ${_formatDate(receipt.createdAt)}'),
+                      Text('Time: ${_formatTime(receipt.createdAt)}'),
+                      if (receipt.isReprint)
+                        const Text(
+                          'REPRINT',
+                          style: TextStyle(
+                            color: Colors.orange,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Transaction: ${receipt.transactionId}'),
+                      Text('Cashier: ${receipt.cashierId}'),
+                      if (receipt.customer?.name != null)
+                        Text('Customer: ${receipt.customer!.name}'),
+                      Text(
+                        receipt.type.name.toUpperCase(),
+                        style: TextStyle(
+                          color: _getReceiptTypeColor(receipt.type),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            } else {
+              // Horizontal layout for wider screens
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Receipt #: ${receipt.receiptNumber}'),
+                        Text('Date: ${_formatDate(receipt.createdAt)}'),
+                        Text('Time: ${_formatTime(receipt.createdAt)}'),
+                        if (receipt.isReprint)
+                          const Text(
+                            'REPRINT',
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text('Transaction: ${receipt.transactionId}'),
-                Text('Cashier: ${receipt.cashierId}'),
-                if (receipt.customer?.name != null)
-                  Text('Customer: ${receipt.customer!.name}'),
-                Text(
-                  receipt.type.name.toUpperCase(),
-                  style: TextStyle(
-                    color: _getReceiptTypeColor(receipt.type),
-                    fontWeight: FontWeight.bold,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Transaction: ${receipt.transactionId}',
+                          textAlign: TextAlign.right,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          'Cashier: ${receipt.cashierId}',
+                          textAlign: TextAlign.right,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (receipt.customer?.name != null)
+                          Text(
+                            'Customer: ${receipt.customer!.name}',
+                            textAlign: TextAlign.right,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        Text(
+                          receipt.type.name.toUpperCase(),
+                          style: TextStyle(
+                            color: _getReceiptTypeColor(receipt.type),
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              );
+            }
+          },
         ),
         
         const SizedBox(height: 20),
@@ -268,15 +354,18 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
+                flex: 3,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       item.productName,
                       style: const TextStyle(fontWeight: FontWeight.w500),
+                      overflow: TextOverflow.visible,
+                      softWrap: true,
                     ),
                     if (item.sku != null)
                       Text(
@@ -285,31 +374,47 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                           fontSize: 12,
                           color: Colors.grey,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                   ],
                 ),
               ),
-              Text('GHS ${item.totalPrice.toStringAsFixed(2)}'),
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  'GHS ${item.totalPrice.toStringAsFixed(2)}',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ),
             ],
           ),
+          const SizedBox(height: 2),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${item.quantity} x GHS ${item.unitPrice.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
+              Expanded(
+                child: Text(
+                  '${item.quantity} x GHS ${item.unitPrice.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (item.discount != null && item.discount! > 0)
+              if (item.discount != null && item.discount! > 0) ...[
+                const SizedBox(width: 8),
                 Text(
                   'Discount: -GHS ${item.discount!.toStringAsFixed(2)}',
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.red,
                   ),
+                  textAlign: TextAlign.right,
                 ),
+              ],
             ],
           ),
         ],
@@ -469,40 +574,78 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
   Widget _buildInfoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(color: Colors.grey),
-          ),
-          Flexible(
-            child: Text(
-              value,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-              textAlign: TextAlign.end,
-            ),
-          ),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final screenWidth = MediaQuery.of(context).size.width;
+          final isNarrowScreen = screenWidth < 400;
+          
+          if (isNarrowScreen) {
+            // Vertical layout for narrow screens
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                  overflow: TextOverflow.visible,
+                  softWrap: true,
+                ),
+              ],
+            );
+          } else {
+            // Horizontal layout for wider screens
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    label,
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    value,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.end,
+                    overflow: TextOverflow.visible,
+                    softWrap: true,
+                  ),
+                ),
+              ],
+            );
+          }
+        },
       ),
     );
   }
 
   Widget _buildActionButtons() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: ElevatedButton.icon(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final isNarrowScreen = screenWidth < 400;
+        
+        if (isNarrowScreen) {
+          // Vertical layout for narrow screens
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ElevatedButton.icon(
                 onPressed: _reprintReceipt,
                 icon: const Icon(Icons.print),
                 label: const Text('Reprint'),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: ElevatedButton.icon(
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
                 onPressed: _shareReceipt,
                 icon: const Icon(Icons.share),
                 label: const Text('Share'),
@@ -511,30 +654,71 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                   foregroundColor: Colors.white,
                 ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
                 onPressed: () => _sendReceipt(DeliveryMethod.email),
                 icon: const Icon(Icons.email),
                 label: const Text('Email'),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: OutlinedButton.icon(
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
                 onPressed: () => _sendReceipt(DeliveryMethod.sms),
                 icon: const Icon(Icons.sms),
                 label: const Text('SMS'),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          );
+        } else {
+          // Horizontal layout for wider screens
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _reprintReceipt,
+                      icon: const Icon(Icons.print),
+                      label: const Text('Reprint'),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _shareReceipt,
+                      icon: const Icon(Icons.share),
+                      label: const Text('Share'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _sendReceipt(DeliveryMethod.email),
+                      icon: const Icon(Icons.email),
+                      label: const Text('Email'),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _sendReceipt(DeliveryMethod.sms),
+                      icon: const Icon(Icons.sms),
+                      label: const Text('SMS'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        }
+      },
     );
   }
 
