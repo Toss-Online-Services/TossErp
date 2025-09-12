@@ -6,6 +6,7 @@ import '../../../../app/utilities/currency_formatter.dart';
 import '../../../providers/home/home_provider.dart';
 import '../../../widgets/app_empty_state.dart';
 import 'simple_cart_item.dart';
+import 'payment_modal_sheet.dart';
 
 class SimpleCartPanel extends StatelessWidget {
   const SimpleCartPanel({super.key});
@@ -302,12 +303,65 @@ class SimpleCartPanel extends StatelessWidget {
                       ],
                     ),
                   ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Checkout Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: () => _proceedToCheckout(context, provider),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppSizes.radius),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.payment),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Proceed to Checkout',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ],
         );
       },
+    );
+  }
+
+  void _proceedToCheckout(BuildContext context, HomeProvider provider) {
+    Navigator.of(context).pop(); // Close cart first
+    _showPaymentModal(context, provider);
+  }
+
+  void _showPaymentModal(BuildContext context, HomeProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => PaymentModalSheet(
+        cartProvider: provider,
+        totalAmount: provider.getFinalTotalAmount().toDouble(),
+        items: provider.orderedProducts,
+      ),
     );
   }
 

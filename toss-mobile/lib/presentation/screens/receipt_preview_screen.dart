@@ -719,6 +719,12 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
         return Colors.blue;
       case ReceiptType.quote:
         return Colors.orange;
+      case ReceiptType.giftCard:
+        return Colors.purple;
+      case ReceiptType.loyalty:
+        return Colors.amber;
+      case ReceiptType.voidTransaction:
+        return Colors.grey;
     }
   }
 }
