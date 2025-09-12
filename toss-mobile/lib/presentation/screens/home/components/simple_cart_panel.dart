@@ -15,9 +15,9 @@ class SimpleCartPanel extends StatelessWidget {
     return Consumer<HomeProvider>(
       builder: (context, provider, child) {
         if (provider.orderedProducts.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.all(AppSizes.padding),
-            child: AppEmptyState(
+          return Container(
+            padding: const EdgeInsets.all(AppSizes.padding),
+            child: const AppEmptyState(
               title: 'Cart is Empty',
               subtitle: 'Add some products to get started',
             ),
@@ -25,31 +25,33 @@ class SimpleCartPanel extends StatelessWidget {
         }
 
         return Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Cart Header
+            // Drag Handle
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSizes.padding,
-                vertical: AppSizes.padding / 2,
-              ),
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(top: 8, bottom: 16),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(AppSizes.radius * 2),
-                  topRight: Radius.circular(AppSizes.radius * 2),
-                ),
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(2),
               ),
+            ),
+
+            // Cart Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding),
               child: Row(
                 children: [
                   Icon(
                     Icons.shopping_cart,
-                    color: Theme.of(context).colorScheme.onSurface,
-                    size: 20,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 24,
                   ),
                   const SizedBox(width: 8),
                   Text(
                     'Cart (${provider.orderedProducts.length} items)',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -71,13 +73,13 @@ class SimpleCartPanel extends StatelessWidget {
               ),
             ),
             
+            const SizedBox(height: 16),
+            
             // Cart Items List
-            Expanded(
+            Flexible(
               child: ListView.builder(
-                padding: const EdgeInsets.only(
-                  top: AppSizes.padding / 2,
-                  bottom: AppSizes.padding,
-                ),
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding / 2),
                 itemCount: provider.orderedProducts.length,
                 itemBuilder: (context, index) {
                   return SimpleCartItem(

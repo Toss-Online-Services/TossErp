@@ -48,7 +48,7 @@ class SimpleCartItem extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(AppSizes.radius / 2),
               child: AppImage(
-                image: orderedProduct.imageUrl ?? '',
+                image: orderedProduct.imageUrl,
                 width: 48,
                 height: 48,
                 backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
