@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +21,8 @@ import 'data/datasources/local/user_local_datasource_impl.dart';
 import 'data/datasources/local/product_local_datasource_impl.dart';
 import 'data/datasources/local/transaction_local_datasource_impl.dart';
 import 'data/datasources/local/queued_action_local_datasource_impl.dart';
+
+final GetIt sl = GetIt.instance;
 
 void main() async {
   // Initialize binding
@@ -80,6 +83,9 @@ void main() async {
     // Setup service locator (skip complex setup for web)
     if (!kIsWeb) {
       setupServiceLocator();
+    } else {
+      // For web, setup minimal service locator
+      sl.registerLazySingleton(() => ThemeProvider());
     }
 
     // Set/lock screen orientation (skip for web)
@@ -99,126 +105,7 @@ void main() async {
     // Continue with app launch even if some initialization fails
   }
 
-  runApp(kIsWeb ? const MyWebApp() : const MyApp());
-}
-
-class MyWebApp extends StatelessWidget {
-  const MyWebApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, _) {
-          return MaterialApp(
-            title: 'TOSS ERP - Web Demo',
-            theme: themeProvider.theme,
-            debugShowCheckedModeBanner: kDebugMode,
-            home: const WebDemoScreen(),
-            builder: (context, child) => ErrorHandlerBuilder(child: child),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class WebDemoScreen extends StatelessWidget {
-  const WebDemoScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('TOSS ERP'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.business,
-              size: 100,
-              color: Colors.blue,
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Welcome to TOSS ERP',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Rural Township Enterprise Management System',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 40),
-            Card(
-              margin: EdgeInsets.all(20),
-              child: Padding(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Text(
-                      'Web Version Successfully Deployed!',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'The TOSS ERP mobile application has been successfully compiled and deployed for web. '
-                      'This demonstrates the cross-platform capability of the Flutter framework.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.check_circle, color: Colors.green, size: 20),
-                SizedBox(width: 8),
-                Text('Firebase Connected'),
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.check_circle, color: Colors.green, size: 20),
-                SizedBox(width: 8),
-                Text('Firestore Rules Active'),
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.check_circle, color: Colors.green, size: 20),
-                SizedBox(width: 8),
-                Text('Web Build Complete'),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -226,6 +113,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // For web, use simplified provider setup
+    if (kIsWeb) {
+      return ChangeNotifierProvider(
+        create: (_) => ThemeProvider(),
+        child: Consumer<ThemeProvider>(
+          builder: (context, themeProvider, _) {
+            return MaterialApp.router(
+              title: 'TOSS ERP - POS System',
+              theme: themeProvider.theme,
+              debugShowCheckedModeBanner: kDebugMode,
+              routerConfig: AppRoutes.router,
+              locale: AppLocale.defaultLocale,
+              supportedLocales: AppLocale.supportedLocales,
+              localizationsDelegates: AppLocale.localizationsDelegates,
+              builder: (context, child) => ErrorHandlerBuilder(child: child),
+            );
+          },
+        ),
+      );
+    }
+    
+    // For mobile/desktop, use full provider setup
     return MultiProvider(
       providers: [
         ...providers,

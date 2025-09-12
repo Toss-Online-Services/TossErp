@@ -75,7 +75,7 @@ class CustomerMessageEntity extends Equatable {
     );
   }
 
-  bool get canRetry => retryCount < 3 && status == MessageStatus.failed;
+  bool get canRetry => (retryCount ?? 0) < 3 && status == MessageStatus.failed;
   bool get isOverdue => DateTime.now().isAfter(scheduledAt.add(const Duration(hours: 1))) && status == MessageStatus.pending;
 
   @override

@@ -62,24 +62,24 @@ class ReceiptService {
     required ReceiptSettings settings,
   }) async {
     final lineItems = transaction.items.map((item) => ReceiptLineItem(
-      id: item.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      productId: item.productId,
-      productName: item.productName ?? 'Unknown Product',
-      sku: item.sku,
+      id: item.id?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      productId: item.productId.toString(),
+      productName: item.productName,
+      sku: item.productId.toString(), // Use productId as SKU fallback
       quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      totalPrice: item.totalPrice,
-      discount: item.discount,
-      tax: item.tax,
+      unitPrice: item.unitPrice.toDouble() / 100, // Convert from cents
+      totalPrice: item.totalPrice.toDouble() / 100, // Convert from cents
+      discount: item.discountAmount.toDouble() / 100, // Convert from cents
+      tax: 0.0, // No tax field in entity, default to 0
     )).toList();
 
     final totals = ReceiptTotals(
-      subtotal: transaction.subtotal,
-      totalDiscount: transaction.discount,
-      totalTax: transaction.tax,
-      total: transaction.total,
-      amountPaid: transaction.amountPaid,
-      change: transaction.change,
+      subtotal: transaction.subtotal.toDouble() / 100, // Convert from cents
+      totalDiscount: transaction.discountAmount.toDouble() / 100, // Convert from cents
+      totalTax: transaction.taxAmount.toDouble() / 100, // Convert from cents
+      total: transaction.total.toDouble() / 100, // Convert from cents
+      amountPaid: transaction.amountPaid.toDouble() / 100, // Convert from cents
+      change: transaction.changeAmount.toDouble() / 100, // Convert from cents
       currency: 'GHS',
     );
 
@@ -87,11 +87,12 @@ class ReceiptService {
         ? await _getReceiptCustomer(transaction.customerId!)
         : null;
 
-    final payment = transaction.paymentMethod != null
+    // Get payment method from payments list if available
+    final payment = transaction.payments.isNotEmpty
         ? ReceiptPayment(
-            method: transaction.paymentMethod!,
-            amount: transaction.amountPaid,
-            reference: transaction.paymentReference,
+            method: transaction.payments.first.method.toString(), // Convert enum to string
+            amount: transaction.payments.first.amount.toDouble() / 100,
+            reference: transaction.payments.first.reference,
           )
         : null;
 
@@ -99,12 +100,14 @@ class ReceiptService {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       receiptNumber: _generateReceiptNumber(),
       type: type,
-      format: format,
-      transactionId: transaction.id ?? '',
-      customerId: transaction.customerId,
-      cashierId: transaction.cashierId ?? 'system',
-      locationId: transaction.locationId ?? 'default',
-      receiptData: transaction.toJson(),
+      transactionId: transaction.id?.toString() ?? '',
+      cashierId: transaction.createdById ?? 'system', // Use createdById as cashier
+      locationId: 'default', // Default location since not in entity
+      receiptData: {
+        'transactionNumber': transaction.transactionNumber,
+        'status': transaction.status.toString(),
+        'type': transaction.type.toString(),
+      }, // Create simple data map
       lineItems: lineItems,
       totals: totals,
       customer: customer,
