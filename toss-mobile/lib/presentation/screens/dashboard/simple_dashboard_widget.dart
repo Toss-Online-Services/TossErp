@@ -109,11 +109,11 @@ class _SimpleDashboardWidgetState extends State<SimpleDashboardWidget> {
                   
                   // Dashboard widgets grid
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 120), // Extra bottom padding for cart panel
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 140), // Extra bottom padding for cart panel
                     sliver: SliverGrid(
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
-                        childAspectRatio: 1.2,
+                        childAspectRatio: 1.0, // Make grid items taller to prevent overflow
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                       ),
@@ -142,30 +142,31 @@ class _SimpleDashboardWidgetState extends State<SimpleDashboardWidget> {
         onTap: () => _showWidgetDetails(context, widget),
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12), // Slightly less padding
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min, // Important: don't expand to fill
             children: [
               Row(
                 children: [
                   Icon(
                     _getWidgetIcon(widget.widget),
                     color: Theme.of(context).colorScheme.primary,
-                    size: 24,
+                    size: 20, // Slightly smaller icon
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       _getWidgetTitle(widget.widget),
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: Theme.of(context).textTheme.titleSmall, // Smaller title
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Expanded(
+              const SizedBox(height: 8), // Less spacing
+              Flexible( // Use Flexible instead of Expanded
                 child: _buildWidgetContent(context, widget.widget),
               ),
             ],
