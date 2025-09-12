@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../../../app/const/const.dart';
 import '../../../app/themes/app_sizes.dart';
@@ -25,8 +24,6 @@ import '../../widgets/product_search_field.dart';
 import '../../widgets/most_used_product_chips.dart';
 import '../products/components/products_card.dart';
 import 'components/simple_cart_panel.dart';
-import 'components/simple_cart_header.dart';
-import 'components/cart_panel_footer.dart';
 import 'components/order_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -362,20 +359,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          // const CustomizableDashboard(), // Temporarily disabled
-          const SimpleDashboardWidget(),
-          _buildProductsView(),
-        ],
+      body: SafeArea(
+        bottom: false, // Let us handle bottom padding manually
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            // const CustomizableDashboard(), // Temporarily disabled
+            const SimpleDashboardWidget(),
+            _buildProductsView(),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildProductsView() {
-    return Consumer<ProductsProvider>(
-      builder: (context, provider, _) {
+    return Consumer2<ProductsProvider, HomeProvider>(
+      builder: (context, provider, homeProvider, _) {
+        final mediaQuery = MediaQuery.of(context);
+        final hasCartItems = homeProvider.orderedProducts.isNotEmpty;
+        final bottomPadding = mediaQuery.padding.bottom + 
+                              56.0 + // Bottom navigation height
+                              (hasCartItems ? 88.0 : 0.0); // Cart height when visible
+        
         return RefreshIndicator(
           onRefresh: () => onRefresh(),
           child: Scrollbar(
@@ -460,12 +466,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 SliverLayoutBuilder(
                   builder: (context, constraint) {
                     if (provider.allProducts == null) {
-                      return const SliverFillRemaining(
+                      return SliverFillRemaining(
                         hasScrollBody: false,
                         fillOverscroll: true,
                         child: Padding(
-                          padding: EdgeInsets.only(bottom: 140),
-                          child: AppProgressIndicator(),
+                          padding: EdgeInsets.only(bottom: bottomPadding),
+                          child: const AppProgressIndicator(),
                         ),
                       );
                     }
@@ -475,7 +481,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         hasScrollBody: false,
                         fillOverscroll: true,
                         child: Padding(
-                          padding: const EdgeInsets.only(bottom: 140),
+                          padding: EdgeInsets.only(bottom: bottomPadding),
                           child: AppEmptyState(
                             subtitle: 'No products available, add product to continue',
                             buttonText: 'Add Product',
@@ -503,7 +509,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   },
                 ),
                 SliverPadding(
-                  padding: const EdgeInsets.only(bottom: 140),
+                  padding: EdgeInsets.only(bottom: bottomPadding),
                   sliver: SliverToBoxAdapter(
                     child: AppLoadingMoreIndicator(isLoading: provider.isLoadingMore),
                   ),
