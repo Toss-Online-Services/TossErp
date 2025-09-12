@@ -15,65 +15,193 @@ class SimpleCartPanel extends StatelessWidget {
     return Consumer<HomeProvider>(
       builder: (context, provider, child) {
         if (provider.orderedProducts.isEmpty) {
-          return Container(
-            padding: const EdgeInsets.all(AppSizes.padding),
-            child: const AppEmptyState(
-              title: 'Cart is Empty',
-              subtitle: 'Add some products to get started',
-            ),
+          return Column(
+            children: [
+              // Enhanced Header for empty cart too
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(AppSizes.padding, 12, AppSizes.padding, 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(AppSizes.radius * 2),
+                    topRight: Radius.circular(AppSizes.radius * 2),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    // Drag Handle with down arrow hint
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Pull down to close',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.outline.withOpacity(0.8),
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: 12),
+                    
+                    // Header with close button
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.shopping_cart_outlined,
+                          color: Theme.of(context).colorScheme.outline,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Cart',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Spacer(),
+                        
+                        // Close button
+                        IconButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.close),
+                          tooltip: 'Close cart',
+                          style: IconButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            foregroundColor: Theme.of(context).colorScheme.onSurface,
+                            padding: const EdgeInsets.all(8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Empty state content
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(AppSizes.padding),
+                  child: const AppEmptyState(
+                    title: 'Cart is Empty',
+                    subtitle: 'Add some products to get started',
+                  ),
+                ),
+              ),
+            ],
           );
         }
 
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Drag Handle
+            // Enhanced Header with close button and drag indicators
             Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(top: 8, bottom: 16),
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(AppSizes.padding, 12, AppSizes.padding, 8),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(2),
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(AppSizes.radius * 2),
+                  topRight: Radius.circular(AppSizes.radius * 2),
+                ),
               ),
-            ),
-
-            // Cart Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding),
-              child: Row(
+              child: Column(
                 children: [
-                  Icon(
-                    Icons.shopping_cart,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 24,
+                  // Drag Handle with down arrow hint
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.keyboard_arrow_down,
+                        color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Pull down to close',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.outline.withOpacity(0.8),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Cart (${provider.orderedProducts.length} items)',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const Spacer(),
                   
-                  // Clear Cart Button
-                  TextButton.icon(
-                    onPressed: provider.orderedProducts.isNotEmpty 
-                      ? () => _showClearCartDialog(context, provider)
-                      : null,
-                    icon: const Icon(Icons.clear_all, size: 16),
-                    label: const Text('Clear'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    ),
+                  const SizedBox(height: 12),
+                  
+                  // Cart Header with close button
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.shopping_cart,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Cart (${provider.orderedProducts.length} items)',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const Spacer(),
+                      
+                      // Close button for easy exit
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.close),
+                        tooltip: 'Close cart',
+                        style: IconButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                          foregroundColor: Theme.of(context).colorScheme.onSurface,
+                          padding: const EdgeInsets.all(8),
+                        ),
+                      ),
+                      
+                      const SizedBox(width: 8),
+                      
+                      // Clear Cart Button
+                      TextButton.icon(
+                        onPressed: provider.orderedProducts.isNotEmpty 
+                          ? () => _showClearCartDialog(context, provider)
+                          : null,
+                        icon: const Icon(Icons.clear_all, size: 16),
+                        label: const Text('Clear'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            
-            const SizedBox(height: 16),
             
             // Cart Items List
             Flexible(
