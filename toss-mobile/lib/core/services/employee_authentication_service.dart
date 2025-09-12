@@ -3,6 +3,7 @@ import 'package:crypto/crypto.dart';
 import 'package:local_auth/local_auth.dart';
 
 import '../entities/employee_entity.dart' as domain;
+import '../../domain/entities/employee_entity.dart';
 
 class AuthenticationResult {
   final bool success;

@@ -94,7 +94,9 @@ class _CustomerSelectionWidgetState extends State<CustomerSelectionWidget> {
           CircleAvatar(
             backgroundColor: Theme.of(context).colorScheme.primary,
             child: Text(
-              widget.selectedCustomer!.name[0].toUpperCase(),
+              widget.selectedCustomer!.name?.isNotEmpty == true 
+                  ? widget.selectedCustomer!.name![0].toUpperCase()
+                  : '?',
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -107,14 +109,14 @@ class _CustomerSelectionWidgetState extends State<CustomerSelectionWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.selectedCustomer!.name,
+                  widget.selectedCustomer!.name ?? 'Unknown Customer',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                if (widget.selectedCustomer!.phone.isNotEmpty)
+                if (widget.selectedCustomer!.phone?.isNotEmpty == true)
                   Text(
-                    widget.selectedCustomer!.phone,
+                    widget.selectedCustomer!.phone!,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey[600],
                     ),
@@ -223,18 +225,20 @@ class _CustomerSelectionWidgetState extends State<CustomerSelectionWidget> {
       leading: CircleAvatar(
         backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
         child: Text(
-          customer.name[0].toUpperCase(),
+          customer.name?.isNotEmpty == true 
+              ? customer.name![0].toUpperCase()
+              : '?',
           style: TextStyle(
             color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      title: Text(customer.name),
+      title: Text(customer.name ?? 'Unknown Customer'),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (customer.phone.isNotEmpty) Text(customer.phone),
+          if (customer.phone?.isNotEmpty == true) Text(customer.phone!),
           if (customer.loyaltyTier != LoyaltyTier.none)
             Text(
               '${_getLoyaltyTierName(customer.loyaltyTier)} • ${customer.loyaltyPoints} points',
@@ -296,8 +300,8 @@ class _CustomerSelectionWidgetState extends State<CustomerSelectionWidget> {
               phone: '+1234567890',
               loyaltyTier: LoyaltyTier.silver,
               loyaltyPoints: 250,
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
+              createdAt: DateTime.now().toIso8601String(),
+              updatedAt: DateTime.now().toIso8601String(),
             ),
             CustomerEntity(
               id: '2',
@@ -305,12 +309,12 @@ class _CustomerSelectionWidgetState extends State<CustomerSelectionWidget> {
               phone: '+0987654321',
               loyaltyTier: LoyaltyTier.gold,
               loyaltyPoints: 500,
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
+              createdAt: DateTime.now().toIso8601String(),
+              updatedAt: DateTime.now().toIso8601String(),
             ),
           ].where((customer) =>
-              customer.name.toLowerCase().contains(query.toLowerCase()) ||
-              customer.phone.contains(query)
+              (customer.name?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+              (customer.phone?.contains(query) ?? false)
           ).toList();
           _isSearching = false;
         });
@@ -522,8 +526,8 @@ class _CustomerSelectionWidgetState extends State<CustomerSelectionWidget> {
                   phone: phoneController.text.trim(),
                   loyaltyTier: LoyaltyTier.bronze,
                   loyaltyPoints: 0,
-                  createdAt: DateTime.now(),
-                  updatedAt: DateTime.now(),
+                  createdAt: DateTime.now().toIso8601String(),
+                  updatedAt: DateTime.now().toIso8601String(),
                 );
                 
                 Navigator.of(context).pop();
@@ -547,7 +551,7 @@ class _CustomerSelectionWidgetState extends State<CustomerSelectionWidget> {
         return Colors.amber;
       case LoyaltyTier.platinum:
         return Colors.purple;
-      case LoyaltyTier.diamond:
+      case LoyaltyTier.vip:
         return Colors.blue;
       case LoyaltyTier.none:
         return Colors.grey;
@@ -564,8 +568,8 @@ class _CustomerSelectionWidgetState extends State<CustomerSelectionWidget> {
         return 'Gold';
       case LoyaltyTier.platinum:
         return 'Platinum';
-      case LoyaltyTier.diamond:
-        return 'Diamond';
+      case LoyaltyTier.vip:
+        return 'VIP';
       case LoyaltyTier.none:
         return 'Member';
     }

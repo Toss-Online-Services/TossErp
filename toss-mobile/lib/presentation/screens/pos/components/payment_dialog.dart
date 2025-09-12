@@ -551,8 +551,7 @@ class _PaymentDialogState extends State<PaymentDialog>
   void _processCardPayment() {
     // TODO: Integrate with actual card processing
     final payment = PaymentEntity(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      transactionId: '',
+      transactionId: DateTime.now().millisecondsSinceEpoch,
       amount: _remainingAmount,
       method: _selectedPaymentMethod,
       status: PaymentStatus.completed,
@@ -597,8 +596,7 @@ class _PaymentDialogState extends State<PaymentDialog>
       final cashAmount = (double.tryParse(_cashReceivedController.text) ?? 0) * 100;
       if (cashAmount > 0) {
         final cashPayment = PaymentEntity(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          transactionId: '',
+          transactionId: DateTime.now().millisecondsSinceEpoch,
           amount: _remainingAmount.clamp(0, cashAmount.toInt()),
           method: PaymentMethod.cash,
           status: PaymentStatus.completed,
@@ -612,8 +610,7 @@ class _PaymentDialogState extends State<PaymentDialog>
     // Add loyalty points payment if used
     if (_loyaltyPointsUsed > 0) {
       final loyaltyPayment = PaymentEntity(
-        id: '${DateTime.now().millisecondsSinceEpoch}_loyalty',
-        transactionId: '',
+        transactionId: DateTime.now().millisecondsSinceEpoch,
         amount: _loyaltyPointsUsed,
         method: PaymentMethod.loyaltyPoints,
         status: PaymentStatus.completed,

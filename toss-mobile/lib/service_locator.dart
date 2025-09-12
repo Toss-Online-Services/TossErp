@@ -40,8 +40,65 @@ import 'data/datasources/local/appointment_local_datasource_impl.dart';
 import 'presentation/providers/shifts/shift_provider.dart';
 import 'data/datasources/local/customer_local_datasource_impl.dart';
 import 'data/repositories/customer_repository_impl.dart';
+import 'domain/repositories/user_repository.dart';
+import 'domain/repositories/product_repository.dart';
+import 'domain/repositories/transaction_repository.dart';
+import 'domain/repositories/queued_action_repository.dart';
 
 final GetIt sl = GetIt.instance;
+
+// Service Locator for Web (simplified with dummy repositories)
+void setupWebServiceLocator() async {
+  try {
+    // Register Firebase Firestore for web
+    sl.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
+    
+    // Register basic providers that work without SQLite
+    sl.registerLazySingleton(() => ThemeProvider());
+    sl.registerLazySingleton(() => SimpleDashboardManager());
+    
+    // Create dummy repositories for web
+    final dummyUserRepo = DummyUserRepository();
+    final dummyProductRepo = DummyProductRepository();
+    final dummyTransactionRepo = DummyTransactionRepository();
+    final dummyQueuedActionRepo = DummyQueuedActionRepository();
+    
+    // Register web-compatible providers with dummy repositories
+    sl.registerLazySingleton(() => MainProvider(
+      userRepository: dummyUserRepo,
+      productRepository: dummyProductRepo,
+      transactionRepository: dummyTransactionRepo,
+      queuedActionRepository: dummyQueuedActionRepo,
+    ));
+    sl.registerLazySingleton(() => HomeProvider(transactionRepository: dummyTransactionRepo));
+    sl.registerLazySingleton(() => ProductsProvider(productRepository: dummyProductRepo));
+    
+    debugPrint('Web service locator setup completed');
+  } catch (e) {
+    debugPrint('Web service locator setup error: $e');
+  }
+}
+
+// Dummy repository implementations for web
+class DummyUserRepository implements UserRepository {
+  @override
+  noSuchMethod(Invocation invocation) => Future.value(null);
+}
+
+class DummyProductRepository implements ProductRepository {
+  @override
+  noSuchMethod(Invocation invocation) => Future.value(null);
+}
+
+class DummyTransactionRepository implements TransactionRepository {
+  @override
+  noSuchMethod(Invocation invocation) => Future.value(null);
+}
+
+class DummyQueuedActionRepository implements QueuedActionRepository {
+  @override
+  noSuchMethod(Invocation invocation) => Future.value(null);
+}
 
 // Service Locator
 void setupServiceLocator() async {
