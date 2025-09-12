@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-enum ReceiptType { sale, refund, layaway, quote, giftCard, loyalty, void }
+enum ReceiptType { sale, refund, layaway, quote, giftCard, loyalty, voidTransaction }
 enum ReceiptFormat { thermal, a4, pos58, pos80 }
 enum ReceiptStatus { pending, printed, emailed, sms, failed }
 enum DeliveryMethod { print, email, sms, whatsapp, all }

@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:local_auth/local_auth.dart';
 
-import '../entities/employee_entity.dart';
+import '../entities/employee_entity.dart' as domain;
 
 class AuthenticationResult {
   final bool success;
-  final EmployeeEntity? employee;
+  final domain.EmployeeEntity? employee;
   final String? error;
   final AuthenticationMethod method;
 
@@ -17,7 +17,7 @@ class AuthenticationResult {
     required this.method,
   });
 
-  factory AuthenticationResult.success(EmployeeEntity employee, AuthenticationMethod method) {
+  factory AuthenticationResult.success(domain.EmployeeEntity employee, AuthenticationMethod method) {
     return AuthenticationResult(
       success: true,
       employee: employee,

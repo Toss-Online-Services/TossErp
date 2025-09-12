@@ -5,6 +5,7 @@ import '../../../app/services/auth/auth_service.dart';
 import '../../../app/utilities/console_log.dart';
 import '../../../core/errors/errors.dart';
 import '../../../core/usecase/usecase.dart';
+import '../../../domain/entities/discount_entity.dart';
 import '../../../domain/entities/ordered_product_entity.dart';
 import '../../../domain/entities/product_entity.dart';
 import '../../../domain/entities/transaction_entity.dart';
@@ -134,7 +135,20 @@ class HomeProvider extends ChangeNotifier {
             final bool isPct = (discountPercent != null && discountPercent! > 0);
             final int value = isPct ? discountPercent!.round() : discountAmount;
             await sl<DiscountRepositoryImpl>()
-                .createDiscount(DiscountEntity(transactionId: txnId, scope: 'cart', type: isPct ? 'percentage' : 'fixed', value: value));
+                .createDiscount(DiscountEntity(
+                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                  name: 'Cart Discount',
+                  description: 'Applied cart-level discount',
+                  type: isPct ? DiscountType.percentage : DiscountType.fixedAmount,
+                  scope: DiscountScope.cart,
+                  application: DiscountApplication.manual,
+                  value: value.toDouble(),
+                  startDate: DateTime.now(),
+                  endDate: DateTime.now().add(const Duration(days: 1)),
+                  createdAt: DateTime.now(),
+                  createdBy: 'system',
+                  transactionId: txnId.toString(),
+                ));
           }
         } catch (e) {
           cl('[discount.save].error $e');

@@ -73,6 +73,8 @@ class DiscountEntity extends Equatable {
   final DateTime createdAt;
   final DateTime? updatedAt;
   final String createdBy;
+  final String? transactionId; // Transaction ID for applied discounts
+  final String? orderedProductId; // Product ID for item-specific discounts
 
   const DiscountEntity({
     required this.id,
@@ -107,6 +109,8 @@ class DiscountEntity extends Equatable {
     required this.createdAt,
     this.updatedAt,
     required this.createdBy,
+    this.transactionId,
+    this.orderedProductId,
   });
 
   @override
@@ -143,6 +147,8 @@ class DiscountEntity extends Equatable {
         createdAt,
         updatedAt,
         createdBy,
+        transactionId,
+        orderedProductId,
       ];
 
   DiscountEntity copyWith({
@@ -178,6 +184,8 @@ class DiscountEntity extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? createdBy,
+    String? transactionId,
+    String? orderedProductId,
   }) {
     return DiscountEntity(
       id: id ?? this.id,
@@ -212,6 +220,8 @@ class DiscountEntity extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       createdBy: createdBy ?? this.createdBy,
+      transactionId: transactionId ?? this.transactionId,
+      orderedProductId: orderedProductId ?? this.orderedProductId,
     );
   }
 
@@ -249,6 +259,8 @@ class DiscountEntity extends Equatable {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
       'createdBy': createdBy,
+      'transactionId': transactionId,
+      'orderedProductId': orderedProductId,
     };
   }
 
@@ -286,6 +298,8 @@ class DiscountEntity extends Equatable {
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
       createdBy: json['createdBy'],
+      transactionId: json['transactionId'],
+      orderedProductId: json['orderedProductId'],
     );
   }
 

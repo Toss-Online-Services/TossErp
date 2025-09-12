@@ -16,10 +16,10 @@ class PaymentRepositoryImpl extends PaymentRepository {
       final id = await paymentLocalDatasource.createPayment(PaymentModel(
         id: payment.id ?? DateTime.now().millisecondsSinceEpoch,
         transactionId: payment.transactionId,
-        method: payment.method,
+        method: payment.method.name, // Convert enum to string
         amount: payment.amount,
         reference: payment.reference,
-        createdAt: payment.createdAt ?? DateTime.now().toIso8601String(),
+        createdAt: payment.createdAt.toIso8601String(), // Convert DateTime to string
         updatedAt: payment.updatedAt ?? DateTime.now().toIso8601String(),
       ));
       return Result.success(id);
@@ -43,13 +43,13 @@ class PaymentRepositoryImpl extends PaymentRepository {
     try {
       final rows = await paymentLocalDatasource.getTransactionPayments(transactionId);
       return Result.success(rows
-          .map((e) => PaymentEntity(
+          .map((e) => PaymentEntity.legacy(
                 id: e.id,
                 transactionId: e.transactionId,
-                method: e.method,
+                methodString: e.method, // Use legacy constructor that accepts String
                 amount: e.amount,
                 reference: e.reference,
-                createdAt: e.createdAt,
+                createdAtString: e.createdAt, // Use legacy constructor that accepts String
                 updatedAt: e.updatedAt,
               ))
           .toList());

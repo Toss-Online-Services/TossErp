@@ -75,13 +75,15 @@ dependencies:
   permission_handler: ^11.3.0  # Permissions management
   device_info_plus: ^10.1.0  # Device information
   battery_plus: ^5.0.3  # Battery status for offline mode
-  vibration: ^1.8.4  # Haptic feedback
+  vibration: ^3.1.3  # Haptic feedback - Updated for Flutter 3.x compatibility
   share_plus: ^7.2.2  # Sharing capabilities
   csv: ^6.0.0  # CSV import/export
   qr_flutter: ^4.1.0  # QR code generation
   geolocator: ^10.1.1  # Location services
   geocoding: ^2.1.1  # Location geocoding
   uuid: ^4.3.3  # UUID generation
+  flutter_local_notifications: ^17.2.2  # Local notifications
+  timezone: ^0.9.4  # Timezone support
 
 
 dev_dependencies:

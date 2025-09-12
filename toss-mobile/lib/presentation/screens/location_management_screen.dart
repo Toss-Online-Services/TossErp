@@ -787,7 +787,7 @@ class _LocationManagementScreenState extends State<LocationManagementScreen>
         return Icons.priority_high;
       case TransferType.rebalance:
         return Icons.balance;
-      case TransferType.returned:
+      case TransferType.returnTransfer:
         return Icons.keyboard_return;
       case TransferType.damaged:
         return Icons.warning;

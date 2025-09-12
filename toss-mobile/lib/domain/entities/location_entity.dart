@@ -282,7 +282,7 @@ class LocationEntity extends Equatable {
 
 // Transfer-related entities
 enum TransferStatus { pending, approved, shipped, received, cancelled, rejected }
-enum TransferType { stock, emergency, rebalance, return, damaged }
+enum TransferType { stock, emergency, rebalance, returnTransfer, damaged }
 
 class InventoryTransferEntity extends Equatable {
   final String id;
