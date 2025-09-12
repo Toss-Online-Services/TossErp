@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 enum CustomerIdType { phone, membershipCard, qrCode, nfc, biometric }
 enum CustomerTier { bronze, silver, gold, platinum, vip }
+enum LoyaltyTier { none, bronze, silver, gold, platinum, vip }
 enum PreferredCommunication { sms, whatsapp, voice, print, none }
 
 class CustomerEntity extends Equatable {
@@ -15,7 +16,9 @@ class CustomerEntity extends Equatable {
   final String? biometricId; // Fingerprint or face recognition hash
   final CustomerIdType primaryIdType;
   final CustomerTier tier;
+  final LoyaltyTier loyaltyTier;
   final int pointsBalance;
+  final int loyaltyPoints;
   final double totalSpent; // Lifetime spending in cents
   final int visitCount;
   final DateTime? lastVisit;
@@ -45,7 +48,9 @@ class CustomerEntity extends Equatable {
     this.biometricId,
     this.primaryIdType = CustomerIdType.phone,
     this.tier = CustomerTier.bronze,
+    this.loyaltyTier = LoyaltyTier.none,
     this.pointsBalance = 0,
+    this.loyaltyPoints = 0,
     this.totalSpent = 0.0,
     this.visitCount = 0,
     this.lastVisit,
@@ -179,7 +184,9 @@ class CustomerEntity extends Equatable {
     biometricId,
     primaryIdType,
     tier,
+    loyaltyTier,
     pointsBalance,
+    loyaltyPoints,
     totalSpent,
     visitCount,
     lastVisit,

@@ -402,7 +402,7 @@ class _PaymentDialogState extends State<PaymentDialog>
             leading: const Icon(Icons.contactless),
             title: const Text('Contactless'),
             trailing: Radio<PaymentMethod>(
-              value: PaymentMethod.contactless,
+              value: PaymentMethod.nfc,
               groupValue: _selectedPaymentMethod,
               onChanged: (value) {
                 setState(() {

@@ -920,7 +920,7 @@ class _GatewayConfigScreenState extends State<GatewayConfigScreen> {
   }
 
   String _formatFieldLabel(String key) {
-    return key.split(/(?=[A-Z])/).join(' ').toUpperCase();
+    return key.replaceAllMapped(RegExp(r'(?=[A-Z])'), (match) => ' ${match.group(0)}').trim().toUpperCase();
   }
 
   String? _getFieldHelperText(String key) {
