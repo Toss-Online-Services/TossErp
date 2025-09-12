@@ -26,9 +26,18 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _mainProvider.initMainProvider(context);
+      if (mounted) {
+        _mainProvider.initMainProvider(context);
+      }
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // Cancel any connectivity subscriptions to prevent context usage after disposal
+    _mainProvider.dispose();
+    super.dispose();
   }
 
   @override
@@ -98,15 +107,21 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onItemTapped(int index, BuildContext context) {
+    if (!mounted) return;
+    
     switch (index) {
       case 0:
-        GoRouter.of(context).go('/home');
+        if (mounted) GoRouter.of(context).go('/home');
+        break;
       case 1:
-        GoRouter.of(context).go('/products');
+        if (mounted) GoRouter.of(context).go('/products');
+        break;
       case 2:
-        GoRouter.of(context).go('/transactions');
+        if (mounted) GoRouter.of(context).go('/transactions');
+        break;
       case 3:
-        GoRouter.of(context).go('/account');
+        if (mounted) GoRouter.of(context).go('/account');
+        break;
     }
   }
 }

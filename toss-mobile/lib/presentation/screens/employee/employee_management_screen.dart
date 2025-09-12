@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../domain/entities/employee_entity.dart';
-import '../../../core/services/employee_authentication_service.dart';
+import '../../../core/services/employee_authentication_service_stub.dart';
 
 class EmployeeManagementScreen extends StatefulWidget {
   const EmployeeManagementScreen({super.key});

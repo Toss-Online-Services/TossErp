@@ -84,6 +84,7 @@ dependencies:
   uuid: ^4.3.3  # UUID generation
   flutter_local_notifications: ^17.2.2  # Local notifications
   timezone: ^0.9.4  # Timezone support
+  shared_preferences: ^2.2.2  # Local storage for theme preferences
 
 
 dev_dependencies:

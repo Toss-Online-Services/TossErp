@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'app/database/app_database.dart';
 import 'app/locale/app_locale.dart';
 import 'app/routes/app_routes.dart';
+import 'app/themes/theme_manager.dart';
 import 'firebase_options.dart';
 import 'presentation/providers/theme/theme_provider.dart';
 import 'presentation/screens/error_handler_screen.dart';
@@ -225,10 +226,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: providers,
-      child: Selector<ThemeProvider, ThemeData>(
-        selector: (context, provider) => provider.theme,
-        builder: (context, theme, _) {
+      providers: [
+        ...providers,
+        ChangeNotifierProvider<ThemeManager>(
+          create: (context) {
+            final themeManager = ThemeManager();
+            themeManager.initialize();
+            return themeManager;
+          },
+        ),
+      ],
+      child: Consumer2<ThemeProvider, ThemeManager>(
+        builder: (context, themeProvider, themeManager, _) {
+          // Use ThemeManager if available, otherwise fall back to ThemeProvider
+          final theme = themeManager.currentThemeData;
+          
           return MaterialApp.router(
             title: 'Flutter POS',
             theme: theme,
