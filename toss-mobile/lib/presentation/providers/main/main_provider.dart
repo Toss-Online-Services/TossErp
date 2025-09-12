@@ -18,7 +18,6 @@ import '../../../service_locator.dart';
 import '../products/products_provider.dart';
 import '../../../data/repositories/appointment_repository_impl.dart';
 import '../../../app/services/notifications/notification_service.dart';
-import '../../../app/services/notifications/notification_service.dart';
 
 class MainProvider extends ChangeNotifier {
   final UserRepository userRepository;
@@ -211,12 +210,11 @@ class MainProvider extends ChangeNotifier {
       if (!res.isSuccess || (res.data?.isEmpty ?? true)) return;
       int idBase = 3000;
       for (final a in res.data!) {
-        if (a.scheduledAt == null) continue;
-        final at = DateTime.tryParse(a.scheduledAt!);
+        final at = DateTime.tryParse(a.scheduledAt);
         if (at == null) continue;
         // Only schedule future times today
         if (at.isBefore(DateTime.now())) continue;
-        final title = 'Appointment: ${a.serviceName ?? 'Service'}';
+        final title = 'Appointment: ${a.serviceName}';
         final body = '${a.customerName ?? 'Customer'} at ${at.hour.toString().padLeft(2, '0')}:${at.minute.toString().padLeft(2, '0')}';
         await NotificationService().scheduleAt(
           id: idBase++,
