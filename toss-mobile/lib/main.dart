@@ -15,6 +15,9 @@ import 'app/themes/theme_manager.dart';
 import 'simple_dashboard_manager.dart';
 import 'firebase_options.dart';
 import 'presentation/providers/theme/theme_provider.dart';
+import 'presentation/providers/main/main_provider.dart';
+import 'presentation/providers/home/home_provider.dart';
+import 'presentation/providers/products/products_provider.dart';
 import 'presentation/screens/error_handler_screen.dart';
 import 'service_locator.dart';
 import 'data/datasources/local/user_local_datasource_impl.dart';
@@ -84,8 +87,8 @@ void main() async {
     if (!kIsWeb) {
       setupServiceLocator();
     } else {
-      // For web, setup minimal service locator
-      sl.registerLazySingleton(() => ThemeProvider());
+      // For web, setup minimal service locator with web-compatible providers
+      setupWebServiceLocator();
     }
 
     // Set/lock screen orientation (skip for web)
@@ -113,10 +116,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // For web, use simplified provider setup
+    // For web, use simplified provider setup with all necessary providers
     if (kIsWeb) {
-      return ChangeNotifierProvider(
-        create: (_) => ThemeProvider(),
+      return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => sl<ThemeProvider>()),
+          ChangeNotifierProvider(create: (_) => sl<SimpleDashboardManager>()),
+          ChangeNotifierProvider(create: (_) => sl<MainProvider>()),
+          ChangeNotifierProvider(create: (_) => sl<HomeProvider>()),
+          ChangeNotifierProvider(create: (_) => sl<ProductsProvider>()),
+        ],
         child: Consumer<ThemeProvider>(
           builder: (context, themeProvider, _) {
             return MaterialApp.router(
