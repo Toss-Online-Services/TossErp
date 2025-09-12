@@ -26,6 +26,9 @@ import '../../presentation/screens/simple_location_management_screen.dart';
 // Import theme screens
 import '../../presentation/settings/theme_selection_screen.dart';
 import '../../presentation/settings/custom_theme_editor_screen.dart';
+// Import dashboard screens (temporarily disabled)
+// import '../../presentation/settings/dashboard_layout_screen.dart';
+// import '../../presentation/settings/dashboard_layout_editor_screen.dart';
 import '../services/auth/auth_service.dart';
 
 // App routes
@@ -128,6 +131,8 @@ class AppRoutes {
       _locations,
       // Theme routes
       _themes,
+      // Dashboard customization routes (temporarily disabled)
+      // _dashboardLayout,
     ],
   );
 
@@ -341,4 +346,24 @@ class AppRoutes {
       return const CustomThemeEditorScreen();
     },
   );
+
+  // Dashboard customization routes (temporarily disabled)
+  // static final _dashboardLayout = GoRoute(
+  //   path: '/dashboard-layout',
+  //   pageBuilder: (context, state) {
+  //     return const NoTransitionPage<void>(
+  //       child: DashboardLayoutScreen(),
+  //     );
+  //   },
+  //   routes: [
+  //     _dashboardLayoutEditor,
+  //   ],
+  // );
+
+  // static final _dashboardLayoutEditor = GoRoute(
+  //   path: 'editor',
+  //   builder: (context, state) {
+  //     return const DashboardLayoutEditorScreen();
+  //   },
+  // );
 }
