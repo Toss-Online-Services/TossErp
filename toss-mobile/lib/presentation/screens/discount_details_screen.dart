@@ -774,10 +774,16 @@ class _DiscountDetailsScreenState extends State<DiscountDetailsScreen>
     switch (application) {
       case DiscountApplication.automatic:
         return 'Automatic';
-      case DiscountApplication.coupon:
+      case DiscountApplication.couponCode:
         return 'Coupon Code';
+      case DiscountApplication.loyaltyTier:
+        return 'Loyalty Tier';
+      case DiscountApplication.customerGroup:
+        return 'Customer Group';
       case DiscountApplication.manual:
         return 'Manual Application';
+    }
+  }
     }
   }
 

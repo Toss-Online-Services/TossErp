@@ -423,7 +423,7 @@ class EmployeeEntity {
   });
 
   bool get isActive => status == EmployeeStatus.active;
-  bool get canWorkAtLocation(String locationId) => locationIds.contains(locationId);
+  bool canWorkAtLocation(String locationId) => locationIds.contains(locationId);
   bool get isCurrentlyWorking => currentShift?.isActive == true;
 
   String get displayName => name.isNotEmpty ? name : employeeNumber;

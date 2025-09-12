@@ -5,7 +5,7 @@ import '../../domain/entities/sync_entity.dart';
 import '../database/database_helper.dart';
 
 class SyncRepository {
-  final DatabaseHelper _databaseHelper;
+  DatabaseHelper _databaseHelper;
 
   SyncRepository(this._databaseHelper);
 

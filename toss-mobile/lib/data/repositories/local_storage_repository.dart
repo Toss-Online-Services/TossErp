@@ -6,7 +6,7 @@ import '../../domain/entities/sync_entity.dart';
 import '../database/database_helper.dart';
 
 class LocalStorageRepository {
-  final DatabaseHelper _databaseHelper;
+  DatabaseHelper _databaseHelper;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   LocalStorageRepository(this._databaseHelper);

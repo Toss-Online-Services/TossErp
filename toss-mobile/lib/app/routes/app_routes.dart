@@ -15,6 +15,14 @@ import '../../presentation/screens/transactions/transaction_detail_screen.dart';
 import '../../presentation/screens/transactions/transactions_screen.dart';
 import '../../presentation/screens/shifts/shift_screen.dart';
 import '../../presentation/screens/home/barcode_scanner_screen.dart';
+// Import advanced feature screens
+import '../../presentation/screens/customer_management_screen.dart';
+import '../../presentation/screens/employee/employee_management_screen.dart';
+import '../../presentation/screens/simple_discount_management_screen.dart';
+import '../../presentation/screens/simple_analytics_screen.dart';
+import '../../presentation/screens/simple_receipt_settings_screen.dart';
+import '../../presentation/screens/simple_sync_management_screen.dart';
+import '../../presentation/screens/simple_location_management_screen.dart';
 import '../services/auth/auth_service.dart';
 
 // App routes
@@ -101,6 +109,14 @@ class AppRoutes {
       _shifts,
       _scan,
       _account,
+      // Advanced feature routes
+      _customers,
+      _staff,
+      _discounts,
+      _reports,
+      _receipts,
+      _sync,
+      _locations,
     ],
   );
 
@@ -228,6 +244,70 @@ class AppRoutes {
     path: 'about',
     builder: (context, state) {
       return const AboutScreen();
+    },
+  );
+
+  // Advanced feature routes
+  static final _customers = GoRoute(
+    path: '/customers',
+    pageBuilder: (context, state) {
+      return const NoTransitionPage<void>(
+        child: CustomerManagementScreen(),
+      );
+    },
+  );
+
+  static final _staff = GoRoute(
+    path: '/staff',
+    pageBuilder: (context, state) {
+      return const NoTransitionPage<void>(
+        child: EmployeeManagementScreen(),
+      );
+    },
+  );
+
+  static final _discounts = GoRoute(
+    path: '/discounts',
+    pageBuilder: (context, state) {
+      return const NoTransitionPage<void>(
+        child: SimpleDiscountManagementScreen(),
+      );
+    },
+  );
+
+  static final _reports = GoRoute(
+    path: '/reports',
+    pageBuilder: (context, state) {
+      return const NoTransitionPage<void>(
+        child: SimpleAnalyticsScreen(),
+      );
+    },
+  );
+
+  static final _receipts = GoRoute(
+    path: '/receipts',
+    pageBuilder: (context, state) {
+      return const NoTransitionPage<void>(
+        child: SimpleReceiptSettingsScreen(),
+      );
+    },
+  );
+
+  static final _sync = GoRoute(
+    path: '/sync',
+    pageBuilder: (context, state) {
+      return const NoTransitionPage<void>(
+        child: SimpleSyncManagementScreen(),
+      );
+    },
+  );
+
+  static final _locations = GoRoute(
+    path: '/locations',
+    pageBuilder: (context, state) {
+      return const NoTransitionPage<void>(
+        child: SimpleLocationManagementScreen(),
+      );
     },
   );
 }
