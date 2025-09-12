@@ -107,11 +107,21 @@ class HomeProvider extends ChangeNotifier {
           try {
             if (cashAmount > 0) {
               await sl<PaymentRepositoryImpl>()
-                  .createPayment(PaymentEntity(transactionId: txnId, method: 'cash', amount: cashAmount));
+                  .createPayment(PaymentEntity(
+                    transactionId: txnId, 
+                    method: PaymentMethod.cash, 
+                    amount: cashAmount,
+                    createdAt: DateTime.now(),
+                  ));
             }
             if (bankAmount > 0) {
               await sl<PaymentRepositoryImpl>()
-                  .createPayment(PaymentEntity(transactionId: txnId, method: 'bank', amount: bankAmount));
+                  .createPayment(PaymentEntity(
+                    transactionId: txnId, 
+                    method: PaymentMethod.bankTransfer, 
+                    amount: bankAmount,
+                    createdAt: DateTime.now(),
+                  ));
             }
           } catch (e) {
             cl('[payments.save].error $e');

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-enum MovementType { sale, purchase, adjustment, transfer, return, waste, production }
+enum MovementType { sale, purchase, adjustment, transfer, returned, waste, production }
 enum MovementReason { 
   sale, 
   purchase, 
@@ -9,9 +9,9 @@ enum MovementReason {
   expired, 
   theft, 
   transfer, 
-  return, 
+  returned, 
   promotion, 
-  inventory_count,
+  inventoryCount,
   other 
 }
 
@@ -90,7 +90,7 @@ class InventoryMovementEntity extends Equatable {
     );
   }
 
-  bool get isIncoming => [MovementType.purchase, MovementType.return, MovementType.adjustment].contains(type) && quantity > 0;
+  bool get isIncoming => [MovementType.purchase, MovementType.returned, MovementType.adjustment].contains(type) && quantity > 0;
   bool get isOutgoing => [MovementType.sale, MovementType.transfer, MovementType.waste, MovementType.adjustment].contains(type) && quantity < 0;
 
   @override

@@ -11,7 +11,7 @@ enum SalesTransactionStatus {
   partiallyRefunded 
 }
 
-enum SalesTransactionType { sale, return, refund, exchange, layaway }
+enum SalesTransactionType { sale, returned, refund, exchange, layaway }
 
 class SalesTransactionEntity extends Equatable {
   final int? id;

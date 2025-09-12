@@ -98,10 +98,15 @@ class PaymentEntity extends Equatable {
     this.updatedAt,
   }) : method = _parsePaymentMethod(methodString),
        status = PaymentStatus.completed,
+       currency = 'GHS',
        authCode = null,
+       gatewayTransactionId = null,
        metadata = null,
        failureReason = null,
+       processingFee = null,
+       customerId = null,
        createdAt = DateTime.tryParse(createdAtString ?? '') ?? DateTime.now(),
+       completedAt = null,
        createdById = null;
 
   static PaymentMethod _parsePaymentMethod(String methodString) {

@@ -1,6 +1,6 @@
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-import '../entities/customer_entity.dart';
+import '../../../domain/entities/customer_entity.dart';
 
 class CustomerIdentificationService {
   static const String _secretKey = 'your-app-secret-key'; // Should be in secure storage

@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
-import '../entities/payment_entity.dart';
+import '../../domain/entities/payment_entity.dart';
+import '../repositories/payment_repository.dart';
 
 class PaymentService {
   static final PaymentService _instance = PaymentService._internal();
