@@ -232,6 +232,11 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void onClearCart() {
+    orderedProducts.clear();
+    notifyListeners();
+  }
+
   void onChangedOrderedProductQuantity(int index, int value) {
     orderedProducts[index] = orderedProducts[index].copyWith(quantity: value);
     notifyListeners();

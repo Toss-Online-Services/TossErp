@@ -23,9 +23,9 @@ import '../../widgets/app_progress_indicator.dart';
 import '../../widgets/product_search_field.dart';
 import '../../widgets/most_used_product_chips.dart';
 import '../products/components/products_card.dart';
-import 'components/cart_panel_body.dart';
+import 'components/enhanced_cart_panel.dart';
+import 'components/enhanced_cart_header.dart';
 import 'components/cart_panel_footer.dart';
-import 'components/cart_panel_header.dart';
 import 'components/order_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -80,11 +80,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final availableHeight = mediaQuery.size.height 
+        - mediaQuery.padding.top 
+        - mediaQuery.padding.bottom
+        - AppSizes.appBarHeight();
+    
     return Scaffold(
       body: SlidingUpPanel(
         controller: homeProvider.panelController,
         minHeight: 88,
-        maxHeight: AppSizes.screenHeight(context) - AppSizes.appBarHeight() - AppSizes.viewPadding(context).top,
+        maxHeight: availableHeight * 0.9, // Use 90% of available height to ensure visibility
         color: Theme.of(context).colorScheme.surfaceContainerLowest,
         boxShadow: [
           BoxShadow(
@@ -98,8 +104,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           topRight: Radius.circular(AppSizes.radius * 2),
         ),
         body: body(),
-        header: const CartPanelHeader(),
-        panel: const CartPanelBody(),
+        header: const EnhancedCartHeader(),
+        panel: const EnhancedCartPanel(),
         footer: const CartPanelFooter(),
         onPanelOpened: () => homeProvider.onChangedIsPanelExpanded(true),
         onPanelClosed: () => homeProvider.onChangedIsPanelExpanded(false),
