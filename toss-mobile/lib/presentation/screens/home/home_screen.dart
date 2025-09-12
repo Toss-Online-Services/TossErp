@@ -101,18 +101,32 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
-                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(AppSizes.radius * 2),
-                          topRight: Radius.circular(AppSizes.radius * 2),
-                        ),
-                      ),
+                      isDismissible: true,
+                      enableDrag: true,
+                      backgroundColor: Colors.transparent,
                       builder: (context) => DraggableScrollableSheet(
                         initialChildSize: 0.7,
                         minChildSize: 0.3,
                         maxChildSize: 0.9,
-                        builder: (context, scrollController) => const SimpleCartPanel(),
+                        snap: true,
+                        snapSizes: const [0.3, 0.7, 0.9],
+                        builder: (context, scrollController) => Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surfaceContainerLowest,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(AppSizes.radius * 2),
+                              topRight: Radius.circular(AppSizes.radius * 2),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, -2),
+                              ),
+                            ],
+                          ),
+                          child: const SimpleCartPanel(),
+                        ),
                       ),
                     );
                   },
