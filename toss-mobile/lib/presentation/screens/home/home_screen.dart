@@ -1,6 +1,5 @@
 import '../../widgets/app_image.dart';
 // import '../../widgets/customizable_dashboard.dart'; // Temporarily disabled
-import '../dashboard/simple_dashboard_widget.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -11,12 +10,10 @@ import '../../../app/themes/app_sizes.dart';
 import '../../../app/utilities/currency_formatter.dart';
 import '../../../domain/entities/product_entity.dart';
 import '../../../service_locator.dart';
-import '../../../simple_dashboard_manager.dart';
 import '../../providers/home/home_provider.dart';
 import '../../providers/main/main_provider.dart';
 import '../../providers/products/products_provider.dart';
 import '../../widgets/app_button.dart';
-import '../../widgets/app_dialog.dart';
 import '../../widgets/app_empty_state.dart';
 import '../../widgets/app_loading_more_indicator.dart';
 import '../../widgets/app_progress_indicator.dart';
@@ -24,7 +21,6 @@ import '../../widgets/product_search_field.dart';
 import '../../widgets/most_used_product_chips.dart';
 import '../products/components/products_card.dart';
 import 'components/simple_cart_panel.dart';
-import 'components/order_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,22 +29,18 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> {
   final mainProvider = sl<MainProvider>();
   final homeProvider = sl<HomeProvider>();
   final productProvider = sl<ProductsProvider>();
-  final dashboardManager = sl<SimpleDashboardManager>();
 
   final scrollController = ScrollController();
 
   final searchFieldController = TextEditingController();
   Timer? _searchDebounce;
 
-  late TabController _tabController;
-
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
     scrollController.addListener(scrollListener);
     WidgetsBinding.instance.addPostFrameCallback((_) => onRefresh());
     super.initState();
@@ -56,7 +48,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _tabController.dispose();
     scrollController.removeListener(scrollListener);
     scrollController.dispose();
     searchFieldController.dispose();
@@ -352,37 +343,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget body() {
     return Scaffold(
       appBar: AppBar(
-        title: title(),
+        title: const Text('TOSS POS'),
         elevation: 0,
         shadowColor: Colors.transparent,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         actions: [
           syncButton(),
           networkInfo(),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(
-              icon: Icon(Icons.dashboard),
-              text: 'Dashboard',
-            ),
-            Tab(
-              icon: Icon(Icons.shopping_cart),
-              text: 'Products',
-            ),
-          ],
-        ),
       ),
       body: SafeArea(
         bottom: false, // Let us handle bottom padding manually
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            // const CustomizableDashboard(), // Temporarily disabled
-            const SimpleDashboardWidget(),
-            _buildProductsView(),
-          ],
-        ),
+        child: _buildProductsView(),
       ),
     );
   }
@@ -408,8 +381,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   floating: true,
                   snap: true,
                   automaticallyImplyLeading: false,
-                  collapsedHeight: 70,
+                  collapsedHeight: 80,
+                  expandedHeight: 80,
                   titleSpacing: 0,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                   title: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding),
                     child: ProductSearchField(
@@ -509,10 +484,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       padding: const EdgeInsets.fromLTRB(AppSizes.padding, 2, AppSizes.padding, AppSizes.padding),
                       sliver: SliverGrid.builder(
                         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 200,
-                          childAspectRatio: 1 / 1.5,
-                          crossAxisSpacing: AppSizes.padding / 2,
-                          mainAxisSpacing: AppSizes.padding / 2,
+                          maxCrossAxisExtent: 180,
+                          childAspectRatio: 1 / 1.3,
+                          crossAxisSpacing: AppSizes.padding,
+                          mainAxisSpacing: AppSizes.padding,
                         ),
                         itemCount: provider.allProducts!.length,
                         itemBuilder: (context, i) {
@@ -542,32 +517,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return ProductsCard(
       product: product,
       onTap: () {
-        if (product.stock == 0) return;
+        if (product.stock == 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Product out of stock')),
+          );
+          return;
+        }
 
-        int currentQty =
-            homeProvider.orderedProducts.where((e) => e.productId == product.id).firstOrNull?.quantity ?? 0;
-
-        AppDialog.show(
-          title: 'Enter Amount',
-          child: OrderCard(
-            name: product.name,
-            imageUrl: product.imageUrl,
-            stock: product.stock,
-            price: product.price,
-            initialQuantity: currentQty,
-            onChangedQuantity: (val) {
-              currentQty = val;
-            },
+        // Directly add to cart - simple one-click functionality
+        homeProvider.onAddOrderedProduct(product, 1);
+        
+        // Show simple feedback
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${product.name} added to cart'),
+            duration: const Duration(seconds: 1),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
-          rightButtonText: 'Add To Cart',
-          leftButtonText: 'Cancel',
-          onTapLeftButton: () {
-            context.pop();
-          },
-          onTapRightButton: () {
-            homeProvider.onAddOrderedProduct(product, currentQty == 0 ? 1 : currentQty);
-            context.pop();
-          },
         );
       },
     );
