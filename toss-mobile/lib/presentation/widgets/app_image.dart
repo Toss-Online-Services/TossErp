@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-// Conditional imports for platform-specific features
-import 'dart:io' if (dart.library.html) 'dart:html' as platform;
-
 // Enum to match the original app_image package
 enum ImgProvider {
   networkImage,

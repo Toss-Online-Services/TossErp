@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:toss_mobile/app/dashboard/dashboard_config.dart';
-import 'package:toss_mobile/app/dashboard/dashboard_manager.dart';
 import '../../app/themes/app_sizes.dart';
 
 /// Customizable dashboard widget for the home screen

@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import '../../lib/domain/entities/product_entity.dart';
-import '../../lib/domain/entities/product_category_entity.dart';
-import '../../lib/core/errors/errors.dart';
-import '../../lib/data/repositories/product_repository_impl.dart';
-import '../../lib/data/datasources/local/product_local_datasource_impl.dart';
-import '../../lib/data/datasources/remote/product_remote_datasource_impl.dart';
-import '../../lib/data/datasources/local/queued_action_local_datasource_impl.dart';
-import '../../lib/data/models/product_model.dart';
+import 'package:toss_mobile/domain/entities/product_entity.dart';
+import 'package:toss_mobile/domain/entities/product_category_entity.dart';
+import 'package:toss_mobile/core/errors/errors.dart';
+import 'package:toss_mobile/data/repositories/product_repository_impl.dart';
+import 'package:toss_mobile/data/datasources/local/product_local_datasource_impl.dart';
+import 'package:toss_mobile/data/datasources/remote/product_remote_datasource_impl.dart';
+import 'package:toss_mobile/data/datasources/local/queued_action_local_datasource_impl.dart';
+import 'package:toss_mobile/data/models/product_model.dart';
 
 import 'product_repository_test.mocks.dart';
 
