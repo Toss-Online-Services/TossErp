@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -47,18 +48,35 @@ class _ProductSearchFieldState extends State<ProductSearchField> {
             textInputAction: TextInputAction.search,
             onChanged: (val) {
               _debounce?.cancel();
+              if (kDebugMode) {
+                print('🔍 Search input changed: "$val"');
+              }
               _debounce = Timer(const Duration(milliseconds: 300), () async {
-                productsProvider.allProducts = null;
-                await productsProvider.getAllProducts(contains: val.trim());
+                if (mounted) {
+                  final searchTerm = val.trim().isEmpty ? null : val.trim();
+                  if (kDebugMode) {
+                    print('🔍 Executing search for: "$searchTerm"');
+                  }
+                  try {
+                    await productsProvider.getAllProducts(contains: searchTerm);
+                    if (kDebugMode) {
+                      productsProvider.debugSearchState();
+                    }
+                  } catch (e) {
+                    if (kDebugMode) {
+                      print('🔍 Search error: $e');
+                    }
+                  }
+                }
               });
             },
             onEditingComplete: () {
               FocusScope.of(context).unfocus();
-              productsProvider.allProducts = null;
-              productsProvider.getAllProducts(contains: widget.controller.text.trim());
+              final searchText = widget.controller.text.trim();
+              productsProvider.getAllProducts(contains: searchText.isEmpty ? null : searchText);
             },
             onTapClearButton: () {
-              productsProvider.getAllProducts(contains: widget.controller.text.trim());
+              productsProvider.getAllProducts(); // Clear search when clear button is tapped
             },
           ),
         ),
