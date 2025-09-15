@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_pos/app/routes/app_routes.dart';
-import 'package:flutter_pos/core/errors/errors.dart';
-import 'package:flutter_pos/core/usecase/usecase.dart';
-import 'package:flutter_pos/presentation/providers/auth/auth_provider.dart';
-import 'package:flutter_pos/presentation/screens/auth/sign_in/sign_in_screen.dart';
-import 'package:flutter_pos/service_locator.dart';
+import 'package:toss_mobile/app/routes/app_routes.dart';
+import 'package:toss_mobile/core/errors/errors.dart';
+import 'package:toss_mobile/core/usecase/usecase.dart';
+import 'package:toss_mobile/presentation/providers/auth/auth_provider.dart';
+import 'package:toss_mobile/presentation/screens/auth/sign_in/sign_in_screen.dart';
+import 'package:toss_mobile/service_locator.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';

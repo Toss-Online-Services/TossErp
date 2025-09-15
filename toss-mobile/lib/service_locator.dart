@@ -47,7 +47,6 @@ import 'presentation/providers/shifts/shift_provider.dart';
 import 'data/datasources/local/customer_local_datasource_impl.dart';
 import 'data/repositories/customer_repository_impl.dart';
 import 'domain/repositories/user_repository.dart';
-import 'domain/repositories/product_repository.dart';
 import 'domain/repositories/queued_action_repository.dart';
 
 final GetIt sl = GetIt.instance;

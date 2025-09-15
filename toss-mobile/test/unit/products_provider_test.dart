@@ -1,14 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import '../../lib/presentation/providers/products/products_provider.dart';
-import '../../lib/domain/repositories/product_repository.dart';
-import '../../lib/domain/entities/product_entity.dart';
-import '../../lib/domain/entities/product_category_entity.dart';
-import '../../lib/core/usecase/usecase.dart';
-import '../../lib/core/errors/errors.dart';
-import '../../lib/app/services/auth/auth_service.dart';
+import 'package:toss_mobile/presentation/providers/products/products_provider.dart';
+import 'package:toss_mobile/domain/repositories/product_repository.dart';
+import 'package:toss_mobile/domain/entities/product_entity.dart';
+import 'package:toss_mobile/domain/entities/product_category_entity.dart';
+import 'package:toss_mobile/core/usecase/usecase.dart';
+import 'package:toss_mobile/core/errors/errors.dart';
+import 'package:toss_mobile/app/services/auth/auth_service.dart';
 
 import 'products_provider_test.mocks.dart';
 

@@ -3,9 +3,8 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 
-import '../../lib/app/services/auth/auth_service.dart';
+import 'package:toss_mobile/app/services/auth/auth_service.dart';
 
 import 'auth_service_test.mocks.dart';
 

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/services.dart';
 
 import 'package:toss_mobile/app/dashboard/dashboard_config.dart';
-import 'package:toss_mobile/app/dashboard/dashboard_manager.dart';
 
 /// Screen for editing and customizing dashboard layouts
 class DashboardLayoutEditorScreen extends StatefulWidget {
