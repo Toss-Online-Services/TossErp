@@ -784,8 +784,6 @@ class _DiscountDetailsScreenState extends State<DiscountDetailsScreen>
         return 'Manual Application';
     }
   }
-    }
-  }
 
   Color _getDiscountTypeColor(DiscountType type) {
     switch (type) {
