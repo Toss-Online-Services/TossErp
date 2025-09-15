@@ -10,6 +10,7 @@ class ProductModel {
   int sold;
   int price;
   String? description;
+  int? categoryId;
   String? createdAt;
   String? updatedAt;
 
@@ -23,6 +24,7 @@ class ProductModel {
     required this.sold,
     required this.price,
     this.description,
+    this.categoryId,
     this.createdAt,
     this.updatedAt,
   });
@@ -38,6 +40,7 @@ class ProductModel {
       sold: json['sold'],
       price: json['price'],
       description: json['description'],
+      categoryId: json['categoryId'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
     );
@@ -54,6 +57,7 @@ class ProductModel {
       'sold': sold,
       'price': price,
       'description': description,
+      'categoryId': categoryId,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };
@@ -70,6 +74,7 @@ class ProductModel {
       sold: entity.sold ?? 0,
       price: entity.price,
       description: entity.description,
+      categoryId: entity.categoryId,
       createdAt: entity.createdAt ?? DateTime.now().toIso8601String(),
       updatedAt: entity.updatedAt ?? DateTime.now().toIso8601String(),
     );
@@ -86,6 +91,7 @@ class ProductModel {
       sold: sold,
       price: price,
       description: description,
+      categoryId: categoryId,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
@@ -101,6 +107,7 @@ class ProductModel {
       stock: 0,
       sold: 0,
       price: 0,
+      categoryId: null,
     );
   }
 }

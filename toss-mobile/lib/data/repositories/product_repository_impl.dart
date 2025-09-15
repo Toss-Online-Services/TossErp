@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import '../../app/const/const.dart';
 import '../../app/services/connectivity/connectivity_service.dart';
 import '../../core/errors/errors.dart';
@@ -55,6 +57,11 @@ class ProductRepositoryImpl extends ProductRepository {
     String? contains,
   }) async {
     try {
+      if (kDebugMode) {
+        debugPrint('🏪 ProductRepository: Getting products for user: $userId');
+        debugPrint('🏪 ProductRepository: Contains: $contains, Limit: $limit, Offset: $offset');
+      }
+      
       var local = await productLocalDatasource.getUserProducts(
         userId,
         orderBy: orderBy,
@@ -63,6 +70,13 @@ class ProductRepositoryImpl extends ProductRepository {
         offset: offset,
         contains: contains,
       );
+
+      if (kDebugMode) {
+        debugPrint('🏪 ProductRepository: Found ${local.length} local products');
+        if (local.isNotEmpty) {
+          debugPrint('🏪 First local product: ${local.first.name}');
+        }
+      }
 
       if (ConnectivityService.isConnected) {
         var remote = await productRemoteDatasource.getUserProducts(
@@ -73,6 +87,10 @@ class ProductRepositoryImpl extends ProductRepository {
           offset: offset,
           contains: contains,
         );
+
+        if (kDebugMode) {
+          debugPrint('🏪 ProductRepository: Found ${remote.length} remote products');
+        }
 
         var res = await syncProducts(local, remote);
 
@@ -95,11 +113,25 @@ class ProductRepositoryImpl extends ProductRepository {
                   (p.stock.toString().contains(term)))
               .toList();
         }
+        
+        if (kDebugMode) {
+          debugPrint('✅ ProductRepository: Returning ${list.length} products after sync and filtering');
+        }
+        
         return Result.success(list);
       }
 
-      return Result.success(local.map((e) => e.toEntity()).toList());
+      var list = local.map((e) => e.toEntity()).toList();
+      
+      if (kDebugMode) {
+        debugPrint('✅ ProductRepository: Returning ${list.length} local products (offline mode)');
+      }
+      
+      return Result.success(list);
     } catch (e) {
+      if (kDebugMode) {
+        debugPrint('❌ ProductRepository: Error getting products: $e');
+      }
       return Result.error(APIError(message: e.toString()));
     }
   }
