@@ -21,20 +21,25 @@ class AuthService implements AuthBase {
   void _initializeGoogleSignIn() {
     // On Android, serverClientId is REQUIRED and must be the Web OAuth client ID
     // Create a .env file with GOOGLE_SERVER_CLIENT_ID=your_web_oauth_client_id
-    final String? serverClientId = dotenv.env['GOOGLE_SERVER_CLIENT_ID'];
+    try {
+      final String? serverClientId = dotenv.env['GOOGLE_SERVER_CLIENT_ID'];
 
-    if (kIsWeb) {
-      // Web does not require initialization here
-      return;
+      if (kIsWeb) {
+        // Web does not require initialization here
+        return;
+      }
+
+      // iOS optionally uses clientId; Android ignores clientId and requires serverClientId
+      final String? iosClientId = DefaultFirebaseOptions.ios.iosClientId;
+
+      GoogleSignIn.instance.initialize(
+        clientId: defaultTargetPlatform == TargetPlatform.iOS ? iosClientId : null,
+        serverClientId: serverClientId,
+      );
+    } catch (e) {
+      debugPrint('Failed to initialize Google Sign-In: $e');
+      // Continue without Google Sign-In configuration if it fails
     }
-
-    // iOS optionally uses clientId; Android ignores clientId and requires serverClientId
-    final String? iosClientId = DefaultFirebaseOptions.ios.iosClientId;
-
-    GoogleSignIn.instance.initialize(
-      clientId: defaultTargetPlatform == TargetPlatform.iOS ? iosClientId : null,
-      serverClientId: serverClientId,
-    );
   }
 
   final FirebaseAuth _firebaseAuth;
