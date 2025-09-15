@@ -12,9 +12,9 @@ class AppTheme {
 
   AppTheme._();
 
-  Color _primaryColor = AppColors.orange;
-  Color? _secondaryColor = AppColors.charcoal;
-  Color? _tertiaryColor = AppColors.plum;
+  Color _primaryColor = AppColors.black;
+  Color? _secondaryColor = Colors.grey[600];
+  Color? _tertiaryColor = Colors.grey[400];
   Brightness _brightness = Brightness.light;
   TextTheme _primaryTextTheme = GoogleFonts.latoTextTheme();
   TextTheme _secondaryTextTheme = GoogleFonts.poppinsTextTheme();
@@ -36,13 +36,43 @@ class AppTheme {
     _secondaryTextTheme = secondaryTextTheme ?? _secondaryTextTheme;
 
     return _base(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: _primaryColor,
-        brightness: _brightness,
-        primary: _primaryColor,
-        secondary: _secondaryColor,
-        tertiary: _tertiaryColor,
-      ),
+      colorScheme: _brightness == Brightness.light 
+          ? ColorScheme.light(
+              primary: Colors.black,
+              onPrimary: Colors.white,
+              secondary: Colors.grey[600]!,
+              onSecondary: Colors.white,
+              tertiary: Colors.grey[400]!,
+              onTertiary: Colors.black,
+              surface: Colors.white,
+              onSurface: Colors.black,
+              surfaceContainerLowest: Colors.white,
+              surfaceContainerLow: Colors.grey[50]!,
+              surfaceContainer: Colors.grey[100]!,
+              surfaceContainerHigh: Colors.grey[200]!,
+              surfaceContainerHighest: Colors.grey[300]!,
+              error: Colors.red,
+              onError: Colors.white,
+              outline: Colors.grey[400]!,
+            )
+          : ColorScheme.dark(
+              primary: Colors.white,
+              onPrimary: Colors.black,
+              secondary: Colors.grey[400]!,
+              onSecondary: Colors.black,
+              tertiary: Colors.grey[600]!,
+              onTertiary: Colors.white,
+              surface: Colors.grey[900]!,
+              onSurface: Colors.white,
+              surfaceContainerLowest: Colors.black,
+              surfaceContainerLow: Colors.grey[800]!,
+              surfaceContainer: Colors.grey[700]!,
+              surfaceContainerHigh: Colors.grey[600]!,
+              surfaceContainerHighest: Colors.grey[500]!,
+              error: Colors.red,
+              onError: Colors.white,
+              outline: Colors.grey[600]!,
+            ),
       brightness: _brightness,
       primaryTextTheme: _primaryTextTheme,
       secondaryTextTheme: _secondaryTextTheme,

@@ -12,6 +12,8 @@ class ProductsProvider extends ChangeNotifier {
   ProductsProvider({required this.productRepository});
 
   List<ProductEntity>? allProducts;
+  bool isLoading = false;
+  String? currentSearchTerm;
 
   // Low stock detection state
   final int lowStockThreshold = 5; // default threshold; could be made configurable
@@ -22,6 +24,10 @@ class ProductsProvider extends ChangeNotifier {
   Future<void> getAllProducts({int? offset, String? contains}) async {
     if (offset != null) {
       isLoadingMore = true;
+      notifyListeners();
+    } else {
+      isLoading = true;
+      currentSearchTerm = contains;
       notifyListeners();
     }
 
@@ -43,40 +49,122 @@ class ProductsProvider extends ChangeNotifier {
       debugPrint('🛒 ProductsProvider: Offset: $offset');
     }
 
-    var res = await GetUserProductsUsecase(productRepository).call(params);
+    try {
+      var res = await GetUserProductsUsecase(productRepository).call(params);
 
-    if (res.isSuccess) {
-      if (kDebugMode) {
-        debugPrint('✅ ProductsProvider: Successfully loaded ${res.data?.length ?? 0} products');
-        if (res.data?.isNotEmpty == true) {
-          debugPrint('🛒 First product: ${res.data!.first.name}');
+      if (res.isSuccess) {
+        if (kDebugMode) {
+          debugPrint('✅ ProductsProvider: Successfully loaded ${res.data?.length ?? 0} products');
+          if (res.data?.isNotEmpty == true) {
+            debugPrint('🛒 First product: ${res.data!.first.name}');
+          }
         }
-      }
-      
-      if (offset == null) {
-        allProducts = res.data ?? [];
+        
+        if (offset == null) {
+          allProducts = res.data ?? [];
+        } else {
+          allProducts?.addAll(res.data ?? []);
+        }
+
+        // Update low stock list on refresh loads
+        if (offset == null) {
+          _computeLowStock();
+        }
       } else {
-        allProducts?.addAll(res.data ?? []);
+        if (kDebugMode) {
+          debugPrint('❌ GetUserProductsUsecase failed: ${res.error?.message}');
+        }
+        throw res.error?.message ?? 'Failed to load data';
       }
-
-      // Update low stock list on refresh loads
-      if (offset == null) {
-        _computeLowStock();
-      }
-
-      isLoadingMore = false;
-      notifyListeners();
-    } else {
+    } catch (e) {
       if (kDebugMode) {
-        debugPrint('❌ GetUserProductsUsecase failed: ${res.error?.message}');
+        debugPrint('❌ ProductsProvider error: $e');
       }
-      throw res.error?.message ?? 'Failed to load data';
+      // Set empty list and ensure we're not stuck in loading state
+      if (offset == null) {
+        allProducts = [];
+      }
+    } finally {
+      isLoading = false;
+      isLoadingMore = false;
+      // Always notify listeners to update UI
+      notifyListeners();
     }
   }
 
   void _computeLowStock() {
     final list = allProducts ?? [];
     lowStockProducts = list.where((p) => p.stock <= lowStockThreshold).toList();
+  }
+
+  // Find alternative products for out-of-stock items
+  List<ProductEntity> getAlternativeProducts(ProductEntity outOfStockProduct, {int limit = 3}) {
+    if (allProducts == null || allProducts!.isEmpty) return [];
+    
+    // Filter out the current product and out-of-stock products
+    final availableProducts = allProducts!.where((p) => 
+      p.id != outOfStockProduct.id && 
+      p.stock > 0 && 
+      p.isActive
+    ).toList();
+    
+    if (availableProducts.isEmpty) return [];
+    
+    // Score alternatives based on similarity
+    final scoredAlternatives = availableProducts.map((product) {
+      double score = 0.0;
+      
+      // Same category gets highest score
+      if (product.categoryId == outOfStockProduct.categoryId && product.categoryId != null) {
+        score += 10.0;
+      }
+      
+      // Similar price range (within 50% difference)
+      if (outOfStockProduct.price > 0) {
+        final priceDifference = (product.price - outOfStockProduct.price).abs() / outOfStockProduct.price;
+        if (priceDifference <= 0.5) {
+          score += 5.0 * (1.0 - priceDifference); // Higher score for closer prices
+        }
+      }
+      
+      // Same unit type
+      if (product.unit == outOfStockProduct.unit && product.unit != null) {
+        score += 3.0;
+      }
+      
+      // Same product type
+      if (product.type == outOfStockProduct.type) {
+        score += 2.0;
+      }
+      
+      // Name similarity (simple keyword matching)
+      final outOfStockKeywords = outOfStockProduct.name.toLowerCase().split(' ');
+      final productKeywords = product.name.toLowerCase().split(' ');
+      final commonKeywords = outOfStockKeywords.where((keyword) => 
+        productKeywords.any((pk) => pk.contains(keyword) || keyword.contains(pk))
+      ).length;
+      score += commonKeywords * 1.5;
+      
+      // Description similarity (if both have descriptions)
+      if (product.description != null && outOfStockProduct.description != null) {
+        final outOfStockDescWords = outOfStockProduct.description!.toLowerCase().split(' ');
+        final productDescWords = product.description!.toLowerCase().split(' ');
+        final commonDescWords = outOfStockDescWords.where((word) => 
+          productDescWords.any((pw) => pw.contains(word) || word.contains(pw))
+        ).length;
+        score += commonDescWords * 0.5;
+      }
+      
+      return {'product': product, 'score': score};
+    }).toList();
+    
+    // Sort by score (highest first) and return top alternatives
+    scoredAlternatives.sort((a, b) => (b['score'] as double).compareTo(a['score'] as double));
+    
+    return scoredAlternatives
+      .take(limit)
+      .map((item) => item['product'] as ProductEntity)
+      .toList();
   }
 
   // Bulk operations by product IDs (compatible with existing UI)
@@ -221,6 +309,20 @@ class ProductsProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error searching product by barcode: $e');
       return null;
+    }
+  }
+
+  // Debug method to test search functionality
+  void debugSearchState() {
+    if (kDebugMode) {
+      debugPrint('🔍 Debug Search State:');
+      debugPrint('🔍 Current search term: $currentSearchTerm');
+      debugPrint('🔍 Products count: ${allProducts?.length ?? 0}');
+      debugPrint('🔍 Is loading: $isLoading');
+      debugPrint('🔍 Is loading more: $isLoadingMore');
+      if (allProducts?.isNotEmpty == true) {
+        debugPrint('🔍 First 3 products: ${allProducts!.take(3).map((p) => p.name).toList()}');
+      }
     }
   }
 }
