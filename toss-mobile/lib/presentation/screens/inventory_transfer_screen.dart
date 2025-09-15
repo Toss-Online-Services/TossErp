@@ -436,7 +436,7 @@ class _InventoryTransferScreenState extends State<InventoryTransferScreen> {
                 ),
               )
             else
-              ...._transferItems.asMap().entries.map((entry) {
+              ..._transferItems.asMap().entries.map((entry) {
                 final index = entry.key;
                 final item = entry.value;
                 final product = _availableProducts.where((p) => p.id == item.productId).firstOrNull;

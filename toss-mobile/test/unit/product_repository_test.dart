@@ -1,10 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import '../../lib/domain/repositories/product_repository.dart';
 import '../../lib/domain/entities/product_entity.dart';
 import '../../lib/domain/entities/product_category_entity.dart';
-import '../../lib/core/usecase/usecase.dart';
+import '../../lib/core/errors/errors.dart';
 import '../../lib/data/repositories/product_repository_impl.dart';
 import '../../lib/data/datasources/local/product_local_datasource_impl.dart';
 import '../../lib/data/datasources/remote/product_remote_datasource_impl.dart';
@@ -75,6 +74,29 @@ void main() {
 
     final sampleProductModel = ProductModel.fromEntity(sampleProduct);
 
+    // Helper function to create modified ProductModel instances
+    ProductModel createProductModel({
+      int? id,
+      String? name,
+      String? barcode,
+      ProductModel? base,
+    }) {
+      final baseModel = base ?? sampleProductModel;
+      return ProductModel(
+        id: id ?? baseModel.id,
+        createdById: baseModel.createdById,
+        name: name ?? baseModel.name,
+        barcode: barcode ?? baseModel.barcode,
+        imageUrl: baseModel.imageUrl,
+        stock: baseModel.stock,
+        sold: baseModel.sold,
+        price: baseModel.price,
+        description: baseModel.description,
+        createdAt: baseModel.createdAt,
+        updatedAt: baseModel.updatedAt,
+      );
+    }
+
     group('getUserProducts', () {
       test('should return products from local datasource when offline', () async {
         // Arrange
@@ -112,7 +134,7 @@ void main() {
         // Arrange
         const userId = 'test_user_123';
         final localProducts = [sampleProductModel];
-        final remoteProducts = [sampleProductModel.copyWith(id: 2, name: 'Remote Product')];
+        final remoteProducts = [createProductModel(id: 2, name: 'Remote Product')];
         
         when(mockLocalDatasource.getUserProducts(
           userId,
@@ -169,7 +191,7 @@ void main() {
         const searchTerm = 'test';
         final products = [
           sampleProductModel,
-          sampleProductModel.copyWith(id: 2, name: 'Another Product'),
+          createProductModel(id: 2, name: 'Another Product'),
         ];
         
         when(mockLocalDatasource.getUserProducts(
@@ -421,7 +443,7 @@ void main() {
         // Arrange
         const userId = 'test_user_123';
         final localProducts = [sampleProductModel];
-        final remoteProducts = [sampleProductModel.copyWith(id: 2, name: 'Remote Product')];
+        final remoteProducts = [createProductModel(id: 2, name: 'Remote Product')];
         
         when(mockLocalDatasource.getAllUserProducts(userId))
             .thenAnswer((_) async => localProducts);
@@ -491,7 +513,7 @@ void main() {
         // Arrange
         const barcode = '9876543210987';
         final emptyProducts = <ProductModel>[];
-        final remoteProducts = [sampleProductModel.copyWith(barcode: barcode)];
+        final remoteProducts = [createProductModel(barcode: barcode)];
         
         when(mockLocalDatasource.getAllUserProducts(''))
             .thenAnswer((_) async => emptyProducts);
@@ -553,7 +575,7 @@ void main() {
         // Arrange
         const barcodes = ['123456789012', '1234567890123', '12345678901234'];
         final products = barcodes.map((barcode) => 
-          sampleProductModel.copyWith(barcode: barcode)).toList();
+          createProductModel(barcode: barcode)).toList();
         
         when(mockLocalDatasource.getAllUserProducts(''))
             .thenAnswer((_) async => products);
@@ -570,9 +592,9 @@ void main() {
         // Arrange
         const targetBarcode = '1234567890123';
         final products = [
-          sampleProductModel.copyWith(id: 1, barcode: '1234567890124'), // Similar but different
-          sampleProductModel.copyWith(id: 2, barcode: targetBarcode),   // Exact match
-          sampleProductModel.copyWith(id: 3, barcode: '1234567890122'), // Similar but different
+          createProductModel(id: 1, barcode: '1234567890124'), // Similar but different
+          createProductModel(id: 2, barcode: targetBarcode),   // Exact match
+          createProductModel(id: 3, barcode: '1234567890122'), // Similar but different
         ];
         
         when(mockLocalDatasource.getAllUserProducts(''))

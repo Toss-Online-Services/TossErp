@@ -7,6 +7,7 @@ import '../../lib/domain/repositories/product_repository.dart';
 import '../../lib/domain/entities/product_entity.dart';
 import '../../lib/domain/entities/product_category_entity.dart';
 import '../../lib/core/usecase/usecase.dart';
+import '../../lib/core/errors/errors.dart';
 import '../../lib/app/services/auth/auth_service.dart';
 
 import 'products_provider_test.mocks.dart';
@@ -227,7 +228,7 @@ void main() {
         const newPrice = 2999.0;
 
         when(mockProductRepository.updateProduct(any))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Act
         await provider.bulkUpdatePricesByIds(productIds, newPrice);
@@ -246,7 +247,7 @@ void main() {
         final originalSecondPrice = sampleProducts[1].price;
 
         when(mockProductRepository.updateProduct(any))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Act
         await provider.bulkUpdatePricesByIds(productIds, newPrice);
@@ -292,7 +293,7 @@ void main() {
         final originalTimestamp = provider.allProducts![0].updatedAt;
 
         when(mockProductRepository.updateProduct(any))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Wait to ensure timestamp difference
         await Future.delayed(const Duration(milliseconds: 10));
@@ -313,7 +314,7 @@ void main() {
         const newStock = 100;
 
         when(mockProductRepository.updateProduct(any))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Act
         await provider.bulkUpdateStockByIds(productIds, newStock);
@@ -331,7 +332,7 @@ void main() {
         const newStock = 100; // Above threshold
 
         when(mockProductRepository.updateProduct(any))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Initial state: should have 1 low stock product
         await provider.getAllProducts();
@@ -351,7 +352,7 @@ void main() {
         const newStock = 2; // Below threshold
 
         when(mockProductRepository.updateProduct(any))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Act
         await provider.bulkUpdateStockByIds(productIds, newStock);
@@ -368,7 +369,7 @@ void main() {
         final originalSecondStock = sampleProducts[1].stock;
 
         when(mockProductRepository.updateProduct(any))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Act
         await provider.bulkUpdateStockByIds(productIds, newStock);
@@ -414,7 +415,7 @@ void main() {
         final productIds = {1};
 
         when(mockProductRepository.deleteProduct(any))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Act
         await provider.bulkDeleteProductsByIds(productIds);
@@ -431,7 +432,7 @@ void main() {
         final productIds = {1, 2};
 
         when(mockProductRepository.deleteProduct(any))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Act
         await provider.bulkDeleteProductsByIds(productIds);
@@ -448,7 +449,7 @@ void main() {
         final productIds = {2}; // Delete the low stock product
 
         when(mockProductRepository.deleteProduct(any))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Act
         await provider.bulkDeleteProductsByIds(productIds);
@@ -467,7 +468,7 @@ void main() {
         final productIds = {1, 2};
 
         when(mockProductRepository.deleteProduct(any))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Act
         await provider.bulkDeleteProductsByIds(productIds);
@@ -529,7 +530,7 @@ void main() {
         const barcode = 'nonexistent';
 
         when(mockProductRepository.getProductByBarcode(barcode))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Act
         final result = await provider.searchProductByBarcode(barcode);
@@ -697,7 +698,7 @@ void main() {
         const newPrice = 2999.0;
 
         when(mockProductRepository.updateProduct(any))
-            .thenAnswer((_) async => Result.success(null));
+            .thenAnswer((_) async => Result.success(()));
 
         // Act
         await provider.bulkUpdatePricesByIds(productIds, newPrice);
@@ -715,7 +716,7 @@ void main() {
         when(mockProductRepository.updateProduct(any))
             .thenAnswer((_) async {
               await Future.delayed(const Duration(milliseconds: 50));
-              return Result.success(null);
+              return Result.success(());
             });
 
         // Act
