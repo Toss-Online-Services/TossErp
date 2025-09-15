@@ -8,11 +8,15 @@ import '../../../../domain/entities/product_entity.dart';
 class ProductsCard extends StatefulWidget {
   final ProductEntity product;
   final Function()? onTap;
+  final bool isSelected;
+  final bool isSelectionMode;
 
   const ProductsCard({
     super.key,
     required this.product,
     this.onTap,
+    this.isSelected = false,
+    this.isSelectionMode = false,
   });
 
   @override

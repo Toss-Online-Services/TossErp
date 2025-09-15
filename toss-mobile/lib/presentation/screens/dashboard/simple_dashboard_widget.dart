@@ -101,6 +101,17 @@ class _SimpleDashboardWidgetState extends State<SimpleDashboardWidget> {
                               icon: const Icon(Icons.tune),
                               label: const Text('Change Layout'),
                             ),
+                            const SizedBox(width: 8),
+                            IconButton(
+                              onPressed: () async {
+                                await dashboardManager.refreshData();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Dashboard data refreshed')),
+                                );
+                              },
+                              icon: const Icon(Icons.refresh),
+                              tooltip: 'Refresh Data',
+                            ),
                           ],
                         ),
                       ),
@@ -177,13 +188,15 @@ class _SimpleDashboardWidgetState extends State<SimpleDashboardWidget> {
   }
 
   Widget _buildWidgetContent(BuildContext context, DashboardWidgetType widget) {
+    final dashboardManager = Provider.of<SimpleDashboardManager>(context, listen: false);
+    
     switch (widget) {
       case DashboardWidgetType.salesSummary:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'R12,450',
+              'R${(dashboardManager.todaysRevenue * 16).toStringAsFixed(0)}', // Convert to Rand (rough)
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: Colors.green,
                 fontWeight: FontWeight.bold,
@@ -200,7 +213,7 @@ class _SimpleDashboardWidgetState extends State<SimpleDashboardWidget> {
                 const Icon(Icons.trending_up, size: 16, color: Colors.green),
                 const SizedBox(width: 4),
                 Text(
-                  '+12%',
+                  '${dashboardManager.todaysTransactionCount} transactions',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.green,
                   ),
@@ -215,7 +228,7 @@ class _SimpleDashboardWidgetState extends State<SimpleDashboardWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'R8,320',
+              'R${(dashboardManager.todaysRevenue * 16).toStringAsFixed(0)}',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: Colors.blue,
                 fontWeight: FontWeight.bold,
@@ -228,7 +241,7 @@ class _SimpleDashboardWidgetState extends State<SimpleDashboardWidget> {
             ),
             const Spacer(),
             Text(
-              '24 transactions',
+              '${dashboardManager.todaysTransactionCount} transactions',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
@@ -239,7 +252,7 @@ class _SimpleDashboardWidgetState extends State<SimpleDashboardWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '156',
+              '${dashboardManager.totalProductsInStock}',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -252,12 +265,18 @@ class _SimpleDashboardWidgetState extends State<SimpleDashboardWidget> {
             const Spacer(),
             Row(
               children: [
-                const Icon(Icons.warning, size: 16, color: Colors.orange),
+                Icon(
+                  dashboardManager.lowStockProducts.isNotEmpty ? Icons.warning : Icons.check_circle,
+                  size: 16,
+                  color: dashboardManager.lowStockProducts.isNotEmpty ? Colors.orange : Colors.green,
+                ),
                 const SizedBox(width: 4),
                 Text(
-                  '3 low stock',
+                  dashboardManager.lowStockProducts.isNotEmpty 
+                      ? '${dashboardManager.lowStockProducts.length} low stock'
+                      : 'All items stocked',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.orange,
+                    color: dashboardManager.lowStockProducts.isNotEmpty ? Colors.orange : Colors.green,
                   ),
                 ),
               ],

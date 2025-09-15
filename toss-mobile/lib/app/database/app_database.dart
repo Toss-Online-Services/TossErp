@@ -76,6 +76,11 @@ class AppDatabase {
       column: 'nextRetryAt',
       addColumnSql: "ALTER TABLE '${AppDatabaseConfig.queuedActionTableName}' ADD COLUMN 'nextRetryAt' DATETIME",
     );
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.productTableName,
+      column: 'barcode',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.productTableName}' ADD COLUMN 'barcode' TEXT",
+    );
   }
 
   Future<void> _ensureColumnExists({
@@ -172,6 +177,7 @@ CREATE TABLE IF NOT EXISTS '$productTableName' (
     'id' INTEGER NOT NULL,
     'createdById' TEXT,
     'name' TEXT,
+    'barcode' TEXT,
     'imageUrl' TEXT,
     'stock' INTEGER,
     'sold' INTEGER,

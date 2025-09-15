@@ -20,4 +20,6 @@ abstract class ProductRepository {
     int? offset,
     String? contains,
   });
+
+  Future<Result<ProductEntity?>> getProductByBarcode(String barcode);
 }

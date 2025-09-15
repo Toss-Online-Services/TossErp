@@ -284,4 +284,44 @@ class ProductRepositoryImpl extends ProductRepository {
 
     return (syncedToLocalCount, syncedToRemoteCount);
   }
+
+  @override
+  Future<Result<ProductEntity?>> getProductByBarcode(String barcode) async {
+    try {
+      // First try to find the product in local datasource
+      final localProducts = await productLocalDatasource.getAllUserProducts('');
+      final localResult = localProducts.firstWhere(
+        (product) => product.barcode == barcode,
+        orElse: () => ProductModel.empty(),
+      );
+
+      if (localResult.id != 0) {
+        return Result.success(localResult.toEntity());
+      }
+
+      // If not found locally and we have connectivity, try remote
+      if (ConnectivityService.isConnected) {
+        try {
+          final remoteProducts = await productRemoteDatasource.getAllUserProducts('');
+          final remoteResult = remoteProducts.firstWhere(
+            (product) => product.barcode == barcode,
+            orElse: () => ProductModel.empty(),
+          );
+
+          if (remoteResult.id != 0) {
+            // Save to local for future access
+            await productLocalDatasource.createProduct(remoteResult);
+            return Result.success(remoteResult.toEntity());
+          }
+        } catch (e) {
+          // If remote fails, continue with null result
+        }
+      }
+
+      // Product not found
+      return Result.success(null);
+    } catch (e) {
+      return Result.error(ServiceError(message: 'Failed to search product by barcode: $e'));
+    }
+  }
 }

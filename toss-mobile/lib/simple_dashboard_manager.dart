@@ -1,6 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'service_locator.dart';
+import 'domain/repositories/transaction_repository.dart';
+import 'domain/repositories/product_repository.dart';
+import 'domain/entities/transaction_entity.dart';
+import 'domain/entities/product_entity.dart';
 
 /// Widget types available for dashboard
 enum DashboardWidgetType {
@@ -197,6 +202,13 @@ class SimpleDashboardManager extends ChangeNotifier {
   
   List<SimpleDashboardLayout> _customLayouts = [];
   bool _isInitialized = false;
+  
+  // Real data for dashboard widgets
+  List<TransactionEntity> _todaysTransactions = [];
+  List<ProductEntity> _lowStockProducts = [];
+  double _todaysRevenue = 0.0;
+  int _todaysTransactionCount = 0;
+  int _totalProductsInStock = 0;
 
   /// Current active dashboard layout
   SimpleDashboardLayout get currentLayout => _currentLayout;
@@ -216,6 +228,13 @@ class SimpleDashboardManager extends ChangeNotifier {
   /// Get all enabled widgets in current layout
   List<SimpleDashboardWidgetConfig> get enabledWidgets => 
       _currentLayout.widgets.where((w) => w.enabled).toList();
+
+  // Real dashboard data getters
+  double get todaysRevenue => _todaysRevenue;
+  int get todaysTransactionCount => _todaysTransactionCount;
+  List<TransactionEntity> get todaysTransactions => _todaysTransactions;
+  List<ProductEntity> get lowStockProducts => _lowStockProducts;
+  int get totalProductsInStock => _totalProductsInStock;
 
   /// Initialize the dashboard manager
   Future<void> initialize() async {
@@ -249,6 +268,9 @@ class SimpleDashboardManager extends ChangeNotifier {
         debugPrint('SimpleDashboardManager: Loaded ${_customLayouts.length} custom layouts');
       }
       
+      // Load real dashboard data
+      await _loadDashboardData();
+      
       _isInitialized = true;
       debugPrint('SimpleDashboardManager: Initialization complete! isInitialized: $_isInitialized');
       notifyListeners();
@@ -257,6 +279,75 @@ class SimpleDashboardManager extends ChangeNotifier {
       _isInitialized = true;
       notifyListeners();
     }
+  }
+
+  /// Load real dashboard data from repositories
+  Future<void> _loadDashboardData() async {
+    try {
+      // Get today's date range
+      final now = DateTime.now();
+      final todayStart = DateTime(now.year, now.month, now.day);
+      final todayEnd = todayStart.add(Duration(days: 1));
+      
+      // Load transactions
+      if (sl.isRegistered<TransactionRepository>()) {
+        final transactionRepo = sl<TransactionRepository>();
+        final result = await transactionRepo.getUserTransactions(
+          'demo-user',
+          limit: 100,
+        );
+        
+        if (result.isSuccess && result.data != null) {
+          final allTransactions = result.data!;
+          
+          // Filter today's transactions
+          _todaysTransactions = allTransactions.where((t) {
+            if (t.createdAt == null) return false;
+            final createdAt = DateTime.parse(t.createdAt!);
+            return createdAt.isAfter(todayStart) && createdAt.isBefore(todayEnd);
+          }).toList();
+          
+          // Calculate today's revenue
+          _todaysRevenue = _todaysTransactions.fold(
+            0.0, 
+            (sum, t) => sum + (t.totalAmount / 100.0), // Convert from cents
+          );
+          
+          _todaysTransactionCount = _todaysTransactions.length;
+          
+          debugPrint('SimpleDashboardManager: Loaded ${_todaysTransactions.length} transactions, revenue: \$${_todaysRevenue.toStringAsFixed(2)}');
+        }
+      }
+      
+      // Load product data
+      if (sl.isRegistered<ProductRepository>()) {
+        final productRepo = sl<ProductRepository>();
+        final result = await productRepo.getUserProducts('default_user');
+        
+        if (result.isSuccess && result.data != null) {
+          final allProducts = result.data!;
+          
+          // Filter low stock products (stock < 10)
+          _lowStockProducts = allProducts.where((p) => p.stock < 10).toList();
+          
+          // Calculate total products in stock
+          _totalProductsInStock = allProducts.fold(
+            0, 
+            (sum, p) => sum + p.stock,
+          );
+          
+          debugPrint('SimpleDashboardManager: Loaded ${allProducts.length} products, ${_lowStockProducts.length} low stock');
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading dashboard data: $e');
+    }
+  }
+
+  /// Refresh dashboard data
+  Future<void> refreshData() async {
+    await _loadDashboardData();
+    notifyListeners();
   }
 
   /// Apply a dashboard layout

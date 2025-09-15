@@ -63,8 +63,7 @@ class _ProductGridItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     color: Colors.grey[200],
                   ),
-                  child: product.imageUrl != null
-                      ? ClipRRect(
+                  child: ClipRRect(
                           borderRadius: BorderRadius.circular(4),
                           child: Image.network(
                             product.imageUrl!,
@@ -73,8 +72,7 @@ class _ProductGridItem extends StatelessWidget {
                               return const Icon(Icons.image_not_supported);
                             },
                           ),
-                        )
-                      : const Icon(Icons.inventory_2_outlined, size: 32),
+                        ),
                 ),
               ),
               const SizedBox(height: 4),
