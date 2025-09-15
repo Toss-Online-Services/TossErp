@@ -81,6 +81,11 @@ class AppDatabase {
       column: 'barcode',
       addColumnSql: "ALTER TABLE '${AppDatabaseConfig.productTableName}' ADD COLUMN 'barcode' TEXT",
     );
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.productTableName,
+      column: 'categoryId',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.productTableName}' ADD COLUMN 'categoryId' INTEGER",
+    );
   }
 
   Future<void> _ensureColumnExists({

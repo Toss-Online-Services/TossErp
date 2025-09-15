@@ -37,9 +37,22 @@ class ProductsProvider extends ChangeNotifier {
       contains: contains,
     );
 
+    if (kDebugMode) {
+      debugPrint('🛒 ProductsProvider: Loading products for user: ${params.param}');
+      debugPrint('🛒 ProductsProvider: Contains filter: $contains');
+      debugPrint('🛒 ProductsProvider: Offset: $offset');
+    }
+
     var res = await GetUserProductsUsecase(productRepository).call(params);
 
     if (res.isSuccess) {
+      if (kDebugMode) {
+        debugPrint('✅ ProductsProvider: Successfully loaded ${res.data?.length ?? 0} products');
+        if (res.data?.isNotEmpty == true) {
+          debugPrint('🛒 First product: ${res.data!.first.name}');
+        }
+      }
+      
       if (offset == null) {
         allProducts = res.data ?? [];
       } else {
