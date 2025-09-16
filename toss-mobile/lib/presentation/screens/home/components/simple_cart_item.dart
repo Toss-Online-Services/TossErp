@@ -281,8 +281,6 @@ class _SimpleCartItemState extends State<SimpleCartItem> {
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                decoration: widget.allowEdit ? TextDecoration.underline : null,
-                                decorationStyle: TextDecorationStyle.dotted,
                               ),
                             ),
                           ),
