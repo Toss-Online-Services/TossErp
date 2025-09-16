@@ -93,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       context: context,
                       isScrollControlled: true,
                       isDismissible: true,
+                      
                       enableDrag: true,
                       backgroundColor: Colors.transparent,
                       builder: (context) => DraggableScrollableSheet(
@@ -164,6 +165,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         topLeft: Radius.circular(AppSizes.radius * 2),
                         topRight: Radius.circular(AppSizes.radius * 2),
                       ),
+                      // Subtle top divider to visually separate from content below
+                      border: Border(
+                        top: BorderSide(
+                          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4),
+                          width: 1,
+                        ),
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
@@ -177,10 +185,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           // Drag Handle - Centered at top
                           Container(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.symmetric(vertical: 4),
                             child: Center(
                               child: Container(
-                                width: 40,
+                                width: 36,
                                 height: 4,
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
@@ -192,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           
                           // Cart Content
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(AppSizes.padding, 0, AppSizes.padding, AppSizes.padding),
+                            padding: const EdgeInsets.fromLTRB(AppSizes.padding, 4, AppSizes.padding, 8),
                             child: Row(
                               children: [
                                 // Cart Icon with Badge
@@ -201,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Icon(
                                       Icons.shopping_cart,
                                       color: Theme.of(context).colorScheme.primary,
-                                      size: 28,
+                                      size: 26,
                                     ),
                                     Positioned(
                                       right: 0,
@@ -234,26 +242,40 @@ class _HomeScreenState extends State<HomeScreen> {
                                 
                                 // Cart Summary
                                 Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        '${provider.getTotalQuantity()} item${provider.getTotalQuantity() != 1 ? 's' : ''}',
-                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.w600,
+                                  child: RichText(
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    text: TextSpan(
+                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ) ?? const TextStyle(),
+                                      children: [
+                                        TextSpan(
+                                          text: '${provider.getTotalQuantity()} item${provider.getTotalQuantity() != 1 ? 's' : ''}  •  ',
                                         ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        CurrencyFormatter.format(provider.getTotalAmount()),
-                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                          color: Theme.of(context).colorScheme.primary,
-                                          fontWeight: FontWeight.w600,
+                                        TextSpan(
+                                          text: CurrencyFormatter.format(provider.getTotalAmount()),
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.primary,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                // Small up arrow indicator (visual hint to pull up)
+                                Container(
+                                  width: 24,
+                                  height: 24,
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.4),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.keyboard_arrow_up,
+                                    size: 18,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -419,9 +441,10 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, provider, homeProvider, _) {
         final mediaQuery = MediaQuery.of(context);
         final hasCartItems = homeProvider.orderedProducts.isNotEmpty;
+        // Reduce list bottom padding to align with the more compact minimized cart height
         final bottomPadding = mediaQuery.padding.bottom + 
                               56.0 + // Bottom navigation height
-                              (hasCartItems ? 88.0 : 0.0); // Cart height when visible
+                              (hasCartItems ? 64.0 : 0.0); // Minimized cart height when visible
         
         return RefreshIndicator(
           onRefresh: () => onRefresh(),

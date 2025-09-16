@@ -20,7 +20,10 @@ class SimpleCartPanel extends StatelessWidget {
             children: [
               // Top section with drag handle and arrow
               Stack(
+                clipBehavior: Clip.none,
                 children: [
+                  // Reserve vertical space so the close button isn't clipped
+                  const SizedBox(height: 56),
                   // Drag Handle - Centered at top
                   Container(
                     width: double.infinity,
@@ -39,31 +42,35 @@ class SimpleCartPanel extends StatelessWidget {
                   
                   // Down arrow positioned at top-right corner
                   Positioned(
-                    top: 6,
-                    right: 6,
+                    top: 8,
+                    right: 8,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(18),
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
                           ),
                         ],
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                          width: 2,
+                        ),
                       ),
                       child: InkWell(
                         onTap: () => Navigator.of(context).pop(),
-                        borderRadius: BorderRadius.circular(18),
+                        borderRadius: BorderRadius.circular(20),
                         child: Container(
-                          width: 36,
-                          height: 36,
-                          padding: const EdgeInsets.all(6),
+                          width: 44,
+                          height: 44,
+                          padding: const EdgeInsets.all(8),
                           child: Icon(
                             Icons.keyboard_arrow_down,
-                            size: 20,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                            size: 28,
+                            color: Theme.of(context).colorScheme.onPrimaryContainer,
                           ),
                         ),
                       ),
@@ -77,7 +84,7 @@ class SimpleCartPanel extends StatelessWidget {
                 children: [
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.fromLTRB(AppSizes.padding, 12, AppSizes.padding, 8),
+                    padding: const EdgeInsets.fromLTRB(AppSizes.padding, 16, AppSizes.padding, 8),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: const BorderRadius.only(
@@ -129,7 +136,10 @@ class SimpleCartPanel extends StatelessWidget {
           children: [
             // Top section with drag handle and arrow
             Stack(
+              clipBehavior: Clip.none,
               children: [
+                // Reserve vertical space so the close button isn't clipped
+                const SizedBox(height: 56),
                 // Drag Handle - Centered at top
                 Container(
                   width: double.infinity,
@@ -148,31 +158,35 @@ class SimpleCartPanel extends StatelessWidget {
                 
                 // Down arrow positioned at top-right corner
                 Positioned(
-                  top: 6,
-                  right: 6,
+                  top: 8,
+                  right: 8,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(18),
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
                         ),
                       ],
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                        width: 2,
+                      ),
                     ),
                     child: InkWell(
                       onTap: () => Navigator.of(context).pop(),
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(20),
                       child: Container(
-                        width: 36,
-                        height: 36,
-                        padding: const EdgeInsets.all(6),
+                        width: 44,
+                        height: 44,
+                        padding: const EdgeInsets.all(8),
                         child: Icon(
                           Icons.keyboard_arrow_down,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          size: 28,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
                         ),
                       ),
                     ),
@@ -186,7 +200,7 @@ class SimpleCartPanel extends StatelessWidget {
               children: [
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(AppSizes.padding, 12, AppSizes.padding, 8),
+                  padding: const EdgeInsets.fromLTRB(AppSizes.padding, 16, AppSizes.padding, 8),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
                     borderRadius: const BorderRadius.only(
@@ -205,11 +219,19 @@ class SimpleCartPanel extends StatelessWidget {
                             size: 24,
                           ),
                           const SizedBox(width: 8),
-                          Text(
-                            'Cart (${provider.orderedProducts.length} items)',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                          Builder(
+                            builder: (context) {
+                              // Use total quantity for clarity if available; fallback to unique items count
+                              final totalQty = context.read<HomeProvider>().getTotalQuantity();
+                              final n = totalQty > 0 ? totalQty : provider.orderedProducts.length;
+                              final label = n == 1 ? 'item' : 'items';
+                              return Text(
+                                'Cart ($n $label)',
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              );
+                            },
                           ),
                           const Spacer(),
                           
