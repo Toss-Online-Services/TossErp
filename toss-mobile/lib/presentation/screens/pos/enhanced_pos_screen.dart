@@ -1757,30 +1757,54 @@ class _POSClosingDialogState extends State<_POSClosingDialog> {
   }
 
   Widget _buildSummaryCard(String title, String value, IconData icon, Color color) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth > 600;
+    
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(isTablet ? 16 : 12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: isDarkMode 
+            ? color.withOpacity(0.15) 
+            : color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(isTablet ? 12 : 8),
+        border: Border.all(
+          color: isDarkMode 
+              ? color.withOpacity(0.5) 
+              : color.withOpacity(0.3),
+        ),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min, // Responsive sizing
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: color,
+          Icon(
+            icon, 
+            color: color, 
+            size: isTablet ? 28 : 24,
+          ),
+          SizedBox(height: isTablet ? 12 : 8),
+          FittedBox( // Responsive text sizing
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: isTablet ? 20 : 18,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: isTablet ? 6 : 4),
           Text(
             title,
-            style: const TextStyle(fontSize: 12),
+            style: TextStyle(
+              fontSize: isTablet ? 14 : 12,
+              color: isDarkMode 
+                  ? Theme.of(context).colorScheme.onSurface.withOpacity(0.8)
+                  : null,
+            ),
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

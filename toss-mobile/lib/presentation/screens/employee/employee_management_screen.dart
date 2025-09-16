@@ -286,28 +286,36 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen>
   Widget _buildEmployeeCard(EmployeeEntity employee) {
     final isCurrentlyWorking = _shifts.any((shift) => 
         shift.employeeId == employee.id && shift.isActive);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth > 600;
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(
+        horizontal: isTablet ? 24 : 16, 
+        vertical: isTablet ? 12 : 8,
+      ),
       child: InkWell(
         onTap: () => _showEmployeeDetails(employee),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(isTablet ? 20 : 16),
           child: Row(
             children: [
               CircleAvatar(
+                radius: isTablet ? 28 : 24,
                 backgroundColor: _getStatusColor(employee.status),
                 child: Text(
                   employee.name.isNotEmpty 
                       ? employee.name[0].toUpperCase()
                       : employee.employeeNumber[0],
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
+                    fontSize: isTablet ? 18 : 16,
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: isTablet ? 20 : 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,65 +324,73 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen>
                       employee.name,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
+                        fontSize: isTablet ? 18 : 16,
                       ),
                     ),
                     Text(
                       '${employee.employeeNumber} • ${employee.roleDisplayName}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
+                        color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                        fontSize: isTablet ? 14 : 12,
                       ),
                     ),
                     if (employee.phone.isNotEmpty)
                       Text(
                         employee.phone,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
+                          color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                          fontSize: isTablet ? 12 : 11,
                         ),
                       ),
-                    Row(
+                    SizedBox(height: isTablet ? 8 : 4),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
                       children: [
-                        if (isCurrentlyWorking) ...[
+                        if (isCurrentlyWorking)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isTablet ? 8 : 6, 
+                              vertical: isTablet ? 3 : 2,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.green,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Text(
+                            child: Text(
                               'Working',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 10,
+                                fontSize: isTablet ? 11 : 10,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                        ],
                         if (employee.isTrainingMode)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isTablet ? 8 : 6, 
+                              vertical: isTablet ? 3 : 2,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.orange,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Text(
+                            child: Text(
                               'Training',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 10,
+                                fontSize: isTablet ? 11 : 10,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                        if (employee.biometricType != BiometricType.none) ...[
-                          const SizedBox(width: 8),
+                        if (employee.biometricType != BiometricType.none)
                           Icon(
                             Icons.fingerprint,
-                            size: 16,
+                            size: isTablet ? 18 : 16,
                             color: Colors.blue,
                           ),
-                        ],
                       ],
                     ),
                   ],
