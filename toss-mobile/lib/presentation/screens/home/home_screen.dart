@@ -158,8 +158,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
                   },
                   child: Container(
-                    height: 88,
-                    padding: const EdgeInsets.all(AppSizes.padding),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surfaceContainerLowest,
                       borderRadius: const BorderRadius.only(
@@ -174,102 +172,95 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    child: Row(
-                      children: [
-                        // Cart Icon with Badge
-                        Stack(
-                          children: [
-                            Icon(
-                              Icons.shopping_cart,
-                              color: Theme.of(context).colorScheme.primary,
-                              size: 28,
-                            ),
-                            Positioned(
-                              right: 0,
-                              top: 0,
+                    child: IntrinsicHeight(
+                      child: Column(
+                        children: [
+                          // Drag Handle - Centered at top
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Center(
                               child: Container(
-                                padding: const EdgeInsets.all(2),
+                                width: 40,
+                                height: 4,
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.error,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                constraints: const BoxConstraints(
-                                  minWidth: 16,
-                                  minHeight: 16,
-                                ),
-                                child: Text(
-                                  provider.getTotalQuantity().toString(),
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.onError,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
+                                  color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(2),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                        
-                        const SizedBox(width: 12),
-                        
-                        // Cart Summary
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${provider.getTotalQuantity()} item${provider.getTotalQuantity() != 1 ? 's' : ''}',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                CurrencyFormatter.format(provider.getTotalAmount()),
-                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
                           ),
-                        ),
-                        
-                        // Drag Handle
-                        Column(
-                          children: [
-                            // Drag indicator lines
-                            Container(
-                              width: 40,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(2),
-                              ),
+                          
+                          // Cart Content
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(AppSizes.padding, 0, AppSizes.padding, AppSizes.padding),
+                            child: Row(
+                              children: [
+                                // Cart Icon with Badge
+                                Stack(
+                                  children: [
+                                    Icon(
+                                      Icons.shopping_cart,
+                                      color: Theme.of(context).colorScheme.primary,
+                                      size: 28,
+                                    ),
+                                    Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).colorScheme.error,
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        constraints: const BoxConstraints(
+                                          minWidth: 16,
+                                          minHeight: 16,
+                                        ),
+                                        child: Text(
+                                          provider.getTotalQuantity().toString(),
+                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                            color: Theme.of(context).colorScheme.onError,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                
+                                const SizedBox(width: 12),
+                                
+                                // Cart Summary
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '${provider.getTotalQuantity()} item${provider.getTotalQuantity() != 1 ? 's' : ''}',
+                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        CurrencyFormatter.format(provider.getTotalAmount()),
+                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                          color: Theme.of(context).colorScheme.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            Container(
-                              width: 40,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            // Drag Handle text
-                            Text(
-                              'Drag Handle',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.outline.withOpacity(0.8),
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
