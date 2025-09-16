@@ -111,6 +111,21 @@ class ThemeConfig {
 /// Predefined theme configurations
 class ThemePresets {
   static const List<ThemeConfig> presets = [
+    // Simple Black and White Theme
+    ThemeConfig(
+      id: 'black_white',
+      name: 'Black & White',
+      description: 'Simple black and white theme with clean design',
+      primaryColor: Colors.black,
+      secondaryColor: Color(0xFF616161), // grey[600]
+      accentColor: Color(0xFF9E9E9E), // grey[500]
+      brightness: Brightness.light,
+      fontFamily: 'Lato',
+      borderRadius: 8.0,
+      spacing: 18.0,
+      isDarkMode: false,
+    ),
+
     // Default TOSS Orange Theme
     ThemeConfig(
       id: 'toss_orange',
@@ -212,5 +227,5 @@ class ThemePresets {
   }
 
   /// Get default theme
-  static ThemeConfig get defaultTheme => presets.first;
+  static ThemeConfig get defaultTheme => presets.first; // This will now be the black & white theme
 }

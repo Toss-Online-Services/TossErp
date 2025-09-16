@@ -331,6 +331,11 @@ class HomeProvider extends ChangeNotifier {
     return orderedProducts.map((e) => e.price * e.quantity).reduce((a, b) => a + b);
   }
 
+  int getTotalQuantity() {
+    if (orderedProducts.isEmpty) return 0;
+    return orderedProducts.map((e) => e.quantity).reduce((a, b) => a + b);
+  }
+
   int getDiscountedTotalAmount() {
     final int subtotal = getTotalAmount();
     int total = subtotal;

@@ -19,80 +19,74 @@ class SimpleCartPanel extends StatelessWidget {
           return Column(
             children: [
               // Enhanced Header for empty cart too
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(AppSizes.padding, 12, AppSizes.padding, 8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(AppSizes.radius * 2),
-                    topRight: Radius.circular(AppSizes.radius * 2),
+              Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(AppSizes.padding, 12, AppSizes.padding, 8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(AppSizes.radius * 2),
+                        topRight: Radius.circular(AppSizes.radius * 2),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        // Header
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.shopping_cart_outlined,
+                              color: Theme.of(context).colorScheme.outline,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Cart',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                child: Column(
-                  children: [
-                    // Drag Handle with down arrow hint
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(2),
+                  
+                  // Down arrow positioned at top-right corner (replacing close button)
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).pop(),
+                        borderRadius: BorderRadius.circular(18),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          padding: const EdgeInsets.all(6),
+                          child: Icon(
+                            Icons.keyboard_arrow_down,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Icon(
-                          Icons.keyboard_arrow_down,
-                          color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Pull down to close',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.outline.withOpacity(0.8),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    
-                    const SizedBox(height: 12),
-                    
-                    // Header with close button
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.shopping_cart_outlined,
-                          color: Theme.of(context).colorScheme.outline,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Cart',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        
-                        // Close button
-                        IconButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          icon: const Icon(Icons.close),
-                          tooltip: 'Close cart',
-                          style: IconButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                            foregroundColor: Theme.of(context).colorScheme.onSurface,
-                            padding: const EdgeInsets.all(8),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               
               // Empty state content
@@ -113,95 +107,88 @@ class SimpleCartPanel extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Enhanced Header with close button and drag indicators
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(AppSizes.padding, 12, AppSizes.padding, 8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(AppSizes.radius * 2),
-                  topRight: Radius.circular(AppSizes.radius * 2),
+            Stack(
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(AppSizes.padding, 12, AppSizes.padding, 8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(AppSizes.radius * 2),
+                      topRight: Radius.circular(AppSizes.radius * 2),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      // Cart Header with clear button
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.shopping_cart,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Cart (${provider.orderedProducts.length} items)',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const Spacer(),
+                          
+                          // Clear Cart Button
+                          TextButton.icon(
+                            onPressed: provider.orderedProducts.isNotEmpty 
+                              ? () => _showClearCartDialog(context, provider)
+                              : null,
+                            icon: const Icon(Icons.clear_all, size: 16),
+                            label: const Text('Clear'),
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.red,
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              child: Column(
-                children: [
-                  // Drag Handle with down arrow hint
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
-                          borderRadius: BorderRadius.circular(2),
+                
+                // Down arrow positioned at top-right corner (replacing close button)
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).pop(),
+                      borderRadius: BorderRadius.circular(18),
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        padding: const EdgeInsets.all(6),
+                        child: Icon(
+                          Icons.keyboard_arrow_down,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Pull down to close',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.outline.withOpacity(0.8),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  // Cart Header with close button
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.shopping_cart,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Cart (${provider.orderedProducts.length} items)',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const Spacer(),
-                      
-                      // Close button for easy exit
-                      IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.close),
-                        tooltip: 'Close cart',
-                        style: IconButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          foregroundColor: Theme.of(context).colorScheme.onSurface,
-                          padding: const EdgeInsets.all(8),
-                        ),
-                      ),
-                      
-                      const SizedBox(width: 8),
-                      
-                      // Clear Cart Button
-                      TextButton.icon(
-                        onPressed: provider.orderedProducts.isNotEmpty 
-                          ? () => _showClearCartDialog(context, provider)
-                          : null,
-                        icon: const Icon(Icons.clear_all, size: 16),
-                        label: const Text('Clear'),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.red,
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
             
             // Cart Items List
