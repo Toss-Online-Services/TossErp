@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../domain/entities/discount_entity.dart';
+import '../../domain/entities/discount_entity.dart' as domain;
 import '../../domain/entities/product_entity.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../../data/services/discount_service.dart';
@@ -11,7 +11,7 @@ import '../widgets/common/custom_app_bar.dart';
 import '../widgets/common/loading_widget.dart';
 
 class AddDiscountScreen extends StatefulWidget {
-  final DiscountEntity? discount;
+  final domain.DiscountEntity? discount;
 
   const AddDiscountScreen({super.key, this.discount});
 
@@ -39,9 +39,9 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
   final _couponCodeController = TextEditingController();
 
   // Form values
-  DiscountType _selectedType = DiscountType.percentage;
-  DiscountScope _selectedScope = DiscountScope.cart;
-  DiscountApplication _selectedApplication = DiscountApplication.automatic;
+  domain.DiscountType _selectedType = domain.DiscountType.percentage;
+  domain.DiscountScope _selectedScope = domain.DiscountScope.cart;
+  domain.DiscountApplication _selectedApplication = domain.DiscountApplication.automatic;
   DateTime? _startDate;
   DateTime? _endDate;
   TimeOfDay? _startTime;
@@ -105,10 +105,10 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
       _nameController.text = discount.name;
       _descriptionController.text = discount.description;
       _valueController.text = discount.value.toString();
-      _minimumAmountController.text = discount.minimumAmount?.toString() ?? '';
-      _maxDiscountAmountController.text = discount.maxDiscountAmount?.toString() ?? '';
-      _usageLimitController.text = discount.usageLimit?.toString() ?? '';
-      _usageLimitPerCustomerController.text = discount.usageLimitPerCustomer?.toString() ?? '';
+  _minimumAmountController.text = discount.minimumPurchase?.toString() ?? '';
+  _maxDiscountAmountController.text = discount.maximumDiscount?.toString() ?? '';
+  _usageLimitController.text = discount.totalMaxUses?.toString() ?? '';
+  _usageLimitPerCustomerController.text = discount.maxUsesPerCustomer?.toString() ?? '';
       _couponCodeController.text = discount.couponCode ?? '';
       
       _selectedType = discount.type;
@@ -124,17 +124,21 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
       if (discount.bogoConfig != null) {
         _buyQuantityController.text = discount.bogoConfig!.buyQuantity.toString();
         _getQuantityController.text = discount.bogoConfig!.getQuantity.toString();
-        _getDiscountPercentageController.text = discount.bogoConfig!.getDiscountPercentage.toString();
+        _getDiscountPercentageController.text = discount.bogoConfig!.getDiscountPercent.toString();
       }
       
       // Initialize time-based configuration
-      if (discount.timeBasedConfig != null) {
-        _selectedDaysOfWeek = discount.timeBasedConfig!.daysOfWeek;
-        _startTime = discount.timeBasedConfig!.startTime;
-        _endTime = discount.timeBasedConfig!.endTime;
-        _isSeasonalDiscount = discount.timeBasedConfig!.isSeasonalDiscount;
-        _seasonStart = discount.timeBasedConfig!.seasonStartDate;
-        _seasonEnd = discount.timeBasedConfig!.seasonEndDate;
+      if (discount.timeConfig != null) {
+        _selectedDaysOfWeek = discount.timeConfig!.daysOfWeek;
+        _startTime = discount.timeConfig!.startTime != null
+            ? TimeOfDay(hour: discount.timeConfig!.startTime!.hour, minute: discount.timeConfig!.startTime!.minute)
+            : null;
+        _endTime = discount.timeConfig!.endTime != null
+            ? TimeOfDay(hour: discount.timeConfig!.endTime!.hour, minute: discount.timeConfig!.endTime!.minute)
+            : null;
+        _isSeasonalDiscount = discount.timeConfig!.seasonalPeriod != null;
+        _seasonStart = null;
+        _seasonEnd = null;
       }
       
       // Initialize location configuration
@@ -143,9 +147,9 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
       }
       
       // Initialize target configuration
-      _targetProductIds = List.from(discount.targetProductIds);
-      _targetCategoryIds = List.from(discount.targetCategoryIds);
-      _targetCustomerIds = List.from(discount.targetCustomerIds);
+  _targetProductIds = List.from(discount.applicableItems);
+  _targetCategoryIds = List.from(discount.applicableCategories);
+  _targetCustomerIds = List.from(discount.applicableCustomers);
     }
   }
 
@@ -276,12 +280,12 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
           ),
           const SizedBox(height: 16),
           
-          DropdownButtonFormField<DiscountType>(
+          DropdownButtonFormField<domain.DiscountType>(
             value: _selectedType,
             decoration: const InputDecoration(
               labelText: 'Discount Type *',
             ),
-            items: DiscountType.values.map((type) => DropdownMenuItem(
+            items: domain.DiscountType.values.map((type) => DropdownMenuItem(
               value: type,
               child: Text(_getDiscountTypeDisplayName(type)),
             )).toList(),
@@ -293,18 +297,18 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
           ),
           const SizedBox(height: 16),
           
-          if (_selectedType == DiscountType.percentage ||
-              _selectedType == DiscountType.fixedAmount) ...[
+          if (_selectedType == domain.DiscountType.percentage ||
+              _selectedType == domain.DiscountType.fixedAmount) ...[
             TextFormField(
               controller: _valueController,
               decoration: InputDecoration(
-                labelText: _selectedType == DiscountType.percentage 
+                labelText: _selectedType == domain.DiscountType.percentage 
                     ? 'Percentage Value *' 
                     : 'Fixed Amount (GHS) *',
-                hintText: _selectedType == DiscountType.percentage 
+                hintText: _selectedType == domain.DiscountType.percentage 
                     ? 'e.g., 10 (for 10%)' 
                     : 'e.g., 50.00',
-                suffixText: _selectedType == DiscountType.percentage ? '%' : 'GHS',
+                suffixText: _selectedType == domain.DiscountType.percentage ? '%' : 'GHS',
               ),
               keyboardType: TextInputType.number,
               inputFormatters: [
@@ -318,7 +322,7 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
                 if (numValue == null || numValue <= 0) {
                   return 'Please enter a valid positive number';
                 }
-                if (_selectedType == DiscountType.percentage && numValue > 100) {
+                if (_selectedType == domain.DiscountType.percentage && numValue > 100) {
                   return 'Percentage cannot be more than 100%';
                 }
                 return null;
@@ -327,18 +331,18 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
             const SizedBox(height: 16),
           ],
           
-          if (_selectedType == DiscountType.bogo ||
-              _selectedType == DiscountType.buyXGetY) ...[
+          if (_selectedType == domain.DiscountType.bogo ||
+              _selectedType == domain.DiscountType.buyXGetY) ...[
             _buildBogoConfiguration(),
             const SizedBox(height: 16),
           ],
           
-          DropdownButtonFormField<DiscountScope>(
+          DropdownButtonFormField<domain.DiscountScope>(
             value: _selectedScope,
             decoration: const InputDecoration(
               labelText: 'Applies To *',
             ),
-            items: DiscountScope.values.map((scope) => DropdownMenuItem(
+            items: domain.DiscountScope.values.map((scope) => DropdownMenuItem(
               value: scope,
               child: Text(_getDiscountScopeDisplayName(scope)),
             )).toList(),
@@ -350,12 +354,12 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
           ),
           const SizedBox(height: 16),
           
-          DropdownButtonFormField<DiscountApplication>(
+          DropdownButtonFormField<domain.DiscountApplication>(
             value: _selectedApplication,
             decoration: const InputDecoration(
               labelText: 'Application Type *',
             ),
-            items: DiscountApplication.values.map((app) => DropdownMenuItem(
+            items: domain.DiscountApplication.values.map((app) => DropdownMenuItem(
               value: app,
               child: Text(_getDiscountApplicationDisplayName(app)),
             )).toList(),
@@ -367,7 +371,7 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
           ),
           const SizedBox(height: 16),
           
-          if (_selectedApplication == DiscountApplication.coupon) ...[
+          if (_selectedApplication == domain.DiscountApplication.couponCode) ...[
             TextFormField(
               controller: _couponCodeController,
               decoration: const InputDecoration(
@@ -376,7 +380,7 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
               ),
               textCapitalization: TextCapitalization.characters,
               validator: (value) {
-                if (_selectedApplication == DiscountApplication.coupon &&
+                if (_selectedApplication == domain.DiscountApplication.couponCode &&
                     (value == null || value.isEmpty)) {
                   return 'Please enter a coupon code';
                 }
@@ -441,8 +445,8 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
-                    if ((_selectedType == DiscountType.bogo ||
-                         _selectedType == DiscountType.buyXGetY) &&
+                    if ((_selectedType == domain.DiscountType.bogo ||
+                         _selectedType == domain.DiscountType.buyXGetY) &&
                         (value == null || value.isEmpty)) {
                       return 'Required';
                     }
@@ -461,8 +465,8 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
-                    if ((_selectedType == DiscountType.bogo ||
-                         _selectedType == DiscountType.buyXGetY) &&
+                    if ((_selectedType == domain.DiscountType.bogo ||
+                         _selectedType == domain.DiscountType.buyXGetY) &&
                         (value == null || value.isEmpty)) {
                       return 'Required';
                     }
@@ -485,8 +489,8 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
               FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
             ],
             validator: (value) {
-              if ((_selectedType == DiscountType.bogo ||
-                   _selectedType == DiscountType.buyXGetY) &&
+              if ((_selectedType == domain.DiscountType.bogo ||
+                   _selectedType == domain.DiscountType.buyXGetY) &&
                   (value == null || value.isEmpty)) {
                 return 'Please enter discount percentage';
               }
@@ -772,16 +776,16 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
           
           const SizedBox(height: 24),
           
-          if (_selectedScope == DiscountScope.item ||
-              _selectedScope == DiscountScope.category ||
-              _selectedScope == DiscountScope.brand) ...[
+      if (_selectedScope == domain.DiscountScope.item ||
+        _selectedScope == domain.DiscountScope.category ||
+        _selectedScope == domain.DiscountScope.brand) ...[
             const Text(
               'Product Restrictions',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             
-            if (_selectedScope == DiscountScope.item) ...[
+            if (_selectedScope == domain.DiscountScope.item) ...[
               ElevatedButton(
                 onPressed: _selectProducts,
                 child: Text('Select Products (${_targetProductIds.length})'),
@@ -800,26 +804,25 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
                     itemBuilder: (context, index) {
                       final productId = _targetProductIds[index];
                       final product = _products.firstWhere(
-                        (p) => p.id == productId,
+                        (p) => (p.id ?? '').toString() == productId,
                         orElse: () => ProductEntity(
-                          id: productId,
+                          id: int.tryParse(productId),
+                          createdById: 'system',
                           name: 'Unknown Product',
                           barcode: '',
+                          imageUrl: '',
+                          stock: 0,
                           price: 0,
-                          cost: 0,
-                          category: '',
-                          brand: '',
-                          stockQuantity: 0,
+                          costPrice: 0,
                           unit: '',
-                          lowStockThreshold: 0,
                           isActive: true,
-                          createdAt: DateTime.now(),
+                          createdAt: DateTime.now().toIso8601String(),
                         ),
                       );
                       
                       return ListTile(
                         title: Text(product.name),
-                        subtitle: Text('GHS ${product.price.toStringAsFixed(2)}'),
+                        subtitle: Text('GHS ${(product.price / 100).toStringAsFixed(2)}'),
                         trailing: IconButton(
                           icon: const Icon(Icons.remove_circle, color: Colors.red),
                           onPressed: () {
@@ -838,7 +841,7 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
           
           const SizedBox(height: 24),
           
-          if (_selectedType == DiscountType.customerSpecific) ...[
+          if (_selectedType == domain.DiscountType.customerSpecific) ...[
             const Text(
               'Customer Restrictions',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -864,23 +867,21 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
                     final customerId = _targetCustomerIds[index];
                     final customer = _customers.firstWhere(
                       (c) => c.id == customerId,
-                      orElse: () => CustomerEntity(
-                        id: customerId,
+                      orElse: () => const CustomerEntity(
+                        id: 'unknown',
                         name: 'Unknown Customer',
-                        email: '',
                         phone: '',
                         address: '',
                         city: '',
-                        totalPurchases: 0,
                         loyaltyPoints: 0,
+                        totalSpent: 0.0,
                         isActive: true,
-                        createdAt: DateTime.now(),
                       ),
                     );
                     
                     return ListTile(
-                      title: Text(customer.name),
-                      subtitle: Text(customer.email),
+                      title: Text(customer.name ?? 'Unknown Customer'),
+                      subtitle: Text(customer.phone ?? ''),
                       trailing: IconButton(
                         icon: const Icon(Icons.remove_circle, color: Colors.red),
                         onPressed: () {
@@ -1041,18 +1042,18 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
             itemCount: _products.length,
             itemBuilder: (context, index) {
               final product = _products[index];
-              final isSelected = _targetProductIds.contains(product.id);
+              final isSelected = _targetProductIds.contains((product.id ?? '').toString());
               
               return CheckboxListTile(
                 title: Text(product.name),
-                subtitle: Text('GHS ${product.price.toStringAsFixed(2)}'),
+                subtitle: Text('GHS ${(product.price / 100).toStringAsFixed(2)}'),
                 value: isSelected,
                 onChanged: (value) {
                   setState(() {
                     if (value!) {
-                      _targetProductIds.add(product.id);
+                      _targetProductIds.add((product.id ?? '').toString());
                     } else {
-                      _targetProductIds.remove(product.id);
+                      _targetProductIds.remove((product.id ?? '').toString());
                     }
                   });
                   Navigator.pop(context);
@@ -1087,8 +1088,8 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
               final isSelected = _targetCustomerIds.contains(customer.id);
               
               return CheckboxListTile(
-                title: Text(customer.name),
-                subtitle: Text(customer.email),
+                title: Text(customer.name ?? 'Unknown Customer'),
+                subtitle: Text(customer.phone ?? ''),
                 value: isSelected,
                 onChanged: (value) {
                   setState(() {
@@ -1126,37 +1127,40 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
 
     try {
       // Create BOGO configuration if needed
-      BogoConfig? bogoConfig;
-      if (_selectedType == DiscountType.bogo || _selectedType == DiscountType.buyXGetY) {
-        bogoConfig = BogoConfig(
+      domain.BogoConfig? bogoConfig;
+      if (_selectedType == domain.DiscountType.bogo || _selectedType == domain.DiscountType.buyXGetY) {
+        bogoConfig = domain.BogoConfig(
+          type: _selectedType == domain.DiscountType.bogo
+              ? domain.BogoType.buyOneGetOne
+              : domain.BogoType.buyXGetYPercent,
           buyQuantity: int.parse(_buyQuantityController.text),
           getQuantity: int.parse(_getQuantityController.text),
-          getDiscountPercentage: double.parse(_getDiscountPercentageController.text),
+          getDiscountPercent: double.parse(_getDiscountPercentageController.text),
         );
       }
 
       // Create time-based configuration if needed
-      TimeBasedConfig? timeBasedConfig;
+      domain.TimeBasedConfig? timeBasedConfig;
       if (_selectedDaysOfWeek.isNotEmpty || _startTime != null || _endTime != null || _isSeasonalDiscount) {
-        timeBasedConfig = TimeBasedConfig(
+        timeBasedConfig = domain.TimeBasedConfig(
           daysOfWeek: _selectedDaysOfWeek,
-          startTime: _startTime,
-          endTime: _endTime,
-          isSeasonalDiscount: _isSeasonalDiscount,
-          seasonStartDate: _seasonStart,
-          seasonEndDate: _seasonEnd,
+          startTime: _startTime != null ? domain.TimeOfDay(hour: _startTime!.hour, minute: _startTime!.minute) : null,
+          endTime: _endTime != null ? domain.TimeOfDay(hour: _endTime!.hour, minute: _endTime!.minute) : null,
+          excludedDates: const [],
+          isHappyHour: false,
+          seasonalPeriod: _isSeasonalDiscount ? 'seasonal' : null,
         );
       }
 
       // Create location configuration if needed
-      LocationConfig? locationConfig;
+      domain.LocationConfig? locationConfig;
       if (_applicableLocations.isNotEmpty) {
-        locationConfig = LocationConfig(
+        locationConfig = domain.LocationConfig(
           applicableLocations: _applicableLocations,
         );
       }
 
-      final discount = DiscountEntity(
+      final discount = domain.DiscountEntity(
         id: widget.discount?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameController.text.trim(),
         description: _descriptionController.text.trim(),
@@ -1164,10 +1168,10 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
         scope: _selectedScope,
         application: _selectedApplication,
         value: double.parse(_valueController.text.isNotEmpty ? _valueController.text : '0'),
-        minimumAmount: _minimumAmountController.text.isNotEmpty 
+        minimumPurchase: _minimumAmountController.text.isNotEmpty 
             ? double.parse(_minimumAmountController.text) 
             : null,
-        maxDiscountAmount: _maxDiscountAmountController.text.isNotEmpty 
+        maximumDiscount: _maxDiscountAmountController.text.isNotEmpty 
             ? double.parse(_maxDiscountAmountController.text) 
             : null,
         startDate: _startDate ?? DateTime.now(),
@@ -1175,24 +1179,25 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
         isActive: _isActive,
         isStackable: _isStackable,
         priority: _priority,
-        usageLimit: _usageLimitController.text.isNotEmpty 
+        totalMaxUses: _usageLimitController.text.isNotEmpty 
             ? int.parse(_usageLimitController.text) 
             : null,
-        usageLimitPerCustomer: _usageLimitPerCustomerController.text.isNotEmpty 
+        maxUsesPerCustomer: _usageLimitPerCustomerController.text.isNotEmpty 
             ? int.parse(_usageLimitPerCustomerController.text) 
             : null,
         currentUses: widget.discount?.currentUses ?? 0,
         couponCode: _couponCodeController.text.isNotEmpty 
             ? _couponCodeController.text.trim() 
             : null,
-        targetProductIds: _targetProductIds,
-        targetCategoryIds: _targetCategoryIds,
-        targetCustomerIds: _targetCustomerIds,
+        applicableItems: _targetProductIds,
+        applicableCategories: _targetCategoryIds,
+        applicableCustomers: _targetCustomerIds,
         bogoConfig: bogoConfig,
-        timeBasedConfig: timeBasedConfig,
+        timeConfig: timeBasedConfig,
         locationConfig: locationConfig,
         createdAt: widget.discount?.createdAt ?? DateTime.now(),
         updatedAt: DateTime.now(),
+        createdBy: widget.discount?.createdBy ?? 'system',
       );
 
       if (widget.discount == null) {
@@ -1231,53 +1236,53 @@ class _AddDiscountScreenState extends State<AddDiscountScreen>
   }
 
   // Helper methods for display names
-  String _getDiscountTypeDisplayName(DiscountType type) {
+  String _getDiscountTypeDisplayName(domain.DiscountType type) {
     switch (type) {
-      case DiscountType.percentage:
+      case domain.DiscountType.percentage:
         return 'Percentage Discount';
-      case DiscountType.fixedAmount:
+      case domain.DiscountType.fixedAmount:
         return 'Fixed Amount Discount';
-      case DiscountType.bogo:
+      case domain.DiscountType.bogo:
         return 'Buy One Get One (BOGO)';
-      case DiscountType.buyXGetY:
+      case domain.DiscountType.buyXGetY:
         return 'Buy X Get Y';
-      case DiscountType.freeShipping:
+      case domain.DiscountType.freeShipping:
         return 'Free Shipping';
-      case DiscountType.customerSpecific:
+      case domain.DiscountType.customerSpecific:
         return 'Customer Specific';
-      case DiscountType.loyaltyPoints:
+      case domain.DiscountType.loyaltyPoints:
         return 'Loyalty Points';
     }
   }
 
-  String _getDiscountScopeDisplayName(DiscountScope scope) {
+  String _getDiscountScopeDisplayName(domain.DiscountScope scope) {
     switch (scope) {
-      case DiscountScope.item:
+      case domain.DiscountScope.item:
         return 'Specific Items';
-      case DiscountScope.category:
+      case domain.DiscountScope.category:
         return 'Product Categories';
-      case DiscountScope.brand:
+      case domain.DiscountScope.brand:
         return 'Product Brands';
-      case DiscountScope.cart:
+      case domain.DiscountScope.cart:
         return 'Entire Cart';
-      case DiscountScope.shipping:
+      case domain.DiscountScope.shipping:
         return 'Shipping';
-      case DiscountScope.total:
+      case domain.DiscountScope.total:
         return 'Order Total';
     }
   }
 
-  String _getDiscountApplicationDisplayName(DiscountApplication application) {
+  String _getDiscountApplicationDisplayName(domain.DiscountApplication application) {
     switch (application) {
-      case DiscountApplication.automatic:
+      case domain.DiscountApplication.automatic:
         return 'Automatic';
-      case DiscountApplication.couponCode:
+      case domain.DiscountApplication.couponCode:
         return 'Coupon Code';
-      case DiscountApplication.loyaltyTier:
+      case domain.DiscountApplication.loyaltyTier:
         return 'Loyalty Tier';
-      case DiscountApplication.customerGroup:
+      case domain.DiscountApplication.customerGroup:
         return 'Customer Group';
-      case DiscountApplication.manual:
+      case domain.DiscountApplication.manual:
         return 'Manual Application';
     }
   }

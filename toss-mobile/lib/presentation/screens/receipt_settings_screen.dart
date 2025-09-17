@@ -63,7 +63,6 @@ class PrinterSettingsTab extends StatefulWidget {
 }
 
 class _PrinterSettingsTabState extends State<PrinterSettingsTab> {
-  final ReceiptService _receiptService = ReceiptService();
   List<PrinterConfig> _printers = [];
   bool _isLoading = true;
 
@@ -168,7 +167,7 @@ class _PrinterSettingsTabState extends State<PrinterSettingsTab> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(printer.type.name.toUpperCase()),
+            Text(printer.type.toUpperCase()),
             Text(
               '${printer.paperWidth}mm - ${printer.defaultFormat.name}',
               style: const TextStyle(fontSize: 12),
@@ -223,7 +222,7 @@ class _PrinterSettingsTabState extends State<PrinterSettingsTab> {
                   ),
                 ),
               ],
-              onSelected: (value) => _handlePrinterAction(printer, value as String),
+              onSelected: (value) => _handlePrinterAction(printer, value),
             ),
           ],
         ),
@@ -269,20 +268,6 @@ class _PrinterSettingsTabState extends State<PrinterSettingsTab> {
 
   Future<void> _togglePrinterStatus(PrinterConfig printer, bool isActive) async {
     try {
-      final updatedPrinter = PrinterConfig(
-        id: printer.id,
-        name: printer.name,
-        type: printer.type,
-        connectionString: printer.connectionString,
-        paperWidth: printer.paperWidth,
-        defaultFormat: printer.defaultFormat,
-        isDefault: printer.isDefault,
-        isActive: isActive,
-        settings: printer.settings,
-        createdAt: printer.createdAt,
-        lastUsedAt: printer.lastUsedAt,
-      );
-
       // Mock save operation
       await Future.delayed(const Duration(milliseconds: 300));
       await _loadPrinters();
@@ -332,20 +317,6 @@ class _PrinterSettingsTabState extends State<PrinterSettingsTab> {
 
   Future<void> _setDefaultPrinter(PrinterConfig printer) async {
     try {
-      final updatedPrinter = PrinterConfig(
-        id: printer.id,
-        name: printer.name,
-        type: printer.type,
-        connectionString: printer.connectionString,
-        paperWidth: printer.paperWidth,
-        defaultFormat: printer.defaultFormat,
-        isDefault: true,
-        isActive: printer.isActive,
-        settings: printer.settings,
-        createdAt: printer.createdAt,
-        lastUsedAt: printer.lastUsedAt,
-      );
-
       // Mock save operation
       await Future.delayed(const Duration(milliseconds: 300));
       await _loadPrinters();
@@ -412,20 +383,22 @@ class _PrinterSettingsTabState extends State<PrinterSettingsTab> {
     }
   }
 
-  IconData _getPrinterTypeIcon(PrinterType type) {
+  IconData _getPrinterTypeIcon(String type) {
     switch (type) {
-      case PrinterType.thermal:
+      case 'thermal':
         return Icons.receipt;
-      case PrinterType.laser:
+      case 'laser':
         return Icons.print;
-      case PrinterType.inkjet:
+      case 'inkjet':
         return Icons.local_printshop;
-      case PrinterType.bluetooth:
+      case 'bluetooth':
         return Icons.bluetooth;
-      case PrinterType.wifi:
+      case 'wifi':
         return Icons.wifi;
-      case PrinterType.usb:
+      case 'usb':
         return Icons.usb;
+      default:
+        return Icons.print;
     }
   }
 }
@@ -449,7 +422,7 @@ class _AddPrinterScreenState extends State<AddPrinterScreen> {
   final _nameController = TextEditingController();
   final _connectionController = TextEditingController();
   
-  PrinterType _selectedType = PrinterType.thermal;
+  String _selectedType = 'thermal';
   int _paperWidth = 80;
   ReceiptFormat _defaultFormat = ReceiptFormat.thermal;
   bool _isDefault = false;
@@ -524,16 +497,20 @@ class _AddPrinterScreenState extends State<AddPrinterScreen> {
             const SizedBox(height: 16),
 
             // Printer Type
-            DropdownButtonFormField<PrinterType>(
+            DropdownButtonFormField<String>(
               value: _selectedType,
               decoration: const InputDecoration(
                 labelText: 'Printer Type',
                 prefixIcon: Icon(Icons.print),
               ),
-              items: PrinterType.values.map((type) => DropdownMenuItem(
-                value: type,
-                child: Text(type.name.toUpperCase()),
-              )).toList(),
+              items: const [
+                DropdownMenuItem(value: 'thermal', child: Text('THERMAL')),
+                DropdownMenuItem(value: 'laser', child: Text('LASER')),
+                DropdownMenuItem(value: 'inkjet', child: Text('INKJET')),
+                DropdownMenuItem(value: 'bluetooth', child: Text('BLUETOOTH')),
+                DropdownMenuItem(value: 'wifi', child: Text('WIFI')),
+                DropdownMenuItem(value: 'usb', child: Text('USB')),
+              ],
               onChanged: (value) {
                 setState(() {
                   _selectedType = value!;
@@ -663,20 +640,7 @@ class _AddPrinterScreenState extends State<AddPrinterScreen> {
     });
 
     try {
-      final printer = PrinterConfig(
-        id: widget.printer?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-        name: _nameController.text.trim(),
-        type: _selectedType,
-        connectionString: _connectionController.text.trim(),
-        paperWidth: _paperWidth,
-        defaultFormat: _defaultFormat,
-        isDefault: _isDefault,
-        isActive: _isActive,
-        settings: {},
-        createdAt: widget.printer?.createdAt ?? DateTime.now(),
-        lastUsedAt: widget.printer?.lastUsedAt,
-      );
-
+      // Mock save printer configuration
       await ReceiptService().getReceiptHistory(); // Mock save operation
       await Future.delayed(const Duration(milliseconds: 300));
       
@@ -734,26 +698,26 @@ class _AddPrinterScreenState extends State<AddPrinterScreen> {
     }
   }
 
-  String _getConnectionHint(PrinterType type) {
+  String _getConnectionHint(String type) {
     switch (type) {
-      case PrinterType.bluetooth:
+      case 'bluetooth':
         return 'Bluetooth MAC Address';
-      case PrinterType.wifi:
+      case 'wifi':
         return 'IP Address:Port (e.g., 192.168.1.100:9100)';
-      case PrinterType.usb:
+      case 'usb':
         return 'USB Device Path';
       default:
         return 'Connection details';
     }
   }
 
-  IconData _getConnectionIcon(PrinterType type) {
+  IconData _getConnectionIcon(String type) {
     switch (type) {
-      case PrinterType.bluetooth:
+      case 'bluetooth':
         return Icons.bluetooth;
-      case PrinterType.wifi:
+      case 'wifi':
         return Icons.wifi;
-      case PrinterType.usb:
+      case 'usb':
         return Icons.usb;
       default:
         return Icons.device_hub;

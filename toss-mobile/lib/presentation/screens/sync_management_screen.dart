@@ -25,8 +25,7 @@ class _SyncManagementScreenState extends State<SyncManagementScreen>
 
   bool _isLoading = false;
   Map<String, dynamic>? _syncStatistics;
-  SyncConfiguration? _syncConfiguration;
-  ConnectivityStatus _connectivityStatus = ConnectivityStatus.unknown;
+  bool _isConnected = false;
 
   @override
   void initState() {
@@ -50,11 +49,9 @@ class _SyncManagementScreenState extends State<SyncManagementScreen>
     
     try {
       final statistics = await _syncService.getSyncStatistics();
-      final configuration = await _syncService.getSyncConfiguration();
       
       setState(() {
         _syncStatistics = statistics;
-        _syncConfiguration = configuration;
       });
     } catch (e) {
       _showErrorDialog('Failed to load sync data', e.toString());
@@ -64,9 +61,9 @@ class _SyncManagementScreenState extends State<SyncManagementScreen>
   }
 
   void _listenToConnectivity() {
-    _connectivityRepository.connectivityStream.listen((status) {
+    _connectivityRepository.connectionStatusStream.listen((isConnected) {
       setState(() {
-        _connectivityStatus = status;
+        _isConnected = isConnected;
       });
     });
   }
@@ -140,8 +137,7 @@ class _SyncManagementScreenState extends State<SyncManagementScreen>
   }
 
   Widget _buildConnectivityCard() {
-    final isConnected = _connectivityStatus == ConnectivityStatus.wifi ||
-                       _connectivityStatus == ConnectivityStatus.mobile;
+  final isConnected = _isConnected;
     
     return Card(
       child: Padding(
@@ -168,7 +164,7 @@ class _SyncManagementScreenState extends State<SyncManagementScreen>
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    _getConnectivityText(_connectivityStatus),
+                    isConnected ? 'Online' : 'Offline',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -471,11 +467,11 @@ class _SyncManagementScreenState extends State<SyncManagementScreen>
   }
 
   Future<void> _refreshData() async {
-    await _initializeData();
+    _initializeData();
   }
 
   Future<void> _performManualSync() async {
-    if (_connectivityStatus == ConnectivityStatus.none) {
+    if (!_isConnected) {
       _showSnackBar('No internet connection available', isError: true);
       return;
     }
@@ -501,7 +497,7 @@ class _SyncManagementScreenState extends State<SyncManagementScreen>
 
     if (!confirmed) return;
 
-    if (_connectivityStatus == ConnectivityStatus.none) {
+    if (!_isConnected) {
       _showSnackBar('No internet connection available', isError: true);
       return;
     }
@@ -540,7 +536,7 @@ class _SyncManagementScreenState extends State<SyncManagementScreen>
     _showLoadingDialog('Exporting data...');
 
     try {
-      final backup = await _syncService.createBackup();
+  final backup = await _syncService.createBackup();
       Navigator.of(context).pop(); // Close loading dialog
       
       // Copy backup data to clipboard
@@ -623,24 +619,6 @@ class _SyncManagementScreenState extends State<SyncManagementScreen>
     return result ?? false;
   }
 
-  String _getConnectivityText(ConnectivityStatus status) {
-    switch (status) {
-      case ConnectivityStatus.wifi:
-        return 'WiFi';
-      case ConnectivityStatus.mobile:
-        return 'Mobile';
-      case ConnectivityStatus.ethernet:
-        return 'Ethernet';
-      case ConnectivityStatus.bluetooth:
-        return 'Bluetooth';
-      case ConnectivityStatus.vpn:
-        return 'VPN';
-      case ConnectivityStatus.none:
-        return 'Offline';
-      case ConnectivityStatus.unknown:
-        return 'Unknown';
-    }
-  }
 
   String _formatTimeAgo(DateTime dateTime) {
     final difference = DateTime.now().difference(dateTime);

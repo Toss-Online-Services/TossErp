@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../../../core/services/employee_authentication_service_stub.dart';
-import '../../../domain/entities/employee_entity.dart';
+import '../../../core/services/employee_authentication_service.dart';
+// import '../../../domain/entities/employee_entity.dart';
 
 class EmployeeLoginScreen extends StatefulWidget {
   final String? locationId;
@@ -35,7 +35,8 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    // Initialize with minimum of 3 tabs (PIN, QR, Employee #); biometric may add one more.
+    _tabController = TabController(length: 3, vsync: this);
     _loadAvailableMethods();
   }
 
@@ -51,6 +52,11 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen>
     final methods = await _authService.getAvailableAuthMethods();
     setState(() {
       _availableMethods = methods;
+      final tabCount = 3 + (_availableMethods.contains(AuthenticationMethod.biometric) ? 1 : 0);
+      if (_tabController.length != tabCount) {
+        _tabController.dispose();
+        _tabController = TabController(length: tabCount, vsync: this);
+      }
     });
   }
 
@@ -393,6 +399,7 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen>
         ),
         const SizedBox(height: 32),
         TextField(
+          controller: _employeeNumberController,
           decoration: const InputDecoration(
             labelText: 'Employee Number',
             prefixIcon: Icon(Icons.badge),

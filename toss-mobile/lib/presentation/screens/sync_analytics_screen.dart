@@ -1086,17 +1086,17 @@ class _SyncAnalyticsScreenState extends State<SyncAnalyticsScreen>
 
   String _getOperationDisplayName(String operation) {
     try {
-      final op = SyncOperation.values.firstWhere((e) => e.name == operation);
+      final op = SyncOperationType.values.firstWhere((e) => e.name == operation);
       switch (op) {
-        case SyncOperation.create:
+        case SyncOperationType.create:
           return 'Create';
-        case SyncOperation.update:
+        case SyncOperationType.update:
           return 'Update';
-        case SyncOperation.delete:
+        case SyncOperationType.delete:
           return 'Delete';
-        case SyncOperation.transfer:
+        case SyncOperationType.transfer:
           return 'Transfer';
-        case SyncOperation.payment:
+        case SyncOperationType.payment:
           return 'Payment';
       }
     } catch (e) {
@@ -1106,17 +1106,17 @@ class _SyncAnalyticsScreenState extends State<SyncAnalyticsScreen>
 
   Color _getOperationColor(String operation) {
     try {
-      final op = SyncOperation.values.firstWhere((e) => e.name == operation);
+      final op = SyncOperationType.values.firstWhere((e) => e.name == operation);
       switch (op) {
-        case SyncOperation.create:
+        case SyncOperationType.create:
           return Colors.green;
-        case SyncOperation.update:
+        case SyncOperationType.update:
           return Colors.blue;
-        case SyncOperation.delete:
+        case SyncOperationType.delete:
           return Colors.red;
-        case SyncOperation.transfer:
+        case SyncOperationType.transfer:
           return Colors.orange;
-        case SyncOperation.payment:
+        case SyncOperationType.payment:
           return Colors.purple;
       }
     } catch (e) {

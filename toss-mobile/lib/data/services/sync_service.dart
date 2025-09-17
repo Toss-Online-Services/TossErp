@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+// import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:battery_plus/battery_plus.dart';
 import 'package:crypto/crypto.dart';
@@ -116,7 +116,9 @@ class SyncService {
 
     // Trigger immediate sync if auto-sync is enabled and we're online
     if (_configuration.autoSync && await _isOnline()) {
-      _triggerSync();
+      // Start sync asynchronously
+      // ignore: unawaited_futures
+      startSync();
     }
 
     return queueItem.id;
@@ -279,60 +281,45 @@ class SyncService {
   }
 
   Future<void> _syncCreate(SyncQueueEntity item) async {
-    final result = await _cloudStorageRepository.create(
-      collection: _getCollectionName(item.entityType),
-      id: item.entityId,
-      data: item.data,
+    // Save entity remotely
+    await _cloudStorageRepository.saveEntity(
+      item.entityType,
+      item.entityId,
+      item.data,
     );
-
-    if (result['conflict'] == true) {
-      throw ConflictException(
-        'Entity already exists',
-        localData: item.data,
-        remoteData: result['existingData'],
-      );
-    }
   }
 
   Future<void> _syncUpdate(SyncQueueEntity item) async {
-    final result = await _cloudStorageRepository.update(
-      collection: _getCollectionName(item.entityType),
-      id: item.entityId,
-      data: item.data,
-      expectedVersion: item.metadata['version'],
+    // Update entity remotely (save with merge)
+    await _cloudStorageRepository.saveEntity(
+      item.entityType,
+      item.entityId,
+      item.data,
     );
-
-    if (result['conflict'] == true) {
-      throw ConflictException(
-        'Version conflict detected',
-        localData: item.data,
-        remoteData: result['currentData'],
-      );
-    }
   }
 
   Future<void> _syncDelete(SyncQueueEntity item) async {
-    await _cloudStorageRepository.delete(
-      collection: _getCollectionName(item.entityType),
-      id: item.entityId,
+    await _cloudStorageRepository.deleteEntity(
+      item.entityType,
+      item.entityId,
     );
   }
 
   Future<void> _syncTransfer(SyncQueueEntity item) async {
     // Handle inventory transfers between locations
-    await _cloudStorageRepository.create(
-      collection: 'transfers',
-      id: item.entityId,
-      data: item.data,
+    await _cloudStorageRepository.saveEntity(
+      SyncEntityType.transfer,
+      item.entityId,
+      item.data,
     );
   }
 
   Future<void> _syncPayment(SyncQueueEntity item) async {
     // Handle payment processing
-    await _cloudStorageRepository.create(
-      collection: 'payments',
-      id: item.entityId,
-      data: item.data,
+    await _cloudStorageRepository.saveEntity(
+      SyncEntityType.transaction,
+      item.entityId,
+      item.data,
     );
   }
 
@@ -486,14 +473,18 @@ class SyncService {
   }
 
   Future<void> _pullEntityTypeChanges(SyncEntityType entityType, DateTime? since) async {
-    final remoteChanges = await _cloudStorageRepository.getChanges(
-      collection: _getCollectionName(entityType),
-      since: since,
+    // Fetch all entities modified since given date
+    final entities = await _cloudStorageRepository.getAllEntities(
+      entityType,
+      modifiedSince: since,
       locationId: await _getCurrentLocationId(),
     );
 
-    for (final change in remoteChanges) {
-      await _applyRemoteChange(entityType, change);
+    for (final entity in entities) {
+      await _applyRemoteChange(entityType, {
+        'id': entity['id'],
+        'data': entity,
+      });
     }
   }
 
@@ -560,7 +551,74 @@ class SyncService {
   }
 
   Future<bool> _isOnline() async {
-    return await _connectivityRepository.isConnected();
+    // ConnectivityRepository exposes a boolean getter; wrap in Future
+    return _connectivityRepository.isConnected;
+  }
+
+  // Public APIs referenced by UI layers
+  Future<Map<String, dynamic>> getSyncStatistics() async {
+    return await _syncRepository.getSyncStatistics();
+  }
+
+  Future<SyncConfiguration> getSyncConfiguration() async {
+    return await getConfiguration();
+  }
+
+  Future<void> syncAll() async {
+    await startSync();
+  }
+
+  Future<void> forceSync() async {
+    await startSync(force: true);
+  }
+
+  Future<Map<String, dynamic>> getSyncAnalytics(String range) async {
+    // Basic placeholder analytics aggregated from repository statistics
+    final stats = await _syncRepository.getSyncStatistics();
+    return {
+      'summary': {
+        'totalSyncs': stats['totalSyncs'] ?? 0,
+        'successRate': stats['successRate'] ?? 0.0,
+        'failedSyncs': stats['failedSyncs'] ?? 0,
+        'avgDuration': stats['avgDuration'] ?? 0.0,
+      },
+      'entityBreakdown': stats['entityBreakdown'] ?? <String, dynamic>{},
+      'operationBreakdown': stats['operationBreakdown'] ?? <String, dynamic>{},
+      'recentActivity': stats['recentActivity'] ?? <dynamic>[],
+      'performance': stats['performance'] ?? <String, dynamic>{},
+      'errors': stats['errors'] ?? <dynamic>[],
+      'network': stats['network'] ?? <String, dynamic>{},
+      'trends': stats['trends'] ?? <dynamic>[],
+    };
+  }
+
+  Future<bool> testConnection() async {
+    try {
+      return await _isOnline();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>> createBackup() async {
+    // Basic backup: export queue and return as map
+    final queue = await _syncRepository.exportQueue();
+    return {
+      'exportedAt': DateTime.now().toIso8601String(),
+      'queue': queue,
+    };
+  }
+
+  Future<void> retryQueueItem(String id) async {
+    final item = await _syncRepository.getQueueItem(id);
+    if (item == null) return;
+    final updated = item.copyWith(
+      status: SyncStatus.pending,
+      attemptCount: 0,
+      errorMessage: null,
+      retryAfter: null,
+    );
+    await _syncRepository.updateQueueItem(updated);
   }
 
   void _startSyncTimer() {
@@ -631,26 +689,7 @@ class SyncService {
     await _syncRepository.cleanupOldItems(cutoffDate);
   }
 
-  String _getCollectionName(SyncEntityType entityType) {
-    switch (entityType) {
-      case SyncEntityType.transaction:
-        return 'transactions';
-      case SyncEntityType.product:
-        return 'products';
-      case SyncEntityType.customer:
-        return 'customers';
-      case SyncEntityType.inventory:
-        return 'inventory';
-      case SyncEntityType.discount:
-        return 'discounts';
-      case SyncEntityType.employee:
-        return 'employees';
-      case SyncEntityType.location:
-        return 'locations';
-      case SyncEntityType.transfer:
-        return 'transfers';
-    }
-  }
+  // _getCollectionName removed; CloudStorageRepository handles collection paths internally.
 
   Map<String, dynamic> _detectConflictFields(
     Map<String, dynamic> local,

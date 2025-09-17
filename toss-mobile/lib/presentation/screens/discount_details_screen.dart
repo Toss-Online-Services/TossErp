@@ -265,12 +265,12 @@ class _DiscountDetailsScreenState extends State<DiscountDetailsScreen>
           const SizedBox(height: 16),
           
           // Amount Restrictions
-          if (_discount.minimumAmount != null || _discount.maxDiscountAmount != null)
+          if (_discount.minimumPurchase != null || _discount.maximumDiscount != null)
             _buildInfoSection('Amount Restrictions', [
-              if (_discount.minimumAmount != null)
-                _buildInfoRow('Minimum Amount', 'GHS ${_discount.minimumAmount!.toStringAsFixed(2)}'),
-              if (_discount.maxDiscountAmount != null)
-                _buildInfoRow('Max Discount', 'GHS ${_discount.maxDiscountAmount!.toStringAsFixed(2)}'),
+              if (_discount.minimumPurchase != null)
+                _buildInfoRow('Minimum Purchase', 'GHS ${_discount.minimumPurchase!.toStringAsFixed(2)}'),
+              if (_discount.maximumDiscount != null)
+                _buildInfoRow('Max Discount', 'GHS ${_discount.maximumDiscount!.toStringAsFixed(2)}'),
             ]),
           
           const SizedBox(height: 16),
@@ -278,10 +278,10 @@ class _DiscountDetailsScreenState extends State<DiscountDetailsScreen>
           // Usage Limits
           _buildInfoSection('Usage Information', [
             _buildInfoRow('Current Uses', _discount.currentUses.toString()),
-            if (_discount.usageLimit != null)
-              _buildInfoRow('Total Limit', _discount.usageLimit.toString()),
-            if (_discount.usageLimitPerCustomer != null)
-              _buildInfoRow('Per Customer Limit', _discount.usageLimitPerCustomer.toString()),
+            if (_discount.totalMaxUses != null)
+              _buildInfoRow('Total Limit', _discount.totalMaxUses.toString()),
+            if (_discount.maxUsesPerCustomer != null)
+              _buildInfoRow('Per Customer Limit', _discount.maxUsesPerCustomer.toString()),
             _buildInfoRow('Remaining Uses', _getRemainingUsesText()),
           ]),
           
@@ -292,13 +292,13 @@ class _DiscountDetailsScreenState extends State<DiscountDetailsScreen>
             _buildInfoSection('BOGO Configuration', [
               _buildInfoRow('Buy Quantity', _discount.bogoConfig!.buyQuantity.toString()),
               _buildInfoRow('Get Quantity', _discount.bogoConfig!.getQuantity.toString()),
-              _buildInfoRow('Get Discount', '${_discount.bogoConfig!.getDiscountPercentage}%'),
+              _buildInfoRow('Get Discount', '${_discount.bogoConfig!.getDiscountPercent}%'),
             ]),
           
           const SizedBox(height: 16),
           
           // Time Restrictions
-          if (_discount.timeBasedConfig != null)
+          if (_discount.timeConfig != null)
             _buildTimeRestrictionsSection(),
           
           const SizedBox(height: 16),
@@ -312,9 +312,9 @@ class _DiscountDetailsScreenState extends State<DiscountDetailsScreen>
           const SizedBox(height: 16),
           
           // Target Information
-          if (_discount.targetProductIds.isNotEmpty ||
-              _discount.targetCategoryIds.isNotEmpty ||
-              _discount.targetCustomerIds.isNotEmpty)
+      if (_discount.applicableItems.isNotEmpty ||
+        _discount.applicableCategories.isNotEmpty ||
+        _discount.applicableCustomers.isNotEmpty)
             _buildTargetInformationSection(),
         ],
       ),
@@ -373,25 +373,12 @@ class _DiscountDetailsScreenState extends State<DiscountDetailsScreen>
             Text('Used at: ${_formatDateTime(usage.usedAt)}'),
           ],
         ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            if (usage.quantity > 1)
-              Text(
-                '${usage.quantity}x',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            Text(
-              _formatDateTime(usage.usedAt).substring(11, 16),
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
-            ),
-          ],
+        trailing: Text(
+          _formatDateTime(usage.usedAt).substring(11, 16),
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
         ),
       ),
     );
@@ -526,7 +513,7 @@ class _DiscountDetailsScreenState extends State<DiscountDetailsScreen>
   }
 
   Widget _buildTimeRestrictionsSection() {
-    final config = _discount.timeBasedConfig!;
+    final config = _discount.timeConfig!;
     final restrictions = <String>[];
     
     if (config.daysOfWeek.isNotEmpty) {
@@ -536,11 +523,12 @@ class _DiscountDetailsScreenState extends State<DiscountDetailsScreen>
     }
     
     if (config.startTime != null && config.endTime != null) {
-      restrictions.add('Hours: ${config.startTime!.format(context)} - ${config.endTime!.format(context)}');
+      final start = '${config.startTime!.hour.toString().padLeft(2, '0')}:${config.startTime!.minute.toString().padLeft(2, '0')}';
+      final end = '${config.endTime!.hour.toString().padLeft(2, '0')}:${config.endTime!.minute.toString().padLeft(2, '0')}';
+      restrictions.add('Hours: $start - $end');
     }
-    
-    if (config.isSeasonalDiscount && config.seasonStartDate != null && config.seasonEndDate != null) {
-      restrictions.add('Season: ${_formatDate(config.seasonStartDate!)} - ${_formatDate(config.seasonEndDate!)}');
+    if (config.seasonalPeriod != null) {
+      restrictions.add('Seasonal Period: ${config.seasonalPeriod}');
     }
     
     return _buildInfoSection('Time Restrictions', [
@@ -551,16 +539,16 @@ class _DiscountDetailsScreenState extends State<DiscountDetailsScreen>
   Widget _buildTargetInformationSection() {
     final targets = <String>[];
     
-    if (_discount.targetProductIds.isNotEmpty) {
-      targets.add('${_discount.targetProductIds.length} specific products');
+    if (_discount.applicableItems.isNotEmpty) {
+      targets.add('${_discount.applicableItems.length} specific products');
     }
     
-    if (_discount.targetCategoryIds.isNotEmpty) {
-      targets.add('${_discount.targetCategoryIds.length} categories');
+    if (_discount.applicableCategories.isNotEmpty) {
+      targets.add('${_discount.applicableCategories.length} categories');
     }
     
-    if (_discount.targetCustomerIds.isNotEmpty) {
-      targets.add('${_discount.targetCustomerIds.length} specific customers');
+    if (_discount.applicableCustomers.isNotEmpty) {
+      targets.add('${_discount.applicableCustomers.length} specific customers');
     }
     
     return _buildInfoSection('Target Information', [
@@ -846,11 +834,11 @@ class _DiscountDetailsScreenState extends State<DiscountDetailsScreen>
   }
 
   String _getRemainingUsesText() {
-    if (_discount.usageLimit == null) {
+    if (_discount.totalMaxUses == null) {
       return 'Unlimited';
     }
     
-    final remaining = _discount.usageLimit! - _discount.currentUses;
+    final remaining = _discount.totalMaxUses! - _discount.currentUses;
     return remaining > 0 ? remaining.toString() : '0 (Limit reached)';
   }
 }

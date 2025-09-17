@@ -124,8 +124,7 @@ class PaymentRepository {
     Map<String, dynamic> metadata = const {},
   }) async {
     try {
-      final gateway = _gateways['paystack']!;
-      final publicKey = gateway.credentials['publicKey']!;
+  final gateway = _gateways['paystack']!;
       final baseUrl = gateway.credentials['baseUrl']!;
 
       // Initialize transaction
@@ -154,7 +153,6 @@ class PaymentRepository {
         final responseData = jsonDecode(initResponse.body);
         
         if (responseData['status'] == true) {
-          final authorizationUrl = responseData['data']['authorization_url'];
           final reference = responseData['data']['reference'];
 
           // For demo purposes, simulate payment completion
@@ -253,8 +251,7 @@ class PaymentRepository {
     Map<String, dynamic> metadata = const {},
   }) async {
     try {
-      final gateway = _gateways['flutterwave']!;
-      final publicKey = gateway.credentials['publicKey']!;
+  final gateway = _gateways['flutterwave']!;
       final baseUrl = gateway.credentials['baseUrl']!;
 
       final paymentData = {
@@ -293,7 +290,7 @@ class PaymentRepository {
         final responseData = jsonDecode(response.body);
         
         if (responseData['status'] == 'success') {
-          final paymentLink = responseData['data']['link'];
+          // final paymentLink = responseData['data']['link']; // Not used in demo flow
           
           // For demo purposes, simulate payment completion
           await Future.delayed(const Duration(seconds: 3));
@@ -387,7 +384,8 @@ class PaymentRepository {
     String? voucher,
   }) async {
     try {
-      final gateway = _gateways['local_momo']!;
+  // Using local momo gateway config if needed for future enhancements
+  final _ = _gateways['local_momo']!;
       
       // Simulate USSD push
       await Future.delayed(const Duration(seconds: 1));

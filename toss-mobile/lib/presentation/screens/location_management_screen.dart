@@ -18,7 +18,6 @@ class _LocationManagementScreenState extends State<LocationManagementScreen>
   
   List<LocationEntity> _locations = [];
   List<InventoryTransferEntity> _transfers = [];
-  LocationEntity? _selectedLocation;
   bool _isLoading = true;
   
   final TextEditingController _searchController = TextEditingController();
@@ -937,7 +936,7 @@ class _LocationManagementScreenState extends State<LocationManagementScreen>
 
   void _generateConsolidatedReport() async {
     try {
-      final report = await _locationService.getConsolidatedReport();
+  await _locationService.getConsolidatedReport();
       // Show report or export options
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

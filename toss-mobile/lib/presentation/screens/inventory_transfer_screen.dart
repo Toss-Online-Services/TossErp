@@ -72,55 +72,43 @@ class _InventoryTransferScreenState extends State<InventoryTransferScreen> {
     // Mock product data - in real app, load from inventory service
     return [
       ProductEntity(
-        id: '1',
+        id: 1,
+        createdById: 'system',
         name: 'Coca Cola 350ml',
         description: 'Coca Cola bottle 350ml',
         sku: 'CC350',
-        category: 'Beverages',
-        subcategory: 'Soft Drinks',
-        unitOfMeasure: 'bottle',
-        sellingPrice: 3.50,
-        costPrice: 2.00,
-        stockQuantity: 120,
-        reorderLevel: 20,
-        maxStockLevel: 500,
+        imageUrl: '',
+        stock: 120,
+        price: 350, // in cents
+        costPrice: 200,
         isActive: true,
-        taxable: true,
-        createdAt: DateTime.now(),
+        createdAt: DateTime.now().toIso8601String(),
       ),
       ProductEntity(
-        id: '2',
+        id: 2,
+        createdById: 'system',
         name: 'Rice - 5kg bag',
         description: 'Premium jasmine rice 5kg',
         sku: 'RICE5KG',
-        category: 'Food',
-        subcategory: 'Grains',
-        unitOfMeasure: 'bag',
-        sellingPrice: 45.00,
-        costPrice: 35.00,
-        stockQuantity: 80,
-        reorderLevel: 10,
-        maxStockLevel: 200,
+        imageUrl: '',
+        stock: 80,
+        price: 4500,
+        costPrice: 3500,
         isActive: true,
-        taxable: false,
-        createdAt: DateTime.now(),
+        createdAt: DateTime.now().toIso8601String(),
       ),
       ProductEntity(
-        id: '3',
+        id: 3,
+        createdById: 'system',
         name: 'Cooking Oil - 1L',
         description: 'Sunflower cooking oil 1 liter',
         sku: 'OIL1L',
-        category: 'Food',
-        subcategory: 'Cooking',
-        unitOfMeasure: 'bottle',
-        sellingPrice: 12.00,
-        costPrice: 8.50,
-        stockQuantity: 45,
-        reorderLevel: 15,
-        maxStockLevel: 150,
+        imageUrl: '',
+        stock: 45,
+        price: 1200,
+        costPrice: 850,
         isActive: true,
-        taxable: false,
-        createdAt: DateTime.now(),
+        createdAt: DateTime.now().toIso8601String(),
       ),
     ];
   }
@@ -606,7 +594,7 @@ class _InventoryTransferScreenState extends State<InventoryTransferScreen> {
         return Icons.priority_high;
       case TransferType.rebalance:
         return Icons.balance;
-      case TransferType.returned:
+      case TransferType.returnTransfer:
         return Icons.keyboard_return;
       case TransferType.damaged:
         return Icons.warning;
@@ -621,7 +609,7 @@ class _InventoryTransferScreenState extends State<InventoryTransferScreen> {
         return 'Emergency Transfer';
       case TransferType.rebalance:
         return 'Rebalance Transfer';
-      case TransferType.returned:
+      case TransferType.returnTransfer:
         return 'Return Transfer';
       case TransferType.damaged:
         return 'Damaged Goods Transfer';
@@ -763,7 +751,7 @@ class _ItemSelectionDialogState extends State<_ItemSelectionDialog> {
                       children: [
                         Text(product.name),
                         Text(
-                          'SKU: ${product.sku} • Stock: ${product.stockQuantity}',
+                          'SKU: ${product.sku} • Stock: ${product.stock}',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],
@@ -776,7 +764,12 @@ class _ItemSelectionDialogState extends State<_ItemSelectionDialog> {
                 onChanged: (value) {
                   setState(() {
                     _selectedProduct = value;
-                    _unitCostController.text = value?.costPrice.toStringAsFixed(2) ?? '';
+                    if (value?.costPrice != null) {
+                      final cents = value!.costPrice!;
+                      _unitCostController.text = (cents / 100).toStringAsFixed(2);
+                    } else {
+                      _unitCostController.text = '';
+                    }
                   });
                 },
                 validator: (value) {
@@ -801,8 +794,8 @@ class _ItemSelectionDialogState extends State<_ItemSelectionDialog> {
                   if (quantity == null || quantity <= 0) {
                     return 'Please enter a valid quantity';
                   }
-                  if (_selectedProduct != null && quantity > _selectedProduct!.stockQuantity) {
-                    return 'Quantity exceeds available stock (${_selectedProduct!.stockQuantity})';
+                  if (_selectedProduct != null && quantity > _selectedProduct!.stock) {
+                    return 'Quantity exceeds available stock (${_selectedProduct!.stock})';
                   }
                   return null;
                 },
@@ -840,7 +833,7 @@ class _ItemSelectionDialogState extends State<_ItemSelectionDialog> {
             if (_formKey.currentState!.validate()) {
               final item = TransferItemEntity(
                 id: DateTime.now().millisecondsSinceEpoch.toString(),
-                productId: _selectedProduct!.id,
+                productId: (_selectedProduct!.id?.toString() ?? _selectedProduct!.sku ?? ''),
                 requestedQuantity: int.parse(_quantityController.text),
                 unitCost: double.parse(_unitCostController.text),
               );
@@ -924,7 +917,7 @@ class _ItemEditDialogState extends State<_ItemEditDialog> {
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            'SKU: ${_selectedProduct.sku} • Stock: ${_selectedProduct.stockQuantity}',
+                            'SKU: ${_selectedProduct.sku} • Stock: ${_selectedProduct.stock}',
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
@@ -953,8 +946,8 @@ class _ItemEditDialogState extends State<_ItemEditDialog> {
                   if (quantity == null || quantity <= 0) {
                     return 'Please enter a valid quantity';
                   }
-                  if (quantity > _selectedProduct.stockQuantity) {
-                    return 'Quantity exceeds available stock (${_selectedProduct.stockQuantity})';
+                  if (quantity > _selectedProduct.stock) {
+                    return 'Quantity exceeds available stock (${_selectedProduct.stock})';
                   }
                   return null;
                 },

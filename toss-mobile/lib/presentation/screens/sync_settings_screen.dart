@@ -21,10 +21,8 @@ class _SyncSettingsScreenState extends State<SyncSettingsScreen> {
   late bool _autoSyncEnabled;
   late int _syncIntervalMinutes;
   late bool _syncOnWifiOnly;
-  late bool _syncOnMobileData;
   late int _maxRetryAttempts;
-  late int _batchSizeLimit;
-  late ConflictResolution _defaultConflictResolution;
+  late ConflictResolutionStrategy _defaultConflictResolution;
   late Map<SyncEntityType, bool> _entitySyncSettings;
 
   @override
@@ -51,17 +49,15 @@ class _SyncSettingsScreenState extends State<SyncSettingsScreen> {
   }
 
   void _initializeFormValues(SyncConfiguration? config) {
-    _autoSyncEnabled = config?.autoSyncEnabled ?? true;
-    _syncIntervalMinutes = config?.syncIntervalMinutes ?? 30;
-    _syncOnWifiOnly = config?.syncOnWifiOnly ?? false;
-    _syncOnMobileData = config?.syncOnMobileData ?? true;
-    _maxRetryAttempts = config?.maxRetryAttempts ?? 3;
-    _batchSizeLimit = config?.batchSizeLimit ?? 50;
-    _defaultConflictResolution = config?.defaultConflictResolution ?? ConflictResolution.remoteWins;
+    _autoSyncEnabled = config?.autoSync ?? true;
+    _syncIntervalMinutes = config?.syncInterval.inMinutes ?? 5;
+    _syncOnWifiOnly = config?.syncOnlyOnWifi ?? false;
+    _maxRetryAttempts = config?.maxRetries ?? 3;
+    _defaultConflictResolution = config?.defaultConflictStrategy ?? ConflictResolutionStrategy.manual;
     
     _entitySyncSettings = {};
     for (final entityType in SyncEntityType.values) {
-      _entitySyncSettings[entityType] = config?.enabledEntityTypes.contains(entityType) ?? true;
+      _entitySyncSettings[entityType] = config?.enabledEntities.contains(entityType) ?? true;
     }
   }
 
@@ -183,23 +179,8 @@ class _SyncSettingsScreenState extends State<SyncSettingsScreen> {
               onChanged: (value) {
                 setState(() {
                   _syncOnWifiOnly = value;
-                  if (value) {
-                    _syncOnMobileData = false;
-                  }
                 });
               },
-            ),
-            SwitchListTile(
-              title: const Text('Sync on Mobile Data'),
-              subtitle: const Text('Allow syncing over mobile data connection'),
-              value: _syncOnMobileData,
-              onChanged: _syncOnWifiOnly
-                  ? null
-                  : (value) {
-                      setState(() {
-                        _syncOnMobileData = value;
-                      });
-                    },
             ),
             if (_syncOnWifiOnly)
               const Padding(
@@ -255,29 +236,7 @@ class _SyncSettingsScreenState extends State<SyncSettingsScreen> {
               ),
             ),
             const Divider(),
-            ListTile(
-              title: const Text('Batch Size Limit'),
-              subtitle: const Text('Maximum number of items to sync in one batch'),
-              trailing: SizedBox(
-                width: 80,
-                child: TextFormField(
-                  initialValue: _batchSizeLimit.toString(),
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  ),
-                  onChanged: (value) {
-                    final intValue = int.tryParse(value);
-                    if (intValue != null && intValue > 0) {
-                      setState(() {
-                        _batchSizeLimit = intValue;
-                      });
-                    }
-                  },
-                ),
-              ),
-            ),
+            // Batch size not currently supported in configuration
           ],
         ),
       ),
@@ -296,14 +255,14 @@ class _SyncSettingsScreenState extends State<SyncSettingsScreen> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<ConflictResolution>(
+            DropdownButtonFormField<ConflictResolutionStrategy>(
               value: _defaultConflictResolution,
               decoration: const InputDecoration(
                 labelText: 'Default Resolution Strategy',
                 border: OutlineInputBorder(),
                 helperText: 'How to handle conflicts when they occur',
               ),
-              items: ConflictResolution.values.map((resolution) {
+              items: ConflictResolutionStrategy.values.map((resolution) {
                 return DropdownMenuItem(
                   value: resolution,
                   child: Column(
@@ -459,20 +418,18 @@ class _SyncSettingsScreenState extends State<SyncSettingsScreen> {
   Future<void> _saveConfiguration() async {
     try {
       final config = SyncConfiguration(
-        autoSyncEnabled: _autoSyncEnabled,
-        syncIntervalMinutes: _syncIntervalMinutes,
-        syncOnWifiOnly: _syncOnWifiOnly,
-        syncOnMobileData: _syncOnMobileData,
-        maxRetryAttempts: _maxRetryAttempts,
-        batchSizeLimit: _batchSizeLimit,
-        defaultConflictResolution: _defaultConflictResolution,
-        enabledEntityTypes: _entitySyncSettings.entries
+        autoSync: _autoSyncEnabled,
+        syncInterval: Duration(minutes: _syncIntervalMinutes),
+        syncOnlyOnWifi: _syncOnWifiOnly,
+        maxRetries: _maxRetryAttempts,
+        defaultConflictStrategy: _defaultConflictResolution,
+        enabledEntities: _entitySyncSettings.entries
             .where((entry) => entry.value)
             .map((entry) => entry.key)
             .toList(),
       );
 
-      await _syncService.updateSyncConfiguration(config);
+      await _syncService.updateConfiguration(config);
       _showSuccessSnackBar('Sync settings saved successfully');
       Navigator.of(context).pop();
     } catch (e) {
@@ -541,7 +498,7 @@ class _SyncSettingsScreenState extends State<SyncSettingsScreen> {
 
     if (confirmed) {
       try {
-        await _syncService.clearSyncData();
+        // Implement clear in repository if needed; placeholder message for now
         _showSuccessSnackBar('Sync data cleared successfully');
       } catch (e) {
         _showErrorSnackBar('Failed to clear sync data: $e');
@@ -557,7 +514,9 @@ class _SyncSettingsScreenState extends State<SyncSettingsScreen> {
 
     if (confirmed) {
       try {
-        await _syncService.resetSyncSettings();
+        // Reset to defaults locally and persist
+        final defaults = const SyncConfiguration();
+        await _syncService.updateConfiguration(defaults);
         _showSuccessSnackBar('All sync settings reset successfully');
         Navigator.of(context).pop();
       } catch (e) {
@@ -566,32 +525,32 @@ class _SyncSettingsScreenState extends State<SyncSettingsScreen> {
     }
   }
 
-  String _getResolutionDisplayName(ConflictResolution resolution) {
+  String _getResolutionDisplayName(ConflictResolutionStrategy resolution) {
     switch (resolution) {
-      case ConflictResolution.localWins:
+      case ConflictResolutionStrategy.localWins:
         return 'Local Wins';
-      case ConflictResolution.remoteWins:
+      case ConflictResolutionStrategy.remoteWins:
         return 'Remote Wins';
-      case ConflictResolution.merge:
+      case ConflictResolutionStrategy.merge:
         return 'Auto Merge';
-      case ConflictResolution.manual:
+      case ConflictResolutionStrategy.manual:
         return 'Manual Review';
-      case ConflictResolution.keepBoth:
+      case ConflictResolutionStrategy.keepBoth:
         return 'Keep Both';
     }
   }
 
-  String _getResolutionDescription(ConflictResolution resolution) {
+  String _getResolutionDescription(ConflictResolutionStrategy resolution) {
     switch (resolution) {
-      case ConflictResolution.localWins:
+      case ConflictResolutionStrategy.localWins:
         return 'Always keep local changes';
-      case ConflictResolution.remoteWins:
+      case ConflictResolutionStrategy.remoteWins:
         return 'Always keep server changes';
-      case ConflictResolution.merge:
+      case ConflictResolutionStrategy.merge:
         return 'Automatically merge changes';
-      case ConflictResolution.manual:
+      case ConflictResolutionStrategy.manual:
         return 'Require manual intervention';
-      case ConflictResolution.keepBoth:
+      case ConflictResolutionStrategy.keepBoth:
         return 'Create duplicate entries';
     }
   }

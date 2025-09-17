@@ -135,9 +135,10 @@ class _DiscountAnalyticsScreenState extends State<DiscountAnalyticsScreen>
       }
     }
 
-    final topCustomers = customerUsage.values.toList()
-      ..sort((a, b) => (b['count'] as int).compareTo(a['count'] as int))
-      ..take(10);
+    final topCustomers = (customerUsage.values.toList()
+          ..sort((a, b) => (b['count'] as int).compareTo(a['count'] as int)))
+        .take(10)
+        .toList();
 
     // Estimated conversion rate and revenue impact
     final conversionRate = _calculateConversionRate(filteredUsage);
@@ -189,7 +190,6 @@ class _DiscountAnalyticsScreenState extends State<DiscountAnalyticsScreen>
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Discount Analytics',
-        subtitle: widget.discount.name,
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -298,7 +298,7 @@ class _DiscountAnalyticsScreenState extends State<DiscountAnalyticsScreen>
               Expanded(
                 child: _buildMetricCard(
                   'Usage Rate',
-                  '${(widget.discount.currentUses / (widget.discount.usageLimit ?? 100) * 100).toStringAsFixed(1)}%',
+                  '${(widget.discount.currentUses / (widget.discount.totalMaxUses ?? 100) * 100).toStringAsFixed(1)}%',
                   Icons.donut_large,
                   Colors.purple,
                 ),
@@ -325,8 +325,8 @@ class _DiscountAnalyticsScreenState extends State<DiscountAnalyticsScreen>
                   _buildInfoRow('Status', widget.discount.isActive ? 'Active' : 'Inactive'),
                   _buildInfoRow('Start Date', _formatDate(widget.discount.startDate)),
                   _buildInfoRow('End Date', _formatDate(widget.discount.endDate)),
-                  if (widget.discount.usageLimit != null)
-                    _buildInfoRow('Usage Limit', widget.discount.usageLimit.toString()),
+                  if (widget.discount.totalMaxUses != null)
+                    _buildInfoRow('Usage Limit', widget.discount.totalMaxUses.toString()),
                 ],
               ),
             ),

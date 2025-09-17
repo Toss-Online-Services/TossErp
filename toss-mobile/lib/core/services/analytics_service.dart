@@ -2,13 +2,10 @@ import '../entities/analytics_entity.dart';
 import '../entities/sales_transaction_entity.dart';
 import '../entities/product_entity.dart';
 import '../entities/customer_entity.dart';
-import '../entities/employee_entity.dart';
+import '../../domain/entities/payment_entity.dart';
+// import '../entities/employee_entity.dart';
 
 class AnalyticsService {
-  // Mock data repositories - in real app, these would be injected
-  static final List<SalesTransactionEntity> _mockTransactions = [];
-  static final List<ProductEntity> _mockProducts = [];
-  static final List<CustomerEntity> _mockCustomers = [];
 
   /// Generate sales analytics for a given date range
   Future<SalesAnalytics> generateSalesAnalytics(DateRange dateRange) async {
@@ -30,43 +27,35 @@ class AnalyticsService {
 
     // Process each transaction
     for (final transaction in transactions) {
-      if (transaction.status == TransactionStatus.completed) {
-        totalSales += transaction.totalAmount / 100;
+      if (transaction.status == SalesTransactionStatus.completed) {
+        totalSales += transaction.total / 100;
         totalTax += transaction.taxAmount / 100;
         totalDiscounts += transaction.discountAmount / 100;
         itemCount += transaction.items.fold(0, (sum, item) => sum + item.quantity);
 
-        // Sales by employee
-        salesByEmployee[transaction.employeeName] = 
-            (salesByEmployee[transaction.employeeName] ?? 0) + (transaction.totalAmount / 100);
-
-        // Sales by location
-        salesByLocation[transaction.locationId] = 
-            (salesByLocation[transaction.locationId] ?? 0) + (transaction.totalAmount / 100);
-
         // Sales by payment method - combine all payments
         for (final payment in transaction.payments) {
           final methodName = _getPaymentMethodName(payment.method);
-          salesByPaymentMethod[methodName] = 
+          salesByPaymentMethod[methodName] =
               (salesByPaymentMethod[methodName] ?? 0) + (payment.amount / 100);
         }
 
-        // Sales by category - would need product category lookup
+        // Sales by category - placeholder without category lookup
         for (final item in transaction.items) {
-          // TODO: Get product category from item.productId
-          final categoryName = 'General'; // Placeholder
-          salesByCategory[categoryName] = 
+          const categoryName = 'General';
+          salesByCategory[categoryName] =
               (salesByCategory[categoryName] ?? 0) + (item.netPrice / 100);
         }
-      } else if (transaction.status == TransactionStatus.returned) {
+      } else if (transaction.status == SalesTransactionStatus.refunded ||
+                 transaction.status == SalesTransactionStatus.partiallyRefunded) {
         returnsCount++;
-        returnsAmount += transaction.totalAmount / 100;
+        returnsAmount += transaction.total / 100;
       }
     }
 
-    final netSales = totalSales - totalDiscounts;
-    final averageTransactionValue = transactionCount > 0 ? totalSales / transactionCount : 0;
-    final averageItemValue = itemCount > 0 ? totalSales / itemCount : 0;
+  final netSales = totalSales - totalDiscounts;
+  final double averageTransactionValue = transactionCount > 0 ? totalSales / transactionCount : 0.0;
+  final double averageItemValue = itemCount > 0 ? totalSales / itemCount : 0.0;
 
     // Generate hourly sales data
     final hourlySales = _generateHourlySalesData(transactions);
@@ -99,31 +88,34 @@ class AnalyticsService {
 
     // Initialize builders for all products
     for (final product in products) {
-      productBuilders[product.id] = ProductAnalyticsBuilder(
-        productId: product.id,
+      productBuilders['${product.id}'] = ProductAnalyticsBuilder(
+        productId: '${product.id}',
         productName: product.name,
-        categoryName: product.categoryName ?? 'Uncategorized',
+        categoryName: product.category?.name ?? 'Uncategorized',
         currentStock: product.stock,
       );
     }
 
     // Process transactions
     for (final transaction in transactions) {
-      if (transaction.status == TransactionStatus.completed) {
+      if (transaction.status == SalesTransactionStatus.completed) {
         for (final item in transaction.items) {
-          final builder = productBuilders[item.productId];
+          final builder = productBuilders['${item.productId}'];
           if (builder != null) {
             builder.addSale(
               quantity: item.quantity,
               sellingPrice: item.unitPrice / 100,
-              cost: item.cost / 100,
+              cost: (productBuilders['${item.productId}']?.currentStock ?? 0) >= 0
+                  ? ((products.firstWhere((p) => p.id == item.productId).costPrice ?? 0) / 100)
+                  : 0,
               discountAmount: item.discountAmount / 100,
             );
           }
         }
-      } else if (transaction.status == TransactionStatus.returned) {
+      } else if (transaction.status == SalesTransactionStatus.refunded ||
+                 transaction.status == SalesTransactionStatus.partiallyRefunded) {
         for (final item in transaction.items) {
-          final builder = productBuilders[item.productId];
+          final builder = productBuilders['${item.productId}'];
           if (builder != null) {
             builder.addReturn(
               quantity: item.quantity,
@@ -157,25 +149,25 @@ class AnalyticsService {
 
     for (final product in products) {
       totalStock += product.stock;
-      final productValue = product.stock * (product.sellingPrice / 100);
+  final productValue = product.stock * (product.price / 100);
       totalValue += productValue;
 
       // Stock levels
       if (product.stock == 0) {
         outOfStockItems++;
-      } else if (product.stock <= product.lowStockThreshold) {
+      } else if (product.lowStockThreshold != null && product.stock <= product.lowStockThreshold!) {
         lowStockItems++;
-      } else if (product.stock > product.lowStockThreshold * 10) {
+      } else if (product.lowStockThreshold != null && product.stock > product.lowStockThreshold! * 10) {
         overstockItems++;
       }
 
       // Category breakdown
-      final categoryName = product.categoryName ?? 'Uncategorized';
+      final categoryName = product.category?.name ?? 'Uncategorized';
       stockByCategory[categoryName] = (stockByCategory[categoryName] ?? 0) + product.stock;
       valueByCategory[categoryName] = (valueByCategory[categoryName] ?? 0) + productValue;
     }
 
-    final averageStockValue = totalProducts > 0 ? totalValue / totalProducts : 0;
+  final double averageStockValue = totalProducts > 0 ? totalValue / totalProducts : 0.0;
     
     // TODO: Calculate actual stock turnover rate from historical data
     final stockTurnoverRate = 4.2; // Mock value
@@ -211,7 +203,7 @@ class AnalyticsService {
     for (final customer in customers) {
       customerSpends[customer.id] = CustomerSpendBuilder(
         customerId: customer.id,
-        customerName: customer.name,
+        customerName: customer.name ?? 'Customer',
       );
 
       final tierName = _getLoyaltyTierName(customer.loyaltyTier);
@@ -220,10 +212,10 @@ class AnalyticsService {
 
     // Process transactions
     for (final transaction in transactions) {
-      if (transaction.customerId != null && transaction.status == TransactionStatus.completed) {
+      if (transaction.customerId != null && transaction.status == SalesTransactionStatus.completed) {
         final builder = customerSpends[transaction.customerId!];
         if (builder != null) {
-          builder.addTransaction(transaction.totalAmount / 100);
+          builder.addTransaction(transaction.total / 100);
         }
       }
     }
@@ -231,13 +223,13 @@ class AnalyticsService {
     final customerData = customerSpends.values.map((builder) => builder.build()).toList();
     final customersWithPurchases = customerData.where((c) => c.transactionCount > 0).toList();
     
-    final totalSpend = customerData.fold(0.0, (sum, c) => sum + c.totalSpend);
-    final averageSpend = customersWithPurchases.isNotEmpty 
+  final totalSpend = customerData.fold(0.0, (sum, c) => sum + c.totalSpend);
+  final averageSpend = customersWithPurchases.isNotEmpty 
         ? totalSpend / customersWithPurchases.length 
         : 0.0;
-    final averageTransactionsPerCustomer = customersWithPurchases.isNotEmpty 
-        ? customersWithPurchases.fold(0, (sum, c) => sum + c.transactionCount) / customersWithPurchases.length
-        : 0;
+  final int averageTransactionsPerCustomer = customersWithPurchases.isNotEmpty 
+    ? (customersWithPurchases.fold(0, (sum, c) => sum + c.transactionCount) / customersWithPurchases.length).round()
+    : 0;
 
     // New vs returning customers (simplified - in real app, would check registration dates)
     final newCustomers = (totalCustomers * 0.3).round(); // Mock 30% new
@@ -375,9 +367,9 @@ class AnalyticsService {
 
     // Process transactions
     for (final transaction in transactions) {
-      if (transaction.status == TransactionStatus.completed) {
+      if (transaction.status == SalesTransactionStatus.completed) {
         final hour = transaction.createdAt.hour;
-        hourlyData[hour]?.addTransaction(transaction.totalAmount / 100);
+        hourlyData[hour]?.addTransaction(transaction.total / 100);
       }
     }
 
@@ -418,9 +410,9 @@ class AnalyticsService {
         return 'Cash';
       case PaymentMethod.card:
         return 'Card';
-      case PaymentMethod.contactless:
+      case PaymentMethod.nfc:
         return 'Contactless';
-      case PaymentMethod.qrCode:
+      case PaymentMethod.qrPayment:
         return 'QR Code';
       case PaymentMethod.bankTransfer:
         return 'Bank Transfer';
@@ -428,6 +420,16 @@ class AnalyticsService {
         return 'Mobile Money';
       case PaymentMethod.loyaltyPoints:
         return 'Loyalty Points';
+      case PaymentMethod.mobileWallet:
+        return 'Mobile Wallet';
+      case PaymentMethod.storeCredit:
+        return 'Store Credit';
+      case PaymentMethod.voucher:
+        return 'Voucher';
+      case PaymentMethod.creditAccount:
+        return 'Credit Account';
+      case PaymentMethod.other:
+        return 'Other';
     }
   }
 
@@ -443,8 +445,8 @@ class AnalyticsService {
         return 'Gold';
       case LoyaltyTier.platinum:
         return 'Platinum';
-      case LoyaltyTier.diamond:
-        return 'Diamond';
+      case LoyaltyTier.vip:
+        return 'VIP';
     }
   }
 
@@ -512,82 +514,103 @@ class AnalyticsService {
   // Mock data generators
   List<SalesTransactionEntity> _generateMockTransactions(DateRange dateRange) {
     final transactions = <SalesTransactionEntity>[];
-    final random = DateTime.now().millisecondsSinceEpoch % 1000;
-    
+
     final days = dateRange.duration.inDays.clamp(1, 30);
     for (int day = 0; day < days; day++) {
       final transactionDate = dateRange.startDate.add(Duration(days: day));
       final transactionsPerDay = 8 + (day % 12); // 8-20 transactions per day
-      
+
       for (int i = 0; i < transactionsPerDay; i++) {
         final hour = 9 + (i % 12); // Business hours 9-21
         final minute = (i * 7) % 60;
         final createdAt = DateTime(transactionDate.year, transactionDate.month, transactionDate.day, hour, minute);
-        
+        final subtotal = (1000 + (i % 50) * 100) * (1 + (i % 3));
+        final discount = (i % 5 == 0) ? 200 : 0;
+        final tax = 100 * (1 + (i % 3));
+        final total = subtotal + tax - discount;
+
         transactions.add(SalesTransactionEntity(
-          id: '${day}_$i',
-          receiptNumber: 'R${day.toString().padLeft(3, '0')}${i.toString().padLeft(2, '0')}',
+          id: null,
+          transactionNumber: 'R${day.toString().padLeft(3, '0')}${i.toString().padLeft(2, '0')}',
+          type: SalesTransactionType.sale,
+          status: (i % 20 == 0) ? SalesTransactionStatus.refunded : SalesTransactionStatus.completed,
           customerId: (i % 4 == 0) ? 'cust_${i % 10}' : null,
-          employeeId: 'emp_${i % 3 + 1}',
-          employeeName: ['John Doe', 'Jane Smith', 'Bob Johnson'][i % 3],
-          locationId: 'loc_1',
+          subtotal: subtotal,
+          taxAmount: tax,
+          discountAmount: discount,
+          loyaltyPointsUsed: 0,
+          loyaltyPointsEarned: 0,
+          total: total,
+          amountPaid: total,
+          changeAmount: 0,
           items: [
             SalesTransactionItemEntity(
-              id: '${day}_${i}_1',
-              productId: 'prod_${i % 20 + 1}',
-              productName: 'Product ${i % 20 + 1}',
-              sku: 'SKU${(i % 20 + 1).toString().padLeft(3, '0')}',
-              displayName: 'Product ${i % 20 + 1}',
+              id: null,
+              transactionId: 0,
+              productId: (i % 20) + 1,
+              productName: 'Product ${(i % 20) + 1}',
+              variantId: null,
+              variantName: null,
               quantity: 1 + (i % 3),
-              unitPrice: (1000 + (i % 50) * 100), // $10-$60
-              discountAmount: (i % 5 == 0) ? 200 : 0, // $2 discount sometimes
-              taxAmount: 100,
-              cost: 500 + (i % 30) * 50,
+              unitPrice: (1000 + (i % 50) * 100),
+              totalPrice: (1000 + (i % 50) * 100) * (1 + (i % 3)),
+              discountAmount: discount,
+              notes: null,
+              metadata: null,
             ),
           ],
-          subtotal: (1000 + (i % 50) * 100) * (1 + (i % 3)),
-          taxAmount: 100 * (1 + (i % 3)),
-          discountAmount: (i % 5 == 0) ? 200 : 0,
-          totalAmount: (1100 + (i % 50) * 100) * (1 + (i % 3)) - ((i % 5 == 0) ? 200 : 0),
           payments: [
             PaymentEntity(
-              id: '${day}_${i}_pay',
-              transactionId: '${day}_$i',
-              amount: (1100 + (i % 50) * 100) * (1 + (i % 3)) - ((i % 5 == 0) ? 200 : 0),
-              method: PaymentMethod.values[i % 3],
+              id: null,
+              transactionId: 0,
+              method: PaymentMethod.values[i % PaymentMethod.values.length],
               status: PaymentStatus.completed,
+              amount: total,
+              currency: 'GHS',
               reference: 'PAY${day}${i}',
+              authCode: null,
+              gatewayTransactionId: null,
+              metadata: null,
+              failureReason: null,
+              processingFee: null,
+              customerId: null,
               createdAt: createdAt,
+              completedAt: createdAt,
+              createdById: null,
+              updatedAt: null,
             ),
           ],
-          status: (i % 20 == 0) ? TransactionStatus.returned : TransactionStatus.completed,
+          notes: null,
+          metadata: null,
+          originalTransactionId: null,
           createdAt: createdAt,
-          updatedAt: createdAt,
+          createdById: null,
+          updatedAt: null,
         ));
       }
     }
-    
+
     return transactions;
   }
 
   List<ProductEntity> _generateMockProducts() {
     return List.generate(50, (index) {
-      final id = 'prod_${index + 1}';
       return ProductEntity(
-        id: id,
+        id: index + 1,
+        createdById: 'system',
         name: 'Product ${index + 1}',
-        description: 'Description for product ${index + 1}',
         sku: 'SKU${(index + 1).toString().padLeft(3, '0')}',
         barcode: '123456789${index.toString().padLeft(3, '0')}',
-        categoryId: 'cat_${(index % 5) + 1}',
-        categoryName: ['Electronics', 'Clothing', 'Food', 'Books', 'Home'][index % 5],
-        sellingPrice: (1000 + (index % 50) * 100),
-        costPrice: (500 + (index % 30) * 50),
+        imageUrl: '',
         stock: 10 + (index % 100),
+        price: (1000 + (index % 50) * 100),
+        costPrice: (500 + (index % 30) * 50),
+        categoryId: null,
+        category: null,
         lowStockThreshold: 5,
         isActive: true,
-        createdAt: DateTime.now().subtract(Duration(days: index % 100)),
-        updatedAt: DateTime.now(),
+        createdAt: DateTime.now().toIso8601String(),
+        updatedAt: DateTime.now().toIso8601String(),
       );
     });
   }
@@ -600,8 +623,8 @@ class AnalyticsService {
         phone: '+123456789${index.toString().padLeft(2, '0')}',
         loyaltyTier: LoyaltyTier.values[index % LoyaltyTier.values.length],
         loyaltyPoints: (index * 25) % 1000,
-        createdAt: DateTime.now().subtract(Duration(days: index % 365)),
-        updatedAt: DateTime.now(),
+        createdAt: DateTime.now().subtract(Duration(days: index % 365)).toIso8601String(),
+        updatedAt: DateTime.now().toIso8601String(),
       );
     });
   }
@@ -642,9 +665,9 @@ class ProductAnalyticsBuilder {
   }
 
   ProductAnalytics build() {
-    final grossProfit = _totalSales - _totalCost;
-    final profitMargin = _totalSales > 0 ? grossProfit / _totalSales : 0;
-    final averageSellingPrice = _quantitySold > 0 ? _totalSales / _quantitySold : 0;
+  final double grossProfit = _totalSales - _totalCost;
+  final double profitMargin = _totalSales > 0 ? grossProfit / _totalSales : 0.0;
+  final double averageSellingPrice = _quantitySold > 0 ? _totalSales / _quantitySold : 0.0;
 
     return ProductAnalytics(
       productId: productId,

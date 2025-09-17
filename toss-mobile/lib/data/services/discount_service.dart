@@ -4,7 +4,7 @@ import '../../domain/entities/discount_entity.dart';
 import '../../domain/entities/sales_transaction_entity.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/entities/customer_entity.dart';
-import '../repositories/discount_repository.dart';
+// Using an internal mock repository defined below for now
 
 class DiscountService {
   static final DiscountService _instance = DiscountService._internal();
@@ -140,8 +140,8 @@ class DiscountService {
         appliedDiscounts: appliedDiscounts,
         totalDiscount: totalDiscount,
         itemDiscounts: itemDiscounts,
-        originalTotal: transaction.subtotal,
-        discountedTotal: transaction.subtotal - totalDiscount,
+        originalTotal: transaction.subtotal.toDouble(),
+        discountedTotal: transaction.subtotal.toDouble() - totalDiscount,
       );
     } catch (e) {
       throw Exception('Failed to calculate discounts: $e');
@@ -205,30 +205,35 @@ class DiscountService {
         (p) => p.id == item.productId,
         orElse: () => ProductEntity(
           id: item.productId,
-          name: item.productName ?? '',
+          createdById: 'system',
+          name: item.productName,
+          sku: null,
+          barcode: null,
+          imageUrl: '',
+          stock: 0,
           price: item.unitPrice,
-          categoryId: '',
-          createdAt: DateTime.now(),
+          costPrice: null,
+          categoryId: null,
+          createdAt: DateTime.now().toIso8601String(),
         ),
       );
 
       // Check if product is excluded
-      if (discount.excludedItems.contains(product.id)) continue;
+  if (discount.excludedItems.contains(product.id?.toString() ?? '')) continue;
 
       // Check applicable items
       if (discount.applicableItems.isNotEmpty) {
-        if (discount.applicableItems.contains(product.id)) return true;
+        if (discount.applicableItems.contains((product.id)?.toString() ?? '')) return true;
       }
 
       // Check applicable categories
       if (discount.applicableCategories.isNotEmpty) {
-        if (discount.applicableCategories.contains(product.categoryId)) return true;
+        if (discount.applicableCategories.contains(product.categoryId?.toString() ?? '')) return true;
       }
 
       // Check applicable brands
       if (discount.applicableBrands.isNotEmpty) {
-        if (product.brandId != null && 
-            discount.applicableBrands.contains(product.brandId)) return true;
+        // No brandId on ProductEntity; skip this check
       }
 
       // If no specific applicability rules, discount applies to all
@@ -256,15 +261,21 @@ class DiscountService {
         (p) => p.id == item.productId,
         orElse: () => ProductEntity(
           id: item.productId,
-          name: item.productName ?? '',
+          createdById: 'system',
+          name: item.productName,
+          sku: null,
+          barcode: null,
+          imageUrl: '',
+          stock: 0,
           price: item.unitPrice,
-          categoryId: '',
-          createdAt: DateTime.now(),
+          costPrice: null,
+          categoryId: null,
+          createdAt: DateTime.now().toIso8601String(),
         ),
       );
 
       if (_isProductApplicable(discount, product)) {
-        applicableItems.add(item.id!);
+        applicableItems.add((item.id ?? item.productId).toString());
         
         if (discount.type == DiscountType.bogo && discount.bogoConfig != null) {
           discountAmount += _calculateBogoDiscount(item, discount.bogoConfig!);
@@ -334,7 +345,9 @@ class DiscountService {
       originalValue: discount.value,
       appliedValue: discount.value,
       discountAmount: discountAmount,
-      appliedToItems: transaction.items.map((item) => item.id!).toList(),
+    appliedToItems: transaction.items
+      .map((item) => (item.id ?? item.productId).toString())
+      .toList(),
       couponCode: discount.couponCode,
       appliedAt: DateTime.now(),
     );
@@ -343,21 +356,22 @@ class DiscountService {
   // Check if product is applicable for discount
   bool _isProductApplicable(DiscountEntity discount, ProductEntity product) {
     // Check if product is excluded
-    if (discount.excludedItems.contains(product.id)) return false;
+    if (discount.excludedItems.contains(product.id?.toString() ?? '')) return false;
 
     // Check applicable items
     if (discount.applicableItems.isNotEmpty) {
-      return discount.applicableItems.contains(product.id);
+      return discount.applicableItems.contains(product.id?.toString() ?? '');
     }
 
     // Check applicable categories
     if (discount.applicableCategories.isNotEmpty) {
-      return discount.applicableCategories.contains(product.categoryId);
+      return discount.applicableCategories.contains(product.categoryId?.toString() ?? '');
     }
 
     // Check applicable brands
-    if (discount.applicableBrands.isNotEmpty && product.brandId != null) {
-      return discount.applicableBrands.contains(product.brandId);
+    if (discount.applicableBrands.isNotEmpty) {
+      // No brandId field; consider brands unsupported in this model
+      return false;
     }
 
     // If no specific rules, applies to all
@@ -367,10 +381,10 @@ class DiscountService {
   }
 
   // Calculate item discount amount
-  double _calculateItemDiscount(TransactionItemEntity item, DiscountEntity discount) {
+  double _calculateItemDiscount(SalesTransactionItemEntity item, DiscountEntity discount) {
     switch (discount.type) {
       case DiscountType.percentage:
-        return item.totalPrice * (discount.value / 100);
+        return item.totalPrice.toDouble() * (discount.value / 100);
       case DiscountType.fixedAmount:
         return discount.value * item.quantity;
       default:
@@ -379,12 +393,12 @@ class DiscountService {
   }
 
   // Calculate BOGO discount
-  double _calculateBogoDiscount(TransactionItemEntity item, BogoConfig config) {
+  double _calculateBogoDiscount(SalesTransactionItemEntity item, BogoConfig config) {
     if (item.quantity < config.buyQuantity) return 0.0;
 
     final eligibleSets = item.quantity ~/ config.buyQuantity;
     final freeItems = eligibleSets * config.getQuantity;
-    final discountPerItem = item.unitPrice * (config.getDiscountPercent / 100);
+    final discountPerItem = item.unitPrice.toDouble() * (config.getDiscountPercent / 100);
     
     return freeItems * discountPerItem;
   }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../domain/entities/discount_entity.dart';
 import '../../data/services/discount_service.dart';
@@ -18,7 +17,6 @@ class DiscountManagementScreen extends StatefulWidget {
 class _DiscountManagementScreenState extends State<DiscountManagementScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final DiscountService _discountService = DiscountService();
 
   @override
   void initState() {

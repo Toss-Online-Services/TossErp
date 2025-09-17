@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
@@ -8,7 +7,7 @@ import 'package:printing/printing.dart';
 
 import '../../domain/entities/receipt_entity.dart';
 import '../../domain/entities/sales_transaction_entity.dart';
-import '../repositories/receipt_repository.dart';
+// Using an internal mock repository defined below for now
 
 class ReceiptService {
   static final ReceiptService _instance = ReceiptService._internal();
