@@ -433,7 +433,7 @@ class CloudStorageRepository {
     return {
       'total': snapshot.size,
       'lastUpdated': snapshot.docs.isNotEmpty 
-          ? snapshot.docs.first.data()['serverUpdatedAt']
+          ? (snapshot.docs.first.data() as Map<String, dynamic>)['serverUpdatedAt']
           : null,
     };
   }

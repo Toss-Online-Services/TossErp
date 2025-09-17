@@ -18,7 +18,6 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
   
   List<SyncConflict> _conflicts = [];
   bool _isLoading = false;
-  String _filterStatus = 'all';
   SyncEntityType? _filterEntityType;
 
   @override
@@ -32,7 +31,7 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
     setState(() => _isLoading = true);
     
     try {
-      final conflicts = await _syncService.getConflicts();
+      final conflicts = await _syncService.getPendingConflicts();
       setState(() {
         _conflicts = _filterConflicts(conflicts);
       });
@@ -45,11 +44,7 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
 
   List<SyncConflict> _filterConflicts(List<SyncConflict> conflicts) {
     return conflicts.where((conflict) {
-      // Filter by status
-      if (_filterStatus != 'all' && conflict.status.name != _filterStatus) {
-        return false;
-      }
-      
+      // Status filter removed; all returned conflicts are pending/unresolved
       // Filter by entity type
       if (_filterEntityType != null && conflict.entityType != _filterEntityType) {
         return false;
@@ -74,7 +69,7 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
           ),
         ],
       ),
-      floatingActionButton: _conflicts.where((c) => c.status == ConflictStatus.unresolved).isNotEmpty
+      floatingActionButton: _conflicts.isNotEmpty
           ? FloatingActionButton.extended(
               onPressed: _resolveAllConflicts,
               icon: const Icon(Icons.auto_fix_high),
@@ -99,32 +94,7 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
       ),
       child: Row(
         children: [
-          Expanded(
-            child: DropdownButtonFormField<String>(
-              value: _filterStatus,
-              decoration: const InputDecoration(
-                labelText: 'Status',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              ),
-              items: [
-                const DropdownMenuItem(value: 'all', child: Text('All')),
-                ...ConflictStatus.values.map((status) =>
-                  DropdownMenuItem(
-                    value: status.name,
-                    child: Text(_getStatusDisplayName(status)),
-                  ),
-                ),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  _filterStatus = value!;
-                  _conflicts = _filterConflicts(_conflicts);
-                });
-              },
-            ),
-          ),
-          const SizedBox(width: 16),
+          // Removed status filter; only entity type filter remains
           Expanded(
             child: DropdownButtonFormField<SyncEntityType?>(
               value: _filterEntityType,
@@ -203,19 +173,15 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
       ),
     );
   }
-
+  
   Widget _buildConflictItem(SyncConflict conflict) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       child: ExpansionTile(
-        leading: CircleAvatar(
-          backgroundColor: _getStatusColor(conflict.status),
-          child: Icon(
-            _getConflictTypeIcon(conflict.conflictType),
-            color: Colors.white,
-            size: 20,
-          ),
+        leading: const CircleAvatar(
+          backgroundColor: Colors.redAccent,
+          child: Icon(Icons.warning, color: Colors.white, size: 20),
         ),
         title: Text(
           '${_getEntityDisplayName(conflict.entityType)} Conflict',
@@ -225,79 +191,54 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('ID: ${conflict.entityId}'),
-            Text('Type: ${_getConflictTypeDisplayName(conflict.conflictType)}'),
+            if (conflict.suggestedStrategy != null)
+              Text('Suggested: ${_getResolutionDisplayName(conflict.suggestedStrategy!)}'),
             Text('Detected: ${DateFormat('MMM dd, yyyy HH:mm').format(conflict.detectedAt)}'),
           ],
         ),
-        trailing: conflict.status == ConflictStatus.unresolved
-            ? PopupMenuButton<String>(
-                onSelected: (value) => _handleQuickResolve(conflict, value),
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'localWins',
-                    child: ListTile(
-                      leading: Icon(Icons.phone_android, color: Colors.blue),
-                      title: Text('Keep Local'),
-                      dense: true,
-                    ),
-                  ),
-                  const PopupMenuItem(
-                    value: 'remoteWins',
-                    child: ListTile(
-                      leading: Icon(Icons.cloud, color: Colors.green),
-                      title: Text('Keep Remote'),
-                      dense: true,
-                    ),
-                  ),
-                  const PopupMenuItem(
-                    value: 'merge',
-                    child: ListTile(
-                      leading: Icon(Icons.merge, color: Colors.orange),
-                      title: Text('Merge'),
-                      dense: true,
-                    ),
-                  ),
-                  const PopupMenuItem(
-                    value: 'manual',
-                    child: ListTile(
-                      leading: Icon(Icons.edit, color: Colors.purple),
-                      title: Text('Manual'),
-                      dense: true,
-                    ),
-                  ),
-                ],
-              )
-            : Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _getStatusColor(conflict.status),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  _getStatusDisplayName(conflict.status),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+        trailing: PopupMenuButton<String>(
+          onSelected: (value) => _handleQuickResolve(conflict, value),
+          itemBuilder: (context) => const [
+            PopupMenuItem(
+              value: 'localWins',
+              child: ListTile(
+                leading: Icon(Icons.phone_android, color: Colors.blue),
+                title: Text('Keep Local'),
+                dense: true,
               ),
+            ),
+            PopupMenuItem(
+              value: 'remoteWins',
+              child: ListTile(
+                leading: Icon(Icons.cloud, color: Colors.green),
+                title: Text('Keep Remote'),
+                dense: true,
+              ),
+            ),
+            PopupMenuItem(
+              value: 'merge',
+              child: ListTile(
+                leading: Icon(Icons.merge, color: Colors.orange),
+                title: Text('Merge'),
+                dense: true,
+              ),
+            ),
+            PopupMenuItem(
+              value: 'manual',
+              child: ListTile(
+                leading: Icon(Icons.edit, color: Colors.purple),
+                title: Text('Manual'),
+                dense: true,
+              ),
+            ),
+          ],
+        ),
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (conflict.description != null) ...[
-                  Text(
-                    'Description:',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(conflict.description!),
-                  const SizedBox(height: 16),
-                ],
-                
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -320,13 +261,8 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
                     ),
                   ],
                 ),
-                
                 const SizedBox(height: 24),
-                
-                if (conflict.status == ConflictStatus.unresolved)
-                  _buildResolutionButtons(conflict)
-                else
-                  _buildResolvedInfo(conflict),
+                _buildResolutionButtons(conflict),
               ],
             ),
           ),
@@ -444,7 +380,7 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
       runSpacing: 8,
       children: [
         ElevatedButton.icon(
-          onPressed: () => _resolveConflict(conflict, ConflictResolution.localWins),
+          onPressed: () => _resolveConflict(conflict, ConflictResolutionStrategy.localWins),
           icon: const Icon(Icons.phone_android, size: 18),
           label: const Text('Keep Local'),
           style: ElevatedButton.styleFrom(
@@ -453,7 +389,7 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
           ),
         ),
         ElevatedButton.icon(
-          onPressed: () => _resolveConflict(conflict, ConflictResolution.remoteWins),
+          onPressed: () => _resolveConflict(conflict, ConflictResolutionStrategy.remoteWins),
           icon: const Icon(Icons.cloud, size: 18),
           label: const Text('Keep Remote'),
           style: ElevatedButton.styleFrom(
@@ -462,7 +398,7 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
           ),
         ),
         ElevatedButton.icon(
-          onPressed: () => _resolveConflict(conflict, ConflictResolution.merge),
+          onPressed: () => _resolveConflict(conflict, ConflictResolutionStrategy.merge),
           icon: const Icon(Icons.merge, size: 18),
           label: const Text('Merge'),
           style: ElevatedButton.styleFrom(
@@ -488,40 +424,7 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
     );
   }
 
-  Widget _buildResolvedInfo(SyncConflict conflict) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.green.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.green.withOpacity(0.3)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.check_circle, color: Colors.green),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Resolved using: ${_getResolutionDisplayName(conflict.resolution!)}',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                if (conflict.resolvedAt != null)
-                  Text(
-                    'Resolved at: ${DateFormat('MMM dd, yyyy HH:mm').format(conflict.resolvedAt!)}',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _resolveConflict(SyncConflict conflict, ConflictResolution resolution) async {
+  Future<void> _resolveConflict(SyncConflict conflict, ConflictResolutionStrategy resolution) async {
     try {
       await _syncService.resolveConflict(conflict.id, resolution);
       _showSuccessSnackBar('Conflict resolved successfully');
@@ -532,16 +435,16 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
   }
 
   Future<void> _handleQuickResolve(SyncConflict conflict, String resolutionType) async {
-    ConflictResolution resolution;
+    ConflictResolutionStrategy resolution;
     switch (resolutionType) {
       case 'localWins':
-        resolution = ConflictResolution.localWins;
+        resolution = ConflictResolutionStrategy.localWins;
         break;
       case 'remoteWins':
-        resolution = ConflictResolution.remoteWins;
+        resolution = ConflictResolutionStrategy.remoteWins;
         break;
       case 'merge':
-        resolution = ConflictResolution.merge;
+        resolution = ConflictResolutionStrategy.merge;
         break;
       case 'manual':
         _showManualResolutionDialog(conflict);
@@ -554,9 +457,7 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
   }
 
   Future<void> _resolveAllConflicts() async {
-    final unresolvedConflicts = _conflicts
-        .where((c) => c.status == ConflictStatus.unresolved)
-        .toList();
+    final unresolvedConflicts = List<SyncConflict>.from(_conflicts);
 
     if (unresolvedConflicts.isEmpty) {
       _showSuccessSnackBar('No unresolved conflicts found');
@@ -571,7 +472,10 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
     if (!confirmed) return;
 
     try {
-      await _syncService.resolveAllConflicts();
+      for (final c in unresolvedConflicts) {
+        final strategy = c.suggestedStrategy ?? ConflictResolutionStrategy.remoteWins;
+        await _syncService.resolveConflict(c.id, strategy);
+      }
       _showSuccessSnackBar('All conflicts resolved automatically');
       _loadConflicts();
     } catch (e) {
@@ -586,7 +490,11 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
         conflict: conflict,
         onResolve: (mergedData) async {
           try {
-            await _syncService.resolveConflictWithData(conflict.id, mergedData);
+            await _syncService.resolveConflict(
+              conflict.id,
+              ConflictResolutionStrategy.manual,
+              customData: mergedData,
+            );
             _showSuccessSnackBar('Conflict resolved with custom data');
             _loadConflicts();
           } catch (e) {
@@ -629,21 +537,12 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
                       _buildDetailRow('Conflict ID', conflict.id),
                       _buildDetailRow('Entity Type', _getEntityDisplayName(conflict.entityType)),
                       _buildDetailRow('Entity ID', conflict.entityId),
-                      _buildDetailRow('Conflict Type', _getConflictTypeDisplayName(conflict.conflictType)),
-                      _buildDetailRow('Status', _getStatusDisplayName(conflict.status)),
+                      if (conflict.suggestedStrategy != null)
+                        _buildDetailRow('Suggested', _getResolutionDisplayName(conflict.suggestedStrategy!)),
                       _buildDetailRow(
                         'Detected At',
                         DateFormat('MMM dd, yyyy HH:mm:ss').format(conflict.detectedAt),
                       ),
-                      if (conflict.resolvedAt != null)
-                        _buildDetailRow(
-                          'Resolved At',
-                          DateFormat('MMM dd, yyyy HH:mm:ss').format(conflict.resolvedAt!),
-                        ),
-                      if (conflict.resolution != null)
-                        _buildDetailRow('Resolution', _getResolutionDisplayName(conflict.resolution!)),
-                      if (conflict.description != null)
-                        _buildDetailRow('Description', conflict.description!),
                       const SizedBox(height: 24),
                       Text(
                         'Local Data:',
@@ -718,57 +617,17 @@ class _SyncConflictsScreenState extends State<SyncConflictsScreen> {
     );
   }
 
-  Color _getStatusColor(ConflictStatus status) {
-    switch (status) {
-      case ConflictStatus.unresolved:
-        return Colors.red;
-      case ConflictStatus.resolved:
-        return Colors.green;
-    }
-  }
-
-  IconData _getConflictTypeIcon(ConflictType type) {
-    switch (type) {
-      case ConflictType.dataConflict:
-        return Icons.warning;
-      case ConflictType.versionConflict:
-        return Icons.history;
-      case ConflictType.deleteConflict:
-        return Icons.delete_forever;
-    }
-  }
-
-  String _getStatusDisplayName(ConflictStatus status) {
-    switch (status) {
-      case ConflictStatus.unresolved:
-        return 'Unresolved';
-      case ConflictStatus.resolved:
-        return 'Resolved';
-    }
-  }
-
-  String _getConflictTypeDisplayName(ConflictType type) {
-    switch (type) {
-      case ConflictType.dataConflict:
-        return 'Data Conflict';
-      case ConflictType.versionConflict:
-        return 'Version Conflict';
-      case ConflictType.deleteConflict:
-        return 'Delete Conflict';
-    }
-  }
-
-  String _getResolutionDisplayName(ConflictResolution resolution) {
+  String _getResolutionDisplayName(ConflictResolutionStrategy resolution) {
     switch (resolution) {
-      case ConflictResolution.localWins:
+      case ConflictResolutionStrategy.localWins:
         return 'Local Wins';
-      case ConflictResolution.remoteWins:
+      case ConflictResolutionStrategy.remoteWins:
         return 'Remote Wins';
-      case ConflictResolution.merge:
+      case ConflictResolutionStrategy.merge:
         return 'Merged';
-      case ConflictResolution.manual:
+      case ConflictResolutionStrategy.manual:
         return 'Manual';
-      case ConflictResolution.keepBoth:
+      case ConflictResolutionStrategy.keepBoth:
         return 'Keep Both';
     }
   }

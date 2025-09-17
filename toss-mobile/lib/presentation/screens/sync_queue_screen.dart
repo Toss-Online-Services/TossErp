@@ -68,7 +68,7 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
         case 'entityType':
           return a.entityType.name.compareTo(b.entityType.name);
         case 'operation':
-          return a.operation.name.compareTo(b.operation.name);
+          return a.operationType.name.compareTo(b.operationType.name);
         default:
           return 0;
       }
@@ -126,7 +126,7 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
                   ),
                   items: [
                     const DropdownMenuItem(value: 'all', child: Text('All')),
-                    ...SyncQueueStatus.values.map((status) =>
+                    ...SyncStatus.values.map((status) =>
                       DropdownMenuItem(
                         value: status.name,
                         child: Text(_getStatusDisplayName(status)),
@@ -257,13 +257,13 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
         leading: CircleAvatar(
           backgroundColor: _getStatusColor(item.status),
           child: Icon(
-            _getOperationIcon(item.operation),
+            _getOperationIcon(item.operationType),
             color: Colors.white,
             size: 20,
           ),
         ),
         title: Text(
-          '${_getEntityDisplayName(item.entityType)} - ${_getOperationDisplayName(item.operation)}',
+          '${_getEntityDisplayName(item.entityType)} - ${_getOperationDisplayName(item.operationType)}',
           style: const TextStyle(fontWeight: FontWeight.w500),
         ),
         subtitle: Column(
@@ -277,7 +277,7 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (item.retryCount > 0)
+            if (item.attemptCount > 0)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -285,7 +285,7 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  'Retry ${item.retryCount}',
+                  'Retry ${item.attemptCount}',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,
@@ -296,7 +296,7 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
             PopupMenuButton<String>(
               onSelected: (value) => _handleItemAction(item, value),
               itemBuilder: (context) => [
-                if (item.status == SyncQueueStatus.pending)
+                if (item.status == SyncStatus.pending)
                   const PopupMenuItem(
                     value: 'retry',
                     child: ListTile(
@@ -304,7 +304,7 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
                       title: Text('Retry Now'),
                     ),
                   ),
-                if (item.status == SyncQueueStatus.failed)
+                if (item.status == SyncStatus.failed)
                   const PopupMenuItem(
                     value: 'retry',
                     child: ListTile(
@@ -338,20 +338,18 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
               children: [
                 _buildDetailRow('Entity ID', item.entityId),
                 _buildDetailRow('Location ID', item.locationId),
-                if (item.dependencies.isNotEmpty)
-                  _buildDetailRow('Dependencies', item.dependencies.join(', ')),
                 if (item.lastAttemptAt != null)
                   _buildDetailRow(
                     'Last Attempt',
                     DateFormat('MMM dd, yyyy HH:mm').format(item.lastAttemptAt!),
                   ),
-                if (item.nextAttemptAt != null)
+                if (item.retryAfter != null)
                   _buildDetailRow(
-                    'Next Attempt',
-                    DateFormat('MMM dd, yyyy HH:mm').format(item.nextAttemptAt!),
+                    'Retry After',
+                    DateFormat('MMM dd, yyyy HH:mm').format(item.retryAfter!),
                   ),
-                if (item.error != null)
-                  _buildDetailRow('Error', item.error!, isError: true),
+                if (item.errorMessage != null)
+                  _buildDetailRow('Error', item.errorMessage!, isError: true),
                 const SizedBox(height: 16),
                 Text(
                   'Data Preview:',
@@ -505,12 +503,12 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
                     children: [
                       _buildDetailRow('ID', item.id),
                       _buildDetailRow('Entity Type', _getEntityDisplayName(item.entityType)),
-                      _buildDetailRow('Operation', _getOperationDisplayName(item.operation)),
+                      _buildDetailRow('Operation', _getOperationDisplayName(item.operationType)),
                       _buildDetailRow('Status', _getStatusDisplayName(item.status)),
                       _buildDetailRow('Priority', item.priority.toString()),
                       _buildDetailRow('Entity ID', item.entityId),
                       _buildDetailRow('Location ID', item.locationId),
-                      _buildDetailRow('Retry Count', item.retryCount.toString()),
+                      _buildDetailRow('Retry Count', item.attemptCount.toString()),
                       _buildDetailRow(
                         'Created At',
                         DateFormat('MMM dd, yyyy HH:mm:ss').format(item.createdAt),
@@ -520,15 +518,15 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
                           'Last Attempt',
                           DateFormat('MMM dd, yyyy HH:mm:ss').format(item.lastAttemptAt!),
                         ),
-                      if (item.nextAttemptAt != null)
+                      if (item.retryAfter != null)
                         _buildDetailRow(
-                          'Next Attempt',
-                          DateFormat('MMM dd, yyyy HH:mm:ss').format(item.nextAttemptAt!),
+                          'Retry After',
+                          DateFormat('MMM dd, yyyy HH:mm:ss').format(item.retryAfter!),
                         ),
-                      if (item.dependencies.isNotEmpty)
-                        _buildDetailRow('Dependencies', item.dependencies.join(', ')),
-                      if (item.error != null)
-                        _buildDetailRow('Error', item.error!, isError: true),
+                      if (item.dependsOnId != null)
+                        _buildDetailRow('Depends On', item.dependsOnId!),
+                      if (item.errorMessage != null)
+                        _buildDetailRow('Error', item.errorMessage!, isError: true),
                       const SizedBox(height: 16),
                       Text(
                         'Full Data:',
@@ -568,62 +566,66 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
     _showSuccessSnackBar('Add to queue feature coming soon');
   }
 
-  Color _getStatusColor(SyncQueueStatus status) {
+  Color _getStatusColor(SyncStatus status) {
     switch (status) {
-      case SyncQueueStatus.pending:
+      case SyncStatus.pending:
         return Colors.orange;
-      case SyncQueueStatus.processing:
+      case SyncStatus.inProgress:
         return Colors.blue;
-      case SyncQueueStatus.completed:
+      case SyncStatus.completed:
         return Colors.green;
-      case SyncQueueStatus.failed:
+      case SyncStatus.failed:
         return Colors.red;
-      case SyncQueueStatus.cancelled:
-        return Colors.grey;
+      case SyncStatus.conflict:
+        return Colors.purple;
+      case SyncStatus.retrying:
+        return Colors.teal;
     }
   }
 
-  IconData _getOperationIcon(SyncOperation operation) {
+  IconData _getOperationIcon(SyncOperationType operation) {
     switch (operation) {
-      case SyncOperation.create:
+      case SyncOperationType.create:
         return Icons.add;
-      case SyncOperation.update:
+      case SyncOperationType.update:
         return Icons.edit;
-      case SyncOperation.delete:
+      case SyncOperationType.delete:
         return Icons.delete;
-      case SyncOperation.transfer:
+      case SyncOperationType.transfer:
         return Icons.swap_horiz;
-      case SyncOperation.payment:
+      case SyncOperationType.payment:
         return Icons.payment;
     }
   }
 
-  String _getStatusDisplayName(SyncQueueStatus status) {
+  String _getStatusDisplayName(SyncStatus status) {
     switch (status) {
-      case SyncQueueStatus.pending:
+      case SyncStatus.pending:
         return 'Pending';
-      case SyncQueueStatus.processing:
+      case SyncStatus.inProgress:
         return 'Processing';
-      case SyncQueueStatus.completed:
+      case SyncStatus.completed:
         return 'Completed';
-      case SyncQueueStatus.failed:
+      case SyncStatus.failed:
         return 'Failed';
-      case SyncQueueStatus.cancelled:
-        return 'Cancelled';
+      case SyncStatus.conflict:
+        return 'Conflict';
+      case SyncStatus.retrying:
+        return 'Retrying';
     }
   }
 
-  String _getOperationDisplayName(SyncOperation operation) {
+  String _getOperationDisplayName(SyncOperationType operation) {
     switch (operation) {
-      case SyncOperation.create:
+      case SyncOperationType.create:
         return 'Create';
-      case SyncOperation.update:
+      case SyncOperationType.update:
         return 'Update';
-      case SyncOperation.delete:
+      case SyncOperationType.delete:
         return 'Delete';
-      case SyncOperation.transfer:
+      case SyncOperationType.transfer:
         return 'Transfer';
-      case SyncOperation.payment:
+      case SyncOperationType.payment:
         return 'Payment';
     }
   }

@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../domain/entities/location_entity.dart';
-import '../../domain/entities/inventory_movement_entity.dart';
-import '../repositories/location_repository.dart';
 
 class LocationService {
   static final LocationService _instance = LocationService._internal();

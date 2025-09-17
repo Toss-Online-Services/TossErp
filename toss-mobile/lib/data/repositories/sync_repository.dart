@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
 
 import '../../domain/entities/sync_entity.dart';

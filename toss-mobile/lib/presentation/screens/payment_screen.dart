@@ -29,7 +29,6 @@ class _PaymentScreenState extends State<PaymentScreen>
   final PaymentService _paymentService = PaymentService();
   
   late TabController _tabController;
-  PaymentMethod _selectedMethod = PaymentMethod.cash;
   bool _isProcessing = false;
   
   // Cash payment

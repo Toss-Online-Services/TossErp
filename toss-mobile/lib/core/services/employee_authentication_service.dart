@@ -364,9 +364,9 @@ class EmployeeAuthenticationService {
       // This would typically involve encrypting and storing the biometric data
       // For now, we'll just generate a unique ID
 
-      final biometricId = _generateBiometricId(employeeId);
-      
-      // TODO: Update employee record with biometric info
+  // Generate and persist a biometric ID for the user (implementation TBD)
+  // final biometricId = _generateBiometricId(employeeId);
+  // TODO: Update employee record with biometric info using `biometricId`
       return true;
 
     } catch (e) {
@@ -434,10 +434,7 @@ class EmployeeAuthenticationService {
     return digest.toString().substring(0, 8);
   }
 
-  String _generateBiometricId(String employeeId) {
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    return 'bio_${employeeId}_$timestamp';
-  }
+  // Future enhancement: generate and store biometric IDs when persisting templates
 }
 
 // Extension method for WorkShift copyWith

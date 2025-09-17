@@ -11,7 +11,6 @@ import '../../../domain/entities/product_entity.dart';
 import '../../../domain/entities/transaction_entity.dart';
 import '../../../domain/repositories/transaction_repository.dart';
 import '../../../domain/entities/payment_entity.dart';
-import '../../../domain/entities/discount_entity.dart';
 import '../../../data/repositories/payment_repository_impl.dart';
 import '../../../data/repositories/discount_repository_impl.dart';
 import '../../../data/repositories/appointment_repository_impl.dart';

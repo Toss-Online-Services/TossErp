@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../domain/entities/receipt_entity.dart';
 import '../../domain/entities/sales_transaction_entity.dart';
@@ -26,7 +25,6 @@ class ReceiptManagementScreen extends StatefulWidget {
 class _ReceiptManagementScreenState extends State<ReceiptManagementScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final ReceiptService _receiptService = ReceiptService();
 
   @override
   void initState() {
@@ -149,7 +147,7 @@ class _ReceiptGenerationTabState extends State<ReceiptGenerationTab> {
               children: [
                 Text('Transaction ID:'),
                 Text(
-                  widget.transaction.id ?? 'N/A',
+                  widget.transaction.id?.toString() ?? 'N/A',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ],
@@ -168,7 +166,7 @@ class _ReceiptGenerationTabState extends State<ReceiptGenerationTab> {
               children: [
                 Text('Total:'),
                 Text(
-                  'GHS ${widget.transaction.total.toStringAsFixed(2)}',
+                  'GHS ${(widget.transaction.total.toDouble() / 100).toStringAsFixed(2)}',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -841,6 +839,12 @@ class _ReceiptHistoryTabState extends State<ReceiptHistoryTab> {
         return Colors.blue;
       case ReceiptType.quote:
         return Colors.orange;
+      case ReceiptType.giftCard:
+        return Colors.purple;
+      case ReceiptType.loyalty:
+        return Colors.amber;
+      case ReceiptType.voidTransaction:
+        return Colors.grey;
     }
   }
 
@@ -854,6 +858,12 @@ class _ReceiptHistoryTabState extends State<ReceiptHistoryTab> {
         return Icons.schedule;
       case ReceiptType.quote:
         return Icons.request_quote;
+      case ReceiptType.giftCard:
+        return Icons.card_giftcard;
+      case ReceiptType.loyalty:
+        return Icons.card_membership;
+      case ReceiptType.voidTransaction:
+        return Icons.block;
     }
   }
 }

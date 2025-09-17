@@ -19,7 +19,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen>
   // Mock data - in real app, this would come from a repository
   List<EmployeeEntity> _employees = [];
   List<WorkShift> _shifts = [];
-  EmployeeEntity? _selectedEmployee;
+  // Selected employee state not required currently; removed to satisfy analyzer
 
   // Filter states
   EmployeeStatus _statusFilter = EmployeeStatus.active;
@@ -829,10 +829,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen>
   }
 
   void _showEmployeeDetails(EmployeeEntity employee) {
-    setState(() {
-      _selectedEmployee = employee;
-    });
-    
+    // Show details sheet for tapped employee
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
