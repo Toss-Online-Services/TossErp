@@ -27,11 +27,108 @@ import 'data/datasources/local/queued_action_local_datasource_impl.dart';
 
 final GetIt sl = GetIt.instance;
 
-void main() async {
-  // Initialize binding
+void main() async { 
+
+  await initializeApp();
+
+  runApp(const MyApp());
+}
+
+Future<void> initializeApp() async {
+ // Initialize binding
   WidgetsFlutterBinding.ensureInitialized();
 
   // Web-specific error handling
+  addWebErrorHandling();
+
+  try {
+    // Initialize Firebase (use `flutterfire configure` to generate the options)
+    await initializeFirebase();
+  
+    // Initialize app local db (skip for web to avoid issues)
+    await initializeAppLocalDb();
+  
+    // Initialize flutter_dotenv
+    await initializeFlutterDotEnv();
+  
+    // Initialize date formatting
+    initializeDateFormatting();
+  
+    // Setup service locator (skip complex setup for web)
+    setupServiceLocator();
+  
+    // Set/lock screen orientation (skip for web)
+   setScreenOrientationAndSystemUI();
+  } catch (e) {
+    debugPrint('Initialization error: $e');
+    // Continue with app launch even if some initialization fails
+  }
+}
+
+void setScreenOrientationAndSystemUI() async {
+  if (!kIsWeb) {
+    // Set/lock screen orientation
+    await SystemChrome.setPreferredOrientations([]);
+
+    // Set Default SystemUIOverlayStyle
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.transparent,
+        statusBarColor: Colors.transparent,
+      ),
+    );
+  }
+}
+
+void setupServiceLocator() {
+     if (!kIsWeb) {
+    setupServiceLocator();
+  } else {
+    // For web, setup minimal service locator with web-compatible providers
+    setupWebServiceLocator();
+  }
+}
+
+Future<void> initializeFlutterDotEnv() async {
+   try {
+    await dotenv.load();
+  } catch (e) {
+    debugPrint('Failed to load .env file: $e');
+    // Continue without .env if it fails
+  }
+}
+
+Future<void> initializeAppLocalDb() async {
+    if (!kIsWeb) {
+    await AppDatabase().init();
+    // Ensure persistence is cleared
+    await FirebaseFirestore.instance.clearPersistence();
+      // Seed sample data for all repositories
+      final appDatabase = AppDatabase();
+      final userLocalDatasource = UserLocalDatasourceImpl(appDatabase);
+      final productLocalDatasource = ProductLocalDatasourceImpl(appDatabase);
+      final transactionLocalDatasource = TransactionLocalDatasourceImpl(appDatabase);
+      final queuedActionLocalDatasource = QueuedActionLocalDatasourceImpl(appDatabase);
+  
+      Future<void> seedAllSampleData() async {
+        await userLocalDatasource.seedSampleUser();
+        await productLocalDatasource.seedSampleProducts();
+        await transactionLocalDatasource.seedSampleTransactions();
+        await queuedActionLocalDatasource.seedSampleQueuedActions();
+      }
+  
+      await seedAllSampleData();
+  }
+}
+
+Future<void> initializeFirebase() async {
+   await Firebase.initializeApp(
+    name: kIsWeb ? null : DefaultFirebaseOptions.currentPlatform.projectId,
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+}
+
+void addWebErrorHandling() {
   if (kIsWeb) {
     FlutterError.onError = (FlutterErrorDetails details) {
       // Log errors for web debugging
@@ -42,73 +139,6 @@ void main() async {
       FlutterError.presentError(details);
     };
   }
-
-  try {
-    // Initialize Firebase (use `flutterfire configure` to generate the options)
-    await Firebase.initializeApp(
-      name: kIsWeb ? null : DefaultFirebaseOptions.currentPlatform.projectId,
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-
-    // Initialize app local db (skip for web to avoid issues)
-    if (!kIsWeb) {
-      await AppDatabase().init();
-      // Ensure persistence is cleared
-      await FirebaseFirestore.instance.clearPersistence();
-        // Seed sample data for all repositories
-        final appDatabase = AppDatabase();
-        final userLocalDatasource = UserLocalDatasourceImpl(appDatabase);
-        final productLocalDatasource = ProductLocalDatasourceImpl(appDatabase);
-        final transactionLocalDatasource = TransactionLocalDatasourceImpl(appDatabase);
-        final queuedActionLocalDatasource = QueuedActionLocalDatasourceImpl(appDatabase);
-
-        Future<void> seedAllSampleData() async {
-          await userLocalDatasource.seedSampleUser();
-          await productLocalDatasource.seedSampleProducts();
-          await transactionLocalDatasource.seedSampleTransactions();
-          await queuedActionLocalDatasource.seedSampleQueuedActions();
-        }
-
-        await seedAllSampleData();
-    }
-
-    // Initialize flutter_dotenv
-    try {
-      await dotenv.load();
-    } catch (e) {
-      debugPrint('Failed to load .env file: $e');
-      // Continue without .env if it fails
-    }
-
-    // Initialize date formatting
-    initializeDateFormatting();
-
-    // Setup service locator (skip complex setup for web)
-    if (!kIsWeb) {
-      setupServiceLocator();
-    } else {
-      // For web, setup minimal service locator with web-compatible providers
-      setupWebServiceLocator();
-    }
-
-    // Set/lock screen orientation (skip for web)
-    if (!kIsWeb) {
-      SystemChrome.setPreferredOrientations([]);
-
-      // Set Default SystemUIOverlayStyle
-      SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(
-          systemNavigationBarColor: Colors.transparent,
-          statusBarColor: Colors.transparent,
-        ),
-      );
-    }
-  } catch (e) {
-    debugPrint('Initialization error: $e');
-    // Continue with app launch even if some initialization fails
-  }
-
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
