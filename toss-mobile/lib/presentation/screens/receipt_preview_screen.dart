@@ -362,7 +362,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item.productName,
+                      item.productName, // TODO: align SalesTransactionEntity/ReceiptLineItem naming if migrating to OrderedProductEntity.name
                       style: const TextStyle(fontWeight: FontWeight.w500),
                       overflow: TextOverflow.visible,
                       softWrap: true,

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../domain/entities/employee_entity.dart';
 import '../../../core/services/employee_authentication_service_stub.dart';
+import 'package:toss_mobile/core/utils/status_color_util.dart';
 
 class EmployeeManagementScreen extends StatefulWidget {
   const EmployeeManagementScreen({super.key});
@@ -303,7 +304,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen>
             children: [
               CircleAvatar(
                 radius: isTablet ? 28 : 24,
-                backgroundColor: _getStatusColor(employee.status),
+                backgroundColor: getStatusColor(employee.status),
                 child: Text(
                   employee.name.isNotEmpty 
                       ? employee.name[0].toUpperCase()
@@ -410,7 +411,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen>
                   Text(
                     _getStatusName(employee.status),
                     style: TextStyle(
-                      color: _getStatusColor(employee.status),
+                      color: getStatusColor(employee.status),
                       fontWeight: FontWeight.w500,
                       fontSize: 12,
                     ),
@@ -865,7 +866,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen>
             children: [
               CircleAvatar(
                 radius: 30,
-                backgroundColor: _getStatusColor(employee.status),
+                backgroundColor: getStatusColor(employee.status),
                 child: Text(
                   employee.name[0].toUpperCase(),
                   style: const TextStyle(
@@ -1204,19 +1205,6 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen>
         ),
       ),
     );
-  }
-
-  Color _getStatusColor(EmployeeStatus status) {
-    switch (status) {
-      case EmployeeStatus.active:
-        return Colors.green;
-      case EmployeeStatus.inactive:
-        return Colors.orange;
-      case EmployeeStatus.terminated:
-        return Colors.red;
-      case EmployeeStatus.onLeave:
-        return Colors.blue;
-    }
   }
 
   String _getStatusName(EmployeeStatus status) {

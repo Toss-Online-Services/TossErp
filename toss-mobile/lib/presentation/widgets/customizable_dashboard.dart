@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:toss_mobile/app/dashboard/dashboard_config.dart';
+import 'package:toss_mobile/simple_dashboard_manager.dart';
 import '../../app/themes/app_sizes.dart';
 
 /// Customizable dashboard widget for the home screen
@@ -11,7 +12,7 @@ class CustomizableDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DashboardManager>(
+    return Consumer<SimpleDashboardManager>(
       builder: (context, dashboardManager, child) {
         final layout = dashboardManager.currentLayout;
         
@@ -32,7 +33,7 @@ class CustomizableDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildDashboardHeader(BuildContext context, DashboardLayout layout) {
+  Widget _buildDashboardHeader(BuildContext context, SimpleDashboardLayout layout) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSizes.padding),
       child: Row(
@@ -66,15 +67,15 @@ class CustomizableDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildDashboardGrid(BuildContext context, DashboardLayout layout) {
+  Widget _buildDashboardGrid(BuildContext context, SimpleDashboardLayout layout) {
     return Padding(
-      padding: EdgeInsets.all(layout.spacing),
+      padding: const EdgeInsets.all(AppSizes.padding),
       child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: layout.columns,
-          crossAxisSpacing: layout.spacing,
-          mainAxisSpacing: layout.spacing,
-          childAspectRatio: _getAspectRatio(layout.columns),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 1.1,
         ),
         itemCount: layout.widgets.length,
         itemBuilder: (context, index) {
@@ -85,14 +86,14 @@ class CustomizableDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildDashboardWidget(BuildContext context, DashboardWidgetConfig config) {
-    final widgetInfo = AvailableWidgets.allWidgets[config.type]!;
-    final color = config.color ?? widgetInfo.defaultColor;
+  Widget _buildDashboardWidget(BuildContext context, SimpleDashboardWidgetConfig config) {
+    // Mapping from legacy to simple widget types may differ; adapt minimal info
+    final color = Theme.of(context).colorScheme.primary;
 
     return Card(
       elevation: 2,
       child: InkWell(
-        onTap: () => _handleWidgetTap(context, config.type),
+  onTap: () => _handleWidgetTap(context, config.widget),
         borderRadius: BorderRadius.circular(12),
         child: Container(
           decoration: BoxDecoration(
@@ -120,7 +121,7 @@ class CustomizableDashboard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
-                        widgetInfo.icon,
+                        Icons.widgets,
                         color: color,
                         size: 20,
                       ),
@@ -153,7 +154,7 @@ class CustomizableDashboard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widgetInfo.name,
+                        config.widget.name,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -162,7 +163,7 @@ class CustomizableDashboard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Expanded(
-                        child: _buildWidgetContent(context, config.type, color),
+                        child: _buildWidgetContent(context, config.widget, color),
                       ),
                     ],
                   ),
@@ -175,28 +176,20 @@ class CustomizableDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildWidgetContent(BuildContext context, DashboardWidget type, Color color) {
+  Widget _buildWidgetContent(BuildContext context, DashboardWidgetType type, Color color) {
     switch (type) {
-      case DashboardWidget.salesSummary:
+      case DashboardWidgetType.salesSummary:
         return _buildSalesContent(context, color);
-      case DashboardWidget.todaysRevenue:
+      case DashboardWidgetType.todaysRevenue:
         return _buildRevenueContent(context, color);
-      case DashboardWidget.inventoryStatus:
+      case DashboardWidgetType.inventoryStatus:
         return _buildInventoryContent(context, color);
-      case DashboardWidget.recentTransactions:
+      case DashboardWidgetType.recentTransactions:
         return _buildTransactionsContent(context, color);
-      case DashboardWidget.topProducts:
+      case DashboardWidgetType.topProducts:
         return _buildTopProductsContent(context, color);
-      case DashboardWidget.quickActions:
+      case DashboardWidgetType.quickActions:
         return _buildQuickActionsContent(context, color);
-      case DashboardWidget.staffActivity:
-        return _buildStaffContent(context, color);
-      case DashboardWidget.customerInsights:
-        return _buildCustomerContent(context, color);
-      case DashboardWidget.performanceMetrics:
-        return _buildPerformanceContent(context, color);
-      case DashboardWidget.alerts:
-        return _buildAlertsContent(context, color);
       default:
         return _buildPlaceholderContent(context, color);
     }
@@ -337,84 +330,6 @@ class CustomizableDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildStaffContent(BuildContext context, Color color) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '3 active',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-        Text(
-          'staff members',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCustomerContent(BuildContext context, Color color) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '89',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-        Text(
-          'customers today',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPerformanceContent(BuildContext context, Color color) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '94%',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-        Text(
-          'efficiency',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAlertsContent(BuildContext context, Color color) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '2',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-        Text(
-          'alerts',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.red,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildPlaceholderContent(BuildContext context, Color color) {
     return Center(
       child: Text(
@@ -466,31 +381,25 @@ class CustomizableDashboard extends StatelessWidget {
     );
   }
 
-  void _handleWidgetTap(BuildContext context, DashboardWidget type) {
+  void _handleWidgetTap(BuildContext context, DashboardWidgetType type) {
     switch (type) {
-      case DashboardWidget.salesSummary:
-      case DashboardWidget.todaysRevenue:
-      case DashboardWidget.performanceMetrics:
+      case DashboardWidgetType.salesSummary:
+      case DashboardWidgetType.todaysRevenue:
+      case DashboardWidgetType.performanceChart:
         context.go('/reports');
         break;
-      case DashboardWidget.inventoryStatus:
-      case DashboardWidget.topProducts:
+      case DashboardWidgetType.inventoryStatus:
+      case DashboardWidgetType.topProducts:
         context.go('/products');
         break;
-      case DashboardWidget.recentTransactions:
+      case DashboardWidgetType.recentTransactions:
         context.go('/transactions');
         break;
-      case DashboardWidget.staffActivity:
-        context.go('/staff');
-        break;
-      case DashboardWidget.customerInsights:
-        context.go('/customers');
-        break;
-      case DashboardWidget.alerts:
+      case DashboardWidgetType.stockAlerts:
         // Could show a dialog or navigate to a notifications screen
         _showAlertsDialog(context);
         break;
-      case DashboardWidget.quickActions:
+      case DashboardWidgetType.quickActions:
         // Quick actions are handled by individual buttons
         break;
       default:
@@ -528,22 +437,7 @@ class CustomizableDashboard extends StatelessWidget {
     );
   }
 
-  double _getAspectRatio(int columns) {
-    switch (columns) {
-      case 1:
-        return 2.5;
-      case 2:
-        return 1.4;
-      case 3:
-        return 1.0;
-      case 4:
-        return 0.8;
-      case 5:
-        return 0.7;
-      default:
-        return 1.2;
-    }
-  }
+  // Removed aspect ratio logic; fixed grid spec used for simple dashboard
 }
 
 /// Quick action button widget

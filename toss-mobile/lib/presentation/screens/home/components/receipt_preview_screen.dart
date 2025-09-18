@@ -274,7 +274,7 @@ class ReceiptPreviewScreen extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: Text(
-                  item.productName,
+                  item.name,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
@@ -287,14 +287,14 @@ class ReceiptPreviewScreen extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  CurrencyFormatter.format(item.productPrice),
+                  CurrencyFormatter.format(item.price),
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.right,
                 ),
               ),
               Expanded(
                 child: Text(
-                  CurrencyFormatter.format(item.productPrice * item.quantity),
+                  CurrencyFormatter.format(item.price * item.quantity),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
@@ -512,8 +512,8 @@ class ReceiptPreviewScreen extends StatelessWidget {
     buffer.writeln('---------------------------------');
     
     for (final item in items) {
-      buffer.writeln('${item.productName}');
-      buffer.writeln('  ${item.quantity}x ${CurrencyFormatter.format(item.productPrice)} = ${CurrencyFormatter.format(item.productPrice * item.quantity)}');
+      buffer.writeln('${item.name}');
+      buffer.writeln('  ${item.quantity}x ${CurrencyFormatter.format(item.price)} = ${CurrencyFormatter.format(item.price * item.quantity)}');
     }
     
     buffer.writeln('---------------------------------');

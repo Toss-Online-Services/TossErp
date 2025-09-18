@@ -294,21 +294,18 @@ class WebProductRepository implements ProductRepository {
       debugPrint('🌐 Limit: $limit');
       debugPrint('🌐 Total sample products: ${_sampleProducts.length}');
     }
-    
-    // Simulate async delay
+
     await Future.delayed(const Duration(milliseconds: 100));
-    
+
     List<ProductEntity> products = List.from(_sampleProducts);
-    
-    // Filter by contains if provided
-    if (contains != null && contains.isNotEmpty) {
-      products = products.where((product) => 
-        product.name.toLowerCase().contains(contains.toLowerCase()) ||
-        (product.description?.toLowerCase().contains(contains.toLowerCase()) ?? false)
+
+    if (contains?.isNotEmpty ?? false) {
+      products = products.where((product) =>
+        product.name.toLowerCase().contains(contains!.toLowerCase()) ||
+        product.description?.toLowerCase().contains(contains.toLowerCase()) ?? false
       ).toList();
     }
-    
-    // Sort products
+
     if (orderBy == 'name') {
       products.sort((a, b) => sortBy == 'ASC' ? a.name.compareTo(b.name) : b.name.compareTo(a.name));
     } else if (orderBy == 'createdAt') {
@@ -316,19 +313,18 @@ class WebProductRepository implements ProductRepository {
     } else {
       products.sort((a, b) => sortBy == 'ASC' ? (a.id ?? 0).compareTo(b.id ?? 0) : (b.id ?? 0).compareTo(a.id ?? 0));
     }
-    
-    // Apply offset and limit
+
     if (offset != null && offset > 0) {
       products = products.skip(offset).toList();
     }
     if (limit > 0 && products.length > limit) {
       products = products.take(limit).toList();
     }
-    
+
     if (kDebugMode) {
       debugPrint('🌐 WebProductRepository: Returning ${products.length} products');
     }
-    
+
     return Result.success(products);
   }
 

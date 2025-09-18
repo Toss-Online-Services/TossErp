@@ -15,7 +15,6 @@ class _SyncSettingsScreenState extends State<SyncSettingsScreen> {
   late final SyncService _syncService;
   
   bool _isLoading = false;
-  SyncConfiguration? _configuration;
   
   // Form controllers
   late bool _autoSyncEnabled;
@@ -38,7 +37,6 @@ class _SyncSettingsScreenState extends State<SyncSettingsScreen> {
     try {
       final config = await _syncService.getSyncConfiguration();
       setState(() {
-        _configuration = config;
         _initializeFormValues(config);
       });
     } catch (e) {
