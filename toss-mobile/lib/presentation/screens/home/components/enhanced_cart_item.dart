@@ -207,7 +207,7 @@ class _EnhancedCartItemState extends State<EnhancedCartItem> with TickerProvider
                           Hero(
                             tag: 'product-${widget.orderedProduct.productId}',
                             child: AppImage(
-                              image: widget.orderedProduct.imageUrl ?? '',
+                              image: widget.orderedProduct.imageUrl,
                               width: 56,
                               height: 56,
                               borderRadius: BorderRadius.circular(AppSizes.radius / 2),

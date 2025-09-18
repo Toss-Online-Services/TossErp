@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../domain/entities/sync_entity.dart';
 import '../../data/services/sync_service.dart';
+import '../../core/utils/status_color_util.dart';
 
 class SyncQueueScreen extends StatefulWidget {
   const SyncQueueScreen({super.key});
@@ -255,7 +256,7 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       child: ExpansionTile(
         leading: CircleAvatar(
-          backgroundColor: _getStatusColor(item.status),
+          backgroundColor: getStatusColor(item.status),
           child: Icon(
             _getOperationIcon(item.operationType),
             color: Colors.white,
@@ -564,23 +565,6 @@ class _SyncQueueScreenState extends State<SyncQueueScreen> {
     // This would open a dialog to manually add items to the queue
     // Implementation depends on specific requirements
     _showSuccessSnackBar('Add to queue feature coming soon');
-  }
-
-  Color _getStatusColor(SyncStatus status) {
-    switch (status) {
-      case SyncStatus.pending:
-        return Colors.orange;
-      case SyncStatus.inProgress:
-        return Colors.blue;
-      case SyncStatus.completed:
-        return Colors.green;
-      case SyncStatus.failed:
-        return Colors.red;
-      case SyncStatus.conflict:
-        return Colors.purple;
-      case SyncStatus.retrying:
-        return Colors.teal;
-    }
   }
 
   IconData _getOperationIcon(SyncOperationType operation) {

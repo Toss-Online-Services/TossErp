@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:toss_mobile/app/dashboard/dashboard_config.dart';
+import 'package:toss_mobile/simple_dashboard_manager.dart';
 
 /// Screen for editing and customizing dashboard layouts
 class DashboardLayoutEditorScreen extends StatefulWidget {
@@ -488,16 +489,28 @@ class _DashboardLayoutEditorScreenState extends State<DashboardLayoutEditorScree
   }
 
   void _saveLayout() {
-    final dashboardManager = context.read<DashboardManager>();
-    
-    final finalLayout = _currentLayout.copyWith(
+    final dashboardManager = context.read<SimpleDashboardManager>();
+
+    final finalLayout = SimpleDashboardLayout(
+      id: widget.initialLayout?.id ?? 'custom_${DateTime.now().millisecondsSinceEpoch}',
       name: _nameController.text.trim(),
       description: _descriptionController.text.trim(),
+      widgets: _currentLayout.widgets.map((widget) => SimpleDashboardWidgetConfig(
+        widget: DashboardWidgetType.values.firstWhere((type) => type.name == widget.type.name, orElse: () => DashboardWidgetType.salesSummary),
+        size: SimpleDashboardWidgetSize.values.firstWhere((size) => size.name == widget.size.name, orElse: () => SimpleDashboardWidgetSize.medium),
+        x: widget.position % _currentLayout.columns,
+        y: widget.position ~/ _currentLayout.columns,
+      )).toList(),
+      lastModified: DateTime.now(),
     );
 
     if (widget.initialLayout == null) {
       // Create new layout
-      dashboardManager.createCustomLayout(finalLayout);
+      dashboardManager.createCustomLayout(
+        name: finalLayout.name,
+        description: finalLayout.description,
+        widgets: finalLayout.widgets,
+      );
     } else {
       // Update existing layout
       dashboardManager.updateCustomLayout(finalLayout);

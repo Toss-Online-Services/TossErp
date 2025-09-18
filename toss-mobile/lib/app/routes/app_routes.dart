@@ -29,7 +29,6 @@ import '../../presentation/settings/custom_theme_editor_screen.dart';
 // Import dashboard screens (temporarily disabled)
 // import '../../presentation/settings/dashboard_layout_screen.dart';
 // import '../../presentation/settings/dashboard_layout_editor_screen.dart';
-import '../services/auth/auth_service.dart';
 
 // App routes
 class AppRoutes {

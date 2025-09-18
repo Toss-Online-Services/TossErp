@@ -20,8 +20,6 @@ class WebErrorBoundary extends StatefulWidget {
 
 class _WebErrorBoundaryState extends State<WebErrorBoundary> {
   bool _hasError = false;
-  Object? _error;
-  StackTrace? _stackTrace;
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +58,6 @@ class _WebErrorBoundaryState extends State<WebErrorBoundary> {
     if (_hasError) {
       setState(() {
         _hasError = false;
-        _error = null;
-        _stackTrace = null;
       });
     }
   }
@@ -71,8 +67,6 @@ class _WebErrorBoundaryState extends State<WebErrorBoundary> {
     if (mounted) {
       setState(() {
         _hasError = true;
-        _error = error;
-        _stackTrace = stackTrace;
       });
 
       if (widget.onError != null) {

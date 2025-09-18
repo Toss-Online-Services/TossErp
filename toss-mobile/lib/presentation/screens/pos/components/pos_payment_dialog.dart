@@ -55,7 +55,6 @@ class _POSPaymentDialogState extends State<POSPaymentDialog> with TickerProvider
   
   // Numeric keypad controller
   String _displayAmount = '0.00';
-  bool _useKeypad = true;
 
   @override
   void initState() {

@@ -64,15 +64,15 @@ class _ProductGridItem extends StatelessWidget {
                     color: Colors.grey[200],
                   ),
                   child: ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: Image.network(
-                            product.imageUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(Icons.image_not_supported);
-                            },
-                          ),
-                        ),
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image.network(
+                      product.imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.image_not_supported);
+                      },
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 4),
@@ -93,7 +93,7 @@ class _ProductGridItem extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              if (product.stockQuantity != null && product.stockQuantity! <= 5)
+              if (product.stock <= 5)
                 Container(
                   margin: const EdgeInsets.only(top: 2),
                   padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),

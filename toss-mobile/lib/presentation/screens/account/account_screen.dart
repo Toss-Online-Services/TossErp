@@ -7,7 +7,6 @@ import '../../../app/routes/app_routes.dart';
 import '../../../app/services/auth/auth_service.dart';
 import '../../../app/themes/app_sizes.dart';
 import '../../providers/main/main_provider.dart';
-import '../../providers/theme/theme_provider.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_dialog.dart';
 

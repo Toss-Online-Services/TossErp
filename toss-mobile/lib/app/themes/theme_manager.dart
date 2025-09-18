@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'theme_config.dart';
-import 'app_colors.dart';
 
 /// Service for managing custom themes and persistence
 class ThemeManager extends ChangeNotifier {
