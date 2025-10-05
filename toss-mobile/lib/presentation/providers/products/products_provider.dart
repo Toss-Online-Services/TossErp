@@ -97,6 +97,22 @@ class ProductsProvider extends ChangeNotifier {
     lowStockProducts = list.where((p) => p.stock <= lowStockThreshold).toList();
   }
 
+  // Get count of low stock products
+  int getLowStockProductsCount() {
+    return lowStockProducts.length;
+  }
+
+  // Get list of low stock products
+  List<ProductEntity> getLowStockProducts() {
+    return lowStockProducts;
+  }
+
+  // Get list of out of stock products
+  List<ProductEntity> getOutOfStockProducts() {
+    final list = allProducts ?? [];
+    return list.where((p) => p.stock == 0).toList();
+  }
+
   // Find alternative products for out-of-stock items
   List<ProductEntity> getAlternativeProducts(ProductEntity outOfStockProduct, {int limit = 3}) {
     if (allProducts == null || allProducts!.isEmpty) return [];

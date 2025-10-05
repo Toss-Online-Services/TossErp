@@ -18,7 +18,7 @@ class SimpleCartPanel extends StatelessWidget {
         if (provider.orderedProducts.isEmpty) {
           return Column(
             children: [
-              // Top section with drag handle and arrow
+              // Top section with drag handle
               Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -134,7 +134,7 @@ class SimpleCartPanel extends StatelessWidget {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Top section with drag handle and arrow
+            // Top section with drag handle
             Stack(
               clipBehavior: Clip.none,
               children: [
@@ -151,43 +151,6 @@ class SimpleCartPanel extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
                         borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                ),
-                
-                // Down arrow positioned at top-right corner
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                        width: 2,
-                      ),
-                    ),
-                    child: InkWell(
-                      onTap: () => Navigator.of(context).pop(),
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        padding: const EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.keyboard_arrow_down,
-                          size: 28,
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        ),
                       ),
                     ),
                   ),

@@ -419,15 +419,56 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget body() {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('TOSS POS'),
         elevation: 0,
         shadowColor: Colors.transparent,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        actions: [
-          syncButton(),
-          networkInfo(),
-        ],
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        titleSpacing: AppSizes.padding,
+        title: Row(
+          children: [
+            syncButton(),
+            networkInfo(),
+            const SizedBox(width: 8),
+            // Inventory Management Quick Access
+            Consumer<ProductsProvider>(
+              builder: (context, provider, _) {
+                final lowStockCount = provider.getLowStockProductsCount();
+                return GestureDetector(
+                  onTap: () => _showInventoryOverview(provider),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: lowStockCount > 0 ? Colors.orange[100] : Colors.green[100],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: lowStockCount > 0 ? Colors.orange[300]! : Colors.green[300]!,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.inventory_2,
+                          size: 16,
+                          color: lowStockCount > 0 ? Colors.orange[700] : Colors.green[700],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$lowStockCount',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: lowStockCount > 0 ? Colors.orange[700] : Colors.green[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         bottom: false, // Let us handle bottom padding manually
@@ -888,6 +929,242 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showInventoryOverview(ProductsProvider provider) {
+    final lowStockProducts = provider.getLowStockProducts();
+    final outOfStockProducts = provider.getOutOfStockProducts();
+    final totalProducts = provider.allProducts?.length ?? 0;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.inventory_2, color: Theme.of(context).primaryColor),
+            const SizedBox(width: 8),
+            const Text('Inventory Overview'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Summary Cards
+            Row(
+              children: [
+                Expanded(
+                  child: _buildInventoryCard(
+                    'Total Products',
+                    '$totalProducts',
+                    Icons.inventory,
+                    Colors.blue,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildInventoryCard(
+                    'Low Stock',
+                    '${lowStockProducts.length}',
+                    Icons.warning,
+                    Colors.orange,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildInventoryCard(
+                    'Out of Stock',
+                    '${outOfStockProducts.length}',
+                    Icons.error,
+                    Colors.red,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildInventoryCard(
+                    'In Stock',
+                    '${totalProducts - outOfStockProducts.length}',
+                    Icons.check_circle,
+                    Colors.green,
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Low Stock Products
+            if (lowStockProducts.isNotEmpty) ...[
+              const Text(
+                'Low Stock Products:',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              ...lowStockProducts.take(3).map((product) => 
+                _buildInventoryItem(product, 'Low Stock', Colors.orange),
+              ),
+              if (lowStockProducts.length > 3)
+                Text(
+                  '... and ${lowStockProducts.length - 3} more',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
+                ),
+            ],
+            
+            // Out of Stock Products
+            if (outOfStockProducts.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Text(
+                'Out of Stock Products:',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              ...outOfStockProducts.take(3).map((product) => 
+                _buildInventoryItem(product, 'Out of Stock', Colors.red),
+              ),
+              if (outOfStockProducts.length > 3)
+                Text(
+                  '... and ${outOfStockProducts.length - 3} more',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
+                ),
+            ],
+            
+            if (lowStockProducts.isEmpty && outOfStockProducts.isEmpty) ...[
+              const SizedBox(height: 16),
+              Center(
+                child: Column(
+                  children: [
+                    Icon(Icons.check_circle, size: 48, color: Colors.green[400]),
+                    const SizedBox(height: 8),
+                    Text(
+                      'All products are well stocked!',
+                      style: TextStyle(
+                        color: Colors.green[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // TODO: Navigate to full inventory management screen
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Full inventory management screen will be implemented here'),
+                ),
+              );
+            },
+            child: const Text('Manage Inventory'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInventoryCard(String title, String value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 10,
+              color: color,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInventoryItem(ProductEntity product, String status, Color statusColor) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: statusColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: statusColor.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  'Stock: ${product.stock}',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: statusColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: statusColor,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              status,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
