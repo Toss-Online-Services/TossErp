@@ -5,6 +5,8 @@ import '../../../../app/themes/app_sizes.dart';
 import '../../../../app/utilities/currency_formatter.dart';
 import '../../../../domain/entities/ordered_product_entity.dart';
 import '../../../../domain/entities/receipt_entity.dart';
+import '../../../../domain/entities/sales_transaction_entity.dart';
+import '../../../../domain/entities/payment_entity.dart';
 import '../../../providers/home/home_provider.dart';
 import '../../receipt_preview_screen.dart';
 
@@ -230,11 +232,26 @@ class _PaymentModalSheetState extends State<PaymentModalSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Customer Information (Optional)',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+        Row(
+          children: [
+            Text(
+              'Customer Information (Optional)',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            TextButton.icon(
+              onPressed: _showCustomerSearch,
+              icon: const Icon(Icons.search, size: 18),
+              label: const Text('Search'),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
         TextField(
@@ -262,6 +279,29 @@ class _PaymentModalSheetState extends State<PaymentModalSheet> {
           ),
         ),
       ],
+    );
+  }
+  
+  void _showCustomerSearch() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Search Customer'),
+        content: const Text('Customer search functionality will be implemented here.\n\nThis will allow cashiers to:\n• Search by name or phone\n• View customer details\n• Select existing customer\n• Create new customer'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // TODO: Navigate to customer management screen
+            },
+            child: const Text('Manage Customers'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -305,6 +345,41 @@ class _PaymentModalSheetState extends State<PaymentModalSheet> {
               Colors.purple,
             ),
           ],
+        ),
+        const SizedBox(height: 16),
+        // Loyalty Points Section
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.amber[50],
+            borderRadius: BorderRadius.circular(AppSizes.radius),
+            border: Border.all(color: Colors.amber[200]!),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.stars, color: Colors.amber[700], size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Loyalty Points',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.amber[700],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Customer loyalty points integration will be implemented here.\n\nThis will allow:\n• View available points\n• Apply points to discount\n• Earn points from purchase',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.amber[700],
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -532,30 +607,109 @@ class _PaymentModalSheetState extends State<PaymentModalSheet> {
   }
 
   Future<void> _createTransaction() async {
-    // TODO: Implement actual transaction creation using TransactionsProvider
-    // For now, just simulate the transaction
-    final transaction = {
-      'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      'timestamp': DateTime.now().toIso8601String(),
-      'items': widget.items.map((item) => {
-        'productId': item.productId,
-        'productName': item.name,
-        'quantity': item.quantity,
-        'price': item.price,
-        'total': item.price * item.quantity,
-      }).toList(),
-      'subtotal': widget.totalAmount,
-      'tax': 0.0,
-      'total': widget.totalAmount,
-      'paymentMethod': selectedPaymentMethod,
-      'amountReceived': selectedPaymentMethod == 'cash' ? receivedAmount : widget.totalAmount,
-      'change': selectedPaymentMethod == 'cash' ? changeAmount : 0.0,
-      'customerName': customerNameController.text.trim().isEmpty ? null : customerNameController.text.trim(),
-      'customerPhone': customerPhoneController.text.trim().isEmpty ? null : customerPhoneController.text.trim(),
-    };
-    
-    // Store transaction (implement with your transaction provider)
-    print('Transaction created: $transaction');
+    try {
+      // Create transaction number
+      final transactionNumber = 'TXN${DateTime.now().millisecondsSinceEpoch}';
+      
+      // Convert items to sales transaction items
+      final transactionItems = widget.items.map((item) => SalesTransactionItemEntity(
+        transactionId: 0, // Will be set by repository
+        productId: item.productId,
+        productName: item.name,
+        quantity: item.quantity,
+        unitPrice: (item.price * 100).round(), // Convert to cents
+        totalPrice: ((item.price * item.quantity) * 100).round(), // Convert to cents
+      )).toList();
+      
+      // Create payment entity
+      final payment = PaymentEntity(
+        transactionId: 0, // Will be set by repository
+        method: _parsePaymentMethod(selectedPaymentMethod),
+        amount: ((selectedPaymentMethod == 'cash' ? receivedAmount : widget.totalAmount) * 100).round(), // Convert to cents
+        status: PaymentStatus.completed,
+        createdAt: DateTime.now(),
+        completedAt: DateTime.now(),
+        reference: 'PAY${DateTime.now().millisecondsSinceEpoch}',
+      );
+      
+      // Create sales transaction entity
+      final salesTransaction = SalesTransactionEntity(
+        transactionNumber: transactionNumber,
+        type: SalesTransactionType.sale,
+        status: SalesTransactionStatus.completed,
+        customerId: _getCustomerIdFromInput(),
+        subtotal: (widget.totalAmount * 100).round(), // Convert to cents
+        total: (widget.totalAmount * 100).round(), // Convert to cents
+        amountPaid: ((selectedPaymentMethod == 'cash' ? receivedAmount : widget.totalAmount) * 100).round(), // Convert to cents
+        changeAmount: (selectedPaymentMethod == 'cash' ? (changeAmount * 100).round() : 0), // Convert to cents
+        items: transactionItems,
+        payments: [payment],
+        notes: _getTransactionNotes(),
+        createdAt: DateTime.now(),
+        createdById: 'current_user', // TODO: Get from auth service
+      );
+      
+      // TODO: Save transaction using SalesTransactionRepository
+      // For now, just log the transaction
+      print('Sales Transaction created: ${salesTransaction.transactionNumber}');
+      print('Total: ${widget.totalAmount}');
+      print('Payment Method: ${selectedPaymentMethod}');
+      print('Customer: ${customerNameController.text.trim()}');
+      
+      // Update customer visit if customer info provided
+      if (customerNameController.text.trim().isNotEmpty || customerPhoneController.text.trim().isNotEmpty) {
+        await _updateCustomerVisit(salesTransaction);
+      }
+      
+    } catch (e) {
+      print('Error creating transaction: $e');
+      rethrow;
+    }
+  }
+  
+  PaymentMethod _parsePaymentMethod(String method) {
+    switch (method.toLowerCase()) {
+      case 'cash': return PaymentMethod.cash;
+      case 'card': return PaymentMethod.card;
+      case 'mobile': return PaymentMethod.mobileMoney;
+      case 'bank': return PaymentMethod.bankTransfer;
+      default: return PaymentMethod.other;
+    }
+  }
+  
+  String? _getCustomerIdFromInput() {
+    // TODO: Implement customer lookup/creation logic
+    // For now, return null for anonymous transactions
+    if (customerNameController.text.trim().isEmpty && customerPhoneController.text.trim().isEmpty) {
+      return null;
+    }
+    // In a real implementation, you would:
+    // 1. Search for existing customer by phone
+    // 2. Create new customer if not found
+    // 3. Return the customer ID
+    return 'temp_customer_${DateTime.now().millisecondsSinceEpoch}';
+  }
+  
+  String? _getTransactionNotes() {
+    final notes = <String>[];
+    if (customerNameController.text.trim().isNotEmpty) {
+      notes.add('Customer: ${customerNameController.text.trim()}');
+    }
+    if (customerPhoneController.text.trim().isNotEmpty) {
+      notes.add('Phone: ${customerPhoneController.text.trim()}');
+    }
+    return notes.isEmpty ? null : notes.join(', ');
+  }
+  
+  Future<void> _updateCustomerVisit(SalesTransactionEntity transaction) async {
+    try {
+      // TODO: Implement customer visit update using CustomerRepository
+      // This would update customer's visit count, total spent, and last visit date
+      print('Updating customer visit for transaction: ${transaction.transactionNumber}');
+    } catch (e) {
+      print('Error updating customer visit: $e');
+      // Don't rethrow - customer visit update failure shouldn't fail the transaction
+    }
   }
 
   void _showReceiptPreview() {

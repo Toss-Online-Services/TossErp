@@ -19,7 +19,7 @@ import 'presentation/providers/main/main_provider.dart';
 import 'presentation/providers/home/home_provider.dart';
 import 'presentation/providers/products/products_provider.dart';
 import 'presentation/screens/error_handler_screen.dart';
-import 'service_locator.dart';
+import 'service_locator.dart' as di;
 import 'data/datasources/local/user_local_datasource_impl.dart';
 import 'data/datasources/local/product_local_datasource_impl.dart';
 import 'data/datasources/local/transaction_local_datasource_impl.dart';
@@ -54,8 +54,8 @@ Future<void> initializeApp() async {
     // Initialize date formatting
     initializeDateFormatting();
   
-    // Setup service locator (skip complex setup for web)
-    setupServiceLocator();
+    // Setup service locator (platform-aware)
+    setupServiceLocatorForPlatform();
   
     // Set/lock screen orientation (skip for web)
    setScreenOrientationAndSystemUI();
@@ -80,12 +80,12 @@ void setScreenOrientationAndSystemUI() async {
   }
 }
 
-void setupServiceLocator() {
-     if (!kIsWeb) {
-    setupServiceLocator();
+void setupServiceLocatorForPlatform() {
+  if (!kIsWeb) {
+    di.setupServiceLocator();
   } else {
     // For web, setup minimal service locator with web-compatible providers
-    setupWebServiceLocator();
+    di.setupWebServiceLocator();
   }
 }
 
@@ -150,11 +150,11 @@ class MyApp extends StatelessWidget {
     if (kIsWeb) {
       return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => sl<ThemeProvider>()),
-          ChangeNotifierProvider(create: (_) => sl<SimpleDashboardManager>()),
-          ChangeNotifierProvider(create: (_) => sl<MainProvider>()),
-          ChangeNotifierProvider(create: (_) => sl<HomeProvider>()),
-          ChangeNotifierProvider(create: (_) => sl<ProductsProvider>()),
+          ChangeNotifierProvider(create: (_) => di.sl<ThemeProvider>()),
+          ChangeNotifierProvider(create: (_) => di.sl<SimpleDashboardManager>()),
+          ChangeNotifierProvider(create: (_) => di.sl<MainProvider>()),
+          ChangeNotifierProvider(create: (_) => di.sl<HomeProvider>()),
+          ChangeNotifierProvider(create: (_) => di.sl<ProductsProvider>()),
         ],
         child: Consumer<ThemeProvider>(
           builder: (context, themeProvider, _) {
@@ -176,7 +176,7 @@ class MyApp extends StatelessWidget {
     // For mobile/desktop, use full provider setup
     return MultiProvider(
       providers: [
-        ...providers,
+        ...di.providers,
         ChangeNotifierProvider<ThemeManager>(
           create: (context) {
             final themeManager = ThemeManager();

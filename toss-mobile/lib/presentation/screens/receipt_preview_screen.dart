@@ -300,6 +300,14 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
           const SizedBox(height: 20),
         ],
         
+        // Loyalty Points Section (Enhanced ERP Feature)
+        if (receipt.customer != null) ...[
+          const Divider(),
+          const SizedBox(height: 16),
+          _buildLoyaltySection(),
+          const SizedBox(height: 20),
+        ],
+        
         // Footer
         if (receipt.settings.footerMessage != null) ...[
           const Divider(),
@@ -910,5 +918,104 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
       case ReceiptType.voidTransaction:
         return Colors.grey;
     }
+  }
+
+  Widget _buildLoyaltySection() {
+    final customer = widget.receipt.customer!;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.stars, color: Colors.amber[700], size: 20),
+            const SizedBox(width: 8),
+            Text(
+              'Loyalty Program',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.amber[700],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.amber[50],
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.amber[200]!),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (customer.loyaltyNumber != null) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Loyalty Number:'),
+                    Text(
+                      customer.loyaltyNumber!,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.amber[700],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+              ],
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Points Earned:'),
+                  Text(
+                    '${_calculatePointsEarned()}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.amber[700],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              if (customer.loyaltyPoints != null) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Total Points:'),
+                    Text(
+                      '${customer.loyaltyPoints}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.amber[700],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 8),
+              Text(
+                'Thank you for your loyalty!',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.amber[600],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  int _calculatePointsEarned() {
+    // Simple calculation: 1 point per GHS 1 spent
+    final total = widget.receipt.totals.total;
+    return (total * 0.01).round(); // 1% of total as points
   }
 }

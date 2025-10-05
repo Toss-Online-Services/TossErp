@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:toss_mobile/domain/entities/employee_entity.dart';
+import 'package:toss_mobile/domain/entities/sync_entity.dart';
 
 /// Utility function to get status color based on status type.
 Color getStatusColor(dynamic status) {

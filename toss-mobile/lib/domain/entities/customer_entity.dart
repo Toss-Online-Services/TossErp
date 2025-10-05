@@ -81,7 +81,9 @@ class CustomerEntity extends Equatable {
     String? biometricId,
     CustomerIdType? primaryIdType,
     CustomerTier? tier,
+    LoyaltyTier? loyaltyTier,
     int? pointsBalance,
+    int? loyaltyPoints,
     double? totalSpent,
     int? visitCount,
     DateTime? lastVisit,
@@ -111,7 +113,9 @@ class CustomerEntity extends Equatable {
       biometricId: biometricId ?? this.biometricId,
       primaryIdType: primaryIdType ?? this.primaryIdType,
       tier: tier ?? this.tier,
+      loyaltyTier: loyaltyTier ?? this.loyaltyTier,
       pointsBalance: pointsBalance ?? this.pointsBalance,
+      loyaltyPoints: loyaltyPoints ?? this.loyaltyPoints,
       totalSpent: totalSpent ?? this.totalSpent,
       visitCount: visitCount ?? this.visitCount,
       lastVisit: lastVisit ?? this.lastVisit,
@@ -205,6 +209,41 @@ class CustomerEntity extends Equatable {
     createdAt,
     updatedAt,
   ];
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'phone': phone,
+      'alternatePhone': alternatePhone,
+      'membershipNumber': membershipNumber,
+      'qrCode': qrCode,
+      'nfcId': nfcId,
+      'biometricId': biometricId,
+      'primaryIdType': primaryIdType.name,
+      'tier': tier.name,
+      'loyaltyTier': loyaltyTier.name,
+      'pointsBalance': pointsBalance,
+      'loyaltyPoints': loyaltyPoints,
+      'totalSpent': totalSpent,
+      'visitCount': visitCount,
+      'lastVisit': lastVisit?.toIso8601String(),
+      'dateOfBirth': dateOfBirth?.toIso8601String(),
+      'address': address,
+      'city': city,
+      'country': country,
+      'gender': gender,
+      'preferredCommunication': preferredCommunication.name,
+      'preferences': preferences,
+      'tags': tags,
+      'isActive': isActive,
+      'notes': notes,
+      'anniversaryDate': anniversaryDate?.toIso8601String(),
+      'referredBy': referredBy,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+    };
+  }
 }
 
 
