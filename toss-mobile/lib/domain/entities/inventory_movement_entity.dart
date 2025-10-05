@@ -93,6 +93,27 @@ class InventoryMovementEntity extends Equatable {
   bool get isIncoming => [MovementType.purchase, MovementType.returned, MovementType.adjustment].contains(type) && quantity > 0;
   bool get isOutgoing => [MovementType.sale, MovementType.transfer, MovementType.waste, MovementType.adjustment].contains(type) && quantity < 0;
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'productId': productId,
+      'batchId': batchId,
+      'type': type.name,
+      'reason': reason.name,
+      'quantity': quantity,
+      'unitPrice': unitPrice,
+      'totalValue': totalValue,
+      'referenceId': referenceId,
+      'referenceType': referenceType,
+      'notes': notes,
+      'fromLocationId': fromLocationId,
+      'toLocationId': toLocationId,
+      'createdById': createdById,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt,
+    };
+  }
+
   @override
   List<Object?> get props => [
     id,

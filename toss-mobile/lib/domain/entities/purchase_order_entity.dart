@@ -76,6 +76,26 @@ class PurchaseOrderEntity extends Equatable {
   int get netAmount => totalAmount - (taxAmount ?? 0) - (discountAmount ?? 0);
   bool get isOverdue => expectedDate != null && DateTime.now().isAfter(expectedDate!) && status != PurchaseOrderStatus.received;
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'orderNumber': orderNumber,
+      'supplierId': supplierId,
+      'status': status.name,
+      'orderDate': orderDate.toIso8601String(),
+      'expectedDate': expectedDate?.toIso8601String(),
+      'receivedDate': receivedDate?.toIso8601String(),
+      'totalAmount': totalAmount,
+      'taxAmount': taxAmount,
+      'discountAmount': discountAmount,
+      'notes': notes,
+      'items': items.map((item) => item.toMap()).toList(),
+      'createdById': createdById,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+    };
+  }
+
   @override
   List<Object?> get props => [
     id,
@@ -141,6 +161,19 @@ class PurchaseOrderItemEntity extends Equatable {
 
   int get quantityPending => quantity - quantityReceived;
   bool get isFullyReceived => quantityReceived >= quantity;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'purchaseOrderId': purchaseOrderId,
+      'productId': productId,
+      'quantity': quantity,
+      'unitPrice': unitPrice,
+      'totalPrice': totalPrice,
+      'quantityReceived': quantityReceived,
+      'notes': notes,
+    };
+  }
 
   @override
   List<Object?> get props => [

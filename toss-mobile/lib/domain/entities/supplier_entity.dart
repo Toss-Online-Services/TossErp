@@ -79,6 +79,28 @@ class SupplierEntity extends Equatable {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'companyName': companyName,
+      'contactPerson': contactPerson,
+      'phoneNumber': phoneNumber,
+      'email': email,
+      'address': address,
+      'city': city,
+      'country': country,
+      'taxNumber': taxNumber,
+      'paymentTerms': paymentTerms,
+      'isActive': isActive,
+      'rating': rating,
+      'notes': notes,
+      'createdById': createdById,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+    };
+  }
+
   @override
   List<Object?> get props => [
     id,
