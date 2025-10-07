@@ -281,7 +281,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
         const SizedBox(height: 16),
         
         // Items
-        ...receipt.lineItems.map((item) => _buildItemRow(item)),
+        ...receipt.lineItems.map((item) => _buildItemRow(item)).toList(),
         
         const SizedBox(height: 16),
         const Divider(),
@@ -567,9 +567,9 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
-            _buildInfoRow('Receipt ID', receipt.id),
+            _buildInfoRow('Receipt ID', receipt.id?.toString() ?? 'N/A'),
             _buildInfoRow('Format', _getFormatDisplayName(receipt.format)),
-            _buildInfoRow('Location', receipt.locationId),
+            _buildInfoRow('Location', receipt.locationId ?? 'Default'),
             if (receipt.originalReceiptId != null)
               _buildInfoRow('Original Receipt', receipt.originalReceiptId!),
             _buildInfoRow('Created', '${_formatDate(receipt.createdAt)} ${_formatTime(receipt.createdAt)}'),
@@ -749,7 +749,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
 
   Future<void> _reprintReceipt() async {
     try {
-      await _receiptService.reprintReceipt(widget.receipt.id);
+      await _receiptService.reprintReceipt(widget.receipt.id?.toString() ?? '');
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -905,16 +905,20 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
     switch (type) {
       case ReceiptType.sale:
         return Colors.green;
+      case ReceiptType.returned:
+        return Colors.orange;
       case ReceiptType.refund:
         return Colors.red;
-      case ReceiptType.layaway:
+      case ReceiptType.invoice:
         return Colors.blue;
+      case ReceiptType.layaway:
+        return Colors.teal;
       case ReceiptType.quote:
-        return Colors.orange;
+        return Colors.amber;
       case ReceiptType.giftCard:
         return Colors.purple;
       case ReceiptType.loyalty:
-        return Colors.amber;
+        return Colors.indigo;
       case ReceiptType.voidTransaction:
         return Colors.grey;
     }

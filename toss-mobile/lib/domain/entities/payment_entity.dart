@@ -11,6 +11,7 @@ class PaymentEntity extends Equatable {
   final PaymentStatus status;
   final int amount; // Amount in cents
   final String? referenceNumber;
+  final String? reference; // Alias for referenceNumber for receipt compatibility
   final String? transactionId;
   final String? cardLast4;
   final String? cardType; // Visa, Mastercard, etc.
@@ -34,6 +35,7 @@ class PaymentEntity extends Equatable {
     this.status = PaymentStatus.pending,
     required this.amount,
     this.referenceNumber,
+    this.reference,
     this.transactionId,
     this.cardLast4,
     this.cardType,
@@ -58,6 +60,7 @@ class PaymentEntity extends Equatable {
     PaymentStatus? status,
     int? amount,
     String? referenceNumber,
+    String? reference,
     String? transactionId,
     String? cardLast4,
     String? cardType,
@@ -81,6 +84,7 @@ class PaymentEntity extends Equatable {
       status: status ?? this.status,
       amount: amount ?? this.amount,
       referenceNumber: referenceNumber ?? this.referenceNumber,
+      reference: reference ?? this.reference,
       transactionId: transactionId ?? this.transactionId,
       cardLast4: cardLast4 ?? this.cardLast4,
       cardType: cardType ?? this.cardType,
@@ -107,6 +111,7 @@ class PaymentEntity extends Equatable {
       'status': status.name,
       'amount': amount,
       'referenceNumber': referenceNumber,
+      'reference': reference,
       'transactionId': transactionId,
       'cardLast4': cardLast4,
       'cardType': cardType,
@@ -139,6 +144,7 @@ class PaymentEntity extends Equatable {
       ),
       amount: map['amount'] ?? 0,
       referenceNumber: map['referenceNumber'],
+      reference: map['reference'],
       transactionId: map['transactionId'],
       cardLast4: map['cardLast4'],
       cardType: map['cardType'],
@@ -165,6 +171,7 @@ class PaymentEntity extends Equatable {
         status,
         amount,
         referenceNumber,
+        reference,
         transactionId,
         cardLast4,
         cardType,

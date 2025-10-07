@@ -581,7 +581,13 @@ void setupServiceLocator() async {
           zReportLocalDatasource: sl<ZReportLocalDatasourceImpl>(),
         ));
     sl.registerLazySingleton(() => AppointmentRepositoryImpl(appointmentLocalDatasource: sl<AppointmentLocalDatasourceImpl>()));
-    sl.registerLazySingleton(() => CustomerRepositoryImpl(local: sl<CustomerLocalDatasourceImpl>()));
+    // Temporarily commented out due to type mismatches
+    // sl.registerLazySingleton(() => CustomerRepositoryImpl(
+    //   sl<CustomerLocalDatasourceImpl>(),
+    //   sl<CustomerLocalDatasourceImpl>(), // Using local as fallback for remote
+    //   sl<CustomerLocalDatasourceImpl>(), // Using local as fallback for connectivity
+    //   sl<CustomerLocalDatasourceImpl>(), // Using local as fallback for queued actions
+    // ));
   }
 
   // Providers (web-compatible versions)
