@@ -108,18 +108,20 @@ class HomeProvider extends ChangeNotifier {
             if (cashAmount > 0) {
               await sl<PaymentRepositoryImpl>()
                   .createPayment(PaymentEntity(
-                    transactionId: txnId, 
+                    transactionId: txnId.toString(), 
                     method: PaymentMethod.cash, 
                     amount: cashAmount,
+                    paymentDate: DateTime.now(),
                     createdAt: DateTime.now(),
                   ));
             }
             if (bankAmount > 0) {
               await sl<PaymentRepositoryImpl>()
                   .createPayment(PaymentEntity(
-                    transactionId: txnId, 
+                    transactionId: txnId.toString(), 
                     method: PaymentMethod.bankTransfer, 
                     amount: bankAmount,
+                    paymentDate: DateTime.now(),
                     createdAt: DateTime.now(),
                   ));
             }

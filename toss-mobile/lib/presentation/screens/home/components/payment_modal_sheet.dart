@@ -623,12 +623,12 @@ class _PaymentModalSheetState extends State<PaymentModalSheet> {
       
       // Create payment entity
       final payment = PaymentEntity(
-        transactionId: 0, // Will be set by repository
+        transactionId: null, // Will be set by repository
         method: _parsePaymentMethod(selectedPaymentMethod),
         amount: ((selectedPaymentMethod == 'cash' ? receivedAmount : widget.totalAmount) * 100).round(), // Convert to cents
         status: PaymentStatus.completed,
+        paymentDate: DateTime.now(),
         createdAt: DateTime.now(),
-        completedAt: DateTime.now(),
         reference: 'PAY${DateTime.now().millisecondsSinceEpoch}',
       );
       
@@ -719,10 +719,11 @@ class _PaymentModalSheetState extends State<PaymentModalSheet> {
     // Create receipt line items
     final List<ReceiptLineItem> lineItems = widget.items.map((item) => ReceiptLineItem(
       id: item.id?.toString() ?? item.productId.toString(),
-      productId: item.productId.toString(),
       productName: item.name,
+      productSku: item.productId.toString(),
       quantity: item.quantity,
       unitPrice: item.price.toDouble(),
+      lineTotal: (item.price * item.quantity).toDouble(),
       totalPrice: (item.price * item.quantity).toDouble(),
     )).toList();
     
@@ -759,18 +760,18 @@ class _PaymentModalSheetState extends State<PaymentModalSheet> {
       businessPhone: '+233 XXX XXX XXX',
       showBarcode: true,
       printCustomerInfo: true,
-      printItemDetails: true,
-      printPaymentDetails: true,
     );
     
     // Create the receipt entity
     final ReceiptEntity receipt = ReceiptEntity(
-      id: 'receipt_${now.millisecondsSinceEpoch}',
+      id: now.millisecondsSinceEpoch,
       receiptNumber: 'R${now.millisecondsSinceEpoch}',
       type: ReceiptType.sale,
       transactionId: transactionId,
       cashierId: 'current_user', // Replace with actual cashier ID
       locationId: 'default_location', // Replace with actual location ID
+      receiptDate: now,
+      createdAt: now,
       receiptData: {
         'paymentMethod': selectedPaymentMethod,
         'timestamp': now.toIso8601String(),
@@ -780,7 +781,6 @@ class _PaymentModalSheetState extends State<PaymentModalSheet> {
       customer: customer,
       payment: payment,
       settings: settings,
-      createdAt: now,
     );
     
     Navigator.of(context).push(

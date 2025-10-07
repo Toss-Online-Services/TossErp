@@ -62,11 +62,12 @@ class ReceiptService {
   }) async {
     final lineItems = transaction.items.map((item) => ReceiptLineItem(
       id: item.id?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      productId: item.productId.toString(),
       productName: item.productName,
+      productSku: item.productId.toString(),
       sku: item.productId.toString(), // Use productId as SKU fallback
       quantity: item.quantity,
       unitPrice: item.unitPrice.toDouble() / 100, // Convert from cents
+      lineTotal: item.totalPrice.toDouble() / 100, // Convert from cents
       totalPrice: item.totalPrice.toDouble() / 100, // Convert from cents
       discount: item.discountAmount.toDouble() / 100, // Convert from cents
       tax: 0.0, // No tax field in entity, default to 0
@@ -96,12 +97,14 @@ class ReceiptService {
         : null;
 
     return ReceiptEntity(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: DateTime.now().millisecondsSinceEpoch,
       receiptNumber: _generateReceiptNumber(),
       type: type,
       transactionId: transaction.id?.toString() ?? '',
       cashierId: transaction.createdById ?? 'system', // Use createdById as cashier
       locationId: 'default', // Default location since not in entity
+      receiptDate: DateTime.now(),
+      createdAt: transaction.createdAt,
       receiptData: {
         'transactionNumber': transaction.transactionNumber,
         'status': transaction.status.toString(),
@@ -112,7 +115,6 @@ class ReceiptService {
       customer: customer,
       payment: payment,
       settings: settings,
-      createdAt: DateTime.now(),
     );
   }
 
@@ -152,13 +154,13 @@ class ReceiptService {
     } catch (e) {
       // Log delivery failure
       await _receiptRepository.addDeliveryAttempt(
-        receipt.id,
+        receipt.id.toString(),
         ReceiptDelivery(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
+          receiptId: receipt.id.toString(),
           method: method,
           status: ReceiptStatus.failed,
-          destination: email ?? phone,
-          attemptedAt: DateTime.now(),
+          sentAt: DateTime.now(),
           errorMessage: e.toString(),
         ),
       );
@@ -180,13 +182,13 @@ class ReceiptService {
       }
 
       await _receiptRepository.addDeliveryAttempt(
-        receipt.id,
+        receipt.id.toString(),
         ReceiptDelivery(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
+          receiptId: receipt.id.toString(),
           method: DeliveryMethod.print,
           status: ReceiptStatus.printed,
-          attemptedAt: DateTime.now(),
-          completedAt: DateTime.now(),
+          sentAt: DateTime.now(),
         ),
       );
     } catch (e) {
@@ -582,14 +584,13 @@ class ReceiptService {
       );
 
       await _receiptRepository.addDeliveryAttempt(
-        receipt.id,
+        receipt.id.toString(),
         ReceiptDelivery(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
+          receiptId: receipt.id.toString(),
           method: DeliveryMethod.email,
           status: ReceiptStatus.emailed,
-          destination: email,
-          attemptedAt: DateTime.now(),
-          completedAt: DateTime.now(),
+          sentAt: DateTime.now(),
         ),
       );
     } catch (e) {
@@ -606,14 +607,13 @@ class ReceiptService {
       await _sendSms(phone, message);
 
       await _receiptRepository.addDeliveryAttempt(
-        receipt.id,
+        receipt.id.toString(),
         ReceiptDelivery(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
+          receiptId: receipt.id.toString(),
           method: DeliveryMethod.sms,
           status: ReceiptStatus.sms,
-          destination: phone,
-          attemptedAt: DateTime.now(),
-          completedAt: DateTime.now(),
+          sentAt: DateTime.now(),
         ),
       );
     } catch (e) {
@@ -630,14 +630,13 @@ class ReceiptService {
       await _sendWhatsApp(phone, message);
 
       await _receiptRepository.addDeliveryAttempt(
-        receipt.id,
+        receipt.id.toString(),
         ReceiptDelivery(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
+          receiptId: receipt.id.toString(),
           method: DeliveryMethod.whatsapp,
           status: ReceiptStatus.sms, // Using SMS status for WhatsApp
-          destination: phone,
-          attemptedAt: DateTime.now(),
-          completedAt: DateTime.now(),
+          sentAt: DateTime.now(),
         ),
       );
     } catch (e) {
@@ -787,7 +786,7 @@ Thank you for choosing us! 🙏
 
     // Create reprint receipt
     final reprintReceipt = ReceiptEntity(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: DateTime.now().millisecondsSinceEpoch,
       receiptNumber: originalReceipt.receiptNumber,
       type: originalReceipt.type,
       format: originalReceipt.format,
@@ -795,6 +794,7 @@ Thank you for choosing us! 🙏
       customerId: originalReceipt.customerId,
       cashierId: originalReceipt.cashierId,
       locationId: originalReceipt.locationId,
+      receiptDate: DateTime.now(),
       receiptData: originalReceipt.receiptData,
       lineItems: originalReceipt.lineItems,
       totals: originalReceipt.totals,
@@ -803,7 +803,7 @@ Thank you for choosing us! 🙏
       settings: originalReceipt.settings,
       createdAt: DateTime.now(),
       isReprint: true,
-      originalReceiptId: originalReceipt.id,
+      originalReceiptId: originalReceipt.id.toString(),
     );
 
     await _printReceipt(reprintReceipt);
@@ -884,15 +884,11 @@ class ReceiptRepository {
           _printers[i] = PrinterConfig(
             id: _printers[i].id,
             name: _printers[i].name,
+            connectionType: _printers[i].connectionType,
             type: _printers[i].type,
-            connectionString: _printers[i].connectionString,
-            paperWidth: _printers[i].paperWidth,
-            defaultFormat: _printers[i].defaultFormat,
+            address: _printers[i].address,
             isDefault: false,
-            isActive: _printers[i].isActive,
             settings: _printers[i].settings,
-            createdAt: _printers[i].createdAt,
-            lastUsedAt: _printers[i].lastUsedAt,
           );
         }
       }
