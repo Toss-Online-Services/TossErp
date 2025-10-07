@@ -22,13 +22,13 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         
         builder.HasIndex(p => p.Sku)
             .IsUnique()
-            .HasFilter("[Sku] IS NOT NULL");
+            .HasFilter("\"Sku\" IS NOT NULL");
         
         builder.Property(p => p.Barcode)
             .HasMaxLength(50);
         
         builder.HasIndex(p => p.Barcode)
-            .HasFilter("[Barcode] IS NOT NULL");
+            .HasFilter("\"Barcode\" IS NOT NULL");
         
         builder.Property(p => p.Description)
             .HasMaxLength(2000);
@@ -73,7 +73,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null!),
                 v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null!) ?? new List<string>()
             )
-            .HasColumnType("nvarchar(max)");
+            .HasColumnType("jsonb");
         
         builder.HasIndex(p => p.Name);
         builder.HasIndex(p => p.CategoryId);
@@ -164,7 +164,7 @@ public class WarehouseConfiguration : IEntityTypeConfiguration<Warehouse>
         
         builder.HasIndex(w => w.Code)
             .IsUnique()
-            .HasFilter("[Code] IS NOT NULL");
+            .HasFilter("\"Code\" IS NOT NULL");
         
         builder.Property(w => w.Description)
             .HasMaxLength(1000);

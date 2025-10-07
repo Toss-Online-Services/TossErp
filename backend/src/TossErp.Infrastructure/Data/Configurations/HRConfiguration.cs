@@ -44,7 +44,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .HasMaxLength(100);
         
         builder.HasIndex(e => e.Email)
-            .HasFilter("[Email] IS NOT NULL");
+            .HasFilter("\"Email\" IS NOT NULL");
         
         builder.Property(e => e.Phone)
             .HasMaxLength(20);
@@ -120,7 +120,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null!),
                 v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null!) ?? new List<string>()
             )
-            .HasColumnType("nvarchar(max)");
+            .HasColumnType("jsonb");
         
         builder.HasIndex(e => e.Status);
         builder.HasIndex(e => e.DepartmentId);

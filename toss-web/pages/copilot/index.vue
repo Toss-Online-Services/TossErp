@@ -71,8 +71,7 @@
 
         <div v-for="(message, index) in messages" :key="index" 
              class="flex" :class="message.role === 'user' ? 'justify-end' : 'justify-start'">
-          <div class="max-w-3xl" :class="message.role === 'user' ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200'"
-               class="rounded-lg px-4 py-3 shadow-sm">
+          <div class="max-w-3xl rounded-lg px-4 py-3 shadow-sm" :class="message.role === 'user' ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200'">
             <div v-if="message.role === 'assistant'" class="flex items-start gap-3">
               <div class="p-2 bg-blue-100 rounded-full flex-shrink-0">
                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

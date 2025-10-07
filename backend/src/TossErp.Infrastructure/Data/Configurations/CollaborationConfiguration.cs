@@ -144,8 +144,6 @@ public class DeliveryPoolConfiguration : IEntityTypeConfiguration<DeliveryPool>
         builder.HasIndex(d => d.Status);
         builder.HasIndex(d => d.ScheduledDate);
         
-        builder.Ignore(d => d.AvailableAmount);
-        
         builder.HasMany(d => d.Participants).WithOne(p => p.DeliveryPool).HasForeignKey(p => p.DeliveryPoolId).OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(d => d.Stops).WithOne(s => s.DeliveryPool).HasForeignKey(s => s.DeliveryPoolId).OnDelete(DeleteBehavior.Cascade);
     }

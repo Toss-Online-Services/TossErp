@@ -133,7 +133,7 @@ public class CarrierConfiguration : IEntityTypeConfiguration<Carrier>
             .HasMaxLength(50);
         
         builder.HasIndex(c => c.Code)
-            .HasFilter("[Code] IS NOT NULL");
+            .HasFilter("\"Code\" IS NOT NULL");
         
         builder.Property(c => c.Type)
             .HasConversion<string>()
