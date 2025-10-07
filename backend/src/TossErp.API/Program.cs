@@ -14,6 +14,10 @@ builder.Services.AddControllers();
 // Register application services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IReceiptService, ReceiptService>();
+builder.Services.AddScoped<ICopilotService, CopilotService>();
+
+// Register HTTP client for AI services
+builder.Services.AddHttpClient("OpenAI");
 
 // Configure Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
