@@ -1,29 +1,24 @@
-export default defineNuxtRouteMiddleware((to) => {
-  // Simple dev guard for protected routes
-  const token = useCookie('auth-token')
-  const publicPaths = ['/login', '/register', '/getting-started', '/']
-  if (publicPaths.includes(to.path)) return
-  if (!token.value) {
-    return navigateTo('/login')
+export default defineNuxtRouteMiddleware((to, from) => {
+  // Skip middleware for login and public pages
+  const publicPages = ['/login', '/register', '/']
+  if (publicPages.includes(to.path)) {
+    return
   }
-})
 
-export default defineNuxtRouteMiddleware((to) => {
-  const userStore = useUserStore()
-  
-  // If user is not authenticated, redirect to login
-  if (!userStore.isAuthenticated) {
+  // Check authentication
+  const { isAuthenticated } = useAuth()
+
+  if (!isAuthenticated.value) {
     return navigateTo('/login')
   }
-  
-  // Check for specific permissions if required
-  if (to.meta.requiresPermission) {
-    const requiredPermission = to.meta.requiresPermission as string
-    if (!userStore.hasPermission.value(requiredPermission)) {
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'Access denied. Insufficient permissions.'
-      })
+
+  // Optional: Check role-based access
+  const { hasAnyRole } = useAuth()
+  const requiredRoles = to.meta.roles as string[] | undefined
+
+  if (requiredRoles && requiredRoles.length > 0) {
+    if (!hasAnyRole(requiredRoles)) {
+      return navigateTo('/unauthorized')
     }
   }
 })

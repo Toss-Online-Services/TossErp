@@ -42,7 +42,8 @@ export default defineNuxtConfig({
     apiSecret: '',
     // Public keys (exposed to client-side)
     public: {
-      apiBase: '/api'
+      apiBase: '/api',
+      apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:5000'
     }
   },
   ssr: false,  // Disable SSR temporarily to fix router issues
