@@ -1,0 +1,54 @@
+import 'dart:io';
+
+import 'package:url_launcher/url_launcher.dart';
+
+// External launcher
+class ExternalLauncher {
+  ExternalLauncher._();
+
+  static void openUrl(String url) async {
+    Uri uri;
+
+    if (!url.contains("http")) {
+      uri = Uri.parse("http://$url");
+    } else {
+      uri = Uri.parse(url);
+    }
+
+    if (!await launchUrl(uri)) {
+      throw Exception('Could not launch $uri');
+    }
+  }
+
+  static void openWhatsApp({
+    required String phone,
+    required String message,
+  }) async {
+    final encoded = Uri.encodeComponent(message);
+    var androidUrl = "whatsapp://send?phone=$phone&text=$encoded";
+    var iosUrl = "https://wa.me/$phone?text=$encoded";
+
+    try {
+      if (Platform.isIOS) {
+        await launchUrl(Uri.parse(iosUrl), mode: LaunchMode.externalApplication);
+      } else {
+        await launchUrl(Uri.parse(androidUrl), mode: LaunchMode.externalApplication);
+      }
+    } on Exception {
+      throw Exception('WhatsApp is not installed.');
+    }
+  }
+
+  static Future<void> openMap(double latitude, double longitude) async {
+    String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+
+    if (!await launchUrl(Uri.parse(googleUrl))) {
+      throw Exception('Could open map url $googleUrl');
+    }
+  }
+
+  static void openEmail({required String to, required String subject, required String body}) async {
+    final uri = Uri.parse('mailto:$to?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}');
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+}
