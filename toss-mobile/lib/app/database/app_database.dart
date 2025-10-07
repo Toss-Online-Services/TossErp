@@ -1,0 +1,694 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+
+import '../utilities/console_log.dart';
+
+class AppDatabase {
+  /// Make [AppDatabase] to be singleton
+  static final AppDatabase _instance = AppDatabase._();
+
+  factory AppDatabase() => _instance;
+
+  AppDatabase._();
+
+  late Database database;
+
+  Future<void> init() async {
+    // Get the path to the database
+    String path = join(await getDatabasesPath(), AppDatabaseConfig.dbPath);
+
+    if (kDebugMode) {
+      // Only for development purpose
+      // await dropDatabase(path);
+    }
+
+    // Create database if not exists
+    File databaseFile = File(path);
+
+    if (!await databaseFile.exists()) await databaseFile.create();
+
+    // Open database
+    database = await openDatabase(path);
+
+    // Create tables
+    await Future.wait([
+      database.execute(AppDatabaseConfig.createUserTable),
+      database.execute(AppDatabaseConfig.createProductTable),
+      database.execute(AppDatabaseConfig.createTransactionTable),
+      database.execute(AppDatabaseConfig.createOrderedProductTable),
+      database.execute(AppDatabaseConfig.createQueuedActionTable),
+      database.execute(AppDatabaseConfig.createPaymentTable),
+      database.execute(AppDatabaseConfig.createDiscountTable),
+      database.execute(AppDatabaseConfig.createShiftTable),
+      database.execute(AppDatabaseConfig.createCashMovementTable),
+      database.execute(AppDatabaseConfig.createZReportTable),
+      database.execute(AppDatabaseConfig.createAppointmentTable),
+      database.execute(AppDatabaseConfig.createCustomerTable),
+      database.execute(AppDatabaseConfig.createCustomerMessageTable),
+      database.execute(AppDatabaseConfig.createSupplierTable),
+      database.execute(AppDatabaseConfig.createPurchaseOrderTable),
+      database.execute(AppDatabaseConfig.createPurchaseOrderItemTable),
+      database.execute(AppDatabaseConfig.createInventoryMovementTable),
+      database.execute(AppDatabaseConfig.createFinancialTransactionTable),
+      database.execute(AppDatabaseConfig.createExpenseTable),
+      database.execute(AppDatabaseConfig.createSupportTicketTable),
+      database.execute(AppDatabaseConfig.createAssetTable),
+      database.execute(AppDatabaseConfig.createQualityCheckTable),
+      database.execute(AppDatabaseConfig.createCustomerFeedbackTable),
+      database.execute(AppDatabaseConfig.createEmployeeTable),
+    ]);
+
+    // Lightweight migration: ensure newly added columns exist
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.transactionTableName,
+      column: 'customerPhone',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.transactionTableName}' ADD COLUMN 'customerPhone' TEXT",
+    );
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.queuedActionTableName,
+      column: 'status',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.queuedActionTableName}' ADD COLUMN 'status' TEXT DEFAULT 'pending'",
+    );
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.queuedActionTableName,
+      column: 'retryCount',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.queuedActionTableName}' ADD COLUMN 'retryCount' INTEGER DEFAULT 0",
+    );
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.queuedActionTableName,
+      column: 'lastError',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.queuedActionTableName}' ADD COLUMN 'lastError' TEXT",
+    );
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.queuedActionTableName,
+      column: 'nextRetryAt',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.queuedActionTableName}' ADD COLUMN 'nextRetryAt' DATETIME",
+    );
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.productTableName,
+      column: 'barcode',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.productTableName}' ADD COLUMN 'barcode' TEXT",
+    );
+    await _ensureColumnExists(
+      table: AppDatabaseConfig.productTableName,
+      column: 'categoryId',
+      addColumnSql: "ALTER TABLE '${AppDatabaseConfig.productTableName}' ADD COLUMN 'categoryId' INTEGER",
+    );
+  }
+
+  Future<void> _ensureColumnExists({
+    required String table,
+    required String column,
+    required String addColumnSql,
+  }) async {
+    try {
+      final res = await database.rawQuery("PRAGMA table_info('$table')");
+      final hasColumn = res.any((row) => (row['name'] as String?) == column);
+      if (!hasColumn) {
+        await database.execute(addColumnSql);
+        cl('[AppDatabase] Added missing column $column to $table');
+      }
+    } catch (e) {
+      cl('[AppDatabase] Column check failed for $table.$column: $e');
+    }
+  }
+
+  // Only for testing
+  Future<void> initTestDatabase({required Database testDatabase}) async {
+    // Ensure this func only can be run in debug mode and completely removed in release mode
+    assert(
+      () {
+        database = testDatabase;
+        return true;
+      }(),
+      "[AppDatabase].initTestDatabase should only be used in unit tests.",
+    );
+
+    if (!kDebugMode) return;
+
+    // Create tables
+    await Future.wait([
+      database.execute(AppDatabaseConfig.createUserTable),
+      database.execute(AppDatabaseConfig.createProductTable),
+      database.execute(AppDatabaseConfig.createTransactionTable),
+      database.execute(AppDatabaseConfig.createOrderedProductTable),
+      database.execute(AppDatabaseConfig.createQueuedActionTable),
+    ]);
+  }
+
+  Future<void> dropDatabase(String path) async {
+    // Check if the database file exists
+    File databaseFile = File(path);
+
+    if (await databaseFile.exists()) {
+      // Delete the database file
+      await databaseFile.delete();
+
+      cl('[AppDatabase].dropDatabase = Database deleted successfully.');
+    } else {
+      cl('[AppDatabase].dropDatabase = Database does not exist.');
+    }
+  }
+}
+
+class AppDatabaseConfig {
+  static const String dbPath = 'app_database.db';
+  static const int version = 1;
+
+  static const String userTableName = 'User';
+  static const String productTableName = 'Product';
+  static const String transactionTableName = 'Transaction';
+  static const String orderedProductTableName = 'OrderedProduct';
+  static const String queuedActionTableName = 'QueuedAction';
+  static const String paymentTableName = 'Payment';
+  static const String discountTableName = 'Discount';
+  static const String shiftTableName = 'Shift';
+  static const String cashMovementTableName = 'CashMovement';
+  static const String zReportTableName = 'ZReport';
+  static const String appointmentTableName = 'Appointment';
+  static const String customerTableName = 'Customer';
+  static const String customerMessageTableName = 'CustomerMessage';
+  static const String supplierTableName = 'Supplier';
+  static const String purchaseOrderTableName = 'PurchaseOrder';
+  static const String purchaseOrderItemTableName = 'PurchaseOrderItem';
+  static const String inventoryMovementTableName = 'InventoryMovement';
+  static const String financialTransactionTableName = 'FinancialTransaction';
+  static const String expenseTableName = 'Expense';
+  static const String supportTicketTableName = 'SupportTicket';
+  static const String assetTableName = 'Asset';
+  static const String qualityCheckTableName = 'QualityCheck';
+  static const String customerFeedbackTableName = 'CustomerFeedback';
+  static const String employeeTableName = 'Employee';
+
+  static String createUserTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$userTableName' (
+    'id' TEXT NOT NULL,
+    'email' TEXT,
+    'phone' TEXT,
+    'name' TEXT,
+    'gender' TEXT,
+    'birthdate' TEXT,
+    'imageUrl' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id')
+);
+''';
+
+  static String createProductTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$productTableName' (
+    'id' INTEGER NOT NULL,
+    'createdById' TEXT,
+    'name' TEXT,
+    'barcode' TEXT,
+    'imageUrl' TEXT,
+    'stock' INTEGER,
+    'sold' INTEGER,
+    'price' INTEGER,
+    'description' TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('createdById') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createTransactionTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$transactionTableName' (
+    'id' INTEGER NOT NULL,
+    'paymentMethod' TEXT,
+    'customerName' TEXT,
+    'customerPhone' TEXT,
+    'description' TEXT,
+    'createdById' TEXT,
+    'receivedAmount' INTEGER,
+    'returnAmount' INTEGER,
+    'totalAmount' INTEGER,
+    'totalOrderedProduct' INTEGER,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('createdById') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createOrderedProductTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$orderedProductTableName' (
+    'id' INTEGER NOT NULL,
+    'transactionId' INTEGER,
+    'productId' INTEGER,
+    'quantity' INTEGER,
+    'stock' INTEGER,
+    'name' TEXT,
+    'imageUrl' TEXT,
+    'price' INTEGER,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('transactionId') REFERENCES 'Transaction' ('id'),
+    FOREIGN KEY ('productId') REFERENCES 'Product' ('id')
+);
+''';
+
+  static String createQueuedActionTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$queuedActionTableName' (
+    'id' INTEGER NOT NULL,
+    'repository' TEXT,
+    'method' TEXT,
+    'param' TEXT,
+    'isCritical' INTEGER,
+    'status' TEXT DEFAULT 'pending',
+    'retryCount' INTEGER DEFAULT 0,
+    'lastError' TEXT,
+    'nextRetryAt' DATETIME,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+''';
+
+  static String createPaymentTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$paymentTableName' (
+    'id' INTEGER NOT NULL,
+    'transactionId' INTEGER,
+    'method' TEXT,
+    'amount' INTEGER,
+    'reference' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('transactionId') REFERENCES 'Transaction' ('id')
+);
+''';
+
+  static String createDiscountTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$discountTableName' (
+    'id' INTEGER NOT NULL,
+    'transactionId' INTEGER,
+    'orderedProductId' INTEGER,
+    'scope' TEXT,
+    'type' TEXT,
+    'value' INTEGER,
+    'code' TEXT,
+    'reason' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('transactionId') REFERENCES 'Transaction' ('id'),
+    FOREIGN KEY ('orderedProductId') REFERENCES 'OrderedProduct' ('id')
+);
+''';
+
+  static String createShiftTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$shiftTableName' (
+    'id' INTEGER NOT NULL,
+    'userId' TEXT,
+    'startedAt' DATETIME,
+    'openingFloat' INTEGER,
+    'endedAt' DATETIME,
+    'closingCash' INTEGER,
+    'expectedCash' INTEGER,
+    'variance' INTEGER,
+    'status' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('userId') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createCashMovementTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$cashMovementTableName' (
+    'id' INTEGER NOT NULL,
+    'shiftId' INTEGER,
+    'type' TEXT,
+    'amount' INTEGER,
+    'note' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('shiftId') REFERENCES 'Shift' ('id')
+);
+''';
+
+  static String createZReportTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$zReportTableName' (
+    'id' INTEGER NOT NULL,
+    'shiftId' INTEGER,
+    'summaryJson' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('shiftId') REFERENCES 'Shift' ('id')
+);
+''';
+
+  static String createAppointmentTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$appointmentTableName' (
+    'id' INTEGER NOT NULL,
+    'customerName' TEXT,
+    'customerPhone' TEXT,
+    'serviceName' TEXT,
+    'staffName' TEXT,
+    'scheduledAt' DATETIME,
+    'status' TEXT,
+    'note' TEXT,
+    'linkedTransactionId' INTEGER,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('linkedTransactionId') REFERENCES 'Transaction' ('id')
+);
+''';
+
+  static String createCustomerTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$customerTableName' (
+    'id' TEXT NOT NULL,
+    'name' TEXT,
+    'phone' TEXT,
+    'alternatePhone' TEXT,
+    'membershipNumber' TEXT,
+    'qrCode' TEXT,
+    'nfcId' TEXT,
+    'biometricId' TEXT,
+    'primaryIdType' TEXT,
+    'tier' TEXT,
+    'loyaltyTier' TEXT,
+    'pointsBalance' INTEGER,
+    'loyaltyPoints' INTEGER,
+    'totalSpent' REAL,
+    'visitCount' INTEGER,
+    'lastVisit' DATETIME,
+    'dateOfBirth' DATETIME,
+    'address' TEXT,
+    'city' TEXT,
+    'country' TEXT,
+    'gender' TEXT,
+    'preferredCommunication' TEXT,
+    'preferences' TEXT,
+    'tags' TEXT,
+    'isActive' INTEGER,
+    'notes' TEXT,
+    'anniversaryDate' DATETIME,
+    'referredBy' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id')
+);
+''';
+
+  static String createCustomerMessageTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$customerMessageTableName' (
+    'id' INTEGER NOT NULL,
+    'customerId' TEXT,
+    'type' TEXT,
+    'channel' TEXT,
+    'content' TEXT,
+    'status' TEXT,
+    'scheduledAt' DATETIME,
+    'sentAt' DATETIME,
+    'deliveredAt' DATETIME,
+    'errorMessage' TEXT,
+    'metadata' TEXT,
+    'retryCount' INTEGER,
+    'createdById' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('customerId') REFERENCES 'Customer' ('id'),
+    FOREIGN KEY ('createdById') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createSupplierTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$supplierTableName' (
+    'id' INTEGER NOT NULL,
+    'name' TEXT,
+    'companyName' TEXT,
+    'contactPerson' TEXT,
+    'phoneNumber' TEXT,
+    'email' TEXT,
+    'address' TEXT,
+    'city' TEXT,
+    'country' TEXT,
+    'taxNumber' TEXT,
+    'paymentTerms' TEXT,
+    'isActive' INTEGER,
+    'rating' REAL,
+    'notes' TEXT,
+    'createdById' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('createdById') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createPurchaseOrderTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$purchaseOrderTableName' (
+    'id' INTEGER NOT NULL,
+    'orderNumber' TEXT,
+    'supplierId' INTEGER,
+    'status' TEXT,
+    'orderDate' DATETIME,
+    'expectedDate' DATETIME,
+    'receivedDate' DATETIME,
+    'totalAmount' INTEGER,
+    'taxAmount' INTEGER,
+    'discountAmount' INTEGER,
+    'notes' TEXT,
+    'createdById' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('supplierId') REFERENCES 'Supplier' ('id'),
+    FOREIGN KEY ('createdById') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createPurchaseOrderItemTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$purchaseOrderItemTableName' (
+    'id' INTEGER NOT NULL,
+    'purchaseOrderId' INTEGER,
+    'productId' INTEGER,
+    'quantity' INTEGER,
+    'unitPrice' INTEGER,
+    'totalPrice' INTEGER,
+    'receivedQuantity' INTEGER,
+    'notes' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('purchaseOrderId') REFERENCES 'PurchaseOrder' ('id'),
+    FOREIGN KEY ('productId') REFERENCES 'Product' ('id')
+);
+''';
+
+  static String createInventoryMovementTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$inventoryMovementTableName' (
+    'id' INTEGER NOT NULL,
+    'productId' INTEGER,
+    'batchId' INTEGER,
+    'type' TEXT,
+    'reason' TEXT,
+    'quantity' INTEGER,
+    'unitPrice' INTEGER,
+    'totalValue' INTEGER,
+    'referenceId' INTEGER,
+    'referenceType' TEXT,
+    'notes' TEXT,
+    'fromLocationId' TEXT,
+    'toLocationId' TEXT,
+    'createdById' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('productId') REFERENCES 'Product' ('id'),
+    FOREIGN KEY ('createdById') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createFinancialTransactionTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$financialTransactionTableName' (
+    'id' INTEGER NOT NULL,
+    'type' TEXT,
+    'category' TEXT,
+    'amount' INTEGER,
+    'description' TEXT,
+    'referenceId' INTEGER,
+    'referenceType' TEXT,
+    'accountType' TEXT,
+    'createdById' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('createdById') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createExpenseTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$expenseTableName' (
+    'id' INTEGER NOT NULL,
+    'category' TEXT,
+    'amount' INTEGER,
+    'description' TEXT,
+    'receiptUrl' TEXT,
+    'vendor' TEXT,
+    'expenseDate' DATETIME,
+    'approvedBy' TEXT,
+    'status' TEXT,
+    'createdById' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('createdById') REFERENCES 'User' ('id'),
+    FOREIGN KEY ('approvedBy') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createSupportTicketTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$supportTicketTableName' (
+    'id' INTEGER NOT NULL,
+    'ticketNumber' TEXT,
+    'customerId' TEXT,
+    'transactionId' INTEGER,
+    'type' TEXT,
+    'priority' TEXT,
+    'status' TEXT,
+    'subject' TEXT,
+    'description' TEXT,
+    'assignedTo' TEXT,
+    'resolution' TEXT,
+    'resolvedAt' DATETIME,
+    'createdById' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('customerId') REFERENCES 'Customer' ('id'),
+    FOREIGN KEY ('transactionId') REFERENCES 'Transaction' ('id'),
+    FOREIGN KEY ('assignedTo') REFERENCES 'User' ('id'),
+    FOREIGN KEY ('createdById') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createAssetTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$assetTableName' (
+    'id' INTEGER NOT NULL,
+    'assetNumber' TEXT,
+    'name' TEXT,
+    'category' TEXT,
+    'description' TEXT,
+    'purchaseDate' DATETIME,
+    'purchasePrice' INTEGER,
+    'currentValue' INTEGER,
+    'depreciationMethod' TEXT,
+    'usefulLife' INTEGER,
+    'location' TEXT,
+    'status' TEXT,
+    'serialNumber' TEXT,
+    'warrantyExpiry' DATETIME,
+    'lastMaintenance' DATETIME,
+    'nextMaintenance' DATETIME,
+    'createdById' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('createdById') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createQualityCheckTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$qualityCheckTableName' (
+    'id' INTEGER NOT NULL,
+    'checkNumber' TEXT,
+    'productId' INTEGER,
+    'supplierId' INTEGER,
+    'type' TEXT,
+    'status' TEXT,
+    'passed' INTEGER,
+    'defectCount' INTEGER,
+    'defectDescription' TEXT,
+    'inspectorId' TEXT,
+    'checkDate' DATETIME,
+    'notes' TEXT,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('productId') REFERENCES 'Product' ('id'),
+    FOREIGN KEY ('supplierId') REFERENCES 'Supplier' ('id'),
+    FOREIGN KEY ('inspectorId') REFERENCES 'User' ('id')
+);
+''';
+
+  static String createCustomerFeedbackTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$customerFeedbackTableName' (
+    'id' INTEGER NOT NULL,
+    'customerId' TEXT,
+    'transactionId' INTEGER,
+    'type' TEXT,
+    'rating' INTEGER,
+    'comment' TEXT,
+    'category' TEXT,
+    'sentiment' TEXT,
+    'actionRequired' INTEGER,
+    'actionTaken' TEXT,
+    'resolved' INTEGER,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('customerId') REFERENCES 'Customer' ('id'),
+    FOREIGN KEY ('transactionId') REFERENCES 'Transaction' ('id')
+);
+''';
+
+  static String createEmployeeTable =
+      '''
+CREATE TABLE IF NOT EXISTS '$employeeTableName' (
+    'id' TEXT NOT NULL,
+    'employeeNumber' TEXT,
+    'name' TEXT,
+    'phone' TEXT,
+    'email' TEXT,
+    'role' TEXT,
+    'status' TEXT,
+    'permissions' TEXT,
+    'pin' TEXT,
+    'biometricId' TEXT,
+    'biometricType' TEXT,
+    'locationIds' TEXT,
+    'hourlyRate' REAL,
+    'hireDate' DATETIME,
+    'terminationDate' DATETIME,
+    'currentShiftId' INTEGER,
+    'performanceMetrics' TEXT,
+    'isTrainingMode' INTEGER,
+    'createdAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    'updatedAt' DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ('id'),
+    FOREIGN KEY ('currentShiftId') REFERENCES 'Shift' ('id')
+);
+''';
+}
