@@ -1,262 +1,265 @@
-# TOSS Web Application
+# TOSS ERP Web Admin
 
-TOSS ERP III Web Client - A comprehensive business management platform designed for South African SMMEs (Small, Medium & Micro Enterprises) with AI-powered insights and collaborative features.
+## Overview
+
+Modern web-based admin dashboard for TOSS ERP III built with Nuxt 4, Vue 3, and Tailwind CSS.
+
+## Tech Stack
+
+- **Nuxt 4** - Full-stack Vue framework
+- **Vue 3** - Progressive JavaScript framework
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first CSS
+- **Pinia** - State management
+- **VueUse** - Composition utilities
 
 ## Features
 
-### 🤖 AI Co-Pilot
-- Intelligent business assistant with natural language interface
-- Real-time insights and recommendations
-- Context-aware responses based on your business data
-- Voice and text interaction support
+### Implemented Dashboards
 
-### 🏪 Core Business Modules
-- **Accounts & Finance**: Financial management, invoicing, payments
-- **CRM**: Customer relationship management and sales tracking  
-- **Inventory**: Stock management with automatic reorder points
-- **Sales & POS**: Point of sale system and sales analytics
-- **Group Buying**: Collaborative purchasing for better prices
-- **Asset Sharing**: Community tool and asset sharing network
-- **Logistics**: Delivery management and supply chain coordination
+✅ **Main Dashboard**
+- KPI cards (Revenue, Orders, Customers, Low Stock)
+- Sales trend charts
+- Top products table
+- Quick actions
 
-### 🚀 Modern Technology Stack
-- **Frontend**: Nuxt 3, Vue 3, TypeScript, Tailwind CSS
-- **State Management**: Pinia stores
-- **Authentication**: JWT-based with role-based permissions
-- **API**: RESTful APIs with Nitro server
-- **Database**: PostgreSQL (production), Redis (sessions)
-- **Testing**: Vitest, Playwright E2E
-- **Development**: Nx monorepo, Hot reload, Docker support
+✅ **POS Management Dashboard**
+- Real-time sales monitoring
+- Transaction history
+- Cashier performance
+- Payment analytics
 
-## Quick Start
+✅ **Inventory Dashboard**
+- Stock level monitoring
+- Low stock alerts
+- Stock movement tracking
+- Inventory valuation
+
+✅ **Finance Dashboard**
+- Balance sheet overview
+- P&L summary
+- Accounts receivable/payable aging
+- Tax liability tracking
+
+✅ **HR Dashboard**
+- Employee headcount
+- Attendance summary
+- Leave requests
+- Department distribution
+
+## Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-- Docker (optional)
+
+- Node.js 18+ or Bun
+- TOSS ERP Backend API running
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd TossErp/toss-web
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-4. **Open your browser**
-   ```
-   http://localhost:3000
-   ```
-
-### Demo Login
-Use these credentials to explore the application:
-
-| Role | Email | Password |
-|------|--------|----------|
-| Business Owner | owner@demo.toss.co.za | password123 |
-| Manager | manager@demo.toss.co.za | password123 |
-| Employee | employee@demo.toss.co.za | password123 |
-
-## Development
-
-### Project Structure
-```
-toss-web/
-├── components/          # Reusable Vue components
-│   ├── AICopilotChat.vue
-│   ├── AppNavigation.vue
-│   ├── ModuleCard.vue
-│   └── NotificationContainer.vue
-├── layouts/             # Application layouts
-│   └── default.vue
-├── middleware/          # Route middleware
-│   └── auth.ts
-├── pages/              # File-based routing pages
-│   ├── dashboard/
-│   ├── accounts/
-│   ├── crm/
-│   ├── inventory/
-│   └── ...
-├── server/             # Nitro server API routes
-│   └── api/
-│       └── auth/
-├── stores/             # Pinia state management
-│   ├── user.ts
-│   ├── settings.ts
-│   └── notifications.ts
-├── tests/              # Test files
-├── assets/             # Static assets
-└── public/             # Public files
-```
-
-### Available Scripts
-
 ```bash
-# Development
-npm run dev              # Start development server
-npm run build           # Build for production  
-npm run preview         # Preview production build
-
-# Testing
-npm run test            # Run unit tests
-npm run test:watch      # Run tests in watch mode
-npm run test:e2e        # Run E2E tests
-
-# Linting & Formatting
-npm run lint            # Run ESLint
-npm run lint:fix        # Fix ESLint errors
-npm run typecheck       # TypeScript type checking
-
-# Docker
-docker-compose up       # Start with Docker
-docker-compose up -d    # Start in background
+# Install dependencies
+npm install
+# or
+bun install
 ```
 
-### Environment Variables
+### Environment Configuration
 
-Create a `.env` file in the project root:
+Create a `.env` file:
 
 ```env
-# Database
-DATABASE_URL=postgresql://toss_user:toss_password@localhost:5432/toss_erp
-
-# Redis
-REDIS_URL=redis://localhost:6379
-
-# Authentication
-JWT_SECRET=your-super-secret-jwt-key
-SESSION_SECRET=your-session-secret
-
-# External APIs (optional)
-OPENAI_API_KEY=your-openai-key
-TWILIO_SID=your-twilio-sid
-TWILIO_TOKEN=your-twilio-token
+API_BASE_URL=http://localhost:5000
 ```
 
-## Architecture
+### Development
 
-### Authentication & Authorization
+```bash
+# Start development server
+npm run dev
+# or
+bun dev
+```
+
+Visit `http://localhost:3000`
+
+### Build for Production
+
+```bash
+# Build the application
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## Project Structure
+
+```
+├── assets/           # Styles and static assets
+├── components/       # Reusable Vue components
+├── composables/      # Composition API composables
+│   ├── useApi.ts    # API request helper
+│   ├── useAuth.ts   # Authentication logic
+│   └── useDashboard.ts # Dashboard data
+├── layouts/          # Layout components
+│   └── dashboard.vue # Main dashboard layout
+├── middleware/       # Route middleware
+│   └── auth.ts      # Authentication guard
+├── pages/            # File-based routing
+│   ├── dashboard/   # Main dashboard
+│   ├── sales/       # Sales & POS pages
+│   ├── inventory/   # Inventory pages
+│   ├── finance/     # Finance pages
+│   ├── hr/          # HR pages
+│   └── ...
+├── stores/           # Pinia stores
+└── types/            # TypeScript type definitions
+```
+
+## Key Features
+
+### Authentication
 - JWT-based authentication
-- Role-based access control (Owner, Manager, Employee)
-- Route protection with middleware
-- Session management with Redis
+- Role-based access control
+- Persistent login (localStorage)
+- Automatic token refresh (planned)
 
-### State Management  
-- **Pinia stores** for centralized state
-- **Reactive data** with Vue 3 Composition API
-- **Persistent storage** for user preferences
-- **Real-time updates** via WebSocket connections
+### Dashboard Features
+- Real-time metrics
+- Interactive charts (planned: Chart.js integration)
+- Responsive design
+- Quick actions
+- Multi-module navigation
 
-### API Design
-- **RESTful endpoints** following OpenAPI standards
-- **Nitro server** for serverless-ready deployment
-- **Type-safe** requests with TypeScript
-- **Error handling** with standardized responses
+### API Integration
+- Centralized API composable
+- Type-safe requests
+- Error handling
+- Loading states
+- Request caching (planned)
 
-### Testing Strategy
-- **Unit tests** with Vitest and Vue Test Utils
-- **E2E tests** with Playwright
-- **Component testing** for Vue components  
-- **API testing** for server endpoints
-- **Continuous Integration** with automated testing
+## Module Dashboards
+
+### Sales & POS
+- `/sales/pos/dashboard` - POS monitoring
+- `/sales/analytics` - Sales analytics
+
+### Inventory
+- `/inventory/dashboard` - Stock overview
+- `/inventory` - Stock management
+- `/inventory/items` - Product catalog
+
+### Finance
+- `/finance/dashboard` - Financial overview
+- `/accounts` - Chart of accounts
+- `/accounts/journal` - Journal entries
+
+### HR
+- `/hr/dashboard` - HR overview
+- `/hr/employees` - Employee management
+- `/hr/leave` - Leave management
+- `/hr/payroll` - Payroll processing
+
+### Procurement
+- `/purchasing/suppliers` - Supplier management
+- `/purchasing/orders` - Purchase orders
+
+## Planned Features
+
+### Extended Modules
+- [ ] Manufacturing dashboard
+- [ ] Supply chain tracking
+- [ ] Project management
+- [ ] Warehouse management
+- [ ] Marketing automation
+- [ ] E-commerce integration
+
+### Collaboration Features (ERP III)
+- [ ] Group buying network
+- [ ] Shared logistics
+- [ ] Asset sharing
+- [ ] Pooled credit
+- [ ] Community forum
+
+### AI Features
+- [ ] Natural language queries
+- [ ] Predictive analytics
+- [ ] Smart recommendations
+- [ ] Automated insights
+
+### Advanced Features
+- [ ] Real-time notifications
+- [ ] Offline mode with sync
+- [ ] Advanced reporting
+- [ ] Custom dashboards
+- [ ] Mobile responsive optimization
+- [ ] Multi-language support
+- [ ] Dark mode
+
+## Development Guidelines
+
+### Component Creation
+- Use `<script setup lang="ts">` syntax
+- Follow Vue 3 Composition API patterns
+- Use Tailwind for styling
+- Implement proper TypeScript types
+
+### API Integration
+- Use `useApi()` composable for all API calls
+- Handle loading and error states
+- Implement proper error messages
+- Use TypeScript interfaces for responses
+
+### Authentication
+- Use `useAuth()` composable
+- Protect routes with `auth` middleware
+- Check roles/permissions where needed
+
+### State Management
+- Use composables for local state
+- Use Pinia stores for global state
+- Minimize store usage when possible
+
+## Testing
+
+```bash
+# Run unit tests
+npm run test
+
+# Run e2e tests
+npm run test:e2e
+```
 
 ## Deployment
 
-### Docker Deployment
+### Docker
 
-1. **Build the image**
-   ```bash
-   docker build -t toss-web .
-   ```
+```bash
+# Build image
+docker build -t tosserp-web:latest .
 
-2. **Run with Docker Compose**
-   ```bash
-   docker-compose up -d
-   ```
+# Run container
+docker run -p 3000:3000 -e API_BASE_URL=https://api.tosserp.com tosserp-web:latest
+```
 
-### Production Build
+### Static Hosting
 
-1. **Build the application**
-   ```bash
-   npm run build
-   ```
+```bash
+# Generate static site
+npm run generate
 
-2. **Preview locally**
-   ```bash
-   npm run preview
-   ```
-
-### Environment Setup
-- Configure environment variables
-- Set up database connections
-- Configure Redis for sessions
-- Set up SSL certificates for HTTPS
-
-## Features in Detail
-
-### AI Co-Pilot
-The AI assistant provides intelligent business insights:
-- **Natural Language Queries**: Ask questions about your business
-- **Contextual Responses**: Answers based on your actual data
-- **Quick Actions**: Common tasks with single clicks
-- **Business Intelligence**: Sales trends, inventory alerts, financial insights
-
-### Group Buying Module
-Collaborative purchasing platform:
-- **Group Orders**: Join buying groups for bulk discounts
-- **Vendor Management**: Negotiate better prices together
-- **Split Shipments**: Share delivery costs
-- **Savings Tracking**: Monitor collective savings
-
-### Asset Sharing Network
-Community resource sharing:
-- **Tool Sharing**: Share equipment with other businesses
-- **Booking System**: Reserve assets when needed
-- **Cost Splitting**: Fair usage-based billing
-- **Trust Network**: Rating and review system
+# Deploy dist/ to your hosting provider
+```
 
 ## Contributing
 
-1. **Fork the repository**
-2. **Create feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Commit changes** (`git commit -m 'Add amazing feature'`)
-4. **Push to branch** (`git push origin feature/amazing-feature`)
-5. **Open Pull Request**
-
-### Development Guidelines
-- Follow TypeScript best practices
-- Write tests for new features
-- Use conventional commit messages
-- Follow Vue 3 composition API patterns
-- Maintain responsive design principles
-
-## Support
-
-### Documentation
-- [API Documentation](./docs/api/)
-- [Component Library](./docs/components/)
-- [Deployment Guide](./docs/deployment/)
-- [Troubleshooting](./docs/troubleshooting/)
-
-### Community
-- **Issues**: Report bugs and feature requests
-- **Discussions**: Ask questions and share ideas
-- **Wiki**: Comprehensive documentation and guides
+Follow the existing code patterns and architecture. Ensure all new features include:
+- TypeScript types
+- Error handling
+- Loading states
+- Responsive design
+- Accessibility considerations
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-**TOSS ERP III** - Empowering South African SMMEs with collaborative business technology.
+Proprietary - TOSS ERP System
