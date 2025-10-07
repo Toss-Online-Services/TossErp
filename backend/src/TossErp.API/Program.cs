@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using TossErp.Infrastructure.Data;
 using TossErp.Infrastructure.Services;
+using TossErp.Infrastructure.Services.AI;
 
 var builder = WebApplication.CreateBuilder(args);
 

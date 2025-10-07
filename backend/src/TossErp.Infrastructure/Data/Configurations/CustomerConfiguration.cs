@@ -24,13 +24,13 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             .HasMaxLength(100);
         
         builder.HasIndex(c => c.Email)
-            .HasFilter("[Email] IS NOT NULL");
+            .HasFilter("\"Email\" IS NOT NULL");
         
         builder.Property(c => c.Phone)
             .HasMaxLength(20);
         
         builder.HasIndex(c => c.Phone)
-            .HasFilter("[Phone] IS NOT NULL");
+            .HasFilter("\"Phone\" IS NOT NULL");
         
         builder.Property(c => c.AlternatePhone)
             .HasMaxLength(20);
