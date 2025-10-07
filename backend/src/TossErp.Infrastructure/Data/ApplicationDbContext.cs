@@ -6,6 +6,12 @@ using TossErp.Domain.Entities.Finance;
 using TossErp.Domain.Entities.Procurement;
 using TossErp.Domain.Entities.HR;
 using TossErp.Domain.Entities.Auth;
+using TossErp.Domain.Entities.Manufacturing;
+using TossErp.Domain.Entities.SupplyChain;
+using TossErp.Domain.Entities.Projects;
+using TossErp.Domain.Entities.WMS;
+using TossErp.Domain.Entities.Marketing;
+using TossErp.Domain.Entities.Ecommerce;
 
 namespace TossErp.Infrastructure.Data;
 
@@ -49,6 +55,34 @@ public class ApplicationDbContext : DbContext
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    
+    // Manufacturing
+    public DbSet<BillOfMaterials> BillsOfMaterials => Set<BillOfMaterials>();
+    public DbSet<BomItem> BomItems => Set<BomItem>();
+    public DbSet<BomOperation> BomOperations => Set<BomOperation>();
+    public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
+    public DbSet<WorkOrderOperation> WorkOrderOperations => Set<WorkOrderOperation>();
+    public DbSet<WorkOrderMaterial> WorkOrderMaterials => Set<WorkOrderMaterial>();
+    public DbSet<ProductionEntry> ProductionEntries => Set<ProductionEntry>();
+    
+    // Supply Chain
+    public DbSet<Shipment> Shipments => Set<Shipment>();
+    public DbSet<ShipmentItem> ShipmentItems => Set<ShipmentItem>();
+    public DbSet<ShipmentTracking> ShipmentTrackingHistory => Set<ShipmentTracking>();
+    public DbSet<Carrier> Carriers => Set<Carrier>();
+    
+    // Projects
+    public DbSet<Project> Projects => Set<Project>();
+    public DbSet<ProjectTask> ProjectTasks => Set<ProjectTask>();
+    
+    // WMS (Advanced Warehouse Management)
+    public DbSet<BinLocation> BinLocations => Set<BinLocation>();
+    
+    // Marketing
+    public DbSet<Campaign> Campaigns => Set<Campaign>();
+    
+    // Ecommerce
+    public DbSet<OnlineOrder> OnlineOrders => Set<OnlineOrder>();
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
