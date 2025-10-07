@@ -12,6 +12,7 @@ using TossErp.Domain.Entities.Projects;
 using TossErp.Domain.Entities.WMS;
 using TossErp.Domain.Entities.Marketing;
 using TossErp.Domain.Entities.Ecommerce;
+using TossErp.Domain.Entities.Collaboration;
 
 namespace TossErp.Infrastructure.Data;
 
@@ -83,6 +84,24 @@ public class ApplicationDbContext : DbContext
     
     // Ecommerce
     public DbSet<OnlineOrder> OnlineOrders => Set<OnlineOrder>();
+    
+    // Collaboration (ERP III Features)
+    public DbSet<BuyingGroup> BuyingGroups => Set<BuyingGroup>();
+    public DbSet<GroupMember> GroupMembers => Set<GroupMember>();
+    public DbSet<GroupPurchaseOrder> GroupPurchaseOrders => Set<GroupPurchaseOrder>();
+    public DbSet<GroupPurchaseOrderItem> GroupPurchaseOrderItems => Set<GroupPurchaseOrderItem>();
+    public DbSet<MemberOrderAllocation> MemberOrderAllocations => Set<MemberOrderAllocation>();
+    public DbSet<DeliveryPool> DeliveryPools => Set<DeliveryPool>();
+    public DbSet<DeliveryPoolParticipant> DeliveryPoolParticipants => Set<DeliveryPoolParticipant>();
+    public DbSet<PoolStop> PoolStops => Set<PoolStop>();
+    public DbSet<SharedAsset> SharedAssets => Set<SharedAsset>();
+    public DbSet<AssetRental> AssetRentals => Set<AssetRental>();
+    public DbSet<CreditPool> CreditPools => Set<CreditPool>();
+    public DbSet<CreditPoolMember> CreditPoolMembers => Set<CreditPoolMember>();
+    public DbSet<CreditAllocation> CreditAllocations => Set<CreditAllocation>();
+    public DbSet<BusinessDirectory> BusinessDirectory => Set<BusinessDirectory>();
+    public DbSet<CommunityEvent> CommunityEvents => Set<CommunityEvent>();
+    public DbSet<EventRegistration> EventRegistrations => Set<EventRegistration>();
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
