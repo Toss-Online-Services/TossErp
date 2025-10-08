@@ -12,14 +12,15 @@ export default {
   theme: {
     extend: {
       colors: {
+        // TOSS ERP Brand Colors - Consistent across all pages
         toss: {
-          primary: '#1d4ed8',
-          secondary: '#f59e0b',
-          accent: '#10b981',
-          danger: '#ef4444',
-          warning: '#f59e0b',
-          success: '#10b981',
-          info: '#3b82f6',
+          primary: '#1d4ed8',    // Blue 700 - Primary brand color
+          secondary: '#f59e0b',  // Amber 500 - Secondary accent
+          accent: '#10b981',     // Emerald 500 - Success/accent
+          danger: '#ef4444',     // Red 500 - Error states
+          warning: '#f59e0b',    // Amber 500 - Warning states
+          success: '#10b981',    // Emerald 500 - Success states
+          info: '#3b82f6',       // Blue 500 - Info states
         },
         brand: {
           50: '#eff6ff',
@@ -32,6 +33,28 @@ export default {
           700: '#1d4ed8',
           800: '#1e40af',
           900: '#1e3a8a',
+        },
+        // Consistent UI Colors - Used across all components
+        ui: {
+          // Background colors
+          'bg-light': '#f8fafc',      // slate-50
+          'bg-dark': '#0f172a',       // slate-900
+          'card-light': '#ffffff',    // white
+          'card-dark': '#1e293b',     // slate-800
+          
+          // Text colors
+          'text-primary-light': '#0f172a',    // slate-900
+          'text-primary-dark': '#ffffff',     // white
+          'text-secondary-light': '#475569',  // slate-600
+          'text-secondary-dark': '#94a3b8',   // slate-400
+          
+          // Border colors
+          'border-light': '#e2e8f0',  // slate-200
+          'border-dark': '#374151',   // slate-700
+          
+          // Interactive colors
+          'hover-light': '#f1f5f9',   // slate-100
+          'hover-dark': '#334155',    // slate-700
         }
       },
       fontFamily: {

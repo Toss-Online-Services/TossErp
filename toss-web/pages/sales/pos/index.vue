@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
+  <div class="min-h-screen bg-gray-50">
     <!-- Mobile-First Page Container -->
     <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
     <!-- Page Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
         <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Point of Sale</h1>
-          <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Quick checkout system for Thabo's Spaza Shop</p>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Point of Sale</h1>
+          <p class="text-gray-600 mt-1 text-sm sm:text-base">Quick checkout system for Thabo's Spaza Shop</p>
         </div>
         <div class="flex flex-wrap gap-2 sm:gap-3">
           <button @click="openDrawer" 
@@ -15,7 +15,7 @@
             Open Drawer
           </button>
           <button @click="showReports = true" 
-                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors text-sm sm:text-base">
+                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm sm:text-base">
             <ChartBarIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
             Reports
           </button>
@@ -24,43 +24,43 @@
 
       <!-- Hardware Status Indicators -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-3 rounded-lg border border-gray-200">
           <div class="flex items-center gap-2">
             <div class="w-3 h-3 rounded-full" :class="hardwareStatus.barcodeScanner ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
-            <span class="text-sm font-medium text-slate-900 dark:text-white">Barcode Scanner</span>
+            <span class="text-sm font-medium text-gray-900">Barcode Scanner</span>
           </div>
-          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ hardwareStatus.barcodeScanner ? 'Ready' : 'Not Connected' }}</p>
+          <p class="text-xs text-gray-600 mt-1">{{ hardwareStatus.barcodeScanner ? 'Ready' : 'Not Connected' }}</p>
         </div>
-        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-3 rounded-lg border border-gray-200">
           <div class="flex items-center gap-2">
             <div class="w-3 h-3 rounded-full" :class="hardwareStatus.cardReader ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
-            <span class="text-sm font-medium text-slate-900 dark:text-white">Card Reader</span>
+            <span class="text-sm font-medium text-gray-900">Card Reader</span>
           </div>
-          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ hardwareStatus.cardReader ? 'Ready' : 'Not Connected' }}</p>
+          <p class="text-xs text-gray-600 mt-1">{{ hardwareStatus.cardReader ? 'Ready' : 'Not Connected' }}</p>
         </div>
-        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-3 rounded-lg border border-gray-200">
           <div class="flex items-center gap-2">
             <div class="w-3 h-3 rounded-full" :class="hardwareStatus.printer ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
-            <span class="text-sm font-medium text-slate-900 dark:text-white">Receipt Printer</span>
+            <span class="text-sm font-medium text-gray-900">Receipt Printer</span>
           </div>
-          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ hardwareStatus.printer ? 'Ready' : 'Not Connected' }}</p>
+          <p class="text-xs text-gray-600 mt-1">{{ hardwareStatus.printer ? 'Ready' : 'Not Connected' }}</p>
         </div>
-        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-3 rounded-lg border border-gray-200">
           <div class="flex items-center gap-2">
             <div class="w-3 h-3 rounded-full" :class="hardwareStatus.cashDrawer ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
-            <span class="text-sm font-medium text-slate-900 dark:text-white">Cash Drawer</span>
+            <span class="text-sm font-medium text-gray-900">Cash Drawer</span>
           </div>
-          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ hardwareStatus.cashDrawer ? 'Ready' : 'Not Connected' }}</p>
+          <p class="text-xs text-gray-600 mt-1">{{ hardwareStatus.cashDrawer ? 'Ready' : 'Not Connected' }}</p>
         </div>
       </div>
 
       <!-- POS Stats Cards -->
       <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Today's Sales</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R {{ formatCurrency(todaySales) }}</p>
+              <p class="text-xs sm:text-sm text-gray-600">Today's Sales</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">R {{ formatCurrency(todaySales) }}</p>
               <p class="text-xs sm:text-sm text-emerald-600">{{ todayTransactions }} transactions</p>
             </div>
             <div class="p-2 sm:p-3 bg-emerald-100 dark:bg-emerald-900 rounded-full">
@@ -69,11 +69,11 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Current Sale</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R {{ formatCurrency(cartTotal) }}</p>
+              <p class="text-xs sm:text-sm text-gray-600">Current Sale</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">R {{ formatCurrency(cartTotal) }}</p>
               <p class="text-xs sm:text-sm text-blue-600">{{ cartItems.length }} items</p>
             </div>
             <div class="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
@@ -82,11 +82,11 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Avg. Sale</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R {{ formatCurrency(averageSale) }}</p>
+              <p class="text-xs sm:text-sm text-gray-600">Avg. Sale</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">R {{ formatCurrency(averageSale) }}</p>
               <p class="text-xs sm:text-sm text-yellow-600">Last hour</p>
             </div>
             <div class="p-2 sm:p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
@@ -95,11 +95,11 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Cash Float</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R {{ formatCurrency(cashFloat) }}</p>
+              <p class="text-xs sm:text-sm text-gray-600">Cash Float</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">R {{ formatCurrency(cashFloat) }}</p>
               <p class="text-xs sm:text-sm text-purple-600">In drawer</p>
             </div>
             <div class="p-2 sm:p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
@@ -114,7 +114,7 @@
         <!-- Product Search and Selection -->
         <div class="lg:col-span-2 space-y-4">
           <!-- Search and Scanner -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
             <div class="flex items-center space-x-3">
               <div class="flex-1 relative">
                 <MagnifyingGlassIcon class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -122,7 +122,7 @@
                   v-model="searchQuery"
                   type="text"
                   placeholder="Scan barcode or search products..."
-                  class="barcode-input w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="barcode-input w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   @keyup.enter="addFirstProductToCart"
                   ref="searchInput"
                 />
@@ -144,7 +144,7 @@
           </div>
 
           <!-- Category Filters -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
             <div class="flex flex-wrap gap-2">
               <button 
                 v-for="category in categories" 
@@ -163,7 +163,7 @@
           </div>
 
           <!-- Products Grid -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               <button 
                 v-for="product in filteredProducts" 
@@ -181,7 +181,7 @@
                   />
                   <CubeIcon v-else class="w-8 h-8 text-slate-400" />
                 </div>
-                <h3 class="font-medium text-slate-900 dark:text-white text-sm truncate mb-1">{{ product.name }}</h3>
+                <h3 class="font-medium text-gray-900 text-sm truncate mb-1">{{ product.name }}</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 truncate mb-2">{{ product.sku }}</p>
                 <div class="flex items-center justify-between">
                   <span class="text-sm font-bold text-blue-600">R{{ product.price.toFixed(2) }}</span>
@@ -206,9 +206,9 @@
         <!-- Cart and Checkout -->
         <div class="space-y-4">
           <!-- Current Sale -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Current Sale</h3>
+              <h3 class="text-lg font-semibold text-gray-900">Current Sale</h3>
               <button 
                 v-if="cartItems.length > 0"
                 @click="clearCart"
@@ -231,7 +231,7 @@
                 class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-lg"
               >
                 <div class="flex-1">
-                  <h4 class="font-medium text-slate-900 dark:text-white text-sm">{{ item.name }}</h4>
+                  <h4 class="font-medium text-gray-900 text-sm">{{ item.name }}</h4>
                   <p class="text-xs text-slate-500 dark:text-slate-400">R{{ item.price.toFixed(2) }} each</p>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -241,7 +241,7 @@
                   >
                     <MinusIcon class="w-3 h-3" />
                   </button>
-                  <span class="w-8 text-center text-sm font-medium text-slate-900 dark:text-white">{{ item.quantity }}</span>
+                  <span class="w-8 text-center text-sm font-medium text-gray-900">{{ item.quantity }}</span>
                   <button 
                     @click="updateQuantity(item.id, item.quantity + 1)"
                     class="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-500"
@@ -259,9 +259,9 @@
             </div>
 
             <!-- Cart Total -->
-            <div v-if="cartItems.length > 0" class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+            <div v-if="cartItems.length > 0" class="mt-4 pt-4 border-t border-gray-200">
               <div class="flex justify-between items-center mb-4">
-                <span class="text-lg font-semibold text-slate-900 dark:text-white">Total:</span>
+                <span class="text-lg font-semibold text-gray-900">Total:</span>
                 <span class="text-xl font-bold text-blue-600">R{{ formatCurrency(cartTotal) }}</span>
               </div>
               
@@ -270,7 +270,7 @@
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Customer</label>
                 <select 
                   v-model="selectedCustomer"
-                  class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                  class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900"
                 >
                   <option value="">Walk-in Customer</option>
                   <option v-for="customer in customers" :key="customer.id" :value="customer.id">
@@ -310,8 +310,8 @@
             </div>
 
           <!-- Quick Actions -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Quick Actions</h3>
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
             <div class="space-y-3">
               <button 
                 @click="holdSale"
@@ -339,13 +339,13 @@
 
     <!-- Payment Success Modal -->
     <div v-if="showSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white dark:bg-slate-800 rounded-xl p-6 max-w-md w-full">
+      <div class="bg-white rounded-xl p-6 max-w-md w-full">
       <div class="text-center">
           <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckIcon class="w-8 h-8 text-green-600" />
         </div>
-          <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-2">Payment Successful!</h3>
-          <p class="text-slate-600 dark:text-slate-400 mb-6">Transaction completed successfully</p>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Payment Successful!</h3>
+          <p class="text-gray-600 mb-6">Transaction completed successfully</p>
           <div class="flex space-x-3">
             <button 
               @click="printReceipt"
@@ -355,7 +355,7 @@
             </button>
             <button 
               @click="emailReceipt"
-              class="flex-1 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors"
+              class="flex-1 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
             >
               Email Receipt
             </button>
