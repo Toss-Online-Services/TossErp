@@ -300,7 +300,7 @@ useHead({
 
 // Layout
 definePageMeta({
-  layout: 'dashboard'
+  layout: 'default'
 })
 
 // Reactive data

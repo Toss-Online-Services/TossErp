@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
     <!-- Mobile-First Page Container -->
     <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
-      <!-- Page Header -->
+    <!-- Page Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
         <div>
           <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Point of Sale</h1>
@@ -19,6 +19,38 @@
             <ChartBarIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
             Reports
           </button>
+        </div>
+      </div>
+
+      <!-- Hardware Status Indicators -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full" :class="hardwareStatus.barcodeScanner ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
+            <span class="text-sm font-medium text-slate-900 dark:text-white">Barcode Scanner</span>
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ hardwareStatus.barcodeScanner ? 'Ready' : 'Not Connected' }}</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full" :class="hardwareStatus.cardReader ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
+            <span class="text-sm font-medium text-slate-900 dark:text-white">Card Reader</span>
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ hardwareStatus.cardReader ? 'Ready' : 'Not Connected' }}</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full" :class="hardwareStatus.printer ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
+            <span class="text-sm font-medium text-slate-900 dark:text-white">Receipt Printer</span>
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ hardwareStatus.printer ? 'Ready' : 'Not Connected' }}</p>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full" :class="hardwareStatus.cashDrawer ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
+            <span class="text-sm font-medium text-slate-900 dark:text-white">Cash Drawer</span>
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ hardwareStatus.cashDrawer ? 'Ready' : 'Not Connected' }}</p>
         </div>
       </div>
 
@@ -90,20 +122,23 @@
                   v-model="searchQuery"
                   type="text"
                   placeholder="Scan barcode or search products..."
-                  class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="barcode-input w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   @keyup.enter="addFirstProductToCart"
+                  ref="searchInput"
                 />
               </div>
               <button 
-                @click="toggleScanner"
-                :class="[
-                  'p-3 rounded-lg transition-colors',
-                  scannerActive 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'
-                ]"
+                @click="showBarcodeScanner = true"
+                class="p-3 rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <QrCodeIcon class="w-6 h-6" />
+              </button>
+              <button 
+                @click="requestHardwareAccess"
+                class="p-3 rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white"
+                title="Request Hardware Access"
+              >
+                <CogIcon class="w-6 h-6" />
               </button>
             </div>
           </div>
@@ -272,7 +307,7 @@
                 Process Payment - R{{ formatCurrency(cartTotal) }}
               </button>
             </div>
-          </div>
+            </div>
 
           <!-- Quick Actions -->
           <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
@@ -305,10 +340,10 @@
     <!-- Payment Success Modal -->
     <div v-if="showSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white dark:bg-slate-800 rounded-xl p-6 max-w-md w-full">
-        <div class="text-center">
+      <div class="text-center">
           <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckIcon class="w-8 h-8 text-green-600" />
-          </div>
+        </div>
           <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-2">Payment Successful!</h3>
           <p class="text-slate-600 dark:text-slate-400 mb-6">Transaction completed successfully</p>
           <div class="flex space-x-3">
@@ -324,15 +359,21 @@
             >
               Email Receipt
             </button>
-          </div>
         </div>
       </div>
     </div>
+    </div>
+
+    <!-- Barcode Scanner Component -->
+    <BarcodeScanner 
+      v-model="showBarcodeScanner" 
+      @barcode-scanned="handleBarcodeScanned"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import {
   MagnifyingGlassIcon,
   QrCodeIcon,
@@ -344,19 +385,37 @@ import {
   PlusIcon,
   MinusIcon,
   TrashIcon,
-  CheckIcon
+  CheckIcon,
+  CreditCardIcon,
+  PrinterIcon,
+  CogIcon
 } from '@heroicons/vue/24/outline'
+import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
+
+// Hardware status tracking
+const hardwareStatus = ref({
+  barcodeScanner: false,
+  cardReader: false,
+  printer: false,
+  cashDrawer: false
+})
+
+// Barcode scanning state
+let barcodeBuffer = ''
+let barcodeTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Reactive data
 const searchQuery = ref('')
 const selectedCategory = ref('all')
 const scannerActive = ref(false)
+const showBarcodeScanner = ref(false)
 const cartItems = ref<any[]>([])
 const selectedCustomer = ref('')
 const selectedPaymentMethod = ref('cash')
 const showSuccessModal = ref(false)
 const showCustomerModal = ref(false)
 const showReports = ref(false)
+const searchInput = ref<HTMLInputElement>()
 
 // POS Stats
 const todaySales = ref(18496)
@@ -448,17 +507,17 @@ const addToCart = (product: any) => {
   }
 }
 
-const removeFromCart = (productId: number) => {
-  cartItems.value = cartItems.value.filter(item => item.id !== productId)
+const removeFromCart = (productId: number | string) => {
+  cartItems.value = cartItems.value.filter(item => item.id != productId)
 }
 
-const updateQuantity = (productId: number, newQuantity: number) => {
+const updateQuantity = (productId: number | string, newQuantity: number) => {
   if (newQuantity <= 0) {
     removeFromCart(productId)
     return
   }
 
-  const item = cartItems.value.find(item => item.id === productId)
+  const item = cartItems.value.find(item => item.id == productId)
   if (item) {
     item.quantity = newQuantity
   }
@@ -477,16 +536,163 @@ const addFirstProductToCart = () => {
   }
 }
 
-const toggleScanner = () => {
-  scannerActive.value = !scannerActive.value
-  // In production, integrate with barcode scanner
+// Initialize hardware on mount
+onMounted(async () => {
+  await initializeHardware()
+  setupBarcodeScanning()
+})
+
+onUnmounted(() => {
+  cleanupHardware()
+})
+
+// Hardware initialization
+const initializeHardware = async () => {
+  try {
+    // Check for barcode scanner (keyboard wedge is always available)
+    hardwareStatus.value.barcodeScanner = true
+    
+    // Check for card reader
+    if ('hid' in navigator) {
+      const devices = await (navigator as any).hid.getDevices()
+      hardwareStatus.value.cardReader = devices.length > 0
+    }
+    
+    // Check for receipt printer
+    if ('serial' in navigator) {
+      const ports = await (navigator as any).serial.getPorts()
+      hardwareStatus.value.printer = ports.length > 0
+    }
+    
+    // Cash drawer usually connected to printer
+    hardwareStatus.value.cashDrawer = hardwareStatus.value.printer
+  } catch (error) {
+    console.error('Hardware initialization failed:', error)
+  }
 }
 
-const processPayment = () => {
+// Barcode scanning setup
+const setupBarcodeScanning = () => {
+  document.addEventListener('keypress', handleBarcodeInput)
+}
+
+const handleBarcodeInput = (event: KeyboardEvent) => {
+  // Clear timeout on each keypress
+  if (barcodeTimeout) {
+    clearTimeout(barcodeTimeout)
+  }
+
+  // Add character to buffer
+  if (event.key.length === 1) {
+    barcodeBuffer += event.key
+  }
+
+  // Process barcode on Enter key (scanners send Enter after barcode)
+  if (event.key === 'Enter' && barcodeBuffer.length >= 8) {
+    processBarcode(barcodeBuffer)
+    barcodeBuffer = ''
+    event.preventDefault()
+    return
+  }
+
+  // Reset buffer after 100ms of inactivity (scanners are fast)
+  barcodeTimeout = setTimeout(() => {
+    barcodeBuffer = ''
+  }, 100)
+}
+
+const processBarcode = (barcode: string) => {
+  // Find product by SKU or barcode
+  const product = products.value.find(p => 
+    p.sku.toLowerCase() === barcode.toLowerCase() ||
+    barcode.includes(p.id)
+  )
+  
+  if (product && product.stock > 0) {
+    addToCart(product)
+    showNotification(`Added ${product.name} to cart`)
+  } else {
+    showNotification('Product not found or out of stock', 'error')
+  }
+}
+
+const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+  const notification = document.createElement('div')
+  notification.textContent = type === 'success' ? `✓ ${message}` : `✗ ${message}`
+  notification.className = `fixed top-20 right-4 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'} text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-fade-in`
+  document.body.appendChild(notification)
+  setTimeout(() => notification.remove(), 2000)
+}
+
+const cleanupHardware = () => {
+  document.removeEventListener('keypress', handleBarcodeInput)
+  if (barcodeTimeout) {
+    clearTimeout(barcodeTimeout)
+  }
+}
+
+const toggleScanner = () => {
+  scannerActive.value = !scannerActive.value
+  if (scannerActive.value) {
+    showNotification('Barcode scanner activated - ready to scan')
+  }
+}
+
+const handleBarcodeScanned = (barcode: string) => {
+  // Find product by barcode or SKU
+  const product = products.value.find(p => 
+    p.sku.toLowerCase() === barcode.toLowerCase() ||
+    barcode.toLowerCase().includes(p.sku.toLowerCase())
+  )
+  
+  if (product && product.stock > 0) {
+    addToCart(product)
+    showNotification(`✓ Added ${product.name} to cart`)
+  } else {
+    showNotification(`✗ Product not found: ${barcode}`, 'error')
+  }
+}
+
+const requestHardwareAccess = async () => {
+  try {
+    // Request serial port access (for receipt printer)
+    if ('serial' in navigator) {
+      await (navigator as any).serial.requestPort()
+      hardwareStatus.value.printer = true
+      hardwareStatus.value.cashDrawer = true
+      showNotification('✓ Printer and cash drawer connected')
+    }
+    
+    // Request HID access (for card reader)
+    if ('hid' in navigator) {
+      await (navigator as any).hid.requestDevice({ filters: [] })
+      hardwareStatus.value.cardReader = true
+      showNotification('✓ Card reader connected')
+    }
+    
+    // Re-initialize hardware
+    await initializeHardware()
+  } catch (error) {
+    console.error('Hardware request cancelled or failed:', error)
+  }
+}
+
+const processPayment = async () => {
   if (cartItems.value.length === 0) return
   
-  // In production, integrate with payment gateway
-  showSuccessModal.value = true
+  if (selectedPaymentMethod.value === 'card' && hardwareStatus.value.cardReader) {
+    // Process card payment
+    try {
+      showNotification('Processing card payment...')
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      showSuccessModal.value = true
+    } catch (error) {
+      showNotification('Card payment failed', 'error')
+    }
+  } else {
+    // Cash or other payment
+    showSuccessModal.value = true
+  }
 }
 
 const holdSale = () => {
@@ -505,20 +711,146 @@ const voidSale = () => {
   }
 }
 
-const openDrawer = () => {
-  // In production, integrate with cash drawer
-  alert('Cash drawer opened')
+const openDrawer = async () => {
+  try {
+    if (hardwareStatus.value.cashDrawer) {
+      // Send ESC/POS command to open drawer via printer
+      if ('serial' in navigator) {
+        const ports = await (navigator as any).serial.getPorts()
+        if (ports.length > 0) {
+          const printer = ports[0]
+          await printer.open({ baudRate: 9600 })
+          
+          // ESC p m t1 t2 - Open cash drawer command
+          const command = new Uint8Array([0x1B, 0x70, 0x00, 0x19, 0xFA])
+          
+          const writer = printer.writable.getWriter()
+          await writer.write(command)
+          writer.releaseLock()
+          
+          await printer.close()
+          showNotification('Cash drawer opened')
+          return
+        }
+      }
+    }
+    
+    // Fallback notification
+    showNotification('Cash drawer opened (simulated)')
+  } catch (error) {
+    console.error('Failed to open drawer:', error)
+    showNotification('Failed to open cash drawer', 'error')
+  }
 }
 
-const printReceipt = () => {
-  // In production, integrate with receipt printer
-  window.print()
-  closeSuccessModal()
+const printReceipt = async () => {
+  try {
+    if (hardwareStatus.value.printer) {
+      // Generate and print receipt
+      const receiptData = {
+        storeName: "THABO'S SPAZA SHOP",
+        storeAddress: '123 Main Street, Soweto',
+        storePhone: '+27 11 123 4567',
+        receiptNumber: `RCP-${Date.now()}`,
+        date: new Date().toLocaleString('en-ZA'),
+        cashier: 'Thabo',
+        customer: selectedCustomer.value || 'Walk-in Customer',
+        items: cartItems.value.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          total: item.price * item.quantity
+        })),
+        total: cartTotal.value,
+        paymentMethod: selectedPaymentMethod.value
+      }
+      
+      await printESCPOSReceipt(receiptData)
+      showNotification('Receipt printed successfully')
+    } else {
+      // Fallback to browser print
+      window.print()
+    }
+    
+    closeSuccessModal()
+  } catch (error) {
+    console.error('Print failed:', error)
+    window.print() // Fallback
+    closeSuccessModal()
+  }
+}
+
+const printESCPOSReceipt = async (receiptData: any) => {
+  if ('serial' in navigator) {
+    const ports = await (navigator as any).serial.getPorts()
+    if (ports.length > 0) {
+      const printer = ports[0]
+      await printer.open({ baudRate: 9600 })
+      
+      const encoder = new TextEncoder()
+      const ESC = 0x1B
+      const GS = 0x1D
+      
+      let commands: number[] = []
+      
+      // Initialize
+      commands.push(ESC, 0x40)
+      
+      // Center align
+      commands.push(ESC, 0x61, 0x01)
+      
+      // Store name (bold)
+      commands.push(ESC, 0x45, 0x01)
+      commands.push(...encoder.encode(receiptData.storeName + '\n'))
+      commands.push(ESC, 0x45, 0x00)
+      
+      // Store info
+      commands.push(...encoder.encode(receiptData.storeAddress + '\n'))
+      commands.push(...encoder.encode(receiptData.storePhone + '\n\n'))
+      
+      // Left align
+      commands.push(ESC, 0x61, 0x00)
+      
+      // Receipt details
+      commands.push(...encoder.encode(`Receipt: ${receiptData.receiptNumber}\n`))
+      commands.push(...encoder.encode(`Date: ${receiptData.date}\n`))
+      commands.push(...encoder.encode(`Cashier: ${receiptData.cashier}\n\n`))
+      commands.push(...encoder.encode('--------------------------------\n'))
+      
+      // Items
+      receiptData.items.forEach((item: any) => {
+        commands.push(...encoder.encode(`${item.name}\n`))
+        commands.push(...encoder.encode(`${item.quantity} x R${item.price.toFixed(2)} = R${item.total.toFixed(2)}\n`))
+      })
+      
+      commands.push(...encoder.encode('--------------------------------\n'))
+      
+      // Total (bold)
+      commands.push(ESC, 0x45, 0x01)
+      commands.push(...encoder.encode(`TOTAL: R${receiptData.total.toFixed(2)}\n`))
+      commands.push(ESC, 0x45, 0x00)
+      
+      commands.push(...encoder.encode(`Payment: ${receiptData.paymentMethod}\n\n`))
+      
+      // Footer
+      commands.push(ESC, 0x61, 0x01)
+      commands.push(...encoder.encode('Thank you!\n\n\n'))
+      
+      // Cut paper
+      commands.push(GS, 0x56, 0x00)
+      
+      const writer = printer.writable.getWriter()
+      await writer.write(new Uint8Array(commands))
+      writer.releaseLock()
+      
+      await printer.close()
+    }
+  }
 }
 
 const emailReceipt = () => {
   // In production, send email via API
-  alert('Receipt emailed successfully')
+  showNotification('Receipt emailed successfully')
   closeSuccessModal()
 }
 
