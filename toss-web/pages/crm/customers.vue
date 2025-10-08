@@ -1,16 +1,16 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
+  <div class="min-h-screen bg-gray-50">
     <!-- Mobile-First Page Container -->
     <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
       <!-- Page Header -->
       <div class="text-center sm:text-left">
         <div class="flex items-center justify-between flex-col sm:flex-row space-y-4 sm:space-y-0">
           <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Customer Management</h1>
-            <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Manage customer relationships, subscriptions, and revenue</p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Customer Management</h1>
+            <p class="text-gray-600 mt-1 text-sm sm:text-base">Manage customer relationships, subscriptions, and revenue</p>
           </div>
           <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
-            <button @click="exportCustomers" class="w-full sm:w-auto px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+            <button @click="exportCustomers" class="w-full sm:w-auto px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 bg-white hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
               <ArrowDownTrayIcon class="w-4 h-4 inline mr-2" />
               Export
             </button>
@@ -24,7 +24,7 @@
       </div>
 
       <!-- Filters and Search -->
-      <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+      <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
         <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center">
           <div class="flex-1 min-w-0">
             <div class="relative">
@@ -33,20 +33,20 @@
                 v-model="searchQuery"
                 type="text"
                 placeholder="Search customers by name, email, or company..."
-                class="pl-10 pr-4 py-2 w-full border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
+                class="pl-10 pr-4 py-2 w-full border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 placeholder-slate-500 dark:placeholder-slate-400"
               />
             </div>
           </div>
           
           <div class="flex flex-wrap gap-2 sm:gap-3">
-            <select v-model="selectedType" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
+            <select v-model="selectedType" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900">
               <option value="">All Types</option>
               <option value="Individual">Individual</option>
               <option value="Business">Business</option>
               <option value="Enterprise">Enterprise</option>
             </select>
             
-            <select v-model="selectedStatus" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
+            <select v-model="selectedStatus" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900">
               <option value="">All Statuses</option>
               <option value="Prospect">Prospect</option>
               <option value="Active">Active</option>
@@ -54,14 +54,14 @@
               <option value="Churned">Churned</option>
             </select>
             
-            <select v-model="selectedTier" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
+            <select v-model="selectedTier" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900">
               <option value="">All Tiers</option>
               <option value="Standard">Standard</option>
               <option value="Premium">Premium</option>
               <option value="Enterprise">Enterprise</option>
             </select>
             
-            <select v-model="selectedSubscriptionStatus" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
+            <select v-model="selectedSubscriptionStatus" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900">
               <option value="">All Subscriptions</option>
               <option value="Trial">Trial</option>
               <option value="Active">Active</option>
@@ -79,59 +79,59 @@
 
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <div class="flex items-center">
             <div class="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
               <UsersIcon class="w-4 h-4 sm:w-6 sm:h-6 text-blue-600" />
             </div>
             <div class="ml-3">
               <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">Total Customers</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ totalCustomers }}</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">{{ totalCustomers }}</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <div class="flex items-center">
             <div class="p-2 sm:p-3 bg-green-100 dark:bg-green-900 rounded-lg">
               <BanknotesIcon class="w-4 h-4 sm:w-6 sm:h-6 text-green-600" />
             </div>
             <div class="ml-3">
               <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">Monthly Recurring Revenue</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">${{ totalMRR.toLocaleString() }}</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">${{ totalMRR.toLocaleString() }}</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <div class="flex items-center">
             <div class="p-2 sm:p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
               <ClockIcon class="w-4 h-4 sm:w-6 sm:h-6 text-yellow-600" />
             </div>
             <div class="ml-3">
               <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">Trial Customers</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ trialCustomers }}</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">{{ trialCustomers }}</p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <div class="flex items-center">
             <div class="p-2 sm:p-3 bg-red-100 dark:bg-red-900 rounded-lg">
               <ExclamationTriangleIcon class="w-4 h-4 sm:w-6 sm:h-6 text-red-600" />
             </div>
             <div class="ml-3">
               <p class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">Expiring Soon</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ expiringCustomers }}</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">{{ expiringCustomers }}</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Customers Table -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200">
         <!-- Bulk Actions -->
-        <div v-if="selectedCustomers.length > 0" class="px-4 sm:px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+        <div v-if="selectedCustomers.length > 0" class="px-4 sm:px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border-b border-gray-200 flex items-center justify-between">
           <span class="text-sm text-blue-800 dark:text-blue-200">{{ selectedCustomers.length }} customers selected</span>
           <div class="space-x-2">
             <button @click="bulkUpdateStatus" class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
@@ -204,7 +204,7 @@
                       <span class="text-xs sm:text-sm font-medium text-blue-800 dark:text-blue-200">{{ getInitials(customer.name) }}</span>
                     </div>
                     <div class="ml-3 min-w-0">
-                      <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ customer.name }}</p>
+                      <p class="text-sm font-medium text-gray-900 truncate">{{ customer.name }}</p>
                       <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 truncate">{{ customer.primaryEmail || 'No email' }}</p>
                     </div>
                   </div>
@@ -248,7 +248,7 @@
 
                 <!-- MRR -->
                 <div class="col-span-1">
-                  <span class="text-sm font-medium text-slate-900 dark:text-white">
+                  <span class="text-sm font-medium text-gray-900">
                     ${{ customer.monthlyRecurringRevenue?.toLocaleString() || '0' }}
                   </span>
                 </div>
@@ -273,7 +273,7 @@
                       <MenuButton class="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200">
                         <EllipsisVerticalIcon class="w-4 h-4" />
                       </MenuButton>
-                      <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-lg bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black/5 dark:ring-white/5 focus:outline-none border border-slate-200 dark:border-slate-700">
+                      <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black/5 dark:ring-white/5 focus:outline-none border border-gray-200">
                         <div class="py-1">
                           <MenuItem>
                             <button @click="manageSubscription(customer)" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 w-full text-left">
@@ -314,7 +314,7 @@
             <button
               @click="currentPage--"
               :disabled="currentPage === 1"
-              class="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-sm hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+              class="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-sm hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-slate-700 dark:text-slate-300"
             >
               Previous
             </button>
@@ -322,7 +322,7 @@
             <button
               @click="currentPage++"
               :disabled="currentPage === totalPages"
-              class="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-sm hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+              class="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-sm hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-slate-700 dark:text-slate-300"
             >
               Next
             </button>
@@ -332,9 +332,9 @@
 
     <!-- Customer Modal (placeholder for now) -->
     <div v-if="showCustomerModal" class="fixed inset-0 bg-slate-600/50 dark:bg-slate-900/75 flex items-center justify-center z-50">
-      <div class="bg-white dark:bg-slate-800 rounded-xl p-6 w-full max-w-2xl mx-4 border border-slate-200 dark:border-slate-700">
-        <h3 class="text-lg font-medium mb-4 text-slate-900 dark:text-white">{{ isEditMode ? 'Edit Customer' : 'New Customer' }}</h3>
-        <p class="text-slate-600 dark:text-slate-400">Customer modal implementation coming soon...</p>
+      <div class="bg-white rounded-xl p-6 w-full max-w-2xl mx-4 border border-gray-200">
+        <h3 class="text-lg font-medium mb-4 text-gray-900">{{ isEditMode ? 'Edit Customer' : 'New Customer' }}</h3>
+        <p class="text-gray-600">Customer modal implementation coming soon...</p>
         <div class="mt-4">
           <button @click="showCustomerModal = false" class="px-4 py-2 bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-400 dark:hover:bg-slate-500">
             Close
