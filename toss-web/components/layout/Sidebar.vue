@@ -1,11 +1,11 @@
 <template>
-  <aside class="flex flex-col flex-shrink-0 w-64 border-r bg-slate-900 border-slate-800">
+  <aside class="flex flex-col flex-shrink-0 w-64 border-r bg-white border-gray-200 shadow-sm">
     <!-- Logo Section -->
-    <div class="flex items-center justify-center h-16 px-4 border-b border-slate-800">
+    <div class="flex items-center justify-center h-16 px-4 border-b border-gray-200">
       <div class="flex items-center justify-center w-8 h-8 mr-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600">
         <span class="text-sm font-bold text-white">T</span>
       </div>
-      <h1 class="text-xl font-bold text-white">TOSS ERP</h1>
+      <h1 class="text-xl font-bold text-gray-900">TOSS ERP</h1>
     </div>
     
     <!-- Navigation -->
@@ -685,14 +685,14 @@ const toggleSettingsDropdown = () => {
   padding: 0.625rem 0.75rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: rgb(203 213 225);
+  color: rgb(75 85 99);
   border-radius: 0.5rem;
   transition: all 0.2s;
 }
 
 .nav-link:hover {
-  background-color: rgb(30 41 59);
-  color: white;
+  background-color: rgb(243 244 246);
+  color: rgb(17 24 39);
 }
 
 .nav-link-active {
@@ -710,23 +710,23 @@ const toggleSettingsDropdown = () => {
   padding: 0.5rem 0.75rem;
   font-size: 0.8125rem;
   font-weight: 400;
-  color: rgb(148 163 184);
+  color: rgb(107 114 128);
   border-radius: 0.375rem;
   transition: all 0.2s;
 }
 
 .nav-sub-link:hover {
-  background-color: rgb(30 41 59);
-  color: rgb(203 213 225);
+  background-color: rgb(249 250 251);
+  color: rgb(17 24 39);
 }
 
 .nav-sub-link-active {
-  background-color: rgba(59, 130, 246, 0.2);
-  color: rgb(147 197 253);
+  background-color: rgba(59, 130, 246, 0.1);
+  color: rgb(59 130 246);
   font-weight: 500;
 }
 
 .nav-sub-link-active:hover {
-  background-color: rgba(59, 130, 246, 0.3);
+  background-color: rgba(59, 130, 246, 0.2);
 }
 </style>

@@ -2,6 +2,9 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-08-24',
+  devServer: {
+    port: 3001
+  },
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxtjs/color-mode',

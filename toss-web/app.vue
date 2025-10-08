@@ -26,9 +26,6 @@ import { ref, onMounted } from 'vue'
 const isOnline = ref(true)
 
 onMounted(() => {
-  // Enable dark mode by default to match the main dashboard
-  document.documentElement.classList.add('dark')
-  
   // Offline detection
   isOnline.value = navigator.onLine
   

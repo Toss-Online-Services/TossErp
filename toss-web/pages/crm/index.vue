@@ -463,7 +463,7 @@ import {
 
 // Page metadata
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'default',
   title: 'CRM Dashboard'
 })
 

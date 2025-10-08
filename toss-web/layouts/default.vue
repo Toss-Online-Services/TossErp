@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+  <div class="min-h-screen bg-gray-50 text-gray-900">
     <!-- Mobile Layout (xs to lg) -->
     <div class="lg:hidden">
       <!-- Mobile Header with Hamburger -->
-      <div class="sticky top-0 z-50 bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700">
+      <div class="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200">
         <div class="flex items-center justify-between px-4 h-16">
           <!-- Mobile Menu Button -->
-          <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700">
+          <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100">
             <Bars3Icon v-if="!mobileMenuOpen" class="w-6 h-6" />
             <XMarkIcon v-else class="w-6 h-6" />
           </button>
@@ -16,12 +16,12 @@
             <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-2">
               <span class="text-white font-bold text-sm">T</span>
             </div>
-            <h1 class="text-lg font-bold">TOSS ERP</h1>
+            <h1 class="text-lg font-bold text-gray-900">TOSS ERP</h1>
           </div>
           
           <!-- Mobile Actions -->
           <div class="flex items-center space-x-2">
-            <button class="relative p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg">
+            <button class="relative p-2 text-gray-400 hover:text-gray-600 rounded-lg">
               <BellIcon class="w-5 h-5" />
               <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
@@ -52,7 +52,7 @@
       <Sidebar />
       <div class="flex-1 flex flex-col overflow-hidden">
         <Header />
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 dark:bg-slate-900">
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
           <slot />
         </main>
       </div>

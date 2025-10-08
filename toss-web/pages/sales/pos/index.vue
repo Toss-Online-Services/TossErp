@@ -63,7 +63,7 @@
               <p class="text-lg sm:text-2xl font-bold text-gray-900">R {{ formatCurrency(todaySales) }}</p>
               <p class="text-xs sm:text-sm text-emerald-600">{{ todayTransactions }} transactions</p>
             </div>
-            <div class="p-2 sm:p-3 bg-emerald-100 dark:bg-emerald-900 rounded-full">
+            <div class="p-2 sm:p-3 bg-emerald-100 rounded-full">
               <CurrencyDollarIcon class="w-4 h-4 sm:w-6 sm:h-6 text-emerald-600" />
             </div>
           </div>
@@ -76,7 +76,7 @@
               <p class="text-lg sm:text-2xl font-bold text-gray-900">R {{ formatCurrency(cartTotal) }}</p>
               <p class="text-xs sm:text-sm text-blue-600">{{ cartItems.length }} items</p>
             </div>
-            <div class="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
+            <div class="p-2 sm:p-3 bg-blue-100 rounded-full">
               <ShoppingCartIcon class="w-4 h-4 sm:w-6 sm:h-6 text-blue-600" />
             </div>
           </div>
@@ -89,7 +89,7 @@
               <p class="text-lg sm:text-2xl font-bold text-gray-900">R {{ formatCurrency(averageSale) }}</p>
               <p class="text-xs sm:text-sm text-yellow-600">Last hour</p>
             </div>
-            <div class="p-2 sm:p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
+            <div class="p-2 sm:p-3 bg-yellow-100 rounded-full">
               <ChartBarIcon class="w-4 h-4 sm:w-6 sm:h-6 text-yellow-600" />
             </div>
           </div>
@@ -102,7 +102,7 @@
               <p class="text-lg sm:text-2xl font-bold text-gray-900">R {{ formatCurrency(cashFloat) }}</p>
               <p class="text-xs sm:text-sm text-purple-600">In drawer</p>
             </div>
-            <div class="p-2 sm:p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
+            <div class="p-2 sm:p-3 bg-purple-100 rounded-full">
               <BanknotesIcon class="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" />
             </div>
           </div>
@@ -154,7 +154,7 @@
                   'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
                   selectedCategory === category.id
                     ? 'bg-blue-600 text-white'
-                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 ]"
               >
                 {{ category.name }}
@@ -170,9 +170,9 @@
                 :key="product.id"
                 @click="addToCart(product)"
                 :disabled="product.stock === 0"
-                class="bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 p-3 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                class="bg-gray-50 rounded-lg border border-gray-200 p-3 hover:border-blue-500 hover:shadow-lg transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div class="aspect-square bg-slate-100 dark:bg-slate-600 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                <div class="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
                   <img 
                     v-if="product.image" 
                     :src="product.image" 
@@ -182,17 +182,17 @@
                   <CubeIcon v-else class="w-8 h-8 text-slate-400" />
                 </div>
                 <h3 class="font-medium text-gray-900 text-sm truncate mb-1">{{ product.name }}</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 truncate mb-2">{{ product.sku }}</p>
+                <p class="text-xs text-gray-500 truncate mb-2">{{ product.sku }}</p>
                 <div class="flex items-center justify-between">
                   <span class="text-sm font-bold text-blue-600">R{{ product.price.toFixed(2) }}</span>
                   <span 
                     :class="[
                       'text-xs px-2 py-1 rounded-full',
                       product.stock > 10 
-                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300' 
+                        ? 'bg-green-100 text-green-700' 
                         : product.stock > 0
-                          ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300'
-                          : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : 'bg-red-100 text-red-700'
                     ]"
                   >
                     Stock: {{ product.stock }}
@@ -219,32 +219,32 @@
             </div>
             
             <div v-if="cartItems.length === 0" class="text-center py-8">
-              <ShoppingCartIcon class="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-              <p class="text-slate-500 dark:text-slate-400">No items in cart</p>
-              <p class="text-sm text-slate-400 dark:text-slate-500">Scan or click products to add</p>
+              <ShoppingCartIcon class="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p class="text-gray-500">No items in cart</p>
+              <p class="text-sm text-gray-400">Scan or click products to add</p>
             </div>
 
             <div v-else class="space-y-3 max-h-64 overflow-y-auto">
               <div 
                 v-for="item in cartItems" 
                 :key="item.id"
-                class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-lg"
+                class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
               >
                 <div class="flex-1">
                   <h4 class="font-medium text-gray-900 text-sm">{{ item.name }}</h4>
-                  <p class="text-xs text-slate-500 dark:text-slate-400">R{{ item.price.toFixed(2) }} each</p>
+                  <p class="text-xs text-gray-500">R{{ item.price.toFixed(2) }} each</p>
                 </div>
                 <div class="flex items-center space-x-2">
                   <button 
                     @click="updateQuantity(item.id, item.quantity - 1)"
-                    class="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-500"
+                    class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300"
                   >
                     <MinusIcon class="w-3 h-3" />
                   </button>
                   <span class="w-8 text-center text-sm font-medium text-gray-900">{{ item.quantity }}</span>
                   <button 
                     @click="updateQuantity(item.id, item.quantity + 1)"
-                    class="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-500"
+                    class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-300"
                   >
                     <PlusIcon class="w-3 h-3" />
                   </button>
@@ -267,10 +267,10 @@
               
               <!-- Customer Selection -->
               <div class="mb-4">
-                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Customer</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Customer</label>
                 <select 
                   v-model="selectedCustomer"
-                  class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
                 >
                   <option value="">Walk-in Customer</option>
                   <option v-for="customer in customers" :key="customer.id" :value="customer.id">
@@ -281,7 +281,7 @@
 
               <!-- Payment Methods -->
               <div class="mb-4">
-                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Payment Method</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
                 <div class="grid grid-cols-2 gap-2">
                   <button 
                     v-for="method in paymentMethods" 
@@ -291,7 +291,7 @@
                       'p-2 rounded-lg text-sm font-medium transition-colors',
                       selectedPaymentMethod === method.id
                         ? 'bg-blue-600 text-white'
-                        : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     ]"
                   >
                     {{ method.name }}
@@ -341,7 +341,7 @@
     <div v-if="showSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-xl p-6 max-w-md w-full">
       <div class="text-center">
-          <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckIcon class="w-8 h-8 text-green-600" />
         </div>
           <h3 class="text-xl font-semibold text-gray-900 mb-2">Payment Successful!</h3>
