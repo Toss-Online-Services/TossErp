@@ -1100,4 +1100,10 @@ const fetchCustomers = async (): Promise<void> => {
     isLoading.value = false
   }
 }
+
+// Page metadata
+definePageMeta({
+  layout: 'default',
+  title: 'Customer Management - TOSS ERP'
+})
 </script>

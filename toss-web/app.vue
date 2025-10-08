@@ -13,6 +13,9 @@
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+    
+    <!-- PWA Install Prompt -->
+    <PwaInstallPrompt />
   </div>
 </template>
 
