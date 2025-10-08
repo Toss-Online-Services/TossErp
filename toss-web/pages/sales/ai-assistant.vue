@@ -240,7 +240,7 @@ useHead({
 
 // Layout
 definePageMeta({
-  layout: 'dashboard'
+  layout: 'default'
 })
 
 // Chat state
