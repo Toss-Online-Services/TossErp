@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/pos/pos_provider.dart';
-import '../../providers/inventory/inventory_provider.dart';
+import '../../providers/pos/simple_pos_provider.dart';
+import '../../providers/inventory/simple_inventory_provider.dart';
 import '../../../domain/entities/payment_entity.dart';
 import 'components/pos_product_grid.dart';
 import 'components/pos_cart_widget.dart';
@@ -26,8 +26,8 @@ class _POSMainScreenState extends State<POSMainScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<InventoryProvider>().loadAllInventory();
-      context.read<POSProvider>().loadTodaySales();
+      context.read<SimpleInventoryProvider>().loadAllInventory();
+      context.read<SimplePOSProvider>().loadTodaySales();
     });
   }
 
@@ -40,8 +40,8 @@ class _POSMainScreenState extends State<POSMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final posProvider = context.watch<POSProvider>();
-    final inventoryProvider = context.watch<InventoryProvider>();
+    final posProvider = context.watch<SimplePOSProvider>();
+    final inventoryProvider = context.watch<SimpleInventoryProvider>();
 
     return Scaffold(
       appBar: _buildAppBar(context, posProvider),
@@ -99,7 +99,7 @@ class _POSMainScreenState extends State<POSMainScreen> {
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context, POSProvider provider) {
+  PreferredSizeWidget _buildAppBar(BuildContext context, SimplePOSProvider provider) {
     return AppBar(
       title: const Text('Point of Sale'),
       actions: [
@@ -207,7 +207,7 @@ class _POSMainScreenState extends State<POSMainScreen> {
     );
   }
 
-  Widget _buildCartHeader(POSProvider provider) {
+  Widget _buildCartHeader(SimplePOSProvider provider) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -250,7 +250,7 @@ class _POSMainScreenState extends State<POSMainScreen> {
     );
   }
 
-  Widget _buildCustomerSection(POSProvider provider) {
+  Widget _buildCustomerSection(SimplePOSProvider provider) {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(12),
@@ -298,7 +298,7 @@ class _POSMainScreenState extends State<POSMainScreen> {
     );
   }
 
-  Widget _buildCartSection(POSProvider provider) {
+  Widget _buildCartSection(SimplePOSProvider provider) {
     if (provider.cartItems.isEmpty) {
       return const Center(
         child: Column(
@@ -333,7 +333,7 @@ class _POSMainScreenState extends State<POSMainScreen> {
     );
   }
 
-  Widget _buildCartItem(POSProvider provider, item, int index) {
+  Widget _buildCartItem(SimplePOSProvider provider, item, int index) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -448,7 +448,7 @@ class _POSMainScreenState extends State<POSMainScreen> {
     );
   }
 
-  Widget _buildCartSummary(POSProvider provider) {
+  Widget _buildCartSummary(SimplePOSProvider provider) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -536,7 +536,7 @@ class _POSMainScreenState extends State<POSMainScreen> {
     );
   }
 
-  Widget _buildCheckoutButtons(BuildContext context, POSProvider provider) {
+  Widget _buildCheckoutButtons(BuildContext context, SimplePOSProvider provider) {
     final canCheckout = provider.cartItems.isNotEmpty;
 
     return Container(
@@ -615,7 +615,7 @@ class _POSMainScreenState extends State<POSMainScreen> {
     );
   }
 
-  Widget _buildQuickActions(BuildContext context, POSProvider provider) {
+  Widget _buildQuickActions(BuildContext context, SimplePOSProvider provider) {
     return POSQuickActions(
       onHoldSale: () {
         // TODO: Implement hold sale
@@ -660,7 +660,7 @@ class _POSMainScreenState extends State<POSMainScreen> {
     );
   }
 
-  void _showCustomerSelector(BuildContext context, POSProvider provider) {
+  void _showCustomerSelector(BuildContext context, SimplePOSProvider provider) {
     // TODO: Implement POSCustomerSelector integration
     showDialog(
       context: context,
@@ -677,7 +677,7 @@ class _POSMainScreenState extends State<POSMainScreen> {
     );
   }
 
-  void _showPaymentDialog(BuildContext context, POSProvider provider) async {
+  void _showPaymentDialog(BuildContext context, SimplePOSProvider provider) async {
     final result = await showDialog(
       context: context,
       builder: (context) => const POSPaymentDialog(),
@@ -712,7 +712,7 @@ class _POSMainScreenState extends State<POSMainScreen> {
     }
   }
 
-  void _showReceiptOptions(BuildContext context, POSProvider provider) {
+  void _showReceiptOptions(BuildContext context, SimplePOSProvider provider) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -747,7 +747,7 @@ class _POSMainScreenState extends State<POSMainScreen> {
     );
   }
 
-  void _showDiscountDialog(BuildContext context, POSProvider provider) {
+  void _showDiscountDialog(BuildContext context, SimplePOSProvider provider) {
     final percentController = TextEditingController();
     final amountController = TextEditingController();
 

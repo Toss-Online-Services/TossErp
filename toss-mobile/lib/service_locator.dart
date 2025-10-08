@@ -44,6 +44,8 @@ import 'data/datasources/local/cash_movement_local_datasource_impl.dart';
 import 'data/datasources/local/z_report_local_datasource_impl.dart';
 import 'data/datasources/local/appointment_local_datasource_impl.dart';
 import 'presentation/providers/shifts/shift_provider.dart';
+import 'presentation/providers/pos/simple_pos_provider.dart';
+import 'presentation/providers/inventory/simple_inventory_provider.dart';
 import 'data/datasources/local/customer_local_datasource_impl.dart';
 import 'data/repositories/customer_repository_impl.dart';
 import 'domain/repositories/user_repository.dart';
@@ -76,6 +78,8 @@ void setupWebServiceLocator() async {
     ));
     sl.registerLazySingleton(() => HomeProvider(transactionRepository: dummyTransactionRepo));
     sl.registerLazySingleton(() => ProductsProvider(productRepository: dummyProductRepo));
+    sl.registerLazySingleton(() => SimplePOSProvider());
+    sl.registerLazySingleton(() => SimpleInventoryProvider());
     
     debugPrint('Web service locator setup completed');
   } catch (e) {
@@ -604,6 +608,8 @@ void setupServiceLocator() async {
       sl.registerLazySingleton(() => AuthProvider(userRepository: sl<UserRepositoryImpl>()));
       sl.registerLazySingleton(() => HomeProvider(transactionRepository: sl<TransactionRepositoryImpl>()));
       sl.registerLazySingleton(() => ProductsProvider(productRepository: sl<ProductRepositoryImpl>()));
+      sl.registerLazySingleton(() => SimplePOSProvider());
+      sl.registerLazySingleton(() => SimpleInventoryProvider());
       sl.registerLazySingleton(() => TransactionsProvider(transactionRepository: sl<TransactionRepositoryImpl>()));
       sl.registerLazySingleton(() => AccountProvider(userRepository: sl<UserRepositoryImpl>()));
       sl.registerLazySingleton(() => ProductFormProvider(productRepository: sl<ProductRepositoryImpl>()));
@@ -632,6 +638,8 @@ final List<SingleChildWidget> providers = [
     ChangeNotifierProvider(create: (_) => sl<MainProvider>()),
     ChangeNotifierProvider(create: (_) => sl<HomeProvider>()),
     ChangeNotifierProvider(create: (_) => sl<ProductsProvider>()),
+    ChangeNotifierProvider(create: (_) => sl<SimplePOSProvider>()),
+    ChangeNotifierProvider(create: (_) => sl<SimpleInventoryProvider>()),
     ChangeNotifierProvider(create: (_) => sl<TransactionsProvider>()),
     ChangeNotifierProvider(create: (_) => sl<AccountProvider>()),
     ChangeNotifierProvider(create: (_) => sl<ProductFormProvider>()),
