@@ -58,10 +58,15 @@ class _MainScreenState extends State<MainScreen> {
         return Scaffold(
           body: widget.child,
           bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Icon(Icons.maps_home_work_outlined),
                 label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.point_of_sale),
+                label: 'POS',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.category_outlined),
@@ -91,16 +96,20 @@ class _MainScreenState extends State<MainScreen> {
       return 0;
     }
 
-    if (location.startsWith('/products')) {
+    if (location.startsWith('/pos')) {
       return 1;
     }
 
-    if (location.startsWith('/transactions')) {
+    if (location.startsWith('/products')) {
       return 2;
     }
 
-    if (location.startsWith('/account')) {
+    if (location.startsWith('/transactions')) {
       return 3;
+    }
+
+    if (location.startsWith('/account')) {
+      return 4;
     }
 
     return 0;
@@ -114,12 +123,15 @@ class _MainScreenState extends State<MainScreen> {
         if (mounted) GoRouter.of(context).go('/home');
         break;
       case 1:
-        if (mounted) GoRouter.of(context).go('/products');
+        if (mounted) GoRouter.of(context).go('/pos');
         break;
       case 2:
-        if (mounted) GoRouter.of(context).go('/transactions');
+        if (mounted) GoRouter.of(context).go('/products');
         break;
       case 3:
+        if (mounted) GoRouter.of(context).go('/transactions');
+        break;
+      case 4:
         if (mounted) GoRouter.of(context).go('/account');
         break;
     }

@@ -15,6 +15,7 @@ import '../../presentation/screens/transactions/transaction_detail_screen.dart';
 import '../../presentation/screens/transactions/transactions_screen.dart';
 import '../../presentation/screens/shifts/shift_screen.dart';
 import '../../presentation/screens/home/barcode_scanner_screen.dart';
+import '../../presentation/screens/pos/pos_main_screen.dart';
 // Import advanced feature screens
 import '../../presentation/screens/customer_management_screen.dart';
 import '../../presentation/screens/employee/employee_management_screen.dart';
@@ -115,6 +116,7 @@ class AppRoutes {
     },
     routes: [
       _home,
+      _pos,
       _products,
       _transactions,
       _shifts,
@@ -140,6 +142,15 @@ class AppRoutes {
     pageBuilder: (context, state) {
       return const NoTransitionPage<void>(
         child: HomeScreen(),
+      );
+    },
+  );
+
+  static final _pos = GoRoute(
+    path: '/pos',
+    pageBuilder: (context, state) {
+      return const NoTransitionPage<void>(
+        child: POSMainScreen(),
       );
     },
   );
