@@ -14,11 +14,15 @@
             <PlusIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
             New Order
           </button>
-          <button @click="exportOrders" 
-                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors text-sm sm:text-base">
-            <ArrowDownTrayIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
-            Export
-          </button>
+          <ExportButton
+            :data="filteredOrders"
+            filename="sales_orders"
+            title="Sales Orders Report"
+            data-type="sales"
+            @export-start="() => {}"
+            @export-complete="(format) => showNotification(`Orders exported as ${format.toUpperCase()}`, 'success')"
+            @export-error="(error) => showNotification(error, 'error')"
+          />
         </div>
       </div>
 
@@ -255,6 +259,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import ExportButton from '~/components/common/ExportButton.vue'
 import { 
   ShoppingBagIcon,
   PlusIcon,
@@ -534,7 +539,11 @@ const printOrder = (order: any) => {
   alert(`Printing order ${order.orderNumber}`)
 }
 
-const exportOrders = () => {
-  alert('Exporting orders... Feature coming soon!')
+const showNotification = (message: string, type: 'success' | 'error') => {
+  if (type === 'success') {
+    alert(`✅ ${message}`)
+  } else {
+    alert(`❌ ${message}`)
+  }
 }
 </script>

@@ -173,27 +173,23 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Production Trend (Last 7 Days)</h3>
-        <div class="h-64 flex items-center justify-center text-gray-400">
-          <div class="text-center">
-            <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
-            </svg>
-            <p>Production trend chart (Chart.js integration pending)</p>
-          </div>
-        </div>
+        <LineChart
+          :labels="productionTrendData.labels"
+          :datasets="productionTrendData.datasets"
+          height="300px"
+          y-axis-label="Units Produced"
+        />
       </div>
 
       <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Capacity Utilization</h3>
-        <div class="h-64 flex items-center justify-center text-gray-400">
-          <div class="text-center">
-            <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
-            </svg>
-            <p>Capacity utilization chart (Chart.js integration pending)</p>
-          </div>
-        </div>
+        <PieChart
+          :labels="capacityData.labels"
+          :data="capacityData.datasets[0].data"
+          :colors="capacityData.datasets[0].backgroundColor"
+          type="doughnut"
+          height="300px"
+        />
       </div>
     </div>
 
@@ -270,10 +266,19 @@
 </template>
 
 <script setup lang="ts">
+import LineChart from '~/components/charts/LineChart.vue'
+import PieChart from '~/components/charts/PieChart.vue'
+
 definePageMeta({
   layout: 'default',
   middleware: ['auth']
 })
+
+const { getProductionTrendData, getCapacityUtilizationData } = useCharts()
+
+// Chart data
+const productionTrendData = getProductionTrendData()
+const capacityData = getCapacityUtilizationData()
 
 // Mock data - would be fetched from API
 const stats = ref({
