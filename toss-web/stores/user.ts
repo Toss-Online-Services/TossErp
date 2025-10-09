@@ -1,3 +1,5 @@
+import type { StoreUser as User, LoginCredentials, ChangePasswordData } from '~/types/auth'
+
 export const useUserStore = defineStore('user', () => {
   // State
   const user = ref<User | null>(null)
@@ -150,30 +152,3 @@ export const useUserStore = defineStore('user', () => {
     changePassword
   }
 })
-
-// Types
-export interface User {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  avatar?: string
-  businessId?: string
-  businessName?: string
-  role: string
-  status: 'active' | 'inactive' | 'pending'
-  createdAt: string
-  updatedAt: string
-}
-
-export interface LoginCredentials {
-  email: string
-  password: string
-  rememberMe?: boolean
-}
-
-export interface ChangePasswordData {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
-}
