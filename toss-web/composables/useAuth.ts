@@ -1,42 +1,12 @@
 import { ref, computed } from 'vue'
 import { jwtDecode } from 'jwt-decode'
-
-export interface User {
-  id: number
-  name: string
-  email: string
-  roles: string[]
-  permissions: string[]
-  avatar?: string
-  lastLogin?: Date
-}
-
-export interface LoginCredentials {
-  email: string
-  password: string
-  rememberMe?: boolean
-}
-
-export interface AuthResponse {
-  token: string
-  refreshToken: string
-  user: User
-  expiresIn: number
-}
-
-export interface TokenPayload {
-  sub: string
-  email: string
-  roles: string[]
-  permissions: string[]
-  exp: number
-  iat: number
-}
-
-export interface RefreshTokenResponse {
-  token: string
-  expiresIn: number
-}
+import type { 
+  AuthUser as User, 
+  LoginCredentials, 
+  AuthResponse, 
+  TokenPayload, 
+  RefreshTokenResponse 
+} from '~/types/auth'
 
 export const useAuth = () => {
   const user = useState<User | null>('auth-user', () => null)
@@ -188,9 +158,22 @@ export const useAuth = () => {
         }
       }
 
+      // Log successful login
+      if (process.client) {
+        const { logLogin } = useAudit()
+        await logLogin(true)
+      }
+
       return true
     } catch (e: any) {
       error.value = e.message || 'Login failed'
+      
+      // Log failed login
+      if (process.client) {
+        const { logLogin } = useAudit()
+        await logLogin(false, error.value)
+      }
+      
       return false
     } finally {
       isLoading.value = false
@@ -201,6 +184,12 @@ export const useAuth = () => {
    * Logout user
    */
   const logout = async (reason?: string) => {
+    // Log logout before clearing state
+    if (process.client && user.value) {
+      const { logLogout } = useAudit()
+      await logLogout()
+    }
+
     // Clear refresh timer
     if (refreshTimer.value) {
       clearTimeout(refreshTimer.value)
@@ -257,7 +246,7 @@ export const useAuth = () => {
         try {
           user.value = JSON.parse(storedUser)
           refreshToken.value = storedRefreshToken
-          token.value = storedToken
+        token.value = storedToken
           
           if (storedTokenExpiry) {
             tokenExpiry.value = parseInt(storedTokenExpiry)

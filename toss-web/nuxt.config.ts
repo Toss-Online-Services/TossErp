@@ -2,8 +2,23 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-08-24',
+  typescript: {
+    strict: true,
+    typeCheck: true
+  },
   devServer: {
     port: 3001
+  },
+  experimental: {
+    payloadExtraction: true,
+    componentIslands: true
+  },
+  optimization: {
+    splitChunks: {
+      layouts: true,
+      pages: true,
+      commons: true
+    }
   },
   modules: [
     '@nuxtjs/tailwindcss',
@@ -54,6 +69,23 @@ export default defineNuxtConfig({
     }
   },
   ssr: false,  // Disable SSR temporarily to fix router issues
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'chart': ['chart.js', 'chartjs-adapter-date-fns'],
+            'export': ['xlsx', 'jspdf', 'jspdf-html2canvas'],
+            'vendor': ['vue', 'vue-router', 'pinia']
+          }
+        }
+      },
+      chunkSizeWarningLimit: 1000
+    },
+    optimizeDeps: {
+      include: ['chart.js', 'xlsx', 'jspdf']
+    }
+  },
   nitro: {
     experimental: {
       wasm: true
