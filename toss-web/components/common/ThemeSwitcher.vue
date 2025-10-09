@@ -1,18 +1,13 @@
 <template>
-  <button @click="toggleTheme" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-    <SunIcon v-if="isDark" class="h-6 w-6" />
-    <MoonIcon v-else class="h-6 w-6" />
-  </button>
+  <!-- Theme switcher disabled to maintain consistent light theme -->
+  <div class="p-2 rounded-full opacity-50 cursor-not-allowed">
+    <SunIcon class="h-6 w-6 text-gray-400" />
+  </div>
 </template>
 
 <script setup>
-import { SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
-import { useColorMode } from '@vueuse/core'
+import { SunIcon } from '@heroicons/vue/24/outline'
 
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
-
-const toggleTheme = () => {
-  colorMode.preference = isDark.value ? 'light' : 'dark'
-}
+// Theme switcher is disabled to maintain consistent light theme across the application
+// The application is configured to always use light mode for consistency
 </script>

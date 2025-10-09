@@ -26,6 +26,11 @@ import { ref, onMounted } from 'vue'
 const isOnline = ref(true)
 
 onMounted(() => {
+  // Force light mode and clear any stored preferences
+  document.documentElement.classList.remove('dark')
+  document.documentElement.classList.add('light')
+  localStorage.setItem('nuxt-color-mode', 'light')
+  
   // Offline detection
   isOnline.value = navigator.onLine
   

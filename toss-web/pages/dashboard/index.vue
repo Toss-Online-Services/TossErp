@@ -96,17 +96,23 @@
       <!-- Sales Chart -->
       <div class="bg-white shadow-sm rounded-lg p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">Sales Trend</h2>
-        <div class="h-64 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg">
-          <p class="text-gray-500">Sales chart placeholder - integrate Chart.js or similar</p>
-        </div>
+        <LineChart
+          :labels="salesTrendData.labels"
+          :datasets="salesTrendData.datasets"
+          height="300px"
+          y-axis-label="Sales (R)"
+        />
       </div>
 
       <!-- Revenue vs Expenses -->
       <div class="bg-white shadow-sm rounded-lg p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">Revenue vs Expenses</h2>
-        <div class="h-64 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg">
-          <p class="text-gray-500">Revenue chart placeholder - integrate Chart.js or similar</p>
-        </div>
+        <BarChart
+          :labels="financialData.labels"
+          :datasets="financialData.datasets"
+          height="300px"
+          y-axis-label="Amount (R)"
+        />
       </div>
     </div>
 
@@ -246,12 +252,20 @@
 </template>
 
 <script setup lang="ts">
+import LineChart from '~/components/charts/LineChart.vue'
+import BarChart from '~/components/charts/BarChart.vue'
+
 definePageMeta({
   layout: 'default',
   middleware: ['auth'],
 })
 
 const { metrics, topProducts, refreshDashboard } = useDashboard()
+const { getSalesAnalyticsData, getFinancialPerformanceData } = useCharts()
+
+// Chart data
+const salesTrendData = getSalesAnalyticsData()
+const financialData = getFinancialPerformanceData()
 
 // Load dashboard data on mount
 onMounted(async () => {

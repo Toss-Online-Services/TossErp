@@ -16,7 +16,10 @@ export default defineNuxtConfig({
     cssPath: '~/assets/css/main.css'
   },
   colorMode: {
-    classSuffix: ''
+    preference: 'light',
+    fallback: 'light',
+    classSuffix: '',
+    storageKey: 'nuxt-color-mode'
   },
   components: {
     global: true,
@@ -47,7 +50,7 @@ export default defineNuxtConfig({
     // Public keys (exposed to client-side)
     public: {
       apiBase: '/api',
-      apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:5000'
+      apiBaseUrl: process.env.API_BASE_URL || ''
     }
   },
   ssr: false,  // Disable SSR temporarily to fix router issues
@@ -62,10 +65,6 @@ export default defineNuxtConfig({
       },
       '/api/analytics': {
         target: 'http://localhost:8081/api/analytics',
-        changeOrigin: true
-      },
-      '/api/auth': {
-        target: 'http://localhost:8081/api/auth',
         changeOrigin: true
       },
       '/api/hr': {
