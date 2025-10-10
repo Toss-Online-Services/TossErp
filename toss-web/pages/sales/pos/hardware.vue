@@ -9,6 +9,15 @@
           <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Quick checkout with barcode scanner & card reader support</p>
         </div>
         <div class="flex flex-wrap gap-2 sm:gap-3">
+          <button @click="toggleFullscreen" 
+                  :class="[
+                    'flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 text-white rounded-lg transition-colors text-sm sm:text-base',
+                    isFullscreen ? 'bg-purple-600 hover:bg-purple-700' : 'bg-indigo-600 hover:bg-indigo-700'
+                  ]"
+                  :title="isFullscreen ? 'Exit Fullscreen (F11)' : 'Enter Fullscreen (F11)'">
+            <component :is="isFullscreen ? ArrowsPointingInIcon : ArrowsPointingOutIcon" class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
+            {{ isFullscreen ? 'Exit' : 'Full' }}
+          </button>
           <button @click="handleOpenDrawer" 
                   class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors text-sm sm:text-base">
             <CurrencyDollarIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
@@ -22,35 +31,63 @@
         </div>
       </div>
 
-      <!-- Hardware Status Indicators -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full" :class="barcodeScannerConnected ? 'bg-green-500' : 'bg-red-500'"></div>
-            <span class="text-sm font-medium text-slate-900 dark:text-white">Barcode Scanner</span>
+      <!-- Compact Hardware Status Bar -->
+      <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-2">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 rounded-full" :class="barcodeScannerConnected ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-xs text-slate-600 dark:text-slate-400">Scanner</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 rounded-full" :class="cardReaderConnected ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-xs text-slate-600 dark:text-slate-400">Card</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 rounded-full" :class="receiptPrinterConnected ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-xs text-slate-600 dark:text-slate-400">Printer</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 rounded-full" :class="cashDrawerConnected ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-xs text-slate-600 dark:text-slate-400">Drawer</span>
+            </div>
           </div>
-          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ barcodeScannerConnected ? 'Connected' : 'Disconnected' }}</p>
+          <button @click="showHardwareDetails = !showHardwareDetails" 
+                  class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+            {{ showHardwareDetails ? 'Hide Details' : 'Show Details' }}
+          </button>
         </div>
-        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full" :class="cardReaderConnected ? 'bg-green-500' : 'bg-red-500'"></div>
-            <span class="text-sm font-medium text-slate-900 dark:text-white">Card Reader</span>
+        
+        <!-- Expandable Hardware Details -->
+        <div v-if="showHardwareDetails" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+          <div class="p-2">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full" :class="barcodeScannerConnected ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-sm font-medium text-slate-900 dark:text-white">Barcode Scanner</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ barcodeScannerConnected ? 'Connected' : 'Disconnected' }}</p>
           </div>
-          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ cardReaderConnected ? 'Connected' : 'Disconnected' }}</p>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full" :class="receiptPrinterConnected ? 'bg-green-500' : 'bg-red-500'"></div>
-            <span class="text-sm font-medium text-slate-900 dark:text-white">Receipt Printer</span>
+          <div class="p-2">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full" :class="cardReaderConnected ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-sm font-medium text-slate-900 dark:text-white">Card Reader</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ cardReaderConnected ? 'Connected' : 'Disconnected' }}</p>
           </div>
-          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ receiptPrinterConnected ? 'Connected' : 'Disconnected' }}</p>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full" :class="cashDrawerConnected ? 'bg-green-500' : 'bg-red-500'"></div>
-            <span class="text-sm font-medium text-slate-900 dark:text-white">Cash Drawer</span>
+          <div class="p-2">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full" :class="receiptPrinterConnected ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-sm font-medium text-slate-900 dark:text-white">Receipt Printer</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ receiptPrinterConnected ? 'Connected' : 'Disconnected' }}</p>
           </div>
-          <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ cashDrawerConnected ? 'Connected' : 'Disconnected' }}</p>
+          <div class="p-2">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full" :class="cashDrawerConnected ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-sm font-medium text-slate-900 dark:text-white">Cash Drawer</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ cashDrawerConnected ? 'Connected' : 'Disconnected' }}</p>
+          </div>
         </div>
       </div>
 
@@ -209,7 +246,9 @@ import {
   BanknotesIcon,
   CreditCardIcon,
   DevicePhoneMobileIcon,
-  CubeIcon
+  CubeIcon,
+  ArrowsPointingOutIcon,
+  ArrowsPointingInIcon
 } from '@heroicons/vue/24/outline'
 
 // Page metadata
@@ -246,6 +285,8 @@ const cartItems = ref<Array<{ id: string; name: string; price: number; quantity:
 const showPaymentModal = ref(false)
 const paymentMessage = ref('')
 const searchInput = ref<HTMLInputElement>()
+const isFullscreen = ref(false)
+const showHardwareDetails = ref(false)
 
 // Sample products
 const products = ref([
@@ -285,6 +326,10 @@ onMounted(async () => {
   
   // Focus search input
   searchInput.value?.focus()
+  
+  // Add fullscreen event listeners
+  document.addEventListener('fullscreenchange', handleFullscreenChange)
+  document.addEventListener('keydown', handleKeyboardShortcut)
 })
 
 onUnmounted(() => {
@@ -292,6 +337,10 @@ onUnmounted(() => {
     cleanupBarcode()
   }
   cleanup()
+  
+  // Remove fullscreen event listeners
+  document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  document.removeEventListener('keydown', handleKeyboardShortcut)
 })
 
 // Functions
@@ -453,5 +502,42 @@ const formatCurrency = (amount: number) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(amount)
+}
+
+// Fullscreen functionality
+const toggleFullscreen = async () => {
+  try {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen()
+      isFullscreen.value = true
+      showHardwareDetails.value = false // Collapse hardware details in fullscreen
+      
+      // Close sidebar/burger menu in fullscreen
+      const sidebar = document.querySelector('[data-sidebar]')
+      if (sidebar) {
+        sidebar.classList.remove('open')
+      }
+      
+      showNotification('✓ Fullscreen mode activated')
+    } else {
+      await document.exitFullscreen()
+      isFullscreen.value = false
+      showNotification('✓ Fullscreen mode deactivated')
+    }
+  } catch (error) {
+    console.error('Fullscreen error:', error)
+    showNotification('✗ Fullscreen not supported', 'error')
+  }
+}
+
+const handleFullscreenChange = () => {
+  isFullscreen.value = !!document.fullscreenElement
+}
+
+const handleKeyboardShortcut = (event: KeyboardEvent) => {
+  if (event.key === 'F11') {
+    event.preventDefault()
+    toggleFullscreen()
+  }
 }
 </script>
