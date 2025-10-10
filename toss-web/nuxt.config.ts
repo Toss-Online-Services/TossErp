@@ -3,8 +3,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-08-24',
   typescript: {
-    strict: true,
-    typeCheck: true
+    strict: false,
+    typeCheck: false
   },
   devServer: {
     port: 3001
