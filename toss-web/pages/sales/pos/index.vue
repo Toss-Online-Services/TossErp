@@ -9,6 +9,15 @@
           <p class="text-gray-600 mt-1 text-sm sm:text-base">Quick checkout system for Thabo's Spaza Shop</p>
         </div>
         <div class="flex flex-wrap gap-2 sm:gap-3">
+          <button @click="toggleFullscreen" 
+                  :class="[
+                    'flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 text-white rounded-lg transition-colors text-sm sm:text-base',
+                    isFullscreen ? 'bg-purple-600 hover:bg-purple-700' : 'bg-indigo-600 hover:bg-indigo-700'
+                  ]"
+                  :title="isFullscreen ? 'Exit Fullscreen (F11)' : 'Enter Fullscreen (F11)'">
+            <component :is="isFullscreen ? ArrowsPointingInIcon : ArrowsPointingOutIcon" class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
+            {{ isFullscreen ? 'Exit' : 'Fullscreen' }}
+          </button>
           <button @click="openDrawer" 
                   class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors text-sm sm:text-base">
             <CurrencyDollarIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
@@ -22,89 +31,72 @@
         </div>
       </div>
 
-      <!-- Hardware Status Indicators -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="bg-white p-3 rounded-lg border border-gray-200">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full" :class="hardwareStatus.barcodeScanner ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
-            <span class="text-sm font-medium text-gray-900">Barcode Scanner</span>
-          </div>
-          <p class="text-xs text-gray-600 mt-1">{{ hardwareStatus.barcodeScanner ? 'Ready' : 'Not Connected' }}</p>
-        </div>
-        <div class="bg-white p-3 rounded-lg border border-gray-200">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full" :class="hardwareStatus.cardReader ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
-            <span class="text-sm font-medium text-gray-900">Card Reader</span>
-          </div>
-          <p class="text-xs text-gray-600 mt-1">{{ hardwareStatus.cardReader ? 'Ready' : 'Not Connected' }}</p>
-        </div>
-        <div class="bg-white p-3 rounded-lg border border-gray-200">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full" :class="hardwareStatus.printer ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
-            <span class="text-sm font-medium text-gray-900">Receipt Printer</span>
-          </div>
-          <p class="text-xs text-gray-600 mt-1">{{ hardwareStatus.printer ? 'Ready' : 'Not Connected' }}</p>
-        </div>
-        <div class="bg-white p-3 rounded-lg border border-gray-200">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-full" :class="hardwareStatus.cashDrawer ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
-            <span class="text-sm font-medium text-gray-900">Cash Drawer</span>
-          </div>
-          <p class="text-xs text-gray-600 mt-1">{{ hardwareStatus.cashDrawer ? 'Ready' : 'Not Connected' }}</p>
-        </div>
-      </div>
-
-      <!-- POS Stats Cards -->
-      <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs sm:text-sm text-gray-600">Today's Sales</p>
-              <p class="text-lg sm:text-2xl font-bold text-gray-900">R {{ formatCurrency(todaySales) }}</p>
-              <p class="text-xs sm:text-sm text-emerald-600">{{ todayTransactions }} transactions</p>
+      <!-- Compact Status Bar with Hardware & Stats -->
+      <div class="bg-white rounded-lg border border-gray-200 p-3">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <!-- Hardware Status -->
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 rounded-full" :class="hardwareStatus.barcodeScanner ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-xs text-gray-600">Scanner</span>
             </div>
-            <div class="p-2 sm:p-3 bg-emerald-100 rounded-full">
-              <CurrencyDollarIcon class="w-4 h-4 sm:w-6 sm:h-6 text-emerald-600" />
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 rounded-full" :class="hardwareStatus.cardReader ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-xs text-gray-600">Card</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 rounded-full" :class="hardwareStatus.printer ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-xs text-gray-600">Printer</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 rounded-full" :class="hardwareStatus.cashDrawer ? 'bg-green-500' : 'bg-red-500'"></div>
+              <span class="text-xs text-gray-600">Drawer</span>
             </div>
           </div>
-        </div>
-
-        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs sm:text-sm text-gray-600">Current Sale</p>
-              <p class="text-lg sm:text-2xl font-bold text-gray-900">R {{ formatCurrency(cartTotal) }}</p>
-              <p class="text-xs sm:text-sm text-blue-600">{{ cartItems.length }} items</p>
+          
+          <!-- Quick Stats -->
+          <div class="flex items-center gap-4 text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="text-gray-600">Today:</span>
+              <span class="font-semibold text-emerald-600">R{{ formatCurrency(todaySales) }}</span>
             </div>
-            <div class="p-2 sm:p-3 bg-blue-100 rounded-full">
-              <ShoppingCartIcon class="w-4 h-4 sm:w-6 sm:h-6 text-blue-600" />
+            <div class="flex items-center gap-1.5">
+              <span class="text-gray-600">Cart:</span>
+              <span class="font-semibold text-blue-600">R{{ formatCurrency(cartTotal) }}</span>
             </div>
-          </div>
-        </div>
-
-        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs sm:text-sm text-gray-600">Avg. Sale</p>
-              <p class="text-lg sm:text-2xl font-bold text-gray-900">R {{ formatCurrency(averageSale) }}</p>
-              <p class="text-xs sm:text-sm text-yellow-600">Last hour</p>
-            </div>
-            <div class="p-2 sm:p-3 bg-yellow-100 rounded-full">
-              <ChartBarIcon class="w-4 h-4 sm:w-6 sm:h-6 text-yellow-600" />
+            <div class="flex items-center gap-1.5">
+              <span class="text-gray-600">Float:</span>
+              <span class="font-semibold text-purple-600">R{{ formatCurrency(cashFloat) }}</span>
             </div>
           </div>
+          
+          <button @click="showStatsDetails = !showStatsDetails" 
+                  class="text-xs text-blue-600 hover:underline">
+            {{ showStatsDetails ? 'Hide' : 'Details' }}
+          </button>
         </div>
-
-        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs sm:text-sm text-gray-600">Cash Float</p>
-              <p class="text-lg sm:text-2xl font-bold text-gray-900">R {{ formatCurrency(cashFloat) }}</p>
-              <p class="text-xs sm:text-sm text-purple-600">In drawer</p>
-            </div>
-            <div class="p-2 sm:p-3 bg-purple-100 rounded-full">
-              <BanknotesIcon class="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" />
-            </div>
+        
+        <!-- Expandable Details -->
+        <div v-if="showStatsDetails" class="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-3 pt-3 border-t border-gray-200">
+          <div class="p-2">
+            <p class="text-xs text-gray-600">Today's Sales</p>
+            <p class="text-lg font-bold text-gray-900">R {{ formatCurrency(todaySales) }}</p>
+            <p class="text-xs text-emerald-600">{{ todayTransactions }} transactions</p>
+          </div>
+          <div class="p-2">
+            <p class="text-xs text-gray-600">Current Sale</p>
+            <p class="text-lg font-bold text-gray-900">R {{ formatCurrency(cartTotal) }}</p>
+            <p class="text-xs text-blue-600">{{ cartItems.length }} items</p>
+          </div>
+          <div class="p-2">
+            <p class="text-xs text-gray-600">Avg. Sale</p>
+            <p class="text-lg font-bold text-gray-900">R {{ formatCurrency(averageSale) }}</p>
+            <p class="text-xs text-yellow-600">Last hour</p>
+          </div>
+          <div class="p-2">
+            <p class="text-xs text-gray-600">Cash Float</p>
+            <p class="text-lg font-bold text-gray-900">R {{ formatCurrency(cashFloat) }}</p>
+            <p class="text-xs text-purple-600">In drawer</p>
           </div>
         </div>
       </div>
@@ -388,7 +380,9 @@ import {
   CheckIcon,
   CreditCardIcon,
   PrinterIcon,
-  CogIcon
+  CogIcon,
+  ArrowsPointingOutIcon,
+  ArrowsPointingInIcon
 } from '@heroicons/vue/24/outline'
 import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
 
@@ -416,6 +410,7 @@ const showSuccessModal = ref(false)
 const showCustomerModal = ref(false)
 const showReports = ref(false)
 const searchInput = ref<HTMLInputElement>()
+const isFullscreen = ref(false)
 
 // POS Stats
 const todaySales = ref(18496)
@@ -540,10 +535,18 @@ const addFirstProductToCart = () => {
 onMounted(async () => {
   await initializeHardware()
   setupBarcodeScanning()
+  
+  // Add fullscreen event listeners
+  document.addEventListener('fullscreenchange', handleFullscreenChange)
+  document.addEventListener('keydown', handleKeyboardShortcut)
 })
 
 onUnmounted(() => {
   cleanupHardware()
+  
+  // Remove fullscreen event listeners
+  document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  document.removeEventListener('keydown', handleKeyboardShortcut)
 })
 
 // Hardware initialization
@@ -857,6 +860,39 @@ const emailReceipt = () => {
 const closeSuccessModal = () => {
   showSuccessModal.value = false
   clearCart()
+}
+
+// Fullscreen functionality
+const toggleFullscreen = async () => {
+  try {
+    if (!document.fullscreenElement) {
+      // Enter fullscreen
+      await document.documentElement.requestFullscreen()
+      isFullscreen.value = true
+      showNotification('✓ Entered fullscreen mode. Press F11 or ESC to exit')
+    } else {
+      // Exit fullscreen
+      await document.exitFullscreen()
+      isFullscreen.value = false
+      showNotification('✓ Exited fullscreen mode')
+    }
+  } catch (error) {
+    console.error('Fullscreen error:', error)
+    showNotification('✗ Fullscreen not supported or blocked', 'error')
+  }
+}
+
+// Handle fullscreen changes (F11, ESC, etc.)
+const handleFullscreenChange = () => {
+  isFullscreen.value = !!document.fullscreenElement
+}
+
+// Keyboard shortcut for fullscreen (F11)
+const handleKeyboardShortcut = (event: KeyboardEvent) => {
+  if (event.key === 'F11') {
+    event.preventDefault()
+    toggleFullscreen()
+  }
 }
 
 // Page metadata
