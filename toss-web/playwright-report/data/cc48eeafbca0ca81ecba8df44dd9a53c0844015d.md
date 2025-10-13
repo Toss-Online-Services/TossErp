@@ -1,0 +1,171 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]:
+        - button [ref=e8] [cursor=pointer]:
+          - img [ref=e9]
+        - generic [ref=e11]:
+          - generic [ref=e13]: T
+          - heading "TOSS ERP" [level=1] [ref=e14]
+        - generic [ref=e15]:
+          - button [ref=e16] [cursor=pointer]:
+            - img [ref=e17]
+          - button "User" [ref=e21] [cursor=pointer]:
+            - img "User" [ref=e22]
+      - main [ref=e23]:
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - heading "Delivery Notes" [level=1] [ref=e28]
+              - paragraph [ref=e29]: Track order fulfillment and deliveries for Thabo's Spaza Shop
+            - generic [ref=e30]:
+              - button "New Delivery" [ref=e31] [cursor=pointer]:
+                - img [ref=e32]
+                - text: New Delivery
+              - button "Export" [ref=e34] [cursor=pointer]:
+                - img [ref=e35]
+                - text: Export
+          - generic [ref=e37]:
+            - generic [ref=e39]:
+              - generic [ref=e40]:
+                - paragraph [ref=e41]: Total Deliveries
+                - paragraph [ref=e42]: "234"
+                - paragraph [ref=e43]: 12 today
+              - img [ref=e45]
+            - generic [ref=e48]:
+              - generic [ref=e49]:
+                - paragraph [ref=e50]: In Transit
+                - paragraph [ref=e51]: "18"
+                - paragraph [ref=e52]: 5 pending
+              - img [ref=e54]
+            - generic [ref=e57]:
+              - generic [ref=e58]:
+                - paragraph [ref=e59]: Delivered
+                - paragraph [ref=e60]: "216"
+                - paragraph [ref=e61]: 94% on time
+              - img [ref=e63]
+            - generic [ref=e66]:
+              - generic [ref=e67]:
+                - paragraph [ref=e68]: Avg Delivery Time
+                - paragraph [ref=e69]: 4.5h
+                - paragraph [ref=e70]: Last 30 days
+              - img [ref=e72]
+          - generic [ref=e76]:
+            - textbox "Search deliveries..." [ref=e78]
+            - generic [ref=e79]:
+              - combobox [ref=e80]:
+                - option "All Status" [selected]
+                - option "Draft"
+                - option "Ready for Pickup"
+                - option "In Transit"
+                - option "Delivered"
+                - option "Cancelled"
+              - combobox [ref=e81]:
+                - option "All Time" [selected]
+                - option "Today"
+                - option "This Week"
+                - option "This Month"
+          - generic [ref=e82]:
+            - heading "Recent Deliveries" [level=3] [ref=e84]
+            - generic [ref=e86]:
+              - generic [ref=e87]:
+                - generic [ref=e88]:
+                  - img [ref=e90]
+                  - generic [ref=e92]:
+                    - generic [ref=e93]:
+                      - paragraph [ref=e94]: DN-2025-001
+                      - generic [ref=e95]: in-transit
+                    - paragraph [ref=e96]: Nomsa Community Kitchen
+                    - paragraph [ref=e97]: 123 Community Street, Soweto, 1818
+                - generic [ref=e98]:
+                  - paragraph [ref=e99]: 8 items
+                  - paragraph [ref=e100]: 13 Oct, 07:45
+                  - generic [ref=e101]:
+                    - button [ref=e102] [cursor=pointer]:
+                      - img [ref=e103]
+                    - button [ref=e106] [cursor=pointer]:
+                      - img [ref=e107]
+                    - button [ref=e109] [cursor=pointer]:
+                      - img [ref=e110]
+              - generic [ref=e113]:
+                - generic [ref=e114]:
+                  - img [ref=e116]
+                  - generic [ref=e118]:
+                    - generic [ref=e119]:
+                      - paragraph [ref=e120]: DN-2025-002
+                      - generic [ref=e121]: delivered
+                    - paragraph [ref=e122]: Sipho Auto Repair
+                    - paragraph [ref=e123]: 456 Garage Road, Alexandra, 2090
+                - generic [ref=e124]:
+                  - paragraph [ref=e125]: 5 items
+                  - paragraph [ref=e126]: 13 Oct, 05:45
+                  - generic [ref=e127]:
+                    - button [ref=e128] [cursor=pointer]:
+                      - img [ref=e129]
+                    - button [ref=e132] [cursor=pointer]:
+                      - img [ref=e133]
+                    - button [ref=e135] [cursor=pointer]:
+                      - img [ref=e136]
+              - generic [ref=e139]:
+                - generic [ref=e140]:
+                  - img [ref=e142]
+                  - generic [ref=e144]:
+                    - generic [ref=e145]:
+                      - paragraph [ref=e146]: DN-2025-003
+                      - generic [ref=e147]: ready
+                    - paragraph [ref=e148]: Lerato Hair Studio
+                    - paragraph [ref=e149]: 789 Beauty Lane, Diepsloot, 2189
+                - generic [ref=e150]:
+                  - paragraph [ref=e151]: 3 items
+                  - paragraph [ref=e152]: 13 Oct, 07:45
+                  - generic [ref=e153]:
+                    - button [ref=e154] [cursor=pointer]:
+                      - img [ref=e155]
+                    - button [ref=e158] [cursor=pointer]:
+                      - img [ref=e159]
+                    - button [ref=e161] [cursor=pointer]:
+                      - img [ref=e162]
+      - generic [ref=e166]:
+        - link "Home" [ref=e167]:
+          - /url: /
+          - img [ref=e168]
+          - generic [ref=e170]: Home
+        - link "CRM" [ref=e171]:
+          - /url: /crm
+          - img [ref=e172]
+          - generic [ref=e174]: CRM
+        - link "Projects" [ref=e175]:
+          - /url: /projects
+          - img [ref=e176]
+          - generic [ref=e178]: Projects
+        - link "Accounts" [ref=e179]:
+          - /url: /accounts
+          - img [ref=e180]
+          - generic [ref=e182]: Accounts
+        - link "Stock" [ref=e183]:
+          - /url: /stock
+          - img [ref=e184]
+          - generic [ref=e186]: Stock
+    - button "3" [ref=e187] [cursor=pointer]:
+      - img [ref=e188]
+      - generic [ref=e191]: "3"
+  - generic:
+    - img
+  - generic:
+    - generic:
+      - generic:
+        - button "Go to parent" [disabled]
+        - button "Open in editor"
+        - button "Close"
+  - generic [ref=e192]:
+    - button "Toggle Nuxt DevTools" [ref=e193] [cursor=pointer]:
+      - img [ref=e194]
+    - generic "Page load time" [ref=e197]:
+      - generic [ref=e198]: "771"
+      - generic [ref=e199]: ms
+    - button "Toggle Component Inspector" [ref=e201] [cursor=pointer]:
+      - img [ref=e202]
+```

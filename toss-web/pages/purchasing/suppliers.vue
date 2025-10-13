@@ -553,10 +553,27 @@ const deleteSupplier = (supplier: any) => {
   }
 }
 
-const exportSuppliers = () => {
-  // Export suppliers to CSV or Excel
-  console.log('Export suppliers')
-  alert('Export functionality will be implemented')
+const exportSuppliers = async () => {
+  const exportData = filteredSuppliers.value.map(supplier => ({
+    'Supplier Code': supplier.code,
+    'Supplier Name': supplier.name,
+    'Email': supplier.email,
+    'Phone': supplier.phone,
+    'Category': supplier.category,
+    'Rating': supplier.rating,
+    'Total Orders': supplier.totalOrders,
+    'Status': supplier.status,
+    'Address': supplier.address
+  }))
+
+  try {
+    const { exportData: exportDataFn } = await import('~/composables/useExport')
+    await exportDataFn(exportData, 'suppliers', 'csv')
+    alert('Suppliers exported successfully!')
+  } catch (error) {
+    console.error('Export failed:', error)
+    alert('Failed to export suppliers. Please try again.')
+  }
 }
 
 onMounted(() => {

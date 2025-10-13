@@ -193,6 +193,113 @@
         </div>
       </div>
 
+      <!-- Sales Module Features -->
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 sm:gap-6">
+        <!-- Core Sales Features -->
+        <div class="bg-white border shadow-sm dark:bg-slate-800 rounded-xl border-gray-200">
+          <div class="p-4 border-b sm:p-6 border-gray-200">
+            <h3 class="text-base font-semibold sm:text-lg text-gray-900">Core Sales Features</h3>
+          </div>
+          <div class="p-4 sm:p-6">
+            <div class="space-y-2 sm:space-y-3">
+              <NuxtLink to="/sales/quotations" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <DocumentTextIcon class="flex-shrink-0 w-5 h-5 text-emerald-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Quotations</p>
+                    <p class="text-xs text-gray-600">Create professional quotes</p>
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <NuxtLink to="/sales/orders" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <ShoppingBagIcon class="flex-shrink-0 w-5 h-5 text-blue-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Sales Orders</p>
+                    <p class="text-xs text-gray-600">Manage customer orders</p>
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <NuxtLink to="/sales/invoices" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <DocumentTextIcon class="flex-shrink-0 w-5 h-5 text-purple-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Invoices</p>
+                    <p class="text-xs text-gray-600">Generate & track invoices</p>
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <NuxtLink to="/sales/delivery-notes" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <TruckIcon class="flex-shrink-0 w-5 h-5 text-indigo-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Delivery Notes</p>
+                    <p class="text-xs text-gray-600">Track order fulfillment</p>
+                  </div>
+                </div>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Features -->
+        <div class="bg-white border shadow-sm dark:bg-slate-800 rounded-xl border-gray-200">
+          <div class="p-4 border-b sm:p-6 border-gray-200">
+            <h3 class="text-base font-semibold sm:text-lg text-gray-900">Advanced Features</h3>
+          </div>
+          <div class="p-4 sm:p-6">
+            <div class="space-y-2 sm:space-y-3">
+              <NuxtLink to="/sales/pricing-rules" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <CurrencyDollarIcon class="flex-shrink-0 w-5 h-5 text-green-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Pricing Rules</p>
+                    <p class="text-xs text-gray-600">Automate discounts</p>
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <NuxtLink to="/sales/analytics" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <ChartBarIcon class="flex-shrink-0 w-5 h-5 text-blue-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Analytics</p>
+                    <p class="text-xs text-gray-600">Sales insights & reports</p>
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <NuxtLink to="/sales/ai-assistant" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <div class="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">AI Assistant</p>
+                    <p class="text-xs text-gray-600">Smart sales insights</p>
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <NuxtLink to="/sales/pos" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <ShoppingCartIcon class="flex-shrink-0 w-5 h-5 text-orange-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Point of Sale</p>
+                    <p class="text-xs text-gray-600">Quick checkout system</p>
+                  </div>
+                </div>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Collaborative Features -->
       <div class="p-4 text-white shadow-sm bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl sm:p-6">
         <div class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">

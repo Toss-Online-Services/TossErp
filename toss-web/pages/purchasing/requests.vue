@@ -649,11 +649,24 @@ const submitRequest = () => {
 
 // Action functions
 const viewRequest = (request: any) => {
-  console.log('View request:', request)
+  const details = `
+Purchase Request: ${request.number}
+Requester: ${request.requester}
+Department: ${request.department}
+Status: ${request.status}
+Priority: ${request.priority}
+Total Amount: $${request.totalAmount.toLocaleString()}
+Created: ${formatDate(request.createdAt)}
+
+Items:
+${request.items.map((item: any) => `- ${item.name}: ${item.quantity} @ $${item.estimatedPrice}`).join('\n')}
+`
+  alert(details)
 }
 
 const editRequest = (request: any) => {
   console.log('Edit request:', request)
+  alert('Edit functionality will open a pre-filled form')
 }
 
 const deleteRequest = (request: any) => {
@@ -661,18 +674,22 @@ const deleteRequest = (request: any) => {
     const index = requests.value.findIndex(r => r.id === request.id)
     if (index > -1) {
       requests.value.splice(index, 1)
+      alert(`Request ${request.number} deleted successfully!`)
     }
   }
 }
 
 const approveRequest = (request: any) => {
   request.status = 'approved'
-  alert(`Request ${request.number} approved!`)
+  alert(`Request ${request.number} approved! You can now convert it to a Purchase Order.`)
 }
 
 const convertToPO = (request: any) => {
-  request.status = 'converted'
-  alert(`Request ${request.number} converted to Purchase Order!`)
+  if (confirm(`Convert ${request.number} to Purchase Order?`)) {
+    request.status = 'converted'
+    alert(`Request ${request.number} converted to Purchase Order PO-2025-XXX`)
+    // In real app, navigate to the new PO
+  }
 }
 
 onMounted(() => {

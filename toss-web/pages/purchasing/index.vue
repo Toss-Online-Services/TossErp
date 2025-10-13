@@ -170,96 +170,153 @@
         </div>
       </div>
 
+      <!-- Core Purchasing Features -->
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Core Purchasing Features</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <NuxtLink to="/purchasing/material-requests" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow">
+            <div class="flex items-center space-x-3">
+              <div class="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                <ClipboardDocumentListIcon class="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900 dark:text-white">Material Requests</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Department requisitions</p>
+              </div>
+            </div>
+          </NuxtLink>
+
+          <NuxtLink to="/purchasing/rfq" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow">
+            <div class="flex items-center space-x-3">
+              <div class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
+                <DocumentTextIcon class="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900 dark:text-white">Request for Quotation</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Multi-supplier RFQ</p>
+              </div>
+            </div>
+          </NuxtLink>
+
+          <NuxtLink to="/purchasing/supplier-quotations" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow">
+            <div class="flex items-center space-x-3">
+              <div class="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
+                <ClipboardDocumentCheckIcon class="w-6 h-6 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900 dark:text-white">Supplier Quotations</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Compare & award</p>
+              </div>
+            </div>
+          </NuxtLink>
+
+          <NuxtLink to="/purchasing/blanket-orders" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow">
+            <div class="flex items-center space-x-3">
+              <div class="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
+                <DocumentDuplicateIcon class="w-6 h-6 text-orange-600 dark:text-orange-400" />
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900 dark:text-white">Blanket Orders</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Long-term agreements</p>
+              </div>
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+
       <!-- Module Navigation -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <!-- Suppliers -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center mb-4">
-            <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900/30">
-              <BuildingOfficeIcon class="w-8 h-8 text-purple-600 dark:text-purple-400" />
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Procurement Management</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Suppliers -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div class="flex items-center mb-4">
+              <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900/30">
+                <BuildingOfficeIcon class="w-8 h-8 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Supplier Management</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Vendor relationships & performance</p>
+              </div>
             </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Supplier Management</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Vendor relationships & performance</p>
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Total Suppliers:</span>
+                <span class="font-medium">42</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Avg Rating:</span>
+                <span class="font-medium">4.2/5</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">On-time Delivery:</span>
+                <span class="font-medium text-green-600">94%</span>
+              </div>
             </div>
+            <NuxtLink to="/purchasing/suppliers" class="block w-full text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors">
+              Manage Suppliers
+            </NuxtLink>
           </div>
-          <div class="space-y-2 mb-4">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Total Suppliers:</span>
-              <span class="font-medium">42</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Avg Rating:</span>
-              <span class="font-medium">4.2/5</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">On-time Delivery:</span>
-              <span class="font-medium text-green-600">94%</span>
-            </div>
-          </div>
-          <NuxtLink to="/purchasing/suppliers" class="block w-full text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors">
-            Manage Suppliers
-          </NuxtLink>
-        </div>
 
-        <!-- Purchase Requests -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center mb-4">
-            <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30">
-              <DocumentTextIcon class="w-8 h-8 text-blue-600 dark:text-blue-400" />
+          <!-- Purchase Requests -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div class="flex items-center mb-4">
+              <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30">
+                <DocumentTextIcon class="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Purchase Requests</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Request approval workflow</p>
+              </div>
             </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Purchase Requests</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Request approval workflow</p>
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Pending Approval:</span>
+                <span class="font-medium text-yellow-600">8</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Approved Today:</span>
+                <span class="font-medium">12</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Avg Processing:</span>
+                <span class="font-medium">2.3 days</span>
+              </div>
             </div>
+            <NuxtLink to="/purchasing/requests" class="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              View Requests
+            </NuxtLink>
           </div>
-          <div class="space-y-2 mb-4">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Pending Approval:</span>
-              <span class="font-medium text-yellow-600">8</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Approved Today:</span>
-              <span class="font-medium">12</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Avg Processing:</span>
-              <span class="font-medium">2.3 days</span>
-            </div>
-          </div>
-          <NuxtLink to="/purchasing/requests" class="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            View Requests
-          </NuxtLink>
-        </div>
 
-        <!-- Purchase Orders -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center mb-4">
-            <div class="p-3 rounded-full bg-green-100 dark:bg-green-900/30">
-              <ShoppingCartIcon class="w-8 h-8 text-green-600 dark:text-green-400" />
+          <!-- Purchase Orders -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div class="flex items-center mb-4">
+              <div class="p-3 rounded-full bg-green-100 dark:bg-green-900/30">
+                <ShoppingCartIcon class="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Purchase Orders</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Order lifecycle management</p>
+              </div>
             </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Purchase Orders</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Order lifecycle management</p>
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Active Orders:</span>
+                <span class="font-medium">24</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">In Transit:</span>
+                <span class="font-medium text-blue-600">15</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">Delivered Today:</span>
+                <span class="font-medium text-green-600">6</span>
+              </div>
             </div>
+            <NuxtLink to="/purchasing/orders" class="block w-full text-center bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
+              Manage Orders
+            </NuxtLink>
           </div>
-          <div class="space-y-2 mb-4">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Active Orders:</span>
-              <span class="font-medium">24</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">In Transit:</span>
-              <span class="font-medium text-blue-600">15</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Delivered Today:</span>
-              <span class="font-medium text-green-600">6</span>
-            </div>
-          </div>
-          <NuxtLink to="/purchasing/orders" class="block w-full text-center bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
-            Manage Orders
-          </NuxtLink>
         </div>
       </div>
 
@@ -415,6 +472,8 @@ import {
   BuildingOfficeIcon,
   DocumentTextIcon,
   ClipboardDocumentCheckIcon,
+  ClipboardDocumentListIcon,
+  DocumentDuplicateIcon,
   CreditCardIcon,
   PlusIcon,
   QrCodeIcon,
@@ -562,7 +621,7 @@ const scanReceipt = () => {
 
 const viewAnalytics = () => {
   console.log('Viewing analytics')
-  alert('Loading procurement analytics...')
+  navigateTo('/purchasing/analytics')
 }
 
 onMounted(() => {
