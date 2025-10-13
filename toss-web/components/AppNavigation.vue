@@ -33,7 +33,7 @@
                 <NuxtLink to="/sales" class="dropdown-link">💰 Sales & CRM</NuxtLink>
                 <NuxtLink to="/pos" class="dropdown-link">🛒 Point of Sale</NuxtLink>
                 <NuxtLink to="/purchasing" class="dropdown-link">🛍️ Purchasing</NuxtLink>
-                <NuxtLink to="/accounts" class="dropdown-link">📊 Accounts</NuxtLink>
+                <NuxtLink to="/accounting" class="dropdown-link">📊 Accounting</NuxtLink>
                 
                 <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
                 <h3 class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Collaboration</h3>

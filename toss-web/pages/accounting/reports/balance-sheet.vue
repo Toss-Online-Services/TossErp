@@ -200,8 +200,7 @@ import { ref, computed, onMounted } from 'vue'
 import type { BalanceSheet } from '~/types/accounting'
 
 definePageMeta({
-  middleware: ['auth'],
-  layout: 'default',
+  layout: 'default'
 })
 
 useHead({

@@ -46,7 +46,7 @@
       </NuxtLink>
       
       <NuxtLink 
-        to="/accounts" 
+        to="/accounting" 
         class="mobile-nav-link"
         :class="{ 'mobile-nav-link-active': route.path.startsWith('/accounts') }"
         @click="$emit('close')"

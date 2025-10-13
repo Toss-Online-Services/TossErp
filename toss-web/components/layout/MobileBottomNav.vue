@@ -16,7 +16,7 @@
         <span class="text-xs">Projects</span>
       </NuxtLink>
       
-      <NuxtLink to="/accounts" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/accounts') }">
+      <NuxtLink to="/accounting" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/accounting') }">
         <CurrencyDollarIcon class="w-5 h-5 mb-1" />
         <span class="text-xs">Accounts</span>
       </NuxtLink>
