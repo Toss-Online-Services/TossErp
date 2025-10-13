@@ -209,8 +209,7 @@ import { ref, onMounted } from 'vue'
 import type { ProfitAndLoss } from '~/types/accounting'
 
 definePageMeta({
-  middleware: ['auth'],
-  layout: 'default',
+  layout: 'default'
 })
 
 useHead({

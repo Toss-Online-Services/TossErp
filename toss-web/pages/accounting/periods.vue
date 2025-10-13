@@ -67,8 +67,7 @@
 import { ref } from 'vue'
 
 definePageMeta({
-  middleware: ['auth'],
-  layout: 'default',
+  layout: 'default'
 })
 
 useHead({

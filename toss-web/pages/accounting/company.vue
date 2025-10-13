@@ -10,6 +10,9 @@
               <p class="text-gray-600 dark:text-gray-400">Manage company information and configurations</p>
             </div>
             <div class="flex space-x-3">
+              <button @click="exportCompanies" class="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                Export CSV
+              </button>
               <button @click="showCreateModal = true" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                 <PlusIcon class="w-5 h-5 inline mr-2" />
                 New Company
@@ -423,6 +426,33 @@ const closeModal = () => {
     is_active: true,
     description: ''
   }
+}
+
+const exportCompanies = () => {
+  const exportData = filteredCompanies.value.map(company => ({
+    'Name': company.name,
+    'Abbreviation': company.abbreviation,
+    'Domain': company.domain,
+    'Currency': company.currency,
+    'Country': company.country,
+    'Tax ID': company.tax_id || '',
+    'Status': company.is_active ? 'Active' : 'Inactive',
+    'Is Group': company.is_group ? 'Yes' : 'No',
+    'Description': company.description || ''
+  }))
+
+  const csvContent = [
+    Object.keys(exportData[0]).join(','),
+    ...exportData.map(row => Object.values(row).map(v => `"${v}"`).join(','))
+  ].join('\n')
+
+  const blob = new Blob([csvContent], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `companies-${new Date().toISOString().split('T')[0]}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
 }
 
 // Lifecycle

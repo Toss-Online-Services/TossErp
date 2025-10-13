@@ -27,11 +27,18 @@
       </div>
 
       <div class="flex gap-2">
-        <ExportButton
-          :data="vatReport"
-          filename="vat-report"
-          :formats="['pdf', 'excel', 'csv']"
-        />
+        <button
+          @click="exportReport('csv')"
+          class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+        >
+          Export CSV
+        </button>
+        <button
+          @click="exportReport('pdf')"
+          class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+        >
+          Export PDF
+        </button>
         <button
           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           @click="loadVATReport"
@@ -261,8 +268,7 @@ import type { VATReport } from '~/types/vat'
 import { useVAT } from '~/composables/useVAT'
 
 definePageMeta({
-  middleware: ['auth'],
-  layout: 'default',
+  layout: 'default'
 })
 
 useHead({
@@ -288,6 +294,47 @@ const loadVATReport = async () => {
   const start = new Date(startDate.value)
   const end = new Date(endDate.value)
   vatReport.value = await getVATReport(start, end)
+}
+
+const exportReport = (format: 'csv' | 'pdf') => {
+  if (!vatReport.value) return
+
+  if (format === 'csv') {
+    const csvData = [
+      ['VAT Report - South Africa'],
+      [`Period: ${startDate.value} to ${endDate.value}`],
+      [''],
+      ['OUTPUT VAT (SALES)'],
+      ['Category', 'Count', 'Subtotal (R)', 'VAT (R)', 'Total (R)'],
+      ['Standard (15%)', vatReport.value.sales.standard.count, vatReport.value.sales.standard.subtotal, vatReport.value.sales.standard.vatAmount, vatReport.value.sales.standard.total],
+      ['Zero-Rated (0%)', vatReport.value.sales.zeroRated.count, vatReport.value.sales.zeroRated.subtotal, vatReport.value.sales.zeroRated.vatAmount, vatReport.value.sales.zeroRated.total],
+      ['Exempt', vatReport.value.sales.exempt.count, vatReport.value.sales.exempt.subtotal, vatReport.value.sales.exempt.vatAmount, vatReport.value.sales.exempt.total],
+      ['Total', vatReport.value.sales.total.count, vatReport.value.sales.total.subtotal, vatReport.value.sales.total.vatAmount, vatReport.value.sales.total.total],
+      [''],
+      ['INPUT VAT (PURCHASES)'],
+      ['Category', 'Count', 'Subtotal (R)', 'VAT (R)', 'Total (R)'],
+      ['Standard (15%)', vatReport.value.purchases.standard.count, vatReport.value.purchases.standard.subtotal, vatReport.value.purchases.standard.vatAmount, vatReport.value.purchases.standard.total],
+      ['Zero-Rated (0%)', vatReport.value.purchases.zeroRated.count, vatReport.value.purchases.zeroRated.subtotal, vatReport.value.purchases.zeroRated.vatAmount, vatReport.value.purchases.zeroRated.total],
+      ['Total', vatReport.value.purchases.total.count, vatReport.value.purchases.total.subtotal, vatReport.value.purchases.total.vatAmount, vatReport.value.purchases.total.total],
+      [''],
+      ['VAT SUMMARY'],
+      ['Output VAT', '', '', vatReport.value.sales.total.vatAmount, ''],
+      ['Input VAT', '', '', vatReport.value.purchases.total.vatAmount, ''],
+      ['Net VAT', '', '', vatReport.value.netVAT, ''],
+      ['Total Payable to SARS', '', '', vatReport.value.totalPayable, ''],
+    ]
+
+    const csv = csvData.map(row => row.join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `vat-report-${startDate.value}-to-${endDate.value}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  } else {
+    alert('PDF export for SARS eFiling format coming soon!')
+  }
 }
 
 onMounted(() => {
