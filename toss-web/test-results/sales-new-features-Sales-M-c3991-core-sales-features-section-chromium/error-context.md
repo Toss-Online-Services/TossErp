@@ -1,0 +1,332 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - complementary [ref=e6]:
+        - generic [ref=e7]:
+          - generic [ref=e9]: T
+          - heading "TOSS ERP" [level=1] [ref=e10]
+        - navigation [ref=e11]:
+          - link "Dashboard" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - img [ref=e13]
+            - text: Dashboard
+          - button "CRM" [ref=e16] [cursor=pointer]:
+            - generic [ref=e17]:
+              - img [ref=e18]
+              - text: CRM
+            - img [ref=e20]
+          - generic [ref=e22]:
+            - button "Sales & Selling" [ref=e23] [cursor=pointer]:
+              - generic [ref=e24]:
+                - img [ref=e25]
+                - text: Sales & Selling
+              - img [ref=e27]
+            - generic [ref=e29]:
+              - link "Sales Dashboard" [ref=e30] [cursor=pointer]:
+                - /url: /sales
+              - link "Quotations" [ref=e31] [cursor=pointer]:
+                - /url: /sales/quotations
+              - link "Sales Orders" [ref=e32] [cursor=pointer]:
+                - /url: /sales/orders
+              - link "Sales Invoices" [ref=e33] [cursor=pointer]:
+                - /url: /sales/invoices
+              - link "Point of Sale" [ref=e34] [cursor=pointer]:
+                - /url: /sales/pos
+              - link "Sales Analytics" [ref=e35] [cursor=pointer]:
+                - /url: /sales/analytics
+          - button "Purchasing" [ref=e37] [cursor=pointer]:
+            - generic [ref=e38]:
+              - img [ref=e39]
+              - text: Purchasing
+            - img [ref=e41]
+          - button "Stock & Inventory" [ref=e44] [cursor=pointer]:
+            - generic [ref=e45]:
+              - img [ref=e46]
+              - text: Stock & Inventory
+            - img [ref=e48]
+          - button "Accounting" [ref=e51] [cursor=pointer]:
+            - generic [ref=e52]:
+              - img [ref=e53]
+              - text: Accounting
+            - img [ref=e55]
+          - button "HR & Payroll" [ref=e58] [cursor=pointer]:
+            - generic [ref=e59]:
+              - img [ref=e60]
+              - text: HR & Payroll
+            - img [ref=e62]
+          - button "Projects" [ref=e65] [cursor=pointer]:
+            - generic [ref=e66]:
+              - img [ref=e67]
+              - text: Projects
+            - img [ref=e69]
+          - button "Automation AI" [ref=e72] [cursor=pointer]:
+            - generic [ref=e73]:
+              - img [ref=e74]
+              - text: Automation
+              - generic [ref=e76]: AI
+            - img [ref=e77]
+          - button "Collaboration Team" [ref=e80] [cursor=pointer]:
+            - generic [ref=e81]:
+              - img [ref=e82]
+              - text: Collaboration
+              - generic [ref=e84]: Team
+            - img [ref=e85]
+          - button "Manufacturing" [ref=e88] [cursor=pointer]:
+            - generic [ref=e89]:
+              - img [ref=e90]
+              - text: Manufacturing
+            - img [ref=e92]
+          - button "Reports & Analytics" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]:
+              - img [ref=e97]
+              - text: Reports & Analytics
+            - img [ref=e99]
+          - button "Settings" [ref=e102] [cursor=pointer]:
+            - generic [ref=e103]:
+              - img [ref=e104]
+              - text: Settings
+            - img [ref=e107]
+        - generic [ref=e110]: TOSS ERP v1.0.0
+      - generic [ref=e111]:
+        - banner [ref=e112]:
+          - generic [ref=e114]:
+            - img [ref=e115]
+            - textbox "Search..." [ref=e117]
+          - generic [ref=e118]:
+            - button [ref=e119] [cursor=pointer]:
+              - img [ref=e120]
+            - img [ref=e124]
+            - button "Username" [ref=e128] [cursor=pointer]:
+              - generic [ref=e129]: Username
+        - main [ref=e130]:
+          - generic [ref=e132]:
+            - generic [ref=e133]:
+              - generic [ref=e134]:
+                - heading "Sales Management" [level=1] [ref=e135]
+                - paragraph [ref=e136]: Track sales, manage orders, and grow your revenue
+              - generic [ref=e137]:
+                - button "New Quote" [ref=e138] [cursor=pointer]:
+                  - img [ref=e139]
+                  - text: New Quote
+                - button "New Sale" [ref=e141] [cursor=pointer]:
+                  - img [ref=e142]
+                  - text: New Sale
+            - generic [ref=e144]:
+              - generic [ref=e146]:
+                - generic [ref=e147]:
+                  - paragraph [ref=e148]: Today's Sales
+                  - paragraph [ref=e149]: R 24,500
+                  - paragraph [ref=e150]: +15.8%
+                - img [ref=e152]
+              - generic [ref=e155]:
+                - generic [ref=e156]:
+                  - paragraph [ref=e157]: Orders
+                  - paragraph [ref=e158]: "42"
+                  - paragraph [ref=e159]: 8 pending
+                - img [ref=e161]
+              - generic [ref=e164]:
+                - generic [ref=e165]:
+                  - paragraph [ref=e166]: Quotes
+                  - paragraph [ref=e167]: "15"
+                  - paragraph [ref=e168]: 6 active
+                - img [ref=e170]
+              - generic [ref=e173]:
+                - generic [ref=e174]:
+                  - paragraph [ref=e175]: Avg Order
+                  - paragraph [ref=e176]: R 580
+                  - paragraph [ref=e177]: 68% conv
+                - img [ref=e179]
+            - generic [ref=e181]:
+              - generic [ref=e183]:
+                - generic [ref=e185]:
+                  - heading "Recent Sales" [level=3] [ref=e186]
+                  - combobox [ref=e187]:
+                    - option "Today" [selected]
+                    - option "This Week"
+                    - option "This Month"
+                - generic [ref=e189]:
+                  - generic [ref=e190]:
+                    - generic [ref=e191]:
+                      - img [ref=e193]
+                      - generic [ref=e195]:
+                        - paragraph [ref=e196]: Mapisa Hair Salon
+                        - paragraph [ref=e197]: 3 items • 13 Oct, 08:49
+                    - generic [ref=e198]:
+                      - paragraph [ref=e199]: R 850
+                      - generic [ref=e200]: completed
+                  - generic [ref=e201]:
+                    - generic [ref=e202]:
+                      - img [ref=e204]
+                      - generic [ref=e206]:
+                        - paragraph [ref=e207]: Thabo Spaza Shop
+                        - paragraph [ref=e208]: 12 items • 13 Oct, 06:49
+                    - generic [ref=e209]:
+                      - paragraph [ref=e210]: R 1,250
+                      - generic [ref=e211]: pending
+                  - generic [ref=e212]:
+                    - generic [ref=e213]:
+                      - img [ref=e215]
+                      - generic [ref=e217]:
+                        - paragraph [ref=e218]: Nomsa Beauty
+                        - paragraph [ref=e219]: 2 items • 13 Oct, 04:49
+                    - generic [ref=e220]:
+                      - paragraph [ref=e221]: R 420
+                      - generic [ref=e222]: completed
+                  - generic [ref=e223]:
+                    - generic [ref=e224]:
+                      - img [ref=e226]
+                      - generic [ref=e228]:
+                        - paragraph [ref=e229]: Sipho Auto Repair
+                        - paragraph [ref=e230]: 1 items • 13 Oct, 02:49
+                    - generic [ref=e231]:
+                      - paragraph [ref=e232]: R 2,100
+                      - generic [ref=e233]: processing
+              - generic [ref=e234]:
+                - generic [ref=e235]:
+                  - heading "Sales Pipeline" [level=3] [ref=e237]
+                  - generic [ref=e239]:
+                    - generic [ref=e240]:
+                      - generic [ref=e241]:
+                        - paragraph [ref=e242]: Leads
+                        - paragraph [ref=e243]: 18 opportunities
+                      - paragraph [ref=e245]: R 45,000
+                    - generic [ref=e248]:
+                      - generic [ref=e249]:
+                        - paragraph [ref=e250]: Proposals
+                        - paragraph [ref=e251]: 12 opportunities
+                      - paragraph [ref=e253]: R 28,000
+                    - generic [ref=e256]:
+                      - generic [ref=e257]:
+                        - paragraph [ref=e258]: Negotiations
+                        - paragraph [ref=e259]: 8 opportunities
+                      - paragraph [ref=e261]: R 35,000
+                    - generic [ref=e264]:
+                      - generic [ref=e265]:
+                        - paragraph [ref=e266]: Closed Won
+                        - paragraph [ref=e267]: 15 opportunities
+                      - paragraph [ref=e269]: R 52,000
+                - generic [ref=e272]:
+                  - heading "Quick Actions" [level=3] [ref=e274]
+                  - generic [ref=e276]:
+                    - button "Create Sale Record a new sale transaction" [ref=e277] [cursor=pointer]:
+                      - generic [ref=e278]:
+                        - img [ref=e279]
+                        - generic [ref=e281]:
+                          - paragraph [ref=e282]: Create Sale
+                          - paragraph [ref=e283]: Record a new sale transaction
+                    - button "Create Quote Generate a price quote" [ref=e284] [cursor=pointer]:
+                      - generic [ref=e285]:
+                        - img [ref=e286]
+                        - generic [ref=e288]:
+                          - paragraph [ref=e289]: Create Quote
+                          - paragraph [ref=e290]: Generate a price quote
+                    - link "Check Inventory View stock levels" [ref=e291] [cursor=pointer]:
+                      - /url: /inventory
+                      - generic [ref=e292]:
+                        - img [ref=e293]
+                        - generic [ref=e295]:
+                          - paragraph [ref=e296]: Check Inventory
+                          - paragraph [ref=e297]: View stock levels
+                    - button "Sales Report Generate analytics" [ref=e298] [cursor=pointer]:
+                      - generic [ref=e299]:
+                        - img [ref=e300]
+                        - generic [ref=e302]:
+                          - paragraph [ref=e303]: Sales Report
+                          - paragraph [ref=e304]: Generate analytics
+            - generic [ref=e305]:
+              - generic [ref=e306]:
+                - heading "Core Sales Features" [level=3] [ref=e308]
+                - generic [ref=e310]:
+                  - link "Quotations Create professional quotes" [ref=e311] [cursor=pointer]:
+                    - /url: /sales/quotations
+                    - generic [ref=e312]:
+                      - img [ref=e313]
+                      - generic [ref=e315]:
+                        - paragraph [ref=e316]: Quotations
+                        - paragraph [ref=e317]: Create professional quotes
+                  - link "Sales Orders Manage customer orders" [ref=e318] [cursor=pointer]:
+                    - /url: /sales/orders
+                    - generic [ref=e319]:
+                      - img [ref=e320]
+                      - generic [ref=e322]:
+                        - paragraph [ref=e323]: Sales Orders
+                        - paragraph [ref=e324]: Manage customer orders
+                  - link "Invoices Generate & track invoices" [ref=e325] [cursor=pointer]:
+                    - /url: /sales/invoices
+                    - generic [ref=e326]:
+                      - img [ref=e327]
+                      - generic [ref=e329]:
+                        - paragraph [ref=e330]: Invoices
+                        - paragraph [ref=e331]: Generate & track invoices
+                  - link "Delivery Notes Track order fulfillment" [ref=e332] [cursor=pointer]:
+                    - /url: /sales/delivery-notes
+                    - generic [ref=e333]:
+                      - img [ref=e334]
+                      - generic [ref=e336]:
+                        - paragraph [ref=e337]: Delivery Notes
+                        - paragraph [ref=e338]: Track order fulfillment
+              - generic [ref=e339]:
+                - heading "Advanced Features" [level=3] [ref=e341]
+                - generic [ref=e343]:
+                  - link "Pricing Rules Automate discounts" [ref=e344] [cursor=pointer]:
+                    - /url: /sales/pricing-rules
+                    - generic [ref=e345]:
+                      - img [ref=e346]
+                      - generic [ref=e348]:
+                        - paragraph [ref=e349]: Pricing Rules
+                        - paragraph [ref=e350]: Automate discounts
+                  - link "Analytics Sales insights & reports" [ref=e351] [cursor=pointer]:
+                    - /url: /sales/analytics
+                    - generic [ref=e352]:
+                      - img [ref=e353]
+                      - generic [ref=e355]:
+                        - paragraph [ref=e356]: Analytics
+                        - paragraph [ref=e357]: Sales insights & reports
+                  - link "AI Assistant Smart sales insights" [ref=e358] [cursor=pointer]:
+                    - /url: /sales/ai-assistant
+                    - generic [ref=e359]:
+                      - img [ref=e361]
+                      - generic [ref=e363]:
+                        - paragraph [ref=e364]: AI Assistant
+                        - paragraph [ref=e365]: Smart sales insights
+                  - link "Point of Sale Quick checkout system" [ref=e366] [cursor=pointer]:
+                    - /url: /sales/pos
+                    - generic [ref=e367]:
+                      - img [ref=e368]
+                      - generic [ref=e370]:
+                        - paragraph [ref=e371]: Point of Sale
+                        - paragraph [ref=e372]: Quick checkout system
+            - generic [ref=e374]:
+              - generic [ref=e375]:
+                - heading "SMME Collaboration Network" [level=3] [ref=e376]
+                - paragraph [ref=e377]: Connect with other township businesses for group buying, shared logistics, and joint opportunities
+              - generic [ref=e378]:
+                - button "Group Buying" [ref=e379] [cursor=pointer]:
+                  - img [ref=e380]
+                  - text: Group Buying
+                - button "Shared Logistics" [ref=e382] [cursor=pointer]:
+                  - img [ref=e383]
+                  - text: Shared Logistics
+    - button "3" [ref=e385] [cursor=pointer]:
+      - img [ref=e386]
+      - generic [ref=e389]: "3"
+  - generic:
+    - img
+  - generic:
+    - generic:
+      - generic:
+        - button "Go to parent" [disabled]
+        - button "Open in editor"
+        - button "Close"
+  - generic [ref=e390]:
+    - button "Toggle Nuxt DevTools" [ref=e391] [cursor=pointer]:
+      - img [ref=e392]
+    - generic "Page load time" [ref=e395]:
+      - generic [ref=e396]: "223"
+      - generic [ref=e397]: ms
+    - button "Toggle Component Inspector" [ref=e399] [cursor=pointer]:
+      - img [ref=e400]
+```

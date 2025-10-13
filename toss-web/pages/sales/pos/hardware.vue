@@ -53,8 +53,9 @@
             </div>
           </div>
           <button @click="showHardwareDetails = !showHardwareDetails" 
-                  class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
-            {{ showHardwareDetails ? 'Hide Details' : 'Show Details' }}
+                  class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors">
+            <component :is="showHardwareDetails ? 'ChevronUpIcon' : 'ChevronDownIcon'" class="w-3 h-3" />
+            {{ showHardwareDetails ? 'Hide' : 'Details' }}
           </button>
         </div>
         
@@ -248,7 +249,9 @@ import {
   DevicePhoneMobileIcon,
   CubeIcon,
   ArrowsPointingOutIcon,
-  ArrowsPointingInIcon
+  ArrowsPointingInIcon,
+  ChevronUpIcon,
+  ChevronDownIcon
 } from '@heroicons/vue/24/outline'
 
 // Page metadata

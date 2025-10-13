@@ -71,7 +71,8 @@
           </div>
           
           <button @click="showStatsDetails = !showStatsDetails" 
-                  class="text-xs text-blue-600 hover:underline">
+                  class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+            <component :is="showStatsDetails ? 'ChevronUpIcon' : 'ChevronDownIcon'" class="w-3 h-3" />
             {{ showStatsDetails ? 'Hide' : 'Details' }}
           </button>
         </div>
@@ -382,7 +383,9 @@ import {
   PrinterIcon,
   CogIcon,
   ArrowsPointingOutIcon,
-  ArrowsPointingInIcon
+  ArrowsPointingInIcon,
+  ChevronUpIcon,
+  ChevronDownIcon
 } from '@heroicons/vue/24/outline'
 import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
 
@@ -411,6 +414,7 @@ const showCustomerModal = ref(false)
 const showReports = ref(false)
 const searchInput = ref<HTMLInputElement>()
 const isFullscreen = ref(false)
+const showStatsDetails = ref(false)
 
 // POS Stats
 const todaySales = ref(18496)
@@ -869,6 +873,14 @@ const toggleFullscreen = async () => {
       // Enter fullscreen
       await document.documentElement.requestFullscreen()
       isFullscreen.value = true
+      showStatsDetails.value = false // Collapse stats in fullscreen
+      
+      // Close sidebar/burger menu
+      const sidebar = document.querySelector('[data-sidebar]')
+      if (sidebar) {
+        sidebar.classList.remove('open')
+      }
+      
       showNotification('✓ Entered fullscreen mode. Press F11 or ESC to exit')
     } else {
       // Exit fullscreen

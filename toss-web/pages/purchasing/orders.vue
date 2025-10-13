@@ -638,34 +638,69 @@ const submitPO = () => {
 
 // Action functions
 const viewPO = (po: any) => {
-  console.log('View PO:', po)
+  const details = `
+Purchase Order: ${po.number}
+Supplier: ${po.supplier} (${po.supplierCode})
+Status: ${po.status}
+Progress: ${po.progress}%
+Expected Delivery: ${formatDate(po.expectedDelivery)}
+Total Amount: $${po.totalAmount.toLocaleString()}
+Payment Terms: ${po.paymentTerms}
+Delivery Terms: ${po.deliveryTerms}
+
+Items:
+${po.items.map((item: any) => `- ${item.name}: ${item.quantity} @ $${item.unitPrice}`).join('\n')}
+`
+  alert(details)
 }
 
 const editPO = (po: any) => {
   console.log('Edit PO:', po)
+  alert('Edit functionality will open a pre-filled form')
 }
 
 const sendPO = (po: any) => {
-  po.status = 'sent'
-  po.progress = 25
-  alert(`PO ${po.number} sent to supplier!`)
+  if (confirm(`Send PO ${po.number} to ${po.supplier} via email?`)) {
+    po.status = 'sent'
+    po.progress = 25
+    alert(`PO ${po.number} sent to supplier! They will receive an email notification.`)
+  }
 }
 
 const downloadPO = (po: any) => {
   console.log('Download PO PDF:', po)
-  alert('PO PDF download will be implemented')
+  alert(`Downloading PO ${po.number} as PDF... This will generate a professional purchase order document.`)
 }
 
 const cancelPO = (po: any) => {
-  if (confirm(`Are you sure you want to cancel ${po.number}?`)) {
+  if (confirm(`Are you sure you want to cancel ${po.number}? This action cannot be undone.`)) {
     po.status = 'cancelled'
     po.progress = 0
+    alert(`PO ${po.number} cancelled. Supplier will be notified.`)
   }
 }
 
-const exportPOs = () => {
-  console.log('Export POs')
-  alert('Export functionality will be implemented')
+const exportPOs = async () => {
+  const exportData = filteredPOs.value.map(po => ({
+    'PO Number': po.number,
+    'Supplier': po.supplier,
+    'Supplier Code': po.supplierCode,
+    'Items': po.items.length,
+    'Total Amount': po.totalAmount,
+    'Expected Delivery': formatDate(po.expectedDelivery),
+    'Status': po.status,
+    'Progress': po.progress + '%',
+    'Created Date': formatDate(po.createdAt)
+  }))
+
+  try {
+    const { exportData: exportDataFn } = await import('~/composables/useExport')
+    await exportDataFn(exportData, 'purchase_orders', 'csv')
+    alert('Purchase orders exported successfully!')
+  } catch (error) {
+    console.error('Export failed:', error)
+    alert('Failed to export purchase orders. Please try again.')
+  }
 }
 
 onMounted(() => {

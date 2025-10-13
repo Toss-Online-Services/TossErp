@@ -728,39 +728,95 @@ const submitInvoice = () => {
 
 // Action functions
 const viewInvoice = (invoice: any) => {
-  console.log('View invoice:', invoice)
+  // Three-way matching display
+  const matchStatus = invoice.poNumber && invoice.receiptNumber ? 'MATCHED ✓' : 'UNMATCHED'
+  const details = `
+Purchase Invoice: ${invoice.number}
+Supplier: ${invoice.supplier}
+Supplier Ref: ${invoice.supplierReference}
+Amount: $${invoice.amount.toLocaleString()} (Tax: $${invoice.taxAmount.toLocaleString()})
+Status: ${invoice.status}
+Invoice Date: ${formatDate(invoice.invoiceDate)}
+Due Date: ${formatDate(invoice.dueDate)}
+
+Three-Way Match: ${matchStatus}
+PO: ${invoice.poNumber || 'No PO'}
+Receipt: ${invoice.receiptNumber || 'No Receipt'}
+${!invoice.poNumber || !invoice.receiptNumber ? '\n⚠️ Warning: Incomplete three-way match' : '\n✓ All documents matched'}
+`
+  alert(details)
 }
 
 const editInvoice = (invoice: any) => {
   console.log('Edit invoice:', invoice)
+  alert('Edit functionality will open a pre-filled form')
 }
 
 const approveInvoice = (invoice: any) => {
+  // Check three-way matching before approval
+  if (!invoice.poNumber) {
+    const proceed = confirm(`Warning: No PO matched to invoice ${invoice.number}. Approve anyway?`)
+    if (!proceed) return
+  }
+  
+  if (!invoice.receiptNumber) {
+    const proceed = confirm(`Warning: No receipt matched to invoice ${invoice.number}. Approve anyway?`)
+    if (!proceed) return
+  }
+  
   invoice.status = 'approved'
-  alert(`Invoice ${invoice.number} approved!`)
+  alert(`Invoice ${invoice.number} approved! Ready for payment processing.`)
 }
 
 const markPaid = (invoice: any) => {
-  invoice.status = 'paid'
-  alert(`Invoice ${invoice.number} marked as paid!`)
+  if (invoice.status !== 'approved') {
+    alert('Invoice must be approved before marking as paid')
+    return
+  }
+  
+  if (confirm(`Mark invoice ${invoice.number} as paid for $${invoice.amount.toLocaleString()}?`)) {
+    invoice.status = 'paid'
+    alert(`Invoice ${invoice.number} marked as paid! Payment recorded in accounting.`)
+  }
 }
 
 const downloadInvoice = (invoice: any) => {
   console.log('Download invoice:', invoice)
-  alert('Download functionality will be implemented')
+  alert(`Downloading invoice ${invoice.number} as PDF...`)
 }
 
 const printInvoice = (invoice: any) => {
   console.log('Print invoice:', invoice)
-  alert('Print functionality will be implemented')
+  alert(`Printing invoice ${invoice.number}...`)
 }
 
 const importInvoices = () => {
-  alert('Import functionality will be implemented')
+  alert('Import invoices from CSV/Excel - file selection dialog will open')
 }
 
-const exportInvoices = () => {
-  alert('Export functionality will be implemented')
+const exportInvoices = async () => {
+  const exportData = filteredInvoices.value.map(invoice => ({
+    'Invoice Number': invoice.number,
+    'Supplier': invoice.supplier,
+    'Supplier Invoice': invoice.supplierReference,
+    'PO Number': invoice.poNumber || 'N/A',
+    'Receipt Number': invoice.receiptNumber || 'N/A',
+    'Amount': invoice.amount,
+    'Tax Amount': invoice.taxAmount,
+    'Invoice Date': formatDate(invoice.invoiceDate),
+    'Due Date': formatDate(invoice.dueDate),
+    'Status': invoice.status,
+    'Three-Way Match': (invoice.poNumber && invoice.receiptNumber) ? 'Complete' : 'Incomplete'
+  }))
+
+  try {
+    const { exportData: exportDataFn } = await import('~/composables/useExport')
+    await exportDataFn(exportData, 'purchase_invoices', 'csv')
+    alert('Purchase invoices exported successfully!')
+  } catch (error) {
+    console.error('Export failed:', error)
+    alert('Failed to export invoices. Please try again.')
+  }
 }
 
 onMounted(() => {

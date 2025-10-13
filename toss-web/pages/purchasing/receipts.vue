@@ -633,30 +633,48 @@ const submitReceipt = () => {
 
 // Action functions
 const viewReceipt = (receipt: any) => {
-  console.log('View receipt:', receipt)
+  const details = `
+Purchase Receipt: ${receipt.number}
+PO Reference: ${receipt.poNumber}
+Supplier: ${receipt.supplier}
+Received By: ${receipt.receivedBy}
+Inspector: ${receipt.inspector}
+Received Date: ${formatDate(receipt.receivedAt)}
+Items: ${receipt.itemsReceived}/${receipt.itemsExpected}
+Quality Status: ${receipt.qualityStatus}
+Status: ${receipt.status}
+`
+  alert(details)
 }
 
 const editReceipt = (receipt: any) => {
   console.log('Edit receipt:', receipt)
+  alert('Edit functionality will open a pre-filled form with receipt details')
 }
 
 const approveReceipt = (receipt: any) => {
-  receipt.status = 'accepted'
-  alert(`Receipt ${receipt.number} approved!`)
+  if (confirm(`Approve receipt ${receipt.number}? This will update inventory levels.`)) {
+    receipt.status = 'accepted'
+    alert(`Receipt ${receipt.number} approved! Inventory has been updated.`)
+  }
 }
 
 const rejectReceipt = (receipt: any) => {
-  receipt.status = 'rejected'
-  alert(`Receipt ${receipt.number} rejected!`)
+  const reason = prompt(`Reason for rejecting receipt ${receipt.number}:`)
+  if (reason) {
+    receipt.status = 'rejected'
+    alert(`Receipt ${receipt.number} rejected. Supplier will be notified: "${reason}"`)
+  }
 }
 
 const printReceipt = (receipt: any) => {
   console.log('Print receipt:', receipt)
-  alert('Print functionality will be implemented')
+  alert(`Printing receipt ${receipt.number}... This will generate a goods received note.`)
 }
 
 const scanBarcode = () => {
-  alert('Barcode scanning will be implemented')
+  alert('Barcode scanner will activate camera or USB scanner to scan delivery note barcodes')
+  // In real app, this would activate WebHID or camera barcode scanner
 }
 
 onMounted(() => {

@@ -1,0 +1,236 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - complementary [ref=e6]:
+        - generic [ref=e7]:
+          - generic [ref=e9]: T
+          - heading "TOSS ERP" [level=1] [ref=e10]
+        - navigation [ref=e11]:
+          - link "Dashboard" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - img [ref=e13]
+            - text: Dashboard
+          - button "CRM" [ref=e16] [cursor=pointer]:
+            - generic [ref=e17]:
+              - img [ref=e18]
+              - text: CRM
+            - img [ref=e20]
+          - generic [ref=e22]:
+            - button "Sales & Selling" [ref=e23] [cursor=pointer]:
+              - generic [ref=e24]:
+                - img [ref=e25]
+                - text: Sales & Selling
+              - img [ref=e27]
+            - generic [ref=e29]:
+              - link "Sales Dashboard" [ref=e30] [cursor=pointer]:
+                - /url: /sales
+              - link "Quotations" [ref=e31] [cursor=pointer]:
+                - /url: /sales/quotations
+              - link "Sales Orders" [ref=e32] [cursor=pointer]:
+                - /url: /sales/orders
+              - link "Sales Invoices" [ref=e33] [cursor=pointer]:
+                - /url: /sales/invoices
+              - link "Point of Sale" [ref=e34] [cursor=pointer]:
+                - /url: /sales/pos
+              - link "Sales Analytics" [ref=e35] [cursor=pointer]:
+                - /url: /sales/analytics
+          - button "Purchasing" [ref=e37] [cursor=pointer]:
+            - generic [ref=e38]:
+              - img [ref=e39]
+              - text: Purchasing
+            - img [ref=e41]
+          - button "Stock & Inventory" [ref=e44] [cursor=pointer]:
+            - generic [ref=e45]:
+              - img [ref=e46]
+              - text: Stock & Inventory
+            - img [ref=e48]
+          - button "Accounting" [ref=e51] [cursor=pointer]:
+            - generic [ref=e52]:
+              - img [ref=e53]
+              - text: Accounting
+            - img [ref=e55]
+          - button "HR & Payroll" [ref=e58] [cursor=pointer]:
+            - generic [ref=e59]:
+              - img [ref=e60]
+              - text: HR & Payroll
+            - img [ref=e62]
+          - button "Projects" [ref=e65] [cursor=pointer]:
+            - generic [ref=e66]:
+              - img [ref=e67]
+              - text: Projects
+            - img [ref=e69]
+          - button "Automation AI" [ref=e72] [cursor=pointer]:
+            - generic [ref=e73]:
+              - img [ref=e74]
+              - text: Automation
+              - generic [ref=e76]: AI
+            - img [ref=e77]
+          - button "Collaboration Team" [ref=e80] [cursor=pointer]:
+            - generic [ref=e81]:
+              - img [ref=e82]
+              - text: Collaboration
+              - generic [ref=e84]: Team
+            - img [ref=e85]
+          - button "Manufacturing" [ref=e88] [cursor=pointer]:
+            - generic [ref=e89]:
+              - img [ref=e90]
+              - text: Manufacturing
+            - img [ref=e92]
+          - button "Reports & Analytics" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]:
+              - img [ref=e97]
+              - text: Reports & Analytics
+            - img [ref=e99]
+          - button "Settings" [ref=e102] [cursor=pointer]:
+            - generic [ref=e103]:
+              - img [ref=e104]
+              - text: Settings
+            - img [ref=e107]
+        - generic [ref=e110]: TOSS ERP v1.0.0
+      - generic [ref=e111]:
+        - banner [ref=e112]:
+          - generic [ref=e114]:
+            - img [ref=e115]
+            - textbox "Search..." [ref=e117]
+          - generic [ref=e118]:
+            - button [ref=e119] [cursor=pointer]:
+              - img [ref=e120]
+            - img [ref=e124]
+            - button "Username" [ref=e128] [cursor=pointer]:
+              - generic [ref=e129]: Username
+        - main [ref=e130]:
+          - generic [ref=e132]:
+            - generic [ref=e133]:
+              - generic [ref=e134]:
+                - heading "Delivery Notes" [level=1] [ref=e135]
+                - paragraph [ref=e136]: Track order fulfillment and deliveries for Thabo's Spaza Shop
+              - generic [ref=e137]:
+                - button "New Delivery" [ref=e138] [cursor=pointer]:
+                  - img [ref=e139]
+                  - text: New Delivery
+                - button "Export" [ref=e141] [cursor=pointer]:
+                  - img [ref=e142]
+                  - text: Export
+            - generic [ref=e144]:
+              - generic [ref=e146]:
+                - generic [ref=e147]:
+                  - paragraph [ref=e148]: Total Deliveries
+                  - paragraph [ref=e149]: "234"
+                  - paragraph [ref=e150]: 12 today
+                - img [ref=e152]
+              - generic [ref=e155]:
+                - generic [ref=e156]:
+                  - paragraph [ref=e157]: In Transit
+                  - paragraph [ref=e158]: "18"
+                  - paragraph [ref=e159]: 5 pending
+                - img [ref=e161]
+              - generic [ref=e164]:
+                - generic [ref=e165]:
+                  - paragraph [ref=e166]: Delivered
+                  - paragraph [ref=e167]: "216"
+                  - paragraph [ref=e168]: 94% on time
+                - img [ref=e170]
+              - generic [ref=e173]:
+                - generic [ref=e174]:
+                  - paragraph [ref=e175]: Avg Delivery Time
+                  - paragraph [ref=e176]: 4.5h
+                  - paragraph [ref=e177]: Last 30 days
+                - img [ref=e179]
+            - generic [ref=e183]:
+              - textbox "Search deliveries..." [ref=e185]
+              - generic [ref=e186]:
+                - combobox [ref=e187]:
+                  - option "All Status" [selected]
+                  - option "Draft"
+                  - option "Ready for Pickup"
+                  - option "In Transit"
+                  - option "Delivered"
+                  - option "Cancelled"
+                - combobox [ref=e188]:
+                  - option "All Time" [selected]
+                  - option "Today"
+                  - option "This Week"
+                  - option "This Month"
+            - generic [ref=e189]:
+              - heading "Recent Deliveries" [level=3] [ref=e191]
+              - generic [ref=e193]:
+                - generic [ref=e194]:
+                  - generic [ref=e195]:
+                    - img [ref=e197]
+                    - generic [ref=e199]:
+                      - generic [ref=e200]:
+                        - paragraph [ref=e201]: DN-2025-001
+                        - generic [ref=e202]: in-transit
+                      - paragraph [ref=e203]: Nomsa Community Kitchen
+                      - paragraph [ref=e204]: 123 Community Street, Soweto, 1818
+                  - generic [ref=e205]:
+                    - paragraph [ref=e206]: 8 items
+                    - paragraph [ref=e207]: 13 Oct, 08:48
+                    - generic [ref=e208]:
+                      - button [ref=e209] [cursor=pointer]:
+                        - img [ref=e210]
+                      - button [ref=e213] [cursor=pointer]:
+                        - img [ref=e214]
+                      - button [ref=e216] [cursor=pointer]:
+                        - img [ref=e217]
+                - generic [ref=e220]:
+                  - generic [ref=e221]:
+                    - img [ref=e223]
+                    - generic [ref=e225]:
+                      - generic [ref=e226]:
+                        - paragraph [ref=e227]: DN-2025-002
+                        - generic [ref=e228]: delivered
+                      - paragraph [ref=e229]: Sipho Auto Repair
+                      - paragraph [ref=e230]: 456 Garage Road, Alexandra, 2090
+                  - generic [ref=e231]:
+                    - paragraph [ref=e232]: 5 items
+                    - paragraph [ref=e233]: 13 Oct, 06:48
+                    - generic [ref=e234]:
+                      - button [ref=e235] [cursor=pointer]:
+                        - img [ref=e236]
+                      - button [ref=e239] [cursor=pointer]:
+                        - img [ref=e240]
+                      - button [ref=e242] [cursor=pointer]:
+                        - img [ref=e243]
+                - generic [ref=e246]:
+                  - generic [ref=e247]:
+                    - img [ref=e249]
+                    - generic [ref=e251]:
+                      - generic [ref=e252]:
+                        - paragraph [ref=e253]: DN-2025-003
+                        - generic [ref=e254]: ready
+                      - paragraph [ref=e255]: Lerato Hair Studio
+                      - paragraph [ref=e256]: 789 Beauty Lane, Diepsloot, 2189
+                  - generic [ref=e257]:
+                    - paragraph [ref=e258]: 3 items
+                    - paragraph [ref=e259]: 13 Oct, 08:48
+                    - generic [ref=e260]:
+                      - button [ref=e261] [cursor=pointer]:
+                        - img [ref=e262]
+                      - button [ref=e265] [cursor=pointer]:
+                        - img [ref=e266]
+                      - button [ref=e268] [cursor=pointer]:
+                        - img [ref=e269]
+    - button "3" [ref=e272] [cursor=pointer]:
+      - img [ref=e273]
+      - generic [ref=e276]: "3"
+  - generic:
+    - img
+  - generic:
+    - generic:
+      - generic:
+        - button "Go to parent" [disabled]
+        - button "Open in editor"
+        - button "Close"
+  - generic [ref=e277]:
+    - button "Toggle Nuxt DevTools" [ref=e278] [cursor=pointer]:
+      - img [ref=e279]
+    - generic "Page load time" [ref=e282]:
+      - generic [ref=e283]: "401"
+      - generic [ref=e284]: ms
+    - button "Toggle Component Inspector" [ref=e286] [cursor=pointer]:
+      - img [ref=e287]
+```
