@@ -47,3 +47,8 @@ node_modules/
 # Task files (commented out - uncomment if needed)
 # tasks.json
 # tasks/
+toss-web/playwright-report/data/*
+
+# Data folders
+data/
+**/data/

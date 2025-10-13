@@ -10,11 +10,11 @@
           </p>
         </div>
         <div class="flex space-x-3">
-          <button class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <button @click="scheduleReport" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
             <CalendarIcon class="w-4 h-4 mr-2" />
             Schedule Report
           </button>
-          <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700">
+          <button @click="exportAllReports" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700">
             <DocumentArrowDownIcon class="w-4 h-4 mr-2" />
             Export All
           </button>
@@ -33,19 +33,19 @@
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Inventory Reports</h3>
         </div>
         <div class="space-y-3">
-          <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button @click="generateSpecificReport('Stock Balance Report', 'Inventory')" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div class="font-medium text-gray-900 dark:text-white">Stock Balance Report</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Current stock levels by item and warehouse</div>
           </button>
-          <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button @click="generateSpecificReport('Low Stock Report', 'Inventory')" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div class="font-medium text-gray-900 dark:text-white">Low Stock Report</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Items below minimum stock levels</div>
           </button>
-          <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button @click="generateSpecificReport('Stock Aging Report', 'Inventory')" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div class="font-medium text-gray-900 dark:text-white">Stock Aging Report</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Analysis of slow-moving inventory</div>
           </button>
-          <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button @click="generateSpecificReport('ABC Analysis', 'Inventory')" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div class="font-medium text-gray-900 dark:text-white">ABC Analysis</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Inventory categorization by value</div>
           </button>
@@ -61,19 +61,19 @@
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Movement Reports</h3>
         </div>
         <div class="space-y-3">
-          <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button @click="generateSpecificReport('Stock Movement History', 'Movement')" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div class="font-medium text-gray-900 dark:text-white">Stock Movement History</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Detailed transaction history</div>
           </button>
-          <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button @click="generateSpecificReport('Consumption Report', 'Movement')" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div class="font-medium text-gray-900 dark:text-white">Consumption Report</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Material consumption patterns</div>
           </button>
-          <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button @click="generateSpecificReport('Transfer Report', 'Movement')" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div class="font-medium text-gray-900 dark:text-white">Transfer Report</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Inter-warehouse transfers</div>
           </button>
-          <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button @click="generateSpecificReport('Adjustment Report', 'Movement')" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div class="font-medium text-gray-900 dark:text-white">Adjustment Report</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Stock adjustments and reconciliations</div>
           </button>
@@ -89,19 +89,19 @@
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Valuation Reports</h3>
         </div>
         <div class="space-y-3">
-          <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button @click="generateSpecificReport('Stock Valuation', 'Valuation')" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div class="font-medium text-gray-900 dark:text-white">Stock Valuation</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Total inventory value by location</div>
           </button>
-          <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button @click="generateSpecificReport('Cost Analysis', 'Valuation')" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div class="font-medium text-gray-900 dark:text-white">Cost Analysis</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Cost breakdown and trends</div>
           </button>
-          <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button @click="generateSpecificReport('Price Variance Report', 'Valuation')" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div class="font-medium text-gray-900 dark:text-white">Price Variance Report</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Purchase price variance analysis</div>
           </button>
-          <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button @click="generateSpecificReport('Profitability Analysis', 'Valuation')" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div class="font-medium text-gray-900 dark:text-white">Profitability Analysis</div>
             <div class="text-sm text-gray-500 dark:text-gray-400">Item-wise profit margins</div>
           </button>
@@ -144,7 +144,7 @@
           </select>
         </div>
         <div class="flex items-end">
-          <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button @click="generateReport" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             Generate Report
           </button>
         </div>
@@ -210,16 +210,16 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 <div class="flex space-x-2">
-                  <button class="text-blue-600 dark:text-blue-400 hover:text-blue-700" title="Download">
+                  <button @click="downloadReport(report)" class="text-blue-600 dark:text-blue-400 hover:text-blue-700" title="Download">
                     <ArrowDownTrayIcon class="w-4 h-4" />
                   </button>
-                  <button class="text-green-600 dark:text-green-400 hover:text-green-700" title="View">
+                  <button @click="viewReport(report)" class="text-green-600 dark:text-green-400 hover:text-green-700" title="View">
                     <EyeIcon class="w-4 h-4" />
                   </button>
-                  <button class="text-gray-600 dark:text-gray-400 hover:text-gray-700" title="Share">
+                  <button @click="shareReport(report)" class="text-gray-600 dark:text-gray-400 hover:text-gray-700" title="Share">
                     <ShareIcon class="w-4 h-4" />
                   </button>
-                  <button class="text-red-600 dark:text-red-400 hover:text-red-700" title="Delete">
+                  <button @click="deleteReport(report)" class="text-red-600 dark:text-red-400 hover:text-red-700" title="Delete">
                     <TrashIcon class="w-4 h-4" />
                   </button>
                 </div>
@@ -276,7 +276,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   CalendarIcon,
   DocumentArrowDownIcon,
@@ -372,5 +372,95 @@ const getStatusClass = (status: string) => {
     'failed': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
   }
   return classes[status as keyof typeof classes] || classes.completed
+}
+
+const generateReport = async () => {
+  if (!selectedReportType.value) {
+    alert('Please select a report type')
+    return
+  }
+  
+  alert(`Generating ${selectedReportType.value} report...\nThis will create a PDF/Excel report based on your selections.`)
+  
+  // Simulate report generation
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  
+  // Add to recent reports
+  const reportTypes: Record<string, string> = {
+    'stock-balance': 'Stock Balance',
+    'movement-history': 'Movement History',
+    'valuation': 'Stock Valuation',
+    'aging': 'Stock Aging'
+  }
+  
+  const newReport = {
+    id: recentReports.value.length + 1,
+    name: `${reportTypes[selectedReportType.value] || 'Stock'} Report`,
+    description: `Generated on ${new Date().toLocaleDateString()}`,
+    type: reportTypes[selectedReportType.value] || 'Stock Report',
+    generated: new Date().toLocaleDateString(),
+    generatedBy: 'Current User',
+    size: `${Math.floor(Math.random() * 5 + 1)}.${Math.floor(Math.random() * 9)} MB`,
+    status: 'completed'
+  }
+  
+  recentReports.value.unshift(newReport)
+  alert('Report generated successfully!')
+}
+
+const generateSpecificReport = (reportType: string, category: string) => {
+  alert(`Generating ${category} - ${reportType}...\nThis will create a detailed report with charts and tables.`)
+}
+
+const downloadReport = (report: any) => {
+  alert(`Downloading ${report.name}...\nFile: ${report.name.replace(/ /g, '_')}.pdf`)
+}
+
+const viewReport = (report: any) => {
+  alert(`Opening ${report.name} in viewer...`)
+}
+
+const shareReport = (report: any) => {
+  alert(`Share ${report.name} via email or link...`)
+}
+
+const deleteReport = (report: any) => {
+  if (confirm(`Delete ${report.name}?`)) {
+    const index = recentReports.value.findIndex(r => r.id === report.id)
+    if (index > -1) {
+      recentReports.value.splice(index, 1)
+      alert('Report deleted successfully!')
+    }
+  }
+}
+
+const scheduleReport = () => {
+  alert('Schedule Report Feature\n\nSetup automated report generation:\n- Daily/Weekly/Monthly schedules\n- Email delivery\n- Multiple recipients\n\nFeature coming soon!')
+}
+
+const exportAllReports = async () => {
+  const exportData = recentReports.value.map(report => ({
+    'Report Name': report.name,
+    'Type': report.type,
+    'Generated': report.generated,
+    'Generated By': report.generatedBy,
+    'Size': report.size,
+    'Status': report.status
+  }))
+
+  const csvContent = [
+    Object.keys(exportData[0]).join(','),
+    ...exportData.map(row => Object.values(row).map(v => `"${v}"`).join(','))
+  ].join('\n')
+
+  const blob = new Blob([csvContent], { type: 'text/csv' })
+  const url = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `stock-reports-index-${new Date().toISOString().split('T')[0]}.csv`
+  a.click()
+  window.URL.revokeObjectURL(url)
+  
+  alert('Reports index exported successfully!')
 }
 </script>

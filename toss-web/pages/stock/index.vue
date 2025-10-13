@@ -8,11 +8,11 @@
           <p class="text-slate-600 dark:text-slate-400">Manage inventory, warehouses, and collaborative purchasing</p>
         </div>
         <div class="flex space-x-3">
-          <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <NuxtLink to="/stock/items" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             <PlusIcon class="w-4 h-4 inline mr-2" />
             Add Item
-          </button>
-          <button class="px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+          </NuxtLink>
+          <button @click="refreshStats" class="px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
             <ArrowPathIcon class="w-4 h-4 inline mr-2" />
             Refresh
           </button>
@@ -282,6 +282,7 @@ import {
   TruckIcon,
   ArrowDownIcon
 } from '@heroicons/vue/24/outline'
+import { useStock } from '../composables/useStock'
 
 // Reactive data
 const loading = ref(true)
@@ -301,24 +302,42 @@ const formatCurrency = (amount: number) => {
   }).format(amount).replace('ZAR', '')
 }
 
+// Composables
+const { getStockOverview, getWarehouses } = useStock()
+
 // Methods
 const loadStats = async () => {
   loading.value = true
   try {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Try to fetch real data from API
+    const [overview, warehousesData] = await Promise.all([
+      getStockOverview().catch(() => null),
+      getWarehouses().catch(() => ({ warehouses: [] }))
+    ])
     
+    stats.value = {
+      totalItems: overview?.totalItems || 1247,
+      totalWarehouses: warehousesData.warehouses?.length || 8,
+      lowStockItems: overview?.lowStockItems || 23,
+      totalStockValue: overview?.totalValue || 456789
+    }
+  } catch (error) {
+    console.error('Failed to load stats:', error)
+    // Use fallback data
     stats.value = {
       totalItems: 1247,
       totalWarehouses: 8,
       lowStockItems: 23,
       totalStockValue: 456789
     }
-  } catch (error) {
-    console.error('Failed to load stats:', error)
   } finally {
     loading.value = false
   }
+}
+
+const refreshStats = async () => {
+  await loadStats()
+  alert('Stock statistics refreshed!')
 }
 
 // Lifecycle

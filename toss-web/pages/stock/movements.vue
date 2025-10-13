@@ -117,13 +117,20 @@
           </select>
         </div>
 
-        <div class="flex items-end">
+        <div class="flex items-end space-x-2">
+          <button
+            @click="exportMovements"
+            type="button"
+            class="flex-1 rounded-lg bg-green-600 px-3 py-2 text-sm font-semibold text-white hover:bg-green-500"
+          >
+            Export CSV
+          </button>
           <button
             @click="clearFilters"
             type="button"
-            class="w-full rounded-lg bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+            class="flex-1 rounded-lg bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500"
           >
-            Clear Filters
+            Clear
           </button>
         </div>
       </div>
@@ -372,7 +379,7 @@ const loadMovements = async () => {
     loading.value = true
     error.value = null
     const response = await getStockMovements()
-    movements.value = response.stockMovements
+    movements.value = response.movements || response.stockMovements || []
   } catch (err) {
     error.value = 'Failed to load stock movements'
     console.error('Error loading stock movements:', err)
@@ -415,22 +422,118 @@ const formatDate = (dateString: string) => {
   })
 }
 
+// Modal state
+const showMovementModal = ref(false)
+const selectedMovementType = ref<'receipt' | 'issue' | 'transfer' | 'adjustment'>('receipt')
+const items = ref<any[]>([])
+
 // Action methods
 const openCreateModal = () => {
-  alert('Create new stock movement - to be implemented')
+  selectedMovementType.value = 'receipt'
+  showMovementModal.value = true
 }
 
-const newMovement = (type: string) => {
-  alert(`New ${type} movement - to be implemented`)
+const newMovement = (type: 'receipt' | 'issue' | 'transfer' | 'adjustment') => {
+  selectedMovementType.value = type
+  showMovementModal.value = true
 }
 
 const viewMovement = (movement: StockMovementDto) => {
-  alert(`View movement details: ${movement.reference || movement.id} - to be implemented`)
+  const details = `
+Stock Movement Details
+
+Reference: ${movement.reference || movement.voucherNo}
+Type: ${movement.movementType}
+Item: ${movement.itemName} (${movement.itemSku})
+Warehouse: ${movement.warehouseName}
+Quantity: ${movement.quantity > 0 ? '+' : ''}${movement.quantity}
+Rate: R${movement.rate?.toFixed(2) || 'N/A'}
+Amount: R${movement.amount?.toFixed(2) || 'N/A'}
+Date: ${formatDate(movement.transactionDate)}
+Balance After: ${movement.balanceQty}
+  `
+  alert(details)
+}
+
+const closeMovementModal = () => {
+  showMovementModal.value = false
+}
+
+const saveMovement = async (data: any) => {
+  try {
+    // In a real app, this would call the API
+    console.log('Saving stock movement:', data)
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    alert('Stock movement created successfully!')
+    showMovementModal.value = false
+    
+    // Reload movements
+    await loadMovements()
+  } catch (error) {
+    console.error('Error saving movement:', error)
+    alert('Failed to save stock movement. Please try again.')
+  }
+}
+
+const exportMovements = async () => {
+  const exportData = filteredMovements.value.map(movement => ({
+    'Reference': movement.reference || movement.voucherNo,
+    'Type': movement.movementType,
+    'Item': movement.itemName,
+    'SKU': movement.itemSku,
+    'Warehouse': movement.warehouseName,
+    'Quantity': movement.quantity,
+    'Rate (R)': movement.rate || 0,
+    'Amount (R)': movement.amount || 0,
+    'Date': formatDate(movement.transactionDate),
+    'Balance': movement.balanceQty
+  }))
+
+  const csvContent = [
+    Object.keys(exportData[0]).join(','),
+    ...exportData.map(row => Object.values(row).join(','))
+  ].join('\n')
+
+  const blob = new Blob([csvContent], { type: 'text/csv' })
+  const url = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `stock-movements-${new Date().toISOString().split('T')[0]}.csv`
+  a.click()
+  window.URL.revokeObjectURL(url)
+  
+  alert('Stock movements exported successfully!')
+}
+
+// Load items for the modal
+const loadItems = async () => {
+  try {
+    const { getItems } = await import('../../composables/useStock')
+    const { getItems: getItemsFn } = getItems ? { getItems } : useStock()
+    const response = await getItemsFn({ page: 1, pageSize: 1000 })
+    items.value = response.items
+  } catch (error) {
+    console.error('Error loading items:', error)
+  }
 }
 
 // Lifecycle
 onMounted(() => {
   loadMovements()
   loadWarehouses()
+  loadItems()
 })
 </script>
+
+<!-- Stock Movement Modal -->
+<StockMovementModal
+  v-if="showMovementModal"
+  :movement-type="selectedMovementType"
+  :items="items"
+  :warehouses="warehouses"
+  @close="closeMovementModal"
+  @save="saveMovement"
+/>

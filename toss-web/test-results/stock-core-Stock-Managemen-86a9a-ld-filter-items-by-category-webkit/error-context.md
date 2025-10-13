@@ -1,0 +1,284 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - complementary [ref=e6]:
+        - generic [ref=e7]:
+          - generic [ref=e9]: T
+          - heading "TOSS ERP" [level=1] [ref=e10]
+        - navigation [ref=e11]:
+          - link "Dashboard" [ref=e12]:
+            - /url: /
+            - img [ref=e13]
+            - text: Dashboard
+          - button "CRM" [ref=e16] [cursor=pointer]:
+            - generic [ref=e17]:
+              - img [ref=e18]
+              - text: CRM
+            - img [ref=e20]
+          - button "Sales & Selling" [ref=e23] [cursor=pointer]:
+            - generic [ref=e24]:
+              - img [ref=e25]
+              - text: Sales & Selling
+            - img [ref=e27]
+          - button "Purchasing" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]:
+              - img [ref=e32]
+              - text: Purchasing
+            - img [ref=e34]
+          - generic [ref=e36]:
+            - button "Stock & Inventory" [ref=e37] [cursor=pointer]:
+              - generic [ref=e38]:
+                - img [ref=e39]
+                - text: Stock & Inventory
+              - img [ref=e41]
+            - generic [ref=e43]:
+              - link "Stock Dashboard" [ref=e44]:
+                - /url: /stock
+              - link "Items" [ref=e45]:
+                - /url: /stock/items
+              - link "Warehouses" [ref=e46]:
+                - /url: /stock/warehouses
+              - link "Stock Movements" [ref=e47]:
+                - /url: /stock/movements
+              - link "Stock Reconciliation" [ref=e48]:
+                - /url: /stock/reconciliation
+              - link "Stock Reports" [ref=e49]:
+                - /url: /stock/reports
+          - button "Accounting" [ref=e51] [cursor=pointer]:
+            - generic [ref=e52]:
+              - img [ref=e53]
+              - text: Accounting
+            - img [ref=e55]
+          - button "HR & Payroll" [ref=e58] [cursor=pointer]:
+            - generic [ref=e59]:
+              - img [ref=e60]
+              - text: HR & Payroll
+            - img [ref=e62]
+          - button "Projects" [ref=e65] [cursor=pointer]:
+            - generic [ref=e66]:
+              - img [ref=e67]
+              - text: Projects
+            - img [ref=e69]
+          - button "Automation AI" [ref=e72] [cursor=pointer]:
+            - generic [ref=e73]:
+              - img [ref=e74]
+              - text: Automation
+              - generic [ref=e76]: AI
+            - img [ref=e77]
+          - button "Collaboration Team" [ref=e80] [cursor=pointer]:
+            - generic [ref=e81]:
+              - img [ref=e82]
+              - text: Collaboration
+              - generic [ref=e84]: Team
+            - img [ref=e85]
+          - button "Manufacturing" [ref=e88] [cursor=pointer]:
+            - generic [ref=e89]:
+              - img [ref=e90]
+              - text: Manufacturing
+            - img [ref=e92]
+          - button "Reports & Analytics" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]:
+              - img [ref=e97]
+              - text: Reports & Analytics
+            - img [ref=e99]
+          - button "Settings" [ref=e102] [cursor=pointer]:
+            - generic [ref=e103]:
+              - img [ref=e104]
+              - text: Settings
+            - img [ref=e107]
+        - generic [ref=e110]: TOSS ERP v1.0.0
+      - generic [ref=e111]:
+        - banner [ref=e112]:
+          - generic [ref=e114]:
+            - img [ref=e115]
+            - textbox "Search..." [ref=e117]
+          - generic [ref=e118]:
+            - button [ref=e119] [cursor=pointer]:
+              - img [ref=e120]
+            - img [ref=e124]
+            - button "Username" [ref=e128] [cursor=pointer]:
+              - generic [ref=e129]: Username
+        - main [ref=e130]:
+          - generic [ref=e131]:
+            - heading "Stock" [level=1] [ref=e132]
+            - generic [ref=e133]:
+              - generic [ref=e135]:
+                - generic [ref=e136]:
+                  - heading "Items" [level=1] [ref=e137]
+                  - paragraph [ref=e138]: Manage your inventory items, track stock levels, and monitor performance
+                - button "Add Item" [ref=e140] [cursor=pointer]:
+                  - img [ref=e141]
+                  - text: Add Item
+              - generic [ref=e143]:
+                - generic [ref=e145]:
+                  - img [ref=e148]
+                  - generic [ref=e151]:
+                    - term [ref=e152]: Total Items
+                    - definition [ref=e153]: "0"
+                - generic [ref=e155]:
+                  - img [ref=e158]
+                  - generic [ref=e161]:
+                    - term [ref=e162]: Low Stock
+                    - definition [ref=e163]: "0"
+                - generic [ref=e165]:
+                  - img [ref=e168]
+                  - generic [ref=e171]:
+                    - term [ref=e172]: Out of Stock
+                    - definition [ref=e173]: "0"
+                - generic [ref=e175]:
+                  - img [ref=e178]
+                  - generic [ref=e181]:
+                    - term [ref=e182]: Total Value
+                    - definition [ref=e183]: R0,00
+              - generic [ref=e185]:
+                - generic [ref=e186]:
+                  - generic:
+                    - img
+                  - textbox "Search items..." [ref=e187]
+                - combobox [ref=e188]:
+                  - option "All Categories" [selected]
+                  - option
+                  - option "4"
+                - combobox [ref=e189]:
+                  - option "All Stock Levels" [selected]
+                  - option "Low Stock"
+                  - option "Out of Stock"
+                  - option "In Stock"
+                - generic [ref=e190]:
+                  - button "Export" [ref=e191] [cursor=pointer]:
+                    - img [ref=e192]
+                    - text: Export
+                  - button [ref=e194] [cursor=pointer]:
+                    - img [ref=e195]
+              - table [ref=e199]:
+                - rowgroup [ref=e200]:
+                  - row "Item Details SKU / Barcode Stock Level Pricing Status Actions" [ref=e201]:
+                    - columnheader "Item Details" [ref=e202]
+                    - columnheader "SKU / Barcode" [ref=e203]
+                    - columnheader "Stock Level" [ref=e204]
+                    - columnheader "Pricing" [ref=e205]
+                    - columnheader "Status" [ref=e206]
+                    - columnheader "Actions" [ref=e207]:
+                      - generic [ref=e208]: Actions
+                - rowgroup [ref=e209]:
+                  - 'row "White Bread Loaf Bakery BREAD-001 45 loaf Reorder: 20 R12,00 Cost: R8,50 Active" [ref=e210] [cursor=pointer]':
+                    - cell "White Bread Loaf Bakery" [ref=e211]:
+                      - generic [ref=e212]:
+                        - img [ref=e215]
+                        - generic [ref=e217]:
+                          - generic [ref=e218]: White Bread Loaf
+                          - generic [ref=e219]: Bakery
+                    - cell "BREAD-001" [ref=e220]:
+                      - generic [ref=e221]: BREAD-001
+                    - 'cell "45 loaf Reorder: 20" [ref=e222]':
+                      - generic [ref=e224]: 45 loaf
+                      - generic [ref=e225]: "Reorder: 20"
+                    - 'cell "R12,00 Cost: R8,50" [ref=e226]':
+                      - generic [ref=e227]: R12,00
+                      - generic [ref=e228]: "Cost: R8,50"
+                    - cell "Active" [ref=e229]:
+                      - generic [ref=e230]: Active
+                    - cell [ref=e231]:
+                      - generic [ref=e232]:
+                        - button [ref=e233]:
+                          - img [ref=e234]
+                        - button [ref=e236]:
+                          - img [ref=e237]
+                  - 'row "Fresh Milk 1L Dairy MILK-001 15 liter Reorder: 25 R25,00 Cost: R18,00 Active" [ref=e239] [cursor=pointer]':
+                    - cell "Fresh Milk 1L Dairy" [ref=e240]:
+                      - generic [ref=e241]:
+                        - img [ref=e244]
+                        - generic [ref=e246]:
+                          - generic [ref=e247]: Fresh Milk 1L
+                          - generic [ref=e248]: Dairy
+                    - cell "MILK-001" [ref=e249]:
+                      - generic [ref=e250]: MILK-001
+                    - 'cell "15 liter Reorder: 25" [ref=e251]':
+                      - generic [ref=e252]:
+                        - generic [ref=e253]: 15 liter
+                        - img [ref=e255]
+                      - generic [ref=e257]: "Reorder: 25"
+                    - 'cell "R25,00 Cost: R18,00" [ref=e258]':
+                      - generic [ref=e259]: R25,00
+                      - generic [ref=e260]: "Cost: R18,00"
+                    - cell "Active" [ref=e261]:
+                      - generic [ref=e262]: Active
+                    - cell [ref=e263]:
+                      - generic [ref=e264]:
+                        - button [ref=e265]:
+                          - img [ref=e266]
+                        - button [ref=e268]:
+                          - img [ref=e269]
+                  - 'row "Basmati Rice 2kg Grains RICE-001 8 kg Reorder: 10 R48,00 Cost: R35,00 Active" [ref=e271] [cursor=pointer]':
+                    - cell "Basmati Rice 2kg Grains" [ref=e272]:
+                      - generic [ref=e273]:
+                        - img [ref=e276]
+                        - generic [ref=e278]:
+                          - generic [ref=e279]: Basmati Rice 2kg
+                          - generic [ref=e280]: Grains
+                    - cell "RICE-001" [ref=e281]:
+                      - generic [ref=e282]: RICE-001
+                    - 'cell "8 kg Reorder: 10" [ref=e283]':
+                      - generic [ref=e284]:
+                        - generic [ref=e285]: 8 kg
+                        - img [ref=e287]
+                      - generic [ref=e289]: "Reorder: 10"
+                    - 'cell "R48,00 Cost: R35,00" [ref=e290]':
+                      - generic [ref=e291]: R48,00
+                      - generic [ref=e292]: "Cost: R35,00"
+                    - cell "Active" [ref=e293]:
+                      - generic [ref=e294]: Active
+                    - cell [ref=e295]:
+                      - generic [ref=e296]:
+                        - button [ref=e297]:
+                          - img [ref=e298]
+                        - button [ref=e300]:
+                          - img [ref=e301]
+                  - 'row "Washing Powder 1kg Cleaning SOAP-001 12 kg Reorder: 15 R32,00 Cost: R22,00 Active" [ref=e303] [cursor=pointer]':
+                    - cell "Washing Powder 1kg Cleaning" [ref=e304]:
+                      - generic [ref=e305]:
+                        - img [ref=e308]
+                        - generic [ref=e310]:
+                          - generic [ref=e311]: Washing Powder 1kg
+                          - generic [ref=e312]: Cleaning
+                    - cell "SOAP-001" [ref=e313]:
+                      - generic [ref=e314]: SOAP-001
+                    - 'cell "12 kg Reorder: 15" [ref=e315]':
+                      - generic [ref=e316]:
+                        - generic [ref=e317]: 12 kg
+                        - img [ref=e319]
+                      - generic [ref=e321]: "Reorder: 15"
+                    - 'cell "R32,00 Cost: R22,00" [ref=e322]':
+                      - generic [ref=e323]: R32,00
+                      - generic [ref=e324]: "Cost: R22,00"
+                    - cell "Active" [ref=e325]:
+                      - generic [ref=e326]: Active
+                    - cell [ref=e327]:
+                      - generic [ref=e328]:
+                        - button [ref=e329]:
+                          - img [ref=e330]
+                        - button [ref=e332]:
+                          - img [ref=e333]
+    - button "3" [ref=e335] [cursor=pointer]:
+      - img [ref=e336]
+      - generic [ref=e339]: "3"
+  - generic:
+    - img
+  - generic:
+    - generic:
+      - generic:
+        - button "Go to parent" [disabled]
+        - button "Open in editor"
+        - button "Close"
+  - generic [ref=e340]:
+    - button "Toggle Nuxt DevTools" [ref=e341] [cursor=pointer]:
+      - img [ref=e342]
+    - generic "Page load time" [ref=e345]:
+      - generic [ref=e346]: "369"
+      - generic [ref=e347]: ms
+    - button "Toggle Component Inspector" [ref=e349] [cursor=pointer]:
+      - img [ref=e350]
+```
