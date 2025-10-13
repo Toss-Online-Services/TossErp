@@ -66,17 +66,22 @@ export interface StockMovementDto {
   itemId: string
   itemName: string
   itemSku: string
+  itemCode?: string
   warehouseId: string
   warehouseName: string
   movementType: 'IN' | 'OUT' | 'TRANSFER'
+  type?: 'receipt' | 'issue' | 'transfer' | 'adjustment'
   quantity: number
   balanceQty: number
   rate?: number
   amount?: number
+  totalValue?: number
   voucherType: string
   voucherNo: string
+  reference?: string
   transactionDate: string
   createdAt: string
+  status?: 'pending' | 'completed' | 'cancelled'
 }
 
 export interface StockLevelDto {
@@ -260,17 +265,22 @@ export const useStock = () => {
       itemId: '1',
       itemName: 'White Bread Loaf',
       itemSku: 'BREAD-001',
+      itemCode: 'BREAD-001',
       warehouseId: '1',
       warehouseName: 'Main Store',
       movementType: 'IN',
+      type: 'receipt',
       quantity: 50,
       balanceQty: 45,
       rate: 8.50,
       amount: 425.00,
+      totalValue: 425.00,
       voucherType: 'Purchase',
       voucherNo: 'PO-2024-001',
+      reference: 'RCP-20240115',
       transactionDate: '2024-01-15T10:30:00Z',
-      createdAt: '2024-01-15T10:30:00Z'
+      createdAt: '2024-01-15T10:30:00Z',
+      status: 'completed'
     },
     {
       id: '2',
@@ -278,17 +288,22 @@ export const useStock = () => {
       itemId: '2',
       itemName: 'Fresh Milk 1L',
       itemSku: 'MILK-001',
+      itemCode: 'MILK-001',
       warehouseId: '2',
       warehouseName: 'Cold Storage Facility',
       movementType: 'OUT',
-      quantity: 10,
+      type: 'issue',
+      quantity: -10,
       balanceQty: 15,
       rate: 18.00,
       amount: 180.00,
+      totalValue: 180.00,
       voucherType: 'Sale',
       voucherNo: 'SALE-2024-045',
+      reference: 'ISS-20240114',
       transactionDate: '2024-01-14T14:20:00Z',
-      createdAt: '2024-01-14T14:20:00Z'
+      createdAt: '2024-01-14T14:20:00Z',
+      status: 'completed'
     },
     {
       id: '3',
@@ -296,17 +311,22 @@ export const useStock = () => {
       itemId: '4',
       itemName: 'Washing Powder 1kg',
       itemSku: 'SOAP-001',
+      itemCode: 'SOAP-001',
       warehouseId: '3',
       warehouseName: 'Township Central Warehouse',
       movementType: 'TRANSFER',
+      type: 'transfer',
       quantity: 5,
       balanceQty: 12,
       rate: 22.00,
       amount: 110.00,
+      totalValue: 110.00,
       voucherType: 'Transfer',
       voucherNo: 'TRF-2024-012',
+      reference: 'TRF-20240113',
       transactionDate: '2024-01-13T09:15:00Z',
-      createdAt: '2024-01-13T09:15:00Z'
+      createdAt: '2024-01-13T09:15:00Z',
+      status: 'completed'
     }
   ]
 

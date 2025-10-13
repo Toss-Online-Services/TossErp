@@ -1,0 +1,248 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - complementary [ref=e6]:
+        - generic [ref=e7]:
+          - generic [ref=e9]: T
+          - heading "TOSS ERP" [level=1] [ref=e10]
+        - navigation [ref=e11]:
+          - link "Dashboard" [ref=e12] [cursor=pointer]:
+            - /url: /
+            - img [ref=e13]
+            - text: Dashboard
+          - button "CRM" [ref=e16] [cursor=pointer]:
+            - generic [ref=e17]:
+              - img [ref=e18]
+              - text: CRM
+            - img [ref=e20]
+          - button "Sales & Selling" [ref=e23] [cursor=pointer]:
+            - generic [ref=e24]:
+              - img [ref=e25]
+              - text: Sales & Selling
+            - img [ref=e27]
+          - button "Purchasing" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]:
+              - img [ref=e32]
+              - text: Purchasing
+            - img [ref=e34]
+          - generic [ref=e36]:
+            - button "Stock & Inventory" [ref=e37] [cursor=pointer]:
+              - generic [ref=e38]:
+                - img [ref=e39]
+                - text: Stock & Inventory
+              - img [ref=e41]
+            - generic [ref=e43]:
+              - link "Stock Dashboard" [ref=e44] [cursor=pointer]:
+                - /url: /stock
+              - link "Items" [ref=e45] [cursor=pointer]:
+                - /url: /stock/items
+              - link "Warehouses" [ref=e46] [cursor=pointer]:
+                - /url: /stock/warehouses
+              - link "Stock Movements" [ref=e47] [cursor=pointer]:
+                - /url: /stock/movements
+              - link "Stock Reconciliation" [ref=e48] [cursor=pointer]:
+                - /url: /stock/reconciliation
+              - link "Stock Reports" [ref=e49] [cursor=pointer]:
+                - /url: /stock/reports
+          - button "Accounting" [ref=e51] [cursor=pointer]:
+            - generic [ref=e52]:
+              - img [ref=e53]
+              - text: Accounting
+            - img [ref=e55]
+          - button "HR & Payroll" [ref=e58] [cursor=pointer]:
+            - generic [ref=e59]:
+              - img [ref=e60]
+              - text: HR & Payroll
+            - img [ref=e62]
+          - button "Projects" [ref=e65] [cursor=pointer]:
+            - generic [ref=e66]:
+              - img [ref=e67]
+              - text: Projects
+            - img [ref=e69]
+          - button "Automation AI" [ref=e72] [cursor=pointer]:
+            - generic [ref=e73]:
+              - img [ref=e74]
+              - text: Automation
+              - generic [ref=e76]: AI
+            - img [ref=e77]
+          - button "Collaboration Team" [ref=e80] [cursor=pointer]:
+            - generic [ref=e81]:
+              - img [ref=e82]
+              - text: Collaboration
+              - generic [ref=e84]: Team
+            - img [ref=e85]
+          - button "Manufacturing" [ref=e88] [cursor=pointer]:
+            - generic [ref=e89]:
+              - img [ref=e90]
+              - text: Manufacturing
+            - img [ref=e92]
+          - button "Reports & Analytics" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]:
+              - img [ref=e97]
+              - text: Reports & Analytics
+            - img [ref=e99]
+          - button "Settings" [ref=e102] [cursor=pointer]:
+            - generic [ref=e103]:
+              - img [ref=e104]
+              - text: Settings
+            - img [ref=e107]
+        - generic [ref=e110]: TOSS ERP v1.0.0
+      - generic [ref=e111]:
+        - banner [ref=e112]:
+          - generic [ref=e114]:
+            - img [ref=e115]
+            - textbox "Search..." [ref=e117]
+          - generic [ref=e118]:
+            - button [ref=e119] [cursor=pointer]:
+              - img [ref=e120]
+            - img [ref=e124]
+            - button "Username" [ref=e128] [cursor=pointer]:
+              - generic [ref=e129]: Username
+        - main [ref=e130]:
+          - generic [ref=e131]:
+            - heading "Stock" [level=1] [ref=e132]
+            - generic [ref=e134]:
+              - generic [ref=e135]:
+                - generic [ref=e136]:
+                  - heading "Stock Management" [level=1] [ref=e137]
+                  - paragraph [ref=e138]: Manage inventory, warehouses, and collaborative purchasing
+                - generic [ref=e139]:
+                  - link "Add Item" [ref=e140] [cursor=pointer]:
+                    - /url: /stock/items
+                    - img [ref=e141]
+                    - text: Add Item
+                  - button "Refresh" [ref=e143] [cursor=pointer]:
+                    - img [ref=e144]
+                    - text: Refresh
+              - generic [ref=e147]:
+                - img [ref=e149]
+                - generic [ref=e151]:
+                  - heading "AI Co-Pilot Insights" [level=3] [ref=e152]
+                  - paragraph [ref=e153]: Low stock detected for 3 items. Consider group purchasing for cleaning supplies to save 15%.
+              - generic [ref=e154]:
+                - generic [ref=e156]:
+                  - img [ref=e158]
+                  - generic [ref=e160]:
+                    - paragraph [ref=e161]: Total Items
+                    - paragraph [ref=e162]: "1247"
+                - generic [ref=e164]:
+                  - img [ref=e166]
+                  - generic [ref=e168]:
+                    - paragraph [ref=e169]: Warehouses
+                    - paragraph [ref=e170]: "3"
+                - generic [ref=e172]:
+                  - img [ref=e174]
+                  - generic [ref=e176]:
+                    - paragraph [ref=e177]: Low Stock
+                    - paragraph [ref=e178]: "23"
+                - generic [ref=e180]:
+                  - img [ref=e182]
+                  - generic [ref=e184]:
+                    - paragraph [ref=e185]: Stock Value
+                    - paragraph [ref=e186]: RR 456,789
+              - generic [ref=e187]:
+                - heading "Quick Actions" [level=3] [ref=e188]
+                - generic [ref=e189]:
+                  - link "Manage Items Add, edit, and organize inventory items" [ref=e190] [cursor=pointer]:
+                    - /url: /stock/items
+                    - img [ref=e192]
+                    - generic [ref=e194]:
+                      - heading "Manage Items" [level=4] [ref=e195]
+                      - paragraph [ref=e196]: Add, edit, and organize inventory items
+                  - link "Shared Warehouses Community storage & facilities" [ref=e197] [cursor=pointer]:
+                    - /url: /stock/warehouses
+                    - img [ref=e199]
+                    - generic [ref=e201]:
+                      - heading "Shared Warehouses" [level=4] [ref=e202]
+                      - paragraph [ref=e203]: Community storage & facilities
+                  - button "Group Purchasing Join bulk orders for savings" [ref=e204] [cursor=pointer]:
+                    - img [ref=e206]
+                    - generic [ref=e208]:
+                      - heading "Group Purchasing" [level=4] [ref=e209]
+                      - paragraph [ref=e210]: Join bulk orders for savings
+                  - link "Stock Movements Track inventory transactions and transfers" [ref=e211] [cursor=pointer]:
+                    - /url: /stock/movements
+                    - img [ref=e213]
+                    - generic [ref=e215]:
+                      - heading "Stock Movements" [level=4] [ref=e216]
+                      - paragraph [ref=e217]: Track inventory transactions and transfers
+              - generic [ref=e218]:
+                - generic [ref=e219]:
+                  - generic [ref=e220]:
+                    - heading "Group Buying" [level=3] [ref=e221]
+                    - generic [ref=e222]: Community
+                  - generic [ref=e223]:
+                    - generic [ref=e224]:
+                      - generic [ref=e225]:
+                        - heading "Cleaning Supplies" [level=4] [ref=e226]
+                        - generic [ref=e227]: 15% savings
+                      - paragraph [ref=e228]: 4/8 businesses joined • 2 days left
+                      - button "Join Group Order" [ref=e231] [cursor=pointer]
+                    - generic [ref=e232]:
+                      - generic [ref=e233]:
+                        - heading "Maize Meal" [level=4] [ref=e234]
+                        - generic [ref=e235]: 20% savings
+                      - paragraph [ref=e236]: 6/6 businesses joined • Ready to order
+                      - button "View Details" [ref=e239] [cursor=pointer]
+                - generic [ref=e240]:
+                  - generic [ref=e241]:
+                    - heading "Shared Delivery" [level=3] [ref=e242]
+                    - generic [ref=e243]: Network
+                  - generic [ref=e244]:
+                    - generic [ref=e245]:
+                      - generic [ref=e246]:
+                        - img [ref=e247]
+                        - heading "Tomorrow 9:00 AM" [level=4] [ref=e249]
+                      - paragraph [ref=e250]: "Route: City Center → Township"
+                      - paragraph [ref=e251]: 2 slots available • R50 per pallet
+                      - button "Reserve Slot" [ref=e252] [cursor=pointer]
+                    - generic [ref=e253]:
+                      - generic [ref=e254]:
+                        - img [ref=e255]
+                        - heading "Friday 2:00 PM" [level=4] [ref=e257]
+                      - paragraph [ref=e258]: "Route: Township → City Center"
+                      - paragraph [ref=e259]: 1 slot available • R45 per pallet
+                      - button "Reserve Slot" [ref=e260] [cursor=pointer]
+                - generic [ref=e261]:
+                  - generic [ref=e262]:
+                    - heading "Recent Activity" [level=3] [ref=e263]
+                    - generic [ref=e264]: Live
+                  - generic [ref=e265]:
+                    - generic [ref=e266]:
+                      - img [ref=e268]
+                      - generic [ref=e270]:
+                        - paragraph [ref=e271]: "Stock received: 50 units of Maize Meal"
+                        - paragraph [ref=e272]: 2 hours ago
+                    - generic [ref=e273]:
+                      - img [ref=e275]
+                      - generic [ref=e277]:
+                        - paragraph [ref=e278]: "Low stock alert: Cleaning supplies"
+                        - paragraph [ref=e279]: 4 hours ago
+                    - generic [ref=e280]:
+                      - img [ref=e282]
+                      - generic [ref=e284]:
+                        - paragraph [ref=e285]: "Joined group purchase: Office supplies"
+                        - paragraph [ref=e286]: 1 day ago
+    - button "3" [ref=e287] [cursor=pointer]:
+      - img [ref=e288]
+      - generic [ref=e291]: "3"
+  - generic:
+    - img
+  - generic:
+    - generic:
+      - generic:
+        - button "Go to parent" [disabled]
+        - button "Open in editor"
+        - button "Close"
+  - generic [ref=e292]:
+    - button "Toggle Nuxt DevTools" [ref=e293] [cursor=pointer]:
+      - img [ref=e294]
+    - generic "Page load time" [ref=e297]:
+      - generic [ref=e298]: "2.3"
+      - generic [ref=e299]: s
+    - button "Toggle Component Inspector" [ref=e301] [cursor=pointer]:
+      - img [ref=e302]
+```
