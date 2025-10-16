@@ -26,73 +26,65 @@
       </NuxtLink>
       
       <NuxtLink 
-        to="/crm" 
-        class="mobile-nav-link"
-        :class="{ 'mobile-nav-link-active': route.path.startsWith('/crm') }"
-        @click="$emit('close')"
-      >
-        <UsersIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-        <span class="truncate">CRM</span>
-      </NuxtLink>
-      
-      <NuxtLink 
-        to="/projects" 
-        class="mobile-nav-link"
-        :class="{ 'mobile-nav-link-active': route.path.startsWith('/projects') }"
-        @click="$emit('close')"
-      >
-        <BriefcaseIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-        <span class="truncate">Projects</span>
-      </NuxtLink>
-      
-      <NuxtLink 
-        to="/accounting" 
-        class="mobile-nav-link"
-        :class="{ 'mobile-nav-link-active': route.path.startsWith('/accounts') }"
-        @click="$emit('close')"
-      >
-        <CurrencyDollarIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-        <span class="truncate">Accounts</span>
-      </NuxtLink>
-      
-      <NuxtLink 
-        to="/hr" 
-        class="mobile-nav-link"
-        :class="{ 'mobile-nav-link-active': route.path.startsWith('/hr') }"
-        @click="$emit('close')"
-      >
-        <UserGroupIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-        <span class="truncate">HR</span>
-      </NuxtLink>
-      
-      <NuxtLink 
         to="/stock" 
         class="mobile-nav-link"
         :class="{ 'mobile-nav-link-active': route.path.startsWith('/stock') }"
         @click="$emit('close')"
       >
         <ArchiveBoxIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-        <span class="truncate">Stock</span>
+        <span class="truncate">Stock & Inventory</span>
       </NuxtLink>
       
       <NuxtLink 
-        to="/selling" 
+        to="/logistics" 
         class="mobile-nav-link"
-        :class="{ 'mobile-nav-link-active': route.path.startsWith('/selling') }"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/logistics') }"
+        @click="$emit('close')"
+      >
+        <TruckIcon class="h-5 w-5 mr-3 flex-shrink-0" />
+        <span class="truncate">Logistics</span>
+      </NuxtLink>
+      
+      <NuxtLink 
+        to="/sales" 
+        class="mobile-nav-link"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/sales') }"
         @click="$emit('close')"
       >
         <ShoppingCartIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-        <span class="truncate">Selling</span>
+        <span class="truncate">Sales</span>
       </NuxtLink>
       
       <NuxtLink 
-        to="/buying" 
+        to="/purchasing" 
         class="mobile-nav-link"
-        :class="{ 'mobile-nav-link-active': route.path.startsWith('/buying') }"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/purchasing') }"
         @click="$emit('close')"
       >
         <ShoppingBagIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-        <span class="truncate">Buying</span>
+        <span class="truncate">Purchasing</span>
+      </NuxtLink>
+      
+      <NuxtLink 
+        to="/automation" 
+        class="mobile-nav-link"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/automation') }"
+        @click="$emit('close')"
+      >
+        <CogIcon class="h-5 w-5 mr-3 flex-shrink-0" />
+        <span class="truncate">Automation</span>
+        <span class="ml-2 px-2 py-0.5 text-xs bg-blue-500 text-white rounded-full">AI</span>
+      </NuxtLink>
+      
+      <NuxtLink 
+        to="/onboarding" 
+        class="mobile-nav-link"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/onboarding') }"
+        @click="$emit('close')"
+      >
+        <UserPlusIcon class="h-5 w-5 mr-3 flex-shrink-0" />
+        <span class="truncate">Onboarding</span>
+        <span class="ml-2 px-2 py-0.5 text-xs bg-green-500 text-white rounded-full">New</span>
       </NuxtLink>
       
       <!-- Additional Mobile Links -->
@@ -100,33 +92,13 @@
         <h3 class="text-xs uppercase text-slate-400 font-semibold mb-2 px-3">More</h3>
         
         <NuxtLink 
-          to="/reports" 
-          class="mobile-nav-link"
-          :class="{ 'mobile-nav-link-active': route.path.startsWith('/reports') }"
-          @click="$emit('close')"
-        >
-          <ChartBarIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-          <span class="truncate">Reports</span>
-        </NuxtLink>
-        
-        <NuxtLink 
           to="/settings" 
           class="mobile-nav-link"
           :class="{ 'mobile-nav-link-active': route.path.startsWith('/settings') }"
           @click="$emit('close')"
         >
-          <CogIcon class="h-5 w-5 mr-3 flex-shrink-0" />
+          <Cog6ToothIcon class="h-5 w-5 mr-3 flex-shrink-0" />
           <span class="truncate">Settings</span>
-        </NuxtLink>
-        
-        <NuxtLink 
-          to="/help" 
-          class="mobile-nav-link"
-          :class="{ 'mobile-nav-link-active': route.path.startsWith('/help') }"
-          @click="$emit('close')"
-        >
-          <QuestionMarkCircleIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-          <span class="truncate">Help & Support</span>
         </NuxtLink>
       </div>
     </nav>
@@ -146,16 +118,13 @@
 <script setup>
 import { 
   HomeIcon, 
-  UsersIcon, 
-  BriefcaseIcon, 
-  CurrencyDollarIcon, 
-  UserGroupIcon, 
   ArchiveBoxIcon, 
   ShoppingCartIcon, 
   ShoppingBagIcon,
-  ChartBarIcon,
   CogIcon,
-  QuestionMarkCircleIcon,
+  Cog6ToothIcon,
+  TruckIcon,
+  UserPlusIcon,
   XMarkIcon
 } from '@heroicons/vue/24/outline'
 import ThemeSwitcher from '~/components/common/ThemeSwitcher.vue'

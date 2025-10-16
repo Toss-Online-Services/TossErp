@@ -10,6 +10,7 @@
     
     <!-- Navigation -->
     <nav class="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
+      <!-- Dashboard -->
       <NuxtLink 
         to="/" 
         class="nav-link"
@@ -19,135 +20,6 @@
         Dashboard
       </NuxtLink>
       
-      <!-- CRM Section -->
-      <div class="space-y-1">
-        <button 
-          @click="toggleCrmDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/crm') }"
-        >
-          <div class="flex items-center">
-            <UsersIcon class="w-5 h-5 mr-3" />
-            CRM
-          </div>
-          <ChevronDownIcon 
-            class="w-4 h-4 transition-transform duration-200"
-            :class="{ 'transform rotate-180': crmDropdownOpen }"
-          />
-        </button>
-        
-        <div 
-          v-show="crmDropdownOpen"
-          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
-        >
-          <NuxtLink to="/crm" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/crm' }">
-            Dashboard
-          </NuxtLink>
-          <NuxtLink to="/crm/customers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/crm/customers' }">
-            Customers
-          </NuxtLink>
-          <NuxtLink to="/crm/leads" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/crm/leads' }">
-            Leads
-          </NuxtLink>
-          <NuxtLink to="/crm/opportunities" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/crm/opportunities' }">
-            Opportunities
-          </NuxtLink>
-          <NuxtLink to="/crm/contacts" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/crm/contacts' }">
-            Contacts
-          </NuxtLink>
-          <NuxtLink to="/crm/automation" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/crm/automation' }">
-            Automation
-          </NuxtLink>
-          <NuxtLink to="/crm/pipeline" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/crm/pipeline' }">
-            Pipeline
-          </NuxtLink>
-        </div>
-      </div>
-
-      <!-- Sales & Selling Section -->
-      <div class="space-y-1">
-        <button 
-          @click="toggleSalesDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/sales') || route.path.startsWith('/selling') }"
-        >
-          <div class="flex items-center">
-            <ShoppingCartIcon class="w-5 h-5 mr-3" />
-            Sales & Selling
-          </div>
-          <ChevronDownIcon 
-            class="w-4 h-4 transition-transform duration-200"
-            :class="{ 'transform rotate-180': salesDropdownOpen }"
-          />
-        </button>
-        
-        <div 
-          v-show="salesDropdownOpen"
-          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
-        >
-          <NuxtLink to="/sales" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales' }">
-            Sales Dashboard
-          </NuxtLink>
-          <NuxtLink to="/sales/quotations" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/quotations' }">
-            Quotations
-          </NuxtLink>
-          <NuxtLink to="/sales/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/orders' }">
-            Sales Orders
-          </NuxtLink>
-          <NuxtLink to="/sales/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/invoices' }">
-            Sales Invoices
-          </NuxtLink>
-          <NuxtLink to="/sales/pos" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path.startsWith('/sales/pos') }">
-            Point of Sale
-          </NuxtLink>
-          <NuxtLink to="/sales/analytics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/analytics' }">
-            Sales Analytics
-          </NuxtLink>
-        </div>
-      </div>
-
-      <!-- Purchasing & Buying Section -->
-      <div class="space-y-1">
-        <button 
-          @click="togglePurchasingDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/purchasing') || route.path.startsWith('/buying') }"
-        >
-          <div class="flex items-center">
-            <ShoppingBagIcon class="w-5 h-5 mr-3" />
-            Purchasing
-          </div>
-          <ChevronDownIcon 
-            class="w-4 h-4 transition-transform duration-200"
-            :class="{ 'transform rotate-180': purchasingDropdownOpen }"
-          />
-        </button>
-        
-        <div 
-          v-show="purchasingDropdownOpen"
-          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
-        >
-          <NuxtLink to="/purchasing" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing' }">
-            Purchase Dashboard
-          </NuxtLink>
-          <NuxtLink to="/purchasing/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/suppliers' }">
-            Suppliers
-          </NuxtLink>
-          <NuxtLink to="/purchasing/requests" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/requests' }">
-            Purchase Requests
-          </NuxtLink>
-          <NuxtLink to="/purchasing/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/orders' }">
-            Purchase Orders
-          </NuxtLink>
-          <NuxtLink to="/purchasing/receipts" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/receipts' }">
-            Purchase Receipts
-          </NuxtLink>
-          <NuxtLink to="/purchasing/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/invoices' }">
-            Purchase Invoices
-          </NuxtLink>
-        </div>
-      </div>
-
       <!-- Stock & Inventory Section -->
       <div class="space-y-1">
         <button 
@@ -190,147 +62,125 @@
         </div>
       </div>
 
-      <!-- Accounting & Finance Section -->
+      <!-- Logistics Section -->
       <div class="space-y-1">
         <button 
-          @click="toggleAccountingDropdown"
+          @click="toggleLogisticsDropdown"
           class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/accounting') || route.path.startsWith('/accounts') }"
+          :class="{ 'nav-link-active': route.path.startsWith('/logistics') }"
         >
           <div class="flex items-center">
-            <CurrencyDollarIcon class="w-5 h-5 mr-3" />
-            Accounting
+            <TruckIcon class="w-5 h-5 mr-3" />
+            Logistics
           </div>
           <ChevronDownIcon 
             class="w-4 h-4 transition-transform duration-200"
-            :class="{ 'transform rotate-180': accountingDropdownOpen }"
+            :class="{ 'transform rotate-180': logisticsDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="accountingDropdownOpen"
+          v-show="logisticsDropdownOpen"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
-          <NuxtLink to="/accounting" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting' }">
-            Accounting Dashboard
-          </NuxtLink>
-          <NuxtLink to="/accounting/chart-of-accounts" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/chart-of-accounts' }">
-            Chart of Accounts
-          </NuxtLink>
-          <NuxtLink to="/accounting/journal-entries" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/journal-entries' }">
-            Journal Entries
-          </NuxtLink>
-          <NuxtLink to="/accounting/reports/general-ledger" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/reports/general-ledger' }">
-            General Ledger
-          </NuxtLink>
-          <NuxtLink to="/accounting/statements" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/statements' }">
-            Financial Statements
-          </NuxtLink>
-          <NuxtLink to="/accounting/reports" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/reports' }">
-            Financial Reports
-          </NuxtLink>
-          <!-- ERPNext Accounting Masters -->
-          <NuxtLink to="/accounting/company" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/company' }">
-            Company Setup
-          </NuxtLink>
-          <NuxtLink to="/accounting/currency" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/currency' }">
-            Currency Management
-          </NuxtLink>
-          <NuxtLink to="/accounting/country" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/country' }">
-            Country Management
-          </NuxtLink>
-          <NuxtLink to="/accounting/periods" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/periods' }">
-            Accounting Periods
-          </NuxtLink>
-          <NuxtLink to="/accounting/fiscal-year" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/fiscal-year' }">
-            Fiscal Year
-          </NuxtLink>
-          <NuxtLink to="/accounting/finance-book" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/finance-book' }">
-            Finance Book
-          </NuxtLink>
-          <NuxtLink to="/accounting/mode-of-payment" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/mode-of-payment' }">
-            Mode of Payment
-          </NuxtLink>
-          <NuxtLink to="/accounting/payment-terms" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/payment-terms' }">
-            Payment Terms
-          </NuxtLink>
-          <NuxtLink to="/accounting/loyalty-program" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/loyalty-program' }">
-            Loyalty Program
+          <NuxtLink to="/logistics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/logistics' }">
+            Logistics Dashboard
           </NuxtLink>
         </div>
       </div>
 
-      <!-- HR & Payroll Section -->
+      <!-- Sales Section -->
       <div class="space-y-1">
         <button 
-          @click="toggleHrDropdown"
+          @click="toggleSalesDropdown"
           class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/hr') }"
+          :class="{ 'nav-link-active': route.path.startsWith('/sales') }"
         >
           <div class="flex items-center">
-            <UserGroupIcon class="w-5 h-5 mr-3" />
-            HR & Payroll
+            <ShoppingCartIcon class="w-5 h-5 mr-3" />
+            Sales
           </div>
           <ChevronDownIcon 
             class="w-4 h-4 transition-transform duration-200"
-            :class="{ 'transform rotate-180': hrDropdownOpen }"
+            :class="{ 'transform rotate-180': salesDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="hrDropdownOpen"
+          v-show="salesDropdownOpen"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
-          <NuxtLink to="/hr" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr' || route.path === '/hr/dashboard' }">
-            HR Dashboard
+          <NuxtLink to="/sales" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales' }">
+            Sales Dashboard
           </NuxtLink>
-          <NuxtLink to="/hr/employees" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr/employees' }">
-            Employees
+          <NuxtLink to="/sales/quotations" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/quotations' }">
+            Quotations
           </NuxtLink>
-          <NuxtLink to="/hr/attendance" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr/attendance' }">
-            Attendance
+          <NuxtLink to="/sales/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/orders' }">
+            Sales Orders
           </NuxtLink>
-          <NuxtLink to="/hr/leave" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr/leave' }">
-            Leave Management
+          <NuxtLink to="/sales/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/invoices' }">
+            Sales Invoices
           </NuxtLink>
-          <NuxtLink to="/hr/payroll" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr/payroll' }">
-            Payroll
+          <NuxtLink to="/sales/delivery-notes" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/delivery-notes' }">
+            Delivery Notes
           </NuxtLink>
-          <NuxtLink to="/hr/reports" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr/reports' }">
-            HR Reports
+          <NuxtLink to="/sales/pos" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path.startsWith('/sales/pos') }">
+            Point of Sale
+          </NuxtLink>
+          <NuxtLink to="/sales/analytics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/analytics' }">
+            Sales Analytics
+          </NuxtLink>
+          <NuxtLink to="/sales/pricing-rules" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/pricing-rules' }">
+            Pricing Rules
+          </NuxtLink>
+          <NuxtLink to="/sales/ai-assistant" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/ai-assistant' }">
+            AI Assistant
           </NuxtLink>
         </div>
       </div>
 
-      <!-- Projects & Tasks Section -->
+      <!-- Purchasing Section -->
       <div class="space-y-1">
         <button 
-          @click="toggleProjectsDropdown"
+          @click="togglePurchasingDropdown"
           class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/projects') }"
+          :class="{ 'nav-link-active': route.path.startsWith('/purchasing') }"
         >
           <div class="flex items-center">
-            <BriefcaseIcon class="w-5 h-5 mr-3" />
-            Projects
+            <ShoppingBagIcon class="w-5 h-5 mr-3" />
+            Purchasing
           </div>
           <ChevronDownIcon 
             class="w-4 h-4 transition-transform duration-200"
-            :class="{ 'transform rotate-180': projectsDropdownOpen }"
+            :class="{ 'transform rotate-180': purchasingDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="projectsDropdownOpen"
+          v-show="purchasingDropdownOpen"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
-          <NuxtLink to="/projects" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/projects' }">
-            Projects Dashboard
+          <NuxtLink to="/purchasing" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing' }">
+            Purchase Dashboard
           </NuxtLink>
-          <NuxtLink to="/projects/tasks" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/projects/tasks' }">
-            Tasks
+          <NuxtLink to="/purchasing/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/suppliers' }">
+            Suppliers
           </NuxtLink>
-          <NuxtLink to="/projects/timesheets" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/projects/timesheets' }">
-            Timesheets
+          <NuxtLink to="/purchasing/requests" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/requests' }">
+            Purchase Requests
+          </NuxtLink>
+          <NuxtLink to="/purchasing/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/orders' }">
+            Purchase Orders
+          </NuxtLink>
+          <NuxtLink to="/purchasing/receipts" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/receipts' }">
+            Purchase Receipts
+          </NuxtLink>
+          <NuxtLink to="/purchasing/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/invoices' }">
+            Purchase Invoices
+          </NuxtLink>
+          <NuxtLink to="/purchasing/analytics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/analytics' }">
+            Analytics
           </NuxtLink>
         </div>
       </div>
@@ -375,115 +225,40 @@
         </div>
       </div>
 
-      <!-- Collaboration Section -->
+      <!-- Onboarding Section -->
       <div class="space-y-1">
         <button 
-          @click="toggleCollaborationDropdown"
+          @click="toggleOnboardingDropdown"
           class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/collaboration') }"
+          :class="{ 'nav-link-active': route.path.startsWith('/onboarding') }"
         >
           <div class="flex items-center">
-            <ChatBubbleLeftRightIcon class="w-5 h-5 mr-3" />
-            Collaboration
-            <span class="ml-2 px-2 py-0.5 text-xs bg-green-500 text-white rounded-full">Team</span>
+            <UserPlusIcon class="w-5 h-5 mr-3" />
+            Onboarding
+            <span class="ml-2 px-2 py-0.5 text-xs bg-green-500 text-white rounded-full">New</span>
           </div>
           <ChevronDownIcon 
             class="w-4 h-4 transition-transform duration-200"
-            :class="{ 'transform rotate-180': collaborationDropdownOpen }"
+            :class="{ 'transform rotate-180': onboardingDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="collaborationDropdownOpen"
+          v-show="onboardingDropdownOpen"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
-          <NuxtLink to="/collaboration" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/collaboration' }">
-            Collaboration Hub
-          </NuxtLink>
-          <NuxtLink to="/collaboration/chat" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/collaboration/chat' }">
-            Team Chat
-          </NuxtLink>
-          <NuxtLink to="/collaboration/meetings" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/collaboration/meetings' }">
-            Meetings
-          </NuxtLink>
-          <NuxtLink to="/collaboration/documents" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/collaboration/documents' }">
-            Documents
-          </NuxtLink>
-          <NuxtLink to="/collaboration/whiteboard" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/collaboration/whiteboard' }">
-            Whiteboard
+          <NuxtLink to="/onboarding" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/onboarding' }">
+            Onboarding Dashboard
           </NuxtLink>
         </div>
       </div>
 
-      <!-- Manufacturing Section -->
-      <div class="space-y-1">
-        <button 
-          @click="toggleManufacturingDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/manufacturing') }"
-        >
-          <div class="flex items-center">
-            <WrenchScrewdriverIcon class="w-5 h-5 mr-3" />
-            Manufacturing
-          </div>
-          <ChevronDownIcon 
-            class="w-4 h-4 transition-transform duration-200"
-            :class="{ 'transform rotate-180': manufacturingDropdownOpen }"
-          />
-        </button>
-        
-        <div 
-          v-show="manufacturingDropdownOpen"
-          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
-        >
-          <NuxtLink to="/manufacturing" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/manufacturing' }">
-            Manufacturing Dashboard
-          </NuxtLink>
-          <NuxtLink to="/manufacturing/bom" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/manufacturing/bom' }">
-            Bill of Materials
-          </NuxtLink>
-          <NuxtLink to="/manufacturing/work-orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/manufacturing/work-orders' }">
-            Work Orders
-          </NuxtLink>
-          <NuxtLink to="/manufacturing/quality" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/manufacturing/quality' }">
-            Quality Control
-          </NuxtLink>
-        </div>
-      </div>
-
-      <!-- Reports & Analytics Section -->
-      <div class="space-y-1">
-        <button 
-          @click="toggleReportsDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/reports') }"
-        >
-          <div class="flex items-center">
-            <ChartBarIcon class="w-5 h-5 mr-3" />
-            Reports & Analytics
-          </div>
-          <ChevronDownIcon 
-            class="w-4 h-4 transition-transform duration-200"
-            :class="{ 'transform rotate-180': reportsDropdownOpen }"
-          />
-        </button>
-        
-        <div 
-          v-show="reportsDropdownOpen"
-          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
-        >
-          <NuxtLink to="/reports" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/reports' }">
-            Reports Dashboard
-          </NuxtLink>
-        </div>
-      </div>
-
-      <!-- Settings & Administration Section -->
+      <!-- Settings Section -->
       <div class="space-y-1">
         <button 
           @click="toggleSettingsDropdown"
           class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/settings') || route.path.startsWith('/admin') }"
+          :class="{ 'nav-link-active': route.path.startsWith('/settings') }"
         >
           <div class="flex items-center">
             <Cog6ToothIcon class="w-5 h-5 mr-3" />
@@ -519,19 +294,14 @@
 import { ref, watch } from 'vue'
 import { 
   HomeIcon, 
-  UsersIcon, 
-  BriefcaseIcon, 
-  CurrencyDollarIcon, 
-  UserGroupIcon, 
   ArchiveBoxIcon, 
   ShoppingCartIcon, 
   ShoppingBagIcon, 
   ChevronDownIcon,
   CogIcon,
-  ChatBubbleLeftRightIcon,
-  WrenchScrewdriverIcon,
-  ChartBarIcon,
-  Cog6ToothIcon
+  Cog6ToothIcon,
+  TruckIcon,
+  UserPlusIcon
 } from '@heroicons/vue/24/outline'
 
 // Ensure router is available
@@ -539,62 +309,46 @@ const router = useRouter()
 const route = useRoute()
 
 // Dropdown states
-const crmDropdownOpen = ref(false)
+const stockDropdownOpen = ref(false)
+const logisticsDropdownOpen = ref(false)
 const salesDropdownOpen = ref(false)
 const purchasingDropdownOpen = ref(false)
-const stockDropdownOpen = ref(false)
-const accountingDropdownOpen = ref(false)
-const hrDropdownOpen = ref(false)
-const projectsDropdownOpen = ref(false)
 const automationDropdownOpen = ref(false)
-const collaborationDropdownOpen = ref(false)
-const manufacturingDropdownOpen = ref(false)
-const reportsDropdownOpen = ref(false)
+const onboardingDropdownOpen = ref(false)
 const settingsDropdownOpen = ref(false)
 
 // Auto-open dropdowns if we're on a page within that section
 watch(() => route.path, (newPath) => {
-  if (newPath.startsWith('/crm')) {
-    crmDropdownOpen.value = true
-  }
-  if (newPath.startsWith('/sales') || newPath.startsWith('/selling')) {
-    salesDropdownOpen.value = true
-  }
-  if (newPath.startsWith('/purchasing') || newPath.startsWith('/buying')) {
-    purchasingDropdownOpen.value = true
-  }
   if (newPath.startsWith('/stock')) {
     stockDropdownOpen.value = true
   }
-  if (newPath.startsWith('/accounting') || newPath.startsWith('/accounts')) {
-    accountingDropdownOpen.value = true
+  if (newPath.startsWith('/logistics')) {
+    logisticsDropdownOpen.value = true
   }
-  if (newPath.startsWith('/hr')) {
-    hrDropdownOpen.value = true
+  if (newPath.startsWith('/sales')) {
+    salesDropdownOpen.value = true
   }
-  if (newPath.startsWith('/projects')) {
-    projectsDropdownOpen.value = true
+  if (newPath.startsWith('/purchasing')) {
+    purchasingDropdownOpen.value = true
   }
   if (newPath.startsWith('/automation')) {
     automationDropdownOpen.value = true
   }
-  if (newPath.startsWith('/collaboration')) {
-    collaborationDropdownOpen.value = true
+  if (newPath.startsWith('/onboarding')) {
+    onboardingDropdownOpen.value = true
   }
-  if (newPath.startsWith('/manufacturing')) {
-    manufacturingDropdownOpen.value = true
-  }
-  if (newPath.startsWith('/reports')) {
-    reportsDropdownOpen.value = true
-  }
-  if (newPath.startsWith('/settings') || newPath.startsWith('/admin')) {
+  if (newPath.startsWith('/settings')) {
     settingsDropdownOpen.value = true
   }
 }, { immediate: true })
 
 // Toggle functions
-const toggleCrmDropdown = () => {
-  crmDropdownOpen.value = !crmDropdownOpen.value
+const toggleStockDropdown = () => {
+  stockDropdownOpen.value = !stockDropdownOpen.value
+}
+
+const toggleLogisticsDropdown = () => {
+  logisticsDropdownOpen.value = !logisticsDropdownOpen.value
 }
 
 const toggleSalesDropdown = () => {
@@ -605,36 +359,12 @@ const togglePurchasingDropdown = () => {
   purchasingDropdownOpen.value = !purchasingDropdownOpen.value
 }
 
-const toggleStockDropdown = () => {
-  stockDropdownOpen.value = !stockDropdownOpen.value
-}
-
-const toggleAccountingDropdown = () => {
-  accountingDropdownOpen.value = !accountingDropdownOpen.value
-}
-
-const toggleHrDropdown = () => {
-  hrDropdownOpen.value = !hrDropdownOpen.value
-}
-
-const toggleProjectsDropdown = () => {
-  projectsDropdownOpen.value = !projectsDropdownOpen.value
-}
-
 const toggleAutomationDropdown = () => {
   automationDropdownOpen.value = !automationDropdownOpen.value
 }
 
-const toggleCollaborationDropdown = () => {
-  collaborationDropdownOpen.value = !collaborationDropdownOpen.value
-}
-
-const toggleManufacturingDropdown = () => {
-  manufacturingDropdownOpen.value = !manufacturingDropdownOpen.value
-}
-
-const toggleReportsDropdown = () => {
-  reportsDropdownOpen.value = !reportsDropdownOpen.value
+const toggleOnboardingDropdown = () => {
+  onboardingDropdownOpen.value = !onboardingDropdownOpen.value
 }
 
 const toggleSettingsDropdown = () => {
