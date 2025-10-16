@@ -302,11 +302,28 @@ const quickActions = ref([
   }
 ])
 
+// Load mock data
+const { get, useMockData } = useApi()
+import { MockAutomationService } from '~/services/mock'
+
 // AI metrics
 const aiMetrics = ref({
   accuracy: 94,
   optimization: 87,
   learning: 76
+})
+
+// Load AI metrics from mock service
+onMounted(async () => {
+  try {
+    const metrics = MockAutomationService.getAIMetrics()
+    aiMetrics.value = metrics
+    
+    const recommendations = MockAutomationService.getAIRecommendations()
+    aiRecommendations.value = recommendations
+  } catch (error) {
+    console.error('Failed to load AI data:', error)
+  }
 })
 
 // AI recommendations
