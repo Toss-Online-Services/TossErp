@@ -1,13 +1,14 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
+import { MockDashboardService } from '~/services/mock'
 
 export interface DashboardMetrics {
   totalRevenue: number
-  totalExpenses: number
-  netProfit: number
+  totalExpenses?: number
+  netProfit?: number
   totalOrders: number
   totalCustomers: number
   lowStockItems: number
-  pendingOrders: number
+  pendingOrders?: number
 }
 
 export interface SalesData {
@@ -24,14 +25,12 @@ export interface TopProduct {
 }
 
 export const useDashboard = () => {
+  const { get, useMockData } = useApi()
   const metrics = ref<DashboardMetrics | null>(null)
   const salesData = ref<SalesData[]>([])
   const topProducts = ref<TopProduct[]>([])
   const isLoading = ref(false)
   const error = ref<string | null>(null)
-
-  const { getAuthHeader } = useAuth()
-  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl || 'http://localhost:5000'
 
   /**
    * Fetch dashboard metrics
@@ -41,18 +40,21 @@ export const useDashboard = () => {
     error.value = null
 
     try {
-      const params = new URLSearchParams()
-      if (startDate) params.append('startDate', startDate.toISOString())
-      if (endDate) params.append('endDate', endDate.toISOString())
+      if (useMockData()) {
+        // Use mock data
+        await new Promise(resolve => setTimeout(resolve, 300))
+        metrics.value = MockDashboardService.getMetrics()
+      } else {
+        const params: Record<string, string> = {}
+        if (startDate) params.startDate = startDate.toISOString()
+        if (endDate) params.endDate = endDate.toISOString()
 
-      metrics.value = await $fetch<DashboardMetrics>(
-        `${apiBaseUrl}/api/dashboard/metrics?${params}`,
-        {
-          headers: getAuthHeader(),
-        }
-      )
+        metrics.value = await get<DashboardMetrics>('/api/dashboard/metrics', params)
+      }
     } catch (e: any) {
       error.value = e.message || 'Failed to fetch metrics'
+      // Fallback to mock on error
+      metrics.value = MockDashboardService.getMetrics()
     } finally {
       isLoading.value = false
     }
@@ -63,12 +65,23 @@ export const useDashboard = () => {
    */
   const fetchSalesTrend = async (days: number = 30) => {
     try {
-      salesData.value = await $fetch<SalesData[]>(
-        `${apiBaseUrl}/api/dashboard/sales-trend?days=${days}`,
-        {
-          headers: getAuthHeader(),
+      if (useMockData()) {
+        // Generate mock sales trend
+        await new Promise(resolve => setTimeout(resolve, 200))
+        const mockData = []
+        for (let i = days - 1; i >= 0; i--) {
+          const date = new Date()
+          date.setDate(date.getDate() - i)
+          mockData.push({
+            date: date.toISOString().split('T')[0],
+            revenue: Math.floor(Math.random() * 50000) + 20000,
+            orders: Math.floor(Math.random() * 50) + 10
+          })
         }
-      )
+        salesData.value = mockData
+      } else {
+        salesData.value = await get<SalesData[]>('/api/dashboard/sales-trend', { days })
+      }
     } catch (e: any) {
       error.value = e.message || 'Failed to fetch sales trend'
     }
@@ -79,14 +92,16 @@ export const useDashboard = () => {
    */
   const fetchTopProducts = async (limit: number = 10) => {
     try {
-      topProducts.value = await $fetch<TopProduct[]>(
-        `${apiBaseUrl}/api/dashboard/top-products?limit=${limit}`,
-        {
-          headers: getAuthHeader(),
-        }
-      )
+      if (useMockData()) {
+        await new Promise(resolve => setTimeout(resolve, 200))
+        topProducts.value = MockDashboardService.getTopProducts().slice(0, limit)
+      } else {
+        topProducts.value = await get<TopProduct[]>('/api/dashboard/top-products', { limit })
+      }
     } catch (e: any) {
       error.value = e.message || 'Failed to fetch top products'
+      // Fallback to mock
+      topProducts.value = MockDashboardService.getTopProducts().slice(0, limit)
     }
   }
 
@@ -113,4 +128,5 @@ export const useDashboard = () => {
     refreshDashboard,
   }
 }
+
 

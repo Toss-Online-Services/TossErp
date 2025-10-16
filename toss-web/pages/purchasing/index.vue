@@ -77,6 +77,11 @@
         </div>
       </div>
 
+      <!-- WhatsApp Ordering Feature -->
+      <div class="mb-8">
+        <WhatsAppOrderViaWhatsApp />
+      </div>
+
       <!-- TOSS Collaboration Features -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Group Buying Opportunities -->

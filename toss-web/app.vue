@@ -1,7 +1,10 @@
 <template>
   <div>
+    <!-- Demo Mode Banner -->
+    <DemoModeBanner />
+    
     <!-- Offline Indicator -->
-    <div v-if="!isOnline" class="fixed top-0 left-0 right-0 z-50 bg-orange-500 text-white text-center py-2 text-sm">
+    <div v-if="!isOnline" class="fixed top-12 left-0 right-0 z-40 bg-orange-500 text-white text-center py-2 text-sm">
       <div class="flex items-center justify-center">
         <svg class="w-4 h-4 mr-2 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 715.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
