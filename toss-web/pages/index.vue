@@ -245,7 +245,7 @@ const salesFunnel = ref([
   { name: 'Closed Won', count: 12, percentage: 10, color: 'bg-purple-500' }
 ])
 
-// Helper functions pipeline
+// Helper functions 
 function formatDate(date: Date): string {
   return new Intl.DateTimeFormat('en-ZA', {
     month: 'short',
