@@ -39,25 +39,21 @@ jobs:
         run: npm install --global vercel@latest
 
       - name: Pull Vercel Environment Information
-        working-directory: toss-web
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web
 
       - name: Build Project Artifacts
-        working-directory: toss-web
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web
 
       - name: Deploy to Vercel (Preview)
         if: github.event_name == 'pull_request'
-        working-directory: toss-web
         run: |
-          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web)
           echo "DEPLOYMENT_URL=$url" >> $GITHUB_ENV
 
       - name: Deploy to Vercel (Production)
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/mvp')
-        working-directory: toss-web
         run: |
-          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web)
           echo "DEPLOYMENT_URL=$url" >> $GITHUB_ENV
 
       - name: Comment PR with deployment URL

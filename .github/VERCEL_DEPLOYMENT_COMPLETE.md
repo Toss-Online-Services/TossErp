@@ -156,16 +156,30 @@ After pushing code, verify:
 
 1. Check GitHub Actions logs for specific errors
 2. Verify all 3 secrets are configured correctly
-3. Ensure `package.json` exists in `toss-web/`
-4. Check Node.js version compatibility
-5. Review Vercel dashboard for build logs
+3. **⚠️ CRITICAL:** Ensure Vercel Root Directory is set to `toss-web`
+4. Ensure `package.json` exists in `toss-web/`
+5. Check Node.js version compatibility
+6. Review Vercel dashboard for build logs
 
 **Common Issues:**
 
+- **"Could not read package.json: ENOENT"** → Root Directory not set to `toss-web` in Vercel settings
 - **"No token found"** → `VERCEL_TOKEN` secret not set
 - **"Project not found"** → Wrong `VERCEL_PROJECT_ID`
 - **"Build failed"** → Check dependencies in `package.json`
 - **"Deployment succeeded but site broken"** → Check browser console
+
+### Fix: "Could not read package.json" Error
+
+This is the most common error for monorepo setups:
+
+**Solution:**
+1. Go to Vercel project dashboard
+2. Navigate to **Settings → General**
+3. Scroll to **Build & Development Settings**
+4. Set **Root Directory** to: `toss-web`
+5. Click **Save**
+6. Retry deployment
 
 ## 📚 Documentation Files
 

@@ -125,13 +125,18 @@ If your app needs environment variables in production:
 
 ### Build & Development Settings
 
-Ensure these are set correctly:
+**CRITICAL:** Since `toss-web` is in a subdirectory, you MUST configure:
 
-- **Framework Preset:** Nuxt.js
-- **Build Command:** `npm run generate`
-- **Output Directory:** `.output/public`
-- **Install Command:** `npm install`
-- **Root Directory:** `toss-web` (if in monorepo)
+1. Go to your Vercel project dashboard
+2. Navigate to **Settings → General**
+3. Under **Build & Development Settings**, set:
+   - **Framework Preset:** Nuxt.js
+   - **Root Directory:** `toss-web` ⚠️ **REQUIRED for monorepo**
+   - **Build Command:** `npm run generate` (or leave default)
+   - **Output Directory:** `.output/public` (or leave default)
+   - **Install Command:** `npm install` (or leave default)
+
+**Without setting the Root Directory to `toss-web`, the deployment will fail!**
 
 ## Step 6: Test the Deployment
 
