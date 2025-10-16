@@ -219,8 +219,10 @@ Ensure these are configured:
 - **Root Directory:** `toss-web` ⚠️ **REQUIRED**
 - **Build Command:** `npm run generate` (default is fine)
 - **Output Directory:** `.output/public` (default is fine)
-- **Install Command:** `npm install` (default is fine)
+- **Install Command:** `npm install` (handled by `.npmrc`)
 - **Node.js Version:** 20.x (default is fine)
+
+**Note:** The project includes a `toss-web/.npmrc` file that configures npm to use `--legacy-peer-deps` automatically, resolving peer dependency conflicts.
 
 ---
 
