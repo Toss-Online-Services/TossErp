@@ -8,6 +8,11 @@
         <p class="text-gray-600 mt-1 text-sm sm:text-base">Welcome back! Here's what's happening with your business today.</p>
       </div>
 
+      <!-- WhatsApp Quick Order -->
+      <div class="mb-4">
+        <WhatsAppChatPlaceholder />
+      </div>
+
       <!-- Quick Stats - Mobile First Grid -->
       <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">

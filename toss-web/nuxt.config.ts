@@ -75,7 +75,7 @@ export default defineNuxtConfig({
         output: {
           manualChunks: {
             'chart': ['chart.js', 'chartjs-adapter-date-fns'],
-            'export': ['xlsx', 'jspdf', 'jspdf-html2canvas'],
+            'export': ['xlsx', 'jspdf', 'jspdf-autotable', 'html2canvas'],
             'vendor': ['vue', 'vue-router', 'pinia']
           }
         }

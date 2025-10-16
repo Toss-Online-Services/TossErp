@@ -50,7 +50,7 @@
               <p class="text-sm text-gray-500 dark:text-gray-500">{{ metrics.savingsPercent }}% reduction</p>
             </div>
             <div class="p-3 rounded-full bg-green-100 dark:bg-green-900/30">
-              <TrendingDownIcon class="w-8 h-8 text-green-600 dark:text-green-400" />
+              <ArrowTrendingDownIcon class="w-8 h-8 text-green-600 dark:text-green-400" />
             </div>
           </div>
         </div>
@@ -362,7 +362,7 @@ import { ref } from 'vue'
 import {
   ArrowDownTrayIcon,
   CurrencyDollarIcon,
-  TrendingDownIcon,
+  ArrowTrendingDownIcon,
   ShoppingCartIcon,
   StarIcon,
   ChartBarIcon,
