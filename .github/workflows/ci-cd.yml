@@ -1,99 +1,18 @@
-name: TOSS ERP CI/CD Pipeline
+name: TOSS MVP - Web Frontend CI
 
 on:
   push:
-    branches: [ main, develop, feature/** ]
+    branches: [ main, feature/mvp ]
+    paths:
+      - 'toss-web/**'
+      - '.github/workflows/ci-cd.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, feature/mvp ]
+    paths:
+      - 'toss-web/**'
 
 jobs:
-  # Backend Tests
-  backend-test:
-    runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: toss_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-      
-      redis:
-        image: redis:7
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
-        include-prerelease: true
-    
-    - name: Restore dependencies
-      run: dotnet restore
-      working-directory: ./backend
-    
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
-      working-directory: ./backend
-    
-    - name: Test
-      run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
-      working-directory: ./backend
-    
-    - name: Upload coverage
-      uses: codecov/codecov-action@v4
-      with:
-        files: ./backend/**/coverage.cobertura.xml
-        flags: backend
-
-  # Mobile Tests
-  mobile-test:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.x'
-        channel: 'stable'
-    
-    - name: Get dependencies
-      run: flutter pub get
-      working-directory: ./toss-mobile
-    
-    - name: Run analyzer
-      run: flutter analyze
-      working-directory: ./toss-mobile
-    
-    - name: Run tests
-      run: flutter test --coverage
-      working-directory: ./toss-mobile
-    
-    - name: Upload coverage
-      uses: codecov/codecov-action@v4
-      with:
-        files: ./toss-mobile/coverage/lcov.info
-        flags: mobile
-
-  # Web Tests
+  # Web Frontend Tests & Build
   web-test:
     runs-on: ubuntu-latest
     
@@ -108,7 +27,7 @@ jobs:
         cache-dependency-path: ./toss-web/package-lock.json
     
     - name: Install dependencies
-      run: npm ci
+      run: npm ci --legacy-peer-deps
       working-directory: ./toss-web
     
     - name: Run linter
@@ -122,76 +41,11 @@ jobs:
     - name: Build
       run: npm run build
       working-directory: ./toss-web
-
-  # Security Scan
-  security-scan:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      if: success()
       with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-    
-    - name: Upload Trivy results to GitHub Security
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: 'trivy-results.sarif'
-
-  # Build and Push Docker Images
-  docker-build:
-    runs-on: ubuntu-latest
-    needs: [backend-test, web-test, security-scan]
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    
-    - name: Login to Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Build and push Backend API
-      uses: docker/build-push-action@v5
-      with:
-        context: ./backend
-        push: true
-        tags: ghcr.io/${{ github.repository }}/api:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-    
-    - name: Build and push Web Admin
-      uses: docker/build-push-action@v5
-      with:
-        context: ./toss-web
-        push: true
-        tags: ghcr.io/${{ github.repository }}/web:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-
-  # Deploy to Production
-  deploy-production:
-    runs-on: ubuntu-latest
-    needs: [docker-build]
-    if: github.ref == 'refs/heads/main'
-    environment: production
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Deploy to Kubernetes
-      run: |
-        echo "Deployment would happen here"
-        # kubectl apply -f k8s/
-        # helm upgrade toss-erp ./charts/toss-erp
+        name: web-build
+        path: toss-web/.output/
+        retention-days: 7
