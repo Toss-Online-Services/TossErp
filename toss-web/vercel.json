@@ -5,7 +5,7 @@
   "framework": "nuxtjs",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
-  "regions": ["jnb1"],
+  "regions": ["cpt1"],
   "routes": [
     {
       "src": "/sw.js",

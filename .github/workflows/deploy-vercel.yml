@@ -31,27 +31,37 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: toss-web/package-lock.json
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
+        shell: bash
+
+      - name: Install project dependencies
+        working-directory: toss-web
+        run: npm ci --legacy-peer-deps
+        shell: bash
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web
+        shell: bash
 
       - name: Build Project Artifacts
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web
+        shell: bash
 
       - name: Deploy to Vercel (Preview)
         if: github.event_name == 'pull_request'
+        shell: bash
         run: |
           url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web)
           echo "DEPLOYMENT_URL=$url" >> $GITHUB_ENV
 
       - name: Deploy to Vercel (Production)
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/mvp')
+        shell: bash
         run: |
           url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web)
           echo "DEPLOYMENT_URL=$url" >> $GITHUB_ENV
@@ -70,6 +80,7 @@ jobs:
 
       - name: Create deployment summary
         if: always()
+        shell: bash
         run: |
           echo "# Vercel Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -94,22 +105,25 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: toss-web/package-lock.json
 
       - name: Install dependencies
         working-directory: toss-web
-        run: npm ci
+        run: npm ci --legacy-peer-deps
+        shell: bash
 
       - name: Install Playwright Browsers
         working-directory: toss-web
         run: npx playwright install chromium
+        shell: bash
 
       - name: Run E2E tests
         working-directory: toss-web
         run: npm run test:e2e
         continue-on-error: true
+        shell: bash
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -118,4 +132,3 @@ jobs:
           name: playwright-report
           path: toss-web/playwright-report/
           retention-days: 7
-
