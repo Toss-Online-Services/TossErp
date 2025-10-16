@@ -15,7 +15,7 @@ vercel link
 - Login when prompted
 - Create new project or select existing
 - Framework: **Nuxt.js**
-- Root Directory: `./toss-web`
+- ⚠️ **IMPORTANT:** When asked about settings, confirm the directory is `toss-web`
 
 ### 3. Get Your IDs
 ```bash
