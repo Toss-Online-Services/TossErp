@@ -350,6 +350,10 @@ const triggerCategories = ref([
   }
 ])
 
+// Load mock triggers
+const { get, useMockData } = useApi()
+import { MockAutomationService } from '~/services/mock'
+
 // Sample triggers data
 const triggers = ref([
   {
@@ -534,4 +538,15 @@ const getResultClass = (result: string) => {
   }
   return classes[result as keyof typeof classes] || classes.Failed
 }
+
+// Load triggers on mount
+onMounted(async () => {
+  try {
+    const mockTriggers = MockAutomationService.getTriggers()
+    const mockStats = MockAutomationService.getTriggerStats()
+    stats.value = mockStats
+  } catch (error) {
+    console.error('Failed to load triggers:', error)
+  }
+})
 </script>

@@ -205,7 +205,10 @@ import {
   ArchiveBoxIcon
 } from '@heroicons/vue/24/outline'
 
-// Sample data
+// Load mock data
+const { get, useMockData } = useApi()
+import { MockAutomationService } from '~/services/mock'
+
 const activeWorkflows = ref([
   {
     id: 1,
@@ -240,6 +243,20 @@ const activeWorkflows = ref([
     icon: ShoppingCartIcon
   }
 ])
+
+// Load automation stats
+const loadStats = async () => {
+  try {
+    const stats = MockAutomationService.getAutomationStats()
+    // Stats loaded from mock service
+  } catch (error) {
+    console.error('Failed to load automation stats:', error)
+  }
+}
+
+onMounted(() => {
+  loadStats()
+})
 
 const recentActivity = ref([
   {
