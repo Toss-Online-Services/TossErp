@@ -118,4 +118,3 @@ jobs:
           name: playwright-report
           path: toss-web/playwright-report/
           retention-days: 7
-
