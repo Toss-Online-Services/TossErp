@@ -1,57 +1,35 @@
-# Use the official Node.js 18 image (not Alpine due to native binding issues)
-FROM node:18 AS base
+# Multi-stage build for Nuxt 4 application
+FROM node:20-alpine AS builder
 
-# Install necessary packages  
-RUN apt-get update && apt-get install -y libc6-dev
-
+# Set working directory
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY nuxt.config.ts ./
-COPY tailwind.config.js ./
 
 # Install dependencies
-RUN npm ci --only=production && npm cache clean --force
-
-# Copy source code
-COPY . .
-
-# Build stage
-FROM base AS builder
-
-# Install all dependencies (including dev)
 RUN npm ci
+
+# Copy application code
+COPY . .
 
 # Build the application
 RUN npm run build
 
 # Production stage
-FROM node:18 AS runner
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Create non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nuxtjs
+# Copy built application from builder
+COPY --from=builder /app/.output /app/.output
+COPY --from=builder /app/package*.json ./
 
-# Copy built application
-COPY --from=builder --chown=nuxtjs:nodejs /app/.output ./
-
-# Set user
-USER nuxtjs
+# Set environment to production
+ENV NODE_ENV=production
 
 # Expose port
 EXPOSE 3000
 
-# Set environment variables
-ENV NODE_ENV=production
-ENV NUXT_HOST=0.0.0.0
-ENV NUXT_PORT=3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD node --version || exit 1
-
 # Start the application
-CMD ["node", "server/index.mjs"]
+CMD ["node", ".output/server/index.mjs"]

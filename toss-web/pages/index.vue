@@ -1,20 +1,25 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
+  <div class="min-h-screen bg-gray-50">
     <!-- Mobile-First Page Container -->
     <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
       <!-- Page Header -->
       <div class="text-center sm:text-left">
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Dashboard</h1>
-        <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Welcome back! Here's what's happening with your business today.</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p class="text-gray-600 mt-1 text-sm sm:text-base">Welcome back! Here's what's happening with your business today.</p>
+      </div>
+
+      <!-- WhatsApp Quick Order -->
+      <div class="mb-4">
+        <WhatsAppChatPlaceholder />
       </div>
 
       <!-- Quick Stats - Mobile First Grid -->
       <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Total Revenue</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R 1.2M</p>
+              <p class="text-xs sm:text-sm text-gray-600">Total Revenue</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">R 1.2M</p>
               <p class="text-xs sm:text-sm text-green-600">+12.5%</p>
             </div>
             <div class="p-2 sm:p-3 bg-green-100 dark:bg-green-900 rounded-full">
@@ -23,11 +28,11 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Customers</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">1,428</p>
+              <p class="text-xs sm:text-sm text-gray-600">Customers</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">1,428</p>
               <p class="text-xs sm:text-sm text-blue-600">+8.2%</p>
             </div>
             <div class="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
@@ -36,11 +41,11 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Projects</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">24</p>
+              <p class="text-xs sm:text-sm text-gray-600">Projects</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">24</p>
               <p class="text-xs sm:text-sm text-yellow-600">3 due</p>
             </div>
             <div class="p-2 sm:p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
@@ -49,11 +54,11 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Pipeline</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R 892K</p>
+              <p class="text-xs sm:text-sm text-gray-600">Pipeline</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">R 892K</p>
               <p class="text-xs sm:text-sm text-purple-600">15 ops</p>
             </div>
             <div class="p-2 sm:p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
@@ -67,9 +72,9 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <!-- Recent Activity -->
         <div class="lg:col-span-2">
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-            <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
-              <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Recent Activity</h3>
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div class="p-4 sm:p-6 border-b border-gray-200">
+              <h3 class="text-base sm:text-lg font-semibold text-gray-900">Recent Activity</h3>
             </div>
             <div class="p-4 sm:p-6">
               <div class="space-y-3 sm:space-y-4">
@@ -78,8 +83,8 @@
                     <component :is="activity.icon" class="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ activity.title }}</p>
-                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 truncate">{{ activity.description }}</p>
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ activity.title }}</p>
+                    <p class="text-xs sm:text-sm text-gray-600 truncate">{{ activity.description }}</p>
                     <p class="text-xs text-slate-500 dark:text-slate-500 mt-1">{{ formatDate(activity.date) }}</p>
                   </div>
                 </div>
@@ -90,9 +95,9 @@
 
         <!-- Quick Actions -->
         <div>
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-            <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
-              <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Quick Actions</h3>
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div class="p-4 sm:p-6 border-b border-gray-200">
+              <h3 class="text-base sm:text-lg font-semibold text-gray-900">Quick Actions</h3>
             </div>
             <div class="p-4 sm:p-6">
               <div class="space-y-2 sm:space-y-3">
@@ -100,8 +105,8 @@
                   <div class="flex items-center space-x-3">
                     <UsersIcon class="w-5 h-5 text-blue-600 flex-shrink-0" />
                     <div class="min-w-0">
-                      <p class="font-medium text-slate-900 dark:text-white text-sm">Manage CRM</p>
-                      <p class="text-xs text-slate-600 dark:text-slate-400 truncate">View customers and opportunities</p>
+                      <p class="font-medium text-gray-900 text-sm">Manage CRM</p>
+                      <p class="text-xs text-gray-600 truncate">View customers and opportunities</p>
                     </div>
                   </div>
                 </NuxtLink>
@@ -110,8 +115,8 @@
                   <div class="flex items-center space-x-3">
                     <BriefcaseIcon class="w-5 h-5 text-green-600 flex-shrink-0" />
                     <div class="min-w-0">
-                      <p class="font-medium text-slate-900 dark:text-white text-sm">View Projects</p>
-                      <p class="text-xs text-slate-600 dark:text-slate-400 truncate">Track project progress</p>
+                      <p class="font-medium text-gray-900 text-sm">View Projects</p>
+                      <p class="text-xs text-gray-600 truncate">Track project progress</p>
                     </div>
                   </div>
                 </NuxtLink>
@@ -120,8 +125,8 @@
                   <div class="flex items-center space-x-3">
                     <CurrencyDollarIcon class="w-5 h-5 text-purple-600 flex-shrink-0" />
                     <div class="min-w-0">
-                      <p class="font-medium text-slate-900 dark:text-white text-sm">Financial Reports</p>
-                      <p class="text-xs text-slate-600 dark:text-slate-400 truncate">View financial data</p>
+                      <p class="font-medium text-gray-900 text-sm">Financial Reports</p>
+                      <p class="text-xs text-gray-600 truncate">View financial data</p>
                     </div>
                   </div>
                 </NuxtLink>
@@ -130,8 +135,8 @@
                   <div class="flex items-center space-x-3">
                     <ArchiveBoxIcon class="w-5 h-5 text-yellow-600 flex-shrink-0" />
                     <div class="min-w-0">
-                      <p class="font-medium text-slate-900 dark:text-white text-sm">Inventory</p>
-                      <p class="text-xs text-slate-600 dark:text-slate-400 truncate">Manage stock levels</p>
+                      <p class="font-medium text-gray-900 text-sm">Inventory</p>
+                      <p class="text-xs text-gray-600 truncate">Manage stock levels</p>
                     </div>
                   </div>
                 </NuxtLink>
@@ -144,9 +149,9 @@
       <!-- Charts and Analytics - Mobile Responsive -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Revenue Chart -->
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
-            <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Revenue Trend</h3>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+          <div class="p-4 sm:p-6 border-b border-gray-200">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900">Revenue Trend</h3>
           </div>
           <div class="p-4 sm:p-6">
             <div class="h-48 sm:h-64 flex items-center justify-center bg-slate-50 dark:bg-slate-700 rounded-lg">
@@ -156,19 +161,19 @@
         </div>
 
         <!-- Sales Funnel -->
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
-            <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Sales Funnel</h3>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+          <div class="p-4 sm:p-6 border-b border-gray-200">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900">Sales Funnel</h3>
           </div>
           <div class="p-4 sm:p-6">
             <div class="space-y-3 sm:space-y-4">
               <div v-for="stage in salesFunnel" :key="stage.name" class="flex items-center justify-between">
                 <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
                   <div class="w-3 h-3 sm:w-4 sm:h-4 rounded-full flex-shrink-0" :class="stage.color"></div>
-                  <span class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ stage.name }}</span>
+                  <span class="text-sm font-medium text-gray-900 truncate">{{ stage.name }}</span>
                 </div>
                 <div class="flex items-center space-x-2 flex-shrink-0">
-                  <span class="text-sm text-slate-600 dark:text-slate-400">{{ stage.count }}</span>
+                  <span class="text-sm text-gray-600">{{ stage.count }}</span>
                   <div class="w-16 sm:w-20 bg-slate-200 dark:bg-slate-600 rounded-full h-2">
                     <div class="h-2 rounded-full transition-all duration-300" :class="stage.color" :style="{ width: stage.percentage + '%' }"></div>
                   </div>
@@ -249,5 +254,11 @@ function formatDate(date: Date): string {
     minute: '2-digit'
   }).format(date)
 }
+
+// Page metadata
+definePageMeta({
+  layout: 'default',
+  title: 'Dashboard - TOSS ERP'
+})
 </script>
 

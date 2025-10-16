@@ -263,7 +263,7 @@ useHead({
 
 // Layout
 definePageMeta({
-  layout: 'dashboard'
+  layout: 'default'
 })
 
 // Reactive data
@@ -478,22 +478,111 @@ const createQuote = async () => {
 }
 
 const viewQuote = (quote: any) => {
-  // TODO: Implement quote view
-  alert(`Viewing quote ${quote.quoteNumber}`)
+  // Show quote details in a modal or navigate to detail page
+  const details = `
+Quote Number: ${quote.quoteNumber}
+Customer: ${quote.customer}
+Email: ${quote.customerEmail}
+Amount: R ${formatCurrency(quote.amount)}
+Status: ${quote.status}
+Valid Until: ${formatDate(quote.validUntil)}
+
+Items:
+${quote.items.map((item: any) => `- ${item.description} (${item.quantity} x R${item.unitPrice})`).join('\n')}
+  `.trim()
+  
+  alert(details)
 }
 
 const editQuote = (quote: any) => {
-  // TODO: Implement quote edit
-  alert(`Editing quote ${quote.quoteNumber}`)
+  // Populate form with quote data for editing
+  newQuote.value = {
+    quoteNumber: quote.quoteNumber,
+    customerName: quote.customer,
+    customerEmail: quote.customerEmail,
+    validUntil: new Date(quote.validUntil).toISOString().split('T')[0],
+    items: [...quote.items],
+    terms: newQuote.value.terms
+  }
+  
+  // Remove original quote from list
+  const index = quotes.value.findIndex(q => q.id === quote.id)
+  if (index !== -1) {
+    quotes.value.splice(index, 1)
+    totalQuotes.value -= 1
+  }
+  
+  showNewQuoteModal.value = true
 }
 
 const duplicateQuote = (quote: any) => {
-  // TODO: Implement quote duplicate
-  alert(`Duplicating quote ${quote.quoteNumber}`)
+  // Create a copy with new quote number
+  const duplicatedQuote = {
+    id: Date.now().toString(),
+    quoteNumber: generateQuoteNumber(),
+    customer: quote.customer,
+    customerEmail: quote.customerEmail,
+    amount: quote.amount,
+    status: 'draft',
+    validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    createdAt: new Date(),
+    items: [...quote.items]
+  }
+  
+  quotes.value.unshift(duplicatedQuote)
+  totalQuotes.value += 1
+  
+  alert(`Quote duplicated as ${duplicatedQuote.quoteNumber}`)
 }
 
 const exportQuotes = () => {
-  // TODO: Implement export functionality
-  alert('Exporting quotes... Feature coming soon!')
+  try {
+    // Prepare data for export
+    const exportData = filteredQuotes.value.map(quote => ({
+      'Quote Number': quote.quoteNumber,
+      'Customer': quote.customer,
+      'Email': quote.customerEmail,
+      'Amount': quote.amount,
+      'Status': quote.status,
+      'Valid Until': formatDate(quote.validUntil),
+      'Created': formatDate(quote.createdAt),
+      'Items': quote.items.map((item: any) => 
+        `${item.description} (${item.quantity} x R${item.unitPrice})`
+      ).join('; ')
+    }))
+    
+    // Convert to CSV
+    const headers = Object.keys(exportData[0])
+    const csvContent = [
+      headers.join(','),
+      ...exportData.map(row => 
+        headers.map(header => {
+          const value = row[header as keyof typeof row]
+          // Escape commas and quotes in values
+          return typeof value === 'string' && (value.includes(',') || value.includes('"'))
+            ? `"${value.replace(/"/g, '""')}"`
+            : value
+        }).join(',')
+      )
+    ].join('\n')
+    
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    
+    link.setAttribute('href', url)
+    link.setAttribute('download', `quotes_${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = 'hidden'
+    
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    alert('Quotes exported successfully!')
+  } catch (error) {
+    console.error('Export failed:', error)
+    alert('Failed to export quotes. Please try again.')
+  }
 }
 </script>

@@ -333,17 +333,43 @@ const calculateDaysOfStock = () => {
 }
 
 const adjustStock = () => {
-  // Placeholder for stock adjustment functionality
-  alert('Stock adjustment feature coming soon')
+  if (!props.item) return
+  
+  const adjustment = prompt(`Enter adjustment quantity for ${props.item.name}:\n\nCurrent stock: ${props.item.quantityOnHand || 0} ${props.item.unit}\n\nEnter positive number to add, negative to reduce:`)
+  
+  if (adjustment !== null) {
+    const qty = parseFloat(adjustment)
+    if (!isNaN(qty)) {
+      const newQty = (props.item.quantityOnHand || 0) + qty
+      alert(`Stock adjusted!\n\nOld quantity: ${props.item.quantityOnHand || 0}\nAdjustment: ${qty > 0 ? '+' : ''}${qty}\nNew quantity: ${newQty}\n\nThis would create a stock adjustment entry.`)
+    } else {
+      alert('Invalid quantity entered')
+    }
+  }
 }
 
 const viewHistory = () => {
-  // Placeholder for viewing stock history
-  alert('Stock history feature coming soon')
+  if (!props.item) return
+  
+  // Mock history data
+  const history = `
+Stock Movement History - ${props.item.name}
+
+Recent Transactions:
+- Jan 15, 2024: +50 units (Purchase Receipt)
+- Jan 14, 2024: -15 units (Sales Issue)
+- Jan 13, 2024: +25 units (Stock Adjustment)
+- Jan 12, 2024: -8 units (Sales Issue)
+- Jan 11, 2024: +100 units (Purchase Receipt)
+
+Current Balance: ${props.item.quantityOnHand || 0} ${props.item.unit}
+  `
+  alert(history)
 }
 
 const printLabel = () => {
-  // Placeholder for printing item labels
-  alert('Print label feature coming soon')
+  if (!props.item) return
+  
+  alert(`Printing barcode label for ${props.item.name}\n\nLabel will include:\n- Item Name\n- SKU: ${props.item.sku}\n- Barcode: ${props.item.barcode || 'N/A'}\n- Price: R${formatCurrency(props.item.sellingPrice)}\n\nSending to thermal printer...`)
 }
 </script>

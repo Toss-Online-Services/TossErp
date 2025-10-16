@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
+  <div class="min-h-screen bg-gray-50">
     <!-- Mobile-First Page Container -->
     <div class="p-4 pb-20 space-y-4 sm:p-6 sm:space-y-6 lg:pb-6">
       <!-- Page Header -->
       <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center sm:gap-0">
         <div>
-          <h1 class="text-2xl font-bold sm:text-3xl text-slate-900 dark:text-white">Sales Management</h1>
-          <p class="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">Track sales, manage orders, and grow your revenue</p>
+          <h1 class="text-2xl font-bold sm:text-3xl text-gray-900">Sales Management</h1>
+          <p class="mt-1 text-sm text-gray-600 sm:text-base">Track sales, manage orders, and grow your revenue</p>
         </div>
         <div class="flex flex-wrap gap-2 sm:gap-3">
           <button @click="showNewQuoteModal = true" 
@@ -24,11 +24,11 @@
 
       <!-- Sales Stats - Mobile First Grid -->
       <div class="grid grid-cols-1 gap-3 xs:grid-cols-2 lg:grid-cols-4 sm:gap-6">
-        <div class="p-4 bg-white border shadow-sm dark:bg-slate-800 sm:p-6 rounded-xl border-slate-200 dark:border-slate-700">
+        <div class="p-4 bg-white border shadow-sm dark:bg-slate-800 sm:p-6 rounded-xl border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Today's Sales</p>
-              <p class="text-lg font-bold sm:text-2xl text-slate-900 dark:text-white">R {{ formatCurrency(todaysSales) }}</p>
+              <p class="text-xs sm:text-sm text-gray-600">Today's Sales</p>
+              <p class="text-lg font-bold sm:text-2xl text-gray-900">R {{ formatCurrency(todaysSales) }}</p>
               <p class="text-xs text-green-600 sm:text-sm">+{{ todaysGrowth }}%</p>
             </div>
             <div class="p-2 bg-green-100 rounded-full sm:p-3 dark:bg-green-900">
@@ -37,11 +37,11 @@
           </div>
         </div>
 
-        <div class="p-4 bg-white border shadow-sm dark:bg-slate-800 sm:p-6 rounded-xl border-slate-200 dark:border-slate-700">
+        <div class="p-4 bg-white border shadow-sm dark:bg-slate-800 sm:p-6 rounded-xl border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Orders</p>
-              <p class="text-lg font-bold sm:text-2xl text-slate-900 dark:text-white">{{ totalOrders }}</p>
+              <p class="text-xs sm:text-sm text-gray-600">Orders</p>
+              <p class="text-lg font-bold sm:text-2xl text-gray-900">{{ totalOrders }}</p>
               <p class="text-xs text-blue-600 sm:text-sm">{{ pendingOrders }} pending</p>
             </div>
             <div class="p-2 bg-blue-100 rounded-full sm:p-3 dark:bg-blue-900">
@@ -50,11 +50,11 @@
           </div>
         </div>
 
-        <div class="p-4 bg-white border shadow-sm dark:bg-slate-800 sm:p-6 rounded-xl border-slate-200 dark:border-slate-700">
+        <div class="p-4 bg-white border shadow-sm dark:bg-slate-800 sm:p-6 rounded-xl border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Quotes</p>
-              <p class="text-lg font-bold sm:text-2xl text-slate-900 dark:text-white">{{ totalQuotes }}</p>
+              <p class="text-xs sm:text-sm text-gray-600">Quotes</p>
+              <p class="text-lg font-bold sm:text-2xl text-gray-900">{{ totalQuotes }}</p>
               <p class="text-xs text-yellow-600 sm:text-sm">{{ activeQuotes }} active</p>
             </div>
             <div class="p-2 bg-yellow-100 rounded-full sm:p-3 dark:bg-yellow-900">
@@ -63,11 +63,11 @@
           </div>
         </div>
 
-        <div class="p-4 bg-white border shadow-sm dark:bg-slate-800 sm:p-6 rounded-xl border-slate-200 dark:border-slate-700">
+        <div class="p-4 bg-white border shadow-sm dark:bg-slate-800 sm:p-6 rounded-xl border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Avg Order</p>
-              <p class="text-lg font-bold sm:text-2xl text-slate-900 dark:text-white">R {{ formatCurrency(averageOrder) }}</p>
+              <p class="text-xs sm:text-sm text-gray-600">Avg Order</p>
+              <p class="text-lg font-bold sm:text-2xl text-gray-900">R {{ formatCurrency(averageOrder) }}</p>
               <p class="text-xs text-purple-600 sm:text-sm">{{ conversionRate }}% conv</p>
             </div>
             <div class="p-2 bg-purple-100 rounded-full sm:p-3 dark:bg-purple-900">
@@ -81,11 +81,11 @@
       <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 sm:gap-6">
         <!-- Recent Sales -->
         <div class="lg:col-span-2">
-          <div class="bg-white border shadow-sm dark:bg-slate-800 rounded-xl border-slate-200 dark:border-slate-700">
-            <div class="p-4 border-b sm:p-6 border-slate-200 dark:border-slate-700">
+          <div class="bg-white border shadow-sm dark:bg-slate-800 rounded-xl border-gray-200">
+            <div class="p-4 border-b sm:p-6 border-gray-200">
               <div class="flex items-center justify-between">
-                <h3 class="text-base font-semibold sm:text-lg text-slate-900 dark:text-white">Recent Sales</h3>
-                <select v-model="salesFilter" class="px-2 py-1 text-xs bg-white border rounded-lg sm:text-sm border-slate-300 dark:border-slate-600 dark:bg-slate-700 text-slate-900 dark:text-white">
+                <h3 class="text-base font-semibold sm:text-lg text-gray-900">Recent Sales</h3>
+                <select v-model="salesFilter" class="px-2 py-1 text-xs bg-white border rounded-lg sm:text-sm border-slate-300 dark:border-slate-600 dark:bg-slate-700 text-gray-900">
                   <option value="today">Today</option>
                   <option value="week">This Week</option>
                   <option value="month">This Month</option>
@@ -100,12 +100,12 @@
                       <ShoppingCartIcon class="w-4 h-4 text-white sm:w-5 sm:h-5" />
                     </div>
                     <div class="flex-1 min-w-0">
-                      <p class="text-sm font-medium truncate text-slate-900 dark:text-white">{{ sale.customer }}</p>
-                      <p class="text-xs truncate sm:text-sm text-slate-600 dark:text-slate-400">{{ sale.items }} items • {{ formatDate(sale.date) }}</p>
+                      <p class="text-sm font-medium truncate text-gray-900">{{ sale.customer }}</p>
+                      <p class="text-xs truncate sm:text-sm text-gray-600">{{ sale.items }} items • {{ formatDate(sale.date) }}</p>
                     </div>
                   </div>
                   <div class="text-right">
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white">R {{ formatCurrency(sale.amount) }}</p>
+                    <p class="text-sm font-semibold text-gray-900">R {{ formatCurrency(sale.amount) }}</p>
                     <span class="inline-flex px-2 py-1 text-xs rounded-full" :class="getStatusBadge(sale.status)">
                       {{ sale.status }}
                     </span>
@@ -119,19 +119,19 @@
         <!-- Sales Pipeline & Quick Actions -->
         <div class="space-y-4 sm:space-y-6">
           <!-- Sales Pipeline -->
-          <div class="bg-white border shadow-sm dark:bg-slate-800 rounded-xl border-slate-200 dark:border-slate-700">
-            <div class="p-4 border-b sm:p-6 border-slate-200 dark:border-slate-700">
-              <h3 class="text-base font-semibold sm:text-lg text-slate-900 dark:text-white">Sales Pipeline</h3>
+          <div class="bg-white border shadow-sm dark:bg-slate-800 rounded-xl border-gray-200">
+            <div class="p-4 border-b sm:p-6 border-gray-200">
+              <h3 class="text-base font-semibold sm:text-lg text-gray-900">Sales Pipeline</h3>
             </div>
             <div class="p-4 sm:p-6">
               <div class="space-y-3 sm:space-y-4">
                 <div v-for="stage in pipelineStages" :key="stage.name" class="flex items-center justify-between">
                   <div>
-                    <p class="text-sm font-medium text-slate-900 dark:text-white">{{ stage.name }}</p>
-                    <p class="text-xs text-slate-600 dark:text-slate-400">{{ stage.count }} opportunities</p>
+                    <p class="text-sm font-medium text-gray-900">{{ stage.name }}</p>
+                    <p class="text-xs text-gray-600">{{ stage.count }} opportunities</p>
                   </div>
                   <div class="text-right">
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white">R {{ formatCurrency(stage.value) }}</p>
+                    <p class="text-sm font-semibold text-gray-900">R {{ formatCurrency(stage.value) }}</p>
                     <div class="w-16 h-2 mt-1 rounded-full bg-slate-200 dark:bg-slate-700">
                       <div class="h-2 bg-blue-600 rounded-full" :style="{ width: stage.percentage + '%' }"></div>
                     </div>
@@ -142,9 +142,9 @@
           </div>
 
           <!-- Quick Actions -->
-          <div class="bg-white border shadow-sm dark:bg-slate-800 rounded-xl border-slate-200 dark:border-slate-700">
-            <div class="p-4 border-b sm:p-6 border-slate-200 dark:border-slate-700">
-              <h3 class="text-base font-semibold sm:text-lg text-slate-900 dark:text-white">Quick Actions</h3>
+          <div class="bg-white border shadow-sm dark:bg-slate-800 rounded-xl border-gray-200">
+            <div class="p-4 border-b sm:p-6 border-gray-200">
+              <h3 class="text-base font-semibold sm:text-lg text-gray-900">Quick Actions</h3>
             </div>
             <div class="p-4 sm:p-6">
               <div class="space-y-2 sm:space-y-3">
@@ -152,8 +152,8 @@
                   <div class="flex items-center space-x-3">
                     <ShoppingCartIcon class="flex-shrink-0 w-5 h-5 text-blue-600" />
                     <div>
-                      <p class="text-sm font-medium text-slate-900 dark:text-white">Create Sale</p>
-                      <p class="text-xs text-slate-600 dark:text-slate-400">Record a new sale transaction</p>
+                      <p class="text-sm font-medium text-gray-900">Create Sale</p>
+                      <p class="text-xs text-gray-600">Record a new sale transaction</p>
                     </div>
                   </div>
                 </button>
@@ -162,8 +162,8 @@
                   <div class="flex items-center space-x-3">
                     <DocumentTextIcon class="flex-shrink-0 w-5 h-5 text-emerald-600" />
                     <div>
-                      <p class="text-sm font-medium text-slate-900 dark:text-white">Create Quote</p>
-                      <p class="text-xs text-slate-600 dark:text-slate-400">Generate a price quote</p>
+                      <p class="text-sm font-medium text-gray-900">Create Quote</p>
+                      <p class="text-xs text-gray-600">Generate a price quote</p>
                     </div>
                   </div>
                 </button>
@@ -172,8 +172,8 @@
                   <div class="flex items-center space-x-3">
                     <CubeIcon class="flex-shrink-0 w-5 h-5 text-purple-600" />
                     <div>
-                      <p class="text-sm font-medium text-slate-900 dark:text-white">Check Inventory</p>
-                      <p class="text-xs text-slate-600 dark:text-slate-400">View stock levels</p>
+                      <p class="text-sm font-medium text-gray-900">Check Inventory</p>
+                      <p class="text-xs text-gray-600">View stock levels</p>
                     </div>
                   </div>
                 </NuxtLink>
@@ -182,12 +182,119 @@
                   <div class="flex items-center space-x-3">
                     <ChartBarIcon class="flex-shrink-0 w-5 h-5 text-orange-600" />
                     <div>
-                      <p class="text-sm font-medium text-slate-900 dark:text-white">Sales Report</p>
-                      <p class="text-xs text-slate-600 dark:text-slate-400">Generate analytics</p>
+                      <p class="text-sm font-medium text-gray-900">Sales Report</p>
+                      <p class="text-xs text-gray-600">Generate analytics</p>
                     </div>
                   </div>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sales Module Features -->
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 sm:gap-6">
+        <!-- Core Sales Features -->
+        <div class="bg-white border shadow-sm dark:bg-slate-800 rounded-xl border-gray-200">
+          <div class="p-4 border-b sm:p-6 border-gray-200">
+            <h3 class="text-base font-semibold sm:text-lg text-gray-900">Core Sales Features</h3>
+          </div>
+          <div class="p-4 sm:p-6">
+            <div class="space-y-2 sm:space-y-3">
+              <NuxtLink to="/sales/quotations" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <DocumentTextIcon class="flex-shrink-0 w-5 h-5 text-emerald-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Quotations</p>
+                    <p class="text-xs text-gray-600">Create professional quotes</p>
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <NuxtLink to="/sales/orders" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <ShoppingBagIcon class="flex-shrink-0 w-5 h-5 text-blue-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Sales Orders</p>
+                    <p class="text-xs text-gray-600">Manage customer orders</p>
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <NuxtLink to="/sales/invoices" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <DocumentTextIcon class="flex-shrink-0 w-5 h-5 text-purple-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Invoices</p>
+                    <p class="text-xs text-gray-600">Generate & track invoices</p>
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <NuxtLink to="/sales/delivery-notes" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <TruckIcon class="flex-shrink-0 w-5 h-5 text-indigo-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Delivery Notes</p>
+                    <p class="text-xs text-gray-600">Track order fulfillment</p>
+                  </div>
+                </div>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Features -->
+        <div class="bg-white border shadow-sm dark:bg-slate-800 rounded-xl border-gray-200">
+          <div class="p-4 border-b sm:p-6 border-gray-200">
+            <h3 class="text-base font-semibold sm:text-lg text-gray-900">Advanced Features</h3>
+          </div>
+          <div class="p-4 sm:p-6">
+            <div class="space-y-2 sm:space-y-3">
+              <NuxtLink to="/sales/pricing-rules" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <CurrencyDollarIcon class="flex-shrink-0 w-5 h-5 text-green-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Pricing Rules</p>
+                    <p class="text-xs text-gray-600">Automate discounts</p>
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <NuxtLink to="/sales/analytics" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <ChartBarIcon class="flex-shrink-0 w-5 h-5 text-blue-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Analytics</p>
+                    <p class="text-xs text-gray-600">Sales insights & reports</p>
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <NuxtLink to="/sales/ai-assistant" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <div class="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">AI Assistant</p>
+                    <p class="text-xs text-gray-600">Smart sales insights</p>
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <NuxtLink to="/sales/pos" class="block w-full p-3 text-left transition-colors border rounded-lg border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700">
+                <div class="flex items-center space-x-3">
+                  <ShoppingCartIcon class="flex-shrink-0 w-5 h-5 text-orange-600" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">Point of Sale</p>
+                    <p class="text-xs text-gray-600">Quick checkout system</p>
+                  </div>
+                </div>
+              </NuxtLink>
             </div>
           </div>
         </div>
@@ -216,9 +323,9 @@
 
     <!-- New Sale Modal -->
     <div v-if="showNewSaleModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div class="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="p-4 border-b sm:p-6 border-slate-200 dark:border-slate-700">
-          <h3 class="text-lg font-semibold sm:text-xl text-slate-900 dark:text-white">Create New Sale</h3>
+      <div class="bg-white rounded-xl sm:rounded-2xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-4 border-b sm:p-6 border-gray-200">
+          <h3 class="text-lg font-semibold sm:text-xl text-gray-900">Create New Sale</h3>
         </div>
         <div class="p-4 sm:p-6">
           <form @submit.prevent="createSale">
@@ -296,15 +403,15 @@
               <!-- Total Display -->
               <div class="p-4 rounded-lg bg-slate-50 dark:bg-slate-700">
                 <div class="flex items-center justify-between">
-                  <span class="text-lg font-semibold text-slate-900 dark:text-white">Total:</span>
-                  <span class="text-xl font-bold text-slate-900 dark:text-white">R {{ formatCurrency(calculateTotal()) }}</span>
+                  <span class="text-lg font-semibold text-gray-900">Total:</span>
+                  <span class="text-xl font-bold text-gray-900">R {{ formatCurrency(calculateTotal()) }}</span>
                 </div>
               </div>
             </div>
 
             <div class="flex justify-end mt-4 space-x-3 sm:mt-6">
               <button @click="showNewSaleModal = false" type="button" 
-                      class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">
+                      class="px-4 py-2 text-gray-600 hover:text-slate-800 dark:hover:text-slate-200">
                 Cancel
               </button>
               <button type="submit" 
@@ -319,9 +426,9 @@
 
     <!-- New Quote Modal -->
     <div v-if="showNewQuoteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div class="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="p-4 border-b sm:p-6 border-slate-200 dark:border-slate-700">
-          <h3 class="text-lg font-semibold sm:text-xl text-slate-900 dark:text-white">Create New Quote</h3>
+      <div class="bg-white rounded-xl sm:rounded-2xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-4 border-b sm:p-6 border-gray-200">
+          <h3 class="text-lg font-semibold sm:text-xl text-gray-900">Create New Quote</h3>
         </div>
         <div class="p-4 sm:p-6">
           <form @submit.prevent="createQuote">
@@ -375,7 +482,7 @@
               <!-- Quote Total -->
               <div class="p-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20">
                 <div class="flex items-center justify-between">
-                  <span class="text-lg font-semibold text-slate-900 dark:text-white">Quote Total:</span>
+                  <span class="text-lg font-semibold text-gray-900">Quote Total:</span>
                   <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400">R {{ formatCurrency(calculateQuoteTotal()) }}</span>
                 </div>
               </div>
@@ -383,7 +490,7 @@
 
             <div class="flex justify-end mt-4 space-x-3 sm:mt-6">
               <button @click="showNewQuoteModal = false" type="button" 
-                      class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">
+                      class="px-4 py-2 text-gray-600 hover:text-slate-800 dark:hover:text-slate-200">
                 Cancel
               </button>
               <button type="submit" 
@@ -422,7 +529,7 @@ useHead({
 
 // Layout
 definePageMeta({
-  layout: 'dashboard'
+  layout: 'default'
 })
 
 // Reactive data

@@ -10,11 +10,11 @@
           </p>
         </div>
         <div class="flex space-x-3">
-          <button class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <button @click="exportReconciliations" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
             <DocumentArrowDownIcon class="w-4 h-4 mr-2" />
             Export
           </button>
-          <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700">
+          <button @click="openNewReconciliation" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700">
             <PlusIcon class="w-4 h-4 mr-2" />
             New Reconciliation
           </button>
@@ -190,16 +190,19 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 <div class="flex space-x-2">
-                  <button class="text-blue-600 dark:text-blue-400 hover:text-blue-700" title="View Details">
+                  <button @click="viewReconciliation(reconciliation)" class="text-blue-600 dark:text-blue-400 hover:text-blue-700" title="View Details">
                     <EyeIcon class="w-4 h-4" />
                   </button>
-                  <button v-if="reconciliation.status === 'draft'" class="text-green-600 dark:text-green-400 hover:text-green-700" title="Start Reconciliation">
+                  <button v-if="reconciliation.status === 'draft'" @click="startReconciliation(reconciliation)" class="text-green-600 dark:text-green-400 hover:text-green-700" title="Start Reconciliation">
                     <PlayIcon class="w-4 h-4" />
                   </button>
-                  <button class="text-gray-600 dark:text-gray-400 hover:text-gray-700" title="Edit">
+                  <button v-if="reconciliation.status === 'in-progress'" @click="completeReconciliation(reconciliation)" class="text-green-600 dark:text-green-400 hover:text-green-700" title="Complete Reconciliation">
+                    <CheckCircleIcon class="w-4 h-4" />
+                  </button>
+                  <button @click="editReconciliation(reconciliation)" class="text-gray-600 dark:text-gray-400 hover:text-gray-700" title="Edit">
                     <PencilIcon class="w-4 h-4" />
                   </button>
-                  <button class="text-red-600 dark:text-red-400 hover:text-red-700" title="Delete">
+                  <button @click="deleteReconciliation(reconciliation)" class="text-red-600 dark:text-red-400 hover:text-red-700" title="Delete">
                     <TrashIcon class="w-4 h-4" />
                   </button>
                 </div>
@@ -214,7 +217,7 @@
         <ClipboardDocumentCheckIcon class="w-12 h-12 text-gray-400 mx-auto mb-4" />
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No reconciliations found</h3>
         <p class="text-gray-500 dark:text-gray-400 mb-4">Get started by creating your first stock reconciliation.</p>
-        <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700">
+        <button @click="openNewReconciliation" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700">
           <PlusIcon class="w-4 h-4 mr-2" />
           New Reconciliation
         </button>
@@ -241,7 +244,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   PlusIcon,
   DocumentArrowDownIcon,
@@ -368,6 +371,11 @@ const filteredReconciliations = computed(() => {
   return filtered
 })
 
+// Modal state
+const showReconciliationModal = ref(false)
+const selectedReconciliation = ref<any>(null)
+const items = ref<any[]>([])
+
 // Methods
 const getStatusClass = (status: string) => {
   const classes = {
@@ -378,4 +386,162 @@ const getStatusClass = (status: string) => {
   }
   return classes[status as keyof typeof classes] || classes.draft
 }
+
+const openNewReconciliation = () => {
+  selectedReconciliation.value = null
+  showReconciliationModal.value = true
+}
+
+const editReconciliation = (rec: any) => {
+  selectedReconciliation.value = rec
+  showReconciliationModal.value = true
+}
+
+const viewReconciliation = (rec: any) => {
+  const details = `
+Reconciliation: ${rec.id}
+Warehouse: ${rec.warehouse}
+Location: ${rec.location}
+Date: ${rec.date}
+Items: ${rec.itemsCount}
+Discrepancies: ${rec.discrepancies}
+Value Impact: ${rec.valueImpact >= 0 ? '+' : ''}$${rec.valueImpact.toLocaleString()}
+Status: ${rec.status}
+  `
+  alert(details)
+}
+
+const startReconciliation = (rec: any) => {
+  rec.status = 'in-progress'
+  editReconciliation(rec)
+}
+
+const completeReconciliation = (rec: any) => {
+  if (confirm(`Complete reconciliation ${rec.id}? This will update stock levels.`)) {
+    rec.status = 'completed'
+    alert(`Reconciliation ${rec.id} completed! Stock levels have been updated.`)
+  }
+}
+
+const deleteReconciliation = (rec: any) => {
+  if (confirm(`Delete reconciliation ${rec.id}?`)) {
+    const index = reconciliations.value.findIndex(r => r.id === rec.id)
+    if (index > -1) {
+      reconciliations.value.splice(index, 1)
+      alert(`Reconciliation ${rec.id} deleted successfully!`)
+    }
+  }
+}
+
+const closeReconciliationModal = () => {
+  showReconciliationModal.value = false
+  selectedReconciliation.value = null
+}
+
+const saveReconciliation = async (data: any) => {
+  try {
+    console.log('Saving reconciliation:', data)
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    if (!selectedReconciliation.value) {
+      // New reconciliation
+      const newRec = {
+        id: `REC-${Date.now().toString().slice(-6)}`,
+        reference: data.reference || `REC-${Date.now().toString().slice(-6)}`,
+        warehouse: warehouses.value.find(w => w.id === parseInt(data.warehouseId))?.name || 'Unknown',
+        location: 'All Sections',
+        date: data.date,
+        time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        itemsCount: data.items.length,
+        discrepancies: data.items.filter((i: any) => i.physicalCount !== null && i.physicalCount !== i.systemQuantity).length,
+        valueImpact: calculateValueImpact(data.items),
+        status: 'draft'
+      }
+      reconciliations.value.unshift(newRec)
+    } else {
+      // Update existing
+      const index = reconciliations.value.findIndex(r => r.id === selectedReconciliation.value.id)
+      if (index > -1) {
+        reconciliations.value[index] = {
+          ...reconciliations.value[index],
+          discrepancies: data.items.filter((i: any) => i.physicalCount !== null && i.physicalCount !== i.systemQuantity).length,
+          valueImpact: calculateValueImpact(data.items),
+          status: 'in-progress'
+        }
+      }
+    }
+    
+    alert('Reconciliation saved successfully!')
+    closeReconciliationModal()
+  } catch (error) {
+    console.error('Error saving reconciliation:', error)
+    alert('Failed to save reconciliation. Please try again.')
+  }
+}
+
+const calculateValueImpact = (items: any[]) => {
+  // Simplified value impact calculation
+  return items.reduce((sum, item) => {
+    if (item.physicalCount === null) return sum
+    const diff = item.physicalCount - item.systemQuantity
+    return sum + (diff * 10) // Assuming R10 per unit
+  }, 0)
+}
+
+const exportReconciliations = async () => {
+  const exportData = filteredReconciliations.value.map(rec => ({
+    'Reconciliation ID': rec.id,
+    'Reference': rec.reference,
+    'Warehouse': rec.warehouse,
+    'Location': rec.location,
+    'Date': rec.date,
+    'Items Count': rec.itemsCount,
+    'Discrepancies': rec.discrepancies,
+    'Value Impact ($)': rec.valueImpact,
+    'Status': rec.status
+  }))
+
+  const csvContent = [
+    Object.keys(exportData[0]).join(','),
+    ...exportData.map(row => Object.values(row).map(v => `"${v}"`).join(','))
+  ].join('\n')
+
+  const blob = new Blob([csvContent], { type: 'text/csv' })
+  const url = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `stock-reconciliations-${new Date().toISOString().split('T')[0]}.csv`
+  a.click()
+  window.URL.revokeObjectURL(url)
+  
+  alert('Reconciliations exported successfully!')
+}
+
+// Load items (mock data)
+const loadItems = async () => {
+  // Mock items for reconciliation
+  items.value = [
+    { id: '1', name: 'White Bread Loaf', sku: 'BREAD-001', quantityOnHand: 45 },
+    { id: '2', name: 'Fresh Milk 1L', sku: 'MILK-001', quantityOnHand: 15 },
+    { id: '3', name: 'Basmati Rice 2kg', sku: 'RICE-001', quantityOnHand: 8 },
+    { id: '4', name: 'Washing Powder 1kg', sku: 'SOAP-001', quantityOnHand: 12 }
+  ]
+}
+
+// Lifecycle
+onMounted(() => {
+  loadItems()
+})
 </script>
+
+<!-- Reconciliation Modal -->
+<ReconciliationModal
+  v-if="showReconciliationModal"
+  :reconciliation="selectedReconciliation"
+  :warehouses="warehouses"
+  :items="items"
+  @close="closeReconciliationModal"
+  @save="saveReconciliation"
+/>

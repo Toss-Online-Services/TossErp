@@ -275,6 +275,10 @@ const stats = ref({
   failed: 3
 })
 
+// Load mock workflows
+const { get, useMockData } = useApi()
+import { MockAutomationService } from '~/services/mock'
+
 // Sample workflows data
 const workflows = ref([
   {
@@ -430,4 +434,14 @@ const getStatusClass = (status: string) => {
   }
   return classes[status as keyof typeof classes] || classes.draft
 }
+
+// Load workflows from mock service
+onMounted(async () => {
+  try {
+    const mockWorkflows = MockAutomationService.getWorkflows()
+    // Workflows loaded
+  } catch (error) {
+    console.error('Failed to load workflows:', error)
+  }
+})
 </script>

@@ -6,24 +6,24 @@
         <span class="text-xs">Home</span>
       </NuxtLink>
       
-      <NuxtLink to="/crm" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/crm') }">
-        <UsersIcon class="w-5 h-5 mb-1" />
-        <span class="text-xs">CRM</span>
-      </NuxtLink>
-      
-      <NuxtLink to="/projects" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/projects') }">
-        <BriefcaseIcon class="w-5 h-5 mb-1" />
-        <span class="text-xs">Projects</span>
-      </NuxtLink>
-      
-      <NuxtLink to="/accounts" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/accounts') }">
-        <CurrencyDollarIcon class="w-5 h-5 mb-1" />
-        <span class="text-xs">Accounts</span>
-      </NuxtLink>
-      
       <NuxtLink to="/stock" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/stock') }">
         <ArchiveBoxIcon class="w-5 h-5 mb-1" />
         <span class="text-xs">Stock</span>
+      </NuxtLink>
+      
+      <NuxtLink to="/sales" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/sales') }">
+        <ShoppingCartIcon class="w-5 h-5 mb-1" />
+        <span class="text-xs">Sales</span>
+      </NuxtLink>
+      
+      <NuxtLink to="/purchasing" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/purchasing') }">
+        <ShoppingBagIcon class="w-5 h-5 mb-1" />
+        <span class="text-xs">Buy</span>
+      </NuxtLink>
+      
+      <NuxtLink to="/automation" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/automation') }">
+        <CogIcon class="w-5 h-5 mb-1" />
+        <span class="text-xs">AI</span>
       </NuxtLink>
     </div>
   </div>
@@ -32,10 +32,10 @@
 <script setup>
 import { 
   HomeIcon, 
-  UsersIcon, 
-  BriefcaseIcon, 
-  CurrencyDollarIcon, 
-  ArchiveBoxIcon
+  ArchiveBoxIcon, 
+  ShoppingCartIcon, 
+  ShoppingBagIcon, 
+  CogIcon
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()

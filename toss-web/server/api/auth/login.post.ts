@@ -9,7 +9,9 @@ export default defineEventHandler(async (event) => {
     }
 
     // In development, accept any credentials and issue a fake token
-    const fakeToken = `dev-${Math.random().toString(36).slice(2)}`
+    const fakeToken = `dev-token-${Math.random().toString(36).slice(2)}`
+    const fakeRefreshToken = `dev-refresh-${Math.random().toString(36).slice(2)}`
+    const expiresIn = body.rememberMe ? 60 * 60 * 24 * 7 : 60 * 60 * 4 // 7 days or 4 hours
 
     // Set cookie (httpOnly disabled in dev so client can read if needed)
     setCookie(event, 'auth-token', fakeToken, {
@@ -17,43 +19,44 @@ export default defineEventHandler(async (event) => {
       sameSite: 'strict',
       secure: false,
       path: '/',
-      maxAge: body.rememberMe ? 60 * 60 * 24 * 7 : 60 * 60 * 4,
+      maxAge: expiresIn,
+    })
+
+    setCookie(event, 'auth-refresh-token', fakeRefreshToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: false,
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
     })
 
     const user = {
-      id: 'user-dev-1',
+      id: 1,
+      name: 'Test User',
       email: body.email,
-      firstName: 'Test',
-      lastName: 'User',
+      roles: ['owner', 'admin'],
+      permissions: [
+        'dashboard:view',
+        'inventory:*',
+        'sales:*',
+        'purchasing:*',
+        'logistics:*',
+        'crm:*',
+        'manufacturing:*',
+        'reports:view',
+        'admin',
+      ],
       avatar: undefined,
-      businessId: 'tenant1',
-      businessName: "Thabo's Spaza Shop",
-      role: 'owner',
-      status: 'active' as const,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     }
-
-    const permissions = [
-      'dashboard:view',
-      'inventory:*',
-      'sales:*',
-      'purchasing:*',
-      'logistics:*',
-      'crm:*',
-      'reports:view',
-      'admin',
-    ]
 
     return {
       token: fakeToken,
+      refreshToken: fakeRefreshToken,
       user,
-      permissions,
+      expiresIn,
     }
   } catch (err) {
     if ((err as any)?.statusCode) throw err
     throw createError({ statusCode: 500, statusMessage: 'Login failed' })
   }
 })
-
-// (Removed duplicate default export block)

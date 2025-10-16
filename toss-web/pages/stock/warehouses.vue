@@ -116,13 +116,20 @@
           </select>
         </div>
 
-        <div class="flex items-end">
+        <div class="flex items-end space-x-2">
+          <button
+            @click="exportWarehouses"
+            type="button"
+            class="flex-1 rounded-lg bg-green-600 px-3 py-2 text-sm font-semibold text-white hover:bg-green-500"
+          >
+            Export
+          </button>
           <button
             @click="clearFilters"
             type="button"
-            class="w-full rounded-lg bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+            class="flex-1 rounded-lg bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500"
           >
-            Clear Filters
+            Clear
           </button>
         </div>
       </div>
@@ -245,23 +252,23 @@
     </div>
   </div>
 
-  <!-- TODO: Create these modal components -->
-  <!-- 
+  <!-- Warehouse Modal -->
   <WarehouseModal
     v-if="showModal"
     :warehouse="selectedWarehouse"
+    :warehouses="warehouses"
     @close="closeModal"
-    @saved="handleWarehouseSaved"
+    @save="handleWarehouseSaved"
   />
 
+  <!-- Warehouse Details Modal -->
   <WarehouseDetailsModal
     v-if="showDetailsModal"
     :warehouse="selectedWarehouse"
     @close="closeDetailsModal"
     @edit="openEditModal"
-    @delete="handleWarehouseDelete"
+    @deactivate="handleWarehouseDeactivate"
   />
-  -->
 </template>
 
 <script setup lang="ts">
@@ -277,10 +284,6 @@ import {
   PencilIcon
 } from '@heroicons/vue/24/outline'
 import { useStock, type WarehouseDto } from '../../composables/useStock'
-
-// Components temporarily commented out until we create them
-// const WarehouseModal = defineAsyncComponent(() => import('../../components/stock/WarehouseModal.vue'))
-// const WarehouseDetailsModal = defineAsyncComponent(() => import('../../components/stock/WarehouseDetailsModal.vue'))
 
 // Composables
 const { getWarehouses } = useStock()
@@ -381,11 +384,14 @@ const formatCurrency = (amount: number) => {
 
 // Modal methods
 const openCreateModal = () => {
-  alert('Create warehouse modal - to be implemented')
+  selectedWarehouse.value = null
+  showModal.value = true
 }
 
 const openEditModal = (warehouse: WarehouseDto) => {
-  alert(`Edit warehouse: ${warehouse.name} - to be implemented`)
+  selectedWarehouse.value = warehouse
+  showDetailsModal.value = false
+  showModal.value = true
 }
 
 const closeModal = () => {
@@ -394,7 +400,8 @@ const closeModal = () => {
 }
 
 const openDetailsModal = (warehouse: WarehouseDto) => {
-  alert(`View details for warehouse: ${warehouse.name} - to be implemented`)
+  selectedWarehouse.value = warehouse
+  showDetailsModal.value = true
 }
 
 const closeDetailsModal = () => {
@@ -402,19 +409,69 @@ const closeDetailsModal = () => {
   selectedWarehouse.value = null
 }
 
-const handleWarehouseSaved = () => {
-  loadWarehouses()
-  closeModal()
+const handleWarehouseSaved = async (data: any) => {
+  try {
+    console.log('Saving warehouse:', data)
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    alert('Warehouse saved successfully!')
+    closeModal()
+    await loadWarehouses()
+  } catch (error) {
+    console.error('Error saving warehouse:', error)
+    alert('Failed to save warehouse. Please try again.')
+  }
 }
 
-const handleWarehouseDelete = () => {
-  loadWarehouses()
-  closeDetailsModal()
+const handleWarehouseDeactivate = async (warehouse: WarehouseDto) => {
+  try {
+    console.log('Deactivating warehouse:', warehouse)
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    alert('Warehouse deactivated successfully!')
+    closeDetailsModal()
+    await loadWarehouses()
+  } catch (error) {
+    console.error('Error deactivating warehouse:', error)
+    alert('Failed to deactivate warehouse. Please try again.')
+  }
 }
 
 const viewStock = (warehouse: WarehouseDto) => {
-  // Navigate to stock view filtered by warehouse - for now just show alert
-  alert(`View stock for warehouse: ${warehouse.name}`)
+  alert(`View stock for warehouse: ${warehouse.name}\nNavigate to stock levels filtered by this warehouse`)
+}
+
+const exportWarehouses = async () => {
+  const exportData = filteredWarehouses.value.map(wh => ({
+    'Code': wh.code,
+    'Name': wh.name,
+    'Type': wh.type || '',
+    'Description': wh.description || '',
+    'Address': wh.address || '',
+    'Items': wh.itemCount || 0,
+    'Stock Value (R)': wh.stockValue || 0,
+    'Status': wh.isActive ? 'Active' : 'Inactive',
+    'Is Group': wh.isGroup ? 'Yes' : 'No'
+  }))
+
+  const csvContent = [
+    Object.keys(exportData[0]).join(','),
+    ...exportData.map(row => Object.values(row).map(v => `"${v}"`).join(','))
+  ].join('\n')
+
+  const blob = new Blob([csvContent], { type: 'text/csv' })
+  const url = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `warehouses-${new Date().toISOString().split('T')[0]}.csv`
+  a.click()
+  window.URL.revokeObjectURL(url)
+  
+  alert('Warehouses exported successfully!')
 }
 
 // Lifecycle

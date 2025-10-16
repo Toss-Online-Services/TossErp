@@ -424,6 +424,10 @@ const recentExecutions = ref([
   }
 ])
 
+// Load mock data
+const { get, useMockData } = useApi()
+import { MockAutomationService } from '~/services/mock'
+
 // Detailed reports
 const detailedReports = ref([
   {
@@ -535,4 +539,14 @@ const getFrequencyClass = (frequency: string) => {
   }
   return classes[frequency as keyof typeof classes] || classes.Daily
 }
+
+// Load reports on mount
+onMounted(async () => {
+  try {
+    const executions = MockAutomationService.getExecutions()
+    detailedReports.value = executions
+  } catch (error) {
+    console.error('Failed to load reports:', error)
+  }
+})
 </script>

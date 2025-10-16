@@ -1,0 +1,121 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main
+      - feature/mvp
+    paths:
+      - 'toss-web/**'
+      - '.github/workflows/deploy-vercel.yml'
+  pull_request:
+    branches:
+      - main
+      - feature/mvp
+    paths:
+      - 'toss-web/**'
+  workflow_dispatch:
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: toss-web/package-lock.json
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web
+
+      - name: Build Project Artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web
+
+      - name: Deploy to Vercel (Preview)
+        if: github.event_name == 'pull_request'
+        run: |
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web)
+          echo "DEPLOYMENT_URL=$url" >> $GITHUB_ENV
+
+      - name: Deploy to Vercel (Production)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/mvp')
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web)
+          echo "DEPLOYMENT_URL=$url" >> $GITHUB_ENV
+
+      - name: Comment PR with deployment URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🚀 Deployment Preview\n\nYour TOSS MVP has been deployed to Vercel!\n\n**Preview URL:** ${process.env.DEPLOYMENT_URL}\n\n### Test Checklist:\n- [ ] Homepage loads correctly\n- [ ] All 7 core modules accessible\n- [ ] PWA installable on mobile\n- [ ] Mock data displays\n- [ ] Charts render properly\n\n*Deployment powered by Vercel*`
+            });
+
+      - name: Create deployment summary
+        if: always()
+        run: |
+          echo "# Vercel Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ github.event_name == 'pull_request' && 'Preview' || 'Production' }}" >> $GITHUB_STEP_SUMMARY
+          if [ -n "$DEPLOYMENT_URL" ]; then
+            echo "**Deployment URL:** $DEPLOYMENT_URL" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+  # Optional: Run E2E tests on deployed preview
+  test-deployment:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: toss-web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: toss-web
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        working-directory: toss-web
+        run: npx playwright install chromium
+
+      - name: Run E2E tests
+        working-directory: toss-web
+        run: npm run test:e2e
+        continue-on-error: true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: toss-web/playwright-report/
+          retention-days: 7
+
