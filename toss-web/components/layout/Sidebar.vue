@@ -88,7 +88,7 @@
           <NuxtLink to="/sales" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales' }">
             Sales Dashboard
           </NuxtLink>
-          <NuxtLink to="/sales/quotations" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/quotationss' }">
+          <NuxtLink to="/sales/quotations" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/quotations' }">
             Quotations
           </NuxtLink>
           <NuxtLink to="/sales/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/orders' }">
@@ -97,7 +97,7 @@
           <NuxtLink to="/sales/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/invoices' }">
             Sales Invoices
           </NuxtLink>
-          <NuxtLink to="/sales/pos" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/pos' }">
+          <NuxtLink to="/sales/pos" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path.startsWith('/sales/pos') }">
             Point of Sale
           </NuxtLink>
           <NuxtLink to="/sales/analytics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/analytics' }">
@@ -217,14 +217,14 @@
           <NuxtLink to="/accounting/chart-of-accounts" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/chart-of-accounts' }">
             Chart of Accounts
           </NuxtLink>
-          <NuxtLink to="/accounting/journal" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/journal' }">
+          <NuxtLink to="/accounting/journal-entries" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/journal-entries' }">
             Journal Entries
           </NuxtLink>
-          <NuxtLink to="/accounting/ledger" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/ledger' }">
+          <NuxtLink to="/accounting/reports/general-ledger" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/reports/general-ledger' }">
             General Ledger
           </NuxtLink>
-          <NuxtLink to="/accounting/payments" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/payments' }">
-            Payments
+          <NuxtLink to="/accounting/statements" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/statements' }">
+            Financial Statements
           </NuxtLink>
           <NuxtLink to="/accounting/reports" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/accounting/reports' }">
             Financial Reports
@@ -281,7 +281,7 @@
           v-show="hrDropdownOpen"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
-          <NuxtLink to="/hr" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr' }">
+          <NuxtLink to="/hr" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr' || route.path === '/hr/dashboard' }">
             HR Dashboard
           </NuxtLink>
           <NuxtLink to="/hr/employees" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr/employees' }">
@@ -290,14 +290,14 @@
           <NuxtLink to="/hr/attendance" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr/attendance' }">
             Attendance
           </NuxtLink>
-          <NuxtLink to="/hr/leaves" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr/leaves' }">
+          <NuxtLink to="/hr/leave" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr/leave' }">
             Leave Management
           </NuxtLink>
           <NuxtLink to="/hr/payroll" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr/payroll' }">
             Payroll
           </NuxtLink>
-          <NuxtLink to="/hr/performance" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr/performance' }">
-            Performance
+          <NuxtLink to="/hr/reports" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/hr/reports' }">
+            HR Reports
           </NuxtLink>
         </div>
       </div>
@@ -326,17 +326,11 @@
           <NuxtLink to="/projects" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/projects' }">
             Projects Dashboard
           </NuxtLink>
-          <NuxtLink to="/projects/list" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/projects/list' }">
-            Project List
-          </NuxtLink>
           <NuxtLink to="/projects/tasks" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/projects/tasks' }">
             Tasks
           </NuxtLink>
-          <NuxtLink to="/projects/timesheet" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/projects/timesheet' }">
-            Timesheet
-          </NuxtLink>
-          <NuxtLink to="/projects/collaboration" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/projects/collaboration' }">
-            Collaboration
+          <NuxtLink to="/projects/timesheets" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/projects/timesheets' }">
+            Timesheets
           </NuxtLink>
         </div>
       </div>
@@ -413,13 +407,10 @@
             Meetings
           </NuxtLink>
           <NuxtLink to="/collaboration/documents" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/collaboration/documents' }">
-            Document Sharing
+            Documents
           </NuxtLink>
           <NuxtLink to="/collaboration/whiteboard" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/collaboration/whiteboard' }">
             Whiteboard
-          </NuxtLink>
-          <NuxtLink to="/collaboration/notifications" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/collaboration/notifications' }">
-            Notifications
           </NuxtLink>
         </div>
       </div>
@@ -454,9 +445,6 @@
           <NuxtLink to="/manufacturing/work-orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/manufacturing/work-orders' }">
             Work Orders
           </NuxtLink>
-          <NuxtLink to="/manufacturing/production" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/manufacturing/production' }">
-            Production Planning
-          </NuxtLink>
           <NuxtLink to="/manufacturing/quality" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/manufacturing/quality' }">
             Quality Control
           </NuxtLink>
@@ -487,18 +475,6 @@
           <NuxtLink to="/reports" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/reports' }">
             Reports Dashboard
           </NuxtLink>
-          <NuxtLink to="/reports/financial" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/reports/financial' }">
-            Financial Reports
-          </NuxtLink>
-          <NuxtLink to="/reports/sales" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/reports/sales' }">
-            Sales Reports
-          </NuxtLink>
-          <NuxtLink to="/reports/inventory" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/reports/inventory' }">
-            Inventory Reports
-          </NuxtLink>
-          <NuxtLink to="/reports/analytics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/reports/analytics' }">
-            Business Analytics
-          </NuxtLink>
         </div>
       </div>
 
@@ -524,19 +500,7 @@
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/settings" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/settings' }">
-            General Settings
-          </NuxtLink>
-          <NuxtLink to="/settings/users" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/settings/users' }">
-            User Management
-          </NuxtLink>
-          <NuxtLink to="/settings/permissions" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/settings/permissions' }">
-            Permissions
-          </NuxtLink>
-          <NuxtLink to="/settings/integrations" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/settings/integrations' }">
-            Integrations
-          </NuxtLink>
-          <NuxtLink to="/settings/backup" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/settings/backup' }">
-            Backup & Security
+            Settings
           </NuxtLink>
         </div>
       </div>
