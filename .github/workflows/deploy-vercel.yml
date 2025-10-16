@@ -38,6 +38,10 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      - name: Install project dependencies
+        working-directory: toss-web
+        run: npm ci --legacy-peer-deps
+
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }} --cwd=toss-web
 
@@ -100,7 +104,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: toss-web
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Install Playwright Browsers
         working-directory: toss-web
