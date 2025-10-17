@@ -147,20 +147,24 @@ const route = useRoute()
   border-radius: 0.5rem;
   transition: all 0.2s;
   touch-action: manipulation;
+  text-decoration: none;
 }
 
 .mobile-nav-link:hover {
   background-color: rgb(30 41 59);
   color: white;
+  text-decoration: none;
 }
 
 .mobile-nav-link-active {
   background: linear-gradient(to right, rgb(37 99 235), rgb(147 51 234));
   color: white;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
 }
 
 .mobile-nav-link-active:hover {
   background: linear-gradient(to right, rgb(29 78 216), rgb(126 34 206));
+  text-decoration: none;
 }
 </style>

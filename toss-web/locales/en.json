@@ -1,0 +1,65 @@
+{
+  "hero": {
+    "tagline": "Order Stock for Your Spaza Shop",
+    "subtitle": "Simple, fast ordering and delivery. No complicated forms. Get your stock delivered to your shop.",
+    "orderNow": "Order Now",
+    "trackOrder": "Track My Order",
+    "communitySupported": "Join 500+ spaza shops in your area"
+  },
+  "support": {
+    "whatsapp": "Chat on WhatsApp",
+    "getHelp": "Get Help",
+    "needHelp": "Need help? Chat with us!",
+    "defaultMessage": "Hi! I need help with my TOSS order."
+  },
+  "groupBuying": {
+    "badge": "Save Money Together",
+    "title": "Group Buying - Better Prices",
+    "description": "Join with other shop owners in your area to buy stock together and get wholesale prices. Same delivery day for everyone!",
+    "benefit1": "Save up to 20% on bulk orders",
+    "benefit2": "Share delivery costs",
+    "benefit3": "Order with trusted neighbors",
+    "joinNow": "Join Group Buying",
+    "memberCount": "53 shop owners in your area"
+  },
+  "delivery": {
+    "timeline": "Your Delivery Status",
+    "current": "Happening Now",
+    "estimatedArrival": "Expected delivery time:",
+    "steps": {
+      "ordered": {
+        "title": "Order Received",
+        "description": "We got your order and are preparing it"
+      },
+      "preparing": {
+        "title": "Getting Your Stock Ready",
+        "description": "We're packing your order carefully"
+      },
+      "outForDelivery": {
+        "title": "On The Way",
+        "description": "Driver is bringing your stock to your shop"
+      },
+      "delivered": {
+        "title": "Delivered",
+        "description": "Your stock has arrived at your shop"
+      }
+    }
+  },
+  "language": {
+    "switchLanguage": "Change language"
+  },
+  "navigation": {
+    "dashboard": "Home",
+    "orderStock": "Order Stock",
+    "myOrders": "My Orders",
+    "groupBuying": "Group Buying",
+    "support": "Help & Support",
+    "myAccount": "My Account"
+  },
+  "offline": {
+    "title": "You are offline",
+    "message": "Some features may not work without internet. We'll save your work and sync when you're back online.",
+    "limitedFeatures": "Limited features available"
+  }
+}
+

@@ -1,0 +1,65 @@
+{
+  "hero": {
+    "tagline": "Thenga Impahla Yevenkile Yakho",
+    "subtitle": "Ukuthenga okulula nokusheshayo. Akukho mafom anxanduva. Fumana impahla yakho ithunyelwe kwivenkile yakho.",
+    "orderNow": "Thenga Ngoku",
+    "trackOrder": "Landela I-odolo Yam",
+    "communitySupported": "Joyina iivenkile ezingaphezu kwe-500 kwindawo yakho"
+  },
+  "support": {
+    "whatsapp": "Ncokola ku-WhatsApp",
+    "getHelp": "Fumana Uncedo",
+    "needHelp": "Ufuna uncedo? Sincokole!",
+    "defaultMessage": "Molo! Ndifuna uncedo nge-odolo yam ye-TOSS."
+  },
+  "groupBuying": {
+    "badge": "Sindisa Imali Kunye",
+    "title": "Ukuthenga Ngeqela - Amaxabiso Amantle",
+    "description": "Joyina nabanye abanini beevenkile kwindawo yakho ukuze nithenga impahla kunye futhi nifumane amaxabiso okuthengisa. Usuku olufanayo lokuhanjiswa kwabonke!",
+    "benefit1": "Sindisa ukuya ku-20% kwii-odolo ezinkulu",
+    "benefit2": "Yabelana ngeendleko zokuhanjiswa",
+    "benefit3": "Thenga nabamelwane abathembekileyo",
+    "joinNow": "Joyina Ukuthenga Ngeqela",
+    "memberCount": "Abanini beevenkile abayi-53 kwindawo yakho"
+  },
+  "delivery": {
+    "timeline": "Imeko Yokuhanjiswa Kwakho",
+    "current": "Kwenzeka Ngoku",
+    "estimatedArrival": "Ixesha lokulindelwe lokuhanjiswa:",
+    "steps": {
+      "ordered": {
+        "title": "I-odolo Ifunyenwe",
+        "description": "Sifumene i-odolo yakho kwaye siyilungisa"
+      },
+      "preparing": {
+        "title": "Silungisa Impahla Yakho",
+        "description": "Sipakisha i-odolo yakho ngononophelo"
+      },
+      "outForDelivery": {
+        "title": "Isendleleni",
+        "description": "Umqhubi uzisa impahla yakho kwivenkile yakho"
+      },
+      "delivered": {
+        "title": "Ihanjisiwe",
+        "description": "Impahla yakho ifike kwivenkile yakho"
+      }
+    }
+  },
+  "language": {
+    "switchLanguage": "Tshintsha ulwimi"
+  },
+  "navigation": {
+    "dashboard": "Ikhaya",
+    "orderStock": "Thenga Impahla",
+    "myOrders": "Ii-odolo Zam",
+    "groupBuying": "Ukuthenga Ngeqela",
+    "support": "Uncedo & Inkxaso",
+    "myAccount": "I-akhawunti Yam"
+  },
+  "offline": {
+    "title": "Awunanto ye-intanethi",
+    "message": "Ezinye iimpawu zinokungasebenzi ngaphandle kwe-intanethi. Siza kugcina umsebenzi wakho kwaye sivumelanise xa ubuya kwi-intanethi.",
+    "limitedFeatures": "Iimpawu ezilinganiselweyo ziyafumaneka"
+  }
+}
+

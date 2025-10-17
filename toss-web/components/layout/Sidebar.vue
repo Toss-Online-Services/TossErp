@@ -382,21 +382,25 @@ const toggleSettingsDropdown = () => {
   color: rgb(75 85 99);
   border-radius: 0.5rem;
   transition: all 0.2s;
+  text-decoration: none;
 }
 
 .nav-link:hover {
   background-color: rgb(243 244 246);
   color: rgb(17 24 39);
+  text-decoration: none;
 }
 
 .nav-link-active {
   background: linear-gradient(to right, rgb(59 130 246), rgb(147 51 234));
   color: white;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
 }
 
 .nav-link-active:hover {
   background: linear-gradient(to right, rgb(37 99 235), rgb(126 34 206));
+  text-decoration: none;
 }
 
 .nav-sub-link {
@@ -407,20 +411,24 @@ const toggleSettingsDropdown = () => {
   color: rgb(107 114 128);
   border-radius: 0.375rem;
   transition: all 0.2s;
+  text-decoration: none;
 }
 
 .nav-sub-link:hover {
   background-color: rgb(249 250 251);
   color: rgb(17 24 39);
+  text-decoration: none;
 }
 
 .nav-sub-link-active {
   background-color: rgba(59, 130, 246, 0.1);
   color: rgb(59 130 246);
   font-weight: 500;
+  text-decoration: none;
 }
 
 .nav-sub-link-active:hover {
   background-color: rgba(59, 130, 246, 0.2);
+  text-decoration: none;
 }
 </style>
