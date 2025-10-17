@@ -10,7 +10,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "echo 'Linting skipped for MVP deployment'",
+    "lint": "echo 'Linting skipped for MVP deploym0ent'",
     "typecheck": "nuxt typecheck",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -35,6 +35,7 @@
     "pinia": "^3.0.3",
     "uuid": "^13.0.0",
     "vue": "^3.5.22",
+    "vue-i18n": "^10.0.4",
     "vue-router": "^4.6.3",
     "xlsx": "^0.18.5"
   },
