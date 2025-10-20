@@ -10,13 +10,23 @@
     
     <!-- Navigation -->
     <nav class="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
-      <!-- Dashboard -->
+      <!-- Home -->
       <NuxtLink 
         to="/" 
         class="nav-link"
         :class="{ 'nav-link-active': route.path === '/' }"
       >
         <HomeIcon class="w-5 h-5 mr-3" />
+        Home
+      </NuxtLink>
+
+      <!-- Dashboard -->
+      <NuxtLink 
+        to="/dashboard" 
+        class="nav-link"
+        :class="{ 'nav-link-active': route.path === '/dashboard' }"
+      >
+        <ChartBarIcon class="w-5 h-5 mr-3" />
         Dashboard
       </NuxtLink>
       
@@ -85,6 +95,15 @@
         >
           <NuxtLink to="/logistics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/logistics' }">
             Logistics Dashboard
+          </NuxtLink>
+          <NuxtLink to="/logistics/shared-runs" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/logistics/shared-runs' }">
+            Shared Delivery Runs
+          </NuxtLink>
+          <NuxtLink to="/logistics/tracking" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/logistics/tracking' }">
+            Live Tracking
+          </NuxtLink>
+          <NuxtLink to="/logistics/driver" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/logistics/driver' }">
+            Driver Interface
           </NuxtLink>
         </div>
       </div>
@@ -163,6 +182,9 @@
         >
           <NuxtLink to="/purchasing" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing' }">
             Purchase Dashboard
+          </NuxtLink>
+          <NuxtLink to="/purchasing/group-buying" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/group-buying' }">
+            Group Buying
           </NuxtLink>
           <NuxtLink to="/purchasing/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/suppliers' }">
             Suppliers
@@ -293,7 +315,8 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { 
-  HomeIcon, 
+  HomeIcon,
+  ChartBarIcon, 
   ArchiveBoxIcon, 
   ShoppingCartIcon, 
   ShoppingBagIcon, 
