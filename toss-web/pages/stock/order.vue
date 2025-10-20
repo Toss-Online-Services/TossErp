@@ -124,7 +124,7 @@ const addToOrder = (product) => {
 }
 
 const removeFromOrder = (itemId) => {
-  const index = orderItems.value.findIndex((item, idx) => idx === itemId)
+  const index = orderItems.value.findIndex((item) => item.id === itemId)
   if (index > -1) {
     orderItems.value.splice(index, 1)
   }
