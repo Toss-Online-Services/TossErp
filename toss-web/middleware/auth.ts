@@ -1,4 +1,9 @@
 export default defineNuxtRouteMiddleware((to, from) => {
+  // Bypass auth in development mode
+  if (process.dev) {
+    return
+  }
+
   // Skip middleware for login and public pages
   const publicPages = ['/login', '/register', '/']
   if (publicPages.includes(to.path)) {
