@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -36,9 +36,6 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3002',
-    reuseExistingServer: !process.env.CI,
-  },
+  // webServer block removed: start Nuxt manually on port 3000 before running tests
+  testMatch: '*.e2e.ts',
 })
