@@ -483,7 +483,7 @@ const getPurchaseTypeClass = (type: string) => {
 
 const getPurchaseTypeLabel = (type: string) => {
   const labels: Record<string, string> = {
-    'aggregated': 'Auto-Aggregated',
+    'aggregated': 'Order Placed',
     'group-buy': 'Group Buy'
   }
   return labels[type] || type
@@ -491,7 +491,7 @@ const getPurchaseTypeLabel = (type: string) => {
 
 const getPurchaseTypeIcon = (type: string) => {
   const icons: Record<string, any> = {
-    'aggregated': BoltIcon,
+    'aggregated': ShoppingCartIcon,
     'group-buy': UserGroupIcon
   }
   return icons[type] || ShoppingCartIcon
