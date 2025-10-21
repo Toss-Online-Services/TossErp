@@ -1,27 +1,37 @@
 <template>
   <div>
-    <!-- Floating AI Assistant Button -->
+    <!-- Floating AI Assistant Button (Draggable) -->
     <Transition name="bounce">
       <button
         v-if="!isOpen"
-        @click="toggleAssistant"
-        class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
+        ref="draggableButton"
+        @click="handleButtonClick"
+        @mousedown="startDrag"
+        @touchstart="startDrag"
+        :style="{ left: buttonPosition.x + 'px', top: buttonPosition.y + 'px' }"
+        class="fixed z-50 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center justify-center group cursor-move touch-none"
       >
-        <SparklesIcon class="w-6 h-6 group-hover:scale-110 transition-transform" />
-        <div v-if="unreadCount > 0" class="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+        <SparklesIcon class="w-6 h-6 group-hover:scale-110 transition-transform pointer-events-none" />
+        <div v-if="unreadCount > 0" class="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center pointer-events-none">
           <span class="text-xs text-white">{{ unreadCount }}</span>
         </div>
       </button>
     </Transition>
 
-    <!-- AI Assistant Panel -->
+    <!-- AI Assistant Panel (Draggable) -->
     <Transition name="slide-up">
       <div
         v-if="isOpen"
-        class="fixed bottom-6 right-6 z-50 w-96 h-[600px] bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden"
+        ref="draggablePanel"
+        :style="{ left: panelPosition.x + 'px', top: panelPosition.y + 'px' }"
+        class="fixed z-50 w-[calc(100vw-16px)] max-w-96 h-[calc(100vh-160px)] max-h-[600px] bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden"
       >
-        <!-- Header -->
-        <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-500 to-purple-600">
+        <!-- Header (Draggable Handle) -->
+        <div 
+          @mousedown="startDragPanel"
+          @touchstart="startDragPanel"
+          class="p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-500 to-purple-600 cursor-move touch-none"
+        >
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
@@ -32,18 +42,26 @@
                 <p class="text-xs text-white/80">{{ currentModule }}</p>
               </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-shrink-0">
               <button
-                @click="minimizeAssistant"
-                class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+                @click.stop="minimizeAssistant"
+                @mousedown.stop
+                @touchstart.stop
+                class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                title="Minimize"
+                type="button"
               >
-                <MinusIcon class="w-4 h-4 text-white" />
+                <MinusIcon class="w-4 h-4 text-white flex-shrink-0" />
               </button>
               <button
-                @click="toggleAssistant"
-                class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+                @click.stop="toggleAssistant"
+                @mousedown.stop
+                @touchstart.stop
+                class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                title="Close"
+                type="button"
               >
-                <XMarkIcon class="w-4 h-4 text-white" />
+                <XMarkIcon class="w-4 h-4 text-white flex-shrink-0" />
               </button>
             </div>
           </div>
@@ -187,6 +205,8 @@ import {
 const router = useRouter()
 const route = useRoute()
 const chatContainer = ref<HTMLElement>()
+const draggableButton = ref<HTMLElement>()
+const draggablePanel = ref<HTMLElement>()
 
 // State
 const isOpen = ref(false)
@@ -194,6 +214,14 @@ const isMinimized = ref(false)
 const isTyping = ref(false)
 const newMessage = ref('')
 const unreadCount = ref(3)
+
+// Drag state
+const isDragging = ref(false)
+const wasDragged = ref(false)
+const dragStartTime = ref(0)
+const buttonPosition = ref({ x: 0, y: 0 })
+const panelPosition = ref({ x: 0, y: 0 })
+const dragOffset = ref({ x: 0, y: 0 })
 
 // Chat messages
 const messages = ref<Array<{
@@ -254,7 +282,158 @@ onMounted(() => {
     }
     messages.value.push(welcomeMessage)
   }
+  
+  // Initialize positions
+  initializePositions()
+  
+  // Add event listeners for drag
+  window.addEventListener('mousemove', handleDragMove)
+  window.addEventListener('mouseup', handleDragEnd)
+  window.addEventListener('touchmove', handleDragMove, { passive: false })
+  window.addEventListener('touchend', handleDragEnd)
 })
+
+// Initialize positions
+function initializePositions() {
+  // Button initial position (bottom-right)
+  if (typeof window !== 'undefined') {
+    // On mobile, account for bottom navigation (80px height + 24px spacing = 104px)
+    const isMobile = window.innerWidth < 1024
+    const bottomOffset = isMobile ? 104 : 24
+    
+    buttonPosition.value = {
+      x: window.innerWidth - 80, // 24px from right + 56px button width
+      y: window.innerHeight - bottomOffset - 56  // Bottom offset + button height
+    }
+    
+    // Panel initial position (bottom-right)
+    // On mobile, make it more centered and higher up
+    if (isMobile) {
+      panelPosition.value = {
+        x: Math.max(8, (window.innerWidth - 384) / 2), // Center horizontally with 8px min margin
+        y: 80 // Start below mobile header
+      }
+    } else {
+      panelPosition.value = {
+        x: window.innerWidth - 408, // 24px from right + 384px panel width
+        y: window.innerHeight - 624  // 24px from bottom + 600px panel height
+      }
+    }
+  }
+}
+
+// Drag functions for button
+function startDrag(event: MouseEvent | TouchEvent) {
+  dragStartTime.value = Date.now()
+  wasDragged.value = false // Reset drag flag
+  
+  const clientX = 'touches' in event ? event.touches[0]?.clientX ?? 0 : event.clientX
+  const clientY = 'touches' in event ? event.touches[0]?.clientY ?? 0 : event.clientY
+  
+  dragOffset.value = {
+    x: clientX - buttonPosition.value.x,
+    y: clientY - buttonPosition.value.y
+  }
+  
+  // Don't set isDragging immediately - wait for actual movement
+}
+
+// Drag functions for panel
+function startDragPanel(event: MouseEvent | TouchEvent) {
+  event.preventDefault()
+  isDragging.value = true
+  wasDragged.value = true // Panel drag is intentional
+  
+  const clientX = 'touches' in event ? event.touches[0]?.clientX ?? 0 : event.clientX
+  const clientY = 'touches' in event ? event.touches[0]?.clientY ?? 0 : event.clientY
+  
+  dragOffset.value = {
+    x: clientX - panelPosition.value.x,
+    y: clientY - panelPosition.value.y
+  }
+}
+
+function handleDragMove(event: MouseEvent | TouchEvent) {
+  // Only start dragging if we've moved more than 5px (prevents accidental drags)
+  if (!isDragging.value && dragStartTime.value > 0) {
+    const clientX = 'touches' in event ? event.touches[0]?.clientX ?? 0 : event.clientX
+    const clientY = 'touches' in event ? event.touches[0]?.clientY ?? 0 : event.clientY
+    
+    const targetX = isOpen.value ? panelPosition.value.x : buttonPosition.value.x
+    const targetY = isOpen.value ? panelPosition.value.y : buttonPosition.value.y
+    
+    const deltaX = Math.abs(clientX - dragOffset.value.x - targetX)
+    const deltaY = Math.abs(clientY - dragOffset.value.y - targetY)
+    
+    // Only start dragging if moved more than 5px
+    if (deltaX > 5 || deltaY > 5) {
+      isDragging.value = true
+      wasDragged.value = true
+      event.preventDefault()
+    } else {
+      return // Not enough movement yet
+    }
+  }
+  
+  if (!isDragging.value) return
+  
+  event.preventDefault()
+  
+  const clientX = 'touches' in event ? event.touches[0]?.clientX ?? 0 : event.clientX
+  const clientY = 'touches' in event ? event.touches[0]?.clientY ?? 0 : event.clientY
+  
+  if (isOpen.value) {
+    // Dragging panel
+    const newX = clientX - dragOffset.value.x
+    const newY = clientY - dragOffset.value.y
+    
+    // Constrain to viewport (responsive panel size)
+    const isMobile = window.innerWidth < 1024
+    const panelWidth = isMobile ? window.innerWidth - 16 : 384
+    const panelHeight = isMobile ? window.innerHeight - 160 : 600
+    
+    const maxX = window.innerWidth - panelWidth
+    const maxY = window.innerHeight - panelHeight
+    
+    panelPosition.value = {
+      x: Math.max(0, Math.min(newX, maxX)),
+      y: Math.max(0, Math.min(newY, maxY))
+    }
+  } else {
+    // Dragging button
+    const newX = clientX - dragOffset.value.x
+    const newY = clientY - dragOffset.value.y
+    
+    // Constrain to viewport
+    const isMobile = window.innerWidth < 1024
+    const bottomNavHeight = isMobile ? 80 : 0
+    const maxX = window.innerWidth - 56 // button width
+    const maxY = window.innerHeight - bottomNavHeight - 56 // button height + bottom nav
+    
+    buttonPosition.value = {
+      x: Math.max(0, Math.min(newX, maxX)),
+      y: Math.max(0, Math.min(newY, maxY))
+    }
+  }
+}
+
+function handleDragEnd() {
+  const wasDragging = isDragging.value
+  isDragging.value = false
+  dragStartTime.value = 0
+  
+  // If we were dragging, prevent the click event
+  if (wasDragging) {
+    return
+  }
+}
+
+function handleButtonClick(event: MouseEvent) {
+  // Only toggle if we didn't drag
+  if (!wasDragged.value) {
+    toggleAssistant()
+  }
+}
 
 function getModuleIcon() {
   const module = currentModule.value.toLowerCase()

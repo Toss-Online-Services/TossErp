@@ -54,11 +54,11 @@
           <NuxtLink to="/stock" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock' }">
             Stock Dashboard
           </NuxtLink>
-          <NuxtLink to="/stock/items" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/items' }">
-            Items
-          </NuxtLink>
           <NuxtLink to="/stock/movements" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/movements' }">
             Stock Movements
+          </NuxtLink>
+          <NuxtLink to="/stock/items" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/items' }">
+            Items
           </NuxtLink>
         </div>
       </div>

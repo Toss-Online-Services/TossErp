@@ -2,51 +2,52 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
     <!-- Page Header with Glass Morphism -->
     <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+      <div class="w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+          <div class="flex-1 min-w-0">
+            <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent truncate">
               Stock Management
             </h1>
-            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+            <p class="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-1">
               Track your inventory and manage stock levels easily
             </p>
-          </div>
-          <div class="flex space-x-3">
+        </div>
+          <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
             <NuxtLink 
               to="/stock/items" 
-              class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200"
+              class="inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm font-semibold whitespace-nowrap"
             >
-              <PlusIcon class="w-4 h-4 mr-2" />
-              Add Item
-            </NuxtLink>
+              <PlusIcon class="w-4 h-4 sm:mr-2" />
+              <span class="hidden sm:inline">Add Item</span>
+          </NuxtLink>
             <button 
               @click="refreshStats" 
-              class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 hover:shadow-md transition-all duration-200"
+              class="inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 hover:shadow-md transition-all duration-200 whitespace-nowrap"
+              title="Refresh"
             >
-              <ArrowPathIcon class="w-4 h-4 mr-2" :class="{ 'animate-spin': loading }" />
-              Refresh
-            </button>
+              <ArrowPathIcon class="w-4 h-4 sm:mr-2" :class="{ 'animate-spin': loading }" />
+              <span class="hidden sm:inline">Refresh</span>
+          </button>
           </div>
         </div>
+        </div>
       </div>
-    </div>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
       <!-- AI Co-Pilot Banner -->
-      <div class="mb-6 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl p-6 text-white relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
+      <div class="mb-4 sm:mb-6 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl p-4 sm:p-6 text-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 sm:w-64 sm:h-64 bg-white/10 rounded-full -mr-16 sm:-mr-32 -mt-16 sm:-mt-32"></div>
         <div class="relative z-10 flex items-start">
-          <div class="p-3 bg-white/20 backdrop-blur-sm rounded-xl mr-4">
-            <SparklesIcon class="w-6 h-6" />
+          <div class="p-2 sm:p-3 bg-white/20 backdrop-blur-sm rounded-xl mr-3 sm:mr-4 flex-shrink-0">
+            <SparklesIcon class="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-bold mb-1">AI Co-Pilot Insights</h3>
-            <p class="text-white/90 text-sm">
+          <div class="flex-1 min-w-0">
+            <h3 class="text-base sm:text-lg font-bold mb-1">AI Co-Pilot Insights</h3>
+            <p class="text-white/90 text-xs sm:text-sm">
               Low stock detected for <strong>3 items</strong>. Consider joining a group buying pool for cleaning supplies to save <strong>15%</strong>.
             </p>
-            <button class="mt-3 px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-sm font-medium transition-all duration-200">
+            <button class="mt-2 sm:mt-3 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap">
               View Suggestions →
             </button>
           </div>
@@ -54,15 +55,15 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div v-for="i in 4" :key="i" class="bg-white dark:bg-slate-800 rounded-2xl p-6 animate-pulse shadow-lg">
-          <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded mb-2"></div>
-          <div class="h-8 bg-slate-200 dark:bg-slate-700 rounded"></div>
+      <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
+        <div v-for="i in 4" :key="i" class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 animate-pulse shadow-lg">
+          <div class="h-3 sm:h-4 bg-slate-200 dark:bg-slate-700 rounded mb-2"></div>
+          <div class="h-6 sm:h-8 bg-slate-200 dark:bg-slate-700 rounded"></div>
         </div>
       </div>
 
       <!-- Stats Cards -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
         <StatsCard
           label="Total Items"
           :value="stats.totalItems"
@@ -97,12 +98,12 @@
           gradient="purple"
           prefix="R"
         />
-      </div>
+        </div>
 
       <!-- Charts & Quick Actions -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
         <!-- Stock Levels Chart -->
-        <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-shadow duration-300">
+        <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300">
           <div class="flex items-center justify-between mb-6">
             <div>
               <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Stock Movement</h3>
@@ -118,39 +119,39 @@
             color="#8B5CF6"
             :height="280"
           />
-        </div>
+      </div>
 
-        <!-- Quick Actions -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-shadow duration-300">
-          <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6">Quick Actions</h3>
+      <!-- Quick Actions -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300">
+          <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4 sm:mb-6">Quick Actions</h3>
           <div class="space-y-3">
-            <NuxtLink
-              to="/stock/items"
+          <NuxtLink
+            to="/stock/items"
               class="flex items-center p-4 bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-900/10 rounded-xl hover:shadow-md transition-all duration-200 group"
-            >
+          >
               <div class="p-3 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
                 <CubeIcon class="w-5 h-5 text-white" />
-              </div>
+            </div>
               <div class="ml-3 flex-1">
                 <p class="font-medium text-slate-900 dark:text-white">Manage Items</p>
                 <p class="text-sm text-slate-600 dark:text-slate-400">View all stock items</p>
-              </div>
-            </NuxtLink>
+            </div>
+          </NuxtLink>
 
-            <NuxtLink
+          <NuxtLink
               to="/stock/movements"
               class="flex items-center p-4 bg-gradient-to-r from-green-50 to-green-100/50 dark:from-green-900/20 dark:to-green-900/10 rounded-xl hover:shadow-md transition-all duration-200 group"
-            >
+          >
               <div class="p-3 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
                 <ArrowsRightLeftIcon class="w-5 h-5 text-white" />
-              </div>
+            </div>
               <div class="ml-3 flex-1">
                 <p class="font-medium text-slate-900 dark:text-white">Track Movements</p>
                 <p class="text-sm text-slate-600 dark:text-slate-400">View stock changes</p>
-              </div>
-            </NuxtLink>
+            </div>
+          </NuxtLink>
 
-            <NuxtLink
+          <NuxtLink
               to="/purchasing/quick-order"
               class="flex items-center p-4 bg-gradient-to-r from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-900/10 rounded-xl hover:shadow-md transition-all duration-200 group"
             >
@@ -175,9 +176,9 @@
                 <p class="text-sm text-slate-600 dark:text-slate-400">Save with neighbors</p>
               </div>
             </NuxtLink>
+            </div>
           </div>
         </div>
-      </div>
 
       <!-- Low Stock Alerts & Top Items -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -198,11 +199,11 @@
               <div class="flex items-center space-x-3">
                 <div class="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
                   <ExclamationTriangleIcon class="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                </div>
+              </div>
                 <div>
                   <p class="font-medium text-slate-900 dark:text-white">{{ item.name }}</p>
                   <p class="text-sm text-slate-600 dark:text-slate-400">{{ item.quantity }} units left</p>
-                </div>
+            </div>
               </div>
               <button class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Reorder</button>
             </div>
@@ -284,7 +285,7 @@ const loadStats = async () => {
     const overview = await getStockOverview().catch(() => null)
     
     if (overview) {
-      stats.value = {
+    stats.value = {
         totalItems: overview.totalItems || stats.value.totalItems,
         totalCategories: overview.totalCategories || stats.value.totalCategories,
         lowStockItems: overview.lowStockItems || stats.value.lowStockItems,

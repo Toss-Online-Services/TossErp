@@ -1,44 +1,41 @@
 <template>
-  <div class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t-2 border-gray-200 shadow-lg lg:hidden safe-area-bottom">
-    <!-- Simplified Navigation - Only Essential Actions -->
+  <div class="fixed bottom-0 left-0 right-0 z-30 bg-white dark:bg-slate-800 border-t-2 border-gray-200 dark:border-slate-700 shadow-lg lg:hidden safe-area-bottom">
+    <!-- Core Functions Navigation -->
     <div class="flex items-center justify-around py-3 px-2">
       <!-- Home -->
       <NuxtLink to="/" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path === '/' }">
         <div class="relative">
           <HomeIcon class="w-7 h-7 mb-1" />
         </div>
-        <span class="text-sm font-medium">{{ $t('navigation.dashboard') || 'Home' }}</span>
+        <span class="text-xs font-medium">Home</span>
       </NuxtLink>
       
-      <!-- Order Stock -->
-      <NuxtLink to="/stock/order" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/stock/order') }">
+      <!-- Buy (Purchasing) -->
+      <NuxtLink to="/purchasing/group-buying" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/purchasing') }">
         <div class="relative">
           <ShoppingCartIcon class="w-7 h-7 mb-1" />
-          <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
-            !
-          </span>
         </div>
-        <span class="text-sm font-medium">{{ $t('navigation.orderStock') || 'Order' }}</span>
+        <span class="text-xs font-medium">Buy</span>
       </NuxtLink>
       
-      <!-- My Orders/Track -->
-      <NuxtLink to="/stock/track" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/stock/track') }">
+      <!-- Sell (Sales) -->
+      <NuxtLink to="/sales" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/sales') }">
         <div class="relative">
           <svg class="w-7 h-7 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
-        <span class="text-sm font-medium">{{ $t('navigation.myOrders') || 'Orders' }}</span>
+        <span class="text-xs font-medium">Sell</span>
       </NuxtLink>
       
-      <!-- Group Buying -->
-      <NuxtLink to="/purchasing/group-buying" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/purchasing/group-buying') }">
+      <!-- Stock -->
+      <NuxtLink to="/stock" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/stock') }">
         <div class="relative">
-          <svg class="w-7 h-7 mb-1" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+          <svg class="w-7 h-7 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
           </svg>
         </div>
-        <span class="text-sm font-medium">{{ $t('navigation.groupBuying') || 'Group' }}</span>
+        <span class="text-xs font-medium">Stock</span>
       </NuxtLink>
     </div>
   </div>
