@@ -425,6 +425,9 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon
 } from '@heroicons/vue/24/outline'
+// Import modal components explicitly
+import ItemModal from '~/components/stock/ItemModal.vue'
+import ItemDetailsModal from '~/components/stock/ItemDetailsModal.vue'
 
 // Composable
 const { 

@@ -60,12 +60,6 @@
           <NuxtLink to="/stock/movements" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/movements' }">
             Stock Movements
           </NuxtLink>
-          <NuxtLink to="/stock/order" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/order' }">
-            Quick Order
-          </NuxtLink>
-          <NuxtLink to="/stock/track" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/track' }">
-            Track Orders
-          </NuxtLink>
         </div>
       </div>
 
@@ -179,6 +173,12 @@
         >
           <NuxtLink to="/purchasing" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing' }">
             Purchase Dashboard
+          </NuxtLink>
+          <NuxtLink to="/purchasing/quick-order" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/quick-order' }">
+            Quick Order
+          </NuxtLink>
+          <NuxtLink to="/purchasing/track-orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/track-orders' }">
+            Track Orders
           </NuxtLink>
           <NuxtLink to="/purchasing/group-buying" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/group-buying' }">
             Group Buying
