@@ -6,7 +6,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
             <NuxtLink 
-              to="/purchasing" 
+              to="/Buying" 
               class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
             >
               <ArrowLeftIcon class="w-5 h-5 text-slate-600 dark:text-slate-400" />
@@ -646,8 +646,8 @@
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from '~/composables/useToast'
-import { useSmartPurchasing } from '~/composables/useSmartPurchasing'
-import type { SmartPurchaseAnalysis } from '~/types/smart-purchasing'
+import { useSmartBuying } from '~/composables/useSmartBuying'
+import type { SmartPurchaseAnalysis } from '~/types/smart-buying'
 import {
   ShoppingCartIcon,
   PlusIcon,
@@ -722,7 +722,7 @@ useHead({
 
 const router = useRouter()
 const toast = useToast()
-const { analyzeCartForOpportunities, joinGroupBuy, createAggregatedOrder, createGroupBuyFromOrder } = useSmartPurchasing()
+const { analyzeCartForOpportunities, joinGroupBuy, createAggregatedOrder, createGroupBuyFromOrder } = useSmartBuying()
 
 // State
 const activeTab = ref('low-stock')
@@ -731,11 +731,11 @@ const orderItems = ref<CartItem[]>([])
 const searchQuery = ref('')
 const selectedCategory = ref<string | null>(null)
 
-// Smart Purchasing State
+// Smart Buying State
 const smartAnalysis = ref<SmartPurchaseAnalysis | null>(null)
 const isAnalyzing = ref(false)
 
-// Watch cart changes and analyze for smart purchasing opportunities
+// Watch cart changes and analyze for smart Buying opportunities
 watch(orderItems, async (newItems: CartItem[]) => {
   if (newItems.length > 0) {
     isAnalyzing.value = true
@@ -1086,7 +1086,7 @@ const checkAndUpdateGroupBuy = async (itemIndex: number) => {
   
   try {
     // Check for active group buy using POST
-    const response = await $fetch<{ hasActive: boolean; opportunity: any }>('/api/purchasing/group-buys/active', {
+    const response = await $fetch<{ hasActive: boolean; opportunity: any }>('/api/buying/group-buys/active', {
       method: 'POST' as any,
       body: { skus: [item.sku] } as any
     })
@@ -1209,7 +1209,7 @@ const updateQuantity = async (index: number, newQuantity: number) => {
   }
 }
 
-// Smart Purchasing Handlers
+// Smart Buying Handlers
 const handleJoinGroupBuy = async () => {
   if (!smartAnalysis.value?.groupBuyOpportunity) return
   
@@ -1227,7 +1227,7 @@ const handleJoinGroupBuy = async () => {
     
     // Clear cart and redirect
     orderItems.value = []
-    router.push('/purchasing/group-buying')
+    router.push('/buying/group-buying')
   } catch (error) {
     console.error('Error joining group buy:', error)
   }
@@ -1248,7 +1248,7 @@ const handleCreateGroupBuy = () => {
   }
   
   localStorage.setItem('group-buy-cart-data', JSON.stringify(cartData))
-  router.push('/purchasing/group-buying?action=create')
+  router.push('/buying/group-buying?action=create')
 }
 
 const formatDeadline = (deadline: Date) => {
@@ -1280,7 +1280,7 @@ const placeOrder = async () => {
     aggregationGroupId = smartAnalysis.value.aggregationOpportunity.id
   }
 
-  // Create order object with smart purchasing metadata
+  // Create order object with smart Buying metadata
   const order = {
     id: orderNumber,
     orderNumber,
@@ -1294,7 +1294,7 @@ const placeOrder = async () => {
     supplier: 'Multiple Suppliers',
     expectedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
     
-    // Smart Purchasing fields
+    // Smart Buying fields
     purchaseType,
     savingsAmount,
     savingsMethod,
@@ -1319,7 +1319,7 @@ const placeOrder = async () => {
 
   // Wait a moment for toast to show, then navigate
   setTimeout(() => {
-    router.push('/purchasing/orders')
+    router.push('/buying/orders')
   }, 1500)
 }
 </script>
@@ -1340,4 +1340,5 @@ const placeOrder = async () => {
   opacity: 0;
 }
 </style>
+
 

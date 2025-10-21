@@ -153,40 +153,40 @@
       <!-- Purchasing Section -->
       <div class="space-y-1">
         <button 
-          @click="togglePurchasingDropdown"
+          @click="toggleBuyingDropdown"
           class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/purchasing') }"
+          :class="{ 'nav-link-active': route.path.startsWith('/buying') }"
         >
           <div class="flex items-center">
             <ShoppingBagIcon class="w-5 h-5 mr-3" />
-            Purchasing
+            Buying
           </div>
           <ChevronDownIcon 
             class="w-4 h-4 transition-transform duration-200"
-            :class="{ 'transform rotate-180': purchasingDropdownOpen }"
+            :class="{ 'transform rotate-180': buyingDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="purchasingDropdownOpen"
+          v-show="buyingDropdownOpen"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
-          <NuxtLink to="/purchasing" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing' }">
-            Purchase Dashboard
+          <NuxtLink to="/buying" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying' }">
+            Buy Dashboard
           </NuxtLink>
-          <NuxtLink to="/purchasing/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/orders' }">
+          <NuxtLink to="/buying/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/orders' }">
             Orders
           </NuxtLink>
-          <NuxtLink to="/purchasing/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/suppliers' }">
+          <NuxtLink to="/buying/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/suppliers' }">
             Suppliers
           </NuxtLink>
-      <NuxtLink to="/purchasing/create-order" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/create-order' }">
+      <NuxtLink to="/buying/create-order" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/create-order' }">
         Create Order
       </NuxtLink>
-          <NuxtLink to="/purchasing/track-orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/track-orders' }">
+          <NuxtLink to="/buying/track-orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/track-orders' }">
             Track Orders
           </NuxtLink>
-          <NuxtLink to="/purchasing/group-buying" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/group-buying' }">
+          <NuxtLink to="/buying/group-buying" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/group-buying' }">
             Group Buying
           </NuxtLink>
         </div>
@@ -320,7 +320,7 @@ const route = useRoute()
 const stockDropdownOpen = ref(false)
 const logisticsDropdownOpen = ref(false)
 const salesDropdownOpen = ref(false)
-const purchasingDropdownOpen = ref(false)
+const buyingDropdownOpen = ref(false)
 const automationDropdownOpen = ref(false)
 const onboardingDropdownOpen = ref(false)
 const settingsDropdownOpen = ref(false)
@@ -336,8 +336,8 @@ watch(() => route.path, (newPath) => {
   if (newPath.startsWith('/sales')) {
     salesDropdownOpen.value = true
   }
-  if (newPath.startsWith('/purchasing')) {
-    purchasingDropdownOpen.value = true
+  if (newPath.startsWith('/buying')) {
+    buyingDropdownOpen.value = true
   }
   if (newPath.startsWith('/automation')) {
     automationDropdownOpen.value = true
@@ -363,8 +363,8 @@ const toggleSalesDropdown = () => {
   salesDropdownOpen.value = !salesDropdownOpen.value
 }
 
-const togglePurchasingDropdown = () => {
-  purchasingDropdownOpen.value = !purchasingDropdownOpen.value
+const toggleBuyingDropdown = () => {
+  buyingDropdownOpen.value = !buyingDropdownOpen.value
 }
 
 const toggleAutomationDropdown = () => {

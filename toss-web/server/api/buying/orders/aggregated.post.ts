@@ -1,6 +1,6 @@
 /**
  * Create an aggregated order
- * POST /api/purchasing/orders/aggregated
+ * POST /api/buying/orders/aggregated
  */
 
 export default defineEventHandler(async (event) => {
@@ -52,4 +52,5 @@ function getAggregationPartners(aggregationGroupId: string) {
   // Mock - return number of partners
   return 2
 }
+
 

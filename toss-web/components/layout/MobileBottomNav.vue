@@ -11,7 +11,7 @@
       </NuxtLink>
       
       <!-- Buy (Purchasing) -->
-      <NuxtLink to="/purchasing/group-buying" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/purchasing') }">
+      <NuxtLink to="/buying/group-buying" class="mobile-bottom-nav-item" :class="{ 'mobile-bottom-nav-active': route.path.startsWith('/buying') }">
         <div class="relative">
           <ShoppingCartIcon class="w-7 h-7 mb-1" />
         </div>

@@ -1,9 +1,9 @@
 /**
  * Check for order aggregation opportunities
- * POST /api/purchasing/aggregation/check
+ * POST /api/buying/aggregation/check
  */
 
-import type { AggregationOpportunity, PurchaseOrderItem } from '~/types/smart-purchasing'
+import type { AggregationOpportunity, PurchaseOrderItem } from '~/types/smart-buying'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -130,4 +130,5 @@ function calculateAggregation(
     }
   } as any
 }
+
 

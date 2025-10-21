@@ -1,5 +1,5 @@
 /**
- * Smart Purchasing Composable
+ * Smart Buying Composable
  * Handles order aggregation and group buying logic
  */
 
@@ -8,13 +8,13 @@ import type {
   AggregationOpportunity,
   GroupBuyOpportunity,
   PurchaseOrderItem
-} from '~/types/smart-purchasing'
+} from '~/types/smart-buying'
 
-export const useSmartPurchasing = () => {
+export const useSmartBuying = () => {
   const toast = useToast()
 
   /**
-   * Analyze cart items for smart purchasing opportunities
+   * Analyze cart items for Smart Buying opportunities
    */
   const analyzeCartForOpportunities = async (items: PurchaseOrderItem[]): Promise<SmartPurchaseAnalysis> => {
     try {
@@ -58,7 +58,7 @@ export const useSmartPurchasing = () => {
   const checkAggregationOpportunities = async (items: PurchaseOrderItem[]) => {
     try {
       // Get pending orders from last 24 hours
-      const response = await $fetch('/api/purchasing/aggregation/check', {
+      const response = await $fetch('/api/buying/aggregation/check', {
         method: 'POST',
         body: { items }
       })
@@ -79,7 +79,7 @@ export const useSmartPurchasing = () => {
   const checkActiveGroupBuys = async (items: PurchaseOrderItem[]) => {
     try {
       const skus = items.map(item => item.sku)
-      const response = await $fetch('/api/purchasing/group-buys/active', {
+      const response = await $fetch('/api/buying/group-buys/active', {
         method: 'POST',
         body: { skus }
       })
@@ -207,7 +207,7 @@ export const useSmartPurchasing = () => {
    */
   const createAggregatedOrder = async (orderData: any, aggregationGroupId: string) => {
     try {
-      const response = await $fetch('/api/purchasing/orders/aggregated', {
+      const response = await $fetch('/api/buying/orders/aggregated', {
         method: 'POST',
         body: {
           ...orderData,
@@ -268,4 +268,5 @@ export const useSmartPurchasing = () => {
     createGroupBuyFromOrder
   }
 }
+
 

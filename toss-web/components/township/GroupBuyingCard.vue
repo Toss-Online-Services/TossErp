@@ -86,7 +86,7 @@ const { t } = useI18n()
 const router = useRouter()
 
 const joinGroupBuying = () => {
-  router.push('/purchasing/group-buying')
+  router.push('/buying/group-buying')
 }
 </script>
 
