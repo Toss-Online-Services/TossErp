@@ -2,40 +2,18 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 relative overflow-hidden">
     <!-- Transaction Type Watermark -->
     <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 select-none">
-      <div 
-        v-if="transactionMode === 'sale'"
-        class="text-[20rem] font-black text-blue-500/5 dark:text-blue-400/5 rotate-[-15deg] whitespace-nowrap"
-      >
+      <div class="text-[20rem] font-black text-blue-500/5 dark:text-blue-400/5 rotate-[-15deg] whitespace-nowrap">
         💰 SALE
-      </div>
-      <div 
-        v-else
-        class="text-[20rem] font-black text-green-500/5 dark:text-green-400/5 rotate-[-15deg] whitespace-nowrap"
-      >
-        📦 ORDER
       </div>
     </div>
 
     <!-- Transaction Type Badge (Top Right) -->
     <div class="fixed top-4 right-4 z-50 pointer-events-none">
-      <div 
-        v-if="transactionMode === 'sale'"
-        class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl shadow-2xl border-4 border-white dark:border-slate-800"
-      >
+      <div class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl shadow-2xl border-4 border-white dark:border-slate-800">
         <span class="text-3xl">💰</span>
         <div>
           <div class="text-xs font-medium opacity-90">Transaction Type</div>
           <div class="text-lg font-black tracking-wider">SALE</div>
-        </div>
-      </div>
-      <div 
-        v-else
-        class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-2xl shadow-2xl border-4 border-white dark:border-slate-800"
-      >
-        <span class="text-3xl">📦</span>
-        <div>
-          <div class="text-xs font-medium opacity-90">Transaction Type</div>
-          <div class="text-lg font-black tracking-wider">ORDER</div>
         </div>
       </div>
     </div>
@@ -71,42 +49,6 @@
         </div>
       </div>
 
-      <!-- Sale / Order Mode Toggle -->
-      <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Transaction Type:</span>
-            <div class="relative inline-flex bg-slate-200 dark:bg-slate-700 rounded-xl p-1">
-              <button
-                @click="transactionMode = 'sale'"
-                :class="[
-                  'relative z-10 px-6 py-2 text-sm font-semibold rounded-lg transition-all duration-200',
-                  transactionMode === 'sale'
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                ]"
-              >
-                💰 Sale
-              </button>
-              <button
-                @click="transactionMode = 'order'"
-                :class="[
-                  'relative z-10 px-6 py-2 text-sm font-semibold rounded-lg transition-all duration-200',
-                  transactionMode === 'order'
-                    ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white shadow-md'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                ]"
-              >
-                📦 Order
-              </button>
-            </div>
-          </div>
-          <div class="text-sm text-slate-600 dark:text-slate-400">
-            <span v-if="transactionMode === 'sale'">Immediate payment & receipt</span>
-            <span v-else>Customer order for later delivery</span>
-          </div>
-        </div>
-      </div>
 
       <!-- Compact Status Bar with Hardware & Stats -->
       <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-3">
@@ -375,7 +317,8 @@
               <!-- Checkout Button -->
               <button 
                 @click="processPayment"
-                class="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200"
+                :disabled="cartItems.length === 0"
+                class="w-full py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 text-white disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
               >
                 💰 Process Payment - R{{ formatCurrency(cartTotal) }}
               </button>
@@ -448,7 +391,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
 import {
   MagnifyingGlassIcon,
   QrCodeIcon,
@@ -471,13 +413,6 @@ import {
 } from '@heroicons/vue/24/outline'
 import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
 
-// Get route for reading query parameters
-const route = useRoute()
-
-// Transaction mode (sale or order)
-const transactionMode = ref<'sale' | 'order'>(
-  route.query.mode === 'order' ? 'order' : 'sale'
-)
 
 // Hardware status tracking
 const hardwareStatus = ref({

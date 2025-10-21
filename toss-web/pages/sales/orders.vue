@@ -14,7 +14,7 @@
           </div>
           <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
             <NuxtLink
-              to="/sales/pos?mode=order"
+              to="/sales/create-order"
               class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold text-sm sm:text-base"
             >
               <PlusIcon class="w-5 h-5 mr-2" />
@@ -258,7 +258,7 @@
           <p class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No orders found</p>
           <p class="text-slate-600 dark:text-slate-400 mb-4">Start by creating your first sales order!</p>
           <NuxtLink
-            to="/sales/pos?mode=order"
+            to="/sales/create-order"
             class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold"
           >
             <PlusIcon class="w-5 h-5 mr-2" />
