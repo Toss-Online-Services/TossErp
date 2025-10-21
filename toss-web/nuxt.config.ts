@@ -40,7 +40,8 @@ export default defineNuxtConfig({
     global: true,
     dirs: [
       '~/components',
-      '~/components/icons'
+      '~/components/icons',
+      '~/components/charts'
     ]
   },
   imports: {
