@@ -113,12 +113,12 @@
             class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
           >
               <option value="">All Status</option>
-            <option value="pending">Pending</option>
+            <option value="pending">Awaiting Approval</option>
             <option value="approved">Approved</option>
-            <option value="in-transit">In Transit</option>
+            <option value="in-transit">On the Way</option>
               <option value="delivered">Delivered</option>
               <option value="cancelled">Cancelled</option>
-            </select>
+          </select>
 
           <!-- Supplier Filter -->
           <select
@@ -181,7 +181,7 @@
                   class="px-3 py-1 rounded-full text-sm font-medium"
                   :class="getStatusClass(order.status)"
                 >
-                  {{ order.status }}
+                  {{ getStatusLabel(order.status) }}
                 </span>
                 <!-- Purchase Type Badge -->
                 <span 
@@ -238,7 +238,7 @@
                   View
                 </button>
                 <button 
-                  v-if="order.status === 'pending'"
+                  v-if="order.status.toLowerCase() === 'pending'"
                   @click="approveOrder(order)" 
                   class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200 text-sm font-medium flex items-center"
                 >
@@ -261,7 +261,7 @@
                 </button>
               </div>
               <button 
-                v-if="order.status === 'pending' || order.status === 'approved'"
+                v-if="order.status.toLowerCase() === 'pending' || order.status.toLowerCase() === 'approved'"
                 @click="cancelOrder(order)" 
                 class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 text-sm font-medium flex items-center"
               >
@@ -449,7 +449,7 @@ const filteredOrders = computed(() => {
       order.number.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       order.supplier.toLowerCase().includes(searchQuery.value.toLowerCase())
     
-    const matchesStatus = !statusFilter.value || order.status === statusFilter.value
+    const matchesStatus = !statusFilter.value || order.status.toLowerCase() === statusFilter.value.toLowerCase()
     const matchesSupplier = !supplierFilter.value || order.supplier === supplierFilter.value
     
     return matchesSearch && matchesStatus && matchesSupplier
@@ -495,6 +495,18 @@ const getPurchaseTypeIcon = (type: string) => {
     'group-buy': UserGroupIcon
   }
   return icons[type] || ShoppingCartIcon
+}
+
+const getStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    'pending': 'Awaiting Approval',
+    'approved': 'Approved',
+    'in-transit': 'On the Way',
+    'delivered': 'Delivered',
+    'cancelled': 'Cancelled',
+    'aggregated': 'Order Placed'
+  }
+  return labels[status.toLowerCase()] || status
 }
 
 const formatDate = (date: Date) => {
