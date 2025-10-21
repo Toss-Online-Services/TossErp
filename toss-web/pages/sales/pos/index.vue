@@ -1,7 +1,47 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 relative overflow-hidden">
+    <!-- Transaction Type Watermark -->
+    <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 select-none">
+      <div 
+        v-if="transactionMode === 'sale'"
+        class="text-[20rem] font-black text-blue-500/5 dark:text-blue-400/5 rotate-[-15deg] whitespace-nowrap"
+      >
+        💰 SALE
+      </div>
+      <div 
+        v-else
+        class="text-[20rem] font-black text-green-500/5 dark:text-green-400/5 rotate-[-15deg] whitespace-nowrap"
+      >
+        📦 ORDER
+      </div>
+    </div>
+
+    <!-- Transaction Type Badge (Top Right) -->
+    <div class="fixed top-4 right-4 z-50 pointer-events-none">
+      <div 
+        v-if="transactionMode === 'sale'"
+        class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl shadow-2xl border-4 border-white dark:border-slate-800"
+      >
+        <span class="text-3xl">💰</span>
+        <div>
+          <div class="text-xs font-medium opacity-90">Transaction Type</div>
+          <div class="text-lg font-black tracking-wider">SALE</div>
+        </div>
+      </div>
+      <div 
+        v-else
+        class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-2xl shadow-2xl border-4 border-white dark:border-slate-800"
+      >
+        <span class="text-3xl">📦</span>
+        <div>
+          <div class="text-xs font-medium opacity-90">Transaction Type</div>
+          <div class="text-lg font-black tracking-wider">ORDER</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Mobile-First Page Container -->
-    <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
+    <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6 relative z-10">
     <!-- Page Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
         <div>
