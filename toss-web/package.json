@@ -1,7 +1,7 @@
 {
   "name": "toss-web",
   "version": "1.0.0",
-  "description": "TOSS ERP III - Township One-Stop Solution - AI-powered collaborative business platform for South African SMMEs",
+  "description": "TOSS ERP III - Township One-St op Solution - AI-powered collaborative business platform for South African SMMEs",
   "type": "module",
   "private": true,
   "scripts": {
