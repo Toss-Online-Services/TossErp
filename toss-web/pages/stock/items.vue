@@ -2,33 +2,34 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
     <!-- Page Header with Glass Morphism -->
     <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+      <div class="w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+          <div class="flex-1 min-w-0">
+            <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent truncate">
               Items Management
             </h1>
-            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+            <p class="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
               Manage inventory items, track stock levels, and monitor performance
             </p>
           </div>
-          <div class="mt-4 sm:mt-0 flex space-x-3">
+          <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
             <button
               @click="showCreateModal = true"
-              class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold"
+              class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold text-sm sm:text-base whitespace-nowrap"
             >
-              <PlusIcon class="w-5 h-5 mr-2" />
-              Add Item
+              <PlusIcon class="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
+              <span class="hidden sm:inline">Add Item</span>
+              <span class="sm:hidden ml-1">Add</span>
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
       <!-- Total Items Card -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
         <div class="flex items-center justify-between">
@@ -91,8 +92,8 @@
     </div>
 
     <!-- Filters and Search -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 sm:p-6 mb-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <!-- Search -->
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -129,17 +130,18 @@
         </select>
 
         <!-- Quick Actions -->
-        <div class="flex space-x-2">
+        <div class="flex space-x-2 sm:col-span-2 lg:col-span-1">
           <button
             @click="exportData"
-            class="flex-1 inline-flex items-center justify-center px-4 py-2.5 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200"
+            class="flex-1 inline-flex items-center justify-center px-3 sm:px-4 py-2.5 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 whitespace-nowrap"
           >
-            <ArrowDownTrayIcon class="w-4 h-4 mr-2" />
-            Export
+            <ArrowDownTrayIcon class="w-4 h-4 mr-1 sm:mr-2" />
+            <span class="hidden xs:inline">Export</span>
           </button>
           <button
             @click="refreshData"
-            class="px-4 py-2.5 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200"
+            class="px-3 sm:px-4 py-2.5 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 flex-shrink-0"
+            title="Refresh"
           >
             <ArrowPathIcon class="w-4 h-4" />
           </button>

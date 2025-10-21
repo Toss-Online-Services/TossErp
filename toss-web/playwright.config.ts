@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:3002',
+    baseURL: 'http://localhost:3001',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -36,6 +36,6 @@ export default defineConfig({
     },
   ],
 
-  // webServer block removed: start Nuxt manually on port 3000 before running tests
-  testMatch: '*.e2e.ts',
+  // webServer block removed: start Nuxt manually on port 3001 before running tests
+  testMatch: ['**/*.e2e.ts', '**/e2e/**/*.spec.ts'],
 })

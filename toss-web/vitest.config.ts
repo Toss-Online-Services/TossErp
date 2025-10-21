@@ -1,16 +1,40 @@
 import { defineConfig } from 'vitest/config'
-import { resolve } from 'path'
+import vue from '@vitejs/plugin-vue'
+import path from 'path'
 
 export default defineConfig({
+  plugins: [vue()],
   test: {
-    environment: 'happy-dom',
     globals: true,
-    setupFiles: ['./tests/setup.ts']
+    environment: 'happy-dom',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      include: [
+        'pages/stock/**/*.vue',
+        'components/stock/**/*.vue',
+        'composables/useStock.ts'
+      ],
+      exclude: [
+        '**/*.test.ts',
+        '**/*.spec.ts',
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/.nuxt/**'
+      ],
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 75,
+        statements: 80
+      }
+    }
   },
   resolve: {
     alias: {
-      '~': resolve(__dirname),
-      '@': resolve(__dirname)
+      '~': path.resolve(__dirname, './'),
+      '@': path.resolve(__dirname, './'),
+      '#app': path.resolve(__dirname, './node_modules/nuxt/dist/app')
     }
   }
 })
