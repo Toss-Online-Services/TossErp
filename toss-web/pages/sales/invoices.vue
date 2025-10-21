@@ -1,84 +1,97 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
-    <!-- Mobile-First Page Container -->
-    <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
-      <!-- Page Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Sales Invoices</h1>
-          <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Manage billing and payment tracking for Thabo's Spaza Shop</p>
-        </div>
-        <div class="flex flex-wrap gap-2 sm:gap-3">
-          <button @click="showNewInvoiceModal = true" 
-                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm sm:text-base">
-            <PlusIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
-            New Invoice
-          </button>
-          <button @click="exportInvoices" 
-                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors text-sm sm:text-base">
-            <ArrowDownTrayIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
-            Export
-          </button>
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+    <!-- Page Header with Glass Morphism -->
+    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
+      <div class="w-full mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
+        <div class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+          <div class="flex-1 min-w-0">
+            <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-blue-600 bg-clip-text text-transparent truncate">
+              Sales Invoices
+            </h1>
+            <p class="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-1">
+              Manage billing and payment tracking
+            </p>
+          </div>
+          <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
+            <button 
+              @click="showNewInvoiceModal = true" 
+              class="inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-orange-600 to-blue-600 text-white rounded-xl hover:from-orange-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm font-semibold whitespace-nowrap"
+            >
+              <PlusIcon class="w-4 h-4 sm:mr-2" />
+              <span class="hidden sm:inline">New Invoice</span>
+            </button>
+            <button 
+              @click="exportInvoices" 
+              class="inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 hover:shadow-md transition-all duration-200 whitespace-nowrap"
+            >
+              <ArrowDownTrayIcon class="w-4 h-4 sm:mr-2" />
+              <span class="hidden sm:inline">Export</span>
+            </button>
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
 
       <!-- Invoice Stats -->
-      <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
           <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Total Invoices</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ totalInvoices }}</p>
-              <p class="text-xs sm:text-sm text-blue-600">{{ newInvoices }} this month</p>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">Total Invoices</p>
+              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white truncate">{{ totalInvoices }}</p>
+              <p class="text-xs sm:text-sm text-blue-600 mt-1">{{ newInvoices }} this month</p>
             </div>
-            <div class="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-              <DocumentTextIcon class="w-4 h-4 sm:w-6 sm:h-6 text-blue-600" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg flex-shrink-0">
+              <DocumentTextIcon class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
           <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Outstanding</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R {{ formatCurrency(outstandingAmount) }}</p>
-              <p class="text-xs sm:text-sm text-red-600">{{ overdueInvoices }} overdue</p>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">Outstanding</p>
+              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white truncate">R{{ formatCurrency(outstandingAmount) }}</p>
+              <p class="text-xs sm:text-sm text-red-600 mt-1">{{ overdueInvoices }} overdue</p>
             </div>
-            <div class="p-2 sm:p-3 bg-red-100 dark:bg-red-900 rounded-full">
-              <ExclamationTriangleIcon class="w-4 h-4 sm:w-6 sm:h-6 text-red-600" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl shadow-lg flex-shrink-0">
+              <ExclamationTriangleIcon class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
           <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Paid This Month</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R {{ formatCurrency(paidThisMonth) }}</p>
-              <p class="text-xs sm:text-sm text-green-600">{{ paidInvoices }} invoices</p>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">Paid This Month</p>
+              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white truncate">R{{ formatCurrency(paidThisMonth) }}</p>
+              <p class="text-xs sm:text-sm text-green-600 mt-1">{{ paidInvoices }} invoices</p>
             </div>
-            <div class="p-2 sm:p-3 bg-green-100 dark:bg-green-900 rounded-full">
-              <CheckCircleIcon class="w-4 h-4 sm:w-6 sm:h-6 text-green-600" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg flex-shrink-0">
+              <CheckCircleIcon class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
           <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Average Invoice</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R {{ formatCurrency(avgInvoiceValue) }}</p>
-              <p class="text-xs sm:text-sm text-purple-600">{{ paymentTerms }} day terms</p>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">Average Invoice</p>
+              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white truncate">R{{ formatCurrency(avgInvoiceValue) }}</p>
+              <p class="text-xs sm:text-sm text-purple-600 mt-1">{{ paymentTerms }} day terms</p>
             </div>
-            <div class="p-2 sm:p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
-              <CalculatorIcon class="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl shadow-lg flex-shrink-0">
+              <CalculatorIcon class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
           </div>
         </div>
       </div>
 
       <!-- Filters and Search -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+      <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div class="flex-1">
             <input v-model="searchQuery" type="text" placeholder="Search invoices..." 
@@ -108,14 +121,14 @@
       </div>
 
       <!-- Invoices List -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
-          <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Recent Invoices</h3>
+      <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
+        <div class="bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-900/20 dark:to-blue-900/20 px-4 sm:px-6 py-4 border-b border-slate-200 dark:border-slate-600">
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Recent Invoices</h3>
         </div>
         <div class="p-4 sm:p-6">
           <div class="space-y-3 sm:space-y-4">
             <div v-for="invoice in filteredInvoices" :key="invoice.id" 
-                 class="flex items-center justify-between p-4 rounded-lg border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                 class="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200 hover:shadow-md">
               <div class="flex items-center space-x-3 flex-1 min-w-0">
                 <div class="w-10 h-10 rounded-full flex items-center justify-center" :class="getStatusColor(invoice.status)">
                   <DocumentTextIcon class="w-5 h-5 text-white" />
@@ -412,14 +425,14 @@ const filteredInvoices = computed(() => {
   let filtered = invoices.value
 
   if (searchQuery.value) {
-    filtered = filtered.filter(invoice => 
+    filtered = filtered.filter((invoice: any) => 
       invoice.customer.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       invoice.invoiceNumber.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
   }
 
   if (statusFilter.value) {
-    filtered = filtered.filter(invoice => invoice.status === statusFilter.value)
+    filtered = filtered.filter((invoice: any) => invoice.status === statusFilter.value)
   }
 
   if (periodFilter.value) {
@@ -504,7 +517,7 @@ const getStatusBadge = (status: string) => {
 
 // Invoice calculation functions
 const calculateSubtotal = () => {
-  return newInvoice.value.items.reduce((total, item) => {
+  return newInvoice.value.items.reduce((total: number, item: any) => {
     return total + (item.quantity * item.unitPrice)
   }, 0)
 }

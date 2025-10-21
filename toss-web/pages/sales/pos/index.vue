@@ -1,38 +1,75 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
     <!-- Mobile-First Page Container -->
     <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
     <!-- Page Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
         <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Point of Sale</h1>
-          <p class="text-gray-600 mt-1 text-sm sm:text-base">Quick checkout system for Thabo's Spaza Shop</p>
+          <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Point of Sale</h1>
+          <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Quick checkout system for Thabo's Spaza Shop</p>
         </div>
         <div class="flex flex-wrap gap-2 sm:gap-3">
           <button @click="toggleFullscreen" 
                   :class="[
-                    'flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 text-white rounded-lg transition-colors text-sm sm:text-base',
-                    isFullscreen ? 'bg-purple-600 hover:bg-purple-700' : 'bg-indigo-600 hover:bg-indigo-700'
+                    'flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base font-semibold',
+                    isFullscreen ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
                   ]"
                   :title="isFullscreen ? 'Exit Fullscreen (F11)' : 'Enter Fullscreen (F11)'">
             <component :is="isFullscreen ? ArrowsPointingInIcon : ArrowsPointingOutIcon" class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
             {{ isFullscreen ? 'Exit' : 'Fullscreen' }}
           </button>
           <button @click="openDrawer" 
-                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors text-sm sm:text-base">
+                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base font-semibold">
             <CurrencyDollarIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
             Open Drawer
           </button>
           <button @click="showReports = true" 
-                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm sm:text-base">
+                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-slate-600 to-gray-600 hover:from-slate-700 hover:to-gray-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base font-semibold">
             <ChartBarIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
             Reports
           </button>
         </div>
       </div>
 
+      <!-- Sale / Order Mode Toggle -->
+      <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Transaction Type:</span>
+            <div class="relative inline-flex bg-slate-200 dark:bg-slate-700 rounded-xl p-1">
+              <button
+                @click="transactionMode = 'sale'"
+                :class="[
+                  'relative z-10 px-6 py-2 text-sm font-semibold rounded-lg transition-all duration-200',
+                  transactionMode === 'sale'
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ]"
+              >
+                💰 Sale
+              </button>
+              <button
+                @click="transactionMode = 'order'"
+                :class="[
+                  'relative z-10 px-6 py-2 text-sm font-semibold rounded-lg transition-all duration-200',
+                  transactionMode === 'order'
+                    ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white shadow-md'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ]"
+              >
+                📦 Order
+              </button>
+            </div>
+          </div>
+          <div class="text-sm text-slate-600 dark:text-slate-400">
+            <span v-if="transactionMode === 'sale'">Immediate payment & receipt</span>
+            <span v-else>Customer order for later delivery</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Compact Status Bar with Hardware & Stats -->
-      <div class="bg-white rounded-lg border border-gray-200 p-3">
+      <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-3">
         <div class="flex items-center justify-between flex-wrap gap-3">
           <!-- Hardware Status -->
           <div class="flex items-center gap-4">
@@ -107,7 +144,7 @@
         <!-- Product Search and Selection -->
         <div class="lg:col-span-2 space-y-4">
           <!-- Search and Scanner -->
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+          <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6">
             <div class="flex items-center space-x-3">
               <div class="flex-1 relative">
                 <MagnifyingGlassIcon class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -122,13 +159,13 @@
               </div>
               <button 
                 @click="showBarcodeScanner = true"
-                class="p-3 rounded-lg transition-colors bg-blue-600 hover:bg-blue-700 text-white"
+                class="p-3 rounded-xl transition-all duration-200 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl"
               >
                 <QrCodeIcon class="w-6 h-6" />
               </button>
               <button 
                 @click="requestHardwareAccess"
-                class="p-3 rounded-lg transition-colors bg-purple-600 hover:bg-purple-700 text-white"
+                class="p-3 rounded-xl transition-all duration-200 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl"
                 title="Request Hardware Access"
               >
                 <CogIcon class="w-6 h-6" />
@@ -137,7 +174,7 @@
           </div>
 
           <!-- Category Filters -->
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+          <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6">
             <div class="flex flex-wrap gap-2">
               <button 
                 v-for="category in categories" 
@@ -156,7 +193,7 @@
           </div>
 
           <!-- Products Grid -->
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+          <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6">
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               <button 
                 v-for="product in filteredProducts" 
@@ -199,17 +236,20 @@
         <!-- Cart and Checkout -->
         <div class="space-y-4">
           <!-- Current Sale -->
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold text-gray-900">Current Sale</h3>
-              <button 
-                v-if="cartItems.length > 0"
-                @click="clearCart"
-                class="text-sm text-red-600 hover:text-red-700"
-              >
-                Clear All
-              </button>
+          <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 sm:py-5">
+              <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white">Current Sale</h3>
+                <button 
+                  v-if="cartItems.length > 0"
+                  @click="clearCart"
+                  class="px-3 py-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-sm font-medium text-white transition-colors"
+                >
+                  Clear All
+                </button>
+              </div>
             </div>
+            <div class="p-4 sm:p-6">
             
             <div v-if="cartItems.length === 0" class="text-center py-8">
               <ShoppingCartIcon class="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -295,34 +335,35 @@
               <!-- Checkout Button -->
               <button 
                 @click="processPayment"
-                class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
+                class="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                Process Payment - R{{ formatCurrency(cartTotal) }}
+                💰 Process Payment - R{{ formatCurrency(cartTotal) }}
               </button>
             </div>
             </div>
+          </div>
 
           <!-- Quick Actions -->
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+          <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
             <div class="space-y-3">
               <button 
                 @click="holdSale"
-                class="w-full py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors"
+                class="w-full py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                Hold Sale
+                ⏸️ Hold Sale
               </button>
               <button 
                 @click="voidSale"
-                class="w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+                class="w-full py-2.5 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                Void Sale
+                ❌ Void Sale
               </button>
               <button 
                 @click="showCustomerModal = true"
-                class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                Add Customer
+                👤 Add Customer
               </button>
             </div>
           </div>
@@ -367,6 +408,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 import {
   MagnifyingGlassIcon,
   QrCodeIcon,
@@ -388,6 +430,14 @@ import {
   ChevronDownIcon
 } from '@heroicons/vue/24/outline'
 import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
+
+// Get route for reading query parameters
+const route = useRoute()
+
+// Transaction mode (sale or order)
+const transactionMode = ref<'sale' | 'order'>(
+  route.query.mode === 'order' ? 'order' : 'sale'
+)
 
 // Hardware status tracking
 const hardwareStatus = ref({
@@ -465,11 +515,11 @@ const filteredProducts = computed(() => {
   let filtered = products.value
 
   if (selectedCategory.value !== 'all') {
-    filtered = filtered.filter(p => p.category === selectedCategory.value)
+    filtered = filtered.filter((p: any) => p.category === selectedCategory.value)
   }
 
   if (searchQuery.value) {
-    filtered = filtered.filter(p => 
+    filtered = filtered.filter((p: any) => 
       p.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       p.sku.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
@@ -479,7 +529,7 @@ const filteredProducts = computed(() => {
 })
 
 const cartTotal = computed(() => {
-  return cartItems.value.reduce((total, item) => total + (item.price * item.quantity), 0)
+  return cartItems.value.reduce((total: number, item: any) => total + (item.price * item.quantity), 0)
 })
 
 // Methods
@@ -493,7 +543,7 @@ const formatCurrency = (amount: number) => {
 const addToCart = (product: any) => {
   if (product.stock === 0) return
 
-  const existingItem = cartItems.value.find(item => item.id === product.id)
+  const existingItem = cartItems.value.find((item: any) => item.id === product.id)
   if (existingItem) {
     existingItem.quantity += 1
   } else {
@@ -507,7 +557,7 @@ const addToCart = (product: any) => {
 }
 
 const removeFromCart = (productId: number | string) => {
-  cartItems.value = cartItems.value.filter(item => item.id != productId)
+  cartItems.value = cartItems.value.filter((item: any) => item.id != productId)
 }
 
 const updateQuantity = (productId: number | string, newQuantity: number) => {
@@ -516,7 +566,7 @@ const updateQuantity = (productId: number | string, newQuantity: number) => {
     return
   }
 
-  const item = cartItems.value.find(item => item.id == productId)
+  const item = cartItems.value.find((item: any) => item.id == productId)
   if (item) {
     item.quantity = newQuantity
   }
@@ -610,9 +660,9 @@ const handleBarcodeInput = (event: KeyboardEvent) => {
 
 const processBarcode = (barcode: string) => {
   // Find product by SKU or barcode
-  const product = products.value.find(p => 
+  const product = products.value.find((p: any) => 
     p.sku.toLowerCase() === barcode.toLowerCase() ||
-    barcode.includes(p.id)
+    barcode.includes(p.id.toString())
   )
   
   if (product && product.stock > 0) {
@@ -647,7 +697,7 @@ const toggleScanner = () => {
 
 const handleBarcodeScanned = (barcode: string) => {
   // Find product by barcode or SKU
-  const product = products.value.find(p => 
+  const product = products.value.find((p: any) => 
     p.sku.toLowerCase() === barcode.toLowerCase() ||
     barcode.toLowerCase().includes(p.sku.toLowerCase())
   )
@@ -762,7 +812,7 @@ const printReceipt = async () => {
         date: new Date().toLocaleString('en-ZA'),
         cashier: 'Thabo',
         customer: selectedCustomer.value || 'Walk-in Customer',
-        items: cartItems.value.map(item => ({
+        items: cartItems.value.map((item: any) => ({
           name: item.name,
           quantity: item.quantity,
           price: item.price,
@@ -826,8 +876,8 @@ const printESCPOSReceipt = async (receiptData: any) => {
       
       // Items
       receiptData.items.forEach((item: any) => {
-        commands.push(...encoder.encode(`${item.name}\n`))
-        commands.push(...encoder.encode(`${item.quantity} x R${item.price.toFixed(2)} = R${item.total.toFixed(2)}\n`))
+        commands.push(...Array.from(encoder.encode(`${item.name}\n`)))
+        commands.push(...Array.from(encoder.encode(`${item.quantity} x R${item.price.toFixed(2)} = R${item.total.toFixed(2)}\n`)))
       })
       
       commands.push(...encoder.encode('--------------------------------\n'))
