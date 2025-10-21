@@ -43,7 +43,7 @@
                   <label class="text-sm font-medium text-slate-600 dark:text-slate-400">Status</label>
                   <div>
                     <span :class="['inline-block px-3 py-1 rounded-full text-sm font-medium', getStatusClass(order?.status)]">
-                      {{ order?.status }}
+                      {{ getStatusLabel(order?.status) }}
                     </span>
                   </div>
                 </div>
@@ -204,9 +204,22 @@ const getStatusClass = (status: string) => {
     'approved': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
     'in-transit': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
     'delivered': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+    'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+    'aggregated': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
   }
   return classes[status?.toLowerCase()] || classes.pending
+}
+
+const getStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    'pending': 'Awaiting Approval',
+    'approved': 'Approved',
+    'in-transit': 'On the Way',
+    'delivered': 'Delivered',
+    'cancelled': 'Cancelled',
+    'aggregated': 'Order Placed'
+  }
+  return labels[status?.toLowerCase()] || status
 }
 
 const formatDate = (date: any) => {

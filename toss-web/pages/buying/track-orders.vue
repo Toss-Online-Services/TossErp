@@ -190,7 +190,7 @@ onMounted(() => {
       id: order.id || order.orderNumber,
       number: order.orderNumber,
       status: order.status?.toLowerCase() || 'pending',
-      statusText: order.status || 'Pending',
+      statusText: getStatusLabel(order.status) || 'Awaiting Approval',
       date: `Ordered ${formatDateRelative(order.date)}`,
       items: order.items?.map((item: any) => item.name).join(', ') || 'N/A',
       total: order.total?.toLocaleString() || '0',
@@ -202,7 +202,7 @@ onMounted(() => {
 
   // Check if order number is in query params
   if (route.query.order) {
-    const order = recentOrders.value.find(o => o.number === route.query.order)
+    const order = recentOrders.value.find((o: any) => o.number === route.query.order)
     if (order) {
       selectedOrder.value = order
     }
@@ -242,6 +242,18 @@ const getStatusIcon = (status: string) => {
     'approved': CheckCircleIcon
   }
   return icons[status as keyof typeof icons] || ClockIcon
+}
+
+const getStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    'pending': 'Awaiting Approval',
+    'approved': 'Approved',
+    'in-transit': 'On the Way',
+    'delivered': 'Delivered',
+    'cancelled': 'Cancelled',
+    'aggregated': 'Order Placed'
+  }
+  return labels[status?.toLowerCase()] || status
 }
 
 const formatDate = (date: string | Date) => {
