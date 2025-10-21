@@ -566,7 +566,7 @@ const generateContextualResponse = (userMessage: string) => {
         ],
         actions: [
           { title: 'View Inventory', route: '/inventory' },
-          { title: 'Create Purchase Order', route: '/purchasing/orders' }
+          { title: 'Create Purchase Order', route: '/buying/orders' }
         ]
       }
     }

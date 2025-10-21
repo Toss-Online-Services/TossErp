@@ -6,7 +6,7 @@
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
             <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Purchasing
+              Buying
             </h1>
             <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
               Manage orders, suppliers, and group buying
@@ -14,7 +14,7 @@
           </div>
           <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
             <NuxtLink 
-              to="/purchasing/create-order"
+              to="/buying/create-order"
               class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold text-sm sm:text-base"
             >
               <ShoppingCartIcon class="w-5 h-5 mr-2" />
@@ -90,7 +90,7 @@
           <div class="flex items-center justify-between mb-6">
             <div>
               <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Spending Trends</h3>
-              <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Last 7 days purchasing activity</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Last 7 days Buying activity</p>
             </div>
           </div>
           <LineChart
@@ -202,9 +202,9 @@
 
       <!-- Quick Actions -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <!-- Purchase Orders -->
+        <!-- Buy Orders -->
         <NuxtLink 
-          to="/purchasing/orders"
+          to="/buying/orders"
           class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 group"
         >
           <div class="flex items-center mb-4">
@@ -212,7 +212,7 @@
               <ShoppingCartIcon class="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Purchase Orders</h3>
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Buy Orders</h3>
               <p class="text-sm text-slate-600 dark:text-slate-400">Manage your orders</p>
             </div>
           </div>
@@ -234,7 +234,7 @@
 
         <!-- Suppliers -->
         <NuxtLink 
-          to="/purchasing/suppliers"
+          to="/buying/suppliers"
           class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 group"
         >
           <div class="flex items-center mb-4">
@@ -264,7 +264,7 @@
 
         <!-- Group Buying -->
         <NuxtLink 
-          to="/purchasing/group-buying"
+          to="/buying/group-buying"
           class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 group"
         >
           <div class="flex items-center mb-4">
@@ -297,7 +297,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Create Order -->
         <NuxtLink 
-          to="/purchasing/create-order"
+          to="/buying/create-order"
           class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 group text-white"
         >
           <div class="flex items-center justify-between">
@@ -316,7 +316,7 @@
 
         <!-- Track Orders -->
         <NuxtLink 
-          to="/purchasing/track-orders"
+          to="/buying/track-orders"
           class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 group text-white"
         >
           <div class="flex items-center justify-between">
@@ -349,9 +349,9 @@ import {
 
 // Page metadata
 useHead({
-  title: 'Purchasing - TOSS ERP',
+  title: 'Buying - TOSS ERP',
   meta: [
-    { name: 'description', content: 'Manage purchasing, orders, suppliers, and group buying in TOSS ERP' }
+    { name: 'description', content: 'Manage Buying, orders, suppliers, and group buying in TOSS ERP' }
   ]
 })
 
@@ -363,3 +363,4 @@ const metrics = ref({
   activeSuppliers: 42
 })
 </script>
+

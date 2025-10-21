@@ -1,9 +1,9 @@
 /**
  * Check for active group buys matching items
- * POST /api/purchasing/group-buys/active
+ * POST /api/buying/group-buys/active
  */
 
-import type { GroupBuyOpportunity } from '~/types/smart-purchasing'
+import type { GroupBuyOpportunity } from '~/types/smart-buying'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -98,4 +98,5 @@ async function findActiveGroupBuys(skus: string[]): Promise<GroupBuyOpportunity[
     gb.deadline > new Date()
   )
 }
+
 

@@ -101,7 +101,7 @@
           </div>
         </NuxtLink>
 
-        <NuxtLink to="/purchasing/group-buying" class="p-6 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 hover:border-yellow-500 dark:hover:border-yellow-400 transition-all hover:shadow-md">
+        <NuxtLink to="/buying/group-buying" class="p-6 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 hover:border-yellow-500 dark:hover:border-yellow-400 transition-all hover:shadow-md">
           <div class="flex items-center space-x-4">
             <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
               <UsersIcon class="w-8 h-8 text-yellow-600 dark:text-yellow-400" />

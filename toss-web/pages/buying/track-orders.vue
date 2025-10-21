@@ -5,7 +5,7 @@
       <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div class="flex items-center gap-3">
           <NuxtLink 
-            to="/purchasing/orders" 
+            to="/buying/orders" 
             class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
           >
             <ArrowLeftIcon class="w-6 h-6 text-slate-600 dark:text-slate-400" />
@@ -128,7 +128,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import OrderTimeline from '~/components/purchasing/OrderTimeline.vue'
+import OrderTimeline from '~/components/buying/OrderTimeline.vue'
 import {
   ArrowLeftIcon,
   XMarkIcon,
@@ -146,7 +146,7 @@ import {
 useHead({
   title: 'Track Orders - TOSS ERP',
   meta: [
-    { name: 'description', content: 'Track your purchase orders and deliveries in real-time' }
+    { name: 'description', content: 'Track your Buy Orders and deliveries in real-time' }
   ]
 })
 
@@ -259,4 +259,5 @@ const formatDateRelative = (date: string | Date) => {
   return `${diffDays} days ago`
 }
 </script>
+
 

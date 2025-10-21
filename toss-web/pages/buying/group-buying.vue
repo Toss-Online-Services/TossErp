@@ -1457,7 +1457,7 @@ const joinSelectedGroup = () => {
 // Share functionality
 const shareLink = computed(() => {
   if (!inviteGroup.value) return ''
-  return `${window.location.origin}/purchasing/group-buying?join=${inviteGroup.value.id}`
+  return `${window.location.origin}/buying/group-buying?join=${inviteGroup.value.id}`
 })
 
 const copyShareLink = async () => {
@@ -1553,3 +1553,4 @@ const sendInvite = () => {
   max-height: 500px;
 }
 </style>
+

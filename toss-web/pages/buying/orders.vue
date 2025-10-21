@@ -6,15 +6,15 @@
           <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
             <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Purchase Orders
+              Buy Orders
             </h1>
             <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
-              Manage and track your purchase orders
+              Manage and track your Buy Orders
             </p>
             </div>
           <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
             <NuxtLink
-              to="/purchasing/create-order"
+              to="/buying/create-order"
               class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold text-sm sm:text-base"
             >
                 <PlusIcon class="w-5 h-5 mr-2" />
@@ -282,7 +282,7 @@
             <p class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No orders found</p>
             <p class="text-slate-600 dark:text-slate-400 mb-4">Start by creating your first purchase order!</p>
             <NuxtLink
-              to="/purchasing/create-order"
+              to="/buying/create-order"
               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold"
             >
               <PlusIcon class="w-5 h-5 mr-2" />
@@ -308,7 +308,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from '~/composables/useToast'
-import OrderDetailsModal from '~/components/purchasing/OrderDetailsModal.vue'
+import OrderDetailsModal from '~/components/buying/OrderDetailsModal.vue'
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -327,9 +327,9 @@ import {
 
 // Page metadata
 useHead({
-  title: 'Purchase Orders - TOSS ERP',
+  title: 'Buy Orders - TOSS ERP',
   meta: [
-    { name: 'description', content: 'Manage and track purchase orders in TOSS ERP' }
+    { name: 'description', content: 'Manage and track Buy Orders in TOSS ERP' }
   ]
 })
 
@@ -673,7 +673,7 @@ const printOrder = (order: any) => {
 const trackOrder = (order: any) => {
   // Navigate to track orders page with order number as query param
   router.push({
-    path: '/purchasing/track-orders',
+    path: '/buying/track-orders',
     query: { order: order.number }
   })
 }
@@ -725,3 +725,4 @@ const exportOrders = () => {
   alert('Exporting orders to CSV/Excel')
 }
 </script>
+

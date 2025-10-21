@@ -126,7 +126,7 @@
       <div class="space-y-3">
         <!-- Track Order - Primary Action -->
         <NuxtLink 
-          to="/purchasing/track-orders"
+          to="/buying/track-orders"
           class="w-full px-6 py-5 bg-blue-600 text-white rounded-xl font-bold text-lg shadow-lg hover:bg-blue-700 transition-all touch-manipulation min-h-[60px] flex items-center justify-center gap-2"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,7 +207,7 @@ onMounted(() => {
     localStorage.removeItem('toss-current-order')
   } else {
     // No order found, redirect to create order page
-    router.push('/purchasing/create-order')
+    router.push('/buying/create-order')
   }
 })
 </script>
@@ -226,4 +226,5 @@ onMounted(() => {
   animation: bounce 1s ease-in-out 3;
 }
 </style>
+
 
