@@ -60,16 +60,29 @@
 
           <!-- Barcode -->
           <div>
-            <label for="barcode" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label for="barcode" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Barcode
             </label>
-            <input
-              id="barcode"
-              v-model="formData.barcode"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              placeholder="Enter barcode"
-            />
+            <div class="relative">
+              <input
+                id="barcode"
+                v-model="formData.barcode"
+                type="text"
+                class="w-full px-4 py-2.5 pr-24 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
+                placeholder="Enter barcode or scan"
+              />
+              <button
+                type="button"
+                @click="showBarcodeScanner = true"
+                class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-md hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center space-x-1.5 text-xs font-semibold shadow-md hover:shadow-lg hover:scale-105"
+              >
+                <QrCodeIcon class="w-4 h-4" />
+                <span>Scan</span>
+              </button>
+            </div>
+            <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+              Click "Scan" button or use a USB barcode scanner
+            </p>
           </div>
 
           <!-- Name -->
@@ -286,6 +299,12 @@
         </div>
       </form>
     </div>
+
+    <!-- Barcode Scanner Component -->
+    <BarcodeScanner
+      v-model="showBarcodeScanner"
+      @barcode-scanned="handleBarcodeScanned"
+    />
   </div>
 </template>
 
@@ -298,8 +317,10 @@ import {
   CurrencyDollarIcon,
   ArchiveBoxIcon,
   CheckIcon,
-  PlusIcon
+  PlusIcon,
+  QrCodeIcon
 } from '@heroicons/vue/24/outline'
+import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
 import type { ItemDto, CreateItemRequest, UpdateItemRequest } from '../../composables/useStock'
 
 // Props
@@ -337,6 +358,18 @@ const formData = ref<CreateItemRequest & { id?: string }>({
 })
 
 const newCategory = ref('')
+
+// Barcode Scanner state
+const showBarcodeScanner = ref(false)
+
+// Barcode Scanner handler
+const handleBarcodeScanned = (barcode: string) => {
+  formData.value.barcode = barcode
+  showBarcodeScanner.value = false
+  
+  // Optional: Show success feedback
+  console.log('Barcode scanned:', barcode)
+}
 
 // Watch for item changes
 watch(() => props.item, (item) => {
