@@ -3,7 +3,7 @@
     <!-- Page Header with Glass Morphism -->
     <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
       <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-        <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
             <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
               Group Buying
@@ -11,15 +11,15 @@
             <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
               Buy together with others to save money
             </p>
-          </div>
+            </div>
           <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
             <button
               @click="showCreateModal = true"
               class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold text-sm sm:text-base"
             >
-              <PlusIcon class="w-5 h-5 mr-2" />
-              Start Group Buy
-            </button>
+                <PlusIcon class="w-5 h-5 mr-2" />
+                Start Group Buy
+              </button>
           </div>
         </div>
       </div>
@@ -89,8 +89,8 @@
               <span class="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 px-3 py-1 rounded-full text-sm font-medium">
                 {{ myGroupBuys.length }} active
               </span>
-            </div>
           </div>
+              </div>
           
           <div class="p-6 space-y-4">
             <div v-for="group in myGroupBuys" :key="group.id" 
@@ -170,8 +170,8 @@
               <span class="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 px-3 py-1 rounded-full text-sm font-medium">
                 {{ availableGroupBuys.length}} opportunities
               </span>
-            </div>
           </div>
+              </div>
           
           <div class="p-6 space-y-4">
             <div v-for="group in availableGroupBuys" :key="group.id" 
@@ -235,11 +235,11 @@
                   Details
                 </button>
               </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
     <!-- Create Group Buy Modal -->
     <Transition name="modal">
@@ -252,7 +252,7 @@
               <div>
                 <h3 class="text-xl font-bold text-white">Start New Group Buy</h3>
                 <p class="text-sm text-white/80">Collaborate with others for better pricing</p>
-              </div>
+            </div>
               <button @click="showCreateModal = false" class="p-2 hover:bg-white/20 rounded-lg transition-colors">
                 <XMarkIcon class="w-6 h-6 text-white" />
               </button>
@@ -261,36 +261,75 @@
             <!-- Form -->
             <div class="p-6 max-h-[70vh] overflow-y-auto">
               <form @submit.prevent="createGroupBuy" class="space-y-6">
-                <!-- Supplier Search -->
-                <div class="relative">
+                <!-- Category Selection - FIRST STEP -->
+              <div>
                   <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Search for Supplier *
+                    <svg class="w-4 h-4 inline mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                    Step 1: Select Category *
                   </label>
                   <div class="relative">
-                    <input
-                      v-model="supplierSearchQuery"
-                      @input="handleSupplierInput"
-                      @focus="showSupplierDropdown = true"
-                      @blur="setTimeout(() => showSupplierDropdown = false, 200)"
-                      type="text"
+                    <select
+                      v-model="newGroupBuy.category"
                       required
-                      placeholder="Search by supplier name, product, or category..."
-                      class="w-full px-4 py-3 pr-10 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                      :class="{ 'border-green-500': selectedSupplier }"
-                    />
-                    <div class="absolute right-3 top-1/2 -translate-y-1/2">
-                      <button
-                        v-if="selectedSupplier"
-                        @click.prevent="clearSupplier"
-                        type="button"
-                        class="text-green-600 hover:text-green-700"
-                      >
-                        <XMarkIcon class="w-5 h-5" />
-                      </button>
-                      <MagnifyingGlassIcon v-else class="w-5 h-5 text-slate-400" />
-                    </div>
-                  </div>
-                  
+                      @change="handleCategoryChange"
+                      class="w-full appearance-none px-4 py-3 pr-10 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all font-medium cursor-pointer"
+                      :class="{ 'border-purple-500 bg-purple-50 dark:bg-purple-900/20': newGroupBuy.category }"
+                    >
+                      <option value="">Select a category to continue</option>
+                      <option value="food">🍽️ Food & Beverages</option>
+                      <option value="supplies">📋 Office Supplies</option>
+                      <option value="equipment">🔧 Equipment & Tools</option>
+                      <option value="technology">💻 Technology</option>
+                      <option value="cleaning">🧹 Cleaning Supplies</option>
+                      <option value="other">📦 Other</option>
+                    </select>
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+              </div>
+              </div>
+                  <p v-if="newGroupBuy.category" class="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                    ✓ Category selected. Now search for suppliers in this category.
+                  </p>
+            </div>
+
+                <!-- Supplier Search - SECOND STEP (appears after category selected) -->
+                <Transition name="slide-down">
+                  <div v-if="newGroupBuy.category" class="relative">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      <svg class="w-4 h-4 inline mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                      </svg>
+                      Step 2: Search for Supplier *
+                    </label>
+                    <div class="relative">
+                      <input
+                        v-model="supplierSearchQuery"
+                        @input="handleSupplierInput"
+                        @focus="showSupplierDropdown = true"
+                        @blur="setTimeout(() => showSupplierDropdown = false, 200)"
+                        type="text"
+                        required
+                        :placeholder="`Search suppliers in ${getCategoryName(newGroupBuy.category)}...`"
+                        class="w-full px-4 py-3 pr-10 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                        :class="{ 'border-green-500': selectedSupplier }"
+                      />
+                      <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                        <button
+                          v-if="selectedSupplier"
+                          @click.prevent="clearSupplier"
+                          type="button"
+                          class="text-green-600 hover:text-green-700"
+                        >
+                          <XMarkIcon class="w-5 h-5" />
+                        </button>
+                        <MagnifyingGlassIcon v-else class="w-5 h-5 text-slate-400" />
+          </div>
+        </div>
+
                   <!-- Selected Supplier Badge -->
                   <div v-if="selectedSupplier" class="mt-2 flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-200 dark:border-green-800">
                     <CheckCircleIcon class="w-5 h-5 text-green-600 flex-shrink-0" />
@@ -301,11 +340,11 @@
                           <StarIcon v-for="i in 5" :key="i" class="w-3 h-3" 
                             :class="i <= Math.round(selectedSupplier.rating) ? 'text-yellow-400' : 'text-slate-300'" 
                           />
-                        </div>
+            </div>
                         <span class="text-xs text-slate-600 dark:text-slate-400">{{ selectedSupplier.rating }}/5</span>
-                      </div>
-                    </div>
-                  </div>
+            </div>
+          </div>
+            </div>
 
                   <!-- Supplier Dropdown -->
                   <Transition name="dropdown">
@@ -334,15 +373,15 @@
                                 >
                                   {{ product }}
                                 </span>
-                              </div>
-                            </div>
+            </div>
+            </div>
                             <div class="flex items-center gap-1 flex-shrink-0">
                               <StarIcon class="w-4 h-4 text-yellow-400" />
                               <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ supplier.rating }}</span>
-                            </div>
-                          </div>
+              </div>
+            </div>
                         </button>
-                      </div>
+          </div>
                     </div>
                   </Transition>
 
@@ -351,75 +390,198 @@
                     v-if="showSupplierDropdown && filteredSuppliers.length === 0 && supplierSearchQuery"
                     class="absolute z-10 w-full mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border-2 border-slate-200 dark:border-slate-700 p-4"
                   >
-                    <p class="text-center text-slate-600 dark:text-slate-400">No suppliers found. Try a different search term.</p>
+                    <p class="text-center text-slate-600 dark:text-slate-400">No suppliers found in this category. Try a different search term.</p>
                   </div>
+
+                  <!-- Suppliers count hint -->
+                  <p v-if="!selectedSupplier && !supplierSearchQuery" class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                    💡 {{ categorySuppliers.length }} suppliers available in {{ getCategoryName(newGroupBuy.category) }}
+                  </p>
                 </div>
+              </Transition>
+
+                <!-- Product Search - THIRD STEP (shown after supplier selected) -->
+                <Transition name="slide-down">
+                  <div v-if="selectedSupplier" class="relative">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      <ShoppingCartIcon class="w-4 h-4 inline mr-1 text-blue-600" />
+                      Step 3: Search Products from {{ selectedSupplier.name }} *
+                    </label>
+                    <div class="relative">
+                      <input
+                        v-model="productSearchQuery"
+                        @input="handleProductInput"
+                        @focus="showProductDropdown = true"
+                        @blur="setTimeout(() => showProductDropdown = false, 200)"
+                        type="text"
+                        placeholder="Search products or services..."
+                        class="w-full px-4 py-3 pr-10 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        :class="{ 'border-green-500': selectedProduct }"
+                      />
+                      <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                        <button
+                          v-if="selectedProduct"
+                          @click.prevent="clearProduct"
+                          type="button"
+                          class="text-green-600 hover:text-green-700"
+                        >
+                          <XMarkIcon class="w-5 h-5" />
+            </button>
+                        <MagnifyingGlassIcon v-else class="w-5 h-5 text-slate-400" />
+          </div>
+        </div>
+
+                    <!-- Selected Product Card -->
+                    <div v-if="selectedProduct" class="mt-2 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-xl p-4 border-2 border-green-200 dark:border-green-800">
+                      <div class="flex items-start gap-3">
+                        <div class="p-2 bg-green-500 rounded-lg">
+                          <CheckCircleIcon class="w-6 h-6 text-white" />
+            </div>
+                        <div class="flex-1">
+                          <h4 class="font-bold text-slate-900 dark:text-white mb-1">{{ selectedProduct.name }}</h4>
+                          <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">{{ selectedProduct.description }}</p>
+                          <div class="grid grid-cols-3 gap-2 text-xs">
+                            <div class="bg-white dark:bg-slate-800 rounded-lg px-2 py-1">
+                              <span class="text-slate-500">Price</span>
+                              <p class="font-bold text-blue-600">R{{ selectedProduct.unitPrice }}</p>
+            </div>
+                            <div class="bg-white dark:bg-slate-800 rounded-lg px-2 py-1">
+                              <span class="text-slate-500">Unit</span>
+                              <p class="font-bold text-slate-900 dark:text-white">{{ selectedProduct.unit }}</p>
+          </div>
+                            <div class="bg-white dark:bg-slate-800 rounded-lg px-2 py-1">
+                              <span class="text-slate-500">Min Order</span>
+                              <p class="font-bold text-slate-900 dark:text-white">{{ selectedProduct.minOrder }}</p>
+            </div>
+            </div>
+            </div>
+            </div>
+          </div>
+
+                    <!-- Product Dropdown -->
+                    <Transition name="dropdown">
+                      <div 
+                        v-if="showProductDropdown && filteredProducts.length > 0" 
+                        class="absolute z-10 w-full mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border-2 border-slate-200 dark:border-slate-700 max-h-96 overflow-y-auto"
+                      >
+                        <div class="p-2">
+                          <button
+                            v-for="product in filteredProducts"
+                            :key="product.id"
+                            @click.prevent="selectProduct(product)"
+                            type="button"
+                            class="w-full text-left px-4 py-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group border-b border-slate-100 dark:border-slate-700 last:border-0"
+                          >
+                            <div class="flex items-start justify-between gap-3">
+                              <div class="flex-1">
+                                <p class="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                  {{ product.name }}
+                                </p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ product.description }}</p>
+                                <div class="flex gap-3 mt-2 text-xs">
+                                  <span class="text-blue-600 font-medium">R{{ product.unitPrice }}/{{ product.unit }}</span>
+                                  <span class="text-slate-500">Min: {{ product.minOrder }} {{ product.unit }}s</span>
+            </div>
+          </div>
+                              <div class="flex-shrink-0 text-right">
+                                <div class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg text-xs font-bold">
+                                  R{{ product.unitPrice }}
+        </div>
+      </div>
+    </div>
+            </button>
+          </div>
+                      </div>
+                    </Transition>
+
+                    <!-- No products message -->
+                    <div 
+                      v-if="showProductDropdown && filteredProducts.length === 0 && productSearchQuery"
+                      class="absolute z-10 w-full mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border-2 border-slate-200 dark:border-slate-700 p-4"
+                    >
+                      <p class="text-center text-slate-600 dark:text-slate-400">No products found. Try a different search term.</p>
+                    </div>
+
+                    <!-- Browse all products link -->
+                    <p v-if="!selectedProduct && !productSearchQuery" class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                      💡 Start typing to search from {{ availableProducts.length }} available products
+                    </p>
+                  </div>
+                </Transition>
 
                 <!-- Product/Service Name -->
-                <div>
+              <div>
                   <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Product or Service Name *
                   </label>
-                  <input
-                    v-model="newGroupBuy.title"
-                    type="text"
-                    required
-                    placeholder="e.g., Office Supplies Bulk Purchase"
+                <input 
+                  v-model="newGroupBuy.title"
+                  type="text" 
+                  required
+                  placeholder="e.g., Office Supplies Bulk Purchase"
                     class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    :disabled="!!selectedProduct"
                   />
-                </div>
+                  <p v-if="selectedProduct" class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    ✓ Auto-filled from selected product
+                  </p>
+            </div>
 
                 <!-- Description -->
-                <div>
+            <div>
                   <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Description *
                   </label>
-                  <textarea
-                    v-model="newGroupBuy.description"
-                    required
+              <textarea 
+                v-model="newGroupBuy.description"
+                required
                     rows="3"
                     placeholder="Describe what you're buying and why others should join"
                     class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  ></textarea>
-                </div>
+                    :disabled="!!selectedProduct"
+              ></textarea>
+                  <p v-if="selectedProduct" class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    ✓ Auto-filled from selected product
+                  </p>
+            </div>
 
                 <!-- Min Quantity and Price -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                       Minimum Quantity *
                     </label>
-                    <input
+                  <input 
                       v-model.number="newGroupBuy.minQuantity"
-                      type="number"
-                      required
+                    type="number" 
+                    required
                       min="2"
                       placeholder="e.g., 100"
                       class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                    />
-                  </div>
-                  <div>
+                  />
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                       Target Price per Unit *
                     </label>
                     <div class="relative">
                       <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">R</span>
-                      <input
+                  <input 
                         v-model.number="newGroupBuy.targetPrice"
-                        type="number"
+                    type="number" 
                         required
                         min="0"
-                        step="0.01"
+                    step="0.01"
                         placeholder="0.00"
                         class="w-full pl-8 pr-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                      />
-                    </div>
+                  />
+                </div>
                   </div>
                 </div>
 
                 <!-- Commitment and Deadline -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                       Your Commitment (Units) *
                     </label>
@@ -436,35 +598,15 @@
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                       Deadline *
                     </label>
-                    <input
-                      v-model="newGroupBuy.deadline"
-                      type="date"
-                      required
+                  <input 
+                    v-model="newGroupBuy.deadline"
+                    type="date" 
+                    required
                       :min="new Date().toISOString().split('T')[0]"
                       class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                    />
-                  </div>
+                  />
                 </div>
-
-                <!-- Category -->
-                <div>
-                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Category *
-                  </label>
-                  <select
-                    v-model="newGroupBuy.category"
-                    required
-                    class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  >
-                    <option value="">Select a category</option>
-                    <option value="food">Food & Beverages</option>
-                    <option value="supplies">Office Supplies</option>
-                    <option value="equipment">Equipment</option>
-                    <option value="technology">Technology</option>
-                    <option value="cleaning">Cleaning Supplies</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
+              </div>
 
                 <!-- Payment Terms -->
                 <div>
@@ -479,14 +621,14 @@
                     <option value="on-delivery">Pay on Delivery</option>
                     <option value="net30">Net 30</option>
                   </select>
-                </div>
+            </div>
 
                 <!-- Benefits Info -->
                 <div class="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 rounded-xl p-4 border-2 border-blue-200 dark:border-blue-800">
                   <div class="flex items-start gap-3">
                     <div class="p-2 bg-blue-500 rounded-lg">
                       <SparklesIcon class="w-5 h-5 text-white" />
-                    </div>
+                </div>
                     <div>
                       <h4 class="font-bold text-slate-900 dark:text-white mb-1">Estimated Benefits</h4>
                       <p class="text-sm text-slate-600 dark:text-slate-400">
@@ -590,7 +732,7 @@
                     <StarIcon v-for="i in 5" :key="i" class="w-4 h-4" 
                       :class="i <= (selectedGroup.trustLevel || selectedGroup.leadTrustScore) ? 'text-yellow-400' : 'text-slate-300'" 
                     />
-                  </div>
+                </div>
                 </div>
               </div>
 
@@ -607,7 +749,7 @@
                       <StarIcon v-for="i in 5" :key="i" class="w-3 h-3" 
                         :class="i <= selectedGroup.leadTrustScore ? 'text-yellow-400' : 'text-slate-300'" 
                       />
-                    </div>
+                </div>
                   </div>
                 </div>
               </div>
@@ -677,7 +819,7 @@
                   Share Link
                 </label>
                 <div class="flex gap-2">
-                  <input
+                  <input 
                     :value="shareLink"
                     readonly
                     class="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white"
@@ -713,9 +855,9 @@
                     <EnvelopeIcon class="w-5 h-5" />
                     Share via Email
                   </button>
-                </div>
               </div>
-
+            </div>
+            
               <!-- Invite by Phone -->
               <div>
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -728,12 +870,12 @@
                     placeholder="+27 XX XXX XXXX"
                     class="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   />
-                  <button
+              <button 
                     @click="sendInvite"
                     class="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 transition-all"
-                  >
+              >
                     Send
-                  </button>
+              </button>
                 </div>
               </div>
 
@@ -755,16 +897,16 @@
 
             <!-- Footer -->
             <div class="border-t border-slate-200 dark:border-slate-700 px-6 py-4 bg-slate-50 dark:bg-slate-900/50">
-              <button
+              <button 
                 @click="showInviteModal = false"
                 class="w-full px-6 py-3 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
               >
                 Done
               </button>
             </div>
-          </div>
         </div>
       </div>
+    </div>
     </Transition>
   </div>
 </template>
@@ -827,26 +969,164 @@ const supplierSearchQuery = ref('')
 const showSupplierDropdown = ref(false)
 const selectedSupplier = ref<any>(null)
 
-// Mock suppliers data - in a real app, this would come from API
+// Product search
+const productSearchQuery = ref('')
+const showProductDropdown = ref(false)
+const selectedProduct = ref<any>(null)
+
+// Mock suppliers data with detailed product catalogs
 const allSuppliers = ref([
-  { id: 1, name: 'Office Pro Suppliers', category: 'supplies', rating: 4.5, products: ['Office Supplies', 'Stationery', 'Furniture'] },
-  { id: 2, name: 'Tech Solutions SA', category: 'technology', rating: 4.8, products: ['Computers', 'Software', 'IT Equipment'] },
-  { id: 3, name: 'Food & Beverage Wholesalers', category: 'food', rating: 4.2, products: ['Food', 'Beverages', 'Snacks'] },
-  { id: 4, name: 'Cleaning Masters', category: 'cleaning', rating: 4.6, products: ['Cleaning Supplies', 'Chemicals', 'Equipment'] },
-  { id: 5, name: 'Industrial Equipment Co', category: 'equipment', rating: 4.4, products: ['Industrial Equipment', 'Machinery', 'Tools'] },
-  { id: 6, name: 'Fresh Produce Direct', category: 'food', rating: 4.7, products: ['Fresh Produce', 'Vegetables', 'Fruits'] },
-  { id: 7, name: 'Stationery World', category: 'supplies', rating: 4.3, products: ['Stationery', 'Office Supplies', 'Paper Products'] },
-  { id: 8, name: 'Tech Hardware Hub', category: 'technology', rating: 4.9, products: ['Hardware', 'Peripherals', 'Accessories'] }
+  { 
+    id: 1, 
+    name: 'Office Pro Suppliers', 
+    category: 'supplies', 
+    rating: 4.5, 
+    products: ['Office Supplies', 'Stationery', 'Furniture'],
+    catalog: [
+      { id: 101, name: 'A4 Copy Paper - 5 Reams', description: 'Premium quality white paper, 80gsm', unitPrice: 285, unit: 'box', minOrder: 10 },
+      { id: 102, name: 'Ballpoint Pens - Box of 50', description: 'Blue ink, smooth writing', unitPrice: 95, unit: 'box', minOrder: 5 },
+      { id: 103, name: 'Office Desk Chair', description: 'Ergonomic with lumbar support', unitPrice: 1850, unit: 'unit', minOrder: 3 },
+      { id: 104, name: 'Stapler Set - Heavy Duty', description: 'Includes staples and remover', unitPrice: 145, unit: 'set', minOrder: 10 },
+      { id: 105, name: 'File Folders - Pack of 100', description: 'Manila folders, legal size', unitPrice: 220, unit: 'pack', minOrder: 5 }
+    ]
+  },
+  { 
+    id: 2, 
+    name: 'Tech Solutions SA', 
+    category: 'technology', 
+    rating: 4.8, 
+    products: ['Computers', 'Software', 'IT Equipment'],
+    catalog: [
+      { id: 201, name: 'Dell Optiplex Desktop PC', description: 'i5 processor, 8GB RAM, 256GB SSD', unitPrice: 8500, unit: 'unit', minOrder: 2 },
+      { id: 202, name: 'HP LaserJet Printer', description: 'Network ready, duplex printing', unitPrice: 4200, unit: 'unit', minOrder: 2 },
+      { id: 203, name: 'Microsoft Office 365 License', description: 'Annual subscription per user', unitPrice: 950, unit: 'license', minOrder: 5 },
+      { id: 204, name: 'Wireless Mouse & Keyboard Set', description: 'Ergonomic design, long battery life', unitPrice: 385, unit: 'set', minOrder: 10 },
+      { id: 205, name: '24" LED Monitor', description: 'Full HD, HDMI & VGA inputs', unitPrice: 2100, unit: 'unit', minOrder: 3 }
+    ]
+  },
+  { 
+    id: 3, 
+    name: 'Food & Beverage Wholesalers', 
+    category: 'food', 
+    rating: 4.2, 
+    products: ['Food', 'Beverages', 'Snacks'],
+    catalog: [
+      { id: 301, name: 'Instant Coffee - 500g Jar', description: 'Premium blend, aromatic', unitPrice: 125, unit: 'jar', minOrder: 20 },
+      { id: 302, name: 'Sugar Sachets - Box of 1000', description: 'White sugar, 5g sachets', unitPrice: 85, unit: 'box', minOrder: 15 },
+      { id: 303, name: 'Tea Bags - Box of 200', description: 'Black tea, premium quality', unitPrice: 95, unit: 'box', minOrder: 20 },
+      { id: 304, name: 'Bottled Water - 24 x 500ml', description: 'Purified spring water', unitPrice: 65, unit: 'case', minOrder: 30 },
+      { id: 305, name: 'Assorted Biscuits Pack', description: 'Mixed variety, 2kg pack', unitPrice: 145, unit: 'pack', minOrder: 15 }
+    ]
+  },
+  { 
+    id: 4, 
+    name: 'Cleaning Masters', 
+    category: 'cleaning', 
+    rating: 4.6, 
+    products: ['Cleaning Supplies', 'Chemicals', 'Equipment'],
+    catalog: [
+      { id: 401, name: 'Industrial Floor Cleaner - 5L', description: 'Multi-surface, fresh scent', unitPrice: 185, unit: 'bottle', minOrder: 10 },
+      { id: 402, name: 'Microfiber Cleaning Cloths - 50 Pack', description: 'Reusable, lint-free', unitPrice: 245, unit: 'pack', minOrder: 5 },
+      { id: 403, name: 'Disinfectant Spray - 750ml', description: 'Kills 99.9% germs', unitPrice: 65, unit: 'bottle', minOrder: 20 },
+      { id: 404, name: 'Mop & Bucket Set', description: 'Heavy duty with wringer', unitPrice: 295, unit: 'set', minOrder: 5 },
+      { id: 405, name: 'Garbage Bags - Roll of 100', description: 'Extra strong, 75L capacity', unitPrice: 125, unit: 'roll', minOrder: 10 }
+    ]
+  },
+  { 
+    id: 5, 
+    name: 'Industrial Equipment Co', 
+    category: 'equipment', 
+    rating: 4.4, 
+    products: ['Industrial Equipment', 'Machinery', 'Tools'],
+    catalog: [
+      { id: 501, name: 'Electric Drill Set', description: 'Cordless, 20V with bits', unitPrice: 1450, unit: 'set', minOrder: 3 },
+      { id: 502, name: 'Tool Cabinet - 7 Drawer', description: 'Heavy duty steel construction', unitPrice: 3200, unit: 'unit', minOrder: 2 },
+      { id: 503, name: 'Safety Gloves - Box of 100 pairs', description: 'Cut-resistant, multiple sizes', unitPrice: 385, unit: 'box', minOrder: 5 },
+      { id: 504, name: 'Industrial Shelving Unit', description: '2m high, 5 shelf capacity', unitPrice: 1850, unit: 'unit', minOrder: 3 },
+      { id: 505, name: 'Hand Tool Set - 120 Pieces', description: 'Complete workshop set', unitPrice: 2400, unit: 'set', minOrder: 2 }
+    ]
+  },
+  { 
+    id: 6, 
+    name: 'Fresh Produce Direct', 
+    category: 'food', 
+    rating: 4.7, 
+    products: ['Fresh Produce', 'Vegetables', 'Fruits'],
+    catalog: [
+      { id: 601, name: 'Fresh Tomatoes - 10kg Box', description: 'Grade A, locally sourced', unitPrice: 85, unit: 'box', minOrder: 20 },
+      { id: 602, name: 'Onions - 10kg Bag', description: 'Medium size, premium quality', unitPrice: 65, unit: 'bag', minOrder: 20 },
+      { id: 603, name: 'Potatoes - 10kg Bag', description: 'Washed, ready to cook', unitPrice: 75, unit: 'bag', minOrder: 20 },
+      { id: 604, name: 'Mixed Salad Greens - 2kg', description: 'Fresh daily, pre-washed', unitPrice: 95, unit: 'pack', minOrder: 15 },
+      { id: 605, name: 'Apples - 12kg Box', description: 'Golden Delicious, crisp & sweet', unitPrice: 145, unit: 'box', minOrder: 15 }
+    ]
+  },
+  { 
+    id: 7, 
+    name: 'Stationery World', 
+    category: 'supplies', 
+    rating: 4.3, 
+    products: ['Stationery', 'Office Supplies', 'Paper Products'],
+    catalog: [
+      { id: 701, name: 'Notebook - A4 Ruled, Pack of 10', description: '200 pages each, hardcover', unitPrice: 185, unit: 'pack', minOrder: 10 },
+      { id: 702, name: 'Highlighters - Set of 6 Colors', description: 'Chisel tip, vibrant colors', unitPrice: 45, unit: 'set', minOrder: 20 },
+      { id: 703, name: 'Sticky Notes - Multi Pack', description: '12 pads, assorted colors', unitPrice: 85, unit: 'pack', minOrder: 15 },
+      { id: 704, name: 'Printer Cartridge - Black', description: 'HP compatible, high yield', unitPrice: 385, unit: 'unit', minOrder: 5 },
+      { id: 705, name: 'Binder Clips - Assorted Sizes, 100 Pack', description: 'Steel construction, durable', unitPrice: 65, unit: 'pack', minOrder: 15 }
+    ]
+  },
+  { 
+    id: 8, 
+    name: 'Tech Hardware Hub', 
+    category: 'technology', 
+    rating: 4.9, 
+    products: ['Hardware', 'Peripherals', 'Accessories'],
+    catalog: [
+      { id: 801, name: 'USB Flash Drive - 64GB', description: 'USB 3.0, high speed transfer', unitPrice: 185, unit: 'unit', minOrder: 10 },
+      { id: 802, name: 'HDMI Cable - 2m', description: '4K compatible, gold plated', unitPrice: 95, unit: 'unit', minOrder: 15 },
+      { id: 803, name: 'Laptop Bag - Padded', description: 'Fits up to 15.6" laptop', unitPrice: 385, unit: 'unit', minOrder: 5 },
+      { id: 804, name: 'Webcam - Full HD 1080p', description: 'Auto-focus, built-in mic', unitPrice: 650, unit: 'unit', minOrder: 5 },
+      { id: 805, name: 'Power Bank - 20000mAh', description: 'Fast charging, dual USB ports', unitPrice: 485, unit: 'unit', minOrder: 8 }
+    ]
+  }
 ])
 
-const filteredSuppliers = computed(() => {
-  if (!supplierSearchQuery.value) return allSuppliers.value
-  
-  const query = supplierSearchQuery.value.toLowerCase()
+// Filter suppliers by selected category
+const categorySuppliers = computed(() => {
+  if (!newGroupBuy.value.category) return []
   return allSuppliers.value.filter((supplier: any) => 
-    supplier.name.toLowerCase().includes(query) ||
-    supplier.products.some((p: string) => p.toLowerCase().includes(query)) ||
-    supplier.category.toLowerCase().includes(query)
+    supplier.category === newGroupBuy.value.category || newGroupBuy.value.category === 'other'
+  )
+})
+
+const filteredSuppliers = computed(() => {
+  // First filter by category
+  let suppliers = categorySuppliers.value
+  
+  // Then filter by search query if provided
+  if (supplierSearchQuery.value) {
+    const query = supplierSearchQuery.value.toLowerCase()
+    suppliers = suppliers.filter((supplier: any) => 
+      supplier.name.toLowerCase().includes(query) ||
+      supplier.products.some((p: string) => p.toLowerCase().includes(query))
+    )
+  }
+  
+  return suppliers
+})
+
+// Product filtering based on selected supplier
+const availableProducts = computed(() => {
+  if (!selectedSupplier.value || !selectedSupplier.value.catalog) return []
+  return selectedSupplier.value.catalog
+})
+
+const filteredProducts = computed(() => {
+  if (!productSearchQuery.value) return availableProducts.value
+  
+  const query = productSearchQuery.value.toLowerCase()
+  return availableProducts.value.filter((product: any) => 
+    product.name.toLowerCase().includes(query) ||
+    product.description.toLowerCase().includes(query)
   )
 })
 
@@ -930,6 +1210,24 @@ const formatDate = (date: Date) => {
   })
 }
 
+// Category helper methods
+const getCategoryName = (category: string) => {
+  const categoryNames: Record<string, string> = {
+    'food': 'Food & Beverages',
+    'supplies': 'Office Supplies',
+    'equipment': 'Equipment & Tools',
+    'technology': 'Technology',
+    'cleaning': 'Cleaning Supplies',
+    'other': 'Other'
+  }
+  return categoryNames[category] || category
+}
+
+const handleCategoryChange = () => {
+  // Reset supplier and product when category changes
+  clearSupplier()
+}
+
 // Supplier selection methods
 const selectSupplier = (supplier: any) => {
   selectedSupplier.value = supplier
@@ -937,12 +1235,10 @@ const selectSupplier = (supplier: any) => {
   newGroupBuy.value.supplierId = supplier.id
   newGroupBuy.value.supplierName = supplier.name
   
-  // Auto-fill category based on supplier
-  if (!newGroupBuy.value.category && supplier.category) {
-    newGroupBuy.value.category = supplier.category
-  }
-  
   showSupplierDropdown.value = false
+  
+  // Reset product selection when supplier changes
+  clearProduct()
 }
 
 const clearSupplier = () => {
@@ -950,6 +1246,7 @@ const clearSupplier = () => {
   supplierSearchQuery.value = ''
   newGroupBuy.value.supplierId = null
   newGroupBuy.value.supplierName = ''
+  clearProduct()
 }
 
 const handleSupplierInput = () => {
@@ -959,6 +1256,37 @@ const handleSupplierInput = () => {
     selectedSupplier.value = null
     newGroupBuy.value.supplierId = null
     newGroupBuy.value.supplierName = ''
+    clearProduct()
+  }
+}
+
+// Product selection methods
+const selectProduct = (product: any) => {
+  selectedProduct.value = product
+  productSearchQuery.value = product.name
+  
+  // Auto-fill form fields based on product
+  newGroupBuy.value.title = product.name
+  newGroupBuy.value.description = `${product.description} - ${selectedSupplier.value.name}`
+  newGroupBuy.value.targetPrice = product.unitPrice
+  newGroupBuy.value.minQuantity = product.minOrder
+  newGroupBuy.value.myCommitment = product.minOrder
+  
+  showProductDropdown.value = false
+  
+  toast.success('Product details auto-filled!')
+}
+
+const clearProduct = () => {
+  selectedProduct.value = null
+  productSearchQuery.value = ''
+}
+
+const handleProductInput = () => {
+  showProductDropdown.value = true
+  // Clear selection if user starts typing
+  if (selectedProduct.value && productSearchQuery.value !== selectedProduct.value.name) {
+    selectedProduct.value = null
   }
 }
 
@@ -1146,5 +1474,25 @@ const sendInvite = () => {
 .dropdown-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+/* Slide down transition for product search */
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-down-enter-from,
+.slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+  max-height: 0;
+}
+
+.slide-down-enter-to,
+.slide-down-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 500px;
 }
 </style>
