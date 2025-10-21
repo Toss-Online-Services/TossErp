@@ -2,30 +2,30 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
     <!-- Page Header with Glass Morphism -->
     <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
-      <div class="w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+      <div class="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
         <div class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-          <div class="flex-1 min-w-0">
-            <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent truncate">
+          <div class="flex-1 min-w-0 overflow-hidden">
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent truncate">
               Stock Management
             </h1>
-            <p class="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-1">
-              Track your inventory and manage stock levels easily
+            <p class="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 truncate">
+              Track your inventory and manage stock
             </p>
         </div>
           <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
             <NuxtLink 
               to="/stock/items" 
-              class="inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm font-semibold whitespace-nowrap"
+              class="inline-flex items-center justify-center p-2 sm:px-4 sm:py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm font-semibold"
             >
-              <PlusIcon class="w-4 h-4 sm:mr-2" />
+              <PlusIcon class="w-5 h-5 sm:w-4 sm:h-4 sm:mr-2" />
               <span class="hidden sm:inline">Add Item</span>
           </NuxtLink>
             <button 
               @click="refreshStats" 
-              class="inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 hover:shadow-md transition-all duration-200 whitespace-nowrap"
+              class="inline-flex items-center justify-center p-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 hover:shadow-md transition-all duration-200"
               title="Refresh"
             >
-              <ArrowPathIcon class="w-4 h-4 sm:mr-2" :class="{ 'animate-spin': loading }" />
+              <ArrowPathIcon class="w-5 h-5 sm:w-4 sm:h-4 sm:mr-2" :class="{ 'animate-spin': loading }" />
               <span class="hidden sm:inline">Refresh</span>
           </button>
           </div>
@@ -38,16 +38,16 @@
       <!-- AI Co-Pilot Banner -->
       <div class="mb-4 sm:mb-6 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl p-4 sm:p-6 text-white relative overflow-hidden">
         <div class="absolute top-0 right-0 w-32 h-32 sm:w-64 sm:h-64 bg-white/10 rounded-full -mr-16 sm:-mr-32 -mt-16 sm:-mt-32"></div>
-        <div class="relative z-10 flex items-start">
-          <div class="p-2 sm:p-3 bg-white/20 backdrop-blur-sm rounded-xl mr-3 sm:mr-4 flex-shrink-0">
+        <div class="relative z-10 flex items-start gap-3 sm:gap-4">
+          <div class="p-2 sm:p-3 bg-white/20 backdrop-blur-sm rounded-xl flex-shrink-0">
             <SparklesIcon class="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <div class="flex-1 min-w-0">
-            <h3 class="text-base sm:text-lg font-bold mb-1">AI Co-Pilot Insights</h3>
-            <p class="text-white/90 text-xs sm:text-sm">
+          <div class="flex-1 min-w-0 overflow-hidden">
+            <h3 class="text-base sm:text-lg font-bold mb-1 sm:mb-2">AI Co-Pilot Insights</h3>
+            <p class="text-white/90 text-xs sm:text-sm leading-relaxed break-words">
               Low stock detected for <strong>3 items</strong>. Consider joining a group buying pool for cleaning supplies to save <strong>15%</strong>.
             </p>
-            <button class="mt-2 sm:mt-3 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap">
+            <button class="mt-3 sm:mt-4 px-4 sm:px-5 py-2 sm:py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-xs sm:text-sm font-medium transition-all duration-200">
               View Suggestions →
             </button>
           </div>
