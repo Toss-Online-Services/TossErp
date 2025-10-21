@@ -1,5 +1,5 @@
 <template>
-  <div class="chart-container">
+  <div class="mini-chart">
     <canvas ref="chartCanvas"></canvas>
   </div>
 </template>
@@ -8,39 +8,30 @@
 import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import {
   Chart,
-  BarController,
-  BarElement,
+  LineController,
+  LineElement,
+  PointElement,
   LinearScale,
   CategoryScale,
-  Tooltip,
-  Legend,
   type ChartConfiguration
 } from 'chart.js'
 
 // Register Chart.js components
 Chart.register(
-  BarController,
-  BarElement,
+  LineController,
+  LineElement,
+  PointElement,
   LinearScale,
-  CategoryScale,
-  Tooltip,
-  Legend
+  CategoryScale
 )
 
 interface Props {
-  labels: string[]
   data: number[]
-  label?: string
   color?: string
-  height?: number
-  horizontal?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  label: 'Data',
-  color: '#3B82F6', // Blue default
-  height: 200,
-  horizontal: false
+  color: '#FFFFFF'
 })
 
 const chartCanvas = ref<HTMLCanvasElement | null>(null)
@@ -49,27 +40,27 @@ let chartInstance: Chart | null = null
 const createChart = () => {
   if (!chartCanvas.value) return
 
-  // Destroy existing chart
   if (chartInstance) {
     chartInstance.destroy()
   }
 
   const config: ChartConfiguration = {
-    type: 'bar',
+    type: 'line',
     data: {
-      labels: props.labels,
+      labels: props.data.map((_, i) => i.toString()),
       datasets: [
         {
-          label: props.label,
           data: props.data,
-          backgroundColor: props.color,
-          borderRadius: 8,
-          borderSkipped: false,
+          borderColor: props.color,
+          backgroundColor: `${props.color}33`,
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 0,
         }
       ]
     },
     options: {
-      indexAxis: props.horizontal ? 'y' : 'x',
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
@@ -77,38 +68,16 @@ const createChart = () => {
           display: false
         },
         tooltip: {
-          mode: 'index',
-          intersect: false,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: 12,
-          cornerRadius: 8,
-          titleFont: {
-            size: 14,
-            weight: 'bold'
-          },
-          bodyFont: {
-            size: 13
-          }
+          enabled: false
         }
       },
       scales: {
         x: {
-          grid: {
-            display: false
-          },
-          border: {
-            display: false
-          }
+          display: false
         },
         y: {
-          beginAtZero: true,
-          grid: {
-            display: true,
-            color: 'rgba(0, 0, 0, 0.05)'
-          },
-          border: {
-            display: false
-          }
+          display: false,
+          beginAtZero: true
         }
       }
     }
@@ -121,7 +90,7 @@ onMounted(() => {
   createChart()
 })
 
-watch(() => [props.data, props.labels], () => {
+watch(() => props.data, () => {
   createChart()
 }, { deep: true })
 
@@ -133,9 +102,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.chart-container {
-  position: relative;
-  height: v-bind(height + 'px');
+.mini-chart {
+  height: 50px;
   width: 100%;
 }
 </style>
+
+

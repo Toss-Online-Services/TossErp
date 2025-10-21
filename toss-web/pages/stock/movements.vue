@@ -57,7 +57,7 @@
 
     <!-- Filters -->
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-5">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
         <div>
           <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
           <div class="relative">
@@ -84,20 +84,6 @@
             <option value="issue">Issue</option>
             <option value="transfer">Transfer</option>
             <option value="adjustment">Adjustment</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="warehouse-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Warehouse</label>
-          <select
-            id="warehouse-filter"
-            v-model="selectedWarehouse"
-            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          >
-            <option value="">All Warehouses</option>
-            <option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse.id">
-              {{ warehouse.name }}
-            </option>
           </select>
         </div>
 
@@ -156,9 +142,6 @@
                 Item
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Warehouse
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Quantity
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -206,9 +189,6 @@
                     {{ movement.itemCode }}
                   </div>
                 </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                {{ movement.warehouseName }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
@@ -290,21 +270,19 @@ import {
   ArrowRightIcon,
   AdjustmentsHorizontalIcon
 } from '@heroicons/vue/24/outline'
-import { useStock, type StockMovementDto, type WarehouseDto } from '../../composables/useStock'
+import { useStock, type StockMovementDto } from '../../composables/useStock'
 
 // Composables
-const { getStockMovements, getWarehouses } = useStock()
+const { getStockMovements } = useStock()
 
 // Reactive data
 const movements = ref<StockMovementDto[]>([])
-const warehouses = ref<WarehouseDto[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
 // Filters
 const searchQuery = ref('')
 const selectedType = ref('')
-const selectedWarehouse = ref('')
 const selectedDateRange = ref('')
 
 // Pagination
@@ -318,22 +296,16 @@ const filteredMovements = computed(() => {
   // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(movement =>
+    filtered = filtered.filter((movement: StockMovementDto) =>
       movement.itemName?.toLowerCase().includes(query) ||
       movement.itemCode?.toLowerCase().includes(query) ||
-      movement.warehouseName?.toLowerCase().includes(query) ||
       movement.reference?.toLowerCase().includes(query)
     )
   }
 
   // Type filter
   if (selectedType.value) {
-    filtered = filtered.filter(movement => movement.type === selectedType.value)
-  }
-
-  // Warehouse filter
-  if (selectedWarehouse.value) {
-    filtered = filtered.filter(movement => movement.warehouseId === selectedWarehouse.value)
+    filtered = filtered.filter((movement: StockMovementDto) => movement.movementType === selectedType.value)
   }
 
   // Date range filter (simplified - in a real app would use proper date filtering)
@@ -359,7 +331,7 @@ const filteredMovements = computed(() => {
         break
     }
     
-    filtered = filtered.filter(movement => new Date(movement.createdAt) >= filterDate)
+    filtered = filtered.filter((movement: StockMovementDto) => new Date(movement.transactionDate) >= filterDate)
   }
 
   return filtered
@@ -379,7 +351,7 @@ const loadMovements = async () => {
     loading.value = true
     error.value = null
     const response = await getStockMovements()
-    movements.value = response.movements || response.stockMovements || []
+    movements.value = response.movements || []
   } catch (err) {
     error.value = 'Failed to load stock movements'
     console.error('Error loading stock movements:', err)
@@ -388,19 +360,9 @@ const loadMovements = async () => {
   }
 }
 
-const loadWarehouses = async () => {
-  try {
-    const response = await getWarehouses()
-    warehouses.value = response.warehouses
-  } catch (err) {
-    console.error('Error loading warehouses:', err)
-  }
-}
-
 const clearFilters = () => {
   searchQuery.value = ''
   selectedType.value = ''
-  selectedWarehouse.value = ''
   selectedDateRange.value = ''
   currentPage.value = 1
 }
@@ -425,7 +387,6 @@ const formatDate = (dateString: string) => {
 // Modal state
 const showMovementModal = ref(false)
 const selectedMovementType = ref<'receipt' | 'issue' | 'transfer' | 'adjustment'>('receipt')
-const items = ref<any[]>([])
 
 // Action methods
 const openCreateModal = () => {
@@ -445,7 +406,6 @@ Stock Movement Details
 Reference: ${movement.reference || movement.voucherNo}
 Type: ${movement.movementType}
 Item: ${movement.itemName} (${movement.itemSku})
-Warehouse: ${movement.warehouseName}
 Quantity: ${movement.quantity > 0 ? '+' : ''}${movement.quantity}
 Rate: R${movement.rate?.toFixed(2) || 'N/A'}
 Amount: R${movement.amount?.toFixed(2) || 'N/A'}
@@ -479,12 +439,11 @@ const saveMovement = async (data: any) => {
 }
 
 const exportMovements = async () => {
-  const exportData = filteredMovements.value.map(movement => ({
+  const exportData = filteredMovements.value.map((movement: StockMovementDto) => ({
     'Reference': movement.reference || movement.voucherNo,
     'Type': movement.movementType,
     'Item': movement.itemName,
     'SKU': movement.itemSku,
-    'Warehouse': movement.warehouseName,
     'Quantity': movement.quantity,
     'Rate (R)': movement.rate || 0,
     'Amount (R)': movement.amount || 0,
@@ -494,7 +453,7 @@ const exportMovements = async () => {
 
   const csvContent = [
     Object.keys(exportData[0]).join(','),
-    ...exportData.map(row => Object.values(row).join(','))
+    ...exportData.map((row: Record<string, any>) => Object.values(row).join(','))
   ].join('\n')
 
   const blob = new Blob([csvContent], { type: 'text/csv' })
@@ -508,32 +467,9 @@ const exportMovements = async () => {
   alert('Stock movements exported successfully!')
 }
 
-// Load items for the modal
-const loadItems = async () => {
-  try {
-    const { getItems } = await import('../../composables/useStock')
-    const { getItems: getItemsFn } = getItems ? { getItems } : useStock()
-    const response = await getItemsFn({ page: 1, pageSize: 1000 })
-    items.value = response.items
-  } catch (error) {
-    console.error('Error loading items:', error)
-  }
-}
-
 // Lifecycle
 onMounted(() => {
   loadMovements()
-  loadWarehouses()
-  loadItems()
 })
 </script>
 
-<!-- Stock Movement Modal -->
-<StockMovementModal
-  v-if="showMovementModal"
-  :movement-type="selectedMovementType"
-  :items="items"
-  :warehouses="warehouses"
-  @close="closeMovementModal"
-  @save="saveMovement"
-/>

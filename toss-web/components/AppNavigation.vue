@@ -37,7 +37,7 @@
                 
                 <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
                 <h3 class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Collaboration</h3>
-                <NuxtLink to="/group-buying" class="dropdown-link">🤝 Group Purchasing</NuxtLink>
+                <NuxtLink to="/purchasing/group-buying" class="dropdown-link">🤝 Group Purchasing</NuxtLink>
                 <NuxtLink to="/logistics" class="dropdown-link">🚚 Shared Logistics</NuxtLink>
                 <NuxtLink to="/tools" class="dropdown-link">🔧 Tool Sharing</NuxtLink>
                 <NuxtLink to="/credit" class="dropdown-link">🏦 Pooled Credit</NuxtLink>
@@ -114,7 +114,7 @@
         <NuxtLink to="/inventory" class="mobile-nav-link">📦 Inventory</NuxtLink>
         <NuxtLink to="/sales" class="mobile-nav-link">💰 Sales</NuxtLink>
         <NuxtLink to="/pos" class="mobile-nav-link">🛒 POS</NuxtLink>
-        <NuxtLink to="/group-buying" class="mobile-nav-link">🤝 Group Buying</NuxtLink>
+        <NuxtLink to="/purchasing/group-buying" class="mobile-nav-link">🤝 Group Buying</NuxtLink>
         <NuxtLink to="/reports" class="mobile-nav-link">Reports</NuxtLink>
       </div>
     </div>

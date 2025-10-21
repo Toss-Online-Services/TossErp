@@ -57,17 +57,14 @@
           <NuxtLink to="/stock/items" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/items' }">
             Items
           </NuxtLink>
-          <NuxtLink to="/stock/warehouses" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/warehouses' }">
-            Warehouses
-          </NuxtLink>
           <NuxtLink to="/stock/movements" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/movements' }">
             Stock Movements
           </NuxtLink>
-          <NuxtLink to="/stock/reconciliation" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/reconciliation' }">
-            Stock Reconciliation
+          <NuxtLink to="/stock/order" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/order' }">
+            Quick Order
           </NuxtLink>
-          <NuxtLink to="/stock/reports" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/reports' }">
-            Stock Reports
+          <NuxtLink to="/stock/track" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/track' }">
+            Track Orders
           </NuxtLink>
         </div>
       </div>
