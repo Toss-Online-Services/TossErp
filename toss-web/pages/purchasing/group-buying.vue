@@ -86,9 +86,18 @@
           <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 px-6 py-4 border-b border-slate-200 dark:border-slate-600">
             <div class="flex items-center justify-between">
               <h3 class="text-lg font-bold text-slate-900 dark:text-white">My Active Group Buys</h3>
-              <span class="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 px-3 py-1 rounded-full text-sm font-medium">
-                {{ myGroupBuys.length }} active
-              </span>
+              <div class="flex items-center gap-2">
+                <button
+                  @click="loadActiveGroupBuys"
+                  class="p-2 hover:bg-white/50 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  title="Refresh"
+                >
+                  <ArrowPathIcon class="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                </button>
+                <span class="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 px-3 py-1 rounded-full text-sm font-medium">
+                  {{ myGroupBuys.length }} active
+                </span>
+              </div>
           </div>
               </div>
           
@@ -106,6 +115,20 @@
                 </span>
               </div>
               <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">{{ group.description }}</p>
+              
+              <!-- Item Details (if available) -->
+              <div v-if="group.itemName" class="mb-3 p-3 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-semibold text-purple-900 dark:text-purple-100">{{ group.itemName }}</p>
+                    <p class="text-xs text-purple-600 dark:text-purple-400">SKU: {{ group.itemSku }}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-sm font-bold text-purple-900 dark:text-purple-100">{{ group.myQuantity }} units</p>
+                    <p class="text-xs text-purple-600 dark:text-purple-400">Your commitment</p>
+                  </div>
+                </div>
+              </div>
               
               <!-- Progress Bar -->
               <div class="mb-3">
@@ -912,7 +935,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   PlusIcon,
   UserGroupIcon,
@@ -928,7 +951,8 @@ import {
   EnvelopeIcon,
   InformationCircleIcon,
   MagnifyingGlassIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  ArrowPathIcon
 } from '@heroicons/vue/24/outline'
 
 // Page metadata
@@ -1139,32 +1163,65 @@ const networkStats = ref({
 })
 
 // Mock data
-const myGroupBuys = ref([
-  {
-    id: 1,
-    title: 'Office Supplies Bulk Purchase',
-    description: 'High-quality office supplies for Q2 2025',
-    status: 'collecting',
-    committed: 850,
-    minQuantity: 1000,
-    memberCount: 12,
-    estimatedSavings: 1250,
-    deadline: new Date('2025-09-15'),
-    trustLevel: 4
-  },
-  {
-    id: 2,
-    title: 'Industrial Cleaning Equipment',
-    description: 'Professional cleaning equipment for warehouses',
-    status: 'negotiating',
-    committed: 5,
-    minQuantity: 8,
-    memberCount: 5,
-    estimatedSavings: 3200,
-    deadline: new Date('2025-09-30'),
-    trustLevel: 5
+const myGroupBuys = ref<any[]>([])
+
+// Load active group buys from localStorage
+onMounted(() => {
+  loadActiveGroupBuys()
+})
+
+const loadActiveGroupBuys = () => {
+  try {
+    const savedGroupBuys = localStorage.getItem('toss-active-group-buys')
+    if (savedGroupBuys) {
+      const groupBuys = JSON.parse(savedGroupBuys)
+      
+      // Filter out expired group buys and format the data
+      myGroupBuys.value = groupBuys
+        .filter((gb: any) => new Date(gb.deadline) > new Date())
+        .map((gb: any) => ({
+          id: gb.id,
+          title: gb.title,
+          description: gb.description,
+          itemName: gb.itemName || 'Various Items',
+          itemSku: gb.itemSku || 'N/A',
+          myQuantity: gb.myQuantity || 0,
+          status: gb.status || 'collecting',
+          committed: gb.committed,
+          minQuantity: gb.minQuantity,
+          memberCount: gb.memberCount,
+          estimatedSavings: gb.estimatedSavings,
+          deadline: new Date(gb.deadline),
+          joinedAt: new Date(gb.joinedAt),
+          savingsPercentage: gb.savingsPercentage || 15,
+          trustLevel: 5
+        }))
+      
+      // Update network stats
+      networkStats.value.activeGroupBuys = myGroupBuys.value.length
+      networkStats.value.totalSavings = Math.round(
+        myGroupBuys.value.reduce((sum: number, gb: any) => sum + gb.estimatedSavings, 0) / 1000
+      )
+    }
+  } catch (error) {
+    console.error('Error loading active group buys:', error)
+    // Fallback to mock data
+    myGroupBuys.value = [
+      {
+        id: 1,
+        title: 'Office Supplies Bulk Purchase',
+        description: 'High-quality office supplies for Q2 2025',
+        status: 'collecting',
+        committed: 850,
+        minQuantity: 1000,
+        memberCount: 12,
+        estimatedSavings: 1250,
+        deadline: new Date('2025-09-15'),
+        trustLevel: 4
+      }
+    ]
   }
-])
+}
 
 const availableGroupBuys = ref([
   {
