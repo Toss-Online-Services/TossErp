@@ -1,15 +1,26 @@
 <template>
-  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-      <!-- Header -->
-      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-            {{ isEditing ? 'Edit Item' : 'Create New Item' }}
-          </h3>
+  <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-slate-200/50 dark:border-slate-700/50 animate-slideUp">
+      <!-- Header with Gradient -->
+      <div class="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-6 py-6 overflow-hidden">
+        <div class="absolute inset-0 bg-black/10"></div>
+        <div class="relative z-10 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+              <CubeIcon class="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-white">
+                {{ isEditing ? 'Edit Item' : 'Create New Item' }}
+              </h3>
+              <p class="text-sm text-white/80 mt-0.5">
+                {{ isEditing ? 'Update your inventory item details' : 'Add a new product to your inventory' }}
+              </p>
+            </div>
+          </div>
           <button
             @click="$emit('close')"
-            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            class="p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-lg transition-all duration-200"
           >
             <XMarkIcon class="w-6 h-6" />
           </button>
@@ -19,9 +30,17 @@
       <!-- Form -->
       <form @submit.prevent="handleSubmit" class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Basic Information -->
+          <!-- Basic Information Section -->
           <div class="md:col-span-2">
-            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-4">Basic Information</h4>
+            <div class="flex items-center space-x-2 mb-6">
+              <div class="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+                <DocumentTextIcon class="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h4 class="text-base font-semibold text-slate-900 dark:text-white">Basic Information</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Product identification and description</p>
+              </div>
+            </div>
           </div>
 
           <!-- SKU -->
@@ -134,9 +153,17 @@
             </select>
           </div>
 
-          <!-- Pricing -->
-          <div class="md:col-span-2">
-            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-4">Pricing</h4>
+          <!-- Pricing Section -->
+          <div class="md:col-span-2 mt-4">
+            <div class="flex items-center space-x-2 mb-6">
+              <div class="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                <CurrencyDollarIcon class="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h4 class="text-base font-semibold text-slate-900 dark:text-white">Pricing</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Set your selling and cost prices</p>
+              </div>
+            </div>
           </div>
 
           <!-- Selling Price -->
@@ -172,9 +199,17 @@
             />
           </div>
 
-          <!-- Stock Management -->
-          <div class="md:col-span-2">
-            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-4">Stock Management</h4>
+          <!-- Stock Management Section -->
+          <div class="md:col-span-2 mt-4">
+            <div class="flex items-center space-x-2 mb-6">
+              <div class="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg">
+                <ArchiveBoxIcon class="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h4 class="text-base font-semibold text-slate-900 dark:text-white">Stock Management</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Configure reorder alerts and thresholds</p>
+              </div>
+            </div>
           </div>
 
           <!-- Reorder Level -->
@@ -229,19 +264,24 @@
         </div>
 
         <!-- Form Actions -->
-        <div class="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
           <button
             type="button"
             @click="$emit('close')"
-            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            class="px-6 py-3 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 font-medium"
           >
             Cancel
           </button>
           <button
             type="submit"
-            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            class="relative px-8 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 overflow-hidden group"
           >
-            {{ isEditing ? 'Update Item' : 'Create Item' }}
+            <span class="relative z-10 flex items-center justify-center">
+              <CheckIcon v-if="isEditing" class="w-5 h-5 mr-2" />
+              <PlusIcon v-else class="w-5 h-5 mr-2" />
+              {{ isEditing ? 'Update Item' : 'Create Item' }}
+            </span>
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
           </button>
         </div>
       </form>
@@ -251,7 +291,15 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { XMarkIcon } from '@heroicons/vue/24/outline'
+import { 
+  XMarkIcon,
+  CubeIcon,
+  DocumentTextIcon,
+  CurrencyDollarIcon,
+  ArchiveBoxIcon,
+  CheckIcon,
+  PlusIcon
+} from '@heroicons/vue/24/outline'
 import type { ItemDto, CreateItemRequest, UpdateItemRequest } from '../../composables/useStock'
 
 // Props
@@ -348,3 +396,59 @@ const handleSubmit = () => {
   emit('save', submitData as CreateItemRequest | UpdateItemRequest)
 }
 </script>
+
+<style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Smooth scrollbar styling */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgb(203 213 225 / 0.5);
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: rgb(148 163 184 / 0.7);
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgb(51 65 85 / 0.5);
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: rgb(71 85 105 / 0.7);
+}
+</style>
