@@ -56,6 +56,144 @@
         </div>
       </div>
 
+      <!-- Smart Purchase Options -->
+      <Transition name="slide-down">
+        <div v-if="smartAnalysis && orderItems.length > 0" class="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl border-2 border-blue-200 dark:border-blue-800 p-6 mb-8 shadow-lg">
+          <div class="flex items-start gap-3 mb-4">
+            <div class="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+              <SparklesIcon class="w-6 h-6 text-white" />
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1">
+                💡 Smart Purchase Options Available!
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400">
+                Save up to R{{ smartAnalysis.estimatedTotalSavings }} with intelligent ordering
+              </p>
+            </div>
+          </div>
+
+          <!-- Option 1: Join Active Group Buy -->
+          <div v-if="smartAnalysis.hasActiveGroupBuy && smartAnalysis.groupBuyOpportunity" 
+               class="bg-white dark:bg-slate-800 rounded-xl p-4 mb-3 border-2 border-green-500 hover:shadow-md transition-all cursor-pointer"
+               @click="handleJoinGroupBuy">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                  <UserGroupIcon class="w-5 h-5 text-green-600" />
+                  <h4 class="font-bold text-slate-900 dark:text-white">Join Active Group Buy</h4>
+                  <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs rounded-full font-bold">
+                    RECOMMENDED
+                  </span>
+                </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                  {{ smartAnalysis.groupBuyOpportunity.title }}
+                </p>
+                <div class="flex flex-wrap gap-3 text-xs">
+                  <span class="flex items-center gap-1 text-green-600 font-medium">
+                    <ArrowDownIcon class="w-3 h-3" />
+                    Save {{ smartAnalysis.groupBuyOpportunity.savingsPercentage }}%
+                  </span>
+                  <span class="text-slate-600 dark:text-slate-400">
+                    {{ smartAnalysis.groupBuyOpportunity.currentParticipants }} members
+                  </span>
+                  <span class="text-slate-600 dark:text-slate-400">
+                    {{ smartAnalysis.groupBuyOpportunity.currentQuantity }}/{{ smartAnalysis.groupBuyOpportunity.targetQuantity }} units
+                  </span>
+                  <span class="text-orange-600">
+                    Ends {{ formatDeadline(smartAnalysis.groupBuyOpportunity.deadline) }}
+                  </span>
+                </div>
+              </div>
+              <button class="px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 shadow-md font-bold text-sm">
+                Join Now
+              </button>
+            </div>
+          </div>
+
+          <!-- Option 2: Auto-Aggregation Available -->
+          <div v-else-if="smartAnalysis.canAggregate && smartAnalysis.aggregationOpportunity" 
+               class="bg-white dark:bg-slate-800 rounded-xl p-4 mb-3 border-2 border-blue-500 hover:shadow-md transition-all">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                  <BoltIcon class="w-5 h-5 text-blue-600" />
+                  <h4 class="font-bold text-slate-900 dark:text-white">Auto-Aggregation Active</h4>
+                  <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs rounded-full font-bold">
+                    AUTOMATIC
+                  </span>
+                </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                  Your order will be combined with {{ smartAnalysis.aggregationOpportunity.participatingOrders.length }} other shops
+                </p>
+                <div class="flex flex-wrap gap-3 text-xs">
+                  <span class="flex items-center gap-1 text-blue-600 font-medium">
+                    <ArrowDownIcon class="w-3 h-3" />
+                    Save R{{ smartAnalysis.aggregationOpportunity.estimatedSavings }}
+                  </span>
+                  <span class="text-slate-600 dark:text-slate-400">
+                    Total: {{ smartAnalysis.aggregationOpportunity.totalQuantity }} units
+                  </span>
+                  <span class="text-slate-600 dark:text-slate-400">
+                    {{ smartAnalysis.aggregationOpportunity.savingsPercentage }}% bulk discount
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <CheckCircleIcon class="w-6 h-6 text-blue-600" />
+                <span class="text-sm font-bold text-blue-600">Active</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Option 3: Create Group Buy -->
+          <div v-else-if="smartAnalysis.shouldCreateGroupBuy && smartAnalysis.groupBuyPotential" 
+               class="bg-white dark:bg-slate-800 rounded-xl p-4 border-2 border-purple-500 hover:shadow-md transition-all cursor-pointer"
+               @click="handleCreateGroupBuy">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                  <PlusCircleIcon class="w-5 h-5 text-purple-600" />
+                  <h4 class="font-bold text-slate-900 dark:text-white">Create Group Buy</h4>
+                  <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs rounded-full font-bold">
+                    OPPORTUNITY
+                  </span>
+                </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                  Invite others to join and unlock bulk pricing
+                </p>
+                <div class="flex flex-wrap gap-3 text-xs">
+                  <span class="flex items-center gap-1 text-purple-600 font-medium">
+                    <ArrowDownIcon class="w-3 h-3" />
+                    Potential {{ smartAnalysis.groupBuyPotential.savingsPercentage }}% savings
+                  </span>
+                  <span class="text-slate-600 dark:text-slate-400">
+                    Est. R{{ smartAnalysis.groupBuyPotential.estimatedSavings }} saved
+                  </span>
+                </div>
+              </div>
+              <button class="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 shadow-md font-bold text-sm">
+                Create
+              </button>
+            </div>
+          </div>
+
+          <!-- Participating Shops (for aggregation) -->
+          <div v-if="smartAnalysis.canAggregate && smartAnalysis.aggregationOpportunity && smartAnalysis.aggregationOpportunity.participatingOrders.length > 0" 
+               class="mt-3 pt-3 border-t border-slate-200 dark:border-slate-600">
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Aggregating with:</p>
+            <div class="flex flex-wrap gap-2">
+              <div v-for="shop in smartAnalysis.aggregationOpportunity.participatingOrders" :key="shop.shopId"
+                   class="flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-lg text-xs">
+                <BuildingStorefrontIcon class="w-3 h-3 text-slate-500" />
+                <span class="font-medium">{{ shop.shopName }}</span>
+                <span class="text-slate-500">({{ shop.quantity }} units)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+
       <!-- Section Tabs -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 mb-6 overflow-hidden">
         <div class="flex border-b border-slate-200 dark:border-slate-700">
@@ -435,9 +573,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from '~/composables/useToast'
+import { useSmartPurchasing } from '~/composables/useSmartPurchasing'
+import type { SmartPurchaseAnalysis } from '~/types/smart-purchasing'
 import {
   ShoppingCartIcon,
   PlusIcon,
@@ -450,7 +590,12 @@ import {
   SparklesIcon,
   CheckCircleIcon,
   ArrowTrendingUpIcon,
-  CubeIcon
+  CubeIcon,
+  UserGroupIcon,
+  BoltIcon,
+  PlusCircleIcon,
+  ArrowDownIcon,
+  BuildingStorefrontIcon
 } from '@heroicons/vue/24/outline'
 
 // Type definitions
@@ -497,6 +642,8 @@ useHead({
 })
 
 const router = useRouter()
+const toast = useToast()
+const { analyzeCartForOpportunities, joinGroupBuy, createAggregatedOrder, createGroupBuyFromOrder } = useSmartPurchasing()
 
 // State
 const activeTab = ref('low-stock')
@@ -504,6 +651,36 @@ const viewCart = ref(false)
 const orderItems = ref<CartItem[]>([])
 const searchQuery = ref('')
 const selectedCategory = ref<string | null>(null)
+
+// Smart Purchasing State
+const smartAnalysis = ref<SmartPurchaseAnalysis | null>(null)
+const isAnalyzing = ref(false)
+
+// Watch cart changes and analyze for smart purchasing opportunities
+watch(orderItems, async (newItems) => {
+  if (newItems.length > 0) {
+    isAnalyzing.value = true
+    try {
+      const items = newItems.map(item => ({
+        id: item.id,
+        sku: item.sku,
+        name: item.name,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        totalPrice: item.quantity * item.price
+      }))
+      
+      smartAnalysis.value = await analyzeCartForOpportunities(items)
+    } catch (error) {
+      console.error('Error analyzing cart:', error)
+      smartAnalysis.value = null
+    } finally {
+      isAnalyzing.value = false
+    }
+  } else {
+    smartAnalysis.value = null
+  }
+}, { deep: true })
 
 // Tabs configuration
 const tabs = computed(() => [
@@ -777,7 +954,57 @@ const updateQuantity = (index: number, newQuantity: number) => {
   }
 }
 
-const toast = useToast()
+// Smart Purchasing Handlers
+const handleJoinGroupBuy = async () => {
+  if (!smartAnalysis.value?.groupBuyOpportunity) return
+  
+  try {
+    const items = orderItems.value.map(item => ({
+      id: item.id,
+      sku: item.sku,
+      name: item.name,
+      quantity: item.quantity,
+      unitPrice: item.price,
+      totalPrice: item.quantity * item.price
+    }))
+    
+    await joinGroupBuy(smartAnalysis.value.groupBuyOpportunity.id, items)
+    
+    // Clear cart and redirect
+    orderItems.value = []
+    router.push('/purchasing/group-buying')
+  } catch (error) {
+    console.error('Error joining group buy:', error)
+  }
+}
+
+const handleCreateGroupBuy = () => {
+  // Store current cart for group buy creation
+  const cartData = {
+    items: orderItems.value.map(item => ({
+      id: item.id,
+      sku: item.sku,
+      name: item.name,
+      quantity: item.quantity,
+      unitPrice: item.price,
+      totalPrice: item.quantity * item.price
+    })),
+    potential: smartAnalysis.value?.groupBuyPotential
+  }
+  
+  localStorage.setItem('group-buy-cart-data', JSON.stringify(cartData))
+  router.push('/purchasing/group-buying?action=create')
+}
+
+const formatDeadline = (deadline: Date) => {
+  const now = new Date()
+  const diffTime = new Date(deadline).getTime() - now.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  
+  if (diffDays === 0) return 'today'
+  if (diffDays === 1) return 'tomorrow'
+  return `in ${diffDays} days`
+}
 
 const placeOrder = async () => {
   if (orderItems.value.length === 0) return
@@ -785,18 +1012,38 @@ const placeOrder = async () => {
   const orderNumber = 'PO-' + Date.now()
   const orderDate = new Date().toISOString()
 
-  // Create order object
+  // Check if aggregation is available
+  let purchaseType = 'individual'
+  let savingsAmount = 0
+  let savingsMethod = 'none'
+  let aggregationGroupId = undefined
+
+  if (smartAnalysis.value?.canAggregate && smartAnalysis.value.aggregationOpportunity) {
+    purchaseType = 'aggregated'
+    savingsAmount = smartAnalysis.value.aggregationOpportunity.estimatedSavings
+    savingsMethod = 'auto-aggregation'
+    aggregationGroupId = smartAnalysis.value.aggregationOpportunity.id
+  }
+
+  // Create order object with smart purchasing metadata
   const order = {
     id: orderNumber,
     orderNumber,
     items: orderItems.value,
     subtotal: subtotal.value,
     deliveryFee: deliveryFee.value,
-    total: totalAmount.value,
+    total: totalAmount.value - savingsAmount, // Apply savings
+    originalPrice: totalAmount.value, // Store original price
     date: orderDate,
-    status: 'Pending',
+    status: purchaseType === 'aggregated' ? 'Aggregated' : 'Pending',
     supplier: 'Multiple Suppliers',
-    expectedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString() // 2 days from now
+    expectedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
+    
+    // Smart Purchasing fields
+    purchaseType,
+    savingsAmount,
+    savingsMethod,
+    aggregationGroupId
   }
 
   // Store order in orders list (for orders page)
@@ -804,10 +1051,14 @@ const placeOrder = async () => {
   existingOrders.unshift(order) // Add to beginning of array
   localStorage.setItem('toss-orders', JSON.stringify(existingOrders))
 
-  // Show success toast
+  // Show success toast with savings info
+  const successMessage = savingsAmount > 0 
+    ? `Order ${orderNumber} created! You saved R${savingsAmount} through ${savingsMethod}! 🎉`
+    : `Order ${orderNumber} created successfully!`
+  
   toast.success(
-    `Order ${orderNumber} created successfully! Redirecting...`,
-    '✅ Order Placed',
+    successMessage + ' Redirecting...',
+    savingsAmount > 0 ? '💰 Smart Purchase!' : '✅ Order Placed',
     3000
   )
 

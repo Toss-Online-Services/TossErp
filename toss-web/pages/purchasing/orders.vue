@@ -183,6 +183,22 @@
                 >
                   {{ order.status }}
                 </span>
+                <!-- Purchase Type Badge -->
+                <span 
+                  v-if="order.purchaseType && order.purchaseType !== 'individual'"
+                  class="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1"
+                  :class="getPurchaseTypeClass(order.purchaseType)"
+                >
+                  <component :is="getPurchaseTypeIcon(order.purchaseType)" class="w-3 h-3" />
+                  {{ getPurchaseTypeLabel(order.purchaseType) }}
+                </span>
+                <!-- Savings Badge -->
+                <span 
+                  v-if="order.savingsAmount && order.savingsAmount > 0"
+                  class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-bold"
+                >
+                  💰 Saved R{{ order.savingsAmount }}
+                </span>
                 <div class="text-right">
                   <p class="text-2xl font-bold text-slate-900 dark:text-white">R{{ order.totalAmount.toLocaleString() }}</p>
                 </div>
@@ -304,7 +320,9 @@ import {
   CurrencyDollarIcon,
   EyeIcon,
   PrinterIcon,
-  XMarkIcon
+  XMarkIcon,
+  BoltIcon,
+  UserGroupIcon
 } from '@heroicons/vue/24/outline'
 
 // Page metadata
@@ -449,9 +467,34 @@ const getStatusClass = (status: string) => {
     'approved': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
     'in-transit': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
     'delivered': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+    'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+    'aggregated': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
   }
-  return classes[status] || 'bg-slate-100 text-slate-800'
+  return classes[status.toLowerCase()] || 'bg-slate-100 text-slate-800'
+}
+
+const getPurchaseTypeClass = (type: string) => {
+  const classes: Record<string, string> = {
+    'aggregated': 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
+    'group-buy': 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+  }
+  return classes[type] || 'bg-slate-100 text-slate-800'
+}
+
+const getPurchaseTypeLabel = (type: string) => {
+  const labels: Record<string, string> = {
+    'aggregated': 'Auto-Aggregated',
+    'group-buy': 'Group Buy'
+  }
+  return labels[type] || type
+}
+
+const getPurchaseTypeIcon = (type: string) => {
+  const icons: Record<string, any> = {
+    'aggregated': BoltIcon,
+    'group-buy': UserGroupIcon
+  }
+  return icons[type] || ShoppingCartIcon
 }
 
 const formatDate = (date: Date) => {
