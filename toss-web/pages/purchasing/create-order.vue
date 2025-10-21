@@ -502,7 +502,8 @@
             <div
               v-for="(item, index) in orderItems"
               :key="index"
-              class="bg-slate-50 dark:bg-slate-900 rounded-xl p-4"
+              class="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 border-2"
+              :class="item.groupBuyEnabled ? 'border-purple-500 dark:border-purple-600' : 'border-transparent'"
             >
               <div class="flex items-start justify-between mb-2">
                 <div class="flex-1 min-w-0">
@@ -515,6 +516,49 @@
                 >
                   <XMarkIcon class="w-5 h-5 text-red-600" />
                 </button>
+              </div>
+
+              <!-- Group Buy Toggle -->
+              <div class="mb-3 p-2 bg-white dark:bg-slate-800 rounded-lg">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <UserGroupIcon class="w-4 h-4 text-purple-600" />
+                    <span class="text-sm font-semibold text-slate-900 dark:text-white">Group Buy</span>
+                  </div>
+                  <button
+                    @click="toggleGroupBuy(index)"
+                    class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
+                    :class="item.groupBuyEnabled ? 'bg-purple-600' : 'bg-slate-300 dark:bg-slate-600'"
+                  >
+                    <span
+                      class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
+                      :class="item.groupBuyEnabled ? 'translate-x-6' : 'translate-x-1'"
+                    ></span>
+                  </button>
+                </div>
+                
+                <!-- Group Buy Details (shown when enabled) -->
+                <Transition name="slide-down">
+                  <div v-if="item.groupBuyEnabled && item.groupBuyDetails" class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1">
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="text-slate-600 dark:text-slate-400">💰 Savings:</span>
+                      <span class="font-bold text-green-600">R{{ item.groupBuyDetails.savings }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="text-slate-600 dark:text-slate-400">⏰ Ends:</span>
+                      <span class="font-medium text-orange-600">{{ item.groupBuyDetails.endsIn }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="text-slate-600 dark:text-slate-400">👥 Progress:</span>
+                      <span class="font-medium text-blue-600">{{ item.groupBuyDetails.progress }}</span>
+                    </div>
+                    <div class="mt-1 pt-1 border-t border-slate-200 dark:border-slate-700">
+                      <p class="text-xs text-purple-600 dark:text-purple-400 font-medium">
+                        {{ item.groupBuyDetails.status }}
+                      </p>
+                    </div>
+                  </div>
+                </Transition>
               </div>
 
               <div class="flex items-center justify-between">
@@ -533,19 +577,42 @@
                     <PlusIcon class="w-4 h-4" />
                   </button>
                 </div>
-                <span class="text-lg font-bold text-slate-900 dark:text-white">
-                  R{{ (item.price * item.quantity).toFixed(2) }}
-                </span>
+                <div class="text-right">
+                  <span class="text-lg font-bold text-slate-900 dark:text-white">
+                    R{{ (item.price * item.quantity).toFixed(2) }}
+                  </span>
+                  <p v-if="item.groupBuyEnabled && item.groupBuyDetails" class="text-xs text-green-600 font-medium">
+                    Save R{{ item.groupBuyDetails.savings }}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Cart Footer -->
           <div class="border-t border-slate-200 dark:border-slate-700 p-6 space-y-4">
+            <!-- Group Buy Savings Summary -->
+            <div v-if="totalGroupBuySavings > 0" class="bg-gradient-to-r from-purple-50 to-green-50 dark:from-purple-900/20 dark:to-green-900/20 rounded-xl p-3 border-2 border-purple-200 dark:border-purple-800">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <UserGroupIcon class="w-5 h-5 text-purple-600" />
+                  <span class="text-sm font-bold text-purple-900 dark:text-purple-100">Group Buy Savings</span>
+                </div>
+                <span class="text-lg font-bold text-green-600">-R{{ totalGroupBuySavings.toFixed(2) }}</span>
+              </div>
+              <p class="text-xs text-purple-700 dark:text-purple-300 mt-1">
+                💡 {{ activeGroupBuyItemsCount }} items in group buys
+              </p>
+            </div>
+
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
                 <span class="text-slate-600 dark:text-slate-400">Subtotal:</span>
                 <span class="font-medium text-slate-900 dark:text-white">R{{ subtotal.toFixed(2) }}</span>
+              </div>
+              <div v-if="totalGroupBuySavings > 0" class="flex justify-between text-sm">
+                <span class="text-green-600 dark:text-green-400">Group Buy Savings:</span>
+                <span class="font-bold text-green-600">-R{{ totalGroupBuySavings.toFixed(2) }}</span>
               </div>
               <div class="flex justify-between text-sm">
                 <span class="text-slate-600 dark:text-slate-400">Delivery:</span>
@@ -553,8 +620,11 @@
               </div>
               <div class="flex justify-between text-lg font-bold pt-2 border-t border-slate-200 dark:border-slate-700">
                 <span class="text-slate-900 dark:text-white">Total:</span>
-                <span class="text-blue-600">R{{ totalAmount.toFixed(2) }}</span>
+                <span class="text-blue-600">R{{ (totalAmount - totalGroupBuySavings).toFixed(2) }}</span>
               </div>
+              <p v-if="totalGroupBuySavings > 0" class="text-xs text-green-600 dark:text-green-400 font-medium text-center">
+                🎉 You're saving R{{ totalGroupBuySavings.toFixed(2) }} with group buying!
+              </p>
             </div>
 
             <button
@@ -631,6 +701,15 @@ interface SearchItem extends BaseItem {
 
 interface CartItem extends BaseItem {
   quantity: number
+  groupBuyEnabled?: boolean
+  groupBuyDetails?: {
+    savings: number
+    endsIn: string
+    progress: string
+    status: string
+    groupBuyId?: string
+    isNew?: boolean
+  }
 }
 
 // Page metadata
@@ -657,11 +736,11 @@ const smartAnalysis = ref<SmartPurchaseAnalysis | null>(null)
 const isAnalyzing = ref(false)
 
 // Watch cart changes and analyze for smart purchasing opportunities
-watch(orderItems, async (newItems) => {
+watch(orderItems, async (newItems: CartItem[]) => {
   if (newItems.length > 0) {
     isAnalyzing.value = true
     try {
-      const items = newItems.map(item => ({
+      const items = newItems.map((item: CartItem) => ({
         id: item.id,
         sku: item.sku,
         name: item.name,
@@ -921,17 +1000,45 @@ const totalAmount = computed(() => {
   return subtotal.value + deliveryFee.value
 })
 
+// Total savings from group buys
+const totalGroupBuySavings = computed(() => {
+  return orderItems.value.reduce((sum: number, item: CartItem) => {
+    if (item.groupBuyEnabled && item.groupBuyDetails) {
+      return sum + item.groupBuyDetails.savings
+    }
+    return sum
+  }, 0)
+})
+
+// Count of items with group buy enabled
+const activeGroupBuyItemsCount = computed(() => {
+  return orderItems.value.filter((item: CartItem) => item.groupBuyEnabled && item.groupBuyDetails).length
+})
+
 // Methods
-const addToCart = (item: BaseItem | LowStockItem | FocusedItem | SearchItem, quantity: number = 1) => {
+const addToCart = async (item: BaseItem | LowStockItem | FocusedItem | SearchItem, quantity: number = 1) => {
   const existingIndex = orderItems.value.findIndex((i: CartItem) => i.id === item.id)
   
   if (existingIndex > -1) {
     orderItems.value[existingIndex].quantity += quantity
+    // Update group buy details when quantity changes
+    if (orderItems.value[existingIndex].groupBuyEnabled) {
+      await checkAndUpdateGroupBuy(existingIndex)
+    }
   } else {
-    orderItems.value.push({
+    // Add new item with group buy enabled by default
+    const newItem: CartItem = {
       ...item,
-      quantity
-    })
+      quantity,
+      groupBuyEnabled: true, // ON by default
+      groupBuyDetails: undefined
+    }
+    
+    orderItems.value.push(newItem)
+    
+    // Check for active group buy or create new one
+    const newIndex = orderItems.value.length - 1
+    await checkAndUpdateGroupBuy(newIndex)
   }
 
   // Show cart on mobile
@@ -942,15 +1049,96 @@ const addToCart = (item: BaseItem | LowStockItem | FocusedItem | SearchItem, qua
   }
 }
 
+// Check for active group buy and auto-join or create
+const checkAndUpdateGroupBuy = async (itemIndex: number) => {
+  const item = orderItems.value[itemIndex]
+  if (!item || !item.groupBuyEnabled) return
+  
+  try {
+    // Check for active group buy using POST
+    const response = await $fetch<{ hasActive: boolean; opportunity: any }>('/api/purchasing/group-buys/active', {
+      method: 'POST' as any,
+      body: { skus: [item.sku] } as any
+    })
+    
+    if (response?.hasActive && response?.opportunity) {
+      // Active group buy found - auto-join
+      const gb = response.opportunity
+      const estimatedSavings = Math.round((item.price * item.quantity * gb.savingsPercentage) / 100)
+      const daysLeft = Math.ceil((new Date(gb.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+      
+      item.groupBuyDetails = {
+        savings: estimatedSavings,
+        endsIn: daysLeft === 0 ? 'today' : daysLeft === 1 ? 'tomorrow' : `${daysLeft} days`,
+        progress: `${gb.currentQuantity}/${gb.targetQuantity} units`,
+        status: `✅ Joined! ${gb.currentParticipants} members`,
+        groupBuyId: gb.id,
+        isNew: false
+      }
+    } else {
+      // No active group buy - create new one automatically
+      const estimatedSavings = Math.round((item.price * item.quantity * 15) / 100) // Estimate 15% savings
+      
+      item.groupBuyDetails = {
+        savings: estimatedSavings,
+        endsIn: '7 days',
+        progress: `${item.quantity}/${item.quantity * 5} units`,
+        status: `🆕 New group buy started!`,
+        groupBuyId: undefined,
+        isNew: true
+      }
+      
+      toast.success(`Group buy started for ${item.name}! Invite others to unlock R${estimatedSavings} savings!`)
+    }
+  } catch (error) {
+    console.error('Error checking group buy:', error)
+    // Set default values on error
+    if (item) {
+      item.groupBuyDetails = {
+        savings: Math.round((item.price * item.quantity * 10) / 100),
+        endsIn: '7 days',
+        progress: `${item.quantity}/500 units`,
+        status: '🆕 Group buy available',
+        isNew: true
+      }
+    }
+  }
+}
+
+// Toggle group buy on/off for an item
+const toggleGroupBuy = async (itemIndex: number) => {
+  const item = orderItems.value[itemIndex]
+  if (!item) return
+  
+  item.groupBuyEnabled = !item.groupBuyEnabled
+  
+  if (item.groupBuyEnabled) {
+    // Enabled - check and setup group buy
+    await checkAndUpdateGroupBuy(itemIndex)
+    toast.success(`Group buy enabled for ${item.name}!`)
+  } else {
+    // Disabled - clear group buy details
+    item.groupBuyDetails = undefined
+    toast.info(`Group buy disabled for ${item.name}`)
+  }
+}
+
 const removeFromCart = (index: number) => {
   orderItems.value.splice(index, 1)
 }
 
-const updateQuantity = (index: number, newQuantity: number) => {
+const updateQuantity = async (index: number, newQuantity: number) => {
   if (newQuantity < 1) {
     removeFromCart(index)
   } else {
-    orderItems.value[index].quantity = newQuantity
+    const item = orderItems.value[index]
+    if (item) {
+      item.quantity = newQuantity
+      // Update group buy details if enabled
+      if (item.groupBuyEnabled) {
+        await checkAndUpdateGroupBuy(index)
+      }
+    }
   }
 }
 
@@ -959,7 +1147,7 @@ const handleJoinGroupBuy = async () => {
   if (!smartAnalysis.value?.groupBuyOpportunity) return
   
   try {
-    const items = orderItems.value.map(item => ({
+    const items = orderItems.value.map((item: CartItem) => ({
       id: item.id,
       sku: item.sku,
       name: item.name,
@@ -981,7 +1169,7 @@ const handleJoinGroupBuy = async () => {
 const handleCreateGroupBuy = () => {
   // Store current cart for group buy creation
   const cartData = {
-    items: orderItems.value.map(item => ({
+    items: orderItems.value.map((item: CartItem) => ({
       id: item.id,
       sku: item.sku,
       name: item.name,
