@@ -1,635 +1,365 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- Page Header -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="py-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Purchasing & Procurement Dashboard</h1>
-              <p class="text-gray-600 dark:text-gray-400">Complete procurement lifecycle management with TOSS collaborative features</p>
-            </div>
-            <div class="flex space-x-3">
-              <button @click="startGroupBuy" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
-                <UserGroupIcon class="w-5 h-5 mr-2" />
-                Start Group Buy
-              </button>
-              <button @click="quickScan" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center">
-                <QrCodeIcon class="w-5 h-5 mr-2" />
-                Quick Scan
-              </button>
-            </div>
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+    <!-- Page Header with Glass Morphism -->
+    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
+      <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div class="flex items-center justify-between">
+          <div class="flex-1 min-w-0">
+            <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Purchasing
+            </h1>
+            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              Manage orders, suppliers, and group buying
+            </p>
+          </div>
+          <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
+            <NuxtLink 
+              to="/purchasing/create-order"
+              class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold text-sm sm:text-base"
+            >
+              <ShoppingCartIcon class="w-5 h-5 mr-2" />
+              Create Order
+            </NuxtLink>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Main Dashboard Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Main Content -->
+    <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      
       <!-- Key Metrics -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30">
-              <ShoppingCartIcon class="w-6 h-6 text-blue-600 dark:text-blue-400" />
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Spend</p>
+              <p class="text-3xl font-bold text-slate-900 dark:text-white">R{{ metrics.totalSpend }}K</p>
+              <p class="text-sm text-green-600 mt-1">+8.2% this month</p>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Spend</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ metrics.totalSpend }}K</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-green-100 dark:bg-green-900/30">
-              <CurrencyDollarIcon class="w-6 h-6 text-green-600 dark:text-green-400" />
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Cost Savings</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ metrics.costSavings }}K</p>
+            <div class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
+              <ShoppingCartIcon class="w-8 h-8 text-white" />
             </div>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900/30">
-              <ClockIcon class="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Cost Savings</p>
+              <p class="text-3xl font-bold text-green-600">R{{ metrics.costSavings }}K</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">15% reduction</p>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Pending Orders</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ metrics.pendingOrders }}</p>
+            <div class="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+              <CurrencyDollarIcon class="w-8 h-8 text-white" />
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Pending Orders</p>
+              <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ metrics.pendingOrders }}</p>
+              <p class="text-sm text-orange-500 mt-1">Awaiting delivery</p>
+            </div>
+            <div class="p-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl">
+              <ClockIcon class="w-8 h-8 text-white" />
             </div>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900/30">
-              <TruckIcon class="w-6 h-6 text-purple-600 dark:text-purple-400" />
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Active Suppliers</p>
+              <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ metrics.activeSuppliers }}</p>
+              <p class="text-sm text-blue-600 mt-1">Verified partners</p>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Active Suppliers</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ metrics.activeSuppliers }}</p>
+            <div class="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl">
+              <TruckIcon class="w-8 h-8 text-white" />
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- WhatsApp Ordering Feature -->
-      <div class="mb-8">
-        <WhatsAppOrderViaWhatsApp />
-      </div>
-
-      <!-- TOSS Collaboration Features -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <!-- Group Buying Opportunities -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center mb-4">
-            <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30">
-              <UserGroupIcon class="w-8 h-8 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Group Buying</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Collaborative procurement</p>
-            </div>
-          </div>
-          <div class="space-y-2 mb-4">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Active Group Buys:</span>
-              <span class="font-medium">23</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Network Savings:</span>
-              <span class="font-medium text-green-600">$485K</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Your Participation:</span>
-              <span class="font-medium">2 active</span>
-            </div>
-          </div>
-          <NuxtLink to="/purchasing/group-buying" class="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            Explore Group Buys
-          </NuxtLink>
-        </div>
-
-        <!-- Shared Assets -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center mb-4">
-            <div class="p-3 rounded-full bg-orange-100 dark:bg-orange-900/30">
-              <TruckIcon class="w-8 h-8 text-orange-600 dark:text-orange-400" />
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Asset Sharing</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Network equipment pool</p>
-            </div>
-          </div>
-          <div class="space-y-2 mb-4">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Available Assets:</span>
-              <span class="font-medium">156</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Cost Savings:</span>
-              <span class="font-medium text-green-600">$125K</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Your Bookings:</span>
-              <span class="font-medium">3 upcoming</span>
-            </div>
-          </div>
-          <NuxtLink to="/purchasing/asset-sharing" class="block w-full text-center bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition-colors">
-            Browse Assets
-          </NuxtLink>
-        </div>
-
-        <!-- Pooled Credit -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center mb-4">
-            <div class="p-3 rounded-full bg-green-100 dark:bg-green-900/30">
-              <BanknotesIcon class="w-8 h-8 text-green-600 dark:text-green-400" />
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Pooled Credit</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Mutual financing network</p>
-            </div>
-          </div>
-          <div class="space-y-2 mb-4">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Available Credit:</span>
-              <span class="font-medium">$245K</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Your Credit Limit:</span>
-              <span class="font-medium text-blue-600">$75K</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600 dark:text-gray-400">Network Rate:</span>
-              <span class="font-medium">6.2% APR</span>
-            </div>
-          </div>
-          <NuxtLink to="/purchasing/pooled-credit" class="block w-full text-center bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
-            Access Credit Pool
-          </NuxtLink>
-        </div>
-      </div>
-
-      <!-- Core Purchasing Features -->
-      <div class="mb-8">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Core Purchasing Features</h3>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <NuxtLink to="/purchasing/material-requests" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow">
-            <div class="flex items-center space-x-3">
-              <div class="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                <ClipboardDocumentListIcon class="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900 dark:text-white">Material Requests</p>
-                <p class="text-xs text-gray-600 dark:text-gray-400">Department requisitions</p>
-              </div>
-            </div>
-          </NuxtLink>
-
-          <NuxtLink to="/purchasing/rfq" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow">
-            <div class="flex items-center space-x-3">
-              <div class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-                <DocumentTextIcon class="w-6 h-6 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900 dark:text-white">Request for Quotation</p>
-                <p class="text-xs text-gray-600 dark:text-gray-400">Multi-supplier RFQ</p>
-              </div>
-            </div>
-          </NuxtLink>
-
-          <NuxtLink to="/purchasing/supplier-quotations" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow">
-            <div class="flex items-center space-x-3">
-              <div class="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
-                <ClipboardDocumentCheckIcon class="w-6 h-6 text-green-600 dark:text-green-400" />
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900 dark:text-white">Supplier Quotations</p>
-                <p class="text-xs text-gray-600 dark:text-gray-400">Compare & award</p>
-              </div>
-            </div>
-          </NuxtLink>
-
-          <NuxtLink to="/purchasing/blanket-orders" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow">
-            <div class="flex items-center space-x-3">
-              <div class="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
-                <DocumentDuplicateIcon class="w-6 h-6 text-orange-600 dark:text-orange-400" />
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900 dark:text-white">Blanket Orders</p>
-                <p class="text-xs text-gray-600 dark:text-gray-400">Long-term agreements</p>
-              </div>
-            </div>
-          </NuxtLink>
-        </div>
-      </div>
-
-      <!-- Module Navigation -->
-      <div class="mb-8">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Procurement Management</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Suppliers -->
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div class="flex items-center mb-4">
-              <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900/30">
-                <BuildingOfficeIcon class="w-8 h-8 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div class="ml-4">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Supplier Management</h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Vendor relationships & performance</p>
-              </div>
-            </div>
-            <div class="space-y-2 mb-4">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Total Suppliers:</span>
-                <span class="font-medium">42</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Avg Rating:</span>
-                <span class="font-medium">4.2/5</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">On-time Delivery:</span>
-                <span class="font-medium text-green-600">94%</span>
-              </div>
-            </div>
-            <NuxtLink to="/purchasing/suppliers" class="block w-full text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors">
-              Manage Suppliers
-            </NuxtLink>
-          </div>
-
-          <!-- Purchase Requests -->
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div class="flex items-center mb-4">
-              <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30">
-                <DocumentTextIcon class="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div class="ml-4">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Purchase Requests</h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Request approval workflow</p>
-              </div>
-            </div>
-            <div class="space-y-2 mb-4">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Pending Approval:</span>
-                <span class="font-medium text-yellow-600">8</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Approved Today:</span>
-                <span class="font-medium">12</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Avg Processing:</span>
-                <span class="font-medium">2.3 days</span>
-              </div>
-            </div>
-            <NuxtLink to="/purchasing/requests" class="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
-              View Requests
-            </NuxtLink>
-          </div>
-
-          <!-- Purchase Orders -->
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div class="flex items-center mb-4">
-              <div class="p-3 rounded-full bg-green-100 dark:bg-green-900/30">
-                <ShoppingCartIcon class="w-8 h-8 text-green-600 dark:text-green-400" />
-              </div>
-              <div class="ml-4">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Purchase Orders</h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Order lifecycle management</p>
-              </div>
-            </div>
-            <div class="space-y-2 mb-4">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Active Orders:</span>
-                <span class="font-medium">24</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">In Transit:</span>
-                <span class="font-medium text-blue-600">15</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Delivered Today:</span>
-                <span class="font-medium text-green-600">6</span>
-              </div>
-            </div>
-            <NuxtLink to="/purchasing/orders" class="block w-full text-center bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
-              Manage Orders
-            </NuxtLink>
           </div>
         </div>
       </div>
 
-      <!-- Secondary Modules -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <!-- Receipts & Quality Control -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center mb-4">
-            <div class="p-3 rounded-full bg-orange-100 dark:bg-orange-900/30">
-              <ClipboardDocumentCheckIcon class="w-8 h-8 text-orange-600 dark:text-orange-400" />
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Receipts & Quality Control</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Receiving and inspection workflow</p>
+      <!-- Charts & Analytics -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Spending Trends Chart -->
+        <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-shadow duration-300">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Spending Trends</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Last 7 days purchasing activity</p>
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="text-center">
-              <p class="text-2xl font-bold text-orange-600">18</p>
-              <p class="text-xs text-gray-600 dark:text-gray-400">Pending Receipt</p>
-            </div>
-            <div class="text-center">
-              <p class="text-2xl font-bold text-green-600">96%</p>
-              <p class="text-xs text-gray-600 dark:text-gray-400">Quality Pass Rate</p>
-            </div>
-          </div>
-          <NuxtLink to="/purchasing/receipts" class="block w-full text-center bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition-colors">
-            Process Receipts
-          </NuxtLink>
+          <LineChart
+            :labels="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+            :data="[45, 52, 48, 65, 58, 72, 68]"
+            label="Spending (R thousands)"
+            color="#3B82F6"
+            :height="280"
+          />
         </div>
 
-        <!-- Invoices & Payments -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center mb-4">
-            <div class="p-3 rounded-full bg-indigo-100 dark:bg-indigo-900/30">
-              <CreditCardIcon class="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Invoices & Payments</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400">Financial processing & three-way matching</p>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="text-center">
-              <p class="text-2xl font-bold text-indigo-600">12</p>
-              <p class="text-xs text-gray-600 dark:text-gray-400">Awaiting Payment</p>
-            </div>
-            <div class="text-center">
-              <p class="text-2xl font-bold text-green-600">$45K</p>
-              <p class="text-xs text-gray-600 dark:text-gray-400">Paid This Month</p>
-            </div>
-          </div>
-          <NuxtLink to="/purchasing/invoices" class="block w-full text-center bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors">
-            Manage Invoices
-          </NuxtLink>
-        </div>
-      </div>
-
-      <!-- Recent Activity & Quick Actions -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Recent Activity Feed -->
-        <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Activity</h3>
+        <!-- Order Status Distribution -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-shadow duration-300">
+          <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6">Order Status</h3>
           <div class="space-y-4">
-            <div v-for="activity in recentActivity" :key="activity.id" class="flex items-start space-x-3">
-              <div class="flex-shrink-0">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center" :class="getActivityIconBg(activity.type)">
-                  <component :is="getActivityIcon(activity.type)" class="w-4 h-4" :class="getActivityIconColor(activity.type)" />
-                </div>
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-slate-600 dark:text-slate-400">Delivered</span>
+                <span class="font-medium text-slate-900 dark:text-white">44%</span>
               </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm text-gray-900 dark:text-white">{{ activity.description }}</p>
-                <p class="text-xs text-gray-600 dark:text-gray-400">{{ formatTimeAgo(activity.timestamp) }}</p>
+              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
+                <div class="bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="width: 44%"></div>
               </div>
-              <div class="flex-shrink-0">
-                <span class="text-xs px-2 py-1 rounded-full" :class="getActivityStatusClass(activity.type)">
-                  {{ activity.status }}
-                </span>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-slate-600 dark:text-slate-400">In Transit</span>
+                <span class="font-medium text-slate-900 dark:text-white">31%</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full" style="width: 31%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-slate-600 dark:text-slate-400">Pending</span>
+                <span class="font-medium text-slate-900 dark:text-white">25%</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
+                <div class="bg-gradient-to-r from-orange-500 to-red-600 h-3 rounded-full" style="width: 25%"></div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Quick Actions & Network Status -->
-        <div class="space-y-6">
-          <!-- Quick Actions -->
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
-            <div class="space-y-3">
-              <button @click="createRequest" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                <div class="flex items-center">
-                  <PlusIcon class="w-5 h-5 text-blue-600 mr-3" />
-                  <span class="text-sm font-medium text-gray-900 dark:text-white">Create Purchase Request</span>
-                </div>
-              </button>
-              <button @click="scanReceipt" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                <div class="flex items-center">
-                  <QrCodeIcon class="w-5 h-5 text-green-600 mr-3" />
-                  <span class="text-sm font-medium text-gray-900 dark:text-white">Scan Receipt/QR Code</span>
-                </div>
-              </button>
-              <button @click="viewAnalytics" class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                <div class="flex items-center">
-                  <ChartBarIcon class="w-5 h-5 text-purple-600 mr-3" />
-                  <span class="text-sm font-medium text-gray-900 dark:text-white">View Analytics</span>
-                </div>
-              </button>
+      <!-- Supplier Performance & Category Breakdown -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Top Suppliers Chart -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-shadow duration-300">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Top Suppliers by Spend</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">This month</p>
             </div>
           </div>
+          <BarChart
+            :labels="['ABC Suppliers', 'XYZ Wholesale', 'Quality Foods', 'Tech Solutions']"
+            :data="[85, 72, 68, 45]"
+            label="Spend (R thousands)"
+            color="#8B5CF6"
+            :height="280"
+          />
+        </div>
 
-          <!-- TOSS Network Status -->
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">TOSS Network Status</h3>
-            <div class="space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600 dark:text-gray-400">Network Health</span>
-                <div class="flex items-center">
-                  <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                  <span class="text-sm font-medium text-green-600">Excellent</span>
-                </div>
+        <!-- Category Spending -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-shadow duration-300">
+          <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6">Spending by Category</h3>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-slate-600 dark:text-slate-400">🥘 Food & Beverages</span>
+                <span class="font-medium text-slate-900 dark:text-white">R125K (40%)</span>
               </div>
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600 dark:text-gray-400">Active Members</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">1,247</span>
+              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full" style="width: 40%"></div>
               </div>
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600 dark:text-gray-400">Your Trust Score</span>
-                <div class="flex items-center">
-                  <StarIcon v-for="i in 5" :key="i" class="w-3 h-3" :class="i <= 4 ? 'text-yellow-400' : 'text-gray-300'" />
-                </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-slate-600 dark:text-slate-400">📦 Supplies & Equipment</span>
+                <span class="font-medium text-slate-900 dark:text-white">R82K (27%)</span>
               </div>
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600 dark:text-gray-400">Network Savings</span>
-                <span class="text-sm font-medium text-green-600">+22% this month</span>
+              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
+                <div class="bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full" style="width: 27%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-slate-600 dark:text-slate-400">🏠 Household Items</span>
+                <span class="font-medium text-slate-900 dark:text-white">R63K (20%)</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
+                <div class="bg-gradient-to-r from-yellow-500 to-orange-600 h-3 rounded-full" style="width: 20%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-slate-600 dark:text-slate-400">💊 Health & Beauty</span>
+                <span class="font-medium text-slate-900 dark:text-white">R38K (13%)</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
+                <div class="bg-gradient-to-r from-pink-500 to-red-600 h-3 rounded-full" style="width: 13%"></div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Purchase Orders -->
+        <NuxtLink 
+          to="/purchasing/orders"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 group"
+        >
+          <div class="flex items-center mb-4">
+            <div class="p-3 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-900/20 rounded-xl group-hover:scale-110 transition-transform">
+              <ShoppingCartIcon class="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Purchase Orders</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Manage your orders</p>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-600 dark:text-slate-400">Active Orders:</span>
+              <span class="font-medium text-slate-900 dark:text-white">24</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-600 dark:text-slate-400">In Transit:</span>
+              <span class="font-medium text-blue-600">15</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-600 dark:text-slate-400">Delivered Today:</span>
+              <span class="font-medium text-green-600">6</span>
+            </div>
+          </div>
+        </NuxtLink>
+
+        <!-- Suppliers -->
+        <NuxtLink 
+          to="/purchasing/suppliers"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 group"
+        >
+          <div class="flex items-center mb-4">
+            <div class="p-3 bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/30 dark:to-purple-900/20 rounded-xl group-hover:scale-110 transition-transform">
+              <TruckIcon class="w-8 h-8 text-purple-600 dark:text-purple-400" />
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Suppliers</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Vendor relationships</p>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-600 dark:text-slate-400">Total Suppliers:</span>
+              <span class="font-medium text-slate-900 dark:text-white">42</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-600 dark:text-slate-400">Avg Rating:</span>
+              <span class="font-medium text-purple-600">4.2/5</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-600 dark:text-slate-400">On-time Delivery:</span>
+              <span class="font-medium text-green-600">94%</span>
+            </div>
+          </div>
+        </NuxtLink>
+
+        <!-- Group Buying -->
+        <NuxtLink 
+          to="/purchasing/group-buying"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 group"
+        >
+          <div class="flex items-center mb-4">
+            <div class="p-3 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-900/20 rounded-xl group-hover:scale-110 transition-transform">
+              <UserGroupIcon class="w-8 h-8 text-green-600 dark:text-green-400" />
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Group Buying</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Buy together, save more</p>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-600 dark:text-slate-400">Active Groups:</span>
+              <span class="font-medium text-slate-900 dark:text-white">5</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-600 dark:text-slate-400">Network Savings:</span>
+              <span class="font-medium text-green-600">R145K</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-600 dark:text-slate-400">Your Participation:</span>
+              <span class="font-medium text-blue-600">2 active</span>
+            </div>
+          </div>
+        </NuxtLink>
+      </div>
+
+      <!-- Secondary Actions -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Create Order -->
+        <NuxtLink 
+          to="/purchasing/create-order"
+          class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 group text-white"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xl font-bold mb-2">Create Order</h3>
+              <p class="text-blue-100 text-sm mb-4">AI-powered smart ordering</p>
+              <button class="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
+                Start Ordering →
+              </button>
+            </div>
+            <div class="p-4 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
+              <ShoppingCartIcon class="w-12 h-12 text-white" />
+            </div>
+          </div>
+        </NuxtLink>
+
+        <!-- Track Orders -->
+        <NuxtLink 
+          to="/purchasing/track-orders"
+          class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 group text-white"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-xl font-bold mb-2">Track Orders</h3>
+              <p class="text-green-100 text-sm mb-4">Monitor delivery status</p>
+              <button class="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
+                View Tracking →
+              </button>
+            </div>
+            <div class="p-4 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
+              <TruckIcon class="w-12 h-12 text-white" />
+            </div>
+          </div>
+        </NuxtLink>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import {
   ShoppingCartIcon,
   CurrencyDollarIcon,
   ClockIcon,
   TruckIcon,
-  UserGroupIcon,
-  BanknotesIcon,
-  BuildingOfficeIcon,
-  DocumentTextIcon,
-  ClipboardDocumentCheckIcon,
-  ClipboardDocumentListIcon,
-  DocumentDuplicateIcon,
-  CreditCardIcon,
-  PlusIcon,
-  QrCodeIcon,
-  ChartBarIcon,
-  StarIcon,
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  InformationCircleIcon
+  UserGroupIcon
 } from '@heroicons/vue/24/outline'
 
-// Reactive data
+// Page metadata
+useHead({
+  title: 'Purchasing - TOSS ERP',
+  meta: [
+    { name: 'description', content: 'Manage purchasing, orders, suppliers, and group buying in TOSS ERP' }
+  ]
+})
+
+// Metrics
 const metrics = ref({
   totalSpend: 245,
   costSavings: 32,
   pendingOrders: 18,
   activeSuppliers: 42
-})
-
-const recentActivity = ref([
-  {
-    id: 1,
-    type: 'group_buy',
-    description: 'Joined office supplies group buy with 12 other members',
-    status: 'Active',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000)
-  },
-  {
-    id: 2,
-    type: 'order',
-    description: 'Purchase order PO-2025-0089 delivered successfully',
-    status: 'Completed',
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000)
-  },
-  {
-    id: 3,
-    type: 'invoice',
-    description: 'Invoice INV-2025-0234 approved for payment',
-    status: 'Approved',
-    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000)
-  },
-  {
-    id: 4,
-    type: 'asset',
-    description: 'Booked industrial 3D printer from TechFab Solutions',
-    status: 'Confirmed',
-    timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000)
-  },
-  {
-    id: 5,
-    type: 'credit',
-    description: 'Loan application for equipment purchase approved',
-    status: 'Approved',
-    timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000)
-  }
-])
-
-// Helper functions
-const getActivityIcon = (type: string) => {
-  const icons = {
-    group_buy: UserGroupIcon,
-    order: ShoppingCartIcon,
-    invoice: CreditCardIcon,
-    asset: TruckIcon,
-    credit: BanknotesIcon,
-    request: DocumentTextIcon,
-    receipt: ClipboardDocumentCheckIcon
-  }
-  return icons[type as keyof typeof icons] || InformationCircleIcon
-}
-
-const getActivityIconBg = (type: string) => {
-  const colors = {
-    group_buy: 'bg-blue-100 dark:bg-blue-900/30',
-    order: 'bg-green-100 dark:bg-green-900/30',
-    invoice: 'bg-purple-100 dark:bg-purple-900/30',
-    asset: 'bg-orange-100 dark:bg-orange-900/30',
-    credit: 'bg-yellow-100 dark:bg-yellow-900/30',
-    request: 'bg-indigo-100 dark:bg-indigo-900/30',
-    receipt: 'bg-teal-100 dark:bg-teal-900/30'
-  }
-  return colors[type as keyof typeof colors] || 'bg-gray-100 dark:bg-gray-900/30'
-}
-
-const getActivityIconColor = (type: string) => {
-  const colors = {
-    group_buy: 'text-blue-600 dark:text-blue-400',
-    order: 'text-green-600 dark:text-green-400',
-    invoice: 'text-purple-600 dark:text-purple-400',
-    asset: 'text-orange-600 dark:text-orange-400',
-    credit: 'text-yellow-600 dark:text-yellow-400',
-    request: 'text-indigo-600 dark:text-indigo-400',
-    receipt: 'text-teal-600 dark:text-teal-400'
-  }
-  return colors[type as keyof typeof colors] || 'text-gray-600 dark:text-gray-400'
-}
-
-const getActivityStatusClass = (type: string) => {
-  const classes = {
-    group_buy: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-    order: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    invoice: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-    asset: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-    credit: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-    request: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
-    receipt: 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-400'
-  }
-  return classes[type as keyof typeof classes] || 'bg-gray-100 text-gray-800'
-}
-
-const formatTimeAgo = (date: Date) => {
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-  const diffDays = Math.floor(diffHours / 24)
-  
-  if (diffDays > 0) {
-    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
-  } else if (diffHours > 0) {
-    return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
-  } else {
-    return 'Just now'
-  }
-}
-
-// Action functions
-const startGroupBuy = () => {
-  console.log('Starting group buy')
-  window.location.href = '/purchasing/requests?groupBuy=true'
-}
-
-const quickScan = () => {
-  console.log('Quick scan initiated')
-  window.location.href = '/purchasing/receipts?scan=true'
-}
-
-const createRequest = () => {
-  console.log('Creating purchase request')
-  window.location.href = '/purchasing/requests'
-}
-
-const scanReceipt = () => {
-  console.log('Scanning receipt')
-  window.location.href = '/purchasing/receipts?scan=true'
-}
-
-const viewAnalytics = () => {
-  console.log('Viewing analytics')
-  navigateTo('/purchasing/analytics')
-}
-
-onMounted(() => {
-  console.log('Purchasing & Procurement Dashboard loaded with TOSS collaboration features')
 })
 </script>

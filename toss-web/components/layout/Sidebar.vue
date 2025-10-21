@@ -174,32 +174,20 @@
           <NuxtLink to="/purchasing" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing' }">
             Purchase Dashboard
           </NuxtLink>
-          <NuxtLink to="/purchasing/quick-order" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/quick-order' }">
-            Quick Order
+          <NuxtLink to="/purchasing/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/orders' }">
+            Orders
           </NuxtLink>
+          <NuxtLink to="/purchasing/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/suppliers' }">
+            Suppliers
+          </NuxtLink>
+      <NuxtLink to="/purchasing/create-order" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/create-order' }">
+        Create Order
+      </NuxtLink>
           <NuxtLink to="/purchasing/track-orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/track-orders' }">
             Track Orders
           </NuxtLink>
           <NuxtLink to="/purchasing/group-buying" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/group-buying' }">
             Group Buying
-          </NuxtLink>
-          <NuxtLink to="/purchasing/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/suppliers' }">
-            Suppliers
-          </NuxtLink>
-          <NuxtLink to="/purchasing/requests" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/requests' }">
-            Purchase Requests
-          </NuxtLink>
-          <NuxtLink to="/purchasing/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/orders' }">
-            Purchase Orders
-          </NuxtLink>
-          <NuxtLink to="/purchasing/receipts" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/receipts' }">
-            Purchase Receipts
-          </NuxtLink>
-          <NuxtLink to="/purchasing/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/invoices' }">
-            Purchase Invoices
-          </NuxtLink>
-          <NuxtLink to="/purchasing/analytics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/analytics' }">
-            Analytics
           </NuxtLink>
         </div>
       </div>

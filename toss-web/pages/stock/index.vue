@@ -152,15 +152,15 @@
           </NuxtLink>
 
           <NuxtLink
-              to="/purchasing/quick-order"
+              to="/purchasing/create-order"
               class="flex items-center p-4 bg-gradient-to-r from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-900/10 rounded-xl hover:shadow-md transition-all duration-200 group"
             >
               <div class="p-3 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
                 <ShoppingCartIcon class="w-5 h-5 text-white" />
               </div>
               <div class="ml-3 flex-1">
-                <p class="font-medium text-slate-900 dark:text-white">Quick Order</p>
-                <p class="text-sm text-slate-600 dark:text-slate-400">Reorder stock</p>
+                <p class="font-medium text-slate-900 dark:text-white">Create Order</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400">AI-powered ordering</p>
               </div>
             </NuxtLink>
 
