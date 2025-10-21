@@ -35,10 +35,10 @@
         class="group relative inline-flex items-center justify-center rounded-xl px-6 py-4 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 overflow-hidden bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
       >
         <div class="flex items-center relative z-10">
-          <ArrowDownIcon class="w-5 h-5 mr-3" />
+          <ArrowDownIcon class="w-6 h-6 mr-3" />
           <div class="text-left">
-            <div class="font-semibold">Stock Receipt</div>
-            <div class="text-xs text-white/80">Add inventory</div>
+            <div class="text-lg font-bold">Stock IN ↓</div>
+            <div class="text-xs text-white/90">Receiving inventory</div>
           </div>
         </div>
       </button>
@@ -48,10 +48,10 @@
         class="group relative inline-flex items-center justify-center rounded-xl px-6 py-4 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 overflow-hidden bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700"
       >
         <div class="flex items-center relative z-10">
-          <ArrowUpIcon class="w-5 h-5 mr-3" />
+          <ArrowUpIcon class="w-6 h-6 mr-3" />
           <div class="text-left">
-            <div class="font-semibold">Stock Issue</div>
-            <div class="text-xs text-white/80">Remove inventory</div>
+            <div class="text-lg font-bold">Stock OUT ↑</div>
+            <div class="text-xs text-white/90">Removing inventory</div>
           </div>
         </div>
       </button>
@@ -61,10 +61,10 @@
         class="group relative inline-flex items-center justify-center rounded-xl px-6 py-4 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
       >
         <div class="flex items-center relative z-10">
-          <ArrowRightIcon class="w-5 h-5 mr-3" />
+          <ArrowRightIcon class="w-6 h-6 mr-3" />
           <div class="text-left">
-            <div class="font-semibold">Stock Transfer</div>
-            <div class="text-xs text-white/80">Move between locations</div>
+            <div class="text-lg font-bold">Stock MOVED →</div>
+            <div class="text-xs text-white/90">Between locations</div>
           </div>
         </div>
       </button>
@@ -74,10 +74,10 @@
         class="group relative inline-flex items-center justify-center rounded-xl px-6 py-4 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 overflow-hidden bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600"
       >
         <div class="flex items-center relative z-10">
-          <AdjustmentsHorizontalIcon class="w-5 h-5 mr-3" />
+          <AdjustmentsHorizontalIcon class="w-6 h-6 mr-3" />
           <div class="text-left">
-            <div class="font-semibold">Stock Adjustment</div>
-            <div class="text-xs text-white/80">Correct discrepancies</div>
+            <div class="text-lg font-bold">Stock FIXED ⇌</div>
+            <div class="text-xs text-white/90">Correct mistakes</div>
           </div>
         </div>
       </button>
@@ -286,6 +286,14 @@
       </div>
     </div>
     </div>
+
+    <!-- Stock Movement Modal -->
+    <StockMovementModal
+      v-if="showMovementModal"
+      :movement-type="selectedMovementType"
+      @close="closeMovementModal"
+      @save="saveMovement"
+    />
   </div>
 </template>
 
@@ -299,6 +307,7 @@ import {
   ArrowRightIcon,
   AdjustmentsHorizontalIcon
 } from '@heroicons/vue/24/outline'
+import StockMovementModal from '~/components/stock/StockMovementModal.vue'
 import { useStock, type StockMovementDto } from '../../composables/useStock'
 
 // Composables
