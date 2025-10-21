@@ -1,83 +1,111 @@
 <template>
-  <div class="p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
-    <!-- Page Header -->
-    <div class="sm:flex sm:items-center">
-      <div class="sm:flex-auto">
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Stock Movements</h1>
-        <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
-          Track all stock transactions including receipts, issues, transfers, and adjustments.
-        </p>
-      </div>
-      <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-        <button
-          @click="openCreateModal"
-          type="button"
-          class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        >
-          <PlusIcon class="w-5 h-5 mr-2" />
-          New Movement
-        </button>
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+    <!-- Page Header with Glass Morphism -->
+    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="sm:flex sm:items-center sm:justify-between">
+          <div>
+            <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              Stock Movements
+            </h1>
+            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              Track all stock transactions including receipts, issues, transfers, and adjustments
+            </p>
+          </div>
+          <div class="mt-4 sm:mt-0">
+            <button
+              @click="openCreateModal"
+              type="button"
+              class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold"
+            >
+              <PlusIcon class="w-5 h-5 mr-2" />
+              New Movement
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
     <!-- Quick Actions -->
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <button
         @click="newMovement('receipt')"
-        class="inline-flex items-center justify-center rounded-lg bg-green-50 dark:bg-green-900 px-4 py-3 text-sm font-semibold text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-800 border border-green-200 dark:border-green-700"
+        class="group relative inline-flex items-center justify-center rounded-xl px-6 py-4 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 overflow-hidden bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
       >
-        <ArrowDownIcon class="w-5 h-5 mr-2" />
-        Stock Receipt
+        <div class="flex items-center relative z-10">
+          <ArrowDownIcon class="w-5 h-5 mr-3" />
+          <div class="text-left">
+            <div class="font-semibold">Stock Receipt</div>
+            <div class="text-xs text-white/80">Add inventory</div>
+          </div>
+        </div>
       </button>
       
       <button
         @click="newMovement('issue')"
-        class="inline-flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900 px-4 py-3 text-sm font-semibold text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-800 border border-red-200 dark:border-red-700"
+        class="group relative inline-flex items-center justify-center rounded-xl px-6 py-4 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 overflow-hidden bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700"
       >
-        <ArrowUpIcon class="w-5 h-5 mr-2" />
-        Stock Issue
+        <div class="flex items-center relative z-10">
+          <ArrowUpIcon class="w-5 h-5 mr-3" />
+          <div class="text-left">
+            <div class="font-semibold">Stock Issue</div>
+            <div class="text-xs text-white/80">Remove inventory</div>
+          </div>
+        </div>
       </button>
       
       <button
         @click="newMovement('transfer')"
-        class="inline-flex items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900 px-4 py-3 text-sm font-semibold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800 border border-blue-200 dark:border-blue-700"
+        class="group relative inline-flex items-center justify-center rounded-xl px-6 py-4 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
       >
-        <ArrowRightIcon class="w-5 h-5 mr-2" />
-        Stock Transfer
+        <div class="flex items-center relative z-10">
+          <ArrowRightIcon class="w-5 h-5 mr-3" />
+          <div class="text-left">
+            <div class="font-semibold">Stock Transfer</div>
+            <div class="text-xs text-white/80">Move between locations</div>
+          </div>
+        </div>
       </button>
       
       <button
         @click="newMovement('adjustment')"
-        class="inline-flex items-center justify-center rounded-lg bg-yellow-50 dark:bg-yellow-900 px-4 py-3 text-sm font-semibold text-yellow-700 dark:text-yellow-300 hover:bg-yellow-100 dark:hover:bg-yellow-800 border border-yellow-200 dark:border-yellow-700"
+        class="group relative inline-flex items-center justify-center rounded-xl px-6 py-4 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 overflow-hidden bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600"
       >
-        <AdjustmentsHorizontalIcon class="w-5 h-5 mr-2" />
-        Stock Adjustment
+        <div class="flex items-center relative z-10">
+          <AdjustmentsHorizontalIcon class="w-5 h-5 mr-3" />
+          <div class="text-left">
+            <div class="font-semibold">Stock Adjustment</div>
+            <div class="text-xs text-white/80">Correct discrepancies</div>
+          </div>
+        </div>
       </button>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
         <div>
-          <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
+          <label for="search" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Search</label>
           <div class="relative">
-            <MagnifyingGlassIcon class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <MagnifyingGlassIcon class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
             <input
               id="search"
               v-model="searchQuery"
               type="text"
               placeholder="Search movements..."
-              class="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              class="pl-11 w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 transition-all duration-200"
             />
           </div>
         </div>
 
         <div>
-          <label for="type-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</label>
+          <label for="type-filter" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Type</label>
           <select
             id="type-filter"
             v-model="selectedType"
-            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500 transition-all duration-200"
           >
             <option value="">All Types</option>
             <option value="receipt">Receipt</option>
@@ -88,11 +116,11 @@
         </div>
 
         <div>
-          <label for="date-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Range</label>
+          <label for="date-filter" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Date Range</label>
           <select
             id="date-filter"
             v-model="selectedDateRange"
-            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500 transition-all duration-200"
           >
             <option value="">All Time</option>
             <option value="today">Today</option>
@@ -107,14 +135,14 @@
           <button
             @click="exportMovements"
             type="button"
-            class="flex-1 rounded-lg bg-green-600 px-3 py-2 text-sm font-semibold text-white hover:bg-green-500"
+            class="flex-1 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:from-green-700 hover:to-emerald-700 shadow-md hover:shadow-lg transition-all duration-200"
           >
             Export CSV
           </button>
           <button
             @click="clearFilters"
             type="button"
-            class="flex-1 rounded-lg bg-gray-600 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500"
+            class="flex-1 rounded-xl border-2 border-slate-300 dark:border-slate-600 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200"
           >
             Clear
           </button>
@@ -123,46 +151,46 @@
     </div>
 
     <!-- Movements Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Movements</h3>
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div class="px-6 py-5 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Recent Movements</h3>
       </div>
       
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-900">
+        <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+          <thead class="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800">
             <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                 Date & Reference
               </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                 Type
               </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                 Item
               </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                 Quantity
               </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                 Value
               </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                 Status
               </th>
-              <th scope="col" class="relative px-6 py-3">
+              <th scope="col" class="relative px-6 py-4">
                 <span class="sr-only">Actions</span>
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="movement in paginatedMovements" :key="movement.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+            <tr v-for="movement in paginatedMovements" :key="movement.id" class="hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-blue-50/50 dark:hover:from-purple-900/10 dark:hover:to-blue-900/10 transition-all duration-200 cursor-pointer">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div>
-                  <div class="text-sm font-medium text-gray-900 dark:text-white">
+                  <div class="text-sm font-semibold text-slate-900 dark:text-white">
                     {{ formatDate(movement.createdAt) }}
                   </div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400">
+                  <div class="text-xs text-slate-500 dark:text-slate-400 font-mono">
                     {{ movement.reference || `#${movement.id.slice(-8)}` }}
                   </div>
                 </div>
@@ -170,22 +198,22 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
                   :class="{
-                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': movement.type === 'receipt',
-                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': movement.type === 'issue',
-                    'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200': movement.type === 'transfer',
-                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200': movement.type === 'adjustment'
+                    'bg-gradient-to-r from-green-500 to-emerald-600 text-white': movement.type === 'receipt',
+                    'bg-gradient-to-r from-red-500 to-pink-600 text-white': movement.type === 'issue',
+                    'bg-gradient-to-r from-blue-500 to-purple-600 text-white': movement.type === 'transfer',
+                    'bg-gradient-to-r from-orange-500 to-yellow-500 text-white': movement.type === 'adjustment'
                   }"
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
+                  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold capitalize"
                 >
                   {{ movement.type }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div>
-                  <div class="text-sm font-medium text-gray-900 dark:text-white">
+                  <div class="text-sm font-semibold text-slate-900 dark:text-white">
                     {{ movement.itemName }}
                   </div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400">
+                  <div class="text-xs text-slate-500 dark:text-slate-400 font-mono">
                     {{ movement.itemCode }}
                   </div>
                 </div>
@@ -196,22 +224,22 @@
                     'text-green-600 dark:text-green-400': movement.quantity > 0,
                     'text-red-600 dark:text-red-400': movement.quantity < 0
                   }"
-                  class="text-sm font-medium"
+                  class="text-sm font-bold"
                 >
                   {{ movement.quantity > 0 ? '+' : '' }}{{ movement.quantity }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-white">
                 R{{ formatCurrency(movement.totalValue || 0) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
                   :class="{
-                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': movement.status === 'completed',
-                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200': movement.status === 'pending',
-                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': movement.status === 'cancelled'
+                    'bg-gradient-to-r from-green-500 to-emerald-600 text-white': movement.status === 'completed',
+                    'bg-gradient-to-r from-yellow-500 to-orange-500 text-white': movement.status === 'pending',
+                    'bg-gradient-to-r from-red-500 to-pink-600 text-white': movement.status === 'cancelled'
                   }"
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
+                  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold capitalize"
                 >
                   {{ movement.status }}
                 </span>
@@ -219,7 +247,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button
                   @click="viewMovement(movement)"
-                  class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                  class="px-4 py-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg font-semibold transition-all duration-200"
                 >
                   View
                 </button>
@@ -230,32 +258,33 @@
       </div>
 
       <!-- Pagination -->
-      <div class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-3">
+      <div class="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 border-t border-slate-200 dark:border-slate-700 px-6 py-4">
         <div class="flex items-center justify-between">
-          <div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
-            <span>Showing {{ ((currentPage - 1) * pageSize) + 1 }} to {{ Math.min(currentPage * pageSize, filteredMovements.length) }} of {{ filteredMovements.length }} movements</span>
+          <div class="flex items-center text-sm text-slate-700 dark:text-slate-300">
+            <span>Showing <span class="font-semibold text-purple-600 dark:text-purple-400">{{ ((currentPage - 1) * pageSize) + 1 }}</span> to <span class="font-semibold text-purple-600 dark:text-purple-400">{{ Math.min(currentPage * pageSize, filteredMovements.length) }}</span> of <span class="font-semibold text-purple-600 dark:text-purple-400">{{ filteredMovements.length }}</span> movements</span>
           </div>
-          <div class="flex items-center space-x-2">
+          <div class="flex items-center space-x-3">
             <button
               @click="currentPage--"
               :disabled="currentPage <= 1"
-              class="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-4 py-2 rounded-xl border-2 border-slate-300 dark:border-slate-600 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
               Previous
             </button>
-            <span class="text-sm text-gray-700 dark:text-gray-300">
+            <span class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl text-sm font-semibold shadow-md">
               Page {{ currentPage }} of {{ totalPages }}
             </span>
             <button
               @click="currentPage++"
               :disabled="currentPage >= totalPages"
-              class="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-4 py-2 rounded-xl border-2 border-slate-300 dark:border-slate-600 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
               Next
             </button>
           </div>
         </div>
       </div>
+    </div>
     </div>
   </div>
 </template>
