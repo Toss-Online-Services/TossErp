@@ -1072,11 +1072,10 @@ const addToCart = async (item: BaseItem | LowStockItem | FocusedItem | SearchIte
     await checkAndUpdateGroupBuy(newIndex)
   }
 
-  // Show cart on mobile
+  // Show toast notification instead of auto-opening cart on mobile
   if (window.innerWidth < 640) {
-    setTimeout(() => {
-      viewCart.value = true
-    }, 300)
+    const itemName = item.name.length > 30 ? item.name.substring(0, 30) + '...' : item.name
+    toast.success(`${itemName} added to cart! (${orderItems.value.length} items)`)
   }
 }
 
