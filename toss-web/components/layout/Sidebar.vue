@@ -123,29 +123,14 @@
           <NuxtLink to="/sales" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales' }">
             Sales Dashboard
           </NuxtLink>
-          <NuxtLink to="/sales/quotations" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/quotations' }">
-            Quotations
-          </NuxtLink>
           <NuxtLink to="/sales/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/orders' }">
-            Sales Orders
+            Orders
           </NuxtLink>
           <NuxtLink to="/sales/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/invoices' }">
-            Sales Invoices
-          </NuxtLink>
-          <NuxtLink to="/sales/delivery-notes" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/delivery-notes' }">
-            Delivery Notes
+            Invoices
           </NuxtLink>
           <NuxtLink to="/sales/pos" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path.startsWith('/sales/pos') }">
             Point of Sale
-          </NuxtLink>
-          <NuxtLink to="/sales/analytics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/analytics' }">
-            Sales Analytics
-          </NuxtLink>
-          <NuxtLink to="/sales/pricing-rules" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/pricing-rules' }">
-            Pricing Rules
-          </NuxtLink>
-          <NuxtLink to="/sales/ai-assistant" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/ai-assistant' }">
-            AI Assistant
           </NuxtLink>
         </div>
       </div>
