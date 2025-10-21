@@ -1015,6 +1015,37 @@ const activeGroupBuyItemsCount = computed(() => {
   return orderItems.value.filter((item: CartItem) => item.groupBuyEnabled && item.groupBuyDetails).length
 })
 
+// Save active group buy to localStorage for reporting
+const saveToActiveGroupBuys = (groupBuy: any) => {
+  try {
+    const existingGroupBuys = localStorage.getItem('toss-active-group-buys')
+    let groupBuys = existingGroupBuys ? JSON.parse(existingGroupBuys) : []
+    
+    // Check if this group buy already exists
+    const existingIndex = groupBuys.findIndex((gb: any) => gb.id === groupBuy.id)
+    
+    if (existingIndex > -1) {
+      // Update existing group buy
+      groupBuys[existingIndex] = {
+        ...groupBuys[existingIndex],
+        ...groupBuy,
+        lastUpdated: new Date().toISOString()
+      }
+    } else {
+      // Add new group buy
+      groupBuys.push({
+        ...groupBuy,
+        joinedAt: new Date().toISOString(),
+        lastUpdated: new Date().toISOString()
+      })
+    }
+    
+    localStorage.setItem('toss-active-group-buys', JSON.stringify(groupBuys))
+  } catch (error) {
+    console.error('Error saving active group buy:', error)
+  }
+}
+
 // Methods
 const addToCart = async (item: BaseItem | LowStockItem | FocusedItem | SearchItem, quantity: number = 1) => {
   const existingIndex = orderItems.value.findIndex((i: CartItem) => i.id === item.id)
@@ -1075,18 +1106,55 @@ const checkAndUpdateGroupBuy = async (itemIndex: number) => {
         groupBuyId: gb.id,
         isNew: false
       }
+      
+      // Save to active group buys for reporting
+      saveToActiveGroupBuys({
+        id: gb.id,
+        title: gb.title,
+        description: gb.description,
+        itemName: item.name,
+        itemSku: item.sku,
+        myQuantity: item.quantity,
+        status: 'active',
+        committed: gb.currentQuantity,
+        minQuantity: gb.targetQuantity,
+        memberCount: gb.currentParticipants,
+        estimatedSavings,
+        deadline: new Date(gb.deadline),
+        joinedAt: new Date(),
+        savingsPercentage: gb.savingsPercentage
+      })
     } else {
       // No active group buy - create new one automatically
       const estimatedSavings = Math.round((item.price * item.quantity * 15) / 100) // Estimate 15% savings
+      const newGroupBuyId = `GB-NEW-${Date.now()}`
       
       item.groupBuyDetails = {
         savings: estimatedSavings,
         endsIn: '7 days',
         progress: `${item.quantity}/${item.quantity * 5} units`,
         status: `🆕 New group buy started!`,
-        groupBuyId: undefined,
+        groupBuyId: newGroupBuyId,
         isNew: true
       }
+      
+      // Save new group buy for reporting
+      saveToActiveGroupBuys({
+        id: newGroupBuyId,
+        title: `${item.name} Group Buy`,
+        description: `Bulk purchase for ${item.name}`,
+        itemName: item.name,
+        itemSku: item.sku,
+        myQuantity: item.quantity,
+        status: 'collecting',
+        committed: item.quantity,
+        minQuantity: item.quantity * 5,
+        memberCount: 1,
+        estimatedSavings,
+        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        joinedAt: new Date(),
+        savingsPercentage: 15
+      })
       
       toast.success(`Group buy started for ${item.name}! Invite others to unlock R${estimatedSavings} savings!`)
     }
