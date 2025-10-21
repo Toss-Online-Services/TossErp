@@ -32,20 +32,32 @@
             :key="index"
             class="flex justify-between items-center bg-gray-50 rounded-lg p-3"
           >
-            <div class="flex items-center gap-2">
-              <span class="text-2xl">{{ item.emoji }}</span>
-              <div>
-                <p class="font-bold text-base text-gray-900">{{ item.name }}</p>
-                <p class="text-sm text-gray-600">{{ item.unit }}</p>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="font-bold text-base text-gray-900">{{ item.name }}</p>
+                  <p class="text-sm text-gray-600">{{ item.sku }}</p>
+                </div>
+                <div class="text-right ml-4">
+                  <p class="text-sm text-gray-600">Qty: {{ item.quantity }}</p>
+                  <p class="font-bold text-base text-gray-900">R {{ (item.price * item.quantity).toFixed(2) }}</p>
+                </div>
               </div>
             </div>
-            <span class="font-bold text-base text-gray-900">R {{ item.price }}</span>
           </div>
         </div>
-        <div class="border-t-2 border-gray-200 pt-4">
-          <div class="flex justify-between items-center">
+        <div class="border-t-2 border-gray-200 pt-4 space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">Subtotal:</span>
+            <span class="font-medium text-gray-900">R {{ subtotal.toFixed(2) }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">Delivery Fee:</span>
+            <span class="font-medium text-gray-900">R {{ deliveryFee.toFixed(2) }}</span>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t-2 border-gray-200">
             <span class="text-lg font-bold text-gray-900">Total Paid:</span>
-            <span class="text-2xl font-bold text-blue-600">R {{ totalPrice }}</span>
+            <span class="text-2xl font-bold text-blue-600">R {{ totalPrice.toFixed(2) }}</span>
           </div>
         </div>
       </div>
@@ -114,7 +126,7 @@
       <div class="space-y-3">
         <!-- Track Order - Primary Action -->
         <NuxtLink 
-          to="/stock/track"
+          to="/purchasing/track-orders"
           class="w-full px-6 py-5 bg-blue-600 text-white rounded-xl font-bold text-lg shadow-lg hover:bg-blue-700 transition-all touch-manipulation min-h-[60px] flex items-center justify-center gap-2"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,6 +177,8 @@ const router = useRouter()
 
 const orderItems = ref([])
 const totalPrice = ref(0)
+const subtotal = ref(0)
+const deliveryFee = ref(0)
 const orderNumber = ref('')
 
 const estimatedDelivery = computed(() => {
@@ -183,15 +197,17 @@ onMounted(() => {
   
   if (orderData) {
     const order = JSON.parse(orderData)
-    orderItems.value = order.items
-    totalPrice.value = order.total
-    orderNumber.value = order.orderNumber
+    orderItems.value = order.items || []
+    subtotal.value = order.subtotal || 0
+    deliveryFee.value = order.deliveryFee || 0
+    totalPrice.value = order.total || 0
+    orderNumber.value = order.orderNumber || 'ORD' + Date.now()
     
     // Clear the order from storage
     localStorage.removeItem('toss-current-order')
   } else {
-    // No order found, redirect to order page
-    router.push('/stock/order')
+    // No order found, redirect to create order page
+    router.push('/purchasing/create-order')
   }
 })
 </script>
