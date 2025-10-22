@@ -49,29 +49,36 @@
           :key="product.id"
           @click="$emit('selectProduct', product)"
           :disabled="product.stock === 0"
-          class="bg-gray-50 rounded-lg border border-gray-200 p-3 hover:border-blue-500 hover:shadow-lg transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed"
+          class="bg-white dark:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-600 p-3 hover:border-blue-500 hover:shadow-xl transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
         >
-          <div class="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+          <!-- Product Image -->
+          <div class="aspect-square bg-slate-100 dark:bg-slate-600 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
             <img 
               v-if="product.image" 
               :src="product.image" 
               :alt="product.name"
               class="w-full h-full object-cover"
             />
-            <CubeIcon v-else class="w-8 h-8 text-slate-400" />
+            <CubeIcon v-else class="w-10 h-10 sm:w-12 sm:h-12 text-slate-400 dark:text-slate-500" />
           </div>
-          <h3 class="font-medium text-gray-900 text-sm truncate mb-1">{{ product.name }}</h3>
-          <p class="text-xs text-gray-500 truncate mb-2">{{ product.sku }}</p>
+          
+          <!-- Product Name -->
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base truncate mb-1">{{ product.name }}</h3>
+          
+          <!-- SKU -->
+          <p class="text-xs text-slate-500 dark:text-slate-400 truncate mb-3">{{ product.sku }}</p>
+          
+          <!-- Price and Stock -->
           <div class="flex items-center justify-between">
-            <span class="text-sm font-bold text-blue-600">R{{ product.price.toFixed(2) }}</span>
+            <span class="text-sm sm:text-base font-bold text-blue-600 dark:text-blue-400">R{{ product.price.toFixed(2) }}</span>
             <span 
               :class="[
-                'text-xs px-2 py-1 rounded-full',
-                product.stock > 10 
-                  ? 'bg-green-100 text-green-700' 
+                'text-xs font-medium px-2 py-1 rounded-full',
+                product.stock >= 10 
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
                   : product.stock > 0
-                    ? 'bg-yellow-100 text-yellow-700'
-                    : 'bg-red-100 text-red-700'
+                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                    : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
               ]"
             >
               Stock: {{ product.stock }}

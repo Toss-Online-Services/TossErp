@@ -28,83 +28,87 @@
     <!-- Main Content -->
     <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
-      <!-- Stats Cards - Now Clickable -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+      <!-- Stats Cards - Now Clickable (Queue Status) -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 mb-8">
         <button 
           @click="filterByStatus('')"
-          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
-          :class="{ 'ring-4 ring-green-500 border-green-500': statusFilter === '' }"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-blue-500 border-blue-500': statusFilter === '' }"
         >
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Orders</p>
-              <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ totalOrders }}</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Orders</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ totalOrders }}</p>
             </div>
-            <div class="p-3 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl">
-              <ShoppingBagIcon class="w-8 h-8 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+              <ShoppingBagIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
         </div>
       </button>
 
         <button
           @click="filterByStatus('pending')"
-          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
-          :class="{ 'ring-4 ring-orange-500 border-orange-500': statusFilter === 'pending' }"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-yellow-500 border-yellow-500': statusFilter === 'pending' }"
         >
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Pending</p>
-              <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ pendingOrders }}</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Pending</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ pendingOrders }}</p>
             </div>
-            <div class="p-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl">
-              <ClockIcon class="w-8 h-8 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl">
+              <ClockIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
         </button>
 
         <button
-          @click="filterByStatus('preparing')"
-          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
-          :class="{ 'ring-4 ring-purple-500 border-purple-500': statusFilter === 'preparing' }"
+          @click="filterByStatus('in-progress')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-blue-500 border-blue-500': statusFilter === 'in-progress' }"
         >
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Preparing</p>
-              <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ preparingOrders }}</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">In Progress</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ inProgressOrders }}</p>
             </div>
-            <div class="p-3 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl">
-              <SparklesIcon class="w-8 h-8 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
+              <SparklesIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
         </button>
 
         <button
-          @click="filterByStatus('delivered')"
-          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
-          :class="{ 'ring-4 ring-green-500 border-green-500': statusFilter === 'delivered' }"
+          @click="filterByStatus('ready')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-green-500 border-green-500': statusFilter === 'ready' }"
         >
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Delivered</p>
-              <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ deliveredOrders }}</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Ready</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ readyOrders }}</p>
             </div>
-            <div class="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
-              <CheckCircleIcon class="w-8 h-8 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+              <CheckCircleIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
         </button>
 
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <button
+          @click="filterByStatus('completed')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-emerald-500 border-emerald-500': statusFilter === 'completed' }"
+        >
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Value</p>
-              <p class="text-3xl font-bold text-slate-900 dark:text-white">R{{ (totalOrderValue / 1000).toFixed(1) }}K</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Completed</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ completedOrders }}</p>
             </div>
-            <div class="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl">
-              <CurrencyDollarIcon class="w-8 h-8 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl">
+              <TruckIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
       </div>
 
       <!-- Filters and Search -->
@@ -129,12 +133,11 @@
             class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
           >
               <option value="">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="preparing">Preparing</option>
-              <option value="ready">Ready</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="pending">⏳ Pending</option>
+              <option value="in-progress">⚙️ In Progress</option>
+              <option value="ready">✅ Ready</option>
+              <option value="completed">📦 Completed</option>
+              <option value="cancelled">❌ Cancelled</option>
             </select>
 
           <!-- Customer Filter -->
@@ -188,7 +191,7 @@
                   class="px-3 py-1 rounded-full text-sm font-medium"
                   :class="getStatusClass(order.status)"
                 >
-                  {{ order.status }}
+                  {{ getStatusLabel(order.status) }}
                 </span>
                 <span 
                   v-if="order.priority !== 'normal'"
@@ -222,7 +225,7 @@
               </div>
               <div>
                 <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Items</p>
-                <p class="text-sm font-medium text-slate-900 dark:text-white">{{ order.items }} items</p>
+                <p class="text-sm font-medium text-slate-900 dark:text-white">{{ order.orderItems?.length || 0 }} items</p>
               </div>
               <div>
                 <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Payment Terms</p>
@@ -231,6 +234,58 @@
                 </p>
               </div>
             </div>
+
+            <!-- Order Items Grid - Visible when expanded -->
+            <transition 
+              enter-active-class="transition-all duration-300 ease-out"
+              enter-from-class="max-h-0 opacity-0"
+              enter-to-class="max-h-[1000px] opacity-100"
+              leave-active-class="transition-all duration-200 ease-in"
+              leave-from-class="max-h-[1000px] opacity-100"
+              leave-to-class="max-h-0 opacity-0"
+            >
+              <div v-if="expandedOrders.includes(order.id)" class="overflow-hidden mb-4">
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-4">
+                  <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">📦 Order Items</h4>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div 
+                      v-for="item in order.orderItems" 
+                      :key="item.id"
+                      class="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-3 border border-slate-200 dark:border-slate-600"
+                    >
+                      <div class="flex items-start justify-between mb-2">
+                        <div class="flex-1">
+                          <h5 class="font-semibold text-slate-900 dark:text-white text-sm">{{ item.name }}</h5>
+                          <p class="text-xs text-slate-500 dark:text-slate-400">SKU: {{ item.sku }}</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between mt-2">
+                        <span class="text-sm font-bold text-blue-600 dark:text-blue-400">
+                          {{ item.quantity }}x @ R{{ item.price.toFixed(2) }}
+                        </span>
+                        <span 
+                          :class="[
+                            'text-xs px-2 py-1 rounded-full font-medium',
+                            item.stock > 10 
+                              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                              : item.stock > 0
+                                ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                          ]"
+                        >
+                          Stock: {{ item.stock }}
+                        </span>
+                      </div>
+                      <div class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-600">
+                        <p class="text-sm font-bold text-slate-900 dark:text-white">
+                          Total: R{{ (item.quantity * item.price).toFixed(2) }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </transition>
 
             <!-- Expandable Timeline Section -->
             <transition 
@@ -350,14 +405,15 @@ const statusFilter = ref('')
 const customerFilter = ref('')
 const expandedOrders = ref<string[]>([])
 
-// Order statistics
-const totalOrders = ref(156)
-const pendingOrders = ref(18)
-const preparingOrders = ref(12)
-const deliveredOrders = ref(126)
-const totalOrderValue = ref(347850)
+// Order statistics (computed from actual orders)
+const totalOrders = computed(() => orders.value.length)
+const pendingOrders = computed(() => orders.value.filter((o: any) => o.status === 'pending').length)
+const inProgressOrders = computed(() => orders.value.filter((o: any) => o.status === 'in-progress').length)
+const readyOrders = computed(() => orders.value.filter((o: any) => o.status === 'ready').length)
+const completedOrders = computed(() => orders.value.filter((o: any) => o.status === 'completed').length)
+const totalOrderValue = computed(() => orders.value.reduce((sum: number, o: any) => sum + o.total, 0))
 
-// Sample orders data
+// Sample orders data with actual POS products
 const orders = ref([
   {
     id: '1',
@@ -365,8 +421,12 @@ const orders = ref([
     customer: 'Nomsa Community Kitchen',
     customerPhone: '+27 82 456 7890',
     total: 4850,
-    items: 8,
-    status: 'preparing',
+    orderItems: [
+      { id: 1, name: 'Coca Cola 2L', sku: 'CC2L001', quantity: 50, price: 35.00, stock: 24 },
+      { id: 2, name: 'White Bread 700g', sku: 'WB700', quantity: 100, price: 18.00, stock: 14 },
+      { id: 3, name: 'Milk 1L', sku: 'MLK1L', quantity: 40, price: 22.00, stock: 11 }
+    ],
+    status: 'in-progress',
     priority: 'urgent',
     orderDate: new Date(),
     expectedDelivery: new Date(Date.now() + 2 * 60 * 60 * 1000),
@@ -379,7 +439,11 @@ const orders = ref([
     customer: 'Sipho Auto Repair',
     customerPhone: '+27 73 123 4567',
     total: 1250,
-    items: 5,
+    orderItems: [
+      { id: 4, name: 'Simba Chips 125g', sku: 'SC125', quantity: 30, price: 12.00, stock: 30 },
+      { id: 5, name: 'Sunlight Soap 250g', sku: 'SS250', quantity: 20, price: 15.00, stock: 8 },
+      { id: 6, name: 'Maggi 2-Minute Noodles', sku: 'MGN2M', quantity: 50, price: 8.00, stock: 45 }
+    ],
     status: 'ready',
     priority: 'normal',
     orderDate: new Date(Date.now() - 2 * 60 * 60 * 1000),
@@ -393,8 +457,11 @@ const orders = ref([
     customer: 'Lerato Hair Studio',
     customerPhone: '+27 84 789 0123', 
     total: 890,
-    items: 3,
-    status: 'delivered',
+    orderItems: [
+      { id: 7, name: 'Castle Lager 440ml', sku: 'CL440', quantity: 24, price: 25.00, stock: 0 },
+      { id: 8, name: 'Purity Baby Food', sku: 'PBF001', quantity: 10, price: 45.00, stock: 12 }
+    ],
+    status: 'completed',
     priority: 'normal',
     orderDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
     deliveryAddress: '789 Beauty Lane, Diepsloot',
@@ -405,9 +472,13 @@ const orders = ref([
     orderNumber: 'SO-2025-004',
     customer: 'Mandla Construction',
     customerPhone: '+27 76 345 6789',
-    total: 12500,
-    items: 15,
-    status: 'confirmed',
+    total: 2550,
+    orderItems: [
+      { id: 1, name: 'Coca Cola 2L', sku: 'CC2L001', quantity: 24, price: 35.00, stock: 24 },
+      { id: 2, name: 'White Bread 700g', sku: 'WB700', quantity: 50, price: 18.00, stock: 14 },
+      { id: 6, name: 'Maggi 2-Minute Noodles', sku: 'MGN2M', quantity: 100, price: 8.00, stock: 45 }
+    ],
+    status: 'in-progress',
     priority: 'high',
     orderDate: new Date(Date.now() - 3 * 60 * 60 * 1000),
     expectedDelivery: new Date(Date.now() + 5 * 60 * 60 * 1000),
@@ -419,14 +490,34 @@ const orders = ref([
     orderNumber: 'SO-2025-005',
     customer: 'Grace Catering Services',
     customerPhone: '+27 82 567 8901',
-    total: 3200,
-    items: 12,
+    total: 1780,
+    orderItems: [
+      { id: 3, name: 'Milk 1L', sku: 'MLK1L', quantity: 30, price: 22.00, stock: 11 },
+      { id: 4, name: 'Simba Chips 125g', sku: 'SC125', quantity: 50, price: 12.00, stock: 30 },
+      { id: 2, name: 'White Bread 700g', sku: 'WB700', quantity: 40, price: 18.00, stock: 14 }
+    ],
     status: 'pending',
     priority: 'urgent',
     orderDate: new Date(Date.now() - 30 * 60 * 1000),
     expectedDelivery: new Date(Date.now() + 4 * 60 * 60 * 1000),
     deliveryAddress: '654 Event Hall, Tembisa',
     notes: 'Wedding catering supplies - time sensitive'
+  },
+  {
+    id: '6',
+    orderNumber: 'SO-2025-006',
+    customer: 'Thabo Spaza Shop',
+    customerPhone: '+27 71 234 5678',
+    total: 1150,
+    orderItems: [
+      { id: 8, name: 'Purity Baby Food', sku: 'PBF001', quantity: 15, price: 45.00, stock: 12 },
+      { id: 5, name: 'Sunlight Soap 250g', sku: 'SS250', quantity: 20, price: 15.00, stock: 8 }
+    ],
+    status: 'completed',
+    priority: 'normal',
+    orderDate: new Date(Date.now() - 48 * 60 * 60 * 1000),
+    deliveryAddress: '789 Township Road, Soweto',
+    notes: 'Regular weekly stock order'
   }
 ])
 
@@ -486,16 +577,26 @@ const formatDate = (date: Date) => {
   }).format(date)
 }
 
-const getStatusClass = (status: string) => {
-  const classes = {
-    pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-    confirmed: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-    preparing: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-    ready: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    delivered: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
-    cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+const getStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    'pending': '⏳ Pending',
+    'in-progress': '⚙️ In Progress',
+    'ready': '✅ Ready',
+    'completed': '📦 Completed',
+    'cancelled': '❌ Cancelled'
   }
-  return classes[status as keyof typeof classes] || 'bg-slate-100 text-slate-800'
+  return labels[status] || status
+}
+
+const getStatusClass = (status: string) => {
+  const classes: Record<string, string> = {
+    'pending': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+    'in-progress': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+    'ready': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+    'completed': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
+    'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+  }
+  return classes[status] || 'bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-400'
 }
 
 const getPriorityClass = (priority: string) => {
