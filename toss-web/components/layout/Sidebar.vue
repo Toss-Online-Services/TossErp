@@ -123,9 +123,39 @@
           <NuxtLink to="/sales" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales' }">
             Sales Dashboard
           </NuxtLink>
-          <NuxtLink to="/sales/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/orders' }">
-            Orders
-          </NuxtLink>
+          
+          <!-- Orders Submenu -->
+          <div class="space-y-1">
+            <button 
+              @click="toggleOrdersDropdown"
+              class="justify-between w-full nav-sub-link"
+              :class="{ 'nav-sub-link-active': route.path.startsWith('/sales/orders') }"
+            >
+              <div class="flex items-center w-full">
+                <span class="flex-1 text-left">Orders</span>
+                <ChevronDownIcon 
+                  class="w-3 h-3 transition-transform duration-200"
+                  :class="{ 'transform rotate-180': ordersDropdownOpen }"
+                />
+              </div>
+            </button>
+            
+            <div 
+              v-show="ordersDropdownOpen"
+              class="pl-3 ml-3 space-y-1 border-l border-slate-600"
+            >
+              <NuxtLink to="/sales/orders" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/sales/orders' }">
+                Orders
+              </NuxtLink>
+              <NuxtLink to="/sales/orders/create-order" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/sales/orders/create-order' }">
+                Create Order
+              </NuxtLink>
+              <NuxtLink to="/sales/orders/queue" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/sales/orders/queue' }">
+                Queue
+              </NuxtLink>
+            </div>
+          </div>
+          
           <NuxtLink to="/sales/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/invoices' }">
             Invoices
           </NuxtLink>
@@ -305,6 +335,7 @@ const route = useRoute()
 const stockDropdownOpen = ref(false)
 const logisticsDropdownOpen = ref(false)
 const salesDropdownOpen = ref(false)
+const ordersDropdownOpen = ref(false)
 const buyingDropdownOpen = ref(false)
 const automationDropdownOpen = ref(false)
 const onboardingDropdownOpen = ref(false)
@@ -320,6 +351,9 @@ watch(() => route.path, (newPath) => {
   }
   if (newPath.startsWith('/sales')) {
     salesDropdownOpen.value = true
+    if (newPath.startsWith('/sales/orders')) {
+      ordersDropdownOpen.value = true
+    }
   }
   if (newPath.startsWith('/buying')) {
     buyingDropdownOpen.value = true
@@ -346,6 +380,10 @@ const toggleLogisticsDropdown = () => {
 
 const toggleSalesDropdown = () => {
   salesDropdownOpen.value = !salesDropdownOpen.value
+}
+
+const toggleOrdersDropdown = () => {
+  ordersDropdownOpen.value = !ordersDropdownOpen.value
 }
 
 const toggleBuyingDropdown = () => {
@@ -422,6 +460,30 @@ const toggleSettingsDropdown = () => {
 
 .nav-sub-link-active:hover {
   background-color: rgba(59, 130, 246, 0.2);
+  text-decoration: none;
+}
+
+.nav-sub-sub-link {
+  display: block;
+  padding: 0.375rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgb(107 114 128);
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.nav-sub-sub-link:hover {
+  background-color: rgb(249 250 251);
+  color: rgb(17 24 39);
+  text-decoration: none;
+}
+
+.nav-sub-sub-link-active {
+  background-color: rgba(59, 130, 246, 0.08);
+  color: rgb(59 130 246);
+  font-weight: 500;
   text-decoration: none;
 }
 </style>
