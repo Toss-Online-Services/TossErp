@@ -189,17 +189,41 @@
           <NuxtLink to="/buying" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying' }">
             Buy Dashboard
           </NuxtLink>
-          <NuxtLink to="/buying/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/orders' }">
-            Orders
+          
+          <!-- Orders Submenu -->
+          <div class="space-y-1">
+            <button 
+              @click="toggleBuyingOrdersDropdown"
+              class="justify-between w-full nav-sub-link"
+              :class="{ 'nav-sub-link-active': route.path.startsWith('/buying/orders') }"
+            >
+              <div class="flex items-center w-full">
+                <span class="flex-1 text-left">Orders</span>
+                <ChevronDownIcon 
+                  class="w-3 h-3 transition-transform duration-200"
+                  :class="{ 'transform rotate-180': buyingOrdersDropdownOpen }"
+                />
+              </div>
+            </button>
+            
+            <div 
+              v-show="buyingOrdersDropdownOpen"
+              class="pl-3 ml-3 space-y-1 border-l border-slate-600"
+            >
+              <NuxtLink to="/buying/orders" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/buying/orders' }">
+                Orders
+              </NuxtLink>
+              <NuxtLink to="/buying/orders/create-order" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/buying/orders/create-order' }">
+                Create Order
+              </NuxtLink>
+            </div>
+          </div>
+          
+          <NuxtLink to="/buying/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/invoices' }">
+            Invoices
           </NuxtLink>
           <NuxtLink to="/buying/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/suppliers' }">
             Suppliers
-          </NuxtLink>
-      <NuxtLink to="/buying/create-order" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/create-order' }">
-        Create Order
-      </NuxtLink>
-          <NuxtLink to="/buying/track-orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/track-orders' }">
-            Track Orders
           </NuxtLink>
           <NuxtLink to="/buying/group-buying" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/group-buying' }">
             Group Buying
@@ -337,6 +361,7 @@ const logisticsDropdownOpen = ref(false)
 const salesDropdownOpen = ref(false)
 const ordersDropdownOpen = ref(false)
 const buyingDropdownOpen = ref(false)
+const buyingOrdersDropdownOpen = ref(false)
 const automationDropdownOpen = ref(false)
 const onboardingDropdownOpen = ref(false)
 const settingsDropdownOpen = ref(false)
@@ -357,6 +382,9 @@ watch(() => route.path, (newPath) => {
   }
   if (newPath.startsWith('/buying')) {
     buyingDropdownOpen.value = true
+    if (newPath.startsWith('/buying/orders')) {
+      buyingOrdersDropdownOpen.value = true
+    }
   }
   if (newPath.startsWith('/automation')) {
     automationDropdownOpen.value = true
@@ -388,6 +416,10 @@ const toggleOrdersDropdown = () => {
 
 const toggleBuyingDropdown = () => {
   buyingDropdownOpen.value = !buyingDropdownOpen.value
+}
+
+const toggleBuyingOrdersDropdown = () => {
+  buyingOrdersDropdownOpen.value = !buyingOrdersDropdownOpen.value
 }
 
 const toggleAutomationDropdown = () => {

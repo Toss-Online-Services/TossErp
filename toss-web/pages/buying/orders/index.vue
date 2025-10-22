@@ -3,7 +3,7 @@
     <!-- Page Header with Glass Morphism -->
     <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
       <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
             <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Buy Orders
@@ -11,13 +11,13 @@
             <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
               Manage and track your Buy Orders
             </p>
-            </div>
+          </div>
           <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
             <NuxtLink
-              to="/buying/create-order"
+              to="/buying/orders/create-order"
               class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold text-sm sm:text-base"
             >
-                <PlusIcon class="w-5 h-5 mr-2" />
+              <PlusIcon class="w-5 h-5 mr-2" />
               Create Order
             </NuxtLink>
           </div>
@@ -28,67 +28,87 @@
     <!-- Main Content -->
     <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+      <!-- Stats Cards - Now Clickable for Filtering -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 mb-8">
+        <button 
+          @click="filterByStatus('')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-blue-500 border-blue-500': statusFilter === '' }"
+        >
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Orders</p>
-              <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ stats.totalPOs }}</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Orders</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ stats.totalPOs }}</p>
             </div>
-            <div class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
-              <ShoppingCartIcon class="w-8 h-8 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+              <ShoppingCartIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <button
+          @click="filterByStatus('pending')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-yellow-500 border-yellow-500': statusFilter === 'pending' }"
+        >
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Pending</p>
-              <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ stats.pendingPOs }}</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Pending</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ stats.pendingPOs }}</p>
             </div>
-            <div class="p-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl">
-              <ClockIcon class="w-8 h-8 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl">
+              <ClockIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <button
+          @click="filterByStatus('approved')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-blue-500 border-blue-500': statusFilter === 'approved' }"
+        >
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">In Transit</p>
-              <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ stats.inTransitPOs }}</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Approved</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ stats.approvedPOs }}</p>
             </div>
-            <div class="p-3 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl">
-              <TruckIcon class="w-8 h-8 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
+              <CheckCircleIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <button
+          @click="filterByStatus('in-transit')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-orange-500 border-orange-500': statusFilter === 'in-transit' }"
+        >
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Delivered</p>
-              <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ stats.deliveredPOs }}</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">In Transit</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ stats.inTransitPOs }}</p>
             </div>
-            <div class="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
-              <CheckCircleIcon class="w-8 h-8 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl">
+              <TruckIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <button
+          @click="filterByStatus('delivered')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-green-500 border-green-500': statusFilter === 'delivered' }"
+        >
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Value</p>
-              <p class="text-3xl font-bold text-slate-900 dark:text-white">R{{ stats.totalValue }}K</p>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Delivered</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ stats.deliveredPOs }}</p>
             </div>
-            <div class="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl">
-              <CurrencyDollarIcon class="w-8 h-8 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+              <TruckIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
       </div>
 
       <!-- Filters and Search -->
@@ -112,12 +132,12 @@
             v-model="statusFilter"
             class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
           >
-              <option value="">All Status</option>
-            <option value="pending">Awaiting Approval</option>
-            <option value="approved">Approved</option>
-            <option value="in-transit">On the Way</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
+            <option value="">All Status</option>
+            <option value="pending">⏳ Pending</option>
+            <option value="approved">✅ Approved</option>
+            <option value="in-transit">🚚 In Transit</option>
+            <option value="delivered">📦 Delivered</option>
+            <option value="cancelled">❌ Cancelled</option>
           </select>
 
           <!-- Supplier Filter -->
@@ -125,11 +145,11 @@
             v-model="supplierFilter"
             class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
           >
-              <option value="">All Suppliers</option>
+            <option value="">All Suppliers</option>
             <option v-for="supplier in suppliers" :key="supplier" :value="supplier">
               {{ supplier }}
             </option>
-            </select>
+          </select>
 
           <!-- Actions -->
           <div class="flex space-x-2">
@@ -144,26 +164,16 @@
         </div>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="loading" class="space-y-4">
-        <div v-for="n in 3" :key="n" class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 animate-pulse">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex-1">
-              <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded w-32 mb-2"></div>
-              <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-48"></div>
-            </div>
-            <div class="h-8 w-24 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-          </div>
-        </div>
-      </div>
-
       <!-- Orders List -->
-      <div v-else-if="filteredOrders.length > 0" class="space-y-4">
+      <div class="space-y-4">
         <div v-for="order in filteredOrders" :key="order.id" 
           class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all duration-300"
         >
-          <!-- Order Header -->
-          <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 px-6 py-4 border-b border-slate-200 dark:border-slate-600">
+          <!-- Order Header - Clickable to expand/collapse -->
+          <div 
+            @click="toggleOrderExpansion(order.id)"
+            class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 px-6 py-4 border-b border-slate-200 dark:border-slate-600 cursor-pointer hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 transition-colors"
+          >
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-4">
                 <div class="flex-shrink-0 h-12 w-12">
@@ -201,12 +211,15 @@
                 </span>
                 <div class="text-right">
                   <p class="text-2xl font-bold text-slate-900 dark:text-white">R{{ order.total.toLocaleString() }}</p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {{ expandedOrders.includes(order.id) ? '▲ Click to collapse' : '▼ Click to expand' }}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Order Details -->
+          <!-- Order Details - Always Visible -->
           <div class="px-6 py-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
               <div>
@@ -227,43 +240,101 @@
               </div>
             </div>
 
+            <!-- Order Items Grid - Visible when expanded -->
+            <transition 
+              enter-active-class="transition-all duration-300 ease-out"
+              enter-from-class="max-h-0 opacity-0"
+              enter-to-class="max-h-[1000px] opacity-100"
+              leave-active-class="transition-all duration-200 ease-in"
+              leave-from-class="max-h-[1000px] opacity-100"
+              leave-to-class="max-h-0 opacity-0"
+            >
+              <div v-if="expandedOrders.includes(order.id)" class="overflow-hidden mb-4">
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-4">
+                  <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">📦 Order Items</h4>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div 
+                      v-for="item in order.orderItems" 
+                      :key="item.id"
+                      class="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-3 border border-slate-200 dark:border-slate-600"
+                    >
+                      <div class="flex items-start justify-between mb-2">
+                        <div class="flex-1">
+                          <h5 class="font-semibold text-slate-900 dark:text-white text-sm">{{ item.name }}</h5>
+                          <p class="text-xs text-slate-500 dark:text-slate-400">SKU: {{ item.sku }}</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between mt-2">
+                        <span class="text-sm font-bold text-blue-600 dark:text-blue-400">
+                          {{ item.quantity }}x @ R{{ item.price.toFixed(2) }}
+                        </span>
+                        <span 
+                          :class="[
+                            'text-xs px-2 py-1 rounded-full font-medium',
+                            item.stock > 10 
+                              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                              : item.stock > 0
+                                ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                          ]"
+                        >
+                          Stock: {{ item.stock }}
+                        </span>
+                      </div>
+                      <div class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-600">
+                        <p class="text-sm font-bold text-slate-900 dark:text-white">
+                          Total: R{{ (item.quantity * item.price).toFixed(2) }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </transition>
+
+            <!-- Expandable Timeline Section -->
+            <transition 
+              enter-active-class="transition-all duration-300 ease-out"
+              enter-from-class="max-h-0 opacity-0"
+              enter-to-class="max-h-[1000px] opacity-100"
+              leave-active-class="transition-all duration-200 ease-in"
+              leave-from-class="max-h-[1000px] opacity-100"
+              leave-to-class="max-h-0 opacity-0"
+            >
+              <div v-if="expandedOrders.includes(order.id)" class="overflow-hidden">
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-6 mb-4">
+                  <BuyingOrderTimeline
+                    :order-number="order.orderNumber"
+                    :status="order.status"
+                    :order-date="order.orderDate"
+                    :expected-delivery="order.expectedDelivery"
+                  />
+                </div>
+              </div>
+            </transition>
+
             <!-- Actions -->
             <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
               <div class="flex space-x-3">
                 <button 
-                  @click="viewOrder(order)" 
-                  class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 text-sm font-medium flex items-center"
-                >
-                  <EyeIcon class="w-4 h-4 mr-1" />
-                  View
-                </button>
-                <button 
-                  v-if="order.status.toLowerCase() === 'pending'"
-                  @click="approveOrder(order)" 
-                  class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200 text-sm font-medium flex items-center"
-                >
-                  <CheckCircleIcon class="w-4 h-4 mr-1" />
-                  Approve
-                </button>
-                <button 
-                  @click="printOrder(order)" 
-                  class="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-200 text-sm font-medium flex items-center"
+                  @click.stop="printOrder(order)" 
+                  class="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-200 text-sm font-medium flex items-center transition-colors"
                 >
                   <PrinterIcon class="w-4 h-4 mr-1" />
                   Print
                 </button>
                 <button 
-                  @click="trackOrder(order)" 
-                  class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-200 text-sm font-medium flex items-center"
+                  @click.stop="sendOrder(order)" 
+                  class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 text-sm font-medium flex items-center transition-colors"
                 >
-                  <TruckIcon class="w-4 h-4 mr-1" />
-                  Track
+                  <PaperAirplaneIcon class="w-4 h-4 mr-1" />
+                  Send
                 </button>
               </div>
               <button 
-                v-if="order.status.toLowerCase() === 'pending' || order.status.toLowerCase() === 'approved'"
-                @click="cancelOrder(order)" 
-                class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 text-sm font-medium flex items-center"
+                v-if="order.status === 'pending' || order.status === 'approved'"
+                @click.stop="cancelOrder(order)" 
+                class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 text-sm font-medium flex items-center transition-colors"
               >
                 <XMarkIcon class="w-4 h-4 mr-1" />
                 Cancel
@@ -274,33 +345,23 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="!loading" class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-12 text-center">
-          <div class="flex flex-col items-center justify-center">
-            <div class="p-4 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full mb-4">
-              <ShoppingCartIcon class="w-12 h-12 text-blue-600 dark:text-blue-400" />
-            </div>
-            <p class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No orders found</p>
-            <p class="text-slate-600 dark:text-slate-400 mb-4">Start by creating your first purchase order!</p>
-            <NuxtLink
-              to="/buying/create-order"
-              class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold"
-            >
-              <PlusIcon class="w-5 h-5 mr-2" />
-              Create Order
-            </NuxtLink>
+      <div v-if="filteredOrders.length === 0" class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-12 text-center">
+        <div class="flex flex-col items-center justify-center">
+          <div class="p-4 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full mb-4">
+            <ShoppingCartIcon class="w-12 h-12 text-blue-600 dark:text-blue-400" />
           </div>
+          <p class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No orders found</p>
+          <p class="text-slate-600 dark:text-slate-400 mb-4">Start by creating your first purchase order!</p>
+          <NuxtLink
+            to="/buying/orders/create-order"
+            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold"
+          >
+            <PlusIcon class="w-5 h-5 mr-2" />
+            Create Order
+          </NuxtLink>
         </div>
+      </div>
     </div>
-
-    <!-- Order Details Modal -->
-    <OrderDetailsModal
-      :show="showOrderDetails"
-      :order="selectedOrder"
-      @close="closeOrderDetails"
-      @print="printOrder"
-      @track="trackOrder"
-    />
-
   </div>
 </template>
 
@@ -308,7 +369,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from '~/composables/useToast'
-import OrderDetailsModal from '~/components/buying/OrderDetailsModal.vue'
+import BuyingOrderTimeline from '~/components/buying/OrderTimeline.vue'
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -317,11 +378,8 @@ import {
   ClockIcon,
   TruckIcon,
   CheckCircleIcon,
-  CurrencyDollarIcon,
-  EyeIcon,
   PrinterIcon,
   XMarkIcon,
-  BoltIcon,
   UserGroupIcon,
   PaperAirplaneIcon
 } from '@heroicons/vue/24/outline'
@@ -367,9 +425,9 @@ const loadOrders = async () => {
 const stats = computed(() => ({
   totalPOs: orders.value.length,
   pendingPOs: orders.value.filter((o: any) => o.status === 'pending').length,
-  inTransitPOs: orders.value.filter((o: any) => o.status === 'approved' || o.status === 'in-transit').length,
-  deliveredPOs: orders.value.filter((o: any) => o.status === 'delivered' || o.status === 'received').length,
-  totalValue: Math.round(orders.value.reduce((sum: number, o: any) => sum + (o.total / 1000), 0) * 100) / 100
+  approvedPOs: orders.value.filter((o: any) => o.status === 'approved').length,
+  inTransitPOs: orders.value.filter((o: any) => o.status === 'in-transit').length,
+  deliveredPOs: orders.value.filter((o: any) => o.status === 'delivered' || o.status === 'received').length
 }))
 
 // Suppliers - computed from orders
@@ -390,6 +448,11 @@ const filteredOrders = computed(() => {
     return matchesSearch && matchesStatus && matchesSupplier
   })
 })
+
+// Filter functions
+const filterByStatus = (status: string) => {
+  statusFilter.value = status
+}
 
 const toggleOrderExpansion = (orderId: string) => {
   const index = expandedOrders.value.indexOf(orderId)
@@ -439,11 +502,11 @@ const getPurchaseTypeIcon = (type: string) => {
 
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
-    'pending': 'Awaiting Approval',
-    'approved': 'Approved',
-    'in-transit': 'On the Way',
-    'delivered': 'Delivered',
-    'cancelled': 'Cancelled',
+    'pending': '⏳ Pending',
+    'approved': '✅ Approved',
+    'in-transit': '🚚 In Transit',
+    'delivered': '📦 Delivered',
+    'cancelled': '❌ Cancelled',
     'aggregated': 'Order Placed'
   }
   return labels[status.toLowerCase()] || status
@@ -457,21 +520,7 @@ const formatDate = (date: Date) => {
   })
 }
 
-// Modal state
-const showOrderDetails = ref(false)
-const selectedOrder = ref<Record<string, any> | null>(null)
-
-const viewOrder = (order: Record<string, any>) => {
-  console.log('View Order clicked:', order)
-  selectedOrder.value = order
-  showOrderDetails.value = true
-  console.log('Modal should be visible:', showOrderDetails.value)
-}
-
-const closeOrderDetails = () => {
-  showOrderDetails.value = false
-  selectedOrder.value = null
-}
+// Action handlers
 
 const printOrder = (order: any) => {
   // Create a print-friendly version
@@ -622,25 +671,18 @@ const printOrder = (order: any) => {
   printWindow.document.close()
 }
 
-const trackOrder = (order: any) => {
-  // Navigate to track orders page with order number as query param
-  router.push({
-    path: '/buying/track-orders',
-    query: { order: order.number }
-  })
-}
-
-const approveOrder = async (order: any) => {
+const sendOrder = (order: any) => {
   const toast = useToast()
   
-  try {
-    await buyingAPI.approveOrder(order.id)
-    await loadOrders()
-    toast.success(`Order ${order.orderNumber} approved successfully!`, '✅ Order Approved', 3000)
-  } catch (error) {
-    console.error('Failed to approve order:', error)
-    toast.error('Failed to approve order', 'Error')
-  }
+  // In production, this would send via WhatsApp, Email, or SMS
+  const message = `Purchase Order ${order.orderNumber} for ${order.customer}\nTotal: R${order.total.toFixed(2)}\nStatus: ${getStatusLabel(order.status)}`
+  
+  // Mock sending functionality
+  toast.success(`📤 Order details sent to ${order.customer}`, '✓ Order Sent', 3000)
+  
+  // In real implementation, could open WhatsApp or email:
+  // const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
+  // window.open(whatsappUrl, '_blank')
 }
 
 const cancelOrder = async (order: any) => {
