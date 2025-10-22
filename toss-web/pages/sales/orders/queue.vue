@@ -164,7 +164,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { 
   QueueListIcon,
   ClockIcon,
@@ -172,6 +172,7 @@ import {
   CheckCircleIcon,
   PlusIcon
 } from '@heroicons/vue/24/outline'
+import { useSalesAPI } from '~/composables/useSalesAPI'
 
 // Page metadata
 useHead({
@@ -185,44 +186,32 @@ definePageMeta({
   layout: 'default'
 })
 
-// Sample queue data
-const queueOrders = ref([
-  {
-    id: '1',
-    orderNumber: '001',
-    customer: 'John Doe',
-    total: 250.50,
-    status: 'pending',
-    createdAt: new Date(Date.now() - 15 * 60 * 1000),
-    orderItems: [
-      { id: 1, name: 'Coca Cola 2L', quantity: 2 },
-      { id: 2, name: 'White Bread 700g', quantity: 3 }
-    ]
-  },
-  {
-    id: '2',
-    orderNumber: '002',
-    customer: 'Sarah Smith',
-    total: 180.00,
-    status: 'in-progress',
-    createdAt: new Date(Date.now() - 30 * 60 * 1000),
-    orderItems: [
-      { id: 3, name: 'Milk 1L', quantity: 1 }
-    ]
-  },
-  {
-    id: '3',
-    orderNumber: '003',
-    customer: 'Mike Johnson',
-    total: 450.75,
-    status: 'ready',
-    createdAt: new Date(Date.now() - 45 * 60 * 1000),
-    orderItems: [
-      { id: 4, name: 'Simba Chips 125g', quantity: 5 },
-      { id: 5, name: 'Castle Lager 440ml', quantity: 6 }
-    ]
+// API
+const salesAPI = useSalesAPI()
+
+// State
+const queueOrders = ref<any[]>([])
+const loading = ref(false)
+
+// Load orders on mount
+onMounted(async () => {
+  await loadQueue()
+})
+
+const loadQueue = async () => {
+  loading.value = true
+  try {
+    const allOrders = await salesAPI.getOrders()
+    // Filter to only show non-completed orders
+    queueOrders.value = allOrders.filter((o: any) => 
+      o.status !== 'completed' && o.status !== 'cancelled'
+    )
+  } catch (error) {
+    console.error('Failed to load queue:', error)
+  } finally {
+    loading.value = false
   }
-])
+}
 
 // Computed
 const pendingCount = computed(() => queueOrders.value.filter((o: any) => o.status === 'pending').length)
@@ -256,26 +245,38 @@ const getStatusClass = (status: string) => {
 }
 
 // Actions
-const updateStatus = (order: any, newStatus: string) => {
-  order.status = newStatus
-  const statusText = getStatusLabel(newStatus)
-  alert(`✓ Order #${order.orderNumber} marked as ${statusText}`)
-}
-
-const completeOrder = (order: any) => {
-  const index = queueOrders.value.findIndex((o: any) => o.id === order.id)
-  if (index > -1) {
-    queueOrders.value.splice(index, 1)
-    alert(`✓ Order #${order.orderNumber} completed and removed from queue`)
+const updateStatus = async (order: any, newStatus: string) => {
+  try {
+    await salesAPI.updateOrderStatus(order.id, newStatus)
+    await loadQueue()
+    const statusText = getStatusLabel(newStatus)
+    alert(`✓ Order #${order.orderNumber} marked as ${statusText}`)
+  } catch (error) {
+    console.error('Failed to update status:', error)
+    alert('✗ Failed to update order status')
   }
 }
 
-const cancelOrder = (order: any) => {
+const completeOrder = async (order: any) => {
+  try {
+    await salesAPI.completeOrder(order.id)
+    await loadQueue()
+    alert(`✓ Order #${order.orderNumber} completed and removed from queue`)
+  } catch (error) {
+    console.error('Failed to complete order:', error)
+    alert('✗ Failed to complete order')
+  }
+}
+
+const cancelOrder = async (order: any) => {
   if (confirm(`Cancel order #${order.orderNumber}?`)) {
-    const index = queueOrders.value.findIndex((o: any) => o.id === order.id)
-    if (index > -1) {
-      queueOrders.value.splice(index, 1)
+    try {
+      await salesAPI.cancelOrder(order.id)
+      await loadQueue()
       alert(`✗ Order #${order.orderNumber} cancelled`)
+    } catch (error) {
+      console.error('Failed to cancel order:', error)
+      alert('✗ Failed to cancel order')
     }
   }
 }

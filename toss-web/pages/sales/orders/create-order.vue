@@ -147,12 +147,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ProductGrid from '~/components/sales/ProductGrid.vue'
 import CartDisplay from '~/components/sales/CartDisplay.vue'
 import CustomerInfoModal from '~/components/sales/CustomerInfoModal.vue'
 import OrderQueue from '~/components/sales/OrderQueue.vue'
 import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
+import { useSalesAPI } from '~/composables/useSalesAPI'
 
 // Page metadata
 useHead({
@@ -166,6 +167,9 @@ definePageMeta({
   layout: 'default'
 })
 
+// API
+const salesAPI = useSalesAPI()
+
 // State
 const searchQuery = ref('')
 const selectedCategory = ref('all')
@@ -176,7 +180,8 @@ const cartItems = ref<any[]>([])
 const pendingOrders = ref<any[]>([])
 const selectedCustomer = ref('')
 const selectedPaymentMethod = ref('cash')
-let orderCounter = 1
+const products = ref<any[]>([])
+const customers = ref<any[]>([])
 
 // Customer info for modal
 const customer = ref({
@@ -185,12 +190,39 @@ const customer = ref({
   notes: ''
 })
 
-// Customers list
-const customers = ref([
-  { id: 1, name: 'John Doe' },
-  { id: 2, name: 'Jane Smith' },
-  { id: 3, name: 'Mike Johnson' }
-])
+// Load data on mount
+onMounted(async () => {
+  await loadProducts()
+  await loadCustomers()
+  await loadPendingOrders()
+})
+
+const loadProducts = async () => {
+  try {
+    products.value = await salesAPI.getProducts()
+  } catch (error) {
+    console.error('Failed to load products:', error)
+  }
+}
+
+const loadCustomers = async () => {
+  try {
+    customers.value = await salesAPI.getCustomers()
+  } catch (error) {
+    console.error('Failed to load customers:', error)
+  }
+}
+
+const loadPendingOrders = async () => {
+  try {
+    const allOrders = await salesAPI.getOrders()
+    pendingOrders.value = allOrders.filter((o: any) => 
+      o.status !== 'completed' && o.status !== 'cancelled'
+    )
+  } catch (error) {
+    console.error('Failed to load pending orders:', error)
+  }
+}
 
 // Payment methods
 const paymentMethods = ref([
@@ -209,18 +241,6 @@ const categories = ref([
   { id: 'household', name: 'Household' },
   { id: 'personal', name: 'Personal Care' },
   { id: 'frozen', name: 'Frozen' }
-])
-
-// Sample products
-const products = ref([
-  { id: 1, name: 'Coca Cola 2L', sku: 'CC2L001', price: 35, stock: 24, category: 'beverages', image: null },
-  { id: 2, name: 'White Bread 700g', sku: 'WB700', price: 18, stock: 14, category: 'groceries', image: null },
-  { id: 3, name: 'Milk 1L', sku: 'MLK1L', price: 22, stock: 11, category: 'groceries', image: null },
-  { id: 4, name: 'Simba Chips 125g', sku: 'SC125', price: 12, stock: 30, category: 'snacks', image: null },
-  { id: 5, name: 'Sunlight Soap 250g', sku: 'SS250', price: 15, stock: 8, category: 'household', image: null },
-  { id: 6, name: 'Maggi 2-Minute Noodles', sku: 'MGN2M', price: 8, stock: 45, category: 'groceries', image: null },
-  { id: 7, name: 'Castle Lager 440ml', sku: 'CL440', price: 25, stock: 0, category: 'beverages', image: null },
-  { id: 8, name: 'Purity Baby Food', sku: 'PBF001', price: 45, stock: 12, category: 'groceries', image: null }
 ])
 
 // Computed
@@ -292,35 +312,45 @@ const saveCustomerInfo = (customerInfo: any) => {
   showNotification('✓ Customer info saved')
 }
 
-const createOrder = () => {
+const createOrder = async () => {
   if (cartItems.value.length === 0) return
 
   const customerName = selectedCustomer.value 
     ? customers.value.find((c: any) => c.id == selectedCustomer.value)?.name || 'Walk-in Customer'
     : 'Walk-in Customer'
 
-  const order = {
-    id: Date.now().toString(),
-    orderNumber: String(orderCounter++).padStart(3, '0'),
-    customerName: customerName,
-    customerPhone: customer.value.phone || '',
-    items: [...cartItems.value],
-    total: cartTotal.value,
-    notes: customer.value.notes || '',
-    status: 'pending',
-    createdAt: new Date(),
-    paymentMethod: selectedPaymentMethod.value
-  }
+  try {
+    const newOrder = await salesAPI.createOrder({
+      customer: customerName,
+      customerPhone: customer.value.phone || '',
+      orderItems: cartItems.value.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        sku: item.sku || `SKU-${item.id}`,
+        quantity: item.quantity,
+        price: item.price,
+        stock: item.stock || 0
+      })),
+      total: cartTotal.value,
+      notes: customer.value.notes || '',
+      status: 'pending',
+      paymentMethod: selectedPaymentMethod.value
+    })
 
-  pendingOrders.value.unshift(order)
-  
-  // Clear form
-  clearCart()
-  selectedCustomer.value = ''
-  selectedPaymentMethod.value = 'cash'
-  customer.value = { name: '', phone: '', notes: '' }
-  
-  showNotification(`✓ Order #${order.orderNumber} created for ${customerName}`)
+    // Reload pending orders
+    await loadPendingOrders()
+    
+    // Clear form
+    clearCart()
+    selectedCustomer.value = ''
+    selectedPaymentMethod.value = 'cash'
+    customer.value = { name: '', phone: '', notes: '' }
+    
+    showNotification(`✓ Order #${newOrder.orderNumber} created for ${customerName}`)
+  } catch (error) {
+    console.error('Failed to create order:', error)
+    showNotification('✗ Failed to create order', 'error')
+  }
 }
 
 const holdOrder = () => {
@@ -340,30 +370,38 @@ const voidOrder = () => {
   }
 }
 
-const updateOrderStatus = (orderId: string, newStatus: string) => {
-  const order = pendingOrders.value.find((o: any) => o.id === orderId)
-  if (order) {
-    order.status = newStatus
+const updateOrderStatus = async (orderId: string, newStatus: string) => {
+  try {
+    await salesAPI.updateOrderStatus(orderId, newStatus)
+    await loadPendingOrders()
     const statusText = newStatus === 'pending' ? 'Pending' : newStatus === 'in-progress' ? 'In Progress' : 'Ready'
-    showNotification(`✓ Order #${order.orderNumber} marked as ${statusText}`)
+    showNotification(`✓ Order marked as ${statusText}`)
+  } catch (error) {
+    console.error('Failed to update order status:', error)
+    showNotification('✗ Failed to update order', 'error')
   }
 }
 
-const completeOrder = (orderId: string) => {
-  const order = pendingOrders.value.find((o: any) => o.id === orderId)
-  if (order) {
-    // Remove from pending orders
-    pendingOrders.value = pendingOrders.value.filter((o: any) => o.id !== orderId)
-    showNotification(`✓ Order #${order.orderNumber} completed`)
+const completeOrder = async (orderId: string) => {
+  try {
+    await salesAPI.completeOrder(orderId)
+    await loadPendingOrders()
+    showNotification(`✓ Order completed`)
+  } catch (error) {
+    console.error('Failed to complete order:', error)
+    showNotification('✗ Failed to complete order', 'error')
   }
 }
 
-const cancelOrder = (orderId: string) => {
+const cancelOrder = async (orderId: string) => {
   if (confirm('Cancel this order?')) {
-    const order = pendingOrders.value.find((o: any) => o.id === orderId)
-    if (order) {
-      pendingOrders.value = pendingOrders.value.filter((o: any) => o.id !== orderId)
-      showNotification(`✗ Order #${order.orderNumber} cancelled`)
+    try {
+      await salesAPI.cancelOrder(orderId)
+      await loadPendingOrders()
+      showNotification(`✗ Order cancelled`)
+    } catch (error) {
+      console.error('Failed to cancel order:', error)
+      showNotification('✗ Failed to cancel order', 'error')
     }
   }
 }
