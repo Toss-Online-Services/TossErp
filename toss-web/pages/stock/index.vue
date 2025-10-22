@@ -152,7 +152,7 @@
           </NuxtLink>
 
           <NuxtLink
-              to="/buying/create-order"
+              to="/buying/orders/create-order"
               class="flex items-center p-4 bg-gradient-to-r from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-900/10 rounded-xl hover:shadow-md transition-all duration-200 group"
             >
               <div class="p-3 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
@@ -165,7 +165,7 @@
             </NuxtLink>
 
             <NuxtLink
-              to="/purchasing/group-buying"
+              to="/buying/group-buying"
               class="flex items-center p-4 bg-gradient-to-r from-orange-50 to-orange-100/50 dark:from-orange-900/20 dark:to-orange-900/10 rounded-xl hover:shadow-md transition-all duration-200 group"
             >
               <div class="p-3 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
