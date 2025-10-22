@@ -8,90 +8,66 @@
       
       <!-- Timeline Events -->
       <div class="space-y-6">
-        <!-- Event 1: Order Placed -->
+        <!-- Event 1: Pending -->
         <div class="relative flex items-start gap-4">
-          <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center z-10 ring-4 ring-white dark:ring-slate-800">
-            <CheckCircleIcon class="w-5 h-5 text-white" />
+          <div class="flex-shrink-0 w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center z-10 ring-4 ring-white dark:ring-slate-800">
+            <ClockIcon class="w-5 h-5 text-white" />
           </div>
           <div class="flex-1 pb-6">
             <div class="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-sm border border-slate-200 dark:border-slate-700">
               <div class="flex items-center justify-between mb-2">
-                <h4 class="font-bold text-slate-900 dark:text-white">Order Placed</h4>
-                <span class="text-xs text-slate-500 dark:text-slate-400">{{ formatDate(orderDate) }}</span>
+                <h4 class="font-bold text-slate-900 dark:text-white">⏳ Pending</h4>
+                <span class="text-xs text-slate-500 dark:text-slate-400">{{ formatDate(pendingDate) }}</span>
               </div>
               <p class="text-sm text-slate-600 dark:text-slate-400">
-                Your order {{ orderNumber }} has been received and is being processed.
+                Order {{ orderNumber }} has been placed and is waiting to be started.
               </p>
             </div>
           </div>
         </div>
 
-        <!-- Event 2: Order Confirmed -->
+        <!-- Event 2: In Progress -->
         <div class="relative flex items-start gap-4">
           <div 
             class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center z-10 ring-4 ring-white dark:ring-slate-800"
-            :class="isConfirmed ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-600'"
-          >
-            <DocumentCheckIcon class="w-5 h-5 text-white" />
-          </div>
-          <div class="flex-1 pb-6">
-            <div class="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-sm border border-slate-200 dark:border-slate-700">
-              <div class="flex items-center justify-between mb-2">
-                <h4 class="font-bold text-slate-900 dark:text-white">Order Confirmed</h4>
-                <span v-if="isConfirmed" class="text-xs text-slate-500 dark:text-slate-400">
-                  {{ formatDate(confirmedDate) }}
-                </span>
-              </div>
-              <p class="text-sm text-slate-600 dark:text-slate-400">
-                <span v-if="isConfirmed">Your order has been confirmed by the supplier.</span>
-                <span v-else class="italic">Awaiting supplier confirmation...</span>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Event 3: Preparing for Shipment -->
-        <div class="relative flex items-start gap-4">
-          <div 
-            class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center z-10 ring-4 ring-white dark:ring-slate-800"
-            :class="isPreparing ? 'bg-purple-500' : 'bg-slate-300 dark:bg-slate-600'"
+            :class="isInProgress ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-600'"
           >
             <CubeIcon class="w-5 h-5 text-white" />
           </div>
           <div class="flex-1 pb-6">
             <div class="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-sm border border-slate-200 dark:border-slate-700">
               <div class="flex items-center justify-between mb-2">
-                <h4 class="font-bold text-slate-900 dark:text-white">Preparing for Shipment</h4>
-                <span v-if="isPreparing" class="text-xs text-slate-500 dark:text-slate-400">
-                  {{ formatDate(preparingDate) }}
+                <h4 class="font-bold text-slate-900 dark:text-white">⚙️ In Progress</h4>
+                <span v-if="isInProgress" class="text-xs text-slate-500 dark:text-slate-400">
+                  {{ formatDate(inProgressDate) }}
                 </span>
               </div>
               <p class="text-sm text-slate-600 dark:text-slate-400">
-                <span v-if="isPreparing">Your order is being packed and prepared for delivery.</span>
+                <span v-if="isInProgress">Your order is being prepared.</span>
                 <span v-else class="italic">Not started yet...</span>
               </p>
             </div>
           </div>
         </div>
 
-        <!-- Event 4: Ready for Pickup/Delivery -->
+        <!-- Event 3: Ready -->
         <div class="relative flex items-start gap-4">
           <div 
             class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center z-10 ring-4 ring-white dark:ring-slate-800"
-            :class="isReady ? 'bg-orange-500' : 'bg-slate-300 dark:bg-slate-600'"
+            :class="isReady ? 'bg-green-500' : 'bg-slate-300 dark:bg-slate-600'"
           >
-            <TruckIcon class="w-5 h-5 text-white" />
+            <CheckCircleIcon class="w-5 h-5 text-white" />
           </div>
           <div class="flex-1 pb-6">
             <div class="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-sm border border-slate-200 dark:border-slate-700">
               <div class="flex items-center justify-between mb-2">
-                <h4 class="font-bold text-slate-900 dark:text-white">Ready for Pickup/Delivery</h4>
+                <h4 class="font-bold text-slate-900 dark:text-white">✅ Ready</h4>
                 <span v-if="isReady" class="text-xs text-slate-500 dark:text-slate-400">
                   {{ formatDate(readyDate) }}
                 </span>
               </div>
               <p class="text-sm text-slate-600 dark:text-slate-400">
-                <span v-if="isReady">Your order is ready and awaiting pickup or out for delivery.</span>
+                <span v-if="isReady">Your order is ready for pickup or delivery.</span>
                 <span v-else class="italic">Not ready yet...</span>
               </p>
               <div v-if="isReady && estimatedDelivery" class="mt-2 flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
@@ -102,25 +78,25 @@
           </div>
         </div>
 
-        <!-- Event 5: Delivered -->
+        <!-- Event 4: Completed -->
         <div class="relative flex items-start gap-4">
           <div 
             class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center z-10 ring-4 ring-white dark:ring-slate-800"
-            :class="isDelivered ? 'bg-green-600' : 'bg-slate-300 dark:bg-slate-600'"
+            :class="isCompleted ? 'bg-emerald-600' : 'bg-slate-300 dark:bg-slate-600'"
           >
-            <CheckBadgeIcon class="w-5 h-5 text-white" />
+            <TruckIcon class="w-5 h-5 text-white" />
           </div>
           <div class="flex-1">
             <div class="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-sm border border-slate-200 dark:border-slate-700">
               <div class="flex items-center justify-between mb-2">
-                <h4 class="font-bold text-slate-900 dark:text-white">Delivered</h4>
-                <span v-if="isDelivered" class="text-xs text-slate-500 dark:text-slate-400">
-                  {{ formatDate(deliveredDate) }}
+                <h4 class="font-bold text-slate-900 dark:text-white">📦 Completed</h4>
+                <span v-if="isCompleted" class="text-xs text-slate-500 dark:text-slate-400">
+                  {{ formatDate(completedDate) }}
                 </span>
               </div>
               <p class="text-sm text-slate-600 dark:text-slate-400">
-                <span v-if="isDelivered">Order successfully delivered and received.</span>
-                <span v-else class="italic">Delivery pending...</span>
+                <span v-if="isCompleted">Order successfully completed and delivered.</span>
+                <span v-else class="italic">Awaiting completion...</span>
               </p>
             </div>
           </div>
@@ -134,10 +110,8 @@
 import { computed } from 'vue'
 import {
   CheckCircleIcon,
-  DocumentCheckIcon,
   CubeIcon,
   TruckIcon,
-  CheckBadgeIcon,
   ClockIcon
 } from '@heroicons/vue/24/solid'
 
@@ -150,49 +124,46 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// Compute timeline progress based on status (sales-specific)
-const isConfirmed = computed(() => {
-  return ['confirmed', 'preparing', 'ready', 'delivered'].includes(props.status.toLowerCase())
+// Compute timeline progress based on status (queue statuses)
+const isPending = computed(() => {
+  return ['pending', 'in-progress', 'ready', 'completed'].includes(props.status.toLowerCase())
 })
 
-const isPreparing = computed(() => {
-  return ['preparing', 'ready', 'delivered'].includes(props.status.toLowerCase())
+const isInProgress = computed(() => {
+  return ['in-progress', 'ready', 'completed'].includes(props.status.toLowerCase())
 })
 
 const isReady = computed(() => {
-  return ['ready', 'delivered'].includes(props.status.toLowerCase())
+  return ['ready', 'completed'].includes(props.status.toLowerCase())
 })
 
-const isDelivered = computed(() => {
-  return props.status.toLowerCase() === 'delivered'
+const isCompleted = computed(() => {
+  return props.status.toLowerCase() === 'completed'
 })
 
 // Mock dates for timeline (in production, these would come from API)
-const confirmedDate = computed(() => {
-  if (!isConfirmed.value) return null
-  const date = new Date(props.orderDate)
-  date.setHours(date.getHours() + 2)
-  return date
+const pendingDate = computed(() => {
+  return props.orderDate
 })
 
-const preparingDate = computed(() => {
-  if (!isPreparing.value) return null
+const inProgressDate = computed(() => {
+  if (!isInProgress.value) return null
   const date = new Date(props.orderDate)
-  date.setHours(date.getHours() + 2)
+  date.setMinutes(date.getMinutes() + 15)
   return date
 })
 
 const readyDate = computed(() => {
   if (!isReady.value) return null
   const date = new Date(props.orderDate)
-  date.setHours(date.getHours() + 4)
+  date.setMinutes(date.getMinutes() + 45)
   return date
 })
 
-const deliveredDate = computed(() => {
-  if (!isDelivered.value) return null
+const completedDate = computed(() => {
+  if (!isCompleted.value) return null
   const date = new Date(props.orderDate)
-  date.setHours(date.getHours() + 6)
+  date.setHours(date.getHours() + 2)
   return date
 })
 
