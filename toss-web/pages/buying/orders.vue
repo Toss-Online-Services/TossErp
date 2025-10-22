@@ -168,12 +168,12 @@
               <div class="flex items-center space-x-4">
                 <div class="flex-shrink-0 h-12 w-12">
                   <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                    <span class="text-lg font-bold text-white">{{ order.supplier.charAt(0) }}</span>
+                    <span class="text-lg font-bold text-white">{{ order.customer?.charAt(0) || 'S' }}</span>
                   </div>
                 </div>
                 <div>
-                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ order.number }}</h3>
-                  <p class="text-sm text-slate-600 dark:text-slate-400">{{ order.supplier }}</p>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ order.orderNumber }}</h3>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">{{ order.customer }}</p>
                 </div>
               </div>
               <div class="flex items-center space-x-3">
@@ -200,7 +200,7 @@
                   💰 Saved R{{ order.savingsAmount }}
                 </span>
                 <div class="text-right">
-                  <p class="text-2xl font-bold text-slate-900 dark:text-white">R{{ order.totalAmount.toLocaleString() }}</p>
+                  <p class="text-2xl font-bold text-slate-900 dark:text-white">R{{ order.total.toLocaleString() }}</p>
                 </div>
               </div>
             </div>
@@ -219,11 +219,11 @@
               </div>
               <div>
                 <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Items</p>
-                <p class="text-sm font-medium text-slate-900 dark:text-white">{{ order.itemCount }} items</p>
+                <p class="text-sm font-medium text-slate-900 dark:text-white">{{ order.orderItems?.length || 0 }} items</p>
               </div>
               <div>
                 <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Payment Terms</p>
-                <p class="text-sm font-medium text-slate-900 dark:text-white">{{ order.paymentTerms }}</p>
+                <p class="text-sm font-medium text-slate-900 dark:text-white">Net 30</p>
               </div>
             </div>
 
@@ -322,8 +322,10 @@ import {
   PrinterIcon,
   XMarkIcon,
   BoltIcon,
-  UserGroupIcon
+  UserGroupIcon,
+  PaperAirplaneIcon
 } from '@heroicons/vue/24/outline'
+import { useBuyingAPI } from '~/composables/useBuyingAPI'
 
 // Page metadata
 useHead({
@@ -335,130 +337,68 @@ useHead({
 
 // Composables
 const router = useRouter()
+const buyingAPI = useBuyingAPI()
 
 // State
-const loading = ref(false)
+const loading = ref(true)
 const searchQuery = ref('')
 const statusFilter = ref('')
 const supplierFilter = ref('')
+const orders = ref<any[]>([])
+const expandedOrders = ref<string[]>([])
 
-// Stats
-const stats = ref({
-  totalPOs: 0,
-  pendingPOs: 0,
-  inTransitPOs: 0,
-  deliveredPOs: 0,
-  totalValue: 0
+// Load orders on mount
+onMounted(async () => {
+  await loadOrders()
 })
 
-// Suppliers list
-const suppliers = ref([
-  'ABC Suppliers',
-  'XYZ Wholesalers',
-  'Quality Foods Ltd',
-  'Tech Solutions Inc',
-  'Multiple Suppliers'
-])
-
-// Mock orders data
-const orders = ref([
-  {
-    id: 1,
-    number: 'PO-2025-001',
-    supplier: 'ABC Suppliers',
-    status: 'in-transit',
-    orderDate: new Date('2025-01-15'),
-    expectedDelivery: new Date('2025-01-25'),
-    totalAmount: 15500,
-    itemCount: 12,
-    paymentTerms: 'Net 30'
-  },
-  {
-    id: 2,
-    number: 'PO-2025-002',
-    supplier: 'XYZ Wholesalers',
-    status: 'pending',
-    orderDate: new Date('2025-01-18'),
-    expectedDelivery: new Date('2025-01-28'),
-    totalAmount: 8200,
-    itemCount: 6,
-    paymentTerms: 'Net 15'
-  },
-  {
-    id: 3,
-    number: 'PO-2025-003',
-    supplier: 'Quality Foods Ltd',
-    status: 'delivered',
-    orderDate: new Date('2025-01-10'),
-    expectedDelivery: new Date('2025-01-20'),
-    totalAmount: 23400,
-    itemCount: 18,
-    paymentTerms: 'Net 30'
-  },
-  {
-    id: 4,
-    number: 'PO-2025-004',
-    supplier: 'Tech Solutions Inc',
-    status: 'approved',
-    orderDate: new Date('2025-01-20'),
-    expectedDelivery: new Date('2025-02-01'),
-    totalAmount: 45000,
-    itemCount: 3,
-    paymentTerms: 'Net 60'
+const loadOrders = async () => {
+  loading.value = true
+  try {
+    orders.value = await buyingAPI.getOrders()
+  } catch (error) {
+    console.error('Failed to load orders:', error)
+  } finally {
+    loading.value = false
   }
-])
+}
 
-// Load orders from localStorage
-  const loadOrders = () => {
-    const savedOrders = localStorage.getItem('toss-orders')
-    if (savedOrders) {
-      const parsedOrders = JSON.parse(savedOrders)
-      // Map the saved orders to match the expected format
-      orders.value = parsedOrders.map((order: Record<string, any>) => ({
-        id: order.id || order.orderNumber,
-        number: order.orderNumber,
-        supplier: order.supplier || 'Multiple Suppliers',
-        status: order.status?.toLowerCase() || 'pending',
-        orderDate: new Date(order.date),
-        expectedDelivery: new Date(order.expectedDelivery || Date.now() + 2 * 24 * 60 * 60 * 1000),
-        totalAmount: order.total,
-        itemCount: order.items?.length || 0,
-        paymentTerms: 'Net 30'
-      }))
+// Stats - computed from actual orders
+const stats = computed(() => ({
+  totalPOs: orders.value.length,
+  pendingPOs: orders.value.filter((o: any) => o.status === 'pending').length,
+  inTransitPOs: orders.value.filter((o: any) => o.status === 'approved' || o.status === 'in-transit').length,
+  deliveredPOs: orders.value.filter((o: any) => o.status === 'delivered' || o.status === 'received').length,
+  totalValue: Math.round(orders.value.reduce((sum: number, o: any) => sum + (o.total / 1000), 0) * 100) / 100
+}))
 
-      // Update stats based on loaded orders
-      updateStats()
-    }
-  }
-
-  // Update stats based on orders
-  const updateStats = () => {
-    stats.value.totalPOs = orders.value.length
-    stats.value.pendingPOs = orders.value.filter((o: Record<string, any>) => o.status === 'pending').length
-    stats.value.inTransitPOs = orders.value.filter((o: Record<string, any>) => o.status === 'in-transit').length
-    stats.value.deliveredPOs = orders.value.filter((o: Record<string, any>) => o.status === 'delivered').length
-    // Calculate total value in thousands and round to 2 decimal places
-    const totalInThousands = orders.value.reduce((sum: number, o: Record<string, any>) => sum + (o.totalAmount / 1000), 0)
-    stats.value.totalValue = Math.round(totalInThousands * 100) / 100
-  }
+// Suppliers - computed from orders
+const suppliers = computed(() => {
+  return [...new Set(orders.value.map((o: any) => o.customer))]
+})
 
 // Computed
 const filteredOrders = computed(() => {
-  return orders.value.filter((order: Record<string, any>) => {
+  return orders.value.filter((order: any) => {
     const matchesSearch = !searchQuery.value || 
-      order.number.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      order.supplier.toLowerCase().includes(searchQuery.value.toLowerCase())
+      order.orderNumber?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      order.customer?.toLowerCase().includes(searchQuery.value.toLowerCase())
     
     const matchesStatus = !statusFilter.value || order.status.toLowerCase() === statusFilter.value.toLowerCase()
-    const matchesSupplier = !supplierFilter.value || order.supplier === supplierFilter.value
+    const matchesSupplier = !supplierFilter.value || order.customer === supplierFilter.value
     
     return matchesSearch && matchesStatus && matchesSupplier
   })
 })
 
-onMounted(() => {
-  loadOrders()
-})
+const toggleOrderExpansion = (orderId: string) => {
+  const index = expandedOrders.value.indexOf(orderId)
+  if (index > -1) {
+    expandedOrders.value.splice(index, 1)
+  } else {
+    expandedOrders.value.push(orderId)
+  }
+}
 
 // Methods
 const getStatusClass = (status: string) => {
@@ -690,45 +630,30 @@ const trackOrder = (order: any) => {
   })
 }
 
-const approveOrder = (order: Record<string, any>) => {
+const approveOrder = async (order: any) => {
   const toast = useToast()
   
-  // Update order status
-  const orderData = localStorage.getItem('toss-orders')
-  if (orderData) {
-    const allOrders = JSON.parse(orderData)
-    const orderIndex = allOrders.findIndex((o: Record<string, any>) => o.id === order.id || o.orderNumber === order.number)
-    
-    if (orderIndex > -1) {
-      allOrders[orderIndex].status = 'approved'
-      localStorage.setItem('toss-orders', JSON.stringify(allOrders))
-      
-      // Reload orders
-      loadOrders()
-      
-      toast.success(`Order ${order.number} approved successfully!`, '✅ Order Approved', 3000)
-    }
+  try {
+    await buyingAPI.approveOrder(order.id)
+    await loadOrders()
+    toast.success(`Order ${order.orderNumber} approved successfully!`, '✅ Order Approved', 3000)
+  } catch (error) {
+    console.error('Failed to approve order:', error)
+    toast.error('Failed to approve order', 'Error')
   }
 }
 
-const cancelOrder = (order: Record<string, any>) => {
+const cancelOrder = async (order: any) => {
   const toast = useToast()
   
-  if (confirm(`Are you sure you want to cancel order ${order.number}?`)) {
-    const orderData = localStorage.getItem('toss-orders')
-    if (orderData) {
-      const allOrders = JSON.parse(orderData)
-      const orderIndex = allOrders.findIndex((o: Record<string, any>) => o.id === order.id || o.orderNumber === order.number)
-      
-      if (orderIndex > -1) {
-        allOrders[orderIndex].status = 'cancelled'
-        localStorage.setItem('toss-orders', JSON.stringify(allOrders))
-        
-        // Reload orders
-        loadOrders()
-        
-        toast.warning(`Order ${order.number} has been cancelled`, 'Order Cancelled', 3000)
-      }
+  if (confirm(`Are you sure you want to cancel order ${order.orderNumber}?`)) {
+    try {
+      await buyingAPI.cancelOrder(order.id)
+      await loadOrders()
+      toast.warning(`Order ${order.orderNumber} has been cancelled`, 'Order Cancelled', 3000)
+    } catch (error) {
+      console.error('Failed to cancel order:', error)
+      toast.error('Failed to cancel order', 'Error')
     }
   }
 }

@@ -394,7 +394,10 @@ import {
   ChevronDownIcon
 } from '@heroicons/vue/24/outline'
 import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
+import { useSalesAPI } from '~/composables/useSalesAPI'
 
+// API
+const salesAPI = useSalesAPI()
 
 // Hardware status tracking
 const hardwareStatus = ref({
@@ -422,6 +425,8 @@ const showReports = ref(false)
 const searchInput = ref<HTMLInputElement>()
 const isFullscreen = ref(false)
 const showStatsDetails = ref(false)
+const products = ref<any[]>([])
+const customers = ref<any[]>([])
 
 // POS Stats
 const todaySales = ref(18496)
@@ -440,24 +445,15 @@ const categories = ref([
   { id: 'frozen', name: 'Frozen' }
 ])
 
-// Sample products
-const products = ref([
-  { id: 1, name: 'Coca Cola 2L', sku: 'CC2L001', price: 35, stock: 24, category: 'beverages', image: null },
-  { id: 2, name: 'White Bread 700g', sku: 'WB700', price: 18, stock: 14, category: 'groceries', image: null },
-  { id: 3, name: 'Milk 1L', sku: 'MLK1L', price: 22, stock: 11, category: 'groceries', image: null },
-  { id: 4, name: 'Simba Chips 125g', sku: 'SC125', price: 12, stock: 30, category: 'snacks', image: null },
-  { id: 5, name: 'Sunlight Soap 250g', sku: 'SS250', price: 15, stock: 8, category: 'household', image: null },
-  { id: 6, name: 'Maggi 2-Minute Noodles', sku: 'MGN2M', price: 8, stock: 45, category: 'groceries', image: null },
-  { id: 7, name: 'Castle Lager 440ml', sku: 'CL440', price: 25, stock: 0, category: 'beverages', image: null },
-  { id: 8, name: 'Purity Baby Food', sku: 'PBF001', price: 45, stock: 12, category: 'groceries', image: null }
-])
-
-// Customers
-const customers = ref([
-  { id: 1, name: 'John Doe' },
-  { id: 2, name: 'Jane Smith' },
-  { id: 3, name: 'Mike Johnson' }
-])
+// Load data on mount
+const loadData = async () => {
+  try {
+    products.value = await salesAPI.getProducts()
+    customers.value = await salesAPI.getCustomers()
+  } catch (error) {
+    console.error('Failed to load POS data:', error)
+  }
+}
 
 // Payment methods
 const paymentMethods = ref([
@@ -544,6 +540,7 @@ const addFirstProductToCart = () => {
 
 // Initialize hardware on mount
 onMounted(async () => {
+  await loadData()
   await initializeHardware()
   setupBarcodeScanning()
   
@@ -694,18 +691,36 @@ const requestHardwareAccess = async () => {
 const processPayment = async () => {
   if (cartItems.value.length === 0) return
   
-  if (selectedPaymentMethod.value === 'card' && hardwareStatus.value.cardReader) {
-    // Process card payment
-    try {
+  try {
+    if (selectedPaymentMethod.value === 'card' && hardwareStatus.value.cardReader) {
       showNotification('Processing card payment...')
       await new Promise(resolve => setTimeout(resolve, 2000))
-      showSuccessModal.value = true
-    } catch (error) {
-      showNotification('Card payment failed', 'error')
     }
-  } else {
-    // Cash or other payment
+
+    // Create sale order via API
+    const customerName = selectedCustomer.value 
+      ? customers.value.find((c: any) => c.id == selectedCustomer.value)?.name || 'Walk-in Customer'
+      : 'Walk-in Customer'
+
+    await salesAPI.createOrder({
+      customer: customerName,
+      orderItems: cartItems.value.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        sku: item.sku || `SKU-${item.id}`,
+        quantity: item.quantity,
+        price: item.price,
+        stock: item.stock || 0
+      })),
+      total: cartTotal.value,
+      status: 'completed',
+      paymentMethod: selectedPaymentMethod.value
+    })
+
     showSuccessModal.value = true
+  } catch (error) {
+    console.error('Payment processing failed:', error)
+    showNotification('Payment failed', 'error')
   }
 }
 

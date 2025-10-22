@@ -361,7 +361,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { 
   ShoppingBagIcon,
   PlusIcon,
@@ -377,6 +377,7 @@ import {
   PaperAirplaneIcon
 } from '@heroicons/vue/24/outline'
 import SalesOrderTimeline from '~/components/sales/OrderTimeline.vue'
+import { useSalesAPI } from '~/composables/useSalesAPI'
 
 // Page metadata
 useHead({
@@ -391,11 +392,32 @@ definePageMeta({
   layout: 'default'
 })
 
+// API
+const salesAPI = useSalesAPI()
+
 // Reactive data
 const searchQuery = ref('')
 const statusFilter = ref('')
 const customerFilter = ref('')
 const expandedOrders = ref<string[]>([])
+const orders = ref<any[]>([])
+const loading = ref(false)
+
+// Load orders on mount
+onMounted(async () => {
+  await loadOrders()
+})
+
+const loadOrders = async () => {
+  loading.value = true
+  try {
+    orders.value = await salesAPI.getOrders()
+  } catch (error) {
+    console.error('Failed to load orders:', error)
+  } finally {
+    loading.value = false
+  }
+}
 
 // Order statistics (computed from actual orders)
 const totalOrders = computed(() => orders.value.length)
@@ -404,114 +426,6 @@ const inProgressOrders = computed(() => orders.value.filter((o: any) => o.status
 const readyOrders = computed(() => orders.value.filter((o: any) => o.status === 'ready').length)
 const completedOrders = computed(() => orders.value.filter((o: any) => o.status === 'completed').length)
 const totalOrderValue = computed(() => orders.value.reduce((sum: number, o: any) => sum + o.total, 0))
-
-// Sample orders data with actual POS products and customers
-const orders = ref([
-  {
-    id: '1',
-    orderNumber: 'SO-2025-001',
-    customer: 'John Doe',
-    customerPhone: '+27 82 456 7890',
-    total: 4850,
-    orderItems: [
-      { id: 1, name: 'Coca Cola 2L', sku: 'CC2L001', quantity: 50, price: 35.00, stock: 24 },
-      { id: 2, name: 'White Bread 700g', sku: 'WB700', quantity: 100, price: 18.00, stock: 14 },
-      { id: 3, name: 'Milk 1L', sku: 'MLK1L', quantity: 40, price: 22.00, stock: 11 }
-    ],
-    status: 'in-progress',
-    priority: 'urgent',
-    orderDate: new Date(),
-    expectedDelivery: new Date(Date.now() + 2 * 60 * 60 * 1000),
-    deliveryAddress: '123 Main Street, Soweto',
-    notes: 'Needed for lunch service - please deliver before 11 AM'
-  },
-  {
-    id: '2',
-    orderNumber: 'SO-2025-002', 
-    customer: 'Sarah Smith',
-    customerPhone: '+27 73 123 4567',
-    total: 1250,
-    orderItems: [
-      { id: 4, name: 'Simba Chips 125g', sku: 'SC125', quantity: 30, price: 12.00, stock: 30 },
-      { id: 5, name: 'Sunlight Soap 250g', sku: 'SS250', quantity: 20, price: 15.00, stock: 8 },
-      { id: 6, name: 'Maggi 2-Minute Noodles', sku: 'MGN2M', quantity: 50, price: 8.00, stock: 45 }
-    ],
-    status: 'ready',
-    priority: 'normal',
-    orderDate: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    expectedDelivery: new Date(Date.now() + 1 * 60 * 60 * 1000),
-    deliveryAddress: '456 Park Avenue, Alexandra',
-    notes: 'Customer will collect in person'
-  },
-  {
-    id: '3',
-    orderNumber: 'SO-2025-003',
-    customer: 'Walk-in Customer',
-    customerPhone: '',
-    total: 890,
-    orderItems: [
-      { id: 7, name: 'Castle Lager 440ml', sku: 'CL440', quantity: 24, price: 25.00, stock: 0 },
-      { id: 8, name: 'Purity Baby Food', sku: 'PBF001', quantity: 10, price: 45.00, stock: 12 }
-    ],
-    status: 'completed',
-    priority: 'normal',
-    orderDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    deliveryAddress: '',
-    notes: 'Cash payment'
-  },
-  {
-    id: '4',
-    orderNumber: 'SO-2025-004',
-    customer: 'Mike Johnson',
-    customerPhone: '+27 76 345 6789',
-    total: 2550,
-    orderItems: [
-      { id: 1, name: 'Coca Cola 2L', sku: 'CC2L001', quantity: 24, price: 35.00, stock: 24 },
-      { id: 2, name: 'White Bread 700g', sku: 'WB700', quantity: 50, price: 18.00, stock: 14 },
-      { id: 6, name: 'Maggi 2-Minute Noodles', sku: 'MGN2M', quantity: 100, price: 8.00, stock: 45 }
-    ],
-    status: 'in-progress',
-    priority: 'high',
-    orderDate: new Date(Date.now() - 3 * 60 * 60 * 1000),
-    expectedDelivery: new Date(Date.now() + 5 * 60 * 60 * 1000),
-    deliveryAddress: 'Construction Site, Building Ave, Orange Farm',
-    notes: 'Large order for construction workers - arrange truck delivery'
-  },
-  {
-    id: '5',
-    orderNumber: 'SO-2025-005',
-    customer: 'Emily Davis',
-    customerPhone: '+27 82 567 8901',
-    total: 1780,
-    orderItems: [
-      { id: 3, name: 'Milk 1L', sku: 'MLK1L', quantity: 30, price: 22.00, stock: 11 },
-      { id: 4, name: 'Simba Chips 125g', sku: 'SC125', quantity: 50, price: 12.00, stock: 30 },
-      { id: 2, name: 'White Bread 700g', sku: 'WB700', quantity: 40, price: 18.00, stock: 14 }
-    ],
-    status: 'pending',
-    priority: 'urgent',
-    orderDate: new Date(Date.now() - 30 * 60 * 1000),
-    expectedDelivery: new Date(Date.now() + 4 * 60 * 60 * 1000),
-    deliveryAddress: '654 Event Hall, Tembisa',
-    notes: 'Wedding catering supplies - time sensitive'
-  },
-  {
-    id: '6',
-    orderNumber: 'SO-2025-006',
-    customer: 'Walk-in Customer',
-    customerPhone: '',
-    total: 1150,
-    orderItems: [
-      { id: 8, name: 'Purity Baby Food', sku: 'PBF001', quantity: 15, price: 45.00, stock: 12 },
-      { id: 5, name: 'Sunlight Soap 250g', sku: 'SS250', quantity: 20, price: 15.00, stock: 8 }
-    ],
-    status: 'completed',
-    priority: 'normal',
-    orderDate: new Date(Date.now() - 48 * 60 * 60 * 1000),
-    deliveryAddress: '',
-    notes: 'Cash payment - walk-in'
-  }
-])
 
 // Computed
 const customers = computed(() => {
@@ -656,10 +570,16 @@ const sendOrder = (order: any) => {
   }
 }
 
-const cancelOrder = (order: any) => {
+const cancelOrder = async (order: any) => {
   if (confirm(`Are you sure you want to cancel order ${order.orderNumber}?`)) {
-    order.status = 'cancelled'
-    alert(`✓ Order ${order.orderNumber} has been cancelled`)
+    try {
+      await salesAPI.cancelOrder(order.id)
+      await loadOrders() // Reload to reflect changes
+      alert(`✓ Order ${order.orderNumber} has been cancelled`)
+    } catch (error) {
+      console.error('Failed to cancel order:', error)
+      alert('✗ Failed to cancel order')
+    }
   }
 }
 
