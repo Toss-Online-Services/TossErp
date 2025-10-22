@@ -28,9 +28,13 @@
     <!-- Main Content -->
     <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
-      <!-- Stats Cards -->
+      <!-- Stats Cards - Now Clickable -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <button 
+          @click="filterByStatus('')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-green-500 border-green-500': statusFilter === '' }"
+        >
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Orders</p>
@@ -40,9 +44,13 @@
               <ShoppingBagIcon class="w-8 h-8 text-white" />
             </div>
         </div>
-      </div>
+      </button>
 
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <button
+          @click="filterByStatus('pending')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-orange-500 border-orange-500': statusFilter === 'pending' }"
+        >
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Pending</p>
@@ -52,9 +60,13 @@
               <ClockIcon class="w-8 h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <button
+          @click="filterByStatus('preparing')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-purple-500 border-purple-500': statusFilter === 'preparing' }"
+        >
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Preparing</p>
@@ -64,9 +76,13 @@
               <SparklesIcon class="w-8 h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+        <button
+          @click="filterByStatus('delivered')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-green-500 border-green-500': statusFilter === 'delivered' }"
+        >
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Delivered</p>
@@ -76,7 +92,7 @@
               <CheckCircleIcon class="w-8 h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
 
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <div class="flex items-center justify-between">
@@ -150,8 +166,11 @@
             <div v-for="order in filteredOrders" :key="order.id" 
           class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all duration-300"
         >
-          <!-- Order Header -->
-          <div class="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 px-6 py-4 border-b border-slate-200 dark:border-slate-600">
+          <!-- Order Header - Clickable to expand/collapse -->
+          <div 
+            @click="toggleOrderExpansion(order.id)"
+            class="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 px-6 py-4 border-b border-slate-200 dark:border-slate-600 cursor-pointer hover:from-green-100 hover:to-blue-100 dark:hover:from-green-900/30 dark:hover:to-blue-900/30 transition-colors"
+          >
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-4">
                 <div class="flex-shrink-0 h-12 w-12">
@@ -180,12 +199,15 @@
                 </span>
               <div class="text-right">
                   <p class="text-2xl font-bold text-slate-900 dark:text-white">R{{ order.total.toLocaleString() }}</p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {{ expandedOrders.includes(order.id) ? '▲ Click to collapse' : '▼ Click to expand' }}
+                  </p>
           </div>
         </div>
       </div>
     </div>
 
-          <!-- Order Details -->
+          <!-- Order Details - Always Visible -->
           <div class="px-6 py-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
               <div>
@@ -210,18 +232,39 @@
               </div>
             </div>
 
+            <!-- Expandable Timeline Section -->
+            <transition 
+              enter-active-class="transition-all duration-300 ease-out"
+              enter-from-class="max-h-0 opacity-0"
+              enter-to-class="max-h-[1000px] opacity-100"
+              leave-active-class="transition-all duration-200 ease-in"
+              leave-from-class="max-h-[1000px] opacity-100"
+              leave-to-class="max-h-0 opacity-0"
+            >
+              <div v-if="expandedOrders.includes(order.id)" class="overflow-hidden">
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-6 mb-4">
+                  <SalesOrderTimeline
+                    :order-number="order.orderNumber"
+                    :status="order.status"
+                    :order-date="order.orderDate"
+                    :expected-delivery="order.expectedDelivery"
+                  />
+                </div>
+              </div>
+            </transition>
+
             <!-- Actions -->
             <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
               <div class="flex space-x-3">
                 <button 
-                  @click="viewOrder(order)" 
+                  @click.stop="viewOrder(order)" 
                   class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 text-sm font-medium flex items-center"
                 >
                   <EyeIcon class="w-4 h-4 mr-1" />
                   View
                 </button>
                 <button 
-                  @click="printOrder(order)" 
+                  @click.stop="printOrder(order)" 
                   class="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-200 text-sm font-medium flex items-center"
                 >
                   <PrinterIcon class="w-4 h-4 mr-1" />
@@ -229,7 +272,7 @@
                 </button>
                 <button 
                   v-if="order.deliveryAddress"
-                  @click="trackOrder(order)" 
+                  @click.stop="trackOrder(order)" 
                   class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-200 text-sm font-medium flex items-center"
                 >
                   <TruckIcon class="w-4 h-4 mr-1" />
@@ -238,7 +281,7 @@
               </div>
               <button 
                 v-if="order.status === 'pending' || order.status === 'confirmed'"
-                @click="cancelOrder(order)" 
+                @click.stop="cancelOrder(order)" 
                 class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 text-sm font-medium flex items-center"
               >
                 <XMarkIcon class="w-4 h-4 mr-1" />
@@ -286,6 +329,7 @@ import {
   SparklesIcon,
   MagnifyingGlassIcon
 } from '@heroicons/vue/24/outline'
+import SalesOrderTimeline from '~/components/sales/OrderTimeline.vue'
 
 // Page metadata
 useHead({
@@ -304,6 +348,7 @@ definePageMeta({
 const searchQuery = ref('')
 const statusFilter = ref('')
 const customerFilter = ref('')
+const expandedOrders = ref<string[]>([])
 
 // Order statistics
 const totalOrders = ref(156)
@@ -410,6 +455,20 @@ const filteredOrders = computed(() => {
 
   return filtered
 })
+
+// Filter functions
+const filterByStatus = (status: string) => {
+  statusFilter.value = status
+}
+
+const toggleOrderExpansion = (orderId: string) => {
+  const index = expandedOrders.value.indexOf(orderId)
+  if (index > -1) {
+    expandedOrders.value.splice(index, 1)
+  } else {
+    expandedOrders.value.push(orderId)
+  }
+}
 
 // Helper functions
 const formatCurrency = (amount: number) => {

@@ -1,25 +1,7 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 relative overflow-hidden">
-    <!-- Transaction Type Watermark -->
-    <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 select-none">
-      <div class="text-[20rem] font-black text-green-500/5 dark:text-green-400/5 rotate-[-15deg] whitespace-nowrap">
-        📦 ORDER
-      </div>
-    </div>
-
-    <!-- Transaction Type Badge (Top Right) -->
-    <div class="fixed top-4 right-4 z-50 pointer-events-none">
-      <div class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-2xl shadow-2xl border-4 border-white dark:border-slate-800">
-        <span class="text-3xl">📦</span>
-        <div>
-          <div class="text-xs font-medium opacity-90">Transaction Type</div>
-          <div class="text-lg font-black tracking-wider">ORDER</div>
-        </div>
-      </div>
-    </div>
-
     <!-- Mobile-First Page Container -->
-    <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6 relative z-10">
+    <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
       <!-- Page Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
         <div>
@@ -55,40 +37,45 @@
         <div class="space-y-4">
           <CartDisplay
             :items="cartItems"
-            title="New Order"
+            title="Current Order"
             @clear-cart="clearCart"
             @update-quantity="updateQuantity"
             @remove-item="removeFromCart"
           >
             <template #customer-section>
-              <!-- Customer Info Prompt/Display -->
+              <!-- Customer Selection -->
               <div class="mb-4">
-                <div v-if="!customer.name" 
-                  class="p-3 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-xl cursor-pointer hover:shadow-md transition-all"
-                  @click="showCustomerModal = true"
+                <label class="block text-sm font-medium text-gray-700 mb-2">Customer</label>
+                <select 
+                  v-model="selectedCustomer"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
                 >
-                  <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    <span class="text-sm font-semibold text-yellow-800">Click to add customer info</span>
-                  </div>
-                </div>
-                <div v-else 
-                  class="p-3 bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-300 rounded-xl"
-                >
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <p class="text-sm font-bold text-green-900">{{ customer.name }}</p>
-                      <p v-if="customer.phone" class="text-xs text-green-700">{{ customer.phone }}</p>
-                    </div>
-                    <button 
-                      @click="showCustomerModal = true"
-                      class="text-xs text-blue-600 hover:text-blue-800 font-medium"
-                    >
-                      Edit
-                    </button>
-                  </div>
+                  <option value="">Walk-in Customer</option>
+                  <option v-for="customer in customers" :key="customer.id" :value="customer.id">
+                    {{ customer.name }}
+                  </option>
+                </select>
+              </div>
+            </template>
+
+            <template #payment-section>
+              <!-- Payment Methods -->
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <button 
+                    v-for="method in paymentMethods" 
+                    :key="method.id"
+                    @click="selectedPaymentMethod = method.id"
+                    :class="[
+                      'p-2 rounded-lg text-sm font-medium transition-colors',
+                      selectedPaymentMethod === method.id
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ]"
+                  >
+                    {{ method.name }}
+                  </button>
                 </div>
               </div>
             </template>
@@ -98,9 +85,9 @@
               <button 
                 @click="createOrder"
                 :disabled="cartItems.length === 0"
-                class="w-full py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 text-white disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+                class="w-full py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 text-white disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
               >
-                📦 Create Order
+                📦 Create Order - R{{ formatCurrency(cartTotal) }}
               </button>
             </template>
           </CartDisplay>
@@ -110,17 +97,22 @@
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
             <div class="space-y-3">
               <button 
+                @click="holdOrder"
+                class="w-full py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                ⏸️ Hold Order
+              </button>
+              <button 
+                @click="voidOrder"
+                class="w-full py-2.5 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                ❌ Void Order
+              </button>
+              <button 
                 @click="showCustomerModal = true"
                 class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                👤 Add/Edit Customer
-              </button>
-              <button 
-                @click="clearCart"
-                :disabled="cartItems.length === 0"
-                class="w-full py-2.5 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                ❌ Clear Order
+                👤 Add Customer
               </button>
             </div>
           </div>
@@ -182,14 +174,31 @@ const showCustomerModal = ref(false)
 const showOrderQueue = ref(false)
 const cartItems = ref<any[]>([])
 const pendingOrders = ref<any[]>([])
+const selectedCustomer = ref('')
+const selectedPaymentMethod = ref('cash')
 let orderCounter = 1
 
-// Customer info
+// Customer info for modal
 const customer = ref({
   name: '',
   phone: '',
   notes: ''
 })
+
+// Customers list
+const customers = ref([
+  { id: 1, name: 'John Doe' },
+  { id: 2, name: 'Jane Smith' },
+  { id: 3, name: 'Mike Johnson' }
+])
+
+// Payment methods
+const paymentMethods = ref([
+  { id: 'cash', name: 'Cash' },
+  { id: 'card', name: 'Card' },
+  { id: 'eft', name: 'EFT' },
+  { id: 'account', name: 'Account' }
+])
 
 // Categories
 const categories = ref([
@@ -220,6 +229,13 @@ const cartTotal = computed(() => {
 })
 
 // Methods
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-ZA', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount)
+}
+
 const addToCart = (product: any) => {
   if (product.stock === 0) return
 
@@ -278,33 +294,50 @@ const saveCustomerInfo = (customerInfo: any) => {
 
 const createOrder = () => {
   if (cartItems.value.length === 0) return
-  
-  if (!customer.value.name.trim()) {
-    showCustomerModal.value = true
-    showNotification('Please add customer information', 'error')
-    return
-  }
+
+  const customerName = selectedCustomer.value 
+    ? customers.value.find((c: any) => c.id == selectedCustomer.value)?.name || 'Walk-in Customer'
+    : 'Walk-in Customer'
 
   const order = {
     id: Date.now().toString(),
     orderNumber: String(orderCounter++).padStart(3, '0'),
-    customerName: customer.value.name,
-    customerPhone: customer.value.phone,
+    customerName: customerName,
+    customerPhone: customer.value.phone || '',
     items: [...cartItems.value],
     total: cartTotal.value,
-    notes: customer.value.notes,
+    notes: customer.value.notes || '',
     status: 'pending',
-    createdAt: new Date()
+    createdAt: new Date(),
+    paymentMethod: selectedPaymentMethod.value
   }
 
   pendingOrders.value.unshift(order)
   
   // Clear form
   clearCart()
+  selectedCustomer.value = ''
+  selectedPaymentMethod.value = 'cash'
   customer.value = { name: '', phone: '', notes: '' }
   
-  showNotification(`✓ Order #${order.orderNumber} created for ${order.customerName}`)
-  showOrderQueue.value = true
+  showNotification(`✓ Order #${order.orderNumber} created for ${customerName}`)
+}
+
+const holdOrder = () => {
+  if (cartItems.value.length === 0) return
+  
+  // In production, save to held orders
+  showNotification('✓ Order held successfully')
+  clearCart()
+}
+
+const voidOrder = () => {
+  if (cartItems.value.length === 0) return
+  
+  if (confirm('Are you sure you want to void this order?')) {
+    clearCart()
+    showNotification('✗ Order voided')
+  }
 }
 
 const updateOrderStatus = (orderId: string, newStatus: string) => {
