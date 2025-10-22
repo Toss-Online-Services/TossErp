@@ -213,11 +213,11 @@
           <!-- Order Details - Always Visible -->
           <div class="px-6 py-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div>
+                <div>
                 <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Order Date</p>
                 <p class="text-sm font-medium text-slate-900 dark:text-white">{{ formatDate(order.orderDate) }}</p>
-              </div>
-              <div>
+                </div>
+                <div>
                 <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Expected Delivery</p>
                 <p class="text-sm font-medium text-slate-900 dark:text-white">
                   {{ order.deliveryAddress ? formatDate(order.expectedDelivery || order.orderDate) : 'Walk-in' }}
@@ -233,7 +233,7 @@
                   {{ order.deliveryAddress ? 'COD' : 'Cash' }}
                 </p>
               </div>
-            </div>
+              </div>
 
             <!-- Order Items Grid - Visible when expanded -->
             <transition 
@@ -254,7 +254,7 @@
                       class="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-3 border border-slate-200 dark:border-slate-600"
                     >
                       <div class="flex items-start justify-between mb-2">
-                        <div class="flex-1">
+                    <div class="flex-1">
                           <h5 class="font-semibold text-slate-900 dark:text-white text-sm">{{ item.name }}</h5>
                           <p class="text-xs text-slate-500 dark:text-slate-400">SKU: {{ item.sku }}</p>
                         </div>
@@ -275,12 +275,12 @@
                         >
                           Stock: {{ item.stock }}
                         </span>
-                      </div>
+                    </div>
                       <div class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-600">
                         <p class="text-sm font-bold text-slate-900 dark:text-white">
                           Total: R{{ (item.quantity * item.price).toFixed(2) }}
                         </p>
-                      </div>
+                    </div>
                     </div>
                   </div>
                 </div>
@@ -312,32 +312,24 @@
             <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
               <div class="flex space-x-3">
                 <button 
-                  @click.stop="viewOrder(order)" 
-                  class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 text-sm font-medium flex items-center"
-                >
-                  <EyeIcon class="w-4 h-4 mr-1" />
-                  View
-                </button>
-                <button 
                   @click.stop="printOrder(order)" 
-                  class="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-200 text-sm font-medium flex items-center"
+                  class="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-200 text-sm font-medium flex items-center transition-colors"
                 >
                   <PrinterIcon class="w-4 h-4 mr-1" />
                   Print
                 </button>
                 <button 
-                  v-if="order.deliveryAddress"
-                  @click.stop="trackOrder(order)" 
-                  class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-200 text-sm font-medium flex items-center"
+                  @click.stop="sendOrder(order)" 
+                  class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 text-sm font-medium flex items-center transition-colors"
                 >
-                  <TruckIcon class="w-4 h-4 mr-1" />
-                  Track
+                  <PaperAirplaneIcon class="w-4 h-4 mr-1" />
+                  Send
                 </button>
               </div>
               <button 
-                v-if="order.status === 'pending' || order.status === 'confirmed'"
+                v-if="order.status === 'pending' || order.status === 'in-progress'"
                 @click.stop="cancelOrder(order)" 
-                class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 text-sm font-medium flex items-center"
+                class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 text-sm font-medium flex items-center transition-colors"
               >
                 <XMarkIcon class="w-4 h-4 mr-1" />
                 Cancel
@@ -377,12 +369,12 @@ import {
   ClockIcon,
   TruckIcon,
   CurrencyDollarIcon,
-  EyeIcon,
   PrinterIcon,
   XMarkIcon,
   CheckCircleIcon,
   SparklesIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
+  PaperAirplaneIcon
 } from '@heroicons/vue/24/outline'
 import SalesOrderTimeline from '~/components/sales/OrderTimeline.vue'
 
@@ -413,12 +405,12 @@ const readyOrders = computed(() => orders.value.filter((o: any) => o.status === 
 const completedOrders = computed(() => orders.value.filter((o: any) => o.status === 'completed').length)
 const totalOrderValue = computed(() => orders.value.reduce((sum: number, o: any) => sum + o.total, 0))
 
-// Sample orders data with actual POS products
+// Sample orders data with actual POS products and customers
 const orders = ref([
   {
     id: '1',
     orderNumber: 'SO-2025-001',
-    customer: 'Nomsa Community Kitchen',
+    customer: 'John Doe',
     customerPhone: '+27 82 456 7890',
     total: 4850,
     orderItems: [
@@ -430,13 +422,13 @@ const orders = ref([
     priority: 'urgent',
     orderDate: new Date(),
     expectedDelivery: new Date(Date.now() + 2 * 60 * 60 * 1000),
-    deliveryAddress: '123 Community Street, Soweto',
+    deliveryAddress: '123 Main Street, Soweto',
     notes: 'Needed for lunch service - please deliver before 11 AM'
   },
   {
     id: '2',
     orderNumber: 'SO-2025-002', 
-    customer: 'Sipho Auto Repair',
+    customer: 'Sarah Smith',
     customerPhone: '+27 73 123 4567',
     total: 1250,
     orderItems: [
@@ -448,14 +440,14 @@ const orders = ref([
     priority: 'normal',
     orderDate: new Date(Date.now() - 2 * 60 * 60 * 1000),
     expectedDelivery: new Date(Date.now() + 1 * 60 * 60 * 1000),
-    deliveryAddress: '456 Garage Road, Alexandra',
+    deliveryAddress: '456 Park Avenue, Alexandra',
     notes: 'Customer will collect in person'
   },
   {
     id: '3',
     orderNumber: 'SO-2025-003',
-    customer: 'Lerato Hair Studio',
-    customerPhone: '+27 84 789 0123', 
+    customer: 'Walk-in Customer',
+    customerPhone: '',
     total: 890,
     orderItems: [
       { id: 7, name: 'Castle Lager 440ml', sku: 'CL440', quantity: 24, price: 25.00, stock: 0 },
@@ -464,13 +456,13 @@ const orders = ref([
     status: 'completed',
     priority: 'normal',
     orderDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    deliveryAddress: '789 Beauty Lane, Diepsloot',
-    notes: 'Weekly hair product delivery'
+    deliveryAddress: '',
+    notes: 'Cash payment'
   },
   {
     id: '4',
     orderNumber: 'SO-2025-004',
-    customer: 'Mandla Construction',
+    customer: 'Mike Johnson',
     customerPhone: '+27 76 345 6789',
     total: 2550,
     orderItems: [
@@ -482,13 +474,13 @@ const orders = ref([
     priority: 'high',
     orderDate: new Date(Date.now() - 3 * 60 * 60 * 1000),
     expectedDelivery: new Date(Date.now() + 5 * 60 * 60 * 1000),
-    deliveryAddress: 'Construction Site, 321 Building Ave, Orange Farm',
+    deliveryAddress: 'Construction Site, Building Ave, Orange Farm',
     notes: 'Large order for construction workers - arrange truck delivery'
   },
   {
     id: '5',
     orderNumber: 'SO-2025-005',
-    customer: 'Grace Catering Services',
+    customer: 'Emily Davis',
     customerPhone: '+27 82 567 8901',
     total: 1780,
     orderItems: [
@@ -506,8 +498,8 @@ const orders = ref([
   {
     id: '6',
     orderNumber: 'SO-2025-006',
-    customer: 'Thabo Spaza Shop',
-    customerPhone: '+27 71 234 5678',
+    customer: 'Walk-in Customer',
+    customerPhone: '',
     total: 1150,
     orderItems: [
       { id: 8, name: 'Purity Baby Food', sku: 'PBF001', quantity: 15, price: 45.00, stock: 12 },
@@ -516,8 +508,8 @@ const orders = ref([
     status: 'completed',
     priority: 'normal',
     orderDate: new Date(Date.now() - 48 * 60 * 60 * 1000),
-    deliveryAddress: '789 Township Road, Soweto',
-    notes: 'Regular weekly stock order'
+    deliveryAddress: '',
+    notes: 'Cash payment - walk-in'
   }
 ])
 
@@ -609,26 +601,69 @@ const getPriorityClass = (priority: string) => {
 }
 
 // Actions
-const viewOrder = (order: any) => {
-  alert(`Viewing order ${order.orderNumber} for ${order.customer}`)
-}
-
 const printOrder = (order: any) => {
-  alert(`Printing order ${order.orderNumber}`)
+  const printWindow = window.open('', '_blank')
+  if (printWindow) {
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Order ${order.orderNumber}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h1 { color: #2563eb; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f3f4f6; }
+          </style>
+        </head>
+        <body>
+          <h1>Order ${order.orderNumber}</h1>
+          <p><strong>Customer:</strong> ${order.customer}</p>
+          <p><strong>Date:</strong> ${formatDate(order.orderDate)}</p>
+          <p><strong>Status:</strong> ${getStatusLabel(order.status)}</p>
+          <h2>Items:</h2>
+          <table>
+            <tr><th>Product</th><th>SKU</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+            ${order.orderItems.map((item: any) => `
+              <tr>
+                <td>${item.name}</td>
+                <td>${item.sku}</td>
+                <td>${item.quantity}</td>
+                <td>R${item.price.toFixed(2)}</td>
+                <td>R${(item.quantity * item.price).toFixed(2)}</td>
+              </tr>
+            `).join('')}
+          </table>
+          <p style="margin-top: 20px;"><strong>Total: R${order.total.toFixed(2)}</strong></p>
+        </body>
+      </html>
+    `)
+    printWindow.document.close()
+    printWindow.print()
+  }
 }
 
-const trackOrder = (order: any) => {
-  alert(`Tracking delivery for order ${order.orderNumber}`)
+const sendOrder = (order: any) => {
+  // In production, this would send via WhatsApp, Email, or SMS
+  const message = `Order ${order.orderNumber} for ${order.customer}\nTotal: R${order.total.toFixed(2)}\nStatus: ${getStatusLabel(order.status)}`
+  
+  if (order.customerPhone) {
+    // WhatsApp share
+    const whatsappUrl = `https://wa.me/${order.customerPhone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`
+    window.open(whatsappUrl, '_blank')
+  } else {
+    alert(`Order details:\n\n${message}\n\nNote: Add customer phone number to send via WhatsApp`)
+  }
 }
 
 const cancelOrder = (order: any) => {
   if (confirm(`Are you sure you want to cancel order ${order.orderNumber}?`)) {
     order.status = 'cancelled'
-    alert(`Order ${order.orderNumber} has been cancelled`)
+    alert(`✓ Order ${order.orderNumber} has been cancelled`)
   }
 }
 
 const exportOrders = () => {
-  alert('Exporting orders...')
+  alert('📥 Exporting orders to CSV...')
 }
 </script>
