@@ -35,59 +35,87 @@
     <!-- Main Content -->
     <div class="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
 
-      <!-- Invoice Stats -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+      <!-- Invoice Stats - Clickable Filters -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 mb-8">
+        <button 
+          @click="filterByStatus('')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-blue-500 border-blue-500': statusFilter === '' }"
+        >
           <div class="flex items-center justify-between">
-            <div class="flex-1 min-w-0">
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">Total Invoices</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white truncate">{{ totalInvoices }}</p>
-              <p class="text-xs sm:text-sm text-blue-600 mt-1">{{ newInvoices }} this month</p>
+            <div>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Invoices</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ stats.totalInvoices }}</p>
             </div>
-            <div class="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg flex-shrink-0">
-              <DocumentTextIcon class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+              <DocumentTextIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+        <button
+          @click="filterByStatus('draft')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-slate-500 border-slate-500': statusFilter === 'draft' }"
+        >
           <div class="flex items-center justify-between">
-            <div class="flex-1 min-w-0">
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">Outstanding</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white truncate">R{{ formatCurrency(outstandingAmount) }}</p>
-              <p class="text-xs sm:text-sm text-red-600 mt-1">{{ overdueInvoices }} overdue</p>
+            <div>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Draft</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ stats.draftInvoices }}</p>
             </div>
-            <div class="p-2 sm:p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl shadow-lg flex-shrink-0">
-              <ExclamationTriangleIcon class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-slate-500 to-slate-600 rounded-xl">
+              <DocumentTextIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+        <button
+          @click="filterByStatus('sent')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-purple-500 border-purple-500': statusFilter === 'sent' }"
+        >
           <div class="flex items-center justify-between">
-            <div class="flex-1 min-w-0">
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">Paid This Month</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white truncate">R{{ formatCurrency(paidThisMonth) }}</p>
-              <p class="text-xs sm:text-sm text-green-600 mt-1">{{ paidInvoices }} invoices</p>
+            <div>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Sent</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ stats.sentInvoices }}</p>
             </div>
-            <div class="p-2 sm:p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg flex-shrink-0">
-              <CheckCircleIcon class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl">
+              <PaperAirplaneIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+        <button
+          @click="filterByStatus('paid')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-green-500 border-green-500': statusFilter === 'paid' }"
+        >
           <div class="flex items-center justify-between">
-            <div class="flex-1 min-w-0">
-              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">Average Invoice</p>
-              <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white truncate">R{{ formatCurrency(avgInvoiceValue) }}</p>
-              <p class="text-xs sm:text-sm text-purple-600 mt-1">{{ paymentTerms }} day terms</p>
+            <div>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Paid</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ stats.paidInvoices }}</p>
             </div>
-            <div class="p-2 sm:p-3 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl shadow-lg flex-shrink-0">
-              <CalculatorIcon class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+              <CheckCircleIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>
-        </div>
+        </button>
+
+        <button
+          @click="filterByStatus('overdue')"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left"
+          :class="{ 'ring-4 ring-red-500 border-red-500': statusFilter === 'overdue' }"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Overdue</p>
+              <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ stats.overdueInvoices }}</p>
+            </div>
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl">
+              <ExclamationTriangleIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+            </div>
+          </div>
+        </button>
       </div>
 
       <!-- Filters and Search -->
@@ -121,49 +149,165 @@
       </div>
 
       <!-- Invoices List -->
-      <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
-        <div class="bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-900/20 dark:to-blue-900/20 px-4 sm:px-6 py-4 border-b border-slate-200 dark:border-slate-600">
-          <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Recent Invoices</h3>
-        </div>
-        <div class="p-4 sm:p-6">
-          <div class="space-y-3 sm:space-y-4">
-            <div v-for="invoice in filteredInvoices" :key="invoice.id" 
-                 class="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200 hover:shadow-md">
-              <div class="flex items-center space-x-3 flex-1 min-w-0">
-                <div class="w-10 h-10 rounded-full flex items-center justify-center" :class="getStatusColor(invoice.status)">
-                  <DocumentTextIcon class="w-5 h-5 text-white" />
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2">
-                    <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ invoice.invoiceNumber }}</p>
-                    <span class="inline-flex px-2 py-1 text-xs rounded-full" :class="getStatusBadge(invoice.status)">
-                      {{ invoice.status }}
-                    </span>
+      <div v-if="filteredInvoices.length > 0" class="space-y-4">
+        <div v-for="invoice in filteredInvoices" :key="invoice.id" 
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all duration-300"
+        >
+          <!-- Invoice Header -->
+          <div 
+            @click="toggleInvoiceExpansion(invoice.id)"
+            class="bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-900/20 dark:to-blue-900/20 px-6 py-4 border-b border-slate-200 dark:border-slate-600 cursor-pointer hover:from-orange-100 hover:to-blue-100 dark:hover:from-orange-900/30 dark:hover:to-blue-900/30 transition-all"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0 h-12 w-12">
+                  <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500 to-blue-600 flex items-center justify-center">
+                    <span class="text-lg font-bold text-white">{{ invoice.customer?.charAt(0) || 'I' }}</span>
                   </div>
-                  <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{{ invoice.customer }}</p>
-                  <p class="text-xs text-slate-500 dark:text-slate-500">Due {{ formatDueDate(invoice.dueDate) }}</p>
+                </div>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ invoice.invoiceNumber }}</h3>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">{{ invoice.customer }}</p>
                 </div>
               </div>
-              <div class="text-right">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white">R {{ formatCurrency(invoice.amount) }}</p>
-                <div class="flex gap-1 mt-1">
-                  <button @click="viewInvoice(invoice)" class="p-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 rounded">
-                    <EyeIcon class="w-4 h-4" />
-                  </button>
-                  <button @click="sendInvoice(invoice)" class="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900 rounded">
-                    <PaperAirplaneIcon class="w-4 h-4" />
-                  </button>
-                  <button @click="printInvoice(invoice)" class="p-1 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900 rounded">
-                    <PrinterIcon class="w-4 h-4" />
-                  </button>
-                  <button @click="markAsPaid(invoice)" class="p-1 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900 rounded">
-                    <BanknotesIcon class="w-4 h-4" />
-                  </button>
+              <div class="flex items-center space-x-3">
+                <span 
+                  class="px-3 py-1 rounded-full text-sm font-medium"
+                  :class="getStatusBadge(invoice.status)"
+                >
+                  {{ getStatusLabel(invoice.status) }}
+                </span>
+                <div class="text-right">
+                  <p class="text-2xl font-bold text-slate-900 dark:text-white">R{{ formatCurrency(invoice.total) }}</p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">
+                    {{ expandedInvoices.includes(invoice.id) ? '▲ Click to collapse' : '▼ Click to expand' }}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
+
+          <!-- Invoice Details (Expandable) -->
+          <transition
+            enter-active-class="transition-all duration-300 ease-out"
+            leave-active-class="transition-all duration-300 ease-in"
+            enter-from-class="opacity-0 max-h-0"
+            enter-to-class="opacity-100 max-h-[2000px]"
+            leave-from-class="opacity-100 max-h-[2000px]"
+            leave-to-class="opacity-0 max-h-0"
+          >
+            <div v-if="expandedInvoices.includes(invoice.id)" class="px-6 py-4">
+              <!-- Key Invoice Details -->
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div>
+                  <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Invoice Date</p>
+                  <p class="text-sm font-medium text-slate-900 dark:text-white">{{ formatDate(invoice.invoiceDate) }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Due Date</p>
+                  <p class="text-sm font-medium text-slate-900 dark:text-white">{{ formatDate(invoice.dueDate) }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Order Reference</p>
+                  <p class="text-sm font-medium text-slate-900 dark:text-white">{{ invoice.orderNumber || 'N/A' }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Items</p>
+                  <p class="text-sm font-medium text-slate-900 dark:text-white">{{ invoice.invoiceItems?.length || 0 }} items</p>
+                </div>
+              </div>
+
+              <!-- Invoice Items Section -->
+              <div v-if="invoice.invoiceItems && invoice.invoiceItems.length > 0" class="mb-6">
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center">
+                  <span class="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                  Invoice Items
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div 
+                    v-for="item in invoice.invoiceItems" 
+                    :key="item.id"
+                    class="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 border border-slate-200 dark:border-slate-700"
+                  >
+                    <div class="flex justify-between items-start mb-2">
+                      <h5 class="font-semibold text-slate-900 dark:text-white">{{ item.name }}</h5>
+                      <span 
+                        class="text-xs px-2 py-1 rounded-full"
+                        :class="getStockClass(item.stock)"
+                      >
+                        Stock: {{ item.stock }}
+                      </span>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">SKU: {{ item.sku }}</p>
+                    <div class="text-sm text-slate-700 dark:text-slate-300">
+                      <p>{{ item.quantity }}x @ R{{ item.price.toFixed(2) }}</p>
+                      <p class="font-bold text-blue-600 dark:text-blue-400 mt-1">
+                        Total: R{{ (item.quantity * item.price).toFixed(2) }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Invoice Timeline -->
+              <div class="mb-6">
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center">
+                  <span class="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                  Invoice Timeline
+                </h4>
+                <InvoiceTimeline 
+                  :status="invoice.status"
+                  :invoice-number="invoice.invoiceNumber"
+                  :invoice-date="invoice.invoiceDate"
+                  :due-date="invoice.dueDate"
+                />
+              </div>
+
+              <!-- Actions -->
+              <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+                <div class="flex space-x-3">
+                  <button 
+                    @click.stop="printInvoice(invoice)" 
+                    class="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-200 text-sm font-medium flex items-center transition-colors"
+                  >
+                    <PrinterIcon class="w-4 h-4 mr-1" />
+                    Print
+                  </button>
+                  <button 
+                    @click.stop="sendInvoice(invoice)" 
+                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 text-sm font-medium flex items-center transition-colors"
+                  >
+                    <PaperAirplaneIcon class="w-4 h-4 mr-1" />
+                    Send
+                  </button>
+                  <button 
+                    v-if="invoice.status !== 'paid'"
+                    @click.stop="markAsPaid(invoice)" 
+                    class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200 text-sm font-medium flex items-center transition-colors"
+                  >
+                    <BanknotesIcon class="w-4 h-4 mr-1" />
+                    Mark as Paid
+                  </button>
+                </div>
+                <button 
+                  v-if="invoice.status === 'draft'"
+                  @click.stop="cancelInvoice(invoice)" 
+                  class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 text-sm font-medium flex items-center transition-colors"
+                >
+                  <XMarkIcon class="w-4 h-4 mr-1" />
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </transition>
         </div>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-12 text-center">
+        <DocumentTextIcon class="w-16 h-16 text-slate-400 mx-auto mb-4" />
+        <p class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No invoices found</p>
+        <p class="text-slate-600 dark:text-slate-400">Create your first invoice to get started.</p>
       </div>
     </div>
 
@@ -297,7 +441,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { 
   DocumentTextIcon,
   PlusIcon,
@@ -311,6 +455,8 @@ import {
   BanknotesIcon,
   XMarkIcon
 } from '@heroicons/vue/24/outline'
+import { useSalesAPI } from '~/composables/useSalesAPI'
+import InvoiceTimeline from '~/components/sales/InvoiceTimeline.vue'
 
 // Page metadata
 useHead({
@@ -325,85 +471,64 @@ definePageMeta({
   layout: 'default'
 })
 
+// API
+const salesAPI = useSalesAPI()
+
 // Reactive data
 const showNewInvoiceModal = ref(false)
 const searchQuery = ref('')
 const statusFilter = ref('')
 const periodFilter = ref('')
+const expandedInvoices = ref<string[]>([])
+const invoices = ref<any[]>([])
+const loading = ref(true)
 
-// Invoice statistics
-const totalInvoices = ref(89)
-const newInvoices = ref(12)
-const outstandingAmount = ref(28450)
-const overdueInvoices = ref(3)
-const paidThisMonth = ref(145800)
-const paidInvoices = ref(23)
-const avgInvoiceValue = ref(2850)
-const paymentTerms = ref(30)
+// Load invoices on mount
+onMounted(async () => {
+  await loadInvoices()
+})
 
-// Sample invoices data for Thabo's Spaza Shop
-const invoices = ref([
-  {
-    id: '1',
-    invoiceNumber: 'INV-2025-001',
-    customer: 'Nomsa Community Kitchen',
-    customerEmail: 'nomsa.kitchen@gmail.com',
-    amount: 4850,
-    status: 'sent',
-    issueDate: new Date(),
-    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-    billingAddress: '123 Community Street, Soweto, 1818',
-    notes: 'Monthly catering supplies order'
-  },
-  {
-    id: '2',
-    invoiceNumber: 'INV-2025-002',
-    customer: 'Sipho Auto Repair',
-    customerEmail: 'sipho.auto@outlook.com',
-    amount: 1250,
-    status: 'paid',
-    issueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-    dueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-    billingAddress: '456 Garage Road, Alexandra, 2090',
-    notes: 'Workshop consumables and refreshments'
-  },
-  {
-    id: '3',
-    invoiceNumber: 'INV-2025-003',
-    customer: 'Lerato Hair Studio',
-    customerEmail: 'lerato.hair@yahoo.com',
-    amount: 890,
-    status: 'overdue',
-    issueDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
-    dueDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
-    billingAddress: '789 Beauty Lane, Diepsloot, 2189',
-    notes: 'Hair care products - regular client'
-  },
-  {
-    id: '4',
-    invoiceNumber: 'INV-2025-004',
-    customer: 'Mandla Construction',
-    customerEmail: 'mandla.builds@hotmail.com',
-    amount: 12500,
-    status: 'viewed',
-    issueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-    dueDate: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000),
-    billingAddress: 'Construction Site, 321 Building Ave, Orange Farm, 1841',
-    notes: 'Bulk supplies for construction crew'
-  },
-  {
-    id: '5',
-    invoiceNumber: 'INV-2025-005',
-    customer: 'Grace Catering Services',
-    customerEmail: 'grace.catering@gmail.com',
-    amount: 3200,
-    status: 'draft',
-    issueDate: new Date(),
-    dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
-    billingAddress: '654 Event Hall, Tembisa, 1632',
-    notes: 'Wedding event supplies - rush order'
+const loadInvoices = async () => {
+  loading.value = true
+  try {
+    invoices.value = await salesAPI.getInvoices()
+  } catch (error) {
+    console.error('Failed to load invoices:', error)
+  } finally {
+    loading.value = false
   }
-])
+}
+
+// Invoice statistics - computed from actual data
+const stats = computed(() => ({
+  totalInvoices: invoices.value.length,
+  draftInvoices: invoices.value.filter((i: any) => i.status === 'draft').length,
+  sentInvoices: invoices.value.filter((i: any) => i.status === 'sent').length,
+  paidInvoices: invoices.value.filter((i: any) => i.status === 'paid').length,
+  overdueInvoices: invoices.value.filter((i: any) => i.status === 'overdue').length
+}))
+
+// Helper functions
+const toggleInvoiceExpansion = (invoiceId: string) => {
+  const index = expandedInvoices.value.indexOf(invoiceId)
+  if (index > -1) {
+    expandedInvoices.value.splice(index, 1)
+  } else {
+    expandedInvoices.value.push(invoiceId)
+  }
+}
+
+const filterByStatus = (status: string) => {
+  statusFilter.value = status
+}
+
+// Helper function (must be defined before use)
+const generateInvoiceNumber = () => {
+  const date = new Date()
+  const year = date.getFullYear()
+  const nextNumber = (invoices.value.length + 1).toString().padStart(3, '0')
+  return `INV-${year}-${nextNumber}`
+}
 
 // Form data
 const newInvoice = ref({
@@ -460,19 +585,20 @@ const filteredInvoices = computed(() => {
   return filtered
 })
 
-// Helper functions
-function generateInvoiceNumber() {
-  const date = new Date()
-  const year = date.getFullYear()
-  const nextNumber = (invoices.value.length + 1).toString().padStart(3, '0')
-  return `INV-${year}-${nextNumber}`
-}
-
+// More helper functions
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-ZA', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   }).format(amount)
+}
+
+const formatDate = (date: Date) => {
+  return new Date(date).toLocaleDateString('en-ZA', { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric' 
+  })
 }
 
 const formatDueDate = (date: Date) => {
@@ -488,6 +614,28 @@ const formatDueDate = (date: Date) => {
     return 'Due tomorrow'
   } else {
     return `Due in ${diffDays} days`
+  }
+}
+
+const getStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    'draft': 'Draft',
+    'sent': 'Sent',
+    'viewed': 'Viewed',
+    'paid': 'Paid',
+    'overdue': 'Overdue',
+    'cancelled': 'Cancelled'
+  }
+  return labels[status.toLowerCase()] || status
+}
+
+const getStockClass = (stock: number) => {
+  if (stock > 10) {
+    return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+  } else if (stock > 0) {
+    return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+  } else {
+    return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
   }
 }
 
@@ -553,22 +701,15 @@ const removeInvoiceItem = (index: number) => {
 // Actions
 const createInvoice = async (sendImmediately = true) => {
   try {
-    const invoice = {
-      id: Date.now().toString(),
-      invoiceNumber: newInvoice.value.invoiceNumber,
+    await salesAPI.createInvoice({
       customer: newInvoice.value.customerName,
-      customerEmail: newInvoice.value.customerEmail,
-      amount: calculateInvoiceTotal(),
+      orderNumber: '', // Can link to an order if needed
+      total: calculateInvoiceTotal(),
       status: sendImmediately ? 'sent' : 'draft',
-      issueDate: new Date(),
-      dueDate: new Date(newInvoice.value.dueDate),
-      billingAddress: newInvoice.value.billingAddress,
-      notes: newInvoice.value.notes
-    }
+      dueDate: new Date(newInvoice.value.dueDate)
+    })
 
-    invoices.value.unshift(invoice)
-    totalInvoices.value += 1
-    
+    await loadInvoices()
     showNewInvoiceModal.value = false
     
     // Reset form
@@ -581,10 +722,10 @@ const createInvoice = async (sendImmediately = true) => {
       items: [{ description: '', quantity: 1, unitPrice: 0 }],
       taxRate: 15,
       discountRate: 0,
-      notes: 'Payment due within 30 days. Thank you for your business!'
+      notes: 'Payment due within 30 * days. Thank you for your business!'
     }
     
-    alert(`Invoice ${invoice.invoiceNumber} ${sendImmediately ? 'created and sent' : 'saved as draft'} successfully!`)
+    alert(`Invoice ${sendImmediately ? 'created and sent' : 'saved as draft'} successfully!`)
   } catch (error) {
     console.error('Error creating invoice:', error)
     alert('Failed to create invoice. Please try again.')
@@ -599,12 +740,18 @@ const viewInvoice = (invoice: any) => {
   alert(`Viewing invoice ${invoice.invoiceNumber} for ${invoice.customer}`)
 }
 
-const sendInvoice = (invoice: any) => {
-  if (invoice.status === 'draft') {
-    invoice.status = 'sent'
-    alert(`Invoice ${invoice.invoiceNumber} sent to ${invoice.customer}`)
-  } else {
-    alert(`Invoice ${invoice.invoiceNumber} resent to ${invoice.customer}`)
+const sendInvoice = async (invoice: any) => {
+  try {
+    if (invoice.status === 'draft') {
+      await salesAPI.updateInvoiceStatus(invoice.id, 'sent')
+      await loadInvoices()
+      alert(`Invoice ${invoice.invoiceNumber} sent to ${invoice.customer}`)
+    } else {
+      alert(`Invoice ${invoice.invoiceNumber} resent to ${invoice.customer}`)
+    }
+  } catch (error) {
+    console.error('Failed to send invoice:', error)
+    alert('Failed to send invoice')
   }
 }
 
@@ -612,16 +759,29 @@ const printInvoice = (invoice: any) => {
   alert(`Printing invoice ${invoice.invoiceNumber}`)
 }
 
-const markAsPaid = (invoice: any) => {
+const markAsPaid = async (invoice: any) => {
   if (invoice.status !== 'paid') {
-    invoice.status = 'paid'
-    paidThisMonth.value += invoice.amount
-    paidInvoices.value += 1
-    if (invoice.status === 'overdue') {
-      overdueInvoices.value -= 1
+    try {
+      await salesAPI.updateInvoiceStatus(invoice.id, 'paid')
+      await loadInvoices()
+      alert(`Invoice ${invoice.invoiceNumber} marked as paid`)
+    } catch (error) {
+      console.error('Failed to mark as paid:', error)
+      alert('Failed to update invoice status')
     }
-    outstandingAmount.value -= invoice.amount
-    alert(`Invoice ${invoice.invoiceNumber} marked as paid`)
+  }
+}
+
+const cancelInvoice = async (invoice: any) => {
+  if (confirm(`Are you sure you want to cancel invoice ${invoice.invoiceNumber}?`)) {
+    try {
+      await salesAPI.updateInvoiceStatus(invoice.id, 'cancelled')
+      await loadInvoices()
+      alert(`Invoice ${invoice.invoiceNumber} cancelled`)
+    } catch (error) {
+      console.error('Failed to cancel invoice:', error)
+      alert('Failed to cancel invoice')
+    }
   }
 }
 

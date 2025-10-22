@@ -49,6 +49,7 @@ interface Invoice {
   dueDate: Date
   invoiceDate: Date
   type: 'sales' | 'buying'
+  invoiceItems?: OrderItem[]
 }
 
 interface Supplier {
@@ -169,6 +170,67 @@ const buyingOrders = ref<Order[]>([
   }
 ])
 
+// Invoices
+const invoices = ref<Invoice[]>([
+  {
+    id: 'INV1',
+    invoiceNumber: 'INV-2025-001',
+    customer: 'John Doe',
+    orderNumber: 'SO-2025-001',
+    total: 4850,
+    status: 'sent',
+    invoiceDate: new Date(),
+    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    invoiceItems: [
+      { id: 1, name: 'Coca Cola 2L', sku: 'CC2L001', quantity: 50, price: 35.00, stock: 24 },
+      { id: 2, name: 'White Bread 700g', sku: 'WB700', quantity: 100, price: 18.00, stock: 14 },
+      { id: 3, name: 'Milk 1L', sku: 'MLK1L', quantity: 40, price: 22.00, stock: 11 }
+    ]
+  },
+  {
+    id: 'INV2',
+    invoiceNumber: 'INV-2025-002',
+    customer: 'Sarah Smith',
+    orderNumber: 'SO-2025-002',
+    total: 1250,
+    status: 'paid',
+    invoiceDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+    dueDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
+    invoiceItems: [
+      { id: 4, name: 'Simba Chips 125g', sku: 'SC125', quantity: 30, price: 12.00, stock: 30 },
+      { id: 5, name: 'Sunlight Soap 250g', sku: 'SS250', quantity: 20, price: 15.00, stock: 8 }
+    ]
+  },
+  {
+    id: 'INV3',
+    invoiceNumber: 'INV-2025-003',
+    customer: 'Mike Johnson',
+    orderNumber: '',
+    total: 890,
+    status: 'overdue',
+    invoiceDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
+    dueDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+    invoiceItems: [
+      { id: 7, name: 'Castle Lager 440ml', sku: 'CL440', quantity: 24, price: 25.00, stock: 0 },
+      { id: 8, name: 'Purity Baby Food', sku: 'PBF001', quantity: 10, price: 45.00, stock: 12 }
+    ]
+  },
+  {
+    id: 'INV4',
+    invoiceNumber: 'INV-2025-004',
+    customer: 'Emily Davis',
+    orderNumber: '',
+    total: 3200,
+    status: 'draft',
+    invoiceDate: new Date(),
+    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    invoiceItems: [
+      { id: 3, name: 'Milk 1L', sku: 'MLK1L', quantity: 50, price: 22.00, stock: 11 },
+      { id: 4, name: 'Simba Chips 125g', sku: 'SC125', quantity: 100, price: 12.00, stock: 30 }
+    ]
+  }
+])
+
 // Sales Invoices
 const salesInvoices = ref<Invoice[]>([
   {
@@ -177,10 +239,60 @@ const salesInvoices = ref<Invoice[]>([
     customer: 'John Doe',
     orderNumber: 'SO-2025-001',
     total: 4850,
+    status: 'sent',
+    invoiceDate: new Date(),
+    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    type: 'sales',
+    invoiceItems: [
+      { id: 1, name: 'Coca Cola 2L', sku: 'CC2L001', quantity: 50, price: 35.00, stock: 24 },
+      { id: 2, name: 'White Bread 700g', sku: 'WB700', quantity: 100, price: 18.00, stock: 14 },
+      { id: 3, name: 'Milk 1L', sku: 'MLK1L', quantity: 40, price: 22.00, stock: 11 }
+    ]
+  },
+  {
+    id: 'SI2',
+    invoiceNumber: 'INV-S-2025-002',
+    customer: 'Sarah Smith',
+    orderNumber: 'SO-2025-002',
+    total: 1250,
     status: 'paid',
-    invoiceDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    dueDate: new Date(Date.now() + 23 * 24 * 60 * 60 * 1000),
-    type: 'sales'
+    invoiceDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+    dueDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
+    type: 'sales',
+    invoiceItems: [
+      { id: 4, name: 'Simba Chips 125g', sku: 'SC125', quantity: 30, price: 12.00, stock: 30 },
+      { id: 5, name: 'Sunlight Soap 250g', sku: 'SS250', quantity: 20, price: 15.00, stock: 8 }
+    ]
+  },
+  {
+    id: 'SI3',
+    invoiceNumber: 'INV-S-2025-003',
+    customer: 'Mike Johnson',
+    orderNumber: '',
+    total: 890,
+    status: 'overdue',
+    invoiceDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
+    dueDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+    type: 'sales',
+    invoiceItems: [
+      { id: 7, name: 'Castle Lager 440ml', sku: 'CL440', quantity: 24, price: 25.00, stock: 0 },
+      { id: 8, name: 'Purity Baby Food', sku: 'PBF001', quantity: 10, price: 45.00, stock: 12 }
+    ]
+  },
+  {
+    id: 'SI4',
+    invoiceNumber: 'INV-S-2025-004',
+    customer: 'Emily Davis',
+    orderNumber: '',
+    total: 3200,
+    status: 'draft',
+    invoiceDate: new Date(),
+    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    type: 'sales',
+    invoiceItems: [
+      { id: 3, name: 'Milk 1L', sku: 'MLK1L', quantity: 50, price: 22.00, stock: 11 },
+      { id: 4, name: 'Simba Chips 125g', sku: 'SC125', quantity: 100, price: 12.00, stock: 30 }
+    ]
   }
 ])
 
