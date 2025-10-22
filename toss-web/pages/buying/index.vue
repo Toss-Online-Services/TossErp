@@ -14,7 +14,7 @@
           </div>
           <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
             <NuxtLink 
-              to="/buying/create-order"
+              to="/buying/orders/create-order"
               class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold text-sm sm:text-base"
             >
               <ShoppingCartIcon class="w-5 h-5 mr-2" />
