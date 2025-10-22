@@ -60,6 +60,9 @@
           <NuxtLink to="/stock/items" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/items' }">
             Items
           </NuxtLink>
+          <NuxtLink to="/stock/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/suppliers' }">
+            Suppliers
+          </NuxtLink>
         </div>
       </div>
 
@@ -221,9 +224,6 @@
           
           <NuxtLink to="/buying/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/invoices' }">
             Invoices
-          </NuxtLink>
-          <NuxtLink to="/buying/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/suppliers' }">
-            Suppliers
           </NuxtLink>
           <NuxtLink to="/buying/group-buying" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/group-buying' }">
             Group Buying

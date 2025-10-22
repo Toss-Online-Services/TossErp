@@ -342,10 +342,9 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Empty State -->
-      <div v-if="filteredOrders.length === 0" class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-12 text-center">
+        <!-- Empty State -->
+        <div v-if="filteredOrders.length === 0" class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-12 text-center">
         <div class="flex flex-col items-center justify-center">
           <div class="p-4 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full mb-4">
             <ShoppingCartIcon class="w-12 h-12 text-blue-600 dark:text-blue-400" />
@@ -360,6 +359,7 @@
             Create Order
           </NuxtLink>
         </div>
+      </div>
       </div>
     </div>
   </div>
