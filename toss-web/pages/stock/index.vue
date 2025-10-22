@@ -139,15 +139,15 @@
           </NuxtLink>
 
           <NuxtLink
-              to="/stock/movements"
+              to="/stock/suppliers"
               class="flex items-center p-4 bg-gradient-to-r from-green-50 to-green-100/50 dark:from-green-900/20 dark:to-green-900/10 rounded-xl hover:shadow-md transition-all duration-200 group"
           >
               <div class="p-3 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
-                <ArrowsRightLeftIcon class="w-5 h-5 text-white" />
+                <UserGroupIcon class="w-5 h-5 text-white" />
             </div>
               <div class="ml-3 flex-1">
-                <p class="font-medium text-slate-900 dark:text-white">Track Movements</p>
-                <p class="text-sm text-slate-600 dark:text-slate-400">View stock changes</p>
+                <p class="font-medium text-slate-900 dark:text-white">Manage Suppliers</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Your vendor network</p>
             </div>
           </NuxtLink>
 
@@ -241,10 +241,8 @@ import {
   CubeIcon,
   ExclamationTriangleIcon,
   CurrencyDollarIcon,
-  ArrowsRightLeftIcon,
   UserGroupIcon,
-  ShoppingCartIcon,
-  TruckIcon
+  ShoppingCartIcon
 } from '@heroicons/vue/24/outline'
 // Manual imports for chart components
 import StatsCard from '~/components/charts/StatsCard.vue'
