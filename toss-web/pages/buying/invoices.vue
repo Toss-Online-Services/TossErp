@@ -786,6 +786,58 @@ const cancelInvoice = async (invoice: any) => {
 }
 
 const exportInvoices = () => {
-  alert('Exporting invoices... Feature coming soon!')
+  try {
+    // Get filtered invoices
+    const invoicesToExport = filteredInvoices.value
+    
+    if (invoicesToExport.length === 0) {
+      alert('No invoices to export')
+      return
+    }
+
+    // Create CSV header
+    const headers = ['Invoice #', 'Customer', 'Date', 'Due Date', 'Amount', 'Status', 'Items']
+    
+    // Create CSV rows
+    const rows = invoicesToExport.map((inv: any) => {
+      const itemsSummary = inv.items.map((item: any) => 
+        `${item.description} (${item.quantity})`
+      ).join('; ')
+      
+      return [
+        inv.invoiceNumber,
+        inv.customerName,
+        new Date(inv.date).toLocaleDateString(),
+        new Date(inv.dueDate).toLocaleDateString(),
+        `R${inv.total.toFixed(2)}`,
+        inv.status,
+        itemsSummary
+      ]
+    })
+    
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n')
+    
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    
+    link.setAttribute('href', url)
+    link.setAttribute('download', `invoices_${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = 'hidden'
+    
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    alert(`✓ Exported ${invoicesToExport.length} invoices successfully!`)
+  } catch (error) {
+    console.error('Export failed:', error)
+    alert('✗ Failed to export invoices')
+  }
 }
 </script>
