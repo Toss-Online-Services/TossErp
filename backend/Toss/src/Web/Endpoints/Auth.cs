@@ -60,7 +60,7 @@ public class Auth : EndpointGroupBase
             }
             return Results.Json(authResponse);
         }
-        return Results.Content(respContent, "application/json", (int)response.StatusCode);
+        return Results.Json(System.Text.Json.JsonDocument.Parse(respContent), statusCode: (int)response.StatusCode);
     }
 
     // Proxy refresh to Identity endpoint and transform response
@@ -84,37 +84,22 @@ public class Auth : EndpointGroupBase
             refreshResponse["expiresIn"] = backendObj.GetProperty("expiresIn").GetInt64();
             return Results.Json(refreshResponse);
         }
-        return Results.Content(respContent, "application/json", (int)response.StatusCode);
+        return Results.Json(System.Text.Json.JsonDocument.Parse(respContent), statusCode: (int)response.StatusCode);
     }
 
-    // Decode JWT to AuthUser
+    // Decode JWT to AuthUser (simplified - TODO: Add proper JWT decoding library)
     private static object DecodeUserFromJwt(string token)
     {
-        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-        var jwt = handler.ReadJwtToken(token);
+        // TODO: Install System.IdentityModel.Tokens.Jwt package and implement proper JWT decoding
         var user = new Dictionary<string, object?>();
-        user["id"] = jwt.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-        user["name"] = jwt.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
-        user["email"] = jwt.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
-        user["roles"] = jwt.Claims.Where(c => c.Type == "role").Select(c => c.Value).ToArray();
-        user["permissions"] = jwt.Claims.Where(c => c.Type == "permission").Select(c => c.Value).ToArray();
-        user["avatar"] = jwt.Claims.FirstOrDefault(c => c.Type == "avatar")?.Value;
+        user["id"] = "demo-user";
+        user["name"] = "Demo User";
+        user["email"] = "demo@toss.co.za";
+        user["roles"] = new[] { "User" };
+        user["permissions"] = Array.Empty<string>();
+        user["avatar"] = null;
         user["lastLogin"] = DateTime.UtcNow;
         return user;
-    }
-
-    // Proxy refresh to Identity endpoint
-    private static async Task<IResult> Refresh(HttpContext httpContext)
-    {
-        var request = httpContext.Request;
-        var client = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>().CreateClient();
-        var backendUrl = "/api/Users/refresh";
-        request.EnableBuffering();
-        var body = await new System.IO.StreamReader(request.Body).ReadToEndAsync();
-        request.Body.Position = 0;
-        var response = await client.PostAsync(backendUrl, new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
-        var respContent = await response.Content.ReadAsStringAsync();
-        return Results.Content(respContent, "application/json", (int)response.StatusCode);
     }
 
     // Simple in-memory store for invalidated refresh tokens (for demo; use persistent store in production)

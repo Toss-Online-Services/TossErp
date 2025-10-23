@@ -2,6 +2,7 @@ using Toss.Application.GroupBuying.Commands.ConfirmPool;
 using Toss.Application.GroupBuying.Commands.CreatePool;
 using Toss.Application.GroupBuying.Commands.JoinPool;
 using Toss.Application.GroupBuying.Queries.GetActivePools;
+using Toss.Application.GroupBuying.Queries.GetMyParticipations;
 using Toss.Application.GroupBuying.Queries.GetPoolById;
 
 namespace Toss.Web.Endpoints;
@@ -15,6 +16,7 @@ public class GroupBuying : EndpointGroupBase
         group.MapGet("pools/{id}", GetPoolById);
         group.MapPost("pools/{poolId}/join", JoinPool);
         group.MapPost("pools/{poolId}/confirm", ConfirmPool);
+        group.MapGet("participations", GetMyParticipations);
     }
 
     public async Task<IResult> CreatePool(ISender sender, CreatePoolCommand command)
@@ -48,6 +50,14 @@ public class GroupBuying : EndpointGroupBase
     {
         var result = await sender.Send(new ConfirmPoolCommand { PoolId = poolId });
         return result.Succeeded ? Results.Ok(result) : Results.BadRequest(result);
+    }
+
+    public async Task<IResult> GetMyParticipations(
+        ISender sender,
+        [AsParameters] GetMyParticipationsQuery query)
+    {
+        var result = await sender.Send(query);
+        return Results.Ok(result);
     }
 }
 
