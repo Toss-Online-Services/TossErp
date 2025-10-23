@@ -1,4 +1,5 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Domain.Entities.Inventory;
 using Toss.Domain.Entities.Sales;
 using Toss.Domain.Enums;
 using Toss.Domain.Events;
@@ -55,7 +56,7 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, int>
                 .FindAsync(new object[] { itemDto.ProductId }, cancellationToken);
 
             if (product == null)
-                throw new NotFoundException(nameof(Product), itemDto.ProductId);
+                throw new NotFoundException(nameof(Product), itemDto.ProductId.ToString());
 
             var lineTotal = (itemDto.UnitPrice * itemDto.Quantity) - itemDto.DiscountAmount;
             var taxAmount = product.IsTaxable ? lineTotal * 0.15m : 0; // 15% VAT

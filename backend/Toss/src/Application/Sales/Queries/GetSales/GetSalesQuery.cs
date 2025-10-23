@@ -1,6 +1,7 @@
 using Toss.Application.Common.Interfaces;
 using Toss.Application.Common.Mappings;
 using Toss.Application.Common.Models;
+using Toss.Domain.Entities.Sales;
 using Toss.Domain.Enums;
 
 namespace Toss.Application.Sales.Queries.GetSales;

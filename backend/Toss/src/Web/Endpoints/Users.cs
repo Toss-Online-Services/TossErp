@@ -4,9 +4,8 @@ namespace Toss.Web.Endpoints;
 
 public class Users : EndpointGroupBase
 {
-    public override void Map(WebApplication app)
+    public override void Map(RouteGroupBuilder group)
     {
-        app.MapGroup(this)
-            .MapIdentityApi<ApplicationUser>();
+        group.MapIdentityApi<ApplicationUser>();
     }
 }
