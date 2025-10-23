@@ -70,7 +70,7 @@ const notifications = ref<Notification[]>([
     title: 'Group Purchase Available',
     message: 'A new bulk order for office supplies is available. Join now to save 25%!',
     actions: [
-      { label: 'View Details', action: () => router.push('/group-buying'), primary: true },
+      { label: 'View Details', action: () => router.push('/buying/group-buying'), primary: true },
       { label: 'Dismiss', action: () => {} }
     ]
   },

@@ -10,13 +10,23 @@
     
     <!-- Navigation -->
     <nav class="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
-      <!-- Dashboard -->
+      <!-- Home -->
       <NuxtLink 
         to="/" 
         class="nav-link"
         :class="{ 'nav-link-active': route.path === '/' }"
       >
         <HomeIcon class="w-5 h-5 mr-3" />
+        Home
+      </NuxtLink>
+
+      <!-- Dashboard -->
+      <NuxtLink 
+        to="/dashboard" 
+        class="nav-link"
+        :class="{ 'nav-link-active': route.path === '/dashboard' }"
+      >
+        <ChartBarIcon class="w-5 h-5 mr-3" />
         Dashboard
       </NuxtLink>
       
@@ -47,17 +57,8 @@
           <NuxtLink to="/stock/items" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/items' }">
             Items
           </NuxtLink>
-          <NuxtLink to="/stock/warehouses" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/warehouses' }">
-            Warehouses
-          </NuxtLink>
-          <NuxtLink to="/stock/movements" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/movements' }">
-            Stock Movements
-          </NuxtLink>
-          <NuxtLink to="/stock/reconciliation" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/reconciliation' }">
-            Stock Reconciliation
-          </NuxtLink>
-          <NuxtLink to="/stock/reports" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/reports' }">
-            Stock Reports
+          <NuxtLink to="/stock/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/suppliers' }">
+            Suppliers
           </NuxtLink>
         </div>
       </div>
@@ -86,6 +87,15 @@
           <NuxtLink to="/logistics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/logistics' }">
             Logistics Dashboard
           </NuxtLink>
+          <NuxtLink to="/logistics/shared-runs" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/logistics/shared-runs' }">
+            Shared Delivery Runs
+          </NuxtLink>
+          <NuxtLink to="/logistics/tracking" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/logistics/tracking' }">
+            Live Tracking
+          </NuxtLink>
+          <NuxtLink to="/logistics/driver" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/logistics/driver' }">
+            Driver Interface
+          </NuxtLink>
         </div>
       </div>
 
@@ -113,29 +123,44 @@
           <NuxtLink to="/sales" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales' }">
             Sales Dashboard
           </NuxtLink>
-          <NuxtLink to="/sales/quotations" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/quotations' }">
-            Quotations
-          </NuxtLink>
-          <NuxtLink to="/sales/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/orders' }">
-            Sales Orders
-          </NuxtLink>
+          
+          <!-- Orders Submenu -->
+          <div class="space-y-1">
+            <button 
+              @click="toggleOrdersDropdown"
+              class="justify-between w-full nav-sub-link"
+              :class="{ 'nav-sub-link-active': route.path.startsWith('/sales/orders') }"
+            >
+              <div class="flex items-center w-full">
+                <span class="flex-1 text-left">Orders</span>
+                <ChevronDownIcon 
+                  class="w-3 h-3 transition-transform duration-200"
+                  :class="{ 'transform rotate-180': ordersDropdownOpen }"
+                />
+              </div>
+            </button>
+            
+            <div 
+              v-show="ordersDropdownOpen"
+              class="pl-3 ml-3 space-y-1 border-l border-slate-600"
+            >
+              <NuxtLink to="/sales/orders" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/sales/orders' }">
+                Orders
+              </NuxtLink>
+              <NuxtLink to="/sales/orders/create-order" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/sales/orders/create-order' }">
+                Create Order
+              </NuxtLink>
+              <NuxtLink to="/sales/orders/queue" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/sales/orders/queue' }">
+                Queue
+              </NuxtLink>
+            </div>
+          </div>
+          
           <NuxtLink to="/sales/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/invoices' }">
-            Sales Invoices
-          </NuxtLink>
-          <NuxtLink to="/sales/delivery-notes" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/delivery-notes' }">
-            Delivery Notes
+            Invoices
           </NuxtLink>
           <NuxtLink to="/sales/pos" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path.startsWith('/sales/pos') }">
             Point of Sale
-          </NuxtLink>
-          <NuxtLink to="/sales/analytics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/analytics' }">
-            Sales Analytics
-          </NuxtLink>
-          <NuxtLink to="/sales/pricing-rules" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/pricing-rules' }">
-            Pricing Rules
-          </NuxtLink>
-          <NuxtLink to="/sales/ai-assistant" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales/ai-assistant' }">
-            AI Assistant
           </NuxtLink>
         </div>
       </div>
@@ -143,44 +168,62 @@
       <!-- Purchasing Section -->
       <div class="space-y-1">
         <button 
-          @click="togglePurchasingDropdown"
+          @click="toggleBuyingDropdown"
           class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/purchasing') }"
+          :class="{ 'nav-link-active': route.path.startsWith('/buying') }"
         >
           <div class="flex items-center">
             <ShoppingBagIcon class="w-5 h-5 mr-3" />
-            Purchasing
+            Buying
           </div>
           <ChevronDownIcon 
             class="w-4 h-4 transition-transform duration-200"
-            :class="{ 'transform rotate-180': purchasingDropdownOpen }"
+            :class="{ 'transform rotate-180': buyingDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="purchasingDropdownOpen"
+          v-show="buyingDropdownOpen"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
-          <NuxtLink to="/purchasing" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing' }">
-            Purchase Dashboard
+          <NuxtLink to="/buying" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying' }">
+            Buy Dashboard
           </NuxtLink>
-          <NuxtLink to="/purchasing/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/suppliers' }">
-            Suppliers
+          
+          <!-- Orders Submenu -->
+          <div class="space-y-1">
+            <button 
+              @click="toggleBuyingOrdersDropdown"
+              class="justify-between w-full nav-sub-link"
+              :class="{ 'nav-sub-link-active': route.path.startsWith('/buying/orders') }"
+            >
+              <div class="flex items-center w-full">
+                <span class="flex-1 text-left">Orders</span>
+                <ChevronDownIcon 
+                  class="w-3 h-3 transition-transform duration-200"
+                  :class="{ 'transform rotate-180': buyingOrdersDropdownOpen }"
+                />
+              </div>
+            </button>
+            
+            <div 
+              v-show="buyingOrdersDropdownOpen"
+              class="pl-3 ml-3 space-y-1 border-l border-slate-600"
+            >
+              <NuxtLink to="/buying/orders" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/buying/orders' }">
+                Orders
+              </NuxtLink>
+              <NuxtLink to="/buying/orders/create-order" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/buying/orders/create-order' }">
+                Create Order
+              </NuxtLink>
+            </div>
+          </div>
+          
+          <NuxtLink to="/buying/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/invoices' }">
+            Invoices
           </NuxtLink>
-          <NuxtLink to="/purchasing/requests" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/requests' }">
-            Purchase Requests
-          </NuxtLink>
-          <NuxtLink to="/purchasing/orders" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/orders' }">
-            Purchase Orders
-          </NuxtLink>
-          <NuxtLink to="/purchasing/receipts" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/receipts' }">
-            Purchase Receipts
-          </NuxtLink>
-          <NuxtLink to="/purchasing/invoices" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/invoices' }">
-            Purchase Invoices
-          </NuxtLink>
-          <NuxtLink to="/purchasing/analytics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/purchasing/analytics' }">
-            Analytics
+          <NuxtLink to="/buying/group-buying" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying/group-buying' }">
+            Group Buying
           </NuxtLink>
         </div>
       </div>
@@ -293,7 +336,8 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { 
-  HomeIcon, 
+  HomeIcon,
+  ChartBarIcon, 
   ArchiveBoxIcon, 
   ShoppingCartIcon, 
   ShoppingBagIcon, 
@@ -312,7 +356,9 @@ const route = useRoute()
 const stockDropdownOpen = ref(false)
 const logisticsDropdownOpen = ref(false)
 const salesDropdownOpen = ref(false)
-const purchasingDropdownOpen = ref(false)
+const ordersDropdownOpen = ref(false)
+const buyingDropdownOpen = ref(false)
+const buyingOrdersDropdownOpen = ref(false)
 const automationDropdownOpen = ref(false)
 const onboardingDropdownOpen = ref(false)
 const settingsDropdownOpen = ref(false)
@@ -327,9 +373,15 @@ watch(() => route.path, (newPath) => {
   }
   if (newPath.startsWith('/sales')) {
     salesDropdownOpen.value = true
+    if (newPath.startsWith('/sales/orders')) {
+      ordersDropdownOpen.value = true
+    }
   }
-  if (newPath.startsWith('/purchasing')) {
-    purchasingDropdownOpen.value = true
+  if (newPath.startsWith('/buying')) {
+    buyingDropdownOpen.value = true
+    if (newPath.startsWith('/buying/orders')) {
+      buyingOrdersDropdownOpen.value = true
+    }
   }
   if (newPath.startsWith('/automation')) {
     automationDropdownOpen.value = true
@@ -355,8 +407,16 @@ const toggleSalesDropdown = () => {
   salesDropdownOpen.value = !salesDropdownOpen.value
 }
 
-const togglePurchasingDropdown = () => {
-  purchasingDropdownOpen.value = !purchasingDropdownOpen.value
+const toggleOrdersDropdown = () => {
+  ordersDropdownOpen.value = !ordersDropdownOpen.value
+}
+
+const toggleBuyingDropdown = () => {
+  buyingDropdownOpen.value = !buyingDropdownOpen.value
+}
+
+const toggleBuyingOrdersDropdown = () => {
+  buyingOrdersDropdownOpen.value = !buyingOrdersDropdownOpen.value
 }
 
 const toggleAutomationDropdown = () => {
@@ -382,21 +442,25 @@ const toggleSettingsDropdown = () => {
   color: rgb(75 85 99);
   border-radius: 0.5rem;
   transition: all 0.2s;
+  text-decoration: none;
 }
 
 .nav-link:hover {
   background-color: rgb(243 244 246);
   color: rgb(17 24 39);
+  text-decoration: none;
 }
 
 .nav-link-active {
   background: linear-gradient(to right, rgb(59 130 246), rgb(147 51 234));
   color: white;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
 }
 
 .nav-link-active:hover {
   background: linear-gradient(to right, rgb(37 99 235), rgb(126 34 206));
+  text-decoration: none;
 }
 
 .nav-sub-link {
@@ -407,20 +471,48 @@ const toggleSettingsDropdown = () => {
   color: rgb(107 114 128);
   border-radius: 0.375rem;
   transition: all 0.2s;
+  text-decoration: none;
 }
 
 .nav-sub-link:hover {
   background-color: rgb(249 250 251);
   color: rgb(17 24 39);
+  text-decoration: none;
 }
 
 .nav-sub-link-active {
   background-color: rgba(59, 130, 246, 0.1);
   color: rgb(59 130 246);
   font-weight: 500;
+  text-decoration: none;
 }
 
 .nav-sub-link-active:hover {
   background-color: rgba(59, 130, 246, 0.2);
+  text-decoration: none;
+}
+
+.nav-sub-sub-link {
+  display: block;
+  padding: 0.375rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgb(107 114 128);
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.nav-sub-sub-link:hover {
+  background-color: rgb(249 250 251);
+  color: rgb(17 24 39);
+  text-decoration: none;
+}
+
+.nav-sub-sub-link-active {
+  background-color: rgba(59, 130, 246, 0.08);
+  color: rgb(59 130 246);
+  font-weight: 500;
+  text-decoration: none;
 }
 </style>

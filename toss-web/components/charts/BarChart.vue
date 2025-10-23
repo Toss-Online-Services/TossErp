@@ -1,99 +1,141 @@
 <template>
-  <BaseChart
-    type="bar"
-    :data="chartData"
-    :options="chartOptions"
-    :height="height"
-  />
+  <div class="chart-container">
+    <canvas ref="chartCanvas"></canvas>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { ChartData, ChartOptions } from 'chart.js'
-import BaseChart from './BaseChart.vue'
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
+import {
+  Chart,
+  BarController,
+  BarElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip,
+  Legend,
+  type ChartConfiguration
+} from 'chart.js'
+
+// Register Chart.js components
+Chart.register(
+  BarController,
+  BarElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip,
+  Legend
+)
 
 interface Props {
   labels: string[]
-  datasets: Array<{
-    label: string
-    data: number[]
-    backgroundColor?: string | string[]
-    borderColor?: string | string[]
-  }>
-  height?: string
-  title?: string
-  yAxisLabel?: string
-  xAxisLabel?: string
+  data: number[]
+  label?: string
+  color?: string
+  height?: number
   horizontal?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  height: '400px',
+  label: 'Data',
+  color: '#3B82F6', // Blue default
+  height: 200,
   horizontal: false
 })
 
-const chartData = computed((): ChartData<'bar'> => ({
-  labels: props.labels,
-  datasets: props.datasets.map((dataset, index) => ({
-    ...dataset,
-    backgroundColor: dataset.backgroundColor || getDefaultColors(dataset.data.length, index),
-    borderColor: dataset.borderColor || getDefaultColors(dataset.data.length, index, 1),
-    borderWidth: 1,
-  }))
-}))
+const chartCanvas = ref<HTMLCanvasElement | null>(null)
+let chartInstance: Chart | null = null
 
-const chartOptions = computed((): ChartOptions<'bar'> => ({
-  responsive: true,
-  maintainAspectRatio: false,
-  indexAxis: props.horizontal ? 'y' as const : 'x' as const,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-    },
-    title: {
-      display: !!props.title,
-      text: props.title,
-    },
-  },
-  scales: {
-    y: {
-      beginAtZero: true,
-      title: {
-        display: !!props.yAxisLabel,
-        text: props.yAxisLabel,
-      },
-      grid: {
-        color: 'rgba(0, 0, 0, 0.1)',
-      },
-    },
-    x: {
-      title: {
-        display: !!props.xAxisLabel,
-        text: props.xAxisLabel,
-      },
-      grid: {
-        color: 'rgba(0, 0, 0, 0.1)',
-      },
-    },
-  },
-}))
+const createChart = () => {
+  if (!chartCanvas.value) return
 
-function getDefaultColors(count: number, datasetIndex: number = 0, alpha: number = 0.8): string[] {
-  const baseColors = [
-    `rgba(59, 130, 246, ${alpha})`, // Blue
-    `rgba(16, 185, 129, ${alpha})`, // Green
-    `rgba(245, 158, 11, ${alpha})`, // Amber
-    `rgba(239, 68, 68, ${alpha})`,  // Red
-    `rgba(139, 92, 246, ${alpha})`, // Purple
-    `rgba(236, 72, 153, ${alpha})`, // Pink
-  ]
-  
-  if (count === 1) {
-    return [baseColors[datasetIndex % baseColors.length]]
+  // Destroy existing chart
+  if (chartInstance) {
+    chartInstance.destroy()
   }
-  
-  return Array.from({ length: count }, (_, i) => 
-    baseColors[(i + datasetIndex) % baseColors.length]
-  )
+
+  const config: ChartConfiguration = {
+    type: 'bar',
+    data: {
+      labels: props.labels,
+      datasets: [
+        {
+          label: props.label,
+          data: props.data,
+          backgroundColor: props.color,
+          borderRadius: 8,
+          borderSkipped: false,
+        }
+      ]
+    },
+    options: {
+      indexAxis: props.horizontal ? 'y' : 'x',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          cornerRadius: 8,
+          titleFont: {
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: 13
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          border: {
+            display: false
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            display: true,
+            color: 'rgba(0, 0, 0, 0.05)'
+          },
+          border: {
+            display: false
+          }
+        }
+      }
+    }
+  }
+
+  chartInstance = new Chart(chartCanvas.value, config)
 }
+
+onMounted(() => {
+  createChart()
+})
+
+watch(() => [props.data, props.labels], () => {
+  createChart()
+}, { deep: true })
+
+onBeforeUnmount(() => {
+  if (chartInstance) {
+    chartInstance.destroy()
+  }
+})
 </script>
+
+<style scoped>
+.chart-container {
+  position: relative;
+  height: v-bind(height + 'px');
+  width: 100%;
+}
+</style>

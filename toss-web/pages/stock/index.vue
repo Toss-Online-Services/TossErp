@@ -1,266 +1,231 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
-    <div class="p-4 pb-20 space-y-4 sm:p-6 sm:space-y-6 lg:pb-6">
-      <!-- Header -->
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Stock Management</h1>
-          <p class="text-slate-600 dark:text-slate-400">Manage inventory, warehouses, and collaborative purchasing</p>
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+    <!-- Page Header with Glass Morphism -->
+    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
+      <div class="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
+        <div class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+          <div class="flex-1 min-w-0 overflow-hidden">
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent truncate">
+              Stock Management
+            </h1>
+            <p class="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 truncate">
+              Track your inventory and manage stock
+            </p>
         </div>
-        <div class="flex space-x-3">
-          <NuxtLink to="/stock/items" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            <PlusIcon class="w-4 h-4 inline mr-2" />
-            Add Item
+          <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
+            <NuxtLink 
+              to="/stock/items" 
+              class="inline-flex items-center justify-center p-2 sm:px-4 sm:py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 text-xs sm:text-sm font-semibold"
+            >
+              <PlusIcon class="w-5 h-5 sm:w-4 sm:h-4 sm:mr-2" />
+              <span class="hidden sm:inline">Add Item</span>
           </NuxtLink>
-          <button @click="refreshStats" class="px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-            <ArrowPathIcon class="w-4 h-4 inline mr-2" />
-            Refresh
+            <button 
+              @click="refreshStats" 
+              class="inline-flex items-center justify-center p-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 hover:shadow-md transition-all duration-200"
+              title="Refresh"
+            >
+              <ArrowPathIcon class="w-5 h-5 sm:w-4 sm:h-4 sm:mr-2" :class="{ 'animate-spin': loading }" />
+              <span class="hidden sm:inline">Refresh</span>
           </button>
+          </div>
+        </div>
         </div>
       </div>
 
-      <!-- AI Co-Pilot Alerts -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <div class="flex items-start">
-          <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-3">
-            <SparklesIcon class="w-5 h-5 text-blue-600 dark:text-blue-400" />
+    <!-- Main Content -->
+    <div class="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
+      <!-- AI Co-Pilot Banner -->
+      <div class="mb-4 sm:mb-6 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl p-4 sm:p-6 text-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 sm:w-64 sm:h-64 bg-white/10 rounded-full -mr-16 sm:-mr-32 -mt-16 sm:-mt-32"></div>
+        <div class="relative z-10 flex items-start gap-3 sm:gap-4">
+          <div class="p-2 sm:p-3 bg-white/20 backdrop-blur-sm rounded-xl flex-shrink-0">
+            <SparklesIcon class="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <div class="flex-1">
-            <h3 class="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">AI Co-Pilot Insights</h3>
-            <p class="text-sm text-blue-700 dark:text-blue-300">
-              Low stock detected for 3 items. Consider group purchasing for cleaning supplies to save 15%.
+          <div class="flex-1 min-w-0 overflow-hidden">
+            <h3 class="text-base sm:text-lg font-bold mb-1 sm:mb-2">AI Co-Pilot Insights</h3>
+            <p class="text-white/90 text-xs sm:text-sm leading-relaxed break-words">
+              Low stock detected for <strong>3 items</strong>. Consider joining a group buying pool for cleaning supplies to save <strong>15%</strong>.
             </p>
+            <button class="mt-3 sm:mt-4 px-4 sm:px-5 py-2 sm:py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-xs sm:text-sm font-medium transition-all duration-200">
+              View Suggestions →
+            </button>
           </div>
         </div>
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div v-for="i in 4" :key="i" class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <div class="animate-pulse">
-            <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded mb-2"></div>
-            <div class="h-8 bg-slate-200 dark:bg-slate-700 rounded"></div>
-          </div>
+      <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
+        <div v-for="i in 4" :key="i" class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-6 animate-pulse shadow-lg">
+          <div class="h-3 sm:h-4 bg-slate-200 dark:bg-slate-700 rounded mb-2"></div>
+          <div class="h-6 sm:h-8 bg-slate-200 dark:bg-slate-700 rounded"></div>
         </div>
       </div>
 
       <!-- Stats Cards -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Total Items -->
-        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <div class="flex items-center">
-            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
-              <CubeIcon class="w-6 h-6 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Items</p>
-              <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ stats.totalItems }}</p>
-            </div>
-          </div>
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
+        <StatsCard
+          label="Total Items"
+          :value="stats.totalItems"
+          :icon="CubeIcon"
+          :change="8.2"
+          change-label="new items this month"
+          gradient="blue"
+        />
+
+        <StatsCard
+          label="Categories"
+          :value="stats.totalCategories"
+          :icon="ShoppingCartIcon"
+          gradient="green"
+        />
+
+        <StatsCard
+          label="Low Stock Items"
+          :value="stats.lowStockItems"
+          :icon="ExclamationTriangleIcon"
+          :change="-12.3"
+          change-label="vs last week"
+          gradient="orange"
+        />
+
+        <StatsCard
+          label="Stock Value"
+          :value="stats.totalStockValue"
+          :icon="CurrencyDollarIcon"
+          :change="15.7"
+          change-label="vs last month"
+          gradient="purple"
+          prefix="R"
+        />
         </div>
 
-        <!-- Total Warehouses -->
-        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <div class="flex items-center">
-            <div class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
-              <BuildingStorefrontIcon class="w-6 h-6 text-green-600 dark:text-green-400" />
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Warehouses</p>
-              <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ stats.totalWarehouses }}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Low Stock Items -->
-        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <div class="flex items-center">
-            <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
-              <ExclamationTriangleIcon class="w-6 h-6 text-orange-600 dark:text-orange-400" />
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Low Stock</p>
-              <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ stats.lowStockItems }}</p>
+      <!-- Charts & Quick Actions -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
+        <!-- Stock Levels Chart -->
+        <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Stock Movement</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                Last 7 days activity
+              </p>
             </div>
           </div>
-        </div>
-
-        <!-- Total Stock Value -->
-        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <div class="flex items-center">
-            <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
-              <CurrencyDollarIcon class="w-6 h-6 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Stock Value</p>
-              <p class="text-2xl font-bold text-slate-900 dark:text-white">R{{ formatCurrency(stats.totalStockValue) }}</p>
-            </div>
-          </div>
-        </div>
+          <LineChart
+            :labels="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+            :data="[120, 135, 128, 145, 152, 148, 160]"
+            label="Items Sold"
+            color="#8B5CF6"
+            :height="280"
+          />
       </div>
 
       <!-- Quick Actions -->
-      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Quick Actions</h3>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300">
+          <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4 sm:mb-6">Quick Actions</h3>
+          <div class="space-y-3">
           <NuxtLink
             to="/stock/items"
-            class="flex items-center p-4 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              class="flex items-center p-4 bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-900/10 rounded-xl hover:shadow-md transition-all duration-200 group"
           >
-            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-4">
-              <CubeIcon class="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div class="p-3 bg-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+                <CubeIcon class="w-5 h-5 text-white" />
             </div>
-            <div>
-              <h4 class="font-medium text-slate-900 dark:text-white">Manage Items</h4>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Add, edit, and organize inventory items</p>
+              <div class="ml-3 flex-1">
+                <p class="font-medium text-slate-900 dark:text-white">Manage Items</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400">View all stock items</p>
             </div>
           </NuxtLink>
 
           <NuxtLink
-            to="/stock/warehouses"
-            class="flex items-center p-4 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              to="/stock/suppliers"
+              class="flex items-center p-4 bg-gradient-to-r from-green-50 to-green-100/50 dark:from-green-900/20 dark:to-green-900/10 rounded-xl hover:shadow-md transition-all duration-200 group"
           >
-            <div class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-4">
-              <BuildingStorefrontIcon class="w-5 h-5 text-green-600 dark:text-green-400" />
+              <div class="p-3 bg-green-500 rounded-lg group-hover:scale-110 transition-transform">
+                <UserGroupIcon class="w-5 h-5 text-white" />
             </div>
-            <div>
-              <h4 class="font-medium text-slate-900 dark:text-white">Shared Warehouses</h4>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Community storage & facilities</p>
+              <div class="ml-3 flex-1">
+                <p class="font-medium text-slate-900 dark:text-white">Manage Suppliers</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Your vendor network</p>
             </div>
           </NuxtLink>
-
-          <button class="flex items-center p-4 border border-purple-200 dark:border-purple-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-700 transition-colors">
-            <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-4">
-              <UserGroupIcon class="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div>
-              <h4 class="font-medium text-slate-900 dark:text-white">Group Purchasing</h4>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Join bulk orders for savings</p>
-            </div>
-          </button>
 
           <NuxtLink
-            to="/stock/movements"
-            class="flex items-center p-4 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              to="/buying/orders/create-order"
+              class="flex items-center p-4 bg-gradient-to-r from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-900/10 rounded-xl hover:shadow-md transition-all duration-200 group"
+            >
+              <div class="p-3 bg-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+                <ShoppingCartIcon class="w-5 h-5 text-white" />
+              </div>
+              <div class="ml-3 flex-1">
+                <p class="font-medium text-slate-900 dark:text-white">Create Order</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400">AI-powered ordering</p>
+              </div>
+            </NuxtLink>
+
+            <NuxtLink
+              to="/buying/group-buying"
+              class="flex items-center p-4 bg-gradient-to-r from-orange-50 to-orange-100/50 dark:from-orange-900/20 dark:to-orange-900/10 rounded-xl hover:shadow-md transition-all duration-200 group"
+            >
+              <div class="p-3 bg-orange-500 rounded-lg group-hover:scale-110 transition-transform">
+                <UserGroupIcon class="w-5 h-5 text-white" />
+              </div>
+              <div class="ml-3 flex-1">
+                <p class="font-medium text-slate-900 dark:text-white">Group Buying</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Save with neighbors</p>
+              </div>
+            </NuxtLink>
+            </div>
+          </div>
+        </div>
+
+      <!-- Low Stock Alerts & Top Items -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Low Stock Alerts -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-shadow duration-300">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Low Stock Alerts</h3>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+              {{ stats.lowStockItems }} items
+            </span>
+          </div>
+          <div class="space-y-3">
+            <div
+              v-for="item in lowStockItemsList"
+              :key="item.id"
+              class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+            >
+              <div class="flex items-center space-x-3">
+                <div class="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                  <ExclamationTriangleIcon class="w-5 h-5 text-orange-600 dark:text-orange-400" />
+              </div>
+                <div>
+                  <p class="font-medium text-slate-900 dark:text-white">{{ item.name }}</p>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">{{ item.quantity }} units left</p>
+            </div>
+              </div>
+              <button class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Reorder</button>
+            </div>
+          </div>
+          <NuxtLink
+            to="/stock/items"
+            class="block mt-4 text-center text-sm text-blue-600 dark:text-blue-400 hover:underline"
           >
-            <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mr-4">
-              <ArrowsRightLeftIcon class="w-5 h-5 text-orange-600 dark:text-orange-400" />
-            </div>
-            <div>
-              <h4 class="font-medium text-slate-900 dark:text-white">Stock Movements</h4>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Track inventory transactions and transfers</p>
-            </div>
+            View all items →
           </NuxtLink>
         </div>
-      </div>
 
-      <!-- Collaborative Features -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Group Purchasing Opportunities -->
-        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Group Buying</h3>
-            <span class="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
-              Community
-            </span>
-          </div>
-          <div class="space-y-3">
-            <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-              <div class="flex justify-between items-start mb-2">
-                <h4 class="font-medium text-slate-900 dark:text-white">Cleaning Supplies</h4>
-                <span class="text-xs text-purple-600 dark:text-purple-400">15% savings</span>
-              </div>
-              <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">4/8 businesses joined • 2 days left</p>
-              <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-2">
-                <div class="bg-purple-600 h-2 rounded-full" style="width: 50%"></div>
-              </div>
-              <button class="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700">Join Group Order</button>
-            </div>
-            
-            <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-              <div class="flex justify-between items-start mb-2">
-                <h4 class="font-medium text-slate-900 dark:text-white">Maize Meal</h4>
-                <span class="text-xs text-green-600 dark:text-green-400">20% savings</span>
-              </div>
-              <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">6/6 businesses joined • Ready to order</p>
-              <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-2">
-                <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
-              </div>
-              <button class="text-sm text-green-600 dark:text-green-400 hover:text-green-700">View Details</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Shared Logistics -->
-        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Shared Delivery</h3>
-            <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
-              Network
-            </span>
-          </div>
-          <div class="space-y-3">
-            <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-              <div class="flex items-center mb-2">
-                <TruckIcon class="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
-                <h4 class="font-medium text-slate-900 dark:text-white">Tomorrow 9:00 AM</h4>
-              </div>
-              <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Route: City Center → Township</p>
-              <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">2 slots available • R50 per pallet</p>
-              <button class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700">Reserve Slot</button>
-            </div>
-            
-            <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-              <div class="flex items-center mb-2">
-                <TruckIcon class="w-4 h-4 text-green-600 dark:text-green-400 mr-2" />
-                <h4 class="font-medium text-slate-900 dark:text-white">Friday 2:00 PM</h4>
-              </div>
-              <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Route: Township → City Center</p>
-              <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">1 slot available • R45 per pallet</p>
-              <button class="text-sm text-green-600 dark:text-green-400 hover:text-green-700">Reserve Slot</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Recent Activity</h3>
-            <span class="bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
-              Live
-            </span>
-          </div>
-          <div class="space-y-3">
-            <div class="flex items-start space-x-3">
-              <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                <ArrowDownIcon class="w-4 h-4 text-green-600 dark:text-green-400" />
-              </div>
-              <div class="flex-1">
-                <p class="text-sm text-slate-900 dark:text-white">Stock received: 50 units of Maize Meal</p>
-                <p class="text-xs text-slate-500 dark:text-slate-400">2 hours ago</p>
-              </div>
-            </div>
-            
-            <div class="flex items-start space-x-3">
-              <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
-                <ExclamationTriangleIcon class="w-4 h-4 text-orange-600 dark:text-orange-400" />
-              </div>
-              <div class="flex-1">
-                <p class="text-sm text-slate-900 dark:text-white">Low stock alert: Cleaning supplies</p>
-                <p class="text-xs text-slate-500 dark:text-slate-400">4 hours ago</p>
-              </div>
-            </div>
-            
-            <div class="flex items-start space-x-3">
-              <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                <UserGroupIcon class="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div class="flex-1">
-                <p class="text-sm text-slate-900 dark:text-white">Joined group purchase: Office supplies</p>
-                <p class="text-xs text-slate-500 dark:text-slate-400">1 day ago</p>
-              </div>
-            </div>
-          </div>
+        <!-- Top Selling Items -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-shadow duration-300">
+          <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6">Top Selling Items</h3>
+          <BarChart
+            :labels="['White Bread', 'Milk 1L', 'Sugar 2.5kg', 'Maize Meal', 'Cooking Oil']"
+            :data="[340, 280, 220, 190, 165]"
+            label="Units Sold"
+            color="#10B981"
+            :height="280"
+          />
         </div>
       </div>
     </div>
@@ -268,94 +233,76 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   PlusIcon,
   ArrowPathIcon,
   SparklesIcon,
   CubeIcon,
-  BuildingStorefrontIcon,
   ExclamationTriangleIcon,
   CurrencyDollarIcon,
   UserGroupIcon,
-  ArrowsRightLeftIcon,
-  TruckIcon,
-  ArrowDownIcon
+  ShoppingCartIcon
 } from '@heroicons/vue/24/outline'
-import { useStock } from '../composables/useStock'
-
-// Reactive data
-const loading = ref(true)
-const stats = ref({
-  totalItems: 0,
-  totalWarehouses: 0,
-  lowStockItems: 0,
-  totalStockValue: 0
-})
-
-// Computed properties
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-ZA', {
-    style: 'currency',
-    currency: 'ZAR',
-    minimumFractionDigits: 0
-  }).format(amount).replace('ZAR', '')
-}
-
-// Composables
-const { getStockOverview, getWarehouses } = useStock()
-
-// Methods
-const loadStats = async () => {
-  loading.value = true
-  try {
-    // Try to fetch real data from API
-    const [overview, warehousesData] = await Promise.all([
-      getStockOverview().catch(() => null),
-      getWarehouses().catch(() => ({ warehouses: [] }))
-    ])
-    
-    stats.value = {
-      totalItems: overview?.totalItems || 1247,
-      totalWarehouses: warehousesData.warehouses?.length || 8,
-      lowStockItems: overview?.lowStockItems || 23,
-      totalStockValue: overview?.totalValue || 456789
-    }
-  } catch (error) {
-    console.error('Failed to load stats:', error)
-    // Use fallback data
-    stats.value = {
-      totalItems: 1247,
-      totalWarehouses: 8,
-      lowStockItems: 23,
-      totalStockValue: 456789
-    }
-  } finally {
-    loading.value = false
-  }
-}
-
-const refreshStats = async () => {
-  await loadStats()
-  alert('Stock statistics refreshed!')
-}
-
-// Lifecycle
-onMounted(() => {
-  loadStats()
-})
-
-// Page metadata
-definePageMeta({
-  layout: 'default',
-  title: 'Stock Management - TOSS ERP'
-})
+// Manual imports for chart components
+import StatsCard from '~/components/charts/StatsCard.vue'
+import LineChart from '~/components/charts/LineChart.vue'
+import BarChart from '~/components/charts/BarChart.vue'
 
 // Meta
 useHead({
   title: 'Stock Management - TOSS ERP',
   meta: [
-    { name: 'description', content: 'Manage inventory, warehouses, and collaborative purchasing for township businesses' }
+    { name: 'description', content: 'Manage your inventory and track stock levels' }
   ]
+})
+
+// Composables
+const { getStockOverview } = useStock()
+
+// State
+const loading = ref(false)
+const stats = ref({
+  totalItems: 1247,
+  totalCategories: 32,
+  lowStockItems: 23,
+  totalStockValue: 456789
+})
+
+const lowStockItemsList = ref([
+  { id: 1, name: 'White Bread', quantity: 12, reorderLevel: 30 },
+  { id: 2, name: 'Fresh Milk 1L', quantity: 8, reorderLevel: 20 },
+  { id: 3, name: 'Sugar 2.5kg', quantity: 5, reorderLevel: 15 },
+  { id: 4, name: 'Cooking Oil 750ml', quantity: 10, reorderLevel: 25 }
+])
+
+// Methods
+const loadStats = async () => {
+  loading.value = true
+  try {
+    const overview = await getStockOverview().catch(() => null)
+    
+    if (overview) {
+    stats.value = {
+        totalItems: overview.totalItems || stats.value.totalItems,
+        totalCategories: overview.totalCategories || stats.value.totalCategories,
+        lowStockItems: overview.lowStockItems || stats.value.lowStockItems,
+        totalStockValue: overview.totalValue || stats.value.totalStockValue
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load stats:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const refreshStats = () => {
+  loadStats()
+}
+
+// Lifecycle
+onMounted(() => {
+  loadStats()
 })
 </script>
