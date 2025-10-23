@@ -1,8 +1,10 @@
 using Toss.Application.GroupBuying.Commands.ConfirmPool;
 using Toss.Application.GroupBuying.Commands.CreatePool;
+using Toss.Application.GroupBuying.Commands.GenerateAggregatedPO;
 using Toss.Application.GroupBuying.Commands.JoinPool;
 using Toss.Application.GroupBuying.Queries.GetActivePools;
 using Toss.Application.GroupBuying.Queries.GetMyParticipations;
+using Toss.Application.GroupBuying.Queries.GetNearbyPoolOpportunities;
 using Toss.Application.GroupBuying.Queries.GetPoolById;
 
 namespace Toss.Web.Endpoints;
@@ -16,7 +18,9 @@ public class GroupBuying : EndpointGroupBase
         group.MapGet("pools/{id}", GetPoolById);
         group.MapPost("pools/{poolId}/join", JoinPool);
         group.MapPost("pools/{poolId}/confirm", ConfirmPool);
+        group.MapPost("pools/{poolId}/generate-po", GenerateAggregatedPO);
         group.MapGet("participations", GetMyParticipations);
+        group.MapGet("opportunities", GetNearbyPoolOpportunities);
     }
 
     public async Task<IResult> CreatePool(ISender sender, CreatePoolCommand command)
@@ -55,6 +59,20 @@ public class GroupBuying : EndpointGroupBase
     public async Task<IResult> GetMyParticipations(
         ISender sender,
         [AsParameters] GetMyParticipationsQuery query)
+    {
+        var result = await sender.Send(query);
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> GenerateAggregatedPO(ISender sender, int poolId)
+    {
+        var result = await sender.Send(new GenerateAggregatedPOCommand { PoolId = poolId });
+        return Results.Created($"/api/buying/purchase-orders/{result}", new { id = result });
+    }
+
+    public async Task<IResult> GetNearbyPoolOpportunities(
+        ISender sender,
+        [AsParameters] GetNearbyPoolOpportunitiesQuery query)
     {
         var result = await sender.Send(query);
         return Results.Ok(result);

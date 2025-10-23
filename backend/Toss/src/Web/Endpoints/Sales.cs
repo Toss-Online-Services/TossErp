@@ -1,4 +1,5 @@
 using Toss.Application.Sales.Commands.CreateSale;
+using Toss.Application.Sales.Commands.GenerateReceipt;
 using Toss.Application.Sales.Commands.VoidSale;
 using Toss.Application.Sales.Queries.GetDailySummary;
 using Toss.Application.Sales.Queries.GetSales;
@@ -20,6 +21,9 @@ public class Sales : EndpointGroupBase
         
         group.MapPost("{id}/void", VoidSale)
             .WithName("VoidSale");
+        
+        group.MapPost("{id}/receipt", GenerateReceipt)
+            .WithName("GenerateReceipt");
     }
 
     public async Task<IResult> CreateSale(ISender sender, CreateSaleCommand command)
@@ -48,6 +52,12 @@ public class Sales : EndpointGroupBase
     {
         var result = await sender.Send(command with { SaleId = id });
         return result ? Results.Ok() : Results.BadRequest("Sale cannot be voided");
+    }
+
+    public async Task<IResult> GenerateReceipt(ISender sender, int id)
+    {
+        var result = await sender.Send(new GenerateReceiptCommand { SaleId = id });
+        return Results.Ok(result);
     }
 }
 
