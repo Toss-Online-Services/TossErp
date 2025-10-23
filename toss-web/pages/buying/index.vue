@@ -243,7 +243,7 @@
             </div>
             <div class="ml-4">
               <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Suppliers</h3>
-              <p class="text-sm text-slate-600 dark:text-slate-400">Vendor relationships</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Manage procurement partners</p>
             </div>
           </div>
           <div class="space-y-2">
@@ -252,8 +252,8 @@
               <span class="font-medium text-slate-900 dark:text-white">42</span>
             </div>
             <div class="flex justify-between text-sm">
-              <span class="text-slate-600 dark:text-slate-400">Avg Rating:</span>
-              <span class="font-medium text-purple-600">4.2/5</span>
+              <span class="text-slate-600 dark:text-slate-400">Products Linked:</span>
+              <span class="font-medium text-purple-600">180+</span>
             </div>
             <div class="flex justify-between text-sm">
               <span class="text-slate-600 dark:text-slate-400">On-time Delivery:</span>
