@@ -1,4 +1,5 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Domain.Entities;
 using Toss.Domain.Entities.GroupBuying;
 using Toss.Domain.Enums;
 
@@ -28,7 +29,7 @@ public class JoinPoolCommandHandler : IRequestHandler<JoinPoolCommand, int>
             .FirstOrDefaultAsync(p => p.Id == request.GroupBuyPoolId, cancellationToken);
 
         if (pool == null)
-            throw new NotFoundException(nameof(GroupBuyPool), request.GroupBuyPoolId);
+            throw new NotFoundException(nameof(GroupBuyPool), request.GroupBuyPoolId.ToString());
 
         if (pool.Status != PoolStatus.Open)
             throw new InvalidOperationException($"Cannot join pool with status: {pool.Status}");

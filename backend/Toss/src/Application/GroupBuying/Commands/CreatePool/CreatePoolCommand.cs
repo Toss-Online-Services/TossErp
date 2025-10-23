@@ -1,5 +1,8 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Domain.Entities;
 using Toss.Domain.Entities.GroupBuying;
+using Toss.Domain.Entities.Inventory;
+using Toss.Domain.Entities.Suppliers;
 using Toss.Domain.Enums;
 
 namespace Toss.Application.GroupBuying.Commands.CreatePool;
@@ -34,17 +37,17 @@ public class CreatePoolCommandHandler : IRequestHandler<CreatePoolCommand, int>
         // Validate product exists
         var product = await _context.Products.FindAsync(new object[] { request.ProductId }, cancellationToken);
         if (product == null)
-            throw new NotFoundException(nameof(Product), request.ProductId);
+            throw new NotFoundException(nameof(Product), request.ProductId.ToString());
 
         // Validate shop exists
         var shop = await _context.Shops.FindAsync(new object[] { request.InitiatorShopId }, cancellationToken);
         if (shop == null)
-            throw new NotFoundException(nameof(Shop), request.InitiatorShopId);
+            throw new NotFoundException(nameof(Shop), request.InitiatorShopId.ToString());
 
         // Validate supplier exists
         var supplier = await _context.Suppliers.FindAsync(new object[] { request.SupplierId }, cancellationToken);
         if (supplier == null)
-            throw new NotFoundException(nameof(Supplier), request.SupplierId);
+            throw new NotFoundException(nameof(Supplier), request.SupplierId.ToString());
 
         var pool = new GroupBuyPool
         {

@@ -8,6 +8,7 @@ using Toss.Domain.Entities.Inventory;
 using Toss.Domain.Entities.Logistics;
 using Toss.Domain.Entities.Payments;
 using Toss.Domain.Entities.Sales;
+using Toss.Domain.Entities.Suppliers;
 using Toss.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

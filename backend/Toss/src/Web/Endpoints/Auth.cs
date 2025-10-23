@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+// using Microsoft.AspNetCore.Authentication.JwtBearer; // TODO: Add JWT authentication
 
 namespace Toss.Web.Endpoints;
 
