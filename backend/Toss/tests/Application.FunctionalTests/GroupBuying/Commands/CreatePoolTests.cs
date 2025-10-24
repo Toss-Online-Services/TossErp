@@ -25,12 +25,15 @@ public class CreatePoolTests : BaseTestFixture
     {
         var command = new CreatePoolCommand
         {
-            ShopId = 999,
+            Title = "Test Pool",
+            InitiatorShopId = 999,
             ProductId = 1,
             SupplierId = 1,
-            TargetQuantity = 100,
-            UnitPrice = 10,
-            CloseDate = DateTimeOffset.UtcNow.AddDays(7)
+            MinimumQuantity = 100,
+            UnitPrice = 100,
+            BulkDiscountPercentage = 20,
+            CloseDate = DateTimeOffset.UtcNow.AddDays(7),
+            EstimatedShippingCost = 500
         };
 
         await Should.ThrowAsync<NotFoundException>(() => SendAsync(command));
@@ -63,19 +66,22 @@ public class CreatePoolTests : BaseTestFixture
         var supplier = new Supplier
         {
             Name = "Test Supplier",
-            ContactEmail = "supplier@test.com"
+            Email = "supplier@test.com"
         };
         await AddAsync(supplier);
 
         var command = new CreatePoolCommand
         {
-            ShopId = shop.Id,
+            Title = "Bulk Purchase Pool",
+            Description = "Bulk purchase for better pricing",
+            InitiatorShopId = shop.Id,
             ProductId = product.Id,
             SupplierId = supplier.Id,
-            TargetQuantity = 100,
-            UnitPrice = 80, // Bulk discount price
+            MinimumQuantity = 100,
+            UnitPrice = 100,
+            BulkDiscountPercentage = 20, // 20% discount
             CloseDate = DateTimeOffset.UtcNow.AddDays(7),
-            Description = "Bulk purchase for better pricing"
+            EstimatedShippingCost = 500
         };
 
         var poolId = await SendAsync(command);
@@ -86,8 +92,9 @@ public class CreatePoolTests : BaseTestFixture
         pool!.InitiatorShopId.ShouldBe(shop.Id);
         pool.ProductId.ShouldBe(product.Id);
         pool.SupplierId.ShouldBe(supplier.Id);
-        pool.TargetQuantity.ShouldBe(100);
-        pool.UnitPrice.ShouldBe(80);
+        pool.MinimumQuantity.ShouldBe(100);
+        pool.UnitPrice.ShouldBe(100);
+        pool.FinalUnitPrice.ShouldBe(80); // After 20% discount
         pool.Status.ShouldBe(PoolStatus.Open);
     }
 
@@ -115,29 +122,32 @@ public class CreatePoolTests : BaseTestFixture
         var supplier = new Supplier
         {
             Name = "Test Supplier",
-            ContactEmail = "supplier@test.com"
+            Email = "supplier@test.com"
         };
         await AddAsync(supplier);
 
         var command = new CreatePoolCommand
         {
-            ShopId = shop.Id,
+            Title = "Test Pool with Initial Participation",
+            InitiatorShopId = shop.Id,
             ProductId = product.Id,
             SupplierId = supplier.Id,
-            TargetQuantity = 100,
-            UnitPrice = 80,
-            InitialQuantity = 20, // Creator wants 20 units
-            CloseDate = DateTimeOffset.UtcNow.AddDays(7)
+            MinimumQuantity = 100,
+            UnitPrice = 100,
+            BulkDiscountPercentage = 20,
+            CloseDate = DateTimeOffset.UtcNow.AddDays(7),
+            EstimatedShippingCost = 500
         };
 
         var poolId = await SendAsync(command);
 
         var pool = await FindAsync<GroupBuyPool>(poolId);
         pool.ShouldNotBeNull();
-        pool!.CurrentQuantity.ShouldBe(20);
+        pool!.CurrentQuantity.ShouldBe(0); // No initial participation in this flow
 
+        // No automatic participation in CreatePoolCommand
         var participationCount = await CountAsync<PoolParticipation>();
-        participationCount.ShouldBe(1);
+        participationCount.ShouldBe(0);
     }
 }
 

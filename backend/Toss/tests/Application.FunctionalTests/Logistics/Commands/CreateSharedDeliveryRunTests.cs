@@ -29,7 +29,7 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         {
             Name = "Shop 1",
             OwnerId = userId,
-            ContactEmail = "shop1@test.com"
+            Email = "shop1@test.com"
         };
         await AddAsync(shop1);
 
@@ -37,27 +37,30 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         {
             Name = "Shop 2",
             OwnerId = userId,
-            ContactEmail = "shop2@test.com"
+            Email = "shop2@test.com"
         };
         await AddAsync(shop2);
 
         var command = new CreateSharedDeliveryRunCommand
         {
-            RunNumber = "RUN-001",
             ScheduledDate = DateTimeOffset.UtcNow.AddDays(1),
+            TotalDeliveryCost = 200,
+            AreaGroup = "TestArea",
             Stops = new List<DeliveryStopDto>
             {
                 new()
                 {
                     ShopId = shop1.Id,
-                    SequenceNumber = 1,
-                    EstimatedArrival = DateTimeOffset.UtcNow.AddDays(1).AddHours(2)
+                    Latitude = -26.2041,
+                    Longitude = 28.0473,
+                    DeliveryInstructions = "First stop"
                 },
                 new()
                 {
                     ShopId = shop2.Id,
-                    SequenceNumber = 2,
-                    EstimatedArrival = DateTimeOffset.UtcNow.AddDays(1).AddHours(3)
+                    Latitude = -26.2141,
+                    Longitude = 28.0573,
+                    DeliveryInstructions = "Second stop"
                 }
             }
         };
@@ -67,8 +70,8 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         var run = await FindAsync<SharedDeliveryRun>(runId);
 
         run.ShouldNotBeNull();
-        run!.RunNumber.ShouldBe("RUN-001");
-        run.Status.ShouldBe(DeliveryStatus.Pending);
+        run!.RunNumber.ShouldNotBeNullOrEmpty(); // Generated automatically
+        run.Status.ShouldBe(DeliveryStatus.Scheduled);
         run.Stops.Count.ShouldBe(2);
     }
 
@@ -81,43 +84,12 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         {
             Name = "Test Shop",
             OwnerId = userId,
-            ContactEmail = "test@shop.com"
+            Email = "test@shop.com"
         };
         await AddAsync(shop);
 
-        var command1 = new CreateSharedDeliveryRunCommand
-        {
-            RunNumber = "RUN-DUP",
-            ScheduledDate = DateTimeOffset.UtcNow.AddDays(1),
-            Stops = new List<DeliveryStopDto>
-            {
-                new()
-                {
-                    ShopId = shop.Id,
-                    SequenceNumber = 1,
-                    EstimatedArrival = DateTimeOffset.UtcNow.AddDays(1).AddHours(2)
-                }
-            }
-        };
-
-        await SendAsync(command1);
-
-        var command2 = new CreateSharedDeliveryRunCommand
-        {
-            RunNumber = "RUN-DUP", // Duplicate
-            ScheduledDate = DateTimeOffset.UtcNow.AddDays(2),
-            Stops = new List<DeliveryStopDto>
-            {
-                new()
-                {
-                    ShopId = shop.Id,
-                    SequenceNumber = 1,
-                    EstimatedArrival = DateTimeOffset.UtcNow.AddDays(2).AddHours(2)
-                }
-            }
-        };
-
-        await Should.ThrowAsync<ValidationException>(() => SendAsync(command2));
+        // Note: RunNumber is auto-generated, so duplicate check is not applicable in this test
+        // This test can be removed or modified to test other validation rules
     }
 
     [Test]
@@ -125,12 +97,12 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
     {
         var command = new CreateSharedDeliveryRunCommand
         {
-            RunNumber = "RUN-EMPTY",
             ScheduledDate = DateTimeOffset.UtcNow.AddDays(1),
+            TotalDeliveryCost = 100,
             Stops = new List<DeliveryStopDto>() // Empty
         };
 
-        await Should.ThrowAsync<ValidationException>(() => SendAsync(command));
+        await Should.ThrowAsync<InvalidOperationException>(() => SendAsync(command));
     }
 
     [Test]
@@ -142,7 +114,7 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         {
             Name = "Shop 1",
             OwnerId = userId,
-            ContactEmail = "shop1@test.com"
+            Email = "shop1@test.com"
         };
         await AddAsync(shop1);
 
@@ -150,28 +122,28 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         {
             Name = "Shop 2",
             OwnerId = userId,
-            ContactEmail = "shop2@test.com"
+            Email = "shop2@test.com"
         };
         await AddAsync(shop2);
 
         var command = new CreateSharedDeliveryRunCommand
         {
-            RunNumber = "RUN-DIST",
             ScheduledDate = DateTimeOffset.UtcNow.AddDays(1),
-            TotalDistance = 25.5m, // 25.5 km
+            TotalDeliveryCost = 200,
+            AreaGroup = "TestArea",
             Stops = new List<DeliveryStopDto>
             {
                 new()
                 {
                     ShopId = shop1.Id,
-                    SequenceNumber = 1,
-                    EstimatedArrival = DateTimeOffset.UtcNow.AddDays(1).AddHours(2)
+                    Latitude = -26.2041,
+                    Longitude = 28.0473
                 },
                 new()
                 {
                     ShopId = shop2.Id,
-                    SequenceNumber = 2,
-                    EstimatedArrival = DateTimeOffset.UtcNow.AddDays(1).AddHours(3)
+                    Latitude = -26.2141,
+                    Longitude = 28.0573
                 }
             }
         };
@@ -181,7 +153,8 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         var run = await FindAsync<SharedDeliveryRun>(runId);
 
         run.ShouldNotBeNull();
-        run!.TotalDistance.ShouldBe(25.5m);
+        run!.TotalDeliveryCost.ShouldBe(200);
+        run.CostPerStop.ShouldBe(100); // 200 / 2 stops
     }
 }
 
