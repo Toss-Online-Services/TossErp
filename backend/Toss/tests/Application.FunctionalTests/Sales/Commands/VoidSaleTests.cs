@@ -153,7 +153,7 @@ public class VoidSaleTests : BaseTestFixture
             Reason = "Second void"
         };
 
-        await Should.ThrowAsync<ValidationException>(() => SendAsync(secondVoidCommand));
+        await Should.ThrowAsync<InvalidOperationException>(() => SendAsync(secondVoidCommand));
     }
 }
 

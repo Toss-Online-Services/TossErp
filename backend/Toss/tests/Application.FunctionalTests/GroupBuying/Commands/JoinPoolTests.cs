@@ -59,20 +59,22 @@ public class JoinPoolTests : BaseTestFixture
         var supplier = new Supplier
         {
             Name = "Test Supplier",
-            ContactEmail = "supplier@test.com"
+            Email = "supplier@test.com"
         };
         await AddAsync(supplier);
 
         // Create pool
         var createCommand = new CreatePoolCommand
         {
-            ShopId = initiatorShop.Id,
+            Title = "Bulk Purchase Test",
+            InitiatorShopId = initiatorShop.Id,
             ProductId = product.Id,
             SupplierId = supplier.Id,
-            TargetQuantity = 100,
-            UnitPrice = 80,
-            InitialQuantity = 30,
-            CloseDate = DateTimeOffset.UtcNow.AddDays(7)
+            MinimumQuantity = 100,
+            UnitPrice = 100,
+            BulkDiscountPercentage = 20,
+            CloseDate = DateTimeOffset.UtcNow.AddDays(7),
+            EstimatedShippingCost = 500
         };
 
         var poolId = await SendAsync(createCommand);
@@ -89,10 +91,10 @@ public class JoinPoolTests : BaseTestFixture
 
         var pool = await FindAsync<GroupBuyPool>(poolId);
         pool.ShouldNotBeNull();
-        pool!.CurrentQuantity.ShouldBe(55); // 30 + 25
+        pool!.CurrentQuantity.ShouldBe(25); // Only joiner (initiator doesn't auto-join in this flow)
 
         var participationCount = await CountAsync<PoolParticipation>();
-        participationCount.ShouldBe(2); // Initiator + Joiner
+        participationCount.ShouldBe(1); // Just the joiner
     }
 
     [Test]
@@ -127,18 +129,22 @@ public class JoinPoolTests : BaseTestFixture
         var supplier = new Supplier
         {
             Name = "Test Supplier",
-            ContactEmail = "supplier@test.com"
+            Email = "supplier@test.com"
         };
         await AddAsync(supplier);
 
         // Create a closed pool
         var pool = new GroupBuyPool
         {
+            PoolNumber = "POOL-TEST-001",
+            Title = "Closed Pool",
             InitiatorShopId = initiatorShop.Id,
             ProductId = product.Id,
             SupplierId = supplier.Id,
-            TargetQuantity = 100,
-            UnitPrice = 80,
+            MinimumQuantity = 100,
+            UnitPrice = 100,
+            FinalUnitPrice = 80,
+            OpenDate = DateTimeOffset.UtcNow.AddDays(-1),
             CloseDate = DateTimeOffset.UtcNow.AddDays(7),
             Status = PoolStatus.Confirmed // Already confirmed/closed
         };
@@ -151,7 +157,7 @@ public class JoinPoolTests : BaseTestFixture
             QuantityCommitted = 10
         };
 
-        await Should.ThrowAsync<ValidationException>(() => SendAsync(joinCommand));
+        await Should.ThrowAsync<InvalidOperationException>(() => SendAsync(joinCommand));
     }
 
     [Test]
@@ -163,7 +169,7 @@ public class JoinPoolTests : BaseTestFixture
         {
             Name = "Test Shop",
             OwnerId = userId,
-            ContactEmail = "test@shop.com"
+            Email = "test@shop.com"
         };
         await AddAsync(shop);
 
@@ -178,19 +184,21 @@ public class JoinPoolTests : BaseTestFixture
         var supplier = new Supplier
         {
             Name = "Test Supplier",
-            ContactEmail = "supplier@test.com"
+            Email = "supplier@test.com"
         };
         await AddAsync(supplier);
 
         var createCommand = new CreatePoolCommand
         {
-            ShopId = shop.Id,
+            Title = "Test Pool",
+            InitiatorShopId = shop.Id,
             ProductId = product.Id,
             SupplierId = supplier.Id,
-            TargetQuantity = 100,
-            UnitPrice = 80,
-            InitialQuantity = 10,
-            CloseDate = DateTimeOffset.UtcNow.AddDays(7)
+            MinimumQuantity = 100,
+            UnitPrice = 100,
+            BulkDiscountPercentage = 20,
+            CloseDate = DateTimeOffset.UtcNow.AddDays(7),
+            EstimatedShippingCost = 500
         };
 
         var poolId = await SendAsync(createCommand);
@@ -203,7 +211,7 @@ public class JoinPoolTests : BaseTestFixture
             QuantityCommitted = 10
         };
 
-        await Should.ThrowAsync<ValidationException>(() => SendAsync(joinCommand));
+        await Should.ThrowAsync<InvalidOperationException>(() => SendAsync(joinCommand));
     }
 }
 
