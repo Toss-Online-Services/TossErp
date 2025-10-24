@@ -12,13 +12,31 @@ public class PurchaseOrder : BaseAuditableEntity
     
     public DateTimeOffset OrderDate { get; set; }
     public DateTimeOffset? ExpectedDeliveryDate { get; set; }
+    public DateTime? RequiredDate { get; set; }
     public PurchaseOrderStatus Status { get; set; } = PurchaseOrderStatus.Draft;
+    
+    // Approval tracking
+    public DateTime? ApprovedDate { get; set; }
+    public string? ApprovedBy { get; set; }
     
     // Amounts
     public decimal Subtotal { get; set; }
     public decimal TaxAmount { get; set; }
     public decimal ShippingCost { get; set; }
     public decimal Total { get; set; }
+    
+    // Aliases for handlers
+    public decimal SubTotal
+    {
+        get => Subtotal;
+        set => Subtotal = value;
+    }
+    
+    public decimal TotalAmount
+    {
+        get => Total;
+        set => Total = value;
+    }
     
     // Group buying reference
     public int? GroupBuyPoolId { get; set; }

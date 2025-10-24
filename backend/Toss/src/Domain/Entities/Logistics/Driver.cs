@@ -6,6 +6,9 @@ public class Driver : BaseAuditableEntity
     public string LastName { get; set; } = string.Empty;
     public string FullName => $"{FirstName} {LastName}";
     
+    // Alias for handlers
+    public string Name => FullName;
+    
     public PhoneNumber Phone { get; set; } = null!;
     public string? Email { get; set; }
     public string? LicenseNumber { get; set; }

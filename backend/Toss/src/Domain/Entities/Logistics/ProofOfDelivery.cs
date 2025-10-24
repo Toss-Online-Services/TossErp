@@ -16,9 +16,13 @@ public class ProofOfDelivery : BaseAuditableEntity
     // Signature-based
     public string? SignatureData { get; set; }
     public string? SignedBy { get; set; }
+    public string? RecipientName { get; set; }
     
     public DateTimeOffset CapturedAt { get; set; }
     public Location? CaptureLocation { get; set; }
+    
+    // Combined proof data (for handler compatibility)
+    public string? ProofData { get; set; }
     
     public string? Notes { get; set; }
 }

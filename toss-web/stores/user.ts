@@ -1,145 +1,96 @@
-import type { StoreUser as User, LoginCredentials, ChangePasswordData } from '~/types/auth'
+import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', () => {
-  // State
-  const user = ref<User | null>(null)
-  const isAuthenticated = ref(false)
-  const loading = ref(false)
-  const permissions = ref<string[]>([])
+  const {
+    user: authUser,
+    isAuthenticated: authIsAuthenticated,
+    isLoading,
+    login: authLogin,
+    logout: authLogout,
+    restoreAuth,
+    checkSession,
+    hasRole,
+    hasPermission: authHasPermission
+  } = useAuth()
 
-  // Getters
+  // Use auth composable state
+  const user = authUser
+  const isAuthenticated = authIsAuthenticated
+  const loading = isLoading
+
+  // Computed
   const fullName = computed(() => {
     if (!user.value) return ''
-    return `${user.value.firstName} ${user.value.lastName}`
+    return user.value.name || `${user.value.id}`
   })
 
   const hasPermission = computed(() => (permission: string) => {
-    return permissions.value.includes(permission) || permissions.value.includes('admin')
+    return authHasPermission(permission)
   })
 
   const userInitials = computed(() => {
-    if (!user.value) return 'U'
-    const firstName = user.value.firstName?.[0] || ''
-    const lastName = user.value.lastName?.[0] || ''
+    if (!user.value || !user.value.name) return 'U'
+    const nameParts = user.value.name.split(' ')
+    const firstName = nameParts[0]?.[0] || ''
+    const lastName = nameParts[1]?.[0] || ''
     return (firstName + lastName).toUpperCase()
   })
 
+  const permissions = computed(() => user.value?.permissions || [])
+
   // Actions
-  async function login(credentials: LoginCredentials) {
-    loading.value = true
+  const login = async (credentials: any) => {
+    return await authLogin(credentials)
+  }
+
+  const logout = async () => {
+    await authLogout()
+  }
+
+  const checkAuth = async () => {
+    // Restore from local storage first
+    restoreAuth()
+    
+    // Then verify with backend
+    if (user.value) {
+      return await checkSession()
+    }
+    return false
+  }
+
+  const updateProfile = async (profileData: any) => {
+    const { put } = useApi()
     try {
-      const response = await $fetch('/api/auth/login', {
-        method: 'POST',
-        body: credentials
-      })
-      
-      user.value = response.user
-      isAuthenticated.value = true
-      permissions.value = response.permissions || []
-      
-      // Store token if needed
-      if (response.token) {
-        const token = useCookie('auth-token', {
-          default: () => null,
-          secure: true,
-          sameSite: 'strict',
-          maxAge: 60 * 60 * 24 * 7 // 7 days
-        })
-        token.value = response.token
-      }
-      
+      const response = await put('/api/user/profile', profileData)
+      // User will be updated on next auth check
       return response
     } catch (error) {
       throw error
-    } finally {
-      loading.value = false
     }
   }
 
-  async function logout() {
-    loading.value = true
+  const changePassword = async (passwords: any) => {
+    const { post } = useApi()
     try {
-      await $fetch('/api/auth/logout', {
-        method: 'POST'
-      })
-    } catch (error) {
-      console.error('Logout error:', error)
-    } finally {
-      user.value = null
-      isAuthenticated.value = false
-      permissions.value = []
-      loading.value = false
-      
-      // Clear token
-      const token = useCookie('auth-token')
-      token.value = null
-      
-      await navigateTo('/login')
-    }
-  }
-
-  async function checkAuth() {
-    const token = useCookie('auth-token')
-    if (!token.value) {
-      return false
-    }
-
-    loading.value = true
-    try {
-      const response = await $fetch('/api/auth/me')
-      user.value = response.user
-      isAuthenticated.value = true
-      permissions.value = response.permissions || []
-      return true
-    } catch (error) {
-      // Token is invalid
-      await logout()
-      return false
-    } finally {
-      loading.value = false
-    }
-  }
-
-  async function updateProfile(profileData: Partial<User>) {
-    loading.value = true
-    try {
-      const response = await $fetch('/api/user/profile', {
-        method: 'PATCH',
-        body: profileData
-      })
-      
-      user.value = { ...user.value, ...response.user }
+      const response = await post('/api/user/change-password', passwords)
       return response
     } catch (error) {
       throw error
-    } finally {
-      loading.value = false
     }
   }
 
-  async function changePassword(passwords: ChangePasswordData) {
-    loading.value = true
-    try {
-      const response = await $fetch('/api/user/change-password', {
-        method: 'POST',
-        body: passwords
-      })
-      return response
-    } catch (error) {
-      throw error
-    } finally {
-      loading.value = false
-    }
+  const checkRole = (role: string) => {
+    return hasRole(role)
   }
 
   return {
     // State
-    user: readonly(user),
-    isAuthenticated: readonly(isAuthenticated),
-    loading: readonly(loading),
-    permissions: readonly(permissions),
+    user,
+    isAuthenticated,
+    loading,
+    permissions,
     
-    // Getters
+    // Computed
     fullName,
     hasPermission,
     userInitials,
@@ -149,6 +100,7 @@ export const useUserStore = defineStore('user', () => {
     logout,
     checkAuth,
     updateProfile,
-    changePassword
+    changePassword,
+    checkRole
   }
 })

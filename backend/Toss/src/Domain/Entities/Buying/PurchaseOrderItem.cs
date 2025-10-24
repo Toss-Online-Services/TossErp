@@ -13,6 +13,14 @@ public class PurchaseOrderItem : BaseEntity
     
     public int QuantityOrdered { get; set; }
     public int QuantityReceived { get; set; }
+    
+    // Alias for handlers
+    public int Quantity
+    {
+        get => QuantityOrdered;
+        set => QuantityOrdered = value;
+    }
+    
     public decimal UnitPrice { get; set; }
     public decimal TaxAmount { get; set; }
     public decimal LineTotal { get; set; }

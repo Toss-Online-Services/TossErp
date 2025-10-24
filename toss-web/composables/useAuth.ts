@@ -18,7 +18,7 @@ export const useAuth = () => {
   const error = ref<string | null>(null)
   const refreshTimer = ref<NodeJS.Timeout | null>(null)
 
-  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl || ''
+  const apiBaseUrl = useRuntimeConfig().public.apiBase || 'http://localhost:5001'
 
   /**
    * Check if token is expired

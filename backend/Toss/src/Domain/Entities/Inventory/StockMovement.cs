@@ -13,6 +13,13 @@ public class StockMovement : BaseAuditableEntity
     public int QuantityChange { get; set; }
     public int QuantityAfter { get; set; }
     
+    // Alias for QuantityChange (used by handlers)
+    public int Quantity
+    {
+        get => QuantityChange;
+        set => QuantityChange = value;
+    }
+    
     // Reference to source transaction
     public string? ReferenceType { get; set; } // "Sale", "Purchase", "Adjustment"
     public int? ReferenceId { get; set; }

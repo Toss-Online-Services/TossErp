@@ -12,6 +12,9 @@ public class GroupBuyPool : BaseAuditableEntity
     public int InitiatorShopId { get; set; }
     public Shop InitiatorShop { get; set; } = null!;
     
+    // Alias for handlers
+    public int CreatorShopId => InitiatorShopId;
+    
     public int SupplierId { get; set; }
     public Supplier Supplier { get; set; } = null!;
     
@@ -23,10 +26,16 @@ public class GroupBuyPool : BaseAuditableEntity
     public decimal BulkDiscountPercentage { get; set; }
     public decimal FinalUnitPrice { get; set; }
     
+    // Aliases for handlers
+    public decimal ProductPrice => UnitPrice;
+    
     // Timing
     public DateTimeOffset OpenDate { get; set; }
     public DateTimeOffset CloseDate { get; set; }
     public DateTimeOffset? ConfirmedDate { get; set; }
+    
+    // Alias for handlers
+    public DateTimeOffset TargetDate => CloseDate;
     
     public PoolStatus Status { get; set; } = PoolStatus.Open;
     

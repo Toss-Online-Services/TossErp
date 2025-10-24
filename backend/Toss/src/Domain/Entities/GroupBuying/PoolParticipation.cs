@@ -5,6 +5,9 @@ public class PoolParticipation : BaseAuditableEntity
     public int GroupBuyPoolId { get; set; }
     public GroupBuyPool GroupBuyPool { get; set; } = null!;
     
+    // Alias for handlers
+    public GroupBuyPool Pool => GroupBuyPool;
+    
     public int ShopId { get; set; }
     public Shop Shop { get; set; } = null!;
     
@@ -13,6 +16,9 @@ public class PoolParticipation : BaseAuditableEntity
     public decimal Subtotal { get; set; }
     public decimal ShippingShare { get; set; }
     public decimal Total { get; set; }
+    
+    // Alias for handlers
+    public int Quantity => QuantityCommitted;
     
     public DateTimeOffset JoinedDate { get; set; }
     public bool IsConfirmed { get; set; }
