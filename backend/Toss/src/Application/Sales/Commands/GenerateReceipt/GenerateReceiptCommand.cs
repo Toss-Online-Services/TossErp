@@ -8,7 +8,7 @@ public record ReceiptDto
     public int Id { get; init; }
     public string ReceiptNumber { get; init; } = string.Empty;
     public int SaleId { get; init; }
-    public DateTime IssuedDate { get; init; }
+    public DateTimeOffset IssuedDate { get; init; }
     public decimal TotalAmount { get; init; }
     public List<ReceiptItemDto> Items { get; init; } = new();
 }

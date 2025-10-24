@@ -1,11 +1,12 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Toss.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Toss.Application.Buying.Commands.CreatePurchaseOrder;
+using Toss.Infrastructure.Identity;
 // using Microsoft.AspNetCore.Authentication.JwtBearer; // TODO: Add JWT authentication
 
 namespace Toss.Web.Endpoints;
@@ -32,7 +33,7 @@ public class Auth : EndpointGroupBase
     }
 
     // Proxy login to Identity endpoint and transform response
-    private static async Task<IResult> Login(HttpContext httpContext)
+    private static async Task<IResult> Login(ISender sender,HttpContext httpContext)
     {
         var request = httpContext.Request;
         var client = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>().CreateClient();
@@ -64,7 +65,7 @@ public class Auth : EndpointGroupBase
     }
 
     // Proxy refresh to Identity endpoint and transform response
-    private static async Task<IResult> Refresh(HttpContext httpContext)
+    private static async Task<IResult> Refresh(ISender sender, HttpContext httpContext)
     {
         var request = httpContext.Request;
         var client = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>().CreateClient();
@@ -105,7 +106,7 @@ public class Auth : EndpointGroupBase
     // Simple in-memory store for invalidated refresh tokens (for demo; use persistent store in production)
     private static readonly HashSet<string> InvalidatedRefreshTokens = new();
 
-    private static async Task<IResult> Logout(HttpContext httpContext)
+    private static async Task<IResult> Logout(ISender sender, HttpContext httpContext)
     {
         // Read refresh token from body
         httpContext.Request.EnableBuffering();
@@ -136,7 +137,7 @@ public class Auth : EndpointGroupBase
     }
 
     // Verify: Validate JWT
-    private static IResult Verify(ClaimsPrincipal user)
+    private static IResult Verify(ISender sender, ClaimsPrincipal user)
     {
         if (user.Identity != null && user.Identity.IsAuthenticated)
         {

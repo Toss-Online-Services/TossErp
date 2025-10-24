@@ -13,7 +13,7 @@ public record CustomerDto
     public string Email { get; init; } = string.Empty;
     public string? PhoneNumber { get; init; }
     public decimal TotalPurchases { get; init; }
-    public DateTime? LastPurchaseDate { get; init; }
+    public DateTimeOffset? LastPurchaseDate { get; init; }
 }
 
 public record GetCustomersQuery : IRequest<PaginatedList<CustomerDto>>
@@ -45,7 +45,7 @@ public class GetCustomersQueryHandler : IRequestHandler<GetCustomersQuery, Pagin
                 c.FirstName.Contains(request.SearchTerm) ||
                 c.LastName.Contains(request.SearchTerm) ||
                 (c.Email != null && c.Email.Contains(request.SearchTerm)) ||
-                (c.PhoneNumber != null && c.PhoneNumber.Value.Contains(request.SearchTerm)));
+                (c.PhoneNumber != null && c.PhoneNumber.Contains(request.SearchTerm)));
         }
 
         var customers = await query
@@ -56,7 +56,7 @@ public class GetCustomersQueryHandler : IRequestHandler<GetCustomersQuery, Pagin
                 FirstName = c.FirstName,
                 LastName = c.LastName,
                 Email = c.Email ?? string.Empty,
-                PhoneNumber = c.PhoneNumber != null ? c.PhoneNumber.Value : null,
+                PhoneNumber = c.PhoneNumber,
                 TotalPurchases = c.TotalPurchases,
                 LastPurchaseDate = c.LastPurchaseDate
             })

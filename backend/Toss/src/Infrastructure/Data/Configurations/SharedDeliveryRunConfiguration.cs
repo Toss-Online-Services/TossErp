@@ -24,7 +24,8 @@ public class SharedDeliveryRunConfiguration : IEntityTypeConfiguration<SharedDel
         builder.Property(r => r.Notes)
             .HasMaxLength(1000);
 
-        builder.ComplexProperty(r => r.StartLocation, locationBuilder =>
+        // Optional StartLocation using OwnsOne for nullable support
+        builder.OwnsOne(r => r.StartLocation, locationBuilder =>
         {
             locationBuilder.Property(l => l.Latitude);
             locationBuilder.Property(l => l.Longitude);

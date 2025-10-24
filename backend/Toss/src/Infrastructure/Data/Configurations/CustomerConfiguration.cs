@@ -25,7 +25,8 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(c => c.Notes)
             .HasMaxLength(2000);
 
-        builder.ComplexProperty(c => c.Phone, phoneBuilder =>
+        // Optional PhoneNumber using OwnsOne for nullable support
+        builder.OwnsOne(c => c.Phone, phoneBuilder =>
         {
             phoneBuilder.Property(p => p.Number).HasMaxLength(20);
         });

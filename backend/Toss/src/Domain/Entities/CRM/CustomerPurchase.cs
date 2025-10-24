@@ -11,6 +11,9 @@ public class CustomerPurchase : BaseAuditableEntity
     public DateTimeOffset PurchaseDate { get; set; }
     public decimal PurchaseAmount { get; set; }
     
+    // Alias for handlers
+    public decimal TotalAmount => PurchaseAmount;
+    
     // Insights
     public int ItemCount { get; set; }
     public string? TopProductCategory { get; set; }

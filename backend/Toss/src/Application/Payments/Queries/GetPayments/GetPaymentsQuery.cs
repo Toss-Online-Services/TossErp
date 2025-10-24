@@ -11,7 +11,7 @@ public record PaymentDto
     public int ShopId { get; init; }
     public decimal Amount { get; init; }
     public string PaymentType { get; init; } = string.Empty;
-    public DateTime PaymentDate { get; init; }
+    public DateTimeOffset PaymentDate { get; init; }
     public string Status { get; init; } = string.Empty;
     public string? TransactionRef { get; init; }
     public int? SaleId { get; init; }
@@ -21,8 +21,8 @@ public record PaymentDto
 public record GetPaymentsQuery : IRequest<PaginatedList<PaymentDto>>
 {
     public int ShopId { get; init; }
-    public DateTime? StartDate { get; init; }
-    public DateTime? EndDate { get; init; }
+    public DateTimeOffset? StartDate { get; init; }
+    public DateTimeOffset? EndDate { get; init; }
     public string? Status { get; init; }
     public int PageNumber { get; init; } = 1;
     public int PageSize { get; init; } = 20;

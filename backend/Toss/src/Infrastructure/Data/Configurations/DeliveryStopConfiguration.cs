@@ -30,10 +30,10 @@ public class DeliveryStopConfiguration : IEntityTypeConfiguration<DeliveryStop>
             .HasForeignKey(s => s.ShopId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(s => s.ProofOfDelivery)
+        builder.HasMany(s => s.ProofOfDeliveries)
             .WithOne(pod => pod.DeliveryStop)
-            .HasForeignKey<DeliveryStop>(s => s.ProofOfDeliveryId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .HasForeignKey(pod => pod.DeliveryStopId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(s => new { s.SharedDeliveryRunId, s.SequenceNumber });
         builder.HasIndex(s => s.Status);

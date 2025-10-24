@@ -30,7 +30,8 @@ public class SupplierConfiguration : IEntityTypeConfiguration<Supplier>
         builder.Property(s => s.Notes)
             .HasMaxLength(2000);
 
-        builder.ComplexProperty(s => s.ContactPhone, phoneBuilder =>
+        // Optional ContactPhone using OwnsOne for nullable support
+        builder.OwnsOne(s => s.ContactPhone, phoneBuilder =>
         {
             phoneBuilder.Property(p => p.Number).HasMaxLength(20);
         });

@@ -6,6 +6,11 @@ public class PoolParticipation : BaseAuditableEntity
     public GroupBuyPool GroupBuyPool { get; set; } = null!;
     
     // Alias for handlers
+    public int PoolId
+    {
+        get => GroupBuyPoolId;
+        set => GroupBuyPoolId = value;
+    }
     public GroupBuyPool Pool => GroupBuyPool;
     
     public int ShopId { get; set; }

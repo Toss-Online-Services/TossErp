@@ -20,7 +20,8 @@ public class ProofOfDeliveryConfiguration : IEntityTypeConfiguration<ProofOfDeli
         builder.Property(pod => pod.Notes)
             .HasMaxLength(1000);
 
-        builder.ComplexProperty(pod => pod.CaptureLocation, locationBuilder =>
+        // Optional CaptureLocation using OwnsOne for nullable support
+        builder.OwnsOne(pod => pod.CaptureLocation, locationBuilder =>
         {
             locationBuilder.Property(l => l.Latitude);
             locationBuilder.Property(l => l.Longitude);
