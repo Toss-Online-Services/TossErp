@@ -7,7 +7,7 @@ public record SharedRunDto
 {
     public int Id { get; init; }
     public string RunNumber { get; init; } = string.Empty;
-    public DateTime ScheduledDate { get; init; }
+    public DateTimeOffset ScheduledDate { get; init; }
     public string Status { get; init; } = string.Empty;
     public int? DriverId { get; init; }
     public string? DriverName { get; init; }
@@ -18,8 +18,8 @@ public record SharedRunDto
 
 public record GetSharedRunsQuery : IRequest<List<SharedRunDto>>
 {
-    public DateTime? StartDate { get; init; }
-    public DateTime? EndDate { get; init; }
+    public DateTimeOffset? StartDate { get; init; }
+    public DateTimeOffset? EndDate { get; init; }
     public DeliveryStatus? Status { get; init; }
 }
 

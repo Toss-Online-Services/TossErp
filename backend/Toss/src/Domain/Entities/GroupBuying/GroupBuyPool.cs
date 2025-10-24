@@ -22,6 +22,7 @@ public class GroupBuyPool : BaseAuditableEntity
     public int MinimumQuantity { get; set; }
     public int? MaximumQuantity { get; set; }
     public int CurrentQuantity { get; set; }
+    public int TargetParticipants { get; set; }
     public decimal UnitPrice { get; set; }
     public decimal BulkDiscountPercentage { get; set; }
     public decimal FinalUnitPrice { get; set; }

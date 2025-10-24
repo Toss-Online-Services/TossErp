@@ -1,4 +1,5 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Domain.Entities;
 using Toss.Domain.Enums;
 
 namespace Toss.Application.GroupBuying.Queries.GetNearbyPoolOpportunities;
@@ -12,7 +13,7 @@ public record PoolOpportunityDto
     public int CurrentParticipants { get; init; }
     public int TargetParticipants { get; init; }
     public decimal PotentialSavings { get; init; }
-    public DateTime? TargetDate { get; init; }
+    public DateTimeOffset? TargetDate { get; init; }
     public double? DistanceKm { get; init; }
 }
 

@@ -6,6 +6,8 @@ public class Shop : BaseAuditableEntity
     public string? Description { get; set; }
     public string OwnerId { get; set; } = string.Empty;
     public Location Location { get; set; } = null!;
+    public int? AddressId { get; set; }
+    public Address? Address { get; set; }
     public PhoneNumber? ContactPhone { get; set; }
     public string? Email { get; set; }
     public bool IsActive { get; set; } = true;

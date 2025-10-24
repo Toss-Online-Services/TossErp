@@ -11,8 +11,8 @@ public record PurchaseOrderDetailDto
     public string ShopName { get; init; } = string.Empty;
     public int SupplierId { get; init; }
     public string SupplierName { get; init; } = string.Empty;
-    public DateTime OrderDate { get; init; }
-    public DateTime? RequiredDate { get; init; }
+    public DateTimeOffset OrderDate { get; init; }
+    public DateTimeOffset? RequiredDate { get; init; }
     public string Status { get; init; } = string.Empty;
     public decimal SubTotal { get; init; }
     public decimal TaxAmount { get; init; }

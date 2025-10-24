@@ -11,8 +11,8 @@ public record ParticipationDto
     public int MyQuantity { get; init; }
     public decimal MyCommitment { get; init; }
     public string Status { get; init; } = string.Empty;
-    public DateTime JoinedDate { get; init; }
-    public DateTime? TargetDate { get; init; }
+    public DateTimeOffset JoinedDate { get; init; }
+    public DateTimeOffset? TargetDate { get; init; }
 }
 
 public record GetMyParticipationsQuery : IRequest<List<ParticipationDto>>

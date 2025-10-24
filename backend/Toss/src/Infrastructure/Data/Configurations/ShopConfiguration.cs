@@ -35,7 +35,8 @@ public class ShopConfiguration : IEntityTypeConfiguration<Shop>
             locationBuilder.Property(l => l.Zone).HasMaxLength(200);
         });
 
-        builder.ComplexProperty(s => s.ContactPhone, phoneBuilder =>
+        // Optional ContactPhone using OwnsOne for nullable support
+        builder.OwnsOne(s => s.ContactPhone, phoneBuilder =>
         {
             phoneBuilder.Property(p => p.Number).HasMaxLength(20);
         });

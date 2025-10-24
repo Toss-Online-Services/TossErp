@@ -10,8 +10,8 @@ public record SupplierProductDto
     public string ProductName { get; init; } = string.Empty;
     public string? SupplierSKU { get; init; }
     public decimal BasePrice { get; init; }
-    public int LeadTimeDays { get; init; }
-    public int MinOrderQuantity { get; init; }
+    public int? LeadTimeDays { get; init; }
+    public int? MinOrderQuantity { get; init; }
     public bool IsActive { get; init; }
 }
 

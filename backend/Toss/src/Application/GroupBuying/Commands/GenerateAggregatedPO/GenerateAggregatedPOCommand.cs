@@ -45,12 +45,12 @@ public class GenerateAggregatedPOCommandHandler : IRequestHandler<GenerateAggreg
         {
             PoolId = pool.Id,
             SupplierId = pool.SupplierId,
-            OrderDate = DateTime.UtcNow,
-            RequiredDate = pool.TargetDate ?? DateTime.UtcNow.AddDays(7),
+            OrderDate = DateTimeOffset.UtcNow,
+            RequiredDate = pool.TargetDate,
             TotalQuantity = totalQuantity,
             TotalAmount = totalAmount,
             Status = PurchaseOrderStatus.Pending,
-            PONumber = $"AGPO-{DateTime.UtcNow:yyyyMMdd}-{pool.Id:D6}"
+            PONumber = $"AGPO-{DateTimeOffset.UtcNow:yyyyMMdd}-{pool.Id:D6}"
         };
 
         _context.AggregatedPurchaseOrders.Add(aggregatedPO);

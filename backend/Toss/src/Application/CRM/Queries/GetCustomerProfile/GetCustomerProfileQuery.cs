@@ -13,16 +13,16 @@ public record CustomerProfileDto
     public int ShopId { get; init; }
     public string ShopName { get; init; } = string.Empty;
     public decimal TotalPurchases { get; init; }
-    public DateTime? LastPurchaseDate { get; init; }
+    public DateTimeOffset? LastPurchaseDate { get; init; }
     public int PurchaseCount { get; init; }
-    public DateTime CreatedDate { get; init; }
+    public DateTimeOffset CreatedDate { get; init; }
     public List<RecentPurchaseDto> RecentPurchases { get; init; } = new();
 }
 
 public record RecentPurchaseDto
 {
     public int SaleId { get; init; }
-    public DateTime PurchaseDate { get; init; }
+    public DateTimeOffset PurchaseDate { get; init; }
     public decimal Amount { get; init; }
 }
 
@@ -56,7 +56,7 @@ public class GetCustomerProfileQueryHandler : IRequestHandler<GetCustomerProfile
             FirstName = customer.FirstName,
             LastName = customer.LastName,
             Email = customer.Email ?? string.Empty,
-            PhoneNumber = customer.PhoneNumber?.Value,
+            PhoneNumber = customer.PhoneNumber,
             ShopId = customer.ShopId,
             ShopName = customer.Shop.Name,
             TotalPurchases = customer.TotalPurchases,

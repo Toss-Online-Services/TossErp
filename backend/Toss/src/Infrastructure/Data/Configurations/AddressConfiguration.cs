@@ -24,7 +24,8 @@ public class AddressConfiguration : IEntityTypeConfiguration<Address>
             .HasMaxLength(2)
             .IsRequired();
 
-        builder.ComplexProperty(a => a.Coordinates, locationBuilder =>
+        // Optional Location coordinates using OwnsOne for nullable support
+        builder.OwnsOne(a => a.Coordinates, locationBuilder =>
         {
             locationBuilder.Property(l => l.Latitude);
             locationBuilder.Property(l => l.Longitude);

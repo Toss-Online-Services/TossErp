@@ -13,7 +13,7 @@ public record StockMovementDto
     public string ProductName { get; init; } = string.Empty;
     public int Quantity { get; init; }
     public string MovementType { get; init; } = string.Empty;
-    public DateTime MovementDate { get; init; }
+    public DateTimeOffset MovementDate { get; init; }
     public string? Notes { get; init; }
 }
 
