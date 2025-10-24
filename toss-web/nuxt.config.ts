@@ -65,8 +65,8 @@ export default defineNuxtConfig({
     apiSecret: '',
     // Public keys (exposed to client-side)
     public: {
-      apiBase: '/api',
-      apiBaseUrl: process.env.API_BASE_URL || ''
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:5001',
+      apiTimeout: 30000
     }
   },
   ssr: false,  // Disable SSR temporarily to fix router issues
@@ -92,77 +92,10 @@ export default defineNuxtConfig({
       wasm: true
     },
     devProxy: {
-      '/api/crm': {
-        target: 'http://localhost:5049/api',
-        changeOrigin: true
-      },
-      '/api/analytics': {
-        target: 'http://localhost:8081/api/analytics',
-        changeOrigin: true
-      },
-      '/api/hr': {
-        target: 'http://localhost:8081/api/hr',
-        changeOrigin: true
-      },
-      '/api/sales': {
-        target: 'http://localhost:8081/api/sales',
-        changeOrigin: true
-      },
-      '/api/stock': {
-        target: 'http://localhost:8081/api/stock',
-        changeOrigin: true
-      },
-      '/api/inventory': {
-        target: 'http://localhost:8081/api/inventory',
-        changeOrigin: true
-      },
-      '/api/financial': {
-        target: 'http://localhost:8081/api/financial',
-        changeOrigin: true
-      },
-      '/api/logistics': {
-        target: 'http://localhost:8081/api/logistics',
-        changeOrigin: true
-      },
-      '/api/ai': {
-        target: 'http://localhost:8081/api/ai',
-        changeOrigin: true
-      },
-      '/api/collaboration': {
-        target: 'http://localhost:8081/api/collaboration',
-        changeOrigin: true
-      },
-      '/api/projects': {
-        target: 'http://localhost:8081/api/projects',
-        changeOrigin: true
-      },
-      '/api/accounts': {
-        target: 'http://localhost:8081/api/accounts',
-        changeOrigin: true
-      },
-      '/api/assets': {
-        target: 'http://localhost:8081/api/assets',
-        changeOrigin: true
-      },
-      '/api/setup': {
-        target: 'http://localhost:8081/api/setup',
-        changeOrigin: true
-      },
-      '/api/notifications': {
-        target: 'http://localhost:8081/api/notifications',
-        changeOrigin: true
-      },
-      '/api/manufacturing': {
-        target: 'http://localhost:8081/api/manufacturing',
-        changeOrigin: true
-      },
-      '/api/group-buying': {
-        target: 'http://localhost:8081/api/group-buying',
-        changeOrigin: true
-      },
-      '/api/services': {
-        target: 'http://localhost:8081/api/services',
-        changeOrigin: true
+      '/api': {
+        target: 'http://localhost:5001',
+        changeOrigin: true,
+        ws: true
       }
     }
   },

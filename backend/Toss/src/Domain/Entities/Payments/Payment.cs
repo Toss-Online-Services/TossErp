@@ -17,6 +17,12 @@ public class Payment : BaseAuditableEntity
     public string? SourceType { get; set; } // "Sale", "PurchaseOrder", "GroupBuy"
     public int? SourceId { get; set; }
     
+    // Explicit source references (for handler compatibility)
+    public int? SaleId { get; set; }
+    public int? PurchaseOrderId { get; set; }
+    public string? TransactionRef { get; set; }
+    public DateTimeOffset PaymentDate { get; set; }
+    
     // Customer/Payer details
     public int? CustomerId { get; set; }
     public Customer? Customer { get; set; }

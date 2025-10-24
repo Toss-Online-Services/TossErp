@@ -18,9 +18,20 @@ public class Sale : BaseAuditableEntity
     public decimal DiscountAmount { get; set; }
     public decimal Total { get; set; }
     
+    // Alias for Total (used by handlers)
+    public decimal TotalAmount
+    {
+        get => Total;
+        set => Total = value;
+    }
+    
     // Payment
     public PaymentType PaymentMethod { get; set; }
     public string? PaymentReference { get; set; }
+    
+    // Void tracking
+    public string? VoidReason { get; set; }
+    public DateTimeOffset? VoidedAt { get; set; }
     
     public string? Notes { get; set; }
     

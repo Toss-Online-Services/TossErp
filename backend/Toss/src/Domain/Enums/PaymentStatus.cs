@@ -5,8 +5,9 @@ public enum PaymentStatus
     Pending = 0,
     Authorized = 1,
     Captured = 2,
-    Failed = 3,
-    Refunded = 4,
-    Cancelled = 5
+    Completed = 3, // Alias for Captured, used by handlers
+    Failed = 4,
+    Refunded = 5,
+    Cancelled = 6
 }
 

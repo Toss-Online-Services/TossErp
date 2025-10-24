@@ -30,7 +30,7 @@ public class GetCashFlowSummaryQueryHandler : IRequestHandler<GetCashFlowSummary
         _context = context;
     }
 
-    public async Task<GetCashFlowSummaryDto> Handle(GetCashFlowSummaryQuery request, CancellationToken cancellationToken)
+    public async Task<CashFlowSummaryDto> Handle(GetCashFlowSummaryQuery request, CancellationToken cancellationToken)
     {
         // Cash In: Sales
         var salesRevenue = await _context.Sales

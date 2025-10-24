@@ -5,10 +5,14 @@ public class Supplier : BaseAuditableEntity
     public string Name { get; set; } = string.Empty;
     public string? CompanyRegNumber { get; set; }
     public string? VATNumber { get; set; }
+    public string? ContactPerson { get; set; }
     
     public PhoneNumber? ContactPhone { get; set; }
     public string? Email { get; set; }
     public string? Website { get; set; }
+    
+    // Alias for handlers expecting string PhoneNumber
+    public string? PhoneNumber => ContactPhone?.ToString();
     
     public int? AddressId { get; set; }
     public Address? Address { get; set; }

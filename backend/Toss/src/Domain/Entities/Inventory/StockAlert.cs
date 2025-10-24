@@ -13,5 +13,12 @@ public class StockAlert : BaseAuditableEntity
     public bool IsAcknowledged { get; set; }
     public DateTimeOffset? AcknowledgedAt { get; set; }
     public string? AcknowledgedBy { get; set; }
+    
+    // Alias for handlers
+    public bool IsResolved
+    {
+        get => IsAcknowledged;
+        set => IsAcknowledged = value;
+    }
 }
 
