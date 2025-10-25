@@ -245,6 +245,19 @@
               </li>
             </ul>
           </div>
+
+          <!-- Error Message -->
+          <div v-if="errorMessage" class="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <div class="flex items-start">
+              <svg class="w-5 h-5 text-red-600 dark:text-red-400 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <div>
+                <h4 class="font-semibold text-red-800 dark:text-red-200">Setup Error</h4>
+                <p class="text-sm text-red-700 dark:text-red-300 mt-1">{{ errorMessage }}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -259,8 +272,12 @@
           {{ currentStep === 1 ? 'Get Started' : 'Continue' }}
         </button>
 
-        <button v-if="currentStep === totalSteps" @click="completeOnboarding" class="px-8 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-          Go to Dashboard
+        <button v-if="currentStep === totalSteps" @click="completeOnboarding" :disabled="isSubmitting" class="px-8 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center">
+          <svg v-if="isSubmitting" class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ isSubmitting ? 'Setting up...' : 'Go to Dashboard' }}
         </button>
       </div>
     </div>
@@ -340,16 +357,62 @@ const toggleModule = (moduleId) => {
   }
 }
 
+const isSubmitting = ref(false)
+const errorMessage = ref('')
+
 const completeOnboarding = async () => {
+  isSubmitting.value = true
+  errorMessage.value = ''
+  
   try {
-    // Save onboarding data to backend
-    // await $api.post('/onboarding/complete', formData.value)
+    // Create shop with onboarding data
+    const shopData = {
+      name: formData.value.companyName,
+      email: formData.value.email,
+      phone: formData.value.phone,
+      address: {
+        street: '',
+        city: '',
+        province: '',
+        postalCode: '',
+        country: formData.value.country
+      },
+      taxNumber: formData.value.taxId,
+      currency: formData.value.currency,
+      industry: formData.value.industry,
+      size: formData.value.companySize
+    }
+
+    // Save to backend
+    const response = await $fetch('/api/shops', {
+      method: 'POST',
+      body: shopData
+    })
+
+    // Update user profile
+    await $fetch('/api/auth/profile', {
+      method: 'PUT',
+      body: {
+        firstName: formData.value.firstName,
+        lastName: formData.value.lastName,
+        email: formData.value.email,
+        phone: formData.value.phone,
+        jobTitle: formData.value.jobTitle,
+        department: formData.value.department
+      }
+    })
+
+    // Save selected modules to local storage
+    localStorage.setItem('toss_modules', JSON.stringify(formData.value.selectedModules))
+    localStorage.setItem('toss_onboarding_complete', 'true')
     
     // Redirect to dashboard
     await router.push('/')
   } catch (error) {
     console.error('Onboarding error:', error)
-    alert('There was an error completing onboarding. Please try again.')
+    errorMessage.value = error.message || 'There was an error completing onboarding. Please try again.'
+  } finally {
+    isSubmitting.value = false
   }
 }
 </script>

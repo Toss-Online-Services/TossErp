@@ -13,8 +13,8 @@ using Toss.Infrastructure.Data;
 namespace Toss.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251024105328_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251025083409_InitialCreateWithMVPEntities")]
+    partial class InitialCreateWithMVPEntities
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -195,6 +195,151 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Addresses");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.ArtificialIntelligence.AIConversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Language")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<DateTime?>("LastMessageAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShopId");
+
+                    b.ToTable("AIConversations");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.ArtificialIntelligence.AIMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ModelUsed")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int?>("TokenCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.ToTable("AIMessages");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.ArtificialIntelligence.AISettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AllowBusinessInsights")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("AllowInventoryPrediction")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("AllowPriceSuggestions")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("AllowProductDescriptionGeneration")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("AllowSalesForecasting")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ApiEndpoint")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ApiKey")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("ProviderType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RequestTimeoutSeconds")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SupportedLanguages")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShopId");
+
+                    b.ToTable("AISettings");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Buying.PurchaseOrder", b =>
@@ -566,9 +711,6 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("CustomerId1")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ItemCount")
                         .HasColumnType("integer");
 
@@ -594,8 +736,6 @@ namespace Toss.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId1");
-
                     b.HasIndex("PurchaseDate");
 
                     b.HasIndex("SaleId");
@@ -603,6 +743,378 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.HasIndex("CustomerId", "PurchaseDate");
 
                     b.ToTable("CustomerPurchases");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductAttribute", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductAttributes");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductAttributeValue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<decimal>("PriceAdjustment")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<int>("ProductAttributeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductAttributeId");
+
+                    b.ToTable("ProductAttributeValues");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductProductTagMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductTagId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductTagId");
+
+                    b.HasIndex("ProductId", "ProductTagId")
+                        .IsUnique();
+
+                    b.ToTable("ProductProductTagMappings");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductReview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("HelpfulNoTotal")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("HelpfulYesTotal")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ReviewText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("StoreId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductReviews");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductTags");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Directory.Country", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AllowsBilling")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("AllowsShipping")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("NumericIsoCode")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Published")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("SubjectToVat")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ThreeLetterIsoCode")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<string>("TwoLetterIsoCode")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Countries");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Directory.Currency", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CurrencyCode")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<string>("CustomFormatting")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("DisplayLocale")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("Published")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("Rate")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("numeric(18,8)");
+
+                    b.Property<DateTime>("UpdatedOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Currencies");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Directory.MeasureDimension", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal>("Ratio")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("numeric(18,8)");
+
+                    b.Property<string>("SystemKeyword")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MeasureDimensions");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Directory.MeasureWeight", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal>("Ratio")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("numeric(18,8)");
+
+                    b.Property<string>("SystemKeyword")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MeasureWeights");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Directory.StateProvince", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Abbreviation")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("Published")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.ToTable("StateProvinces");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.GroupBuying.AggregatedPurchaseOrder", b =>
@@ -1198,6 +1710,124 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.ToTable("StockMovements");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Localization.Language", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FlagImageFileName")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("LanguageCulture")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("Published")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("Rtl")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UniqueSeoCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Languages");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Localization.LocaleStringResource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ResourceName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("ResourceValue")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LanguageId", "ResourceName")
+                        .IsUnique();
+
+                    b.ToTable("LocaleStringResources");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Localization.LocalizedProperty", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LocaleKey")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<string>("LocaleKeyGroup")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<string>("LocaleValue")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LanguageId");
+
+                    b.HasIndex("EntityId", "LanguageId", "LocaleKeyGroup", "LocaleKey");
+
+                    b.ToTable("LocalizedProperties");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Logistics.DeliveryStop", b =>
                 {
                     b.Property<int>("Id")
@@ -1512,6 +2142,186 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.HasIndex("Status");
 
                     b.ToTable("SharedDeliveryRuns");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("BillingAddressId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CustomerCurrencyCode")
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CustomerIp")
+                        .HasMaxLength(45)
+                        .HasColumnType("character varying(45)");
+
+                    b.Property<int?>("CustomerLanguageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CustomerTaxDisplayType")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("OrderGuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("OrderStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("OrderSubtotalExclTax")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal>("OrderSubtotalInclTax")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal>("OrderTax")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal>("OrderTotal")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<DateTime?>("PaidDateUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PaymentMethodSystemName")
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("RefundedAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<int?>("ShippingAddressId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ShippingMethod")
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<int>("ShippingStatus")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BillingAddressId");
+
+                    b.HasIndex("ShippingAddressId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("DiscountAmountExclTax")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal>("DiscountAmountInclTax")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<int>("DownloadCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("OrderItemGuid")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("PriceExclTax")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal>("PriceInclTax")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("UnitPriceExclTax")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal>("UnitPriceInclTax")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.OrderNote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("DisplayToCustomer")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderNotes");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Payments.PayLink", b =>
@@ -2025,6 +2835,193 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.ToTable("SaleItems");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Security.AclRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityId", "EntityName");
+
+                    b.ToTable("AclRecords");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Security.PermissionRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SystemName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PermissionRecords");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Security.PermissionRoleMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PermissionRecordId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PermissionRecordId");
+
+                    b.ToTable("PermissionRoleMappings");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Shipping.Shipment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminComment")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeliveryDateUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ShippedDateUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("TotalWeight")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<string>("TrackingNumber")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Shipments");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Shipping.ShipmentItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShipmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("WarehouseId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShipmentId");
+
+                    b.ToTable("ShipmentItems");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Shipping.ShippingMethod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShippingMethods");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Shop", b =>
                 {
                     b.Property<int>("Id")
@@ -2131,6 +3128,99 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Shops");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Stores.Store", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CompanyAddress")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("CompanyName")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("CompanyPhoneNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("CompanyVat")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DefaultLanguageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Hosts")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<bool>("Ssl_enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Stores");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Stores.StoreMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<int>("StoreId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StoreId");
+
+                    b.HasIndex("EntityId", "EntityName");
+
+                    b.ToTable("StoreMappings");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Suppliers.Supplier", b =>
@@ -2327,6 +3417,150 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.ToTable("SupplierProducts");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Tax.TaxCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaxCategories");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Tax.TaxRate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CountryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal>("Percentage")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<int?>("StateProvinceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TaxCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Zip")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaxCategoryId");
+
+                    b.ToTable("TaxRates");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Vendors.Vendor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("AddressId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
+
+                    b.ToTable("Vendors");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Vendors.VendorNote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("VendorId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("VendorNotes");
+                });
+
             modelBuilder.Entity("Toss.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -2474,6 +3708,39 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Coordinates");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.ArtificialIntelligence.AIConversation", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Shop");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.ArtificialIntelligence.AIMessage", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.ArtificialIntelligence.AIConversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.ArtificialIntelligence.AISettings", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Shop");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Buying.PurchaseOrder", b =>
                 {
                     b.HasOne("Toss.Domain.Entities.Shop", "Shop")
@@ -2580,10 +3847,6 @@ namespace Toss.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Toss.Domain.Entities.CRM.Customer", null)
-                        .WithMany("Purchases")
-                        .HasForeignKey("CustomerId1");
-
                     b.HasOne("Toss.Domain.Entities.Sales.Sale", "Sale")
                         .WithMany()
                         .HasForeignKey("SaleId")
@@ -2593,6 +3856,39 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Sale");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductAttributeValue", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Catalog.ProductAttribute", "ProductAttribute")
+                        .WithMany("ProductAttributeValues")
+                        .HasForeignKey("ProductAttributeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductAttribute");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductProductTagMapping", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Catalog.ProductTag", "ProductTag")
+                        .WithMany("ProductProductTagMappings")
+                        .HasForeignKey("ProductTagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductTag");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Directory.StateProvince", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Directory.Country", "Country")
+                        .WithMany("StateProvinces")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.GroupBuying.AggregatedPurchaseOrder", b =>
@@ -2736,6 +4032,28 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Shop");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Localization.LocaleStringResource", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Localization.Language", "Language")
+                        .WithMany()
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Language");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Localization.LocalizedProperty", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Localization.Language", "Language")
+                        .WithMany()
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Language");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Logistics.DeliveryStop", b =>
                 {
                     b.HasOne("Toss.Domain.Entities.Logistics.SharedDeliveryRun", "SharedDeliveryRun")
@@ -2832,6 +4150,45 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Driver");
 
                     b.Navigation("StartLocation");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.Order", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Address", "BillingAddress")
+                        .WithMany()
+                        .HasForeignKey("BillingAddressId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Toss.Domain.Entities.Address", "ShippingAddress")
+                        .WithMany()
+                        .HasForeignKey("ShippingAddressId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("BillingAddress");
+
+                    b.Navigation("ShippingAddress");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.OrderItem", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Orders.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.OrderNote", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Orders.Order", "Order")
+                        .WithMany("OrderNotes")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Payments.PayLink", b =>
@@ -2952,6 +4309,28 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Sale");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Security.PermissionRoleMapping", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Security.PermissionRecord", "PermissionRecord")
+                        .WithMany("PermissionRoleMappings")
+                        .HasForeignKey("PermissionRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PermissionRecord");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Shipping.ShipmentItem", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Shipping.Shipment", "Shipment")
+                        .WithMany("ShipmentItems")
+                        .HasForeignKey("ShipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Shipment");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Shop", b =>
                 {
                     b.HasOne("Toss.Domain.Entities.Address", "Address")
@@ -2979,6 +4358,17 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Address");
 
                     b.Navigation("ContactPhone");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Stores.StoreMapping", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Stores.Store", "Store")
+                        .WithMany("StoreMappings")
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Suppliers.Supplier", b =>
@@ -3041,6 +4431,43 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Supplier");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Tax.TaxRate", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Tax.TaxCategory", "TaxCategory")
+                        .WithMany()
+                        .HasForeignKey("TaxCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TaxCategory");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Vendors.Vendor", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Address");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Vendors.VendorNote", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Vendors.Vendor", "Vendor")
+                        .WithMany("VendorNotes")
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.ArtificialIntelligence.AIConversation", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Buying.PurchaseOrder", b =>
                 {
                     b.Navigation("Items");
@@ -3054,9 +4481,22 @@ namespace Toss.Infrastructure.Data.Migrations
 
                     b.Navigation("PurchaseHistory");
 
-                    b.Navigation("Purchases");
-
                     b.Navigation("Sales");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductAttribute", b =>
+                {
+                    b.Navigation("ProductAttributeValues");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductTag", b =>
+                {
+                    b.Navigation("ProductProductTagMappings");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Directory.Country", b =>
+                {
+                    b.Navigation("StateProvinces");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.GroupBuying.AggregatedPurchaseOrder", b =>
@@ -3099,6 +4539,13 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Stops");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.Order", b =>
+                {
+                    b.Navigation("OrderItems");
+
+                    b.Navigation("OrderNotes");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Payments.PayLink", b =>
                 {
                     b.Navigation("Payments");
@@ -3111,6 +4558,21 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Receipt");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Security.PermissionRecord", b =>
+                {
+                    b.Navigation("PermissionRoleMappings");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Shipping.Shipment", b =>
+                {
+                    b.Navigation("ShipmentItems");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Stores.Store", b =>
+                {
+                    b.Navigation("StoreMappings");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Suppliers.Supplier", b =>
                 {
                     b.Navigation("SupplierProducts");
@@ -3119,6 +4581,11 @@ namespace Toss.Infrastructure.Data.Migrations
             modelBuilder.Entity("Toss.Domain.Entities.Suppliers.SupplierProduct", b =>
                 {
                     b.Navigation("PricingTiers");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Vendors.Vendor", b =>
+                {
+                    b.Navigation("VendorNotes");
                 });
 #pragma warning restore 612, 618
         }

@@ -14,6 +14,8 @@ public class CustomerPurchaseConfiguration : IEntityTypeConfiguration<CustomerPu
         builder.Property(cp => cp.TopProductCategory)
             .HasMaxLength(200);
 
+        // Customer relationship is configured in CustomerConfiguration
+
         builder.HasOne(cp => cp.Sale)
             .WithMany()
             .HasForeignKey(cp => cp.SaleId)
