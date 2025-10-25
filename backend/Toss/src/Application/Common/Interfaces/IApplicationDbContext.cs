@@ -1,12 +1,22 @@
 ﻿using Toss.Domain.Entities;
+using Toss.Domain.Entities.ArtificialIntelligence;
 using Toss.Domain.Entities.Buying;
+using Toss.Domain.Entities.Catalog;
 using Toss.Domain.Entities.CRM;
+using Toss.Domain.Entities.Directory;
 using Toss.Domain.Entities.GroupBuying;
 using Toss.Domain.Entities.Inventory;
+using Toss.Domain.Entities.Localization;
 using Toss.Domain.Entities.Logistics;
+using Toss.Domain.Entities.Orders;
 using Toss.Domain.Entities.Payments;
 using Toss.Domain.Entities.Sales;
+using Toss.Domain.Entities.Security;
+using Toss.Domain.Entities.Shipping;
+using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities.Suppliers;
+using Toss.Domain.Entities.Tax;
+using Toss.Domain.Entities.Vendors;
 
 namespace Toss.Application.Common.Interfaces;
 
@@ -15,6 +25,57 @@ public interface IApplicationDbContext
     // Core entities
     DbSet<Shop> Shops { get; }
     DbSet<Address> Addresses { get; }
+
+    // AI entities
+    DbSet<AISettings> AISettings { get; }
+    DbSet<AIConversation> AIConversations { get; }
+    DbSet<AIMessage> AIMessages { get; }
+
+    // Localization entities
+    DbSet<Language> Languages { get; }
+    DbSet<LocaleStringResource> LocaleStringResources { get; }
+    DbSet<LocalizedProperty> LocalizedProperties { get; }
+
+    // Directory entities
+    DbSet<Country> Countries { get; }
+    DbSet<StateProvince> StateProvinces { get; }
+    DbSet<Currency> Currencies { get; }
+    DbSet<MeasureWeight> MeasureWeights { get; }
+    DbSet<MeasureDimension> MeasureDimensions { get; }
+
+    // Tax entities
+    DbSet<TaxCategory> TaxCategories { get; }
+    DbSet<TaxRate> TaxRates { get; }
+
+    // Security entities
+    DbSet<PermissionRecord> PermissionRecords { get; }
+    DbSet<PermissionRoleMapping> PermissionRoleMappings { get; }
+    DbSet<AclRecord> AclRecords { get; }
+
+    // Store entities
+    DbSet<Store> Stores { get; }
+    DbSet<StoreMapping> StoreMappings { get; }
+
+    // Catalog entities
+    DbSet<ProductAttribute> ProductAttributes { get; }
+    DbSet<ProductAttributeValue> ProductAttributeValues { get; }
+    DbSet<ProductReview> ProductReviews { get; }
+    DbSet<ProductTag> ProductTags { get; }
+    DbSet<ProductProductTagMapping> ProductProductTagMappings { get; }
+
+    // Vendor entities
+    DbSet<Vendor> Vendors { get; }
+    DbSet<VendorNote> VendorNotes { get; }
+
+    // Order entities
+    DbSet<Order> Orders { get; }
+    DbSet<OrderItem> OrderItems { get; }
+    DbSet<OrderNote> OrderNotes { get; }
+
+    // Shipping entities
+    DbSet<ShippingMethod> ShippingMethods { get; }
+    DbSet<Shipment> Shipments { get; }
+    DbSet<ShipmentItem> ShipmentItems { get; }
 
     // Inventory entities
     DbSet<Product> Products { get; }
