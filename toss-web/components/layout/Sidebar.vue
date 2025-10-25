@@ -228,6 +228,36 @@
         </div>
       </div>
 
+      <!-- CRM Section -->
+      <div class="space-y-1">
+        <button 
+          @click="toggleCrmDropdown"
+          class="justify-between w-full nav-link"
+          :class="{ 'nav-link-active': route.path.startsWith('/crm') }"
+        >
+          <div class="flex items-center">
+            <UsersIcon class="w-5 h-5 mr-3" />
+            CRM
+          </div>
+          <ChevronDownIcon 
+            class="w-4 h-4 transition-transform duration-200"
+            :class="{ 'transform rotate-180': crmDropdownOpen }"
+          />
+        </button>
+        
+        <div 
+          v-show="crmDropdownOpen"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
+        >
+          <NuxtLink to="/crm" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/crm' }">
+            CRM Dashboard
+          </NuxtLink>
+          <NuxtLink to="/crm/customers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/crm/customers' }">
+            Customers
+          </NuxtLink>
+        </div>
+      </div>
+
       <!-- Automation Section -->
       <div class="space-y-1">
         <button 
@@ -345,7 +375,8 @@ import {
   CogIcon,
   Cog6ToothIcon,
   TruckIcon,
-  UserPlusIcon
+  UserPlusIcon,
+  UsersIcon
 } from '@heroicons/vue/24/outline'
 
 // Ensure router is available
@@ -359,6 +390,7 @@ const salesDropdownOpen = ref(false)
 const ordersDropdownOpen = ref(false)
 const buyingDropdownOpen = ref(false)
 const buyingOrdersDropdownOpen = ref(false)
+const crmDropdownOpen = ref(false)
 const automationDropdownOpen = ref(false)
 const onboardingDropdownOpen = ref(false)
 const settingsDropdownOpen = ref(false)
@@ -382,6 +414,9 @@ watch(() => route.path, (newPath) => {
     if (newPath.startsWith('/buying/orders')) {
       buyingOrdersDropdownOpen.value = true
     }
+  }
+  if (newPath.startsWith('/crm')) {
+    crmDropdownOpen.value = true
   }
   if (newPath.startsWith('/automation')) {
     automationDropdownOpen.value = true
@@ -417,6 +452,10 @@ const toggleBuyingDropdown = () => {
 
 const toggleBuyingOrdersDropdown = () => {
   buyingOrdersDropdownOpen.value = !buyingOrdersDropdownOpen.value
+}
+
+const toggleCrmDropdown = () => {
+  crmDropdownOpen.value = !crmDropdownOpen.value
 }
 
 const toggleAutomationDropdown = () => {

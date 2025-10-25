@@ -41,6 +41,9 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             .HasForeignKey(c => c.AddressId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        // Ignore the Purchases property as it's just an alias for PurchaseHistory
+        builder.Ignore(c => c.Purchases);
+        
         builder.HasMany(c => c.PurchaseHistory)
             .WithOne(cp => cp.Customer)
             .HasForeignKey(cp => cp.CustomerId)

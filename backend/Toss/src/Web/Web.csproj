@@ -3,6 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Toss.Web</RootNamespace>
     <AssemblyName>Toss.Web</AssemblyName>
+    <UserSecretsId>56c2ceda-a405-4866-99a4-6065768fbbbd</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

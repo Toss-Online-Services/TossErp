@@ -56,13 +56,23 @@
       </NuxtLink>
       
       <NuxtLink 
-        to="/purchasing" 
+        to="/buying" 
         class="mobile-nav-link"
-        :class="{ 'mobile-nav-link-active': route.path.startsWith('/purchasing') }"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/buying') }"
         @click="$emit('close')"
       >
         <ShoppingBagIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-        <span class="truncate">Purchasing</span>
+        <span class="truncate">Buying</span>
+      </NuxtLink>
+      
+      <NuxtLink 
+        to="/crm" 
+        class="mobile-nav-link"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/crm') }"
+        @click="$emit('close')"
+      >
+        <UsersIcon class="h-5 w-5 mr-3 flex-shrink-0" />
+        <span class="truncate">CRM</span>
       </NuxtLink>
       
       <NuxtLink 
@@ -125,6 +135,7 @@ import {
   Cog6ToothIcon,
   TruckIcon,
   UserPlusIcon,
+  UsersIcon,
   XMarkIcon
 } from '@heroicons/vue/24/outline'
 import ThemeSwitcher from '~/components/common/ThemeSwitcher.vue'

@@ -76,6 +76,21 @@
             placeholder="Ask me anything about your business..."
             class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
           />
+          <!-- Voice Input Button -->
+          <button
+            @click="handleVoiceInput"
+            :disabled="isTyping"
+            :class="[
+              'p-2 rounded-lg transition-colors',
+              isVoiceListening ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
+            ]"
+            :title="isVoiceListening ? 'Stop listening' : 'Voice input'"
+          >
+            <svg v-if="!isVoiceListening" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+            <div v-else class="w-4 h-4 bg-red-600 rounded-full animate-pulse"></div>
+          </button>
           <button
             @click="sendMessage"
             :disabled="!newMessage.trim() || isTyping"
@@ -115,6 +130,8 @@
 </template>
 
 <script setup lang="ts">
+import { useVoiceCommands } from '~/composables/useVoiceCommands'
+
 interface Message {
   id: string
   type: 'user' | 'bot'
@@ -132,6 +149,19 @@ const isOpen = ref(false)
 const isTyping = ref(false)
 const newMessage = ref('')
 const messagesContainer = ref<HTMLElement>()
+
+// Voice commands integration
+const {
+  isListening: isVoiceListening,
+  isSupported: isVoiceSupported,
+  transcript: voiceTranscript,
+  toggleListening,
+  speak,
+  clearTranscript
+} = useVoiceCommands({
+  continuous: false,
+  interimResults: true
+})
 
 const messages = ref<Message[]>([
   {
@@ -212,6 +242,38 @@ function sendQuickAction(text: string) {
   newMessage.value = text
   sendMessage()
 }
+
+// Voice input handler
+function handleVoiceInput() {
+  toggleListening()
+}
+
+// Watch for voice transcript changes
+watch(voiceTranscript, async (newTranscript) => {
+  if (newTranscript && !isVoiceListening.value) {
+    // Voice input completed, send as message
+    newMessage.value = newTranscript
+    await sendMessage()
+    clearTranscript()
+  }
+})
+
+// Watch for AI responses to speak them if voice was used
+let lastMessageCount = messages.value.length
+watch(() => messages.value.length, async (newLength) => {
+  if (newLength > lastMessageCount && isVoiceSupported.value) {
+    const lastMessage = messages.value[messages.value.length - 1]
+    if (lastMessage.type === 'bot' && isVoiceListening.value) {
+      // Speak the AI response
+      try {
+        await speak(lastMessage.content)
+      } catch (err) {
+        console.error('Failed to speak response:', err)
+      }
+    }
+  }
+  lastMessageCount = newLength
+})
 
 function generateAIResponse(input: string): string {
   const lowerInput = input.toLowerCase()
