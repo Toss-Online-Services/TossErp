@@ -111,9 +111,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useVoiceCommands } from '~/composables/useVoiceCommands'
-import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   showLanguageSelector?: boolean
@@ -128,7 +127,8 @@ const emit = defineEmits<{
   languageChange: [lang: string]
 }>()
 
-const { t, locale } = useI18n()
+// Helper function for translations (fallback when vue-i18n not available)
+const t = (key: string, fallback: string) => fallback
 
 // Initialize voice commands
 const {
@@ -208,7 +208,7 @@ const selectLanguage = (lang: string) => {
 const speakResponse = async (text: string) => {
   if (props.autoSpeak && isSupported.value) {
     try {
-      await speak(text, languageCode.value)
+      await speak(text, currentLanguage.value)
     } catch (err) {
       console.error('Speech synthesis error:', err)
     }
