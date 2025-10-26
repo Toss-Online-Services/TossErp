@@ -1,8 +1,9 @@
 using Toss.Application.Common.Exceptions;
 using Toss.Application.Sales.Commands.CreateSale;
 using Toss.Domain.Entities;
-using Toss.Domain.Entities.Inventory;
+using Toss.Domain.Entities.Catalog;
 using Toss.Domain.Entities.Sales;
+using Toss.Domain.Entities.Stores;
 using Toss.Domain.Enums;
 
 namespace Toss.Application.FunctionalTests.Sales.Commands;
@@ -40,7 +41,7 @@ public class CreateSaleTests : BaseTestFixture
         var userId = await RunAsDefaultUserAsync();
 
         // Create shop
-        var shop = new Shop
+        var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
@@ -66,7 +67,7 @@ public class CreateSaleTests : BaseTestFixture
         var userId = await RunAsDefaultUserAsync();
 
         // Create shop
-        var shop = new Shop
+        var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
@@ -129,7 +130,7 @@ public class CreateSaleTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var shop = new Shop
+        var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
@@ -184,7 +185,7 @@ public class CreateSaleTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var shop = new Shop
+        var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,

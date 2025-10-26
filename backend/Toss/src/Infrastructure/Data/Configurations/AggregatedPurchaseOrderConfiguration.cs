@@ -27,9 +27,9 @@ public class AggregatedPurchaseOrderConfiguration : IEntityTypeConfiguration<Agg
         builder.Property(apo => apo.Notes)
             .HasMaxLength(1000);
 
-        builder.HasOne(apo => apo.Supplier)
+        builder.HasOne(apo => apo.Vendor)
             .WithMany()
-            .HasForeignKey(apo => apo.SupplierId)
+            .HasForeignKey(apo => apo.VendorId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(apo => apo.APONumber)

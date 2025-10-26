@@ -10,13 +10,13 @@ public class GroupBuyPool : BaseAuditableEntity
     public Product Product { get; set; } = null!;
     
     public int InitiatorShopId { get; set; }
-    public Shop InitiatorShop { get; set; } = null!;
+    public Store InitiatorShop { get; set; } = null!;
     
     // Alias for handlers
     public int CreatorShopId => InitiatorShopId;
     
-    public int SupplierId { get; set; }
-    public Supplier Supplier { get; set; } = null!;
+    public int VendorId { get; set; }
+    public Vendor Vendor { get; set; } = null!;
     
     // Pooling details
     public int MinimumQuantity { get; set; }

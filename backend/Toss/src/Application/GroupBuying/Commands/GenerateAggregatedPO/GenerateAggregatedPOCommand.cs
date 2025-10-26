@@ -44,7 +44,7 @@ public class GenerateAggregatedPOCommandHandler : IRequestHandler<GenerateAggreg
         var aggregatedPO = new AggregatedPurchaseOrder
         {
             PoolId = pool.Id,
-            SupplierId = pool.SupplierId,
+            VendorId = pool.VendorId,
             OrderDate = DateTimeOffset.UtcNow,
             RequiredDate = pool.TargetDate,
             TotalQuantity = totalQuantity,

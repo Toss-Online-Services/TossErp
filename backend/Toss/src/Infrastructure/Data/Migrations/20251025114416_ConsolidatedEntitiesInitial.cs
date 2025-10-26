@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Toss.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreateWithMVPEntities : Migration
+    public partial class ConsolidatedEntitiesInitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -274,31 +274,6 @@ namespace Toss.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductReviews",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
-                    CustomerId = table.Column<int>(type: "integer", nullable: false),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    ReviewText = table.Column<string>(type: "text", nullable: false),
-                    Rating = table.Column<int>(type: "integer", nullable: false),
-                    IsApproved = table.Column<bool>(type: "boolean", nullable: false),
-                    HelpfulYesTotal = table.Column<int>(type: "integer", nullable: false),
-                    HelpfulNoTotal = table.Column<int>(type: "integer", nullable: false),
-                    StoreId = table.Column<int>(type: "integer", nullable: true),
-                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
-                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductReviews", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ProductTags",
                 columns: table => new
                 {
@@ -350,32 +325,6 @@ namespace Toss.Infrastructure.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ShippingMethods", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Stores",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: false),
-                    Url = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: false),
-                    Ssl_enabled = table.Column<bool>(type: "boolean", nullable: false),
-                    Hosts = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    DefaultLanguageId = table.Column<int>(type: "integer", nullable: false),
-                    DisplayOrder = table.Column<int>(type: "integer", nullable: false),
-                    CompanyName = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    CompanyAddress = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    CompanyPhoneNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    CompanyVat = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
-                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Stores", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -449,6 +398,10 @@ namespace Toss.Infrastructure.Data.Migrations
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     OwnerId = table.Column<string>(type: "text", nullable: false),
+                    Location_Latitude = table.Column<double>(type: "double precision", nullable: true),
+                    Location_Longitude = table.Column<double>(type: "double precision", nullable: true),
+                    Location_Area = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    Location_Zone = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     AddressId = table.Column<int>(type: "integer", nullable: true),
                     ContactPhone_Number = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -463,10 +416,15 @@ namespace Toss.Infrastructure.Data.Migrations
                     WhatsAppAlertsEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     GroupBuyingEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     AIAssistantEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    Location_Area = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Location_Latitude = table.Column<double>(type: "double precision", nullable: false),
-                    Location_Longitude = table.Column<double>(type: "double precision", nullable: false),
-                    Location_Zone = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    Url = table.Column<string>(type: "text", nullable: false),
+                    Ssl_enabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Hosts = table.Column<string>(type: "text", nullable: false),
+                    DefaultLanguageId = table.Column<int>(type: "integer", nullable: true),
+                    DisplayOrder = table.Column<int>(type: "integer", nullable: false),
+                    CompanyName = table.Column<string>(type: "text", nullable: true),
+                    CompanyAddress = table.Column<string>(type: "text", nullable: true),
+                    CompanyPhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    CompanyVat = table.Column<string>(type: "text", nullable: true),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -483,51 +441,26 @@ namespace Toss.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Suppliers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    CompanyRegNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    VATNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    ContactPerson = table.Column<string>(type: "text", nullable: true),
-                    ContactPhone_Number = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    Website = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    AddressId = table.Column<int>(type: "integer", nullable: true),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    CreditLimit = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: true),
-                    PaymentTermsDays = table.Column<int>(type: "integer", nullable: true),
-                    Notes = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
-                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Suppliers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Suppliers_Addresses_AddressId",
-                        column: x => x.AddressId,
-                        principalTable: "Addresses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Vendors",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: true),
                     Email = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: false),
+                    CompanyRegNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    VATNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    ContactPerson = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    ContactPhone_Number = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    Website = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     Active = table.Column<bool>(type: "boolean", nullable: false),
+                    CreditLimit = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: true),
+                    PaymentTermsDays = table.Column<int>(type: "integer", nullable: false),
                     DisplayOrder = table.Column<int>(type: "integer", nullable: false),
+                    AdminComment = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: true),
                     AddressId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -842,26 +775,6 @@ namespace Toss.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductProductTagMappings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
-                    ProductTagId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductProductTagMappings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProductProductTagMappings_ProductTags_ProductTagId",
-                        column: x => x.ProductTagId,
-                        principalTable: "ProductTags",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ShipmentItems",
                 columns: table => new
                 {
@@ -879,27 +792,6 @@ namespace Toss.Infrastructure.Data.Migrations
                         name: "FK_ShipmentItems_Shipments_ShipmentId",
                         column: x => x.ShipmentId,
                         principalTable: "Shipments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "StoreMappings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    EntityId = table.Column<int>(type: "integer", nullable: false),
-                    EntityName = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: false),
-                    StoreId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StoreMappings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_StoreMappings_Stores_StoreId",
-                        column: x => x.StoreId,
-                        principalTable: "Stores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1085,6 +977,27 @@ namespace Toss.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "StoreMappings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    EntityId = table.Column<int>(type: "integer", nullable: false),
+                    EntityName = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: false),
+                    StoreId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StoreMappings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StoreMappings_Shops_StoreId",
+                        column: x => x.StoreId,
+                        principalTable: "Shops",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AggregatedPurchaseOrders",
                 columns: table => new
                 {
@@ -1094,7 +1007,7 @@ namespace Toss.Infrastructure.Data.Migrations
                     PONumber = table.Column<string>(type: "text", nullable: false),
                     GroupBuyPoolId = table.Column<int>(type: "integer", nullable: false),
                     PoolId = table.Column<int>(type: "integer", nullable: false),
-                    SupplierId = table.Column<int>(type: "integer", nullable: false),
+                    VendorId = table.Column<int>(type: "integer", nullable: false),
                     TotalQuantity = table.Column<int>(type: "integer", nullable: false),
                     Subtotal = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     TaxAmount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
@@ -1115,9 +1028,9 @@ namespace Toss.Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_AggregatedPurchaseOrders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AggregatedPurchaseOrders_Suppliers_SupplierId",
-                        column: x => x.SupplierId,
-                        principalTable: "Suppliers",
+                        name: "FK_AggregatedPurchaseOrders_Vendors_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1130,7 +1043,7 @@ namespace Toss.Infrastructure.Data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     PONumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     ShopId = table.Column<int>(type: "integer", nullable: false),
-                    SupplierId = table.Column<int>(type: "integer", nullable: false),
+                    VendorId = table.Column<int>(type: "integer", nullable: false),
                     OrderDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     ExpectedDeliveryDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     RequiredDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -1161,9 +1074,9 @@ namespace Toss.Infrastructure.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PurchaseOrders_Suppliers_SupplierId",
-                        column: x => x.SupplierId,
-                        principalTable: "Suppliers",
+                        name: "FK_PurchaseOrders_Vendors_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1231,6 +1144,63 @@ namespace Toss.Infrastructure.Data.Migrations
                         principalTable: "Shops",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductProductTagMappings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    ProductTagId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductProductTagMappings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductProductTagMappings_ProductTags_ProductTagId",
+                        column: x => x.ProductTagId,
+                        principalTable: "ProductTags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductProductTagMappings_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductReviews",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProductId = table.Column<int>(type: "integer", nullable: false),
+                    CustomerId = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    ReviewText = table.Column<string>(type: "text", nullable: false),
+                    Rating = table.Column<int>(type: "integer", nullable: false),
+                    IsApproved = table.Column<bool>(type: "boolean", nullable: false),
+                    HelpfulYesTotal = table.Column<int>(type: "integer", nullable: false),
+                    HelpfulNoTotal = table.Column<int>(type: "integer", nullable: false),
+                    StoreId = table.Column<int>(type: "integer", nullable: true),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductReviews", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductReviews_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1346,18 +1316,18 @@ namespace Toss.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SupplierProducts",
+                name: "VendorProducts",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SupplierId = table.Column<int>(type: "integer", nullable: false),
+                    VendorId = table.Column<int>(type: "integer", nullable: false),
                     ProductId = table.Column<int>(type: "integer", nullable: false),
-                    SupplierSKU = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    VendorSKU = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     BasePrice = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    Currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
+                    Currency = table.Column<string>(type: "text", nullable: false),
                     MinOrderQuantity = table.Column<int>(type: "integer", nullable: false),
-                    LeadTimeDays = table.Column<int>(type: "integer", nullable: true),
+                    LeadTimeDays = table.Column<int>(type: "integer", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
@@ -1366,17 +1336,17 @@ namespace Toss.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SupplierProducts", x => x.Id);
+                    table.PrimaryKey("PK_VendorProducts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SupplierProducts_Products_ProductId",
+                        name: "FK_VendorProducts_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SupplierProducts_Suppliers_SupplierId",
-                        column: x => x.SupplierId,
-                        principalTable: "Suppliers",
+                        name: "FK_VendorProducts_Vendors_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1536,7 +1506,7 @@ namespace Toss.Infrastructure.Data.Migrations
                     Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
                     ProductId = table.Column<int>(type: "integer", nullable: false),
                     InitiatorShopId = table.Column<int>(type: "integer", nullable: false),
-                    SupplierId = table.Column<int>(type: "integer", nullable: false),
+                    VendorId = table.Column<int>(type: "integer", nullable: false),
                     MinimumQuantity = table.Column<int>(type: "integer", nullable: false),
                     MaximumQuantity = table.Column<int>(type: "integer", nullable: true),
                     CurrentQuantity = table.Column<int>(type: "integer", nullable: false),
@@ -1581,9 +1551,9 @@ namespace Toss.Infrastructure.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_GroupBuyPools_Suppliers_SupplierId",
-                        column: x => x.SupplierId,
-                        principalTable: "Suppliers",
+                        name: "FK_GroupBuyPools_Vendors_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1689,22 +1659,21 @@ namespace Toss.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SupplierPricings",
+                name: "VendorPricings",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SupplierProductId = table.Column<int>(type: "integer", nullable: false),
+                    VendorProductId = table.Column<int>(type: "integer", nullable: false),
                     MinQuantity = table.Column<int>(type: "integer", nullable: false),
                     MaxQuantity = table.Column<int>(type: "integer", nullable: true),
                     UnitPrice = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     DiscountPercentage = table.Column<decimal>(type: "numeric(5,2)", precision: 5, scale: 2, nullable: true),
-                    BasePrice = table.Column<decimal>(type: "numeric", nullable: false),
                     ValidFrom = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     ValidTo = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    BasePrice = table.Column<decimal>(type: "numeric", nullable: false),
                     EffectiveDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    CreatedDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -1712,11 +1681,11 @@ namespace Toss.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SupplierPricings", x => x.Id);
+                    table.PrimaryKey("PK_VendorPricings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SupplierPricings_SupplierProducts_SupplierProductId",
-                        column: x => x.SupplierProductId,
-                        principalTable: "SupplierProducts",
+                        name: "FK_VendorPricings_VendorProducts_VendorProductId",
+                        column: x => x.VendorProductId,
+                        principalTable: "VendorProducts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1986,9 +1955,9 @@ namespace Toss.Infrastructure.Data.Migrations
                 column: "Status");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AggregatedPurchaseOrders_SupplierId",
+                name: "IX_AggregatedPurchaseOrders_VendorId",
                 table: "AggregatedPurchaseOrders",
-                column: "SupplierId");
+                column: "VendorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AIConversations_ShopId",
@@ -2145,9 +2114,9 @@ namespace Toss.Infrastructure.Data.Migrations
                 columns: new[] { "Status", "CloseDate" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupBuyPools_SupplierId",
+                name: "IX_GroupBuyPools_VendorId",
                 table: "GroupBuyPools",
-                column: "SupplierId");
+                column: "VendorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invoices_CustomerId",
@@ -2321,6 +2290,11 @@ namespace Toss.Infrastructure.Data.Migrations
                 column: "ProductTagId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductReviews_ProductId",
+                table: "ProductReviews",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Products_Barcode",
                 table: "Products",
                 column: "Barcode");
@@ -2388,9 +2362,9 @@ namespace Toss.Infrastructure.Data.Migrations
                 column: "Status");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PurchaseOrders_SupplierId",
+                name: "IX_PurchaseOrders_VendorId",
                 table: "PurchaseOrders",
-                column: "SupplierId");
+                column: "VendorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PurchaseReceipts_PurchaseOrderId",
@@ -2569,42 +2543,6 @@ namespace Toss.Infrastructure.Data.Migrations
                 column: "StoreId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SupplierPricings_SupplierProductId",
-                table: "SupplierPricings",
-                column: "SupplierProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SupplierPricings_ValidFrom_ValidTo",
-                table: "SupplierPricings",
-                columns: new[] { "ValidFrom", "ValidTo" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SupplierProducts_ProductId",
-                table: "SupplierProducts",
-                column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SupplierProducts_SupplierId_ProductId",
-                table: "SupplierProducts",
-                columns: new[] { "SupplierId", "ProductId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Suppliers_AddressId",
-                table: "Suppliers",
-                column: "AddressId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Suppliers_Email",
-                table: "Suppliers",
-                column: "Email");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Suppliers_Name",
-                table: "Suppliers",
-                column: "Name");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TaxRates_TaxCategoryId",
                 table: "TaxRates",
                 column: "TaxCategoryId");
@@ -2615,9 +2553,65 @@ namespace Toss.Infrastructure.Data.Migrations
                 column: "VendorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_VendorPricings_IsActive",
+                table: "VendorPricings",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VendorPricings_ValidFrom",
+                table: "VendorPricings",
+                column: "ValidFrom");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VendorPricings_VendorProductId",
+                table: "VendorPricings",
+                column: "VendorProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VendorPricings_VendorProductId_ValidFrom",
+                table: "VendorPricings",
+                columns: new[] { "VendorProductId", "ValidFrom" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VendorProducts_IsActive",
+                table: "VendorProducts",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VendorProducts_ProductId",
+                table: "VendorProducts",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VendorProducts_VendorId_ProductId",
+                table: "VendorProducts",
+                columns: new[] { "VendorId", "ProductId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Vendors_AddressId",
                 table: "Vendors",
                 column: "AddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vendors_Deleted",
+                table: "Vendors",
+                column: "Deleted");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vendors_DisplayOrder",
+                table: "Vendors",
+                column: "DisplayOrder");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vendors_Email",
+                table: "Vendors",
+                column: "Email");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vendors_Name",
+                table: "Vendors",
+                column: "Name");
         }
 
         /// <inheritdoc />
@@ -2732,13 +2726,13 @@ namespace Toss.Infrastructure.Data.Migrations
                 name: "StoreMappings");
 
             migrationBuilder.DropTable(
-                name: "SupplierPricings");
-
-            migrationBuilder.DropTable(
                 name: "TaxRates");
 
             migrationBuilder.DropTable(
                 name: "VendorNotes");
+
+            migrationBuilder.DropTable(
+                name: "VendorPricings");
 
             migrationBuilder.DropTable(
                 name: "AIConversations");
@@ -2786,16 +2780,10 @@ namespace Toss.Infrastructure.Data.Migrations
                 name: "Countries");
 
             migrationBuilder.DropTable(
-                name: "Stores");
-
-            migrationBuilder.DropTable(
-                name: "SupplierProducts");
-
-            migrationBuilder.DropTable(
                 name: "TaxCategories");
 
             migrationBuilder.DropTable(
-                name: "Vendors");
+                name: "VendorProducts");
 
             migrationBuilder.DropTable(
                 name: "AggregatedPurchaseOrders");
@@ -2810,7 +2798,7 @@ namespace Toss.Infrastructure.Data.Migrations
                 name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Suppliers");
+                name: "Vendors");
 
             migrationBuilder.DropTable(
                 name: "Drivers");

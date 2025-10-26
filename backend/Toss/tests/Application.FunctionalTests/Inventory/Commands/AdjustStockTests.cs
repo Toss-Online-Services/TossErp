@@ -1,6 +1,7 @@
 using Toss.Application.Inventory.Commands.AdjustStock;
 using Toss.Domain.Entities;
-using Toss.Domain.Entities.Inventory;
+using Toss.Domain.Entities.Catalog;
+using Toss.Domain.Entities.Stores;
 using Toss.Domain.Enums;
 
 namespace Toss.Application.FunctionalTests.Inventory.Commands;
@@ -29,7 +30,7 @@ public class AdjustStockTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var shop = new Shop
+        var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
@@ -74,7 +75,7 @@ public class AdjustStockTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var shop = new Shop
+        var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
@@ -119,7 +120,7 @@ public class AdjustStockTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var shop = new Shop
+        var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
@@ -163,7 +164,7 @@ public class AdjustStockTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var shop = new Shop
+        var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,

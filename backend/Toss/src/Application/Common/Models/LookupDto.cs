@@ -1,6 +1,7 @@
 ﻿using Toss.Domain.Entities;
-using Toss.Domain.Entities.Inventory;
-using Toss.Domain.Entities.Suppliers;
+using Toss.Domain.Entities.Catalog;
+using Toss.Domain.Entities.Stores;
+using Toss.Domain.Entities.Vendors;
 
 namespace Toss.Application.Common.Models;
 
@@ -14,11 +15,11 @@ public class LookupDto
     {
         public Mapping()
         {
-            CreateMap<Shop, LookupDto>()
+            CreateMap<Store, LookupDto>()
                 .ForMember(d => d.Title, opt => opt.MapFrom(s => s.Name));
             CreateMap<Product, LookupDto>()
                 .ForMember(d => d.Title, opt => opt.MapFrom(s => s.Name));
-            CreateMap<Supplier, LookupDto>()
+            CreateMap<Vendor, LookupDto>()
                 .ForMember(d => d.Title, opt => opt.MapFrom(s => s.Name));
         }
     }

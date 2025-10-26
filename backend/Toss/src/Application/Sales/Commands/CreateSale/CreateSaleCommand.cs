@@ -1,5 +1,5 @@
 using Toss.Application.Common.Interfaces;
-using Toss.Domain.Entities.Inventory;
+using Toss.Domain.Entities.Catalog;
 using Toss.Domain.Entities.Sales;
 using Toss.Domain.Enums;
 using Toss.Domain.Events;

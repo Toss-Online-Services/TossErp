@@ -1,4 +1,5 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities;
 using Toss.Domain.Entities.Logistics;
 using Toss.Domain.Enums;
@@ -57,7 +58,7 @@ public class CreateSharedDeliveryRunCommandHandler : IRequestHandler<CreateShare
         {
             var shop = await _context.Shops.FindAsync(new object[] { stopDto.ShopId }, cancellationToken);
             if (shop == null)
-                throw new NotFoundException(nameof(Shop), stopDto.ShopId.ToString());
+                throw new NotFoundException(nameof(Store), stopDto.ShopId.ToString());
 
             var stop = new DeliveryStop
             {

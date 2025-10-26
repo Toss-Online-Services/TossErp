@@ -2,6 +2,7 @@ using Toss.Application.Common.Exceptions;
 using Toss.Application.Logistics.Commands.CreateSharedDeliveryRun;
 using Toss.Domain.Entities;
 using Toss.Domain.Entities.Logistics;
+using Toss.Domain.Entities.Stores;
 using Toss.Domain.Enums;
 using Toss.Domain.ValueObjects;
 
@@ -25,7 +26,7 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         var userId = await RunAsDefaultUserAsync();
 
         // Create shops
-        var shop1 = new Shop
+        var shop1 = new Store
         {
             Name = "Shop 1",
             OwnerId = userId,
@@ -33,7 +34,7 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         };
         await AddAsync(shop1);
 
-        var shop2 = new Shop
+        var shop2 = new Store
         {
             Name = "Shop 2",
             OwnerId = userId,
@@ -80,7 +81,7 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var shop = new Shop
+        var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
@@ -110,7 +111,7 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var shop1 = new Shop
+        var shop1 = new Store
         {
             Name = "Shop 1",
             OwnerId = userId,
@@ -118,7 +119,7 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         };
         await AddAsync(shop1);
 
-        var shop2 = new Shop
+        var shop2 = new Store
         {
             Name = "Shop 2",
             OwnerId = userId,

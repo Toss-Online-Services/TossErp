@@ -1,29 +1,26 @@
 ﻿using Toss.Domain.Entities;
 using Toss.Domain.Entities.ArtificialIntelligence;
-using Toss.Domain.Entities.Buying;
+using Toss.Domain.Entities.Orders;
 using Toss.Domain.Entities.Catalog;
 using Toss.Domain.Entities.CRM;
 using Toss.Domain.Entities.Directory;
 using Toss.Domain.Entities.GroupBuying;
-using Toss.Domain.Entities.Inventory;
 using Toss.Domain.Entities.Localization;
 using Toss.Domain.Entities.Logistics;
-using Toss.Domain.Entities.Orders;
 using Toss.Domain.Entities.Payments;
 using Toss.Domain.Entities.Sales;
 using Toss.Domain.Entities.Security;
 using Toss.Domain.Entities.Shipping;
 using Toss.Domain.Entities.Stores;
-using Toss.Domain.Entities.Suppliers;
-using Toss.Domain.Entities.Tax;
 using Toss.Domain.Entities.Vendors;
+using Toss.Domain.Entities.Tax;
 
 namespace Toss.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
     // Core entities
-    DbSet<Shop> Shops { get; }
+    DbSet<Store> Shops { get; }
     DbSet<Address> Addresses { get; }
 
     // AI entities
@@ -52,8 +49,7 @@ public interface IApplicationDbContext
     DbSet<PermissionRoleMapping> PermissionRoleMappings { get; }
     DbSet<AclRecord> AclRecords { get; }
 
-    // Store entities
-    DbSet<Store> Stores { get; }
+    // Store entities (Shop is already defined above as core entity)
     DbSet<StoreMapping> StoreMappings { get; }
 
     // Catalog entities
@@ -63,9 +59,11 @@ public interface IApplicationDbContext
     DbSet<ProductTag> ProductTags { get; }
     DbSet<ProductProductTagMapping> ProductProductTagMappings { get; }
 
-    // Vendor entities
+    // Vendor entities (merged from Suppliers)
     DbSet<Vendor> Vendors { get; }
     DbSet<VendorNote> VendorNotes { get; }
+    DbSet<VendorProduct> VendorProducts { get; }
+    DbSet<VendorPricing> VendorPricings { get; }
 
     // Order entities
     DbSet<Order> Orders { get; }
@@ -90,10 +88,7 @@ public interface IApplicationDbContext
     DbSet<Receipt> Receipts { get; }
     DbSet<Invoice> Invoices { get; }
 
-    // Supplier entities
-    DbSet<Supplier> Suppliers { get; }
-    DbSet<SupplierProduct> SupplierProducts { get; }
-    DbSet<SupplierPricing> SupplierPricings { get; }
+    // Supplier entities (removed - now using Vendors)
 
     // Buying entities
     DbSet<PurchaseOrder> PurchaseOrders { get; }

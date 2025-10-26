@@ -8,7 +8,7 @@ public class Receipt : BaseAuditableEntity
     public Sale Sale { get; set; } = null!;
     
     public int ShopId { get; set; }
-    public Shop Shop { get; set; } = null!;
+    public Store Shop { get; set; } = null!;
     
     public decimal TotalAmount { get; set; }
     public DateTimeOffset IssuedDate { get; set; }

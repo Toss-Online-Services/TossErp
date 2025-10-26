@@ -2,8 +2,9 @@ using Toss.Application.GroupBuying.Commands.CreatePool;
 using Toss.Application.GroupBuying.Commands.JoinPool;
 using Toss.Domain.Entities;
 using Toss.Domain.Entities.GroupBuying;
-using Toss.Domain.Entities.Inventory;
-using Toss.Domain.Entities.Suppliers;
+using Toss.Domain.Entities.Catalog;
+using Toss.Domain.Entities.Stores;
+using Toss.Domain.Entities.Vendors;
 using Toss.Domain.Enums;
 
 namespace Toss.Application.FunctionalTests.GroupBuying.Commands;
@@ -31,7 +32,7 @@ public class JoinPoolTests : BaseTestFixture
         var userId = await RunAsDefaultUserAsync();
 
         // Create initiator shop
-        var initiatorShop = new Shop
+        var initiatorShop = new Store
         {
             Name = "Initiator Shop",
             OwnerId = userId,
@@ -40,7 +41,7 @@ public class JoinPoolTests : BaseTestFixture
         await AddAsync(initiatorShop);
 
         // Create joining shop
-        var joiningShop = new Shop
+        var joiningShop = new Store
         {
             Name = "Joining Shop",
             OwnerId = userId,
@@ -56,9 +57,9 @@ public class JoinPoolTests : BaseTestFixture
         };
         await AddAsync(product);
 
-        var supplier = new Supplier
+        var supplier = new Vendor
         {
-            Name = "Test Supplier",
+            Name = "Test Vendor",
             Email = "supplier@test.com"
         };
         await AddAsync(supplier);
@@ -69,7 +70,7 @@ public class JoinPoolTests : BaseTestFixture
             Title = "Bulk Purchase Test",
             InitiatorShopId = initiatorShop.Id,
             ProductId = product.Id,
-            SupplierId = supplier.Id,
+            VendorId = supplier.Id,
             MinimumQuantity = 100,
             UnitPrice = 100,
             BulkDiscountPercentage = 20,
@@ -102,7 +103,7 @@ public class JoinPoolTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var initiatorShop = new Shop
+        var initiatorShop = new Store
         {
             Name = "Initiator Shop",
             OwnerId = userId,
@@ -110,7 +111,7 @@ public class JoinPoolTests : BaseTestFixture
         };
         await AddAsync(initiatorShop);
 
-        var joiningShop = new Shop
+        var joiningShop = new Store
         {
             Name = "Joining Shop",
             OwnerId = userId,
@@ -126,9 +127,9 @@ public class JoinPoolTests : BaseTestFixture
         };
         await AddAsync(product);
 
-        var supplier = new Supplier
+        var supplier = new Vendor
         {
-            Name = "Test Supplier",
+            Name = "Test Vendor",
             Email = "supplier@test.com"
         };
         await AddAsync(supplier);
@@ -140,7 +141,7 @@ public class JoinPoolTests : BaseTestFixture
             Title = "Closed Pool",
             InitiatorShopId = initiatorShop.Id,
             ProductId = product.Id,
-            SupplierId = supplier.Id,
+            VendorId = supplier.Id,
             MinimumQuantity = 100,
             UnitPrice = 100,
             FinalUnitPrice = 80,
@@ -165,7 +166,7 @@ public class JoinPoolTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var shop = new Shop
+        var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
@@ -181,9 +182,9 @@ public class JoinPoolTests : BaseTestFixture
         };
         await AddAsync(product);
 
-        var supplier = new Supplier
+        var supplier = new Vendor
         {
-            Name = "Test Supplier",
+            Name = "Test Vendor",
             Email = "supplier@test.com"
         };
         await AddAsync(supplier);
@@ -193,7 +194,7 @@ public class JoinPoolTests : BaseTestFixture
             Title = "Test Pool",
             InitiatorShopId = shop.Id,
             ProductId = product.Id,
-            SupplierId = supplier.Id,
+            VendorId = supplier.Id,
             MinimumQuantity = 100,
             UnitPrice = 100,
             BulkDiscountPercentage = 20,

@@ -6,7 +6,7 @@ public class DeliveryStop : BaseAuditableEntity
     public SharedDeliveryRun SharedDeliveryRun { get; set; } = null!;
     
     public int ShopId { get; set; }
-    public Shop Shop { get; set; } = null!;
+    public Store Shop { get; set; } = null!;
     
     public int SequenceNumber { get; set; }
     

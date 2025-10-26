@@ -1,4 +1,5 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities;
 using Toss.Domain.Entities.CRM;
 using Toss.Domain.ValueObjects;
@@ -30,7 +31,7 @@ public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerComman
         // Validate shop exists
         var shop = await _context.Shops.FindAsync(new object[] { request.ShopId }, cancellationToken);
         if (shop == null)
-            throw new NotFoundException(nameof(Shop), request.ShopId.ToString());
+            throw new NotFoundException(nameof(Store), request.ShopId.ToString());
 
         var customer = new Customer
         {

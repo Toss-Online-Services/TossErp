@@ -339,220 +339,6 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.ToTable("AISettings");
                 });
 
-            modelBuilder.Entity("Toss.Domain.Entities.Buying.PurchaseOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ApprovedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("ApprovedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("ExpectedDeliveryDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("GroupBuyPoolId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsPartOfGroupBuy")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<DateTimeOffset>("OrderDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PONumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<DateTime?>("RequiredDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("ShippingCost")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<int>("ShopId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("SubTotal")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("Subtotal")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("TaxAmount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<decimal>("Total")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("numeric");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupBuyPoolId");
-
-                    b.HasIndex("OrderDate");
-
-                    b.HasIndex("PONumber")
-                        .IsUnique();
-
-                    b.HasIndex("Status");
-
-                    b.HasIndex("SupplierId");
-
-                    b.HasIndex("ShopId", "OrderDate");
-
-                    b.ToTable("PurchaseOrders");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Buying.PurchaseOrderItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("LineTotal")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.Property<string>("ProductSKU")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("PurchaseOrderId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("QuantityOrdered")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("QuantityReceived")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("TaxAmount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("PurchaseOrderId");
-
-                    b.ToTable("PurchaseOrderItems");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Buying.PurchaseReceipt", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsPartialReceipt")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<int>("PurchaseOrderId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("QualityCheckPassed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("QualityNotes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("ReceiptNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("ReceivedBy")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTimeOffset>("ReceivedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PurchaseOrderId");
-
-                    b.HasIndex("ReceiptNumber")
-                        .IsUnique();
-
-                    b.HasIndex("ReceivedDate");
-
-                    b.ToTable("PurchaseReceipts");
-                });
-
             modelBuilder.Entity("Toss.Domain.Entities.CRM.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -742,6 +528,90 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.ToTable("CustomerPurchases");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Barcode")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal>("BasePrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("CostPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsTaxable")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("MinimumStockLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<int?>("ReorderQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SKU")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Unit")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Barcode");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("SKU")
+                        .IsUnique();
+
+                    b.ToTable("Products");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductAttribute", b =>
                 {
                     b.Property<int>("Id")
@@ -792,6 +662,50 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.HasIndex("ProductAttributeId");
 
                     b.ToTable("ProductAttributeValues");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("ParentCategoryId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("ProductCategories");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductProductTagMapping", b =>
@@ -870,6 +784,8 @@ namespace Toss.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductId");
+
                     b.ToTable("ProductReviews");
                 });
 
@@ -889,6 +805,185 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ProductTags");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.StockAlert", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset?>("AcknowledgedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("AcknowledgedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("CurrentStock")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsAcknowledged")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsResolved")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("MinimumStock")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ShopId", "IsAcknowledged");
+
+                    b.ToTable("StockAlerts");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.StockLevel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("AverageCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("CurrentStock")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastStockDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ReorderPoint")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ReorderQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ReservedStock")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ShopId", "ProductId")
+                        .IsUnique();
+
+                    b.ToTable("StockLevels");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.StockMovement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("MovementDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("MovementType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuantityAfter")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuantityBefore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuantityChange")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ReferenceId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ReferenceType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovementDate");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ReferenceType", "ReferenceId");
+
+                    b.HasIndex("ShopId", "ProductId");
+
+                    b.ToTable("StockMovements");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Directory.Country", b =>
@@ -1173,9 +1268,6 @@ namespace Toss.Infrastructure.Data.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
 
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("integer");
-
                     b.Property<decimal>("TaxAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
@@ -1190,6 +1282,9 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Property<int>("TotalQuantity")
                         .HasColumnType("integer");
 
+                    b.Property<int>("VendorId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("APONumber")
@@ -1199,7 +1294,7 @@ namespace Toss.Infrastructure.Data.Migrations
 
                     b.HasIndex("Status");
 
-                    b.HasIndex("SupplierId");
+                    b.HasIndex("VendorId");
 
                     b.ToTable("AggregatedPurchaseOrders");
                 });
@@ -1289,9 +1384,6 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("TargetParticipants")
                         .HasColumnType("integer");
 
@@ -1303,6 +1395,9 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("VendorId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -1320,7 +1415,7 @@ namespace Toss.Infrastructure.Data.Migrations
 
                     b.HasIndex("Status");
 
-                    b.HasIndex("SupplierId");
+                    b.HasIndex("VendorId");
 
                     b.HasIndex("Status", "CloseDate");
 
@@ -1398,313 +1493,6 @@ namespace Toss.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("PoolParticipations");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Inventory.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Barcode")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<decimal>("BasePrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal?>("CostPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsTaxable")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<int>("MinimumStockLevel")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.Property<int?>("ReorderQuantity")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SKU")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Unit")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Barcode");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("Name");
-
-                    b.HasIndex("SKU")
-                        .IsUnique();
-
-                    b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Inventory.ProductCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<int?>("ParentCategoryId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name");
-
-                    b.HasIndex("ParentCategoryId");
-
-                    b.ToTable("ProductCategories");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Inventory.StockAlert", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset?>("AcknowledgedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("AcknowledgedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<int>("CurrentStock")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsAcknowledged")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsResolved")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<int>("MinimumStock")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ShopId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("ShopId", "IsAcknowledged");
-
-                    b.ToTable("StockAlerts");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Inventory.StockLevel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("AverageCost")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<int>("CurrentStock")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("LastStockDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ReorderPoint")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ReorderQuantity")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ReservedStock")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ShopId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("ShopId", "ProductId")
-                        .IsUnique();
-
-                    b.ToTable("StockLevels");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Inventory.StockMovement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("MovementDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("MovementType")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("QuantityAfter")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("QuantityBefore")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("QuantityChange")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ReferenceId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ReferenceType")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int>("ShopId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MovementDate");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("ReferenceType", "ReferenceId");
-
-                    b.HasIndex("ShopId", "ProductId");
-
-                    b.ToTable("StockMovements");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Localization.Language", b =>
@@ -2319,6 +2107,220 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderNotes");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.PurchaseOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApprovedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("ExpectedDeliveryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("GroupBuyPoolId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsPartOfGroupBuy")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTimeOffset>("OrderDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PONumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("RequiredDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("ShippingCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("ShopId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("TaxAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("VendorId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupBuyPoolId");
+
+                    b.HasIndex("OrderDate");
+
+                    b.HasIndex("PONumber")
+                        .IsUnique();
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("VendorId");
+
+                    b.HasIndex("ShopId", "OrderDate");
+
+                    b.ToTable("PurchaseOrders");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.PurchaseOrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("LineTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("ProductSKU")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("PurchaseOrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuantityOrdered")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuantityReceived")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TaxAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("PurchaseOrderId");
+
+                    b.ToTable("PurchaseOrderItems");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.PurchaseReceipt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsPartialReceipt")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("PurchaseOrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("QualityCheckPassed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("QualityNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("ReceiptNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ReceivedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTimeOffset>("ReceivedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseOrderId");
+
+                    b.HasIndex("ReceiptNumber")
+                        .IsUnique();
+
+                    b.HasIndex("ReceivedDate");
+
+                    b.ToTable("PurchaseReceipts");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Payments.PayLink", b =>
@@ -3019,7 +3021,7 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.ToTable("ShippingMethods");
                 });
 
-            modelBuilder.Entity("Toss.Domain.Entities.Shop", b =>
+            modelBuilder.Entity("Toss.Domain.Entities.Stores.Shop", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3039,6 +3041,18 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Property<TimeOnly?>("ClosingTime")
                         .HasColumnType("time without time zone");
 
+                    b.Property<string>("CompanyAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyPhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyVat")
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
@@ -3050,8 +3064,14 @@ namespace Toss.Infrastructure.Data.Migrations
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)");
 
+                    b.Property<int?>("DefaultLanguageId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -3059,6 +3079,10 @@ namespace Toss.Infrastructure.Data.Migrations
 
                     b.Property<bool>("GroupBuyingEnabled")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Hosts")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -3086,6 +3110,9 @@ namespace Toss.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("Ssl_enabled")
+                        .HasColumnType("boolean");
+
                     b.Property<decimal>("TaxRate")
                         .HasColumnType("numeric");
 
@@ -3094,27 +3121,12 @@ namespace Toss.Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("WhatsAppAlertsEnabled")
                         .HasColumnType("boolean");
-
-                    b.ComplexProperty<Dictionary<string, object>>("Location", "Toss.Domain.Entities.Shop.Location#Location", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("Area")
-                                .HasMaxLength(200)
-                                .HasColumnType("character varying(200)");
-
-                            b1.Property<double>("Latitude")
-                                .HasColumnType("double precision");
-
-                            b1.Property<double>("Longitude")
-                                .HasColumnType("double precision");
-
-                            b1.Property<string>("Zone")
-                                .HasMaxLength(200)
-                                .HasColumnType("character varying(200)");
-                        });
 
                     b.HasKey("Id");
 
@@ -3125,71 +3137,6 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Shops");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Stores.Store", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CompanyAddress")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("CompanyName")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("CompanyPhoneNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("CompanyVat")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<int>("DefaultLanguageId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Hosts")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<bool>("Ssl_enabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Stores");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Stores.StoreMapping", b =>
@@ -3218,200 +3165,6 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.HasIndex("EntityId", "EntityName");
 
                     b.ToTable("StoreMappings");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Suppliers.Supplier", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AddressId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("CompanyRegNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("ContactPerson")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<decimal?>("CreditLimit")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<int?>("PaymentTermsDays")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("VATNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Website")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
-
-                    b.HasIndex("Email");
-
-                    b.HasIndex("Name");
-
-                    b.ToTable("Suppliers");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Suppliers.SupplierPricing", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("BasePrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal?>("DiscountPercentage")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("numeric(5,2)");
-
-                    b.Property<DateTimeOffset?>("EffectiveDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("MaxQuantity")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MinQuantity")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SupplierProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTimeOffset?>("ValidFrom")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset?>("ValidTo")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SupplierProductId");
-
-                    b.HasIndex("ValidFrom", "ValidTo");
-
-                    b.ToTable("SupplierPricings");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Suppliers.SupplierProduct", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("BasePrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("LeadTimeDays")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MinOrderQuantity")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SupplierSKU")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("SupplierId", "ProductId")
-                        .IsUnique();
-
-                    b.ToTable("SupplierProducts");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Tax.TaxCategory", b =>
@@ -3498,14 +3251,34 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Property<int?>("AddressId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("AdminComment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("CompanyRegNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ContactPerson")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
+                    b.Property<decimal?>("CreditLimit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer");
@@ -3526,9 +3299,28 @@ namespace Toss.Infrastructure.Data.Migrations
                         .HasMaxLength(400)
                         .HasColumnType("character varying(400)");
 
+                    b.Property<int>("PaymentTermsDays")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("VATNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId");
+
+                    b.HasIndex("Deleted");
+
+                    b.HasIndex("DisplayOrder");
+
+                    b.HasIndex("Email");
+
+                    b.HasIndex("Name");
 
                     b.ToTable("Vendors");
                 });
@@ -3556,6 +3348,130 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.HasIndex("VendorId");
 
                     b.ToTable("VendorNotes");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Vendors.VendorPricing", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal?>("DiscountPercentage")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)");
+
+                    b.Property<DateTimeOffset?>("EffectiveDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("MaxQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTimeOffset?>("ValidFrom")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("ValidTo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("VendorProductId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("ValidFrom");
+
+                    b.HasIndex("VendorProductId");
+
+                    b.HasIndex("VendorProductId", "ValidFrom");
+
+                    b.ToTable("VendorPricings");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Vendors.VendorProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("BasePrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("LeadTimeDays")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinOrderQuantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("VendorId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("VendorSKU")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("VendorId", "ProductId")
+                        .IsUnique();
+
+                    b.ToTable("VendorProducts");
                 });
 
             modelBuilder.Entity("Toss.Infrastructure.Identity.ApplicationUser", b =>
@@ -3707,7 +3623,7 @@ namespace Toss.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Toss.Domain.Entities.ArtificialIntelligence.AIConversation", b =>
                 {
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3729,62 +3645,13 @@ namespace Toss.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Toss.Domain.Entities.ArtificialIntelligence.AISettings", b =>
                 {
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Shop");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Buying.PurchaseOrder", b =>
-                {
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
-                        .WithMany()
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Toss.Domain.Entities.Suppliers.Supplier", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Shop");
-
-                    b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Buying.PurchaseOrderItem", b =>
-                {
-                    b.HasOne("Toss.Domain.Entities.Inventory.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Toss.Domain.Entities.Buying.PurchaseOrder", "PurchaseOrder")
-                        .WithMany("Items")
-                        .HasForeignKey("PurchaseOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("PurchaseOrder");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Buying.PurchaseReceipt", b =>
-                {
-                    b.HasOne("Toss.Domain.Entities.Buying.PurchaseOrder", "PurchaseOrder")
-                        .WithMany("Receipts")
-                        .HasForeignKey("PurchaseOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PurchaseOrder");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.CRM.Customer", b =>
@@ -3794,7 +3661,7 @@ namespace Toss.Infrastructure.Data.Migrations
                         .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3855,6 +3722,16 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Sale");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.Product", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Catalog.ProductCategory", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductAttributeValue", b =>
                 {
                     b.HasOne("Toss.Domain.Entities.Catalog.ProductAttribute", "ProductAttribute")
@@ -3866,8 +3743,24 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("ProductAttribute");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductCategory", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Catalog.ProductCategory", "ParentCategory")
+                        .WithMany("SubCategories")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentCategory");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductProductTagMapping", b =>
                 {
+                    b.HasOne("Toss.Domain.Entities.Catalog.Product", null)
+                        .WithMany("ProductProductTagMappings")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Toss.Domain.Entities.Catalog.ProductTag", "ProductTag")
                         .WithMany("ProductProductTagMappings")
                         .HasForeignKey("ProductTagId")
@@ -3875,6 +3768,72 @@ namespace Toss.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("ProductTag");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductReview", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Catalog.Product", null)
+                        .WithMany("ProductReviews")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.StockAlert", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Catalog.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Shop");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.StockLevel", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Catalog.Product", "Product")
+                        .WithMany("StockLevels")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Shop");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.StockMovement", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Catalog.Product", "Product")
+                        .WithMany("StockMovements")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Directory.StateProvince", b =>
@@ -3890,13 +3849,13 @@ namespace Toss.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Toss.Domain.Entities.GroupBuying.AggregatedPurchaseOrder", b =>
                 {
-                    b.HasOne("Toss.Domain.Entities.Suppliers.Supplier", "Supplier")
+                    b.HasOne("Toss.Domain.Entities.Vendors.Vendor", "Vendor")
                         .WithMany()
-                        .HasForeignKey("SupplierId")
+                        .HasForeignKey("VendorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Supplier");
+                    b.Navigation("Vendor");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.GroupBuying.GroupBuyPool", b =>
@@ -3906,21 +3865,21 @@ namespace Toss.Infrastructure.Data.Migrations
                         .HasForeignKey("Toss.Domain.Entities.GroupBuying.GroupBuyPool", "AggregatedPurchaseOrderId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Toss.Domain.Entities.Shop", "InitiatorShop")
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "InitiatorShop")
                         .WithMany()
                         .HasForeignKey("InitiatorShopId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Toss.Domain.Entities.Inventory.Product", "Product")
+                    b.HasOne("Toss.Domain.Entities.Catalog.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Toss.Domain.Entities.Suppliers.Supplier", "Supplier")
+                    b.HasOne("Toss.Domain.Entities.Vendors.Vendor", "Vendor")
                         .WithMany()
-                        .HasForeignKey("SupplierId")
+                        .HasForeignKey("VendorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -3930,7 +3889,7 @@ namespace Toss.Infrastructure.Data.Migrations
 
                     b.Navigation("Product");
 
-                    b.Navigation("Supplier");
+                    b.Navigation("Vendor");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.GroupBuying.PoolParticipation", b =>
@@ -3941,90 +3900,13 @@ namespace Toss.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("GroupBuyPool");
-
-                    b.Navigation("Shop");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Inventory.Product", b =>
-                {
-                    b.HasOne("Toss.Domain.Entities.Inventory.ProductCategory", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Inventory.ProductCategory", b =>
-                {
-                    b.HasOne("Toss.Domain.Entities.Inventory.ProductCategory", "ParentCategory")
-                        .WithMany("SubCategories")
-                        .HasForeignKey("ParentCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("ParentCategory");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Inventory.StockAlert", b =>
-                {
-                    b.HasOne("Toss.Domain.Entities.Inventory.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
-                        .WithMany()
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Shop");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Inventory.StockLevel", b =>
-                {
-                    b.HasOne("Toss.Domain.Entities.Inventory.Product", "Product")
-                        .WithMany("StockLevels")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
-                        .WithMany()
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Shop");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Inventory.StockMovement", b =>
-                {
-                    b.HasOne("Toss.Domain.Entities.Inventory.Product", "Product")
-                        .WithMany("StockMovements")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
-                        .WithMany()
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
 
                     b.Navigation("Shop");
                 });
@@ -4059,7 +3941,7 @@ namespace Toss.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -4188,6 +4070,55 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.PurchaseOrder", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
+                        .WithMany()
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Toss.Domain.Entities.Vendors.Vendor", "Vendor")
+                        .WithMany()
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Shop");
+
+                    b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.PurchaseOrderItem", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Catalog.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Toss.Domain.Entities.Orders.PurchaseOrder", "PurchaseOrder")
+                        .WithMany("Items")
+                        .HasForeignKey("PurchaseOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("PurchaseOrder");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.PurchaseReceipt", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Orders.PurchaseOrder", "PurchaseOrder")
+                        .WithMany("Receipts")
+                        .HasForeignKey("PurchaseOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PurchaseOrder");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Payments.PayLink", b =>
                 {
                     b.HasOne("Toss.Domain.Entities.CRM.Customer", "Customer")
@@ -4195,7 +4126,7 @@ namespace Toss.Infrastructure.Data.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4218,7 +4149,7 @@ namespace Toss.Infrastructure.Data.Migrations
                         .HasForeignKey("PayLinkId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4258,7 +4189,7 @@ namespace Toss.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4276,7 +4207,7 @@ namespace Toss.Infrastructure.Data.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Toss.Domain.Entities.Shop", "Shop")
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
                         .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4289,7 +4220,7 @@ namespace Toss.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Toss.Domain.Entities.Sales.SaleItem", b =>
                 {
-                    b.HasOne("Toss.Domain.Entities.Inventory.Product", "Product")
+                    b.HasOne("Toss.Domain.Entities.Catalog.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -4328,7 +4259,7 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Shipment");
                 });
 
-            modelBuilder.Entity("Toss.Domain.Entities.Shop", b =>
+            modelBuilder.Entity("Toss.Domain.Entities.Stores.Shop", b =>
                 {
                     b.HasOne("Toss.Domain.Entities.Address", "Address")
                         .WithMany()
@@ -4352,80 +4283,49 @@ namespace Toss.Infrastructure.Data.Migrations
                                 .HasForeignKey("ShopId");
                         });
 
-                    b.Navigation("Address");
-
-                    b.Navigation("ContactPhone");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Stores.StoreMapping", b =>
-                {
-                    b.HasOne("Toss.Domain.Entities.Stores.Store", "Store")
-                        .WithMany("StoreMappings")
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Store");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Suppliers.Supplier", b =>
-                {
-                    b.HasOne("Toss.Domain.Entities.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.OwnsOne("Toss.Domain.ValueObjects.PhoneNumber", "ContactPhone", b1 =>
+                    b.OwnsOne("Toss.Domain.ValueObjects.Location", "Location", b1 =>
                         {
-                            b1.Property<int>("SupplierId")
+                            b1.Property<int>("ShopId")
                                 .HasColumnType("integer");
 
-                            b1.Property<string>("Number")
-                                .IsRequired()
-                                .HasMaxLength(20)
-                                .HasColumnType("character varying(20)");
+                            b1.Property<string>("Area")
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)");
 
-                            b1.HasKey("SupplierId");
+                            b1.Property<double>("Latitude")
+                                .HasColumnType("double precision");
 
-                            b1.ToTable("Suppliers");
+                            b1.Property<double>("Longitude")
+                                .HasColumnType("double precision");
+
+                            b1.Property<string>("Zone")
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)");
+
+                            b1.HasKey("ShopId");
+
+                            b1.ToTable("Shops");
 
                             b1.WithOwner()
-                                .HasForeignKey("SupplierId");
+                                .HasForeignKey("ShopId");
                         });
 
                     b.Navigation("Address");
 
                     b.Navigation("ContactPhone");
+
+                    b.Navigation("Location");
                 });
 
-            modelBuilder.Entity("Toss.Domain.Entities.Suppliers.SupplierPricing", b =>
+            modelBuilder.Entity("Toss.Domain.Entities.Stores.StoreMapping", b =>
                 {
-                    b.HasOne("Toss.Domain.Entities.Suppliers.SupplierProduct", "SupplierProduct")
-                        .WithMany("PricingTiers")
-                        .HasForeignKey("SupplierProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SupplierProduct");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Suppliers.SupplierProduct", b =>
-                {
-                    b.HasOne("Toss.Domain.Entities.Inventory.Product", "Product")
+                    b.HasOne("Toss.Domain.Entities.Stores.Shop", "Shop")
                         .WithMany()
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("StoreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Toss.Domain.Entities.Suppliers.Supplier", "Supplier")
-                        .WithMany("SupplierProducts")
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Supplier");
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Tax.TaxRate", b =>
@@ -4446,7 +4346,27 @@ namespace Toss.Infrastructure.Data.Migrations
                         .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.OwnsOne("Toss.Domain.ValueObjects.PhoneNumber", "ContactPhone", b1 =>
+                        {
+                            b1.Property<int>("VendorId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)");
+
+                            b1.HasKey("VendorId");
+
+                            b1.ToTable("Vendors");
+
+                            b1.WithOwner()
+                                .HasForeignKey("VendorId");
+                        });
+
                     b.Navigation("Address");
+
+                    b.Navigation("ContactPhone");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Vendors.VendorNote", b =>
@@ -4460,16 +4380,39 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Vendor");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Vendors.VendorPricing", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Vendors.VendorProduct", "VendorProduct")
+                        .WithMany("PricingTiers")
+                        .HasForeignKey("VendorProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VendorProduct");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Vendors.VendorProduct", b =>
+                {
+                    b.HasOne("Toss.Domain.Entities.Catalog.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Toss.Domain.Entities.Vendors.Vendor", "Vendor")
+                        .WithMany("VendorProducts")
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Vendor");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.ArtificialIntelligence.AIConversation", b =>
                 {
                     b.Navigation("Messages");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Buying.PurchaseOrder", b =>
-                {
-                    b.Navigation("Items");
-
-                    b.Navigation("Receipts");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.CRM.Customer", b =>
@@ -4481,9 +4424,27 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("Sales");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.Product", b =>
+                {
+                    b.Navigation("ProductProductTagMappings");
+
+                    b.Navigation("ProductReviews");
+
+                    b.Navigation("StockLevels");
+
+                    b.Navigation("StockMovements");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductAttribute", b =>
                 {
                     b.Navigation("ProductAttributeValues");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductCategory", b =>
+                {
+                    b.Navigation("Products");
+
+                    b.Navigation("SubCategories");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Catalog.ProductTag", b =>
@@ -4505,20 +4466,6 @@ namespace Toss.Infrastructure.Data.Migrations
             modelBuilder.Entity("Toss.Domain.Entities.GroupBuying.GroupBuyPool", b =>
                 {
                     b.Navigation("Participations");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Inventory.Product", b =>
-                {
-                    b.Navigation("StockLevels");
-
-                    b.Navigation("StockMovements");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Inventory.ProductCategory", b =>
-                {
-                    b.Navigation("Products");
-
-                    b.Navigation("SubCategories");
                 });
 
             modelBuilder.Entity("Toss.Domain.Entities.Logistics.DeliveryStop", b =>
@@ -4543,6 +4490,13 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("OrderNotes");
                 });
 
+            modelBuilder.Entity("Toss.Domain.Entities.Orders.PurchaseOrder", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("Receipts");
+                });
+
             modelBuilder.Entity("Toss.Domain.Entities.Payments.PayLink", b =>
                 {
                     b.Navigation("Payments");
@@ -4565,24 +4519,16 @@ namespace Toss.Infrastructure.Data.Migrations
                     b.Navigation("ShipmentItems");
                 });
 
-            modelBuilder.Entity("Toss.Domain.Entities.Stores.Store", b =>
-                {
-                    b.Navigation("StoreMappings");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Suppliers.Supplier", b =>
-                {
-                    b.Navigation("SupplierProducts");
-                });
-
-            modelBuilder.Entity("Toss.Domain.Entities.Suppliers.SupplierProduct", b =>
-                {
-                    b.Navigation("PricingTiers");
-                });
-
             modelBuilder.Entity("Toss.Domain.Entities.Vendors.Vendor", b =>
                 {
                     b.Navigation("VendorNotes");
+
+                    b.Navigation("VendorProducts");
+                });
+
+            modelBuilder.Entity("Toss.Domain.Entities.Vendors.VendorProduct", b =>
+                {
+                    b.Navigation("PricingTiers");
                 });
 #pragma warning restore 612, 618
         }

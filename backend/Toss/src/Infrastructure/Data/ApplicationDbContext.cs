@@ -2,23 +2,20 @@
 using Toss.Application.Common.Interfaces;
 using Toss.Domain.Entities;
 using Toss.Domain.Entities.ArtificialIntelligence;
-using Toss.Domain.Entities.Buying;
+using Toss.Domain.Entities.Orders;
 using Toss.Domain.Entities.Catalog;
 using Toss.Domain.Entities.CRM;
 using Toss.Domain.Entities.Directory;
 using Toss.Domain.Entities.GroupBuying;
-using Toss.Domain.Entities.Inventory;
 using Toss.Domain.Entities.Localization;
 using Toss.Domain.Entities.Logistics;
-using Toss.Domain.Entities.Orders;
 using Toss.Domain.Entities.Payments;
 using Toss.Domain.Entities.Sales;
 using Toss.Domain.Entities.Security;
 using Toss.Domain.Entities.Shipping;
 using Toss.Domain.Entities.Stores;
-using Toss.Domain.Entities.Suppliers;
-using Toss.Domain.Entities.Tax;
 using Toss.Domain.Entities.Vendors;
+using Toss.Domain.Entities.Tax;
 using Toss.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +27,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
     // Core entities
-    public DbSet<Shop> Shops => Set<Shop>();
+    public DbSet<Store> Shops => Set<Store>();
     public DbSet<Address> Addresses => Set<Address>();
 
     // Inventory entities
@@ -46,10 +43,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Receipt> Receipts => Set<Receipt>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
 
-    // Supplier entities
-    public DbSet<Supplier> Suppliers => Set<Supplier>();
-    public DbSet<SupplierProduct> SupplierProducts => Set<SupplierProduct>();
-    public DbSet<SupplierPricing> SupplierPricings => Set<SupplierPricing>();
+    // Supplier entities (removed - now using Vendors)
 
     // Buying entities
     public DbSet<PurchaseOrder> PurchaseOrders => Set<PurchaseOrder>();
@@ -102,8 +96,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<PermissionRoleMapping> PermissionRoleMappings => Set<PermissionRoleMapping>();
     public DbSet<AclRecord> AclRecords => Set<AclRecord>();
 
-    // Store entities
-    public DbSet<Store> Stores => Set<Store>();
+    // Store entities (Shop is already defined above as core entity)
     public DbSet<StoreMapping> StoreMappings => Set<StoreMapping>();
 
     // Catalog entities
@@ -113,9 +106,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<ProductTag> ProductTags => Set<ProductTag>();
     public DbSet<ProductProductTagMapping> ProductProductTagMappings => Set<ProductProductTagMapping>();
 
-    // Vendor entities
+    // Vendor entities (merged from Suppliers)
     public DbSet<Vendor> Vendors => Set<Vendor>();
     public DbSet<VendorNote> VendorNotes => Set<VendorNote>();
+    public DbSet<VendorProduct> VendorProducts => Set<VendorProduct>();
+    public DbSet<VendorPricing> VendorPricings => Set<VendorPricing>();
 
     // Order entities
     public DbSet<Order> Orders => Set<Order>();

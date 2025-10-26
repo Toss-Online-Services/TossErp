@@ -76,6 +76,6 @@ public class AISettings : BaseEntity
     /// Gets or sets the shop ID this setting belongs to
     /// </summary>
     public int ShopId { get; set; }
-    public Shop? Shop { get; set; }
+    public Store? Shop { get; set; }
 }
 

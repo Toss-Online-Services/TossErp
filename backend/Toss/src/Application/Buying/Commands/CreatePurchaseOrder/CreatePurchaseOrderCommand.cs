@@ -1,8 +1,9 @@
 using Toss.Application.Common.Interfaces;
 using Toss.Domain.Entities;
-using Toss.Domain.Entities.Buying;
-using Toss.Domain.Entities.Inventory;
-using Toss.Domain.Entities.Suppliers;
+using Toss.Domain.Entities.Orders;
+using Toss.Domain.Entities.Catalog;
+using Toss.Domain.Entities.Stores;
+using Toss.Domain.Entities.Vendors;
 using Toss.Domain.Enums;
 
 namespace Toss.Application.Buying.Commands.CreatePurchaseOrder;
@@ -10,7 +11,7 @@ namespace Toss.Application.Buying.Commands.CreatePurchaseOrder;
 public record CreatePurchaseOrderCommand : IRequest<int>
 {
     public int ShopId { get; init; }
-    public int SupplierId { get; init; }
+    public int VendorId { get; init; }
     public DateTimeOffset? ExpectedDeliveryDate { get; init; }
     public decimal ShippingCost { get; init; }
     public int? GroupBuyPoolId { get; init; }
@@ -39,18 +40,18 @@ public class CreatePurchaseOrderCommandHandler : IRequestHandler<CreatePurchaseO
         // Validate shop exists
         var shop = await _context.Shops.FindAsync(new object[] { request.ShopId }, cancellationToken);
         if (shop == null)
-            throw new NotFoundException(nameof(Shop), request.ShopId.ToString());
+            throw new NotFoundException(nameof(Store), request.ShopId.ToString());
 
-        // Validate supplier exists
-        var supplier = await _context.Suppliers.FindAsync(new object[] { request.SupplierId }, cancellationToken);
-        if (supplier == null)
-            throw new NotFoundException(nameof(Supplier), request.SupplierId.ToString());
+        // Validate vendor exists
+        var vendor = await _context.Vendors.FindAsync(new object[] { request.VendorId }, cancellationToken);
+        if (vendor == null)
+            throw new NotFoundException(nameof(Vendor), request.VendorId.ToString());
 
         var purchaseOrder = new PurchaseOrder
         {
             PONumber = await GeneratePONumber(request.ShopId, cancellationToken),
             ShopId = request.ShopId,
-            SupplierId = request.SupplierId,
+            VendorId = request.VendorId,
             OrderDate = DateTimeOffset.UtcNow,
             ExpectedDeliveryDate = request.ExpectedDeliveryDate,
             Status = PurchaseOrderStatus.Draft,

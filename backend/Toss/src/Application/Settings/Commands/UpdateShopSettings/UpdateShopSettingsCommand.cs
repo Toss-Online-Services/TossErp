@@ -1,4 +1,5 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities;
 
 namespace Toss.Application.Settings.Commands.UpdateShopSettings;
@@ -29,7 +30,7 @@ public class UpdateShopSettingsCommandHandler : IRequestHandler<UpdateShopSettin
             .FindAsync(new object[] { request.ShopId }, cancellationToken);
 
         if (shop == null)
-            throw new NotFoundException(nameof(Shop), request.ShopId.ToString());
+            throw new NotFoundException(nameof(Store), request.ShopId.ToString());
 
         // Update settings (simplified - in production, you'd have a Settings entity)
         if (!string.IsNullOrWhiteSpace(request.Currency))

@@ -2,8 +2,9 @@ using Toss.Application.Common.Exceptions;
 using Toss.Application.GroupBuying.Commands.CreatePool;
 using Toss.Domain.Entities;
 using Toss.Domain.Entities.GroupBuying;
-using Toss.Domain.Entities.Inventory;
-using Toss.Domain.Entities.Suppliers;
+using Toss.Domain.Entities.Catalog;
+using Toss.Domain.Entities.Stores;
+using Toss.Domain.Entities.Vendors;
 using Toss.Domain.Enums;
 
 namespace Toss.Application.FunctionalTests.GroupBuying.Commands;
@@ -28,7 +29,7 @@ public class CreatePoolTests : BaseTestFixture
             Title = "Test Pool",
             InitiatorShopId = 999,
             ProductId = 1,
-            SupplierId = 1,
+            VendorId = 1,
             MinimumQuantity = 100,
             UnitPrice = 100,
             BulkDiscountPercentage = 20,
@@ -45,7 +46,7 @@ public class CreatePoolTests : BaseTestFixture
         var userId = await RunAsDefaultUserAsync();
 
         // Create shop
-        var shop = new Shop
+        var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
@@ -63,9 +64,9 @@ public class CreatePoolTests : BaseTestFixture
         await AddAsync(product);
 
         // Create supplier
-        var supplier = new Supplier
+        var supplier = new Vendor
         {
-            Name = "Test Supplier",
+            Name = "Test Vendor",
             Email = "supplier@test.com"
         };
         await AddAsync(supplier);
@@ -76,7 +77,7 @@ public class CreatePoolTests : BaseTestFixture
             Description = "Bulk purchase for better pricing",
             InitiatorShopId = shop.Id,
             ProductId = product.Id,
-            SupplierId = supplier.Id,
+            VendorId = supplier.Id,
             MinimumQuantity = 100,
             UnitPrice = 100,
             BulkDiscountPercentage = 20, // 20% discount
@@ -91,7 +92,7 @@ public class CreatePoolTests : BaseTestFixture
         pool.ShouldNotBeNull();
         pool!.InitiatorShopId.ShouldBe(shop.Id);
         pool.ProductId.ShouldBe(product.Id);
-        pool.SupplierId.ShouldBe(supplier.Id);
+        pool.VendorId.ShouldBe(supplier.Id);
         pool.MinimumQuantity.ShouldBe(100);
         pool.UnitPrice.ShouldBe(100);
         pool.FinalUnitPrice.ShouldBe(80); // After 20% discount
@@ -103,7 +104,7 @@ public class CreatePoolTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
-        var shop = new Shop
+        var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
@@ -119,9 +120,9 @@ public class CreatePoolTests : BaseTestFixture
         };
         await AddAsync(product);
 
-        var supplier = new Supplier
+        var supplier = new Vendor
         {
-            Name = "Test Supplier",
+            Name = "Test Vendor",
             Email = "supplier@test.com"
         };
         await AddAsync(supplier);
@@ -131,7 +132,7 @@ public class CreatePoolTests : BaseTestFixture
             Title = "Test Pool with Initial Participation",
             InitiatorShopId = shop.Id,
             ProductId = product.Id,
-            SupplierId = supplier.Id,
+            VendorId = supplier.Id,
             MinimumQuantity = 100,
             UnitPrice = 100,
             BulkDiscountPercentage = 20,

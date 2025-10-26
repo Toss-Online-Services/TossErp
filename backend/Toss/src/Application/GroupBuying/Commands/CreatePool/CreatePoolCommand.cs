@@ -1,8 +1,9 @@
 using Toss.Application.Common.Interfaces;
 using Toss.Domain.Entities;
 using Toss.Domain.Entities.GroupBuying;
-using Toss.Domain.Entities.Inventory;
-using Toss.Domain.Entities.Suppliers;
+using Toss.Domain.Entities.Catalog;
+using Toss.Domain.Entities.Stores;
+using Toss.Domain.Entities.Vendors;
 using Toss.Domain.Enums;
 
 namespace Toss.Application.GroupBuying.Commands.CreatePool;
@@ -13,7 +14,7 @@ public record CreatePoolCommand : IRequest<int>
     public string? Description { get; init; }
     public int ProductId { get; init; }
     public int InitiatorShopId { get; init; }
-    public int SupplierId { get; init; }
+    public int VendorId { get; init; }
     public int MinimumQuantity { get; init; }
     public int? MaximumQuantity { get; init; }
     public decimal UnitPrice { get; init; }
@@ -42,12 +43,12 @@ public class CreatePoolCommandHandler : IRequestHandler<CreatePoolCommand, int>
         // Validate shop exists
         var shop = await _context.Shops.FindAsync(new object[] { request.InitiatorShopId }, cancellationToken);
         if (shop == null)
-            throw new NotFoundException(nameof(Shop), request.InitiatorShopId.ToString());
+            throw new NotFoundException(nameof(Store), request.InitiatorShopId.ToString());
 
-        // Validate supplier exists
-        var supplier = await _context.Suppliers.FindAsync(new object[] { request.SupplierId }, cancellationToken);
-        if (supplier == null)
-            throw new NotFoundException(nameof(Supplier), request.SupplierId.ToString());
+        // Validate vendor exists
+        var vendor = await _context.Vendors.FindAsync(new object[] { request.VendorId }, cancellationToken);
+        if (vendor == null)
+            throw new NotFoundException(nameof(Vendor), request.VendorId.ToString());
 
         var pool = new GroupBuyPool
         {
@@ -56,7 +57,7 @@ public class CreatePoolCommandHandler : IRequestHandler<CreatePoolCommand, int>
             Description = request.Description,
             ProductId = request.ProductId,
             InitiatorShopId = request.InitiatorShopId,
-            SupplierId = request.SupplierId,
+            VendorId = request.VendorId,
             MinimumQuantity = request.MinimumQuantity,
             MaximumQuantity = request.MaximumQuantity,
             CurrentQuantity = 0,

@@ -47,9 +47,9 @@ public class GroupBuyPoolConfiguration : IEntityTypeConfiguration<GroupBuyPool>
             .HasForeignKey(p => p.InitiatorShopId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(p => p.Supplier)
+        builder.HasOne(p => p.Vendor)
             .WithMany()
-            .HasForeignKey(p => p.SupplierId)
+            .HasForeignKey(p => p.VendorId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(p => p.Participations)

@@ -4,7 +4,7 @@ public class Sale : BaseAuditableEntity
 {
     public string SaleNumber { get; set; } = string.Empty;
     public int ShopId { get; set; }
-    public Shop Shop { get; set; } = null!;
+    public Store Shop { get; set; } = null!;
     
     public int? CustomerId { get; set; }
     public Customer? Customer { get; set; }

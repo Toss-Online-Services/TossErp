@@ -22,7 +22,7 @@ public class GetActivePoolsQueryHandler : IRequestHandler<GetActivePoolsQuery, L
     {
         var query = _context.GroupBuyPools
             .Include(p => p.Product)
-            .Include(p => p.Supplier)
+            .Include(p => p.Vendor)
             .Include(p => p.Participations)
             .Where(p => p.Status == PoolStatus.Open && p.CloseDate > DateTimeOffset.UtcNow);
 
@@ -42,7 +42,7 @@ public class GetActivePoolsQueryHandler : IRequestHandler<GetActivePoolsQuery, L
             PoolNumber = p.PoolNumber,
             Title = p.Title,
             ProductName = p.Product.Name,
-            SupplierName = p.Supplier.Name,
+            VendorName = p.Vendor.Name,
             MinimumQuantity = p.MinimumQuantity,
             CurrentQuantity = p.CurrentQuantity,
             MaximumQuantity = p.MaximumQuantity,
@@ -65,7 +65,7 @@ public class PoolSummaryDto
     public string PoolNumber { get; init; } = string.Empty;
     public string Title { get; init; } = string.Empty;
     public string ProductName { get; init; } = string.Empty;
-    public string SupplierName { get; init; } = string.Empty;
+    public string VendorName { get; init; } = string.Empty;
     public int MinimumQuantity { get; init; }
     public int CurrentQuantity { get; init; }
     public int? MaximumQuantity { get; init; }

@@ -14,8 +14,8 @@ public class StoreMappingConfiguration : IEntityTypeConfiguration<StoreMapping>
             .IsRequired()
             .HasMaxLength(400);
 
-        builder.HasOne(x => x.Store)
-            .WithMany(x => x.StoreMappings)
+        builder.HasOne(x => x.Shop)
+            .WithMany()
             .HasForeignKey(x => x.StoreId)
             .OnDelete(DeleteBehavior.Cascade);
 

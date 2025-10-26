@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Toss.Domain.Entities.Inventory;
+using Toss.Domain.Entities.Catalog;
 
 namespace Toss.Infrastructure.Data.Configurations;
 

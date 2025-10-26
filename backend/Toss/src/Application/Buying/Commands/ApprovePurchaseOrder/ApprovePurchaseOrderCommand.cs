@@ -1,5 +1,5 @@
 using Toss.Application.Common.Interfaces;
-using Toss.Domain.Entities.Buying;
+using Toss.Domain.Entities.Orders;
 using Toss.Domain.Enums;
 
 namespace Toss.Application.Buying.Commands.ApprovePurchaseOrder;

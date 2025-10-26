@@ -24,6 +24,6 @@ public class StoreMapping : BaseEntity
     /// Gets or sets the store ID
     /// </summary>
     public int StoreId { get; set; }
-    public Store? Store { get; set; }
+    public Store? Shop { get; set; }
 }
 

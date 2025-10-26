@@ -10,6 +10,7 @@ public record VendorDto
     public string Name { get; init; } = string.Empty;
     public string? Email { get; init; }
     public string? Description { get; init; }
+    public string? PhoneNumber { get; init; }
     public bool Active { get; init; }
     public int DisplayOrder { get; init; }
 }
@@ -33,19 +34,22 @@ public class GetVendorsQueryHandler : IRequestHandler<GetVendorsQuery, Paginated
 
     public async Task<PaginatedList<VendorDto>> Handle(GetVendorsQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Vendors.AsQueryable();
+        var query = _context.Vendors
+            .Where(v => !v.Deleted) // Exclude soft-deleted vendors
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        {
+            var searchTerm = request.SearchTerm.ToLower();
+            query = query.Where(v => 
+                v.Name.ToLower().Contains(searchTerm) ||
+                (v.Email != null && v.Email.ToLower().Contains(searchTerm)) ||
+                (v.Description != null && v.Description.ToLower().Contains(searchTerm)));
+        }
 
         if (request.ActiveOnly == true)
         {
             query = query.Where(v => v.Active);
-        }
-
-        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
-        {
-            query = query.Where(v => 
-                v.Name.Contains(request.SearchTerm) ||
-                (v.Email != null && v.Email.Contains(request.SearchTerm)) ||
-                (v.Description != null && v.Description.Contains(request.SearchTerm)));
         }
 
         var vendors = await query
@@ -57,6 +61,7 @@ public class GetVendorsQueryHandler : IRequestHandler<GetVendorsQuery, Paginated
                 Name = v.Name,
                 Email = v.Email,
                 Description = v.Description,
+                PhoneNumber = v.PhoneNumber,
                 Active = v.Active,
                 DisplayOrder = v.DisplayOrder
             })
@@ -65,4 +70,3 @@ public class GetVendorsQueryHandler : IRequestHandler<GetVendorsQuery, Paginated
         return vendors;
     }
 }
-

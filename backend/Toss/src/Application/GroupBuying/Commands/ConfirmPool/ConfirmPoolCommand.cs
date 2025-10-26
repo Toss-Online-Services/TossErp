@@ -54,7 +54,7 @@ public class ConfirmPoolCommandHandler : IRequestHandler<ConfirmPoolCommand, Res
         {
             APONumber = await GenerateAPONumber(cancellationToken),
             GroupBuyPoolId = pool.Id,
-            SupplierId = pool.SupplierId,
+            VendorId = pool.VendorId,
             TotalQuantity = pool.CurrentQuantity,
             Subtotal = pool.Participations.Sum(p => p.Subtotal),
             TaxAmount = pool.Participations.Sum(p => p.Subtotal) * 0.15m, // 15% VAT
