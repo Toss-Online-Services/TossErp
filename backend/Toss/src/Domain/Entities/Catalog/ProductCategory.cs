@@ -1,9 +1,12 @@
+using Toss.Domain.Common;
+using Toss.Domain.Entities.Localization;
+
 namespace Toss.Domain.Entities.Catalog;
 
 /// <summary>
 /// Represents a product category with hierarchical support
 /// </summary>
-public class ProductCategory : BaseAuditableEntity
+public class ProductCategory : BaseAuditableEntity, IMetaTagsSupported, ILocalizedEntity
 {
     public ProductCategory()
     {
@@ -43,5 +46,21 @@ public class ProductCategory : BaseAuditableEntity
     /// Gets or sets the products in this category
     /// </summary>
     public ICollection<Product> Products { get; set; }
+
+    // SEO Properties
+    /// <summary>
+    /// Gets or sets the meta title for SEO
+    /// </summary>
+    public string? MetaTitle { get; set; }
+
+    /// <summary>
+    /// Gets or sets the meta keywords for SEO
+    /// </summary>
+    public string? MetaKeywords { get; set; }
+
+    /// <summary>
+    /// Gets or sets the meta description for SEO
+    /// </summary>
+    public string? MetaDescription { get; set; }
 }
 

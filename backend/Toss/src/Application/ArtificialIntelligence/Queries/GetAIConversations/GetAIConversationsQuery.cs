@@ -2,7 +2,7 @@ using Toss.Application.Common.Interfaces;
 using Toss.Application.Common.Mappings;
 using Toss.Application.Common.Models;
 
-namespace Toss.Application.AI.Queries.GetAIConversations;
+namespace Toss.Application.ArtificialIntelligence.Queries.GetAIConversations;
 
 public record AIConversationDto
 {

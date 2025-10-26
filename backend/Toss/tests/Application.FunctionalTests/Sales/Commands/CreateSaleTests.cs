@@ -32,7 +32,7 @@ public class CreateSaleTests : BaseTestFixture
             }
         };
 
-        await Should.ThrowAsync<NotFoundException>(() => SendAsync(command));
+        await Should.ThrowAsync<Toss.Application.Common.Exceptions.NotFoundException>(() => SendAsync(command));
     }
 
     [Test]
@@ -58,7 +58,7 @@ public class CreateSaleTests : BaseTestFixture
             }
         };
 
-        await Should.ThrowAsync<NotFoundException>(() => SendAsync(command));
+        await Should.ThrowAsync<Toss.Application.Common.Exceptions.NotFoundException>(() => SendAsync(command));
     }
 
     [Test]

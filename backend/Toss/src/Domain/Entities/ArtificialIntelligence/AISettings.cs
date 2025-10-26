@@ -8,13 +8,16 @@ public class AISettings : BaseEntity
     public AISettings()
     {
         Enabled = true;
-        ProviderType = AIProviderType.OpenAI;
+        ProviderType = AIProviderType.Gemini;
         AllowSalesForecasting = true;
         AllowInventoryPrediction = true;
         AllowBusinessInsights = true;
         AllowPriceSuggestions = true;
+        AllowMetaTitleGeneration = true;
+        AllowMetaKeywordsGeneration = true;
+        AllowMetaDescriptionGeneration = true;
         SupportedLanguages = new List<string> { "en", "zu", "xh", "st", "tn", "af" };
-        RequestTimeoutSeconds = 30;
+        RequestTimeout = 30;
     }
 
     /// <summary>
@@ -28,9 +31,19 @@ public class AISettings : BaseEntity
     public AIProviderType ProviderType { get; set; }
 
     /// <summary>
-    /// Gets or sets the API key for the selected provider
+    /// Gets or sets the Gemini API key
     /// </summary>
-    public string? ApiKey { get; set; }
+    public string? GeminiApiKey { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ChatGPT API key
+    /// </summary>
+    public string? ChatGptApiKey { get; set; }
+
+    /// <summary>
+    /// Gets or sets the DeepSeek API key
+    /// </summary>
+    public string? DeepSeekApiKey { get; set; }
 
     /// <summary>
     /// Gets or sets the API endpoint URL (for custom providers)
@@ -40,7 +53,42 @@ public class AISettings : BaseEntity
     /// <summary>
     /// Gets or sets the request timeout in seconds
     /// </summary>
-    public int RequestTimeoutSeconds { get; set; }
+    public int? RequestTimeout { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether meta title generation is allowed
+    /// </summary>
+    public bool AllowMetaTitleGeneration { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether meta keywords generation is allowed
+    /// </summary>
+    public bool AllowMetaKeywordsGeneration { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether meta description generation is allowed
+    /// </summary>
+    public bool AllowMetaDescriptionGeneration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the product description query template
+    /// </summary>
+    public string? ProductDescriptionQuery { get; set; }
+
+    /// <summary>
+    /// Gets or sets the meta title query template
+    /// </summary>
+    public string? MetaTitleQuery { get; set; }
+
+    /// <summary>
+    /// Gets or sets the meta keywords query template
+    /// </summary>
+    public string? MetaKeywordsQuery { get; set; }
+
+    /// <summary>
+    /// Gets or sets the meta description query template
+    /// </summary>
+    public string? MetaDescriptionQuery { get; set; }
 
     /// <summary>
     /// Gets or sets whether sales forecasting is allowed

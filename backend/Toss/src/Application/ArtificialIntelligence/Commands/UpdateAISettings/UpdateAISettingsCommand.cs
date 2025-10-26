@@ -3,7 +3,7 @@ using Toss.Domain.Entities.ArtificialIntelligence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Toss.Application.AI.Commands.UpdateAISettings;
+namespace Toss.Application.ArtificialIntelligence.Commands.UpdateAISettings;
 
 public record UpdateAISettingsCommand : IRequest
 {
@@ -46,9 +46,26 @@ public class UpdateAISettingsCommandHandler : IRequestHandler<UpdateAISettingsCo
 
         settings.Enabled = request.Enabled;
         settings.ProviderType = Enum.Parse<AIProviderType>(request.ProviderType);
-        settings.ApiKey = request.ApiKey;
+        
+        // Set the appropriate API key based on provider type
+        if (!string.IsNullOrEmpty(request.ApiKey))
+        {
+            switch (settings.ProviderType)
+            {
+                case AIProviderType.Gemini:
+                    settings.GeminiApiKey = request.ApiKey;
+                    break;
+                case AIProviderType.ChatGpt:
+                    settings.ChatGptApiKey = request.ApiKey;
+                    break;
+                case AIProviderType.DeepSeek:
+                    settings.DeepSeekApiKey = request.ApiKey;
+                    break;
+            }
+        }
+        
         settings.ApiEndpoint = request.ApiEndpoint;
-        settings.RequestTimeoutSeconds = request.RequestTimeoutSeconds;
+        settings.RequestTimeout = request.RequestTimeoutSeconds;
         settings.AllowSalesForecasting = request.AllowSalesForecasting;
         settings.AllowInventoryPrediction = request.AllowInventoryPrediction;
         settings.AllowBusinessInsights = request.AllowBusinessInsights;
