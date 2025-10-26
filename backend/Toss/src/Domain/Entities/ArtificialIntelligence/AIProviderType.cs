@@ -6,23 +6,28 @@ namespace Toss.Domain.Entities.ArtificialIntelligence;
 public enum AIProviderType
 {
     /// <summary>
-    /// OpenAI (ChatGPT)
-    /// </summary>
-    OpenAI = 1,
-    
-    /// <summary>
     /// Google Gemini
     /// </summary>
-    Gemini = 2,
+    Gemini = 1,
+    
+    /// <summary>
+    /// OpenAI (ChatGPT)
+    /// </summary>
+    ChatGpt = 2,
+    
+    /// <summary>
+    /// DeepSeek AI
+    /// </summary>
+    DeepSeek = 3,
     
     /// <summary>
     /// Anthropic Claude
     /// </summary>
-    Claude = 3,
+    Claude = 4,
     
     /// <summary>
     /// Local/Self-hosted AI (for offline support)
     /// </summary>
-    LocalAI = 4
+    LocalAI = 5
 }
 

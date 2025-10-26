@@ -37,7 +37,7 @@ public class CreatePoolTests : BaseTestFixture
             EstimatedShippingCost = 500
         };
 
-        await Should.ThrowAsync<NotFoundException>(() => SendAsync(command));
+        await Should.ThrowAsync<Toss.Application.Common.Exceptions.NotFoundException>(() => SendAsync(command));
     }
 
     [Test]

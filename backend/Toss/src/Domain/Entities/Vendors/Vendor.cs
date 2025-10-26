@@ -1,9 +1,12 @@
+using Toss.Domain.Common;
+using Toss.Domain.Entities.Localization;
+
 namespace Toss.Domain.Entities.Vendors;
 
 /// <summary>
 /// Represents a vendor/supplier (unified entity for ERP and marketplace)
 /// </summary>
-public class Vendor : BaseAuditableEntity
+public class Vendor : BaseAuditableEntity, IMetaTagsSupported, ILocalizedEntity
 {
     public Vendor()
     {
@@ -106,6 +109,22 @@ public class Vendor : BaseAuditableEntity
     /// Gets or sets the vendor products (product-vendor associations)
     /// </summary>
     public ICollection<VendorProduct> VendorProducts { get; set; }
+
+    // SEO Properties
+    /// <summary>
+    /// Gets or sets the meta title for SEO
+    /// </summary>
+    public string? MetaTitle { get; set; }
+
+    /// <summary>
+    /// Gets or sets the meta keywords for SEO
+    /// </summary>
+    public string? MetaKeywords { get; set; }
+
+    /// <summary>
+    /// Gets or sets the meta description for SEO
+    /// </summary>
+    public string? MetaDescription { get; set; }
 
     // Alias for compatibility
     public bool IsActive => Active;

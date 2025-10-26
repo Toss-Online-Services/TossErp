@@ -48,6 +48,13 @@ public static class DependencyInjection
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddTransient<IIdentityService, IdentityService>();
 
+        // AI Services
+        builder.Services.AddScoped<Toss.Infrastructure.Services.ArtificialIntelligence.IAISettingsService, 
+            Toss.Infrastructure.Services.ArtificialIntelligence.AISettingsService>();
+        builder.Services.AddHttpClient<Toss.Infrastructure.Services.ArtificialIntelligence.ArtificialIntelligenceHttpClient>();
+        builder.Services.AddScoped<Toss.Application.Common.Interfaces.IArtificialIntelligenceService, 
+            Toss.Infrastructure.Services.ArtificialIntelligence.ArtificialIntelligenceService>();
+
         builder.Services.AddAuthorization(options =>
             options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
     }

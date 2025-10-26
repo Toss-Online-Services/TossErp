@@ -1,5 +1,5 @@
-using Toss.Application.AICopilot.Queries.AskAI;
-using Toss.Application.AICopilot.Queries.GetAISuggestions;
+using Toss.Application.ArtificialIntelligence.Queries.AskAI;
+using Toss.Application.ArtificialIntelligence.Queries.GetAISuggestions;
 
 namespace Toss.Web.Endpoints;
 

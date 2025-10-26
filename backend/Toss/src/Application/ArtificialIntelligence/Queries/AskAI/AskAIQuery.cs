@@ -1,6 +1,6 @@
 using Toss.Application.Common.Interfaces;
 
-namespace Toss.Application.AICopilot.Queries.AskAI;
+namespace Toss.Application.ArtificialIntelligence.Queries.AskAI;
 
 public record AIResponseDto
 {

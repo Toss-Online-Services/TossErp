@@ -1,7 +1,7 @@
 using Toss.Application.Common.Interfaces;
 using Toss.Domain.Entities.ArtificialIntelligence;
 
-namespace Toss.Application.AI.Queries.GetAISettings;
+namespace Toss.Application.ArtificialIntelligence.Queries.GetAISettings;
 
 public record AISettingsDto
 {
@@ -35,26 +35,37 @@ public class GetAISettingsQueryHandler : IRequestHandler<GetAISettingsQuery, AIS
 
     public async Task<AISettingsDto?> Handle(GetAISettingsQuery request, CancellationToken cancellationToken)
     {
-        var settings = await _context.AISettings
+        var entity = await _context.AISettings
             .Where(s => s.ShopId == request.ShopId)
-            .Select(s => new AISettingsDto
-            {
-                Id = s.Id,
-                Enabled = s.Enabled,
-                ProviderType = s.ProviderType,
-                ApiKey = s.ApiKey,
-                ApiEndpoint = s.ApiEndpoint,
-                RequestTimeoutSeconds = s.RequestTimeoutSeconds,
-                SupportedLanguages = s.SupportedLanguages,
-                AllowSalesForecasting = s.AllowSalesForecasting,
-                AllowInventoryPrediction = s.AllowInventoryPrediction,
-                AllowBusinessInsights = s.AllowBusinessInsights,
-                AllowPriceSuggestions = s.AllowPriceSuggestions,
-                AllowProductDescriptionGeneration = s.AllowProductDescriptionGeneration
-            })
             .FirstOrDefaultAsync(cancellationToken);
 
-        return settings;
+        if (entity == null)
+            return null;
+
+        // Get the appropriate API key based on provider type
+        var apiKey = entity.ProviderType switch
+        {
+            AIProviderType.Gemini => entity.GeminiApiKey,
+            AIProviderType.ChatGpt => entity.ChatGptApiKey,
+            AIProviderType.DeepSeek => entity.DeepSeekApiKey,
+            _ => null
+        };
+
+        return new AISettingsDto
+        {
+            Id = entity.Id,
+            Enabled = entity.Enabled,
+            ProviderType = entity.ProviderType,
+            ApiKey = apiKey,
+            ApiEndpoint = entity.ApiEndpoint,
+            RequestTimeoutSeconds = entity.RequestTimeout ?? 30,
+            SupportedLanguages = entity.SupportedLanguages,
+            AllowSalesForecasting = entity.AllowSalesForecasting,
+            AllowInventoryPrediction = entity.AllowInventoryPrediction,
+            AllowBusinessInsights = entity.AllowBusinessInsights,
+            AllowPriceSuggestions = entity.AllowPriceSuggestions,
+            AllowProductDescriptionGeneration = entity.AllowProductDescriptionGeneration
+        };
     }
 }
 

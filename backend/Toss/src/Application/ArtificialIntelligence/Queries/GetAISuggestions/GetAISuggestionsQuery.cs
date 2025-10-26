@@ -1,6 +1,6 @@
 using Toss.Application.Common.Interfaces;
 
-namespace Toss.Application.AICopilot.Queries.GetAISuggestions;
+namespace Toss.Application.ArtificialIntelligence.Queries.GetAISuggestions;
 
 public record AISuggestionDto
 {

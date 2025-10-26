@@ -10,7 +10,13 @@ public class AISettingsConfiguration : IEntityTypeConfiguration<AISettings>
     {
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.ApiKey)
+        builder.Property(x => x.GeminiApiKey)
+            .HasMaxLength(500);
+
+        builder.Property(x => x.ChatGptApiKey)
+            .HasMaxLength(500);
+
+        builder.Property(x => x.DeepSeekApiKey)
             .HasMaxLength(500);
 
         builder.Property(x => x.ApiEndpoint)
