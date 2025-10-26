@@ -21,8 +21,8 @@ public class AggregatedPurchaseOrder : BaseAuditableEntity
         set => GroupBuyPoolId = value;
     }
     
-    public int SupplierId { get; set; }
-    public Supplier Supplier { get; set; } = null!;
+    public int VendorId { get; set; }
+    public Vendor Vendor { get; set; } = null!;
     
     public int TotalQuantity { get; set; }
     public decimal Subtotal { get; set; }

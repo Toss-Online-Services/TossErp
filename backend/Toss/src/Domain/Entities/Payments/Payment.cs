@@ -5,7 +5,7 @@ public class Payment : BaseAuditableEntity
     public string PaymentReference { get; set; } = string.Empty;
     
     public int ShopId { get; set; }
-    public Shop Shop { get; set; } = null!;
+    public Store Shop { get; set; } = null!;
     
     public PaymentType PaymentType { get; set; }
     public PaymentStatus Status { get; set; } = PaymentStatus.Pending;

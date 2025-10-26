@@ -1,6 +1,5 @@
 using Toss.Application.Common.Interfaces;
 using Toss.Domain.Entities.Catalog;
-using Toss.Domain.Entities.Inventory;
 
 namespace Toss.Application.Catalog.Commands.CreateProductReview;
 

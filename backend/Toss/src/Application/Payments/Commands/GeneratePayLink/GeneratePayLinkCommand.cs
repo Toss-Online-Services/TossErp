@@ -1,4 +1,5 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities;
 using Toss.Domain.Entities.Payments;
 
@@ -32,7 +33,7 @@ public class GeneratePayLinkCommandHandler : IRequestHandler<GeneratePayLinkComm
         // Validate shop exists
         var shop = await _context.Shops.FindAsync(new object[] { request.ShopId }, cancellationToken);
         if (shop == null)
-            throw new NotFoundException(nameof(Shop), request.ShopId.ToString());
+            throw new NotFoundException(nameof(Store), request.ShopId.ToString());
 
         var linkCode = GenerateLinkCode();
         var fullUrl = $"https://pay.toss.co.za/{linkCode}"; // TODO: Use actual configuration

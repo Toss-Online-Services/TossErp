@@ -1,4 +1,5 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities;
 using Toss.Domain.Enums;
 
@@ -39,7 +40,7 @@ public class GetNearbyPoolOpportunitiesQueryHandler : IRequestHandler<GetNearbyP
         var shop = await _context.Shops.FindAsync(new object[] { request.ShopId }, cancellationToken);
         
         if (shop == null)
-            throw new NotFoundException(nameof(Shop), request.ShopId.ToString());
+            throw new NotFoundException(nameof(Store), request.ShopId.ToString());
 
         // Get open pools (simplified - in production, calculate actual distance using geospatial queries)
         var query = _context.GroupBuyPools

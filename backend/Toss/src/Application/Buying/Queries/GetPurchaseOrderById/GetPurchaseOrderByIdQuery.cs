@@ -1,5 +1,5 @@
 using Toss.Application.Common.Interfaces;
-using Toss.Domain.Entities.Buying;
+using Toss.Domain.Entities.Orders;
 
 namespace Toss.Application.Buying.Queries.GetPurchaseOrderById;
 
@@ -9,8 +9,8 @@ public record PurchaseOrderDetailDto
     public string PONumber { get; init; } = string.Empty;
     public int ShopId { get; init; }
     public string ShopName { get; init; } = string.Empty;
-    public int SupplierId { get; init; }
-    public string SupplierName { get; init; } = string.Empty;
+    public int VendorId { get; init; }
+    public string VendorName { get; init; } = string.Empty;
     public DateTimeOffset OrderDate { get; init; }
     public DateTimeOffset? RequiredDate { get; init; }
     public string Status { get; init; } = string.Empty;
@@ -47,7 +47,7 @@ public class GetPurchaseOrderByIdQueryHandler : IRequestHandler<GetPurchaseOrder
     {
         var po = await _context.PurchaseOrders
             .Include(p => p.Shop)
-            .Include(p => p.Supplier)
+            .Include(p => p.Vendor)
             .Include(p => p.Items)
                 .ThenInclude(i => i.Product)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
@@ -61,8 +61,8 @@ public class GetPurchaseOrderByIdQueryHandler : IRequestHandler<GetPurchaseOrder
             PONumber = po.PONumber,
             ShopId = po.ShopId,
             ShopName = po.Shop.Name,
-            SupplierId = po.SupplierId,
-            SupplierName = po.Supplier.Name,
+            VendorId = po.VendorId,
+            VendorName = po.Vendor.Name,
             OrderDate = po.OrderDate,
             RequiredDate = po.RequiredDate,
             Status = po.Status.ToString(),

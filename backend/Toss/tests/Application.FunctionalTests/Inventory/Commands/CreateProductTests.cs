@@ -1,6 +1,6 @@
 using Toss.Application.Common.Exceptions;
 using Toss.Application.Inventory.Commands.CreateProduct;
-using Toss.Domain.Entities.Inventory;
+using Toss.Domain.Entities.Catalog;
 
 namespace Toss.Application.FunctionalTests.Inventory.Commands;
 

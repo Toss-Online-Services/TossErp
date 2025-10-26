@@ -22,7 +22,7 @@ public class GetPoolByIdQueryHandler : IRequestHandler<GetPoolByIdQuery, PoolDet
     {
         var pool = await _context.GroupBuyPools
             .Include(p => p.Product)
-            .Include(p => p.Supplier)
+            .Include(p => p.Vendor)
             .Include(p => p.InitiatorShop)
             .Include(p => p.Participations)
                 .ThenInclude(pp => pp.Shop)
@@ -41,8 +41,8 @@ public class GetPoolByIdQueryHandler : IRequestHandler<GetPoolByIdQuery, PoolDet
             ProductId = pool.ProductId,
             ProductName = pool.Product.Name,
             ProductSKU = pool.Product.SKU,
-            SupplierId = pool.SupplierId,
-            SupplierName = pool.Supplier.Name,
+            VendorId = pool.VendorId,
+            VendorName = pool.Vendor.Name,
             InitiatorShopId = pool.InitiatorShopId,
             InitiatorShopName = pool.InitiatorShop.Name,
             MinimumQuantity = pool.MinimumQuantity,
@@ -82,8 +82,8 @@ public class PoolDetailDto
     public int ProductId { get; init; }
     public string ProductName { get; init; } = string.Empty;
     public string ProductSKU { get; init; } = string.Empty;
-    public int SupplierId { get; init; }
-    public string SupplierName { get; init; } = string.Empty;
+    public int VendorId { get; init; }
+    public string VendorName { get; init; } = string.Empty;
     public int InitiatorShopId { get; init; }
     public string InitiatorShopName { get; init; } = string.Empty;
     public int MinimumQuantity { get; init; }

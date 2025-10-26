@@ -1,4 +1,5 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities;
 
 namespace Toss.Application.Settings.Queries.GetShopSettings;
@@ -35,7 +36,7 @@ public class GetShopSettingsQueryHandler : IRequestHandler<GetShopSettingsQuery,
             .FindAsync(new object[] { request.ShopId }, cancellationToken);
 
         if (shop == null)
-            throw new NotFoundException(nameof(Shop), request.ShopId.ToString());
+            throw new NotFoundException(nameof(Store), request.ShopId.ToString());
 
         return new ShopSettingsDto
         {

@@ -1,7 +1,7 @@
 using Toss.Application.Common.Interfaces;
 using Toss.Application.Common.Mappings;
 using Toss.Application.Common.Models;
-using Toss.Domain.Entities.Inventory;
+using Toss.Domain.Entities.Catalog;
 
 namespace Toss.Application.Inventory.Queries.GetProducts;
 

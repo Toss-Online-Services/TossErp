@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Toss.Domain.Entities.Buying;
+using Toss.Domain.Entities.Orders;
 
 namespace Toss.Infrastructure.Data.Configurations;
 
@@ -32,9 +32,9 @@ public class PurchaseOrderConfiguration : IEntityTypeConfiguration<PurchaseOrder
             .HasForeignKey(po => po.ShopId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(po => po.Supplier)
+        builder.HasOne(po => po.Vendor)
             .WithMany()
-            .HasForeignKey(po => po.SupplierId)
+            .HasForeignKey(po => po.VendorId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(po => po.Items)

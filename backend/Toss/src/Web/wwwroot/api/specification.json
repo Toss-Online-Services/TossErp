@@ -1600,223 +1600,6 @@
         }
       }
     },
-    "/api/Suppliers": {
-      "post": {
-        "tags": [
-          "Suppliers"
-        ],
-        "operationId": "PostApiSuppliers",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateSupplierCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Suppliers"
-        ],
-        "operationId": "GetApiSuppliers",
-        "parameters": [
-          {
-            "name": "SearchTerm",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          },
-          {
-            "name": "IsActive",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "nullable": true
-            },
-            "x-position": 2
-          },
-          {
-            "name": "PageNumber",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 3
-          },
-          {
-            "name": "PageSize",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 4
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/Suppliers/{id}": {
-      "get": {
-        "tags": [
-          "Suppliers"
-        ],
-        "operationId": "GetApiSuppliers2",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/Suppliers/{id}/products": {
-      "post": {
-        "tags": [
-          "Suppliers"
-        ],
-        "operationId": "PostApiSuppliersProducts",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LinkSupplierProductCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Suppliers"
-        ],
-        "operationId": "GetApiSuppliersProducts",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "SupplierId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 2
-          },
-          {
-            "name": "ActiveOnly",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "nullable": true
-            },
-            "x-position": 3
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/Suppliers/products/{productId}/pricing": {
-      "put": {
-        "tags": [
-          "Suppliers"
-        ],
-        "operationId": "PutApiSuppliersProductsPricing",
-        "parameters": [
-          {
-            "name": "productId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSupplierPricingCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/api/Users/register": {
       "post": {
         "tags": [
@@ -2210,6 +1993,223 @@
           }
         ]
       }
+    },
+    "/api/Vendors": {
+      "post": {
+        "tags": [
+          "Vendors"
+        ],
+        "operationId": "PostApiVendors",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVendorCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Vendors"
+        ],
+        "operationId": "GetApiVendors",
+        "parameters": [
+          {
+            "name": "SearchTerm",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "ActiveOnly",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 3
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 4
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Vendors/{id}": {
+      "get": {
+        "tags": [
+          "Vendors"
+        ],
+        "operationId": "GetApiVendors2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Vendors/{id}/products": {
+      "post": {
+        "tags": [
+          "Vendors"
+        ],
+        "operationId": "PostApiVendorsProducts",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkVendorProductCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Vendors"
+        ],
+        "operationId": "GetApiVendorsProducts",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "VendorId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "ActiveOnly",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Vendors/products/{productId}/pricing": {
+      "put": {
+        "tags": [
+          "Vendors"
+        ],
+        "operationId": "PutApiVendorsProductsPricing",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVendorPricingCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2239,7 +2239,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "supplierId": {
+          "vendorId": {
             "type": "integer",
             "format": "int32"
           },
@@ -2350,7 +2350,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "supplierId": {
+          "vendorId": {
             "type": "integer",
             "format": "int32"
           },
@@ -2874,107 +2874,6 @@
           }
         }
       },
-      "CreateSupplierCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "companyRegNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "vatNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "website": {
-            "type": "string",
-            "nullable": true
-          },
-          "paymentTermsDays": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "creditLimit": {
-            "type": "number",
-            "format": "decimal",
-            "nullable": true
-          },
-          "notes": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "LinkSupplierProductCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "supplierId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "productId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "supplierSKU": {
-            "type": "string",
-            "nullable": true
-          },
-          "basePrice": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "leadTimeDays": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "minOrderQuantity": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "UpdateSupplierPricingCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "supplierProductId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "newBasePrice": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "newLeadTimeDays": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "newMinOrderQuantity": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "effectiveDate": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
       "HttpValidationProblemDetails": {
         "allOf": [
           {
@@ -3197,6 +3096,122 @@
           "oldPassword": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "CreateVendorCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyRegNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "vatNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "contactPerson": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "website": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentTermsDays": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "creditLimit": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "adminComment": {
+            "type": "string",
+            "nullable": true
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "LinkVendorProductCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "vendorId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "productId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "vendorSKU": {
+            "type": "string",
+            "nullable": true
+          },
+          "basePrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "leadTimeDays": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "minOrderQuantity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateVendorPricingCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "vendorProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newBasePrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "newLeadTimeDays": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "newMinOrderQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "effectiveDate": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       }

@@ -14,7 +14,7 @@ public class PoolParticipation : BaseAuditableEntity
     public GroupBuyPool Pool => GroupBuyPool;
     
     public int ShopId { get; set; }
-    public Shop Shop { get; set; } = null!;
+    public Store Shop { get; set; } = null!;
     
     public int QuantityCommitted { get; set; }
     public decimal UnitPrice { get; set; }

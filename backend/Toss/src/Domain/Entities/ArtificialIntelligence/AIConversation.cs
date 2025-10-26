@@ -16,7 +16,7 @@ public class AIConversation : BaseAuditableEntity
     /// Gets or sets the shop ID
     /// </summary>
     public int ShopId { get; set; }
-    public Shop? Shop { get; set; }
+    public Store? Shop { get; set; }
 
     /// <summary>
     /// Gets or sets the user ID who initiated the conversation

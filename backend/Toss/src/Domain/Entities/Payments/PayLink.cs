@@ -6,7 +6,7 @@ public class PayLink : BaseAuditableEntity
     public string FullUrl { get; set; } = string.Empty;
     
     public int ShopId { get; set; }
-    public Shop Shop { get; set; } = null!;
+    public Store Shop { get; set; } = null!;
     
     public decimal Amount { get; set; }
     public string Currency { get; set; } = "ZAR";

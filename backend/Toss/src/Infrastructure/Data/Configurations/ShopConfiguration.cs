@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities;
 
 namespace Toss.Infrastructure.Data.Configurations;
 
-public class ShopConfiguration : IEntityTypeConfiguration<Shop>
+public class ShopConfiguration : IEntityTypeConfiguration<Store>
 {
-    public void Configure(EntityTypeBuilder<Shop> builder)
+    public void Configure(EntityTypeBuilder<Store> builder)
     {
         builder.Property(s => s.Name)
             .HasMaxLength(200)
@@ -27,7 +28,8 @@ public class ShopConfiguration : IEntityTypeConfiguration<Shop>
         builder.Property(s => s.Email)
             .HasMaxLength(256);
 
-        builder.ComplexProperty(s => s.Location, locationBuilder =>
+        // Location as owned type to support nullable (optional)
+        builder.OwnsOne(s => s.Location, locationBuilder =>
         {
             locationBuilder.Property(l => l.Latitude).IsRequired();
             locationBuilder.Property(l => l.Longitude).IsRequired();
