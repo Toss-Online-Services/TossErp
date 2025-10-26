@@ -2,6 +2,7 @@ using Toss.Application.Sales.Commands.CreateSale;
 using Toss.Application.Sales.Commands.GenerateReceipt;
 using Toss.Application.Sales.Commands.VoidSale;
 using Toss.Application.Sales.Queries.GetDailySummary;
+using Toss.Application.Sales.Queries.GetSaleById;
 using Toss.Application.Sales.Queries.GetSales;
 
 namespace Toss.Web.Endpoints;
@@ -15,6 +16,9 @@ public class Sales : EndpointGroupBase
 
         group.MapGet(string.Empty, GetSales)
             .WithName("GetSales");
+
+        group.MapGet("{id}", GetSaleById)
+            .WithName("GetSaleById");
 
         group.MapGet("daily-summary", GetDailySummary)
             .WithName("GetDailySummary");
@@ -37,6 +41,12 @@ public class Sales : EndpointGroupBase
         [AsParameters] GetSalesQuery query)
     {
         var result = await sender.Send(query);
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> GetSaleById(ISender sender, int id)
+    {
+        var result = await sender.Send(new GetSaleByIdQuery { Id = id });
         return Results.Ok(result);
     }
 
