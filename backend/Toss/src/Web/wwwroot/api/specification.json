@@ -66,6 +66,81 @@
         }
       }
     },
+    "/api/AICopilot/meta-tags": {
+      "post": {
+        "tags": [
+          "AICopilot"
+        ],
+        "operationId": "PostApiAICopilotMetaTags",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateMetaTagsCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/AICopilot/settings/{shopId}": {
+      "get": {
+        "tags": [
+          "AICopilot"
+        ],
+        "operationId": "GetApiAICopilotSettings",
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/AICopilot/settings": {
+      "put": {
+        "tags": [
+          "AICopilot"
+        ],
+        "operationId": "PutApiAICopilotSettings",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAISettingsCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/Auth/login": {
       "post": {
         "tags": [
@@ -2228,6 +2303,72 @@
           "context": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "GenerateMetaTagsCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "entityType": {
+            "type": "string"
+          },
+          "entityId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "languageId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateAISettingsCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "shopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "providerType": {
+            "type": "string"
+          },
+          "apiKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "apiEndpoint": {
+            "type": "string",
+            "nullable": true
+          },
+          "requestTimeoutSeconds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "allowSalesForecasting": {
+            "type": "boolean"
+          },
+          "allowInventoryPrediction": {
+            "type": "boolean"
+          },
+          "allowBusinessInsights": {
+            "type": "boolean"
+          },
+          "allowPriceSuggestions": {
+            "type": "boolean"
+          },
+          "allowProductDescriptionGeneration": {
+            "type": "boolean"
+          },
+          "supportedLanguages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },

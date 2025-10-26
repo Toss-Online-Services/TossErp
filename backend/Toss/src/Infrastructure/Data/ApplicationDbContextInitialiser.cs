@@ -41,13 +41,59 @@ public class ApplicationDbContextInitialiser
     {
         try
         {
-            // Apply pending migrations
-            await _context.Database.MigrateAsync();
+            // Check if database can be connected
+            if (await _context.Database.CanConnectAsync())
+            {
+                // Check if there are pending migrations
+                var pendingMigrations = await _context.Database.GetPendingMigrationsAsync();
+                var appliedMigrations = await _context.Database.GetAppliedMigrationsAsync();
+                
+                if (pendingMigrations.Any())
+                {
+                    _logger.LogInformation("Pending migrations detected: {Migrations}", 
+                        string.Join(", ", pendingMigrations));
+                    
+                    // If database has tables but no migration history, 
+                    // assume it was created manually and skip migration
+                    if (!appliedMigrations.Any() && await _context.Shops.AnyAsync())
+                    {
+                        _logger.LogWarning("Database has tables but no migration history. " +
+                            "Skipping automatic migration. Please apply migrations manually if needed.");
+                        _logger.LogWarning("To mark migrations as applied, see: MarkBaseMigrationApplied.sql");
+                        return;
+                    }
+                    
+                    // Apply pending migrations
+                    try
+                    {
+                        await _context.Database.MigrateAsync();
+                        _logger.LogInformation("Database migrations applied successfully.");
+                    }
+                    catch (Npgsql.PostgresException pgEx) when (pgEx.SqlState == "42P07")
+                    {
+                        // Table already exists - likely migration history is out of sync
+                        _logger.LogWarning(pgEx, 
+                            "Migration failed: Table already exists. Database may need manual migration sync. " +
+                            "See APPLY_MIGRATION_INSTRUCTIONS.md for details.");
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation("Database is up to date. No pending migrations.");
+                }
+            }
+            else
+            {
+                _logger.LogWarning("Cannot connect to database. Skipping migration check.");
+            }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while initialising the database.");
-            throw;
+            // Don't throw - allow app to start even if migration fails
+            // This is important for NSwag generation and development scenarios
+            _logger.LogWarning("Database initialisation failed, but application will continue. " +
+                "Some features may not work until database is properly configured.");
         }
     }
 

@@ -35,5 +35,10 @@ public partial interface IArtificialIntelligenceService
         TEntity entity, 
         int languageId = 0)
         where TEntity : BaseEntity, IMetaTagsSupported;
+
+    /// <summary>
+    /// Generate AI response for a question with optional context
+    /// </summary>
+    Task<string> GenerateResponseAsync(string question, string? context = null);
 }
 
