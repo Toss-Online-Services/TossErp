@@ -30,6 +30,22 @@ public class Auth : EndpointGroupBase
         // GET /api/auth/verify
         groupBuilder.MapGet("verify", Verify)
             .RequireAuthorization();
+
+        // GET /api/auth/session - Get current session info
+        groupBuilder.MapGet("session", GetSession)
+            .RequireAuthorization();
+
+        // POST /api/auth/session/activity - Update session activity
+        groupBuilder.MapPost("session/activity", UpdateSessionActivity)
+            .RequireAuthorization();
+
+        // POST /api/auth/session/validate - Validate session
+        groupBuilder.MapPost("session/validate", ValidateSession)
+            .RequireAuthorization();
+
+        // POST /api/auth/session/terminate - Terminate session
+        groupBuilder.MapPost("session/terminate", TerminateSession)
+            .RequireAuthorization();
     }
 
     // Proxy login to Identity endpoint and transform response
@@ -144,5 +160,121 @@ public class Auth : EndpointGroupBase
             return Results.Ok(new { message = "Token is valid" });
         }
         return Results.Unauthorized();
+    }
+
+    // Session DTOs
+    private record SessionInfoDto(
+        string SessionId,
+        string UserId,
+        DateTime CreatedAt,
+        DateTime LastActivity,
+        DateTime ExpiresAt,
+        string IpAddress,
+        string UserAgent,
+        bool IsActive
+    );
+
+    // Simple in-memory session store (for demo; use Redis or database in production)
+    private static readonly Dictionary<string, SessionInfoDto> Sessions = new();
+
+    // GET /api/auth/session - Get current session info
+    private static IResult GetSession(HttpContext httpContext, ClaimsPrincipal user)
+    {
+        if (user.Identity == null || !user.Identity.IsAuthenticated)
+        {
+            return Results.Unauthorized();
+        }
+
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "unknown";
+        var sessionId = httpContext.TraceIdentifier; // Use TraceIdentifier as session ID
+        var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        var userAgent = httpContext.Request.Headers.UserAgent.ToString();
+
+        // Check if session exists, if not create it
+        if (!Sessions.ContainsKey(sessionId))
+        {
+            var expiresAt = DateTime.UtcNow.AddHours(24); // 24 hour session
+            Sessions[sessionId] = new SessionInfoDto(
+                SessionId: sessionId,
+                UserId: userId,
+                CreatedAt: DateTime.UtcNow,
+                LastActivity: DateTime.UtcNow,
+                ExpiresAt: expiresAt,
+                IpAddress: ipAddress,
+                UserAgent: userAgent,
+                IsActive: true
+            );
+        }
+
+        var session = Sessions[sessionId];
+        return Results.Ok(session);
+    }
+
+    // POST /api/auth/session/activity - Update session activity
+    private static IResult UpdateSessionActivity(HttpContext httpContext, ClaimsPrincipal user)
+    {
+        if (user.Identity == null || !user.Identity.IsAuthenticated)
+        {
+            return Results.Unauthorized();
+        }
+
+        var sessionId = httpContext.TraceIdentifier;
+
+        if (Sessions.ContainsKey(sessionId))
+        {
+            var session = Sessions[sessionId];
+            // Update with new last activity time
+            Sessions[sessionId] = session with { LastActivity = DateTime.UtcNow };
+            return Results.Ok(new { message = "Session activity updated" });
+        }
+
+        return Results.NotFound(new { message = "Session not found" });
+    }
+
+    // POST /api/auth/session/validate - Validate session
+    private static IResult ValidateSession(HttpContext httpContext, ClaimsPrincipal user)
+    {
+        if (user.Identity == null || !user.Identity.IsAuthenticated)
+        {
+            return Results.Ok(new { valid = false, reason = "Not authenticated" });
+        }
+
+        var sessionId = httpContext.TraceIdentifier;
+
+        if (Sessions.ContainsKey(sessionId))
+        {
+            var session = Sessions[sessionId];
+            
+            // Check if session is active and not expired
+            if (session.IsActive && session.ExpiresAt > DateTime.UtcNow)
+            {
+                return Results.Ok(new { valid = true });
+            }
+            else
+            {
+                return Results.Ok(new { valid = false, reason = "Session expired or inactive" });
+            }
+        }
+
+        return Results.Ok(new { valid = false, reason = "Session not found" });
+    }
+
+    // POST /api/auth/session/terminate - Terminate session
+    private static IResult TerminateSession(HttpContext httpContext, ClaimsPrincipal user)
+    {
+        if (user.Identity == null || !user.Identity.IsAuthenticated)
+        {
+            return Results.Unauthorized();
+        }
+
+        var sessionId = httpContext.TraceIdentifier;
+
+        if (Sessions.ContainsKey(sessionId))
+        {
+            Sessions.Remove(sessionId);
+            return Results.Ok(new { message = "Session terminated" });
+        }
+
+        return Results.NotFound(new { message = "Session not found" });
     }
 }

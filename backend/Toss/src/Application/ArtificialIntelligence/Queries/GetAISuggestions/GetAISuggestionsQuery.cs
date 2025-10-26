@@ -1,4 +1,5 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Domain.Enums;
 
 namespace Toss.Application.ArtificialIntelligence.Queries.GetAISuggestions;
 
@@ -52,7 +53,7 @@ public class GetAISuggestionsQueryHandler : IRequestHandler<GetAISuggestionsQuer
 
         // Check for open group buy pools
         var openPools = await _context.GroupBuyPools
-            .Where(p => p.Status == Domain.Enums.PoolStatus.Open && p.CreatorShopId != request.ShopId)
+            .Where(p => p.Status == PoolStatus.Open && p.CreatorShopId != request.ShopId)
             .CountAsync(cancellationToken);
 
         if (openPools > 0)
@@ -69,7 +70,7 @@ public class GetAISuggestionsQueryHandler : IRequestHandler<GetAISuggestionsQuer
 
         // Check for pending purchase orders
         var pendingPOs = await _context.PurchaseOrders
-            .Where(po => po.ShopId == request.ShopId && po.Status == Domain.Enums.PurchaseOrderStatus.Pending)
+            .Where(po => po.ShopId == request.ShopId && po.Status == PurchaseOrderStatus.Pending)
             .CountAsync(cancellationToken);
 
         if (pendingPOs > 0)

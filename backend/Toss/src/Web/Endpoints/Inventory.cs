@@ -1,6 +1,10 @@
 using Toss.Application.Inventory.Commands.AdjustStock;
 using Toss.Application.Inventory.Commands.CreateProduct;
+using Toss.Application.Inventory.Queries.GetCategories;
 using Toss.Application.Inventory.Queries.GetLowStockAlerts;
+using Toss.Application.Inventory.Queries.GetProductByBarcode;
+using Toss.Application.Inventory.Queries.GetProductById;
+using Toss.Application.Inventory.Queries.GetProductBySku;
 using Toss.Application.Inventory.Queries.GetProducts;
 using Toss.Application.Inventory.Queries.GetStockLevels;
 using Toss.Application.Inventory.Queries.GetStockMovementHistory;
@@ -13,6 +17,10 @@ public class Inventory : EndpointGroupBase
     {
         group.MapPost("products", CreateProduct);
         group.MapGet("products", GetProducts);
+        group.MapGet("products/{id}", GetProductById);
+        group.MapGet("products/by-sku", GetProductBySku);
+        group.MapGet("products/by-barcode", GetProductByBarcode);
+        group.MapGet("categories", GetCategories);
         group.MapGet("stock-levels", GetStockLevels);
         group.MapGet("low-stock-alerts", GetLowStockAlerts);
         group.MapPost("stock/adjust", AdjustStock);
@@ -29,6 +37,41 @@ public class Inventory : EndpointGroupBase
         ISender sender,
         [AsParameters] GetProductsQuery query)
     {
+        var result = await sender.Send(query);
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> GetProductById(ISender sender, int id)
+    {
+        var result = await sender.Send(new GetProductByIdQuery { Id = id });
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> GetProductBySku(ISender sender, string sku, int shopId)
+    {
+        var query = new GetProductBySkuQuery { Sku = sku, ShopId = shopId };
+        var result = await sender.Send(query);
+
+        if (result == null)
+            return Results.NotFound(new { message = $"Product with SKU '{sku}' not found in shop {shopId}" });
+
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> GetProductByBarcode(ISender sender, string barcode, int shopId)
+    {
+        var query = new GetProductByBarcodeQuery { Barcode = barcode, ShopId = shopId };
+        var result = await sender.Send(query);
+
+        if (result == null)
+            return Results.NotFound(new { message = $"Product with barcode '{barcode}' not found in shop {shopId}" });
+
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> GetCategories(ISender sender, int shopId)
+    {
+        var query = new GetCategoriesQuery { ShopId = shopId };
         var result = await sender.Send(query);
         return Results.Ok(result);
     }
