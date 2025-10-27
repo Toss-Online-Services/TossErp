@@ -2,7 +2,7 @@ import type { Store, CreateStoreRequest, UpdateStoreRequest } from '~/types/stor
 
 export const useStoresAPI = () => {
   const config = useRuntimeConfig()
-  const baseURL = config.public.apiBaseUrl || 'http://localhost:5000/api'
+  const baseURL = (config.public.apiBase || 'https://localhost:5001') + '/api'
 
   const getStores = async (params?: {
     searchTerm?: string
