@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+const baseUrl = process.env.BASE_URL || 'http://localhost:3001';
 const testUser = {
   username: 'testuser',
   password: 'TestPassword123!'

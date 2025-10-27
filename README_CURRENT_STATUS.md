@@ -53,7 +53,7 @@ Once running, access:
 
 | Service | URL | What You'll See |
 |---------|-----|-----------------|
-| **Main App** | http://localhost:3000 | TOSS Web Interface |
+| **Main App** | http://localhost:3001 | TOSS Web Interface |
 | **API** | http://localhost:5001 | ASP.NET Core API |
 | **Swagger** | http://localhost:5001/swagger | Interactive API Docs |
 | **Health** | http://localhost:5001/health | API Health Status |
@@ -297,7 +297,7 @@ When everything is working, you'll see:
 ### Frontend
 ```
 ✅ Nuxt 4.0 with Nitro 3.0
-✅ Local: http://localhost:3000
+✅ Local: http://localhost:3001
 ✅ Network: use --host to expose
 ✅ ✓ Client compiled successfully
 ```

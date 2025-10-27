@@ -34,7 +34,7 @@ cd C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\toss-web
 
 | Service | URL | Description |
 |---------|-----|-------------|
-| **Frontend** | http://localhost:3000 | Main application |
+| **Frontend** | http://localhost:3001 | Main application |
 | **Backend API** | http://localhost:5001 | REST API |
 | **Swagger UI** | http://localhost:5001/swagger | API documentation |
 | **Health Check** | http://localhost:5001/health | API status |
@@ -186,7 +186,7 @@ netstat -ano | findstr :5001
 taskkill /PID <pid> /F
 
 # Kill process on port 3000 (frontend)
-netstat -ano | findstr :3000
+netstat -ano | findstr :3001
 taskkill /PID <pid> /F
 ```
 
@@ -235,7 +235,7 @@ npm run dev
 ```
 
 ### 2. Access Frontend
-Open browser: http://localhost:3000
+Open browser: http://localhost:3001
 
 ### 3. View API Docs
 Open browser: http://localhost:5001/swagger
@@ -261,7 +261,7 @@ Watch it simulate:
 ### Immediate (Now)
 1. **Test the system**
    - Run both servers
-   - Access http://localhost:3000
+   - Access http://localhost:3001
    - Explore the UI
    - Test POS, inventory, group buying
 
@@ -336,7 +336,7 @@ Watch it simulate:
 ## ✨ Success Checklist
 
 - [ ] Backend starts without errors
-- [ ] Frontend loads at http://localhost:3000
+- [ ] Frontend loads at http://localhost:3001
 - [ ] Swagger UI accessible at http://localhost:5001/swagger
 - [ ] Can login with test accounts
 - [ ] Can create a sale in POS

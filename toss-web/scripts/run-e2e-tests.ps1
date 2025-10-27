@@ -9,8 +9,8 @@ $ErrorActionPreference = "Continue"
 # Configuration
 $BACKEND_DIR = "C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\backend\Toss"
 $FRONTEND_DIR = "C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\toss-web"
-$BACKEND_URL = "http://localhost:5001"
-$FRONTEND_URL = "http://localhost:3000"
+$BACKEND_URL = "http://localhost:5000"
+$FRONTEND_URL = "http://localhost:3001"
 $MAX_WAIT = 60 # seconds
 
 # Function to check if a URL is responding
@@ -90,9 +90,9 @@ Write-Host "================================`n" -ForegroundColor Cyan
 cd $FRONTEND_DIR
 
 # Run tests
-Write-Host "Executing: npx playwright test tests/e2e/toss-complete-workflow.e2e.test.ts`n" -ForegroundColor Gray
+Write-Host "Executing: npx playwright test tests/e2e/toss-complete-flow.e2e.test.ts`n" -ForegroundColor Gray
 
-npx playwright test tests/e2e/toss-complete-workflow.e2e.test.ts --headed
+npx playwright test tests/e2e/toss-complete-flow.e2e.test.ts --headed
 
 $testResult = $LASTEXITCODE
 

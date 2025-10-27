@@ -654,7 +654,7 @@ npm run dev
 ```
 
 ### Access URLs
-- Frontend: http://localhost:3000
+- Frontend: http://localhost:3001
 - Backend API: http://localhost:5001
 - Swagger: http://localhost:5001/swagger
 

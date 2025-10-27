@@ -28,6 +28,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     // Core entities
     public DbSet<Store> Shops => Set<Store>();
+    public DbSet<Store> Stores => Set<Store>(); // Alias for Shops
     public DbSet<Address> Addresses => Set<Address>();
 
     // Inventory entities

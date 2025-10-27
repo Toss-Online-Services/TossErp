@@ -63,113 +63,128 @@ test.describe('TOSS Complete Workflow', () => {
   // PHASE 1: ONBOARDING
   // ============================================================================
 
-  test('1. Shop Owner Onboarding - Register Spaza Shop', async ({ page }) => {
-    console.log('\n🏪 PHASE 1: Shop Owner Onboarding')
+  test('1. Shop Owner Registration - Register Spaza Shop', async ({ page }) => {
+    console.log('\n🏪 PHASE 1: Shop Owner Registration')
     console.log('=' .repeat(60))
     
-    await page.goto('http://localhost:3000/onboarding')
+    await page.goto('http://localhost:3001/auth/register')
     
-    // Step 1: Welcome
-    await expect(page.locator('h1')).toContainText('Welcome to TOSS')
-    await page.click('button:has-text("Get Started")')
+    // Wait for page to load
+    await expect(page.locator('h1').filter({ hasText: 'Join TOSS' })).toBeVisible()
     
-    // Step 2: Business Information
-    await page.fill('input[placeholder="Your Company Ltd"]', testData.shop.name)
-    await page.selectOption('select', { label: 'Retail' }) // Industry
-    await page.selectOption('select[class*="companySize"]', '1-10') // Size
-    await page.selectOption('select[class*="country"]', 'ZA') // South Africa
-    await page.selectOption('select[class*="currency"]', 'ZAR') // South African Rand
-    await page.click('button:has-text("Continue")')
+    // Step 1: Shop Information
+    await page.fill('input[placeholder*="Thabo\'s Spaza Shop"]', testData.shop.name)
+    await page.selectOption('select', { value: 'soweto' })
+    await page.fill('input[placeholder*="Diepkloof Extension"]', 'Diepkloof')
+    await page.fill('textarea[placeholder*="physical address"]', testData.shop.address)
+    await page.click('button:has-text("Continue →")')
+    await page.waitForTimeout(500)
     
-    // Step 3: Personal Information
-    await page.fill('input[placeholder*="First"]', 'Lerato')
-    await page.fill('input[placeholder*="Last"]', 'Mokoena')
-    await page.fill('input[type="email"]', testData.shop.email)
-    await page.fill('input[type="tel"]', testData.shop.phone)
-    await page.fill('input[placeholder*="Job"]', 'Owner')
-    await page.click('button:has-text("Continue")')
+    // Step 2: Owner Information
+    await page.fill('input[placeholder="First name"]', 'Lerato')
+    await page.fill('input[placeholder="Last name"]', 'Mokoena')
+    await page.fill('input[placeholder="+27 XX XXX XXXX"]', testData.shop.phone)
+    await page.fill('input[placeholder="your@email.com"]', testData.shop.email)
+    await page.click('button:has-text("Continue →")')
+    await page.waitForTimeout(500)
     
-    // Step 4: Select Modules - Select POS, Inventory, Group Buying
-    await page.click('text=Point of Sale')
-    await page.click('text=Inventory')
-    await page.click('text=Group Buying')
-    await page.click('button:has-text("Continue")')
+    // Step 3: Account Security
+    await page.fill('input[placeholder*="Create a strong password"]', testData.shop.password)
+    await page.fill('input[placeholder*="Re-enter password"]', testData.shop.password)
+    await page.check('input[type="checkbox"][required]')
+    await page.click('button:has-text("Complete Registration")')
     
-    // Step 5: Complete
-    await expect(page.locator('h1')).toContainText("You're All Set")
-    await page.click('button:has-text("Go to Dashboard")')
-    
-    // Verify dashboard loaded
-    await expect(page).toHaveURL(/\/(dashboard)?/)
-    console.log('✅ Shop owner onboarded successfully')
+    // Wait for registration and navigation to dashboard
+    await page.waitForURL('**/dashboard', { timeout: 10000 })
+    console.log('✅ Shop owner registered successfully')
     
     // Store shop context
     shopContext.id = 1 // Mock ID
     shopContext.name = testData.shop.name
   })
 
-  test('2. Supplier Onboarding - Register Wholesale Supplier', async ({ page }) => {
-    console.log('\n📦 PHASE 1: Supplier Onboarding')
+  test('2. Vendor Registration - Register Wholesale Vendor', async ({ page }) => {
+    console.log('\n📦 PHASE 1: Vendor Registration')
     console.log('=' .repeat(60))
     
     // Logout shop owner
-    await page.goto('http://localhost:3000/logout')
+    await page.goto('http://localhost:3001/auth/login')
+    await page.click('text=Sign out', { strict: false }).catch(() => {})
     
-    // Register supplier
-    await page.goto('http://localhost:3000/onboarding')
+    // Register vendor
+    await page.goto('http://localhost:3001/auth/register-vendor')
+    await expect(page.locator('h1')).toContainText('Register as Vendor')
     
-    // Welcome
-    await page.click('button:has-text("Get Started")')
+    // Step 1: Company Information
+    await page.fill('input[placeholder="Fresh Foods Suppliers"]', testData.supplier.name)
+    await page.fill('input[placeholder="2024/123456/07"]', '2024/123456/07')
+    await page.fill('input[placeholder="4567890123"]', '4567890123')
+    await page.fill('input[placeholder="https://yourcompany.co.za"]', 'https://freshfoods.co.za')
+    await page.fill('textarea[placeholder*="Brief description"]', 'Quality wholesale food supplier')
+    await page.click('button:has-text("Continue →")')
+    await page.waitForTimeout(500)
     
-    // Business Info
-    await page.fill('input[placeholder="Your Company Ltd"]', testData.supplier.name)
-    await page.selectOption('select', { label: 'Wholesale' })
-    await page.selectOption('select[class*="companySize"]', '11-50')
-    await page.selectOption('select[class*="country"]', 'ZA')
-    await page.selectOption('select[class*="currency"]', 'ZAR')
-    await page.click('button:has-text("Continue")')
+    // Step 2: Contact Person
+    await page.fill('input[placeholder="Jane Doe"]', 'John Supplier')
+    await page.fill('input[placeholder="+27 82 123 4567"]', testData.supplier.phone)
+    await page.fill('input[placeholder="contact@company.co.za"]', testData.supplier.email)
+    await page.click('button:has-text("Continue →")')
+    await page.waitForTimeout(500)
     
-    // Personal Info
-    await page.fill('input[placeholder*="First"]', 'John')
-    await page.fill('input[placeholder*="Last"]', 'Supplier')
-    await page.fill('input[type="email"]', testData.supplier.email)
-    await page.fill('input[type="tel"]', testData.supplier.phone)
-    await page.fill('input[placeholder*="Job"]', 'Sales Manager')
-    await page.click('button:has-text("Continue")')
+    // Step 3: Address & Payment Terms
+    await page.fill('input[placeholder="456 Business Avenue"]', testData.supplier.address)
+    await page.fill('input[placeholder="Johannesburg"]', 'Johannesburg')
+    await page.selectOption('select', { value: 'Gauteng' })
+    await page.fill('input[placeholder="2000"]', '2000')
+    await page.fill('input[type="number"][min="0"][step="100"]', '50000')
+    await page.click('button:has-text("Continue →")')
+    await page.waitForTimeout(500)
     
-    // Modules - Select relevant for supplier
-    await page.click('text=Inventory')
-    await page.click('text=Sales')
-    await page.click('button:has-text("Continue")')
+    // Step 4: Account Security
+    await page.fill('input[placeholder*="Create a strong password"]', testData.supplier.password)
+    await page.fill('input[placeholder*="Re-enter password"]', testData.supplier.password)
+    await page.click('button:has-text("Complete Registration")')
     
-    // Complete
-    await page.click('button:has-text("Go to Dashboard")')
-    
-    console.log('✅ Supplier onboarded successfully')
+    // Wait for dashboard
+    await page.waitForURL('**/dashboard', { timeout: 10000 })
+    console.log('✅ Vendor registered successfully')
     
     supplierContext.id = 2
     supplierContext.name = testData.supplier.name
   })
 
-  test('3. Driver Onboarding - Register Delivery Driver', async ({ page }) => {
-    console.log('\n🚚 PHASE 1: Driver Onboarding')
+  test('3. Driver Registration - Register Delivery Driver', async ({ page }) => {
+    console.log('\n🚚 PHASE 1: Driver Registration')
     console.log('=' .repeat(60))
     
-    // Logout supplier
-    await page.goto('http://localhost:3000/logout')
+    // Logout vendor
+    await page.goto('http://localhost:3001/auth/login')
+    await page.click('text=Sign out', { strict: false }).catch(() => {})
     
     // Register driver
-    await page.goto('http://localhost:3000/onboarding/driver')
+    await page.goto('http://localhost:3001/auth/register-driver')
+    await expect(page.locator('h1')).toContainText('Register as Driver')
     
-    // Driver-specific onboarding
-    await page.fill('input[placeholder*="Name"]', testData.driver.name)
-    await page.fill('input[type="email"]', testData.driver.email)
-    await page.fill('input[type="tel"]', testData.driver.phone)
-    await page.fill('input[placeholder*="License"]', testData.driver.licensePlate)
-    await page.selectOption('select', testData.driver.vehicleType)
-    await page.click('button:has-text("Register")')
+    // Step 1: Personal Information & License
+    const [firstName, lastName] = testData.driver.name.split(' ')
+    await page.fill('input[placeholder="John"]', firstName)
+    await page.fill('input[placeholder="Doe"]', lastName)
+    await page.fill('input[placeholder="+27 82 123 4567"]', testData.driver.phone)
+    await page.fill('input[placeholder="john.doe@example.com"]', testData.driver.email)
+    await page.fill('input[placeholder="JD123456"]', 'TM123456')
+    await page.click('button:has-text("Continue →")')
+    await page.waitForTimeout(500)
     
-    console.log('✅ Driver onboarded successfully')
+    // Step 2: Vehicle Information & Security
+    await page.selectOption('select', { value: testData.driver.vehicleType })
+    await page.fill('input[placeholder="GP-123-ABC"]', testData.driver.licensePlate)
+    await page.fill('input[placeholder*="Create a strong password"]', testData.driver.password)
+    await page.fill('input[placeholder*="Re-enter password"]', testData.driver.password)
+    await page.click('button:has-text("Complete Registration")')
+    
+    // Wait for dashboard
+    await page.waitForURL('**/dashboard', { timeout: 10000 })
+    console.log('✅ Driver registered successfully')
     
     driverContext.id = 3
     driverContext.name = testData.driver.name
@@ -184,13 +199,13 @@ test.describe('TOSS Complete Workflow', () => {
     console.log('=' .repeat(60))
     
     // Login as supplier
-    await page.goto('http://localhost:3000/login')
+    await page.goto('http://localhost:3001/login')
     await page.fill('input[type="email"]', testData.supplier.email)
     await page.fill('input[type="password"]', testData.supplier.password)
     await page.click('button:has-text("Login")')
     
     // Navigate to products
-    await page.goto('http://localhost:3000/inventory/products')
+    await page.goto('http://localhost:3001/inventory/products')
     
     // Create each product
     for (const product of testData.products) {
@@ -220,13 +235,13 @@ test.describe('TOSS Complete Workflow', () => {
     console.log('=' .repeat(60))
     
     // Login as shop owner
-    await page.goto('http://localhost:3000/login')
+    await page.goto('http://localhost:3001/login')
     await page.fill('input[type="email"]', testData.shop.email)
     await page.fill('input[type="password"]', testData.shop.password)
     await page.click('button:has-text("Login")')
     
     // Browse products
-    await page.goto('http://localhost:3000/buying/products')
+    await page.goto('http://localhost:3001/buying/products')
     
     // Verify products are visible
     for (const product of testData.products) {
@@ -239,7 +254,7 @@ test.describe('TOSS Complete Workflow', () => {
   test('6. Shop Owner Creates Order (Individual)', async ({ page }) => {
     console.log('\n📝 Creating individual order...')
     
-    await page.goto('http://localhost:3000/buying/orders/new')
+    await page.goto('http://localhost:3001/buying/orders/new')
     
     // Add products to order
     await page.click('button:has-text("Add Item")')
@@ -277,7 +292,7 @@ test.describe('TOSS Complete Workflow', () => {
   test('7. Shop Owner Joins Group Buying Pool', async ({ page }) => {
     console.log('\n👥 Joining group buying pool...')
     
-    await page.goto('http://localhost:3000/group-buying')
+    await page.goto('http://localhost:3001/group-buying')
     
     // Check for available pools
     await page.click('button:has-text("Browse Pools")')
@@ -314,13 +329,13 @@ test.describe('TOSS Complete Workflow', () => {
     console.log('=' .repeat(60))
     
     // Login as supplier
-    await page.goto('http://localhost:3000/login')
+    await page.goto('http://localhost:3001/login')
     await page.fill('input[type="email"]', testData.supplier.email)
     await page.fill('input[type="password"]', testData.supplier.password)
     await page.click('button:has-text("Login")')
     
     // Go to orders
-    await page.goto('http://localhost:3000/supplier/orders')
+    await page.goto('http://localhost:3001/supplier/orders')
     
     // Find the order
     await expect(page.locator(`text=Order #${orderContext.orderId}`)).toBeVisible()
@@ -351,13 +366,13 @@ test.describe('TOSS Complete Workflow', () => {
     console.log('=' .repeat(60))
     
     // Login as driver
-    await page.goto('http://localhost:3000/login')
+    await page.goto('http://localhost:3001/login')
     await page.fill('input[type="email"]', testData.driver.email)
     await page.fill('input[type="password"]', testData.driver.password)
     await page.click('button:has-text("Login")')
     
     // Go to available deliveries
-    await page.goto('http://localhost:3000/driver/deliveries')
+    await page.goto('http://localhost:3001/driver/deliveries')
     
     // Find and accept delivery
     await expect(page.locator(`text=Order #${orderContext.orderId}`)).toBeVisible()
@@ -379,7 +394,7 @@ test.describe('TOSS Complete Workflow', () => {
     console.log('\n📦 Completing delivery...')
     
     // Continue with delivery
-    await page.goto('http://localhost:3000/driver/deliveries/active')
+    await page.goto('http://localhost:3001/driver/deliveries/active')
     await page.click(`text=Order #${orderContext.orderId}`)
     
     // Mark as out for delivery
@@ -416,17 +431,17 @@ test.describe('TOSS Complete Workflow', () => {
     console.log('=' .repeat(60))
     
     // Login as shop owner
-    await page.goto('http://localhost:3000/login')
+    await page.goto('http://localhost:3001/login')
     await page.fill('input[type="email"]', testData.shop.email)
     await page.fill('input[type="password"]', testData.shop.password)
     await page.click('button:has-text("Login")')
     
     // Check notifications
-    await page.goto('http://localhost:3000/notifications')
+    await page.goto('http://localhost:3001/notifications')
     await expect(page.locator('text=Order Delivered')).toBeVisible()
     
     // View order
-    await page.goto(`http://localhost:3000/buying/orders/${orderContext.orderId}`)
+    await page.goto(`http://localhost:3001/buying/orders/${orderContext.orderId}`)
     
     // Verify order status
     await expect(page.locator('text=Delivered')).toBeVisible()
@@ -444,7 +459,7 @@ test.describe('TOSS Complete Workflow', () => {
     console.log('\n📊 Verifying final state...')
     
     // Check inventory updated
-    await page.goto('http://localhost:3000/stock')
+    await page.goto('http://localhost:3001/stock')
     
     // Verify new stock levels
     await expect(page.locator('text=White Bread')).toBeVisible()
@@ -462,7 +477,7 @@ test.describe('TOSS Complete Workflow', () => {
   test('13. Verify Payment Processing', async ({ page }) => {
     console.log('\n💰 Verifying payment...')
     
-    await page.goto('http://localhost:3000/payments')
+    await page.goto('http://localhost:3001/payments')
     
     // Check payment record
     await expect(page.locator(`text=Order #${orderContext.orderId}`)).toBeVisible()
@@ -484,14 +499,14 @@ test.describe('TOSS Complete Workflow', () => {
   test('14. Generate Reports and Analytics', async ({ page }) => {
     console.log('\n📈 Generating reports...')
     
-    await page.goto('http://localhost:3000/dashboard')
+    await page.goto('http://localhost:3001/dashboard')
     
     // Verify metrics updated
     await expect(page.locator('[data-metric="total-orders"]')).toContainText('1')
     await expect(page.locator('[data-metric="total-sales"]')).toContainText('R')
     
     // View detailed reports
-    await page.goto('http://localhost:3000/reports/sales')
+    await page.goto('http://localhost:3001/reports/sales')
     await expect(page.locator(`text=Order #${orderContext.orderId}`)).toBeVisible()
     
     console.log('✅ Reports generated successfully')
@@ -505,7 +520,7 @@ test.describe('TOSS Complete Workflow', () => {
     console.log('\n🤖 Testing AI Assistant')
     console.log('=' .repeat(60))
     
-    await page.goto('http://localhost:3000')
+    await page.goto('http://localhost:3001')
     
     // Open AI assistant
     await page.click('[data-testid="ai-assistant-toggle"]')

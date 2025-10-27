@@ -115,7 +115,7 @@ cd C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\toss-web
 ```
 
 ### Access Points
-- 🌐 **Frontend:** http://localhost:3000
+- 🌐 **Frontend:** http://localhost:3001
 - 🔌 **API:** http://localhost:5001
 - 📚 **Swagger:** http://localhost:5001/swagger
 - 💚 **Health:** http://localhost:5001/health
@@ -222,7 +222,7 @@ cd C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\toss-web
 
 ### 1. Test Voice Commands
 ```
-1. Open http://localhost:3000
+1. Open http://localhost:3001
 2. Click AI Assistant
 3. Click microphone button
 4. Say "How were my sales today?"

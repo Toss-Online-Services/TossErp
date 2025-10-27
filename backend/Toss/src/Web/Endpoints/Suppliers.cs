@@ -47,13 +47,14 @@ public class Suppliers : EndpointGroupBase
     }
 
     // GET /api/suppliers - Alias for GetVendors
-    private static async Task<IResult> GetSuppliers(ISender sender, int? shopId, int? skip, int? take)
+    private static async Task<IResult> GetSuppliers(ISender sender, string? searchTerm, bool? activeOnly, int? pageNumber, int? pageSize)
     {
         var query = new GetVendorsQuery
         {
-            ShopId = shopId,
-            Skip = skip ?? 0,
-            Take = take ?? 50
+            SearchTerm = searchTerm,
+            ActiveOnly = activeOnly,
+            PageNumber = pageNumber ?? 1,
+            PageSize = pageSize ?? 10
         };
 
         var result = await sender.Send(query);
@@ -63,7 +64,7 @@ public class Suppliers : EndpointGroupBase
     // GET /api/suppliers/{id} - Alias for GetVendorById
     private static async Task<IResult> GetSupplierById(ISender sender, int id)
     {
-        var query = new GetVendorByIdQuery { VendorId = id };
+        var query = new GetVendorByIdQuery { Id = id };
         var result = await sender.Send(query);
         return Results.Ok(result);
     }

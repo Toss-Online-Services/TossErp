@@ -21,6 +21,7 @@ public interface IApplicationDbContext
 {
     // Core entities
     DbSet<Store> Shops { get; }
+    DbSet<Store> Stores { get; } // Alias for Shops (for Store/Shop naming consistency)
     DbSet<Address> Addresses { get; }
 
     // AI entities

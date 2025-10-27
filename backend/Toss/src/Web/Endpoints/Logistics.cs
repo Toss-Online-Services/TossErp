@@ -2,6 +2,7 @@ using Toss.Application.Logistics.Commands.AssignDriver;
 using Toss.Application.Logistics.Commands.CaptureProofOfDelivery;
 using Toss.Application.Logistics.Commands.CreateSharedDeliveryRun;
 using Toss.Application.Logistics.Commands.UpdateDeliveryStatus;
+using Toss.Application.Logistics.Queries.GetDeliveryTracking;
 using Toss.Application.Logistics.Queries.GetDriverRunView;
 using Toss.Application.Logistics.Queries.GetSharedRuns;
 
@@ -14,6 +15,7 @@ public class Logistics : EndpointGroupBase
         group.MapPost("delivery-runs", CreateSharedDeliveryRun);
         group.MapGet("delivery-runs", GetSharedRuns);
         group.MapGet("delivery-runs/{id}/driver-view", GetDriverRunView);
+        group.MapGet("delivery-runs/{runId}/tracking", GetDeliveryTracking);
         group.MapPost("delivery-runs/{id}/status", UpdateDeliveryStatus);
         group.MapPost("delivery-runs/{id}/assign-driver", AssignDriver);
         group.MapPost("delivery-stops/{stopId}/proof", CaptureProofOfDelivery);
@@ -48,6 +50,12 @@ public class Logistics : EndpointGroupBase
     public async Task<IResult> GetDriverRunView(ISender sender, int id, [AsParameters] GetDriverRunViewQuery query)
     {
         var result = await sender.Send(query with { RunId = id });
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> GetDeliveryTracking(ISender sender, int runId)
+    {
+        var result = await sender.Send(new GetDeliveryTrackingQuery { RunId = runId });
         return Results.Ok(result);
     }
 

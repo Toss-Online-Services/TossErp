@@ -305,12 +305,12 @@ composables/
 ### **Environment Setup**
 ```bash
 pnpm install
-pnpm dev  # Starts dev server on http://localhost:3000
+pnpm dev  # Starts dev server on http://localhost:3001
 ```
 
 ### **Testing Pages**
-- Group Buying: http://localhost:3000/buying/group-buying
-- Shared Runs: http://localhost:3000/logistics/shared-runs
+- Group Buying: http://localhost:3001/buying/group-buying
+- Shared Runs: http://localhost:3001/logistics/shared-runs
 
 ### **Mock Data**
 All features use realistic mock data in composables. Ready to swap with real API calls by updating the composables.

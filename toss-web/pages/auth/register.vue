@@ -352,14 +352,32 @@ const handleRegister = async () => {
         password: form.value.password,
         whatsappAlerts: form.value.whatsappAlerts
       }
-    })
+    }) as any
 
-    // Navigate to onboarding or dashboard
+    // Store authentication data in session storage
+    if (response.success && response.token) {
+      sessionStorage.setItem('toss_token', response.token)
+      sessionStorage.setItem('toss_user', JSON.stringify(response.user))
+      sessionStorage.setItem('toss_shop', JSON.stringify(response.shop))
+      
+      console.log('✅ Registration successful:', response.message)
+      console.log('User:', response.user)
+      console.log('Shop:', response.shop)
+    }
+
+    // Navigate to dashboard
     alert('✅ Registration successful! Welcome to TOSS!')
-    navigateTo('/onboarding')
+    await navigateTo('/dashboard')
   } catch (error: any) {
     console.error('Registration failed:', error)
-    alert(error.message || 'Registration failed. Please try again.')
+    
+    // Extract error message from response
+    const errorMessage = error?.data?.message || 
+                        error?.data?.statusMessage || 
+                        error?.message || 
+                        'Registration failed. Please try again.'
+    
+    alert(`❌ ${errorMessage}`)
   } finally {
     loading.value = false
   }

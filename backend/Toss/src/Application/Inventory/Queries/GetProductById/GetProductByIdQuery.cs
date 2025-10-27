@@ -7,15 +7,15 @@ public record ProductDetailDto
 {
     public int Id { get; init; }
     public string Name { get; init; } = string.Empty;
-    public string Sku { get; init; } = string.Empty;
+    public string SKU { get; init; } = string.Empty;
     public string? Barcode { get; init; }
     public string? Description { get; init; }
-    public decimal Price { get; init; }
+    public decimal BasePrice { get; init; }
     public int? CategoryId { get; init; }
     public string? CategoryName { get; init; }
-    public int StockQuantity { get; init; }
-    public int ReorderLevel { get; init; }
-    public bool Published { get; init; }
+    public int TotalStock { get; init; }
+    public int MinimumStockLevel { get; init; }
+    public bool IsActive { get; init; }
 }
 
 public record GetProductByIdQuery : IRequest<ProductDetailDto>
@@ -35,7 +35,8 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, P
     public async Task<ProductDetailDto> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
         var product = await _context.Products
-            .Include(p => p.ProductCategory)
+            .Include(p => p.Category)
+            .Include(p => p.StockLevels)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
         if (product == null)
@@ -45,15 +46,15 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, P
         {
             Id = product.Id,
             Name = product.Name,
-            Sku = product.Sku,
+            SKU = product.SKU,
             Barcode = product.Barcode,
             Description = product.Description,
-            Price = product.Price,
-            CategoryId = product.ProductCategoryId,
-            CategoryName = product.ProductCategory?.Name,
-            StockQuantity = product.StockQuantity,
-            ReorderLevel = product.ReorderLevel,
-            Published = product.Published
+            BasePrice = product.BasePrice,
+            CategoryId = product.CategoryId,
+            CategoryName = product.Category?.Name,
+            TotalStock = product.StockLevels.Sum(sl => sl.AvailableStock),
+            MinimumStockLevel = product.MinimumStockLevel,
+            IsActive = product.IsActive
         };
     }
 }
