@@ -165,6 +165,36 @@
         </div>
       </div>
 
+      <!-- Stores Section -->
+      <div class="space-y-1">
+        <button 
+          @click="toggleStoresDropdown"
+          class="justify-between w-full nav-link"
+          :class="{ 'nav-link-active': route.path.startsWith('/stores') }"
+        >
+          <div class="flex items-center">
+            <BuildingStorefrontIcon class="w-5 h-5 mr-3" />
+            Stores
+          </div>
+          <ChevronDownIcon 
+            class="w-4 h-4 transition-transform duration-200"
+            :class="{ 'transform rotate-180': storesDropdownOpen }"
+          />
+        </button>
+        
+        <div 
+          v-show="storesDropdownOpen"
+          class="pl-3 ml-6 space-y-1 border-l border-slate-700"
+        >
+          <NuxtLink to="/stores" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stores' }">
+            All Stores
+          </NuxtLink>
+          <NuxtLink to="/stores/create" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stores/create' }">
+            Create Store
+          </NuxtLink>
+        </div>
+      </div>
+
       <!-- Purchasing Section -->
       <div class="space-y-1">
         <button 
@@ -371,6 +401,7 @@ import {
   ArchiveBoxIcon, 
   ShoppingCartIcon, 
   ShoppingBagIcon, 
+  BuildingStorefrontIcon,
   ChevronDownIcon,
   CogIcon,
   Cog6ToothIcon,
@@ -388,6 +419,7 @@ const stockDropdownOpen = ref(false)
 const logisticsDropdownOpen = ref(false)
 const salesDropdownOpen = ref(false)
 const ordersDropdownOpen = ref(false)
+const storesDropdownOpen = ref(false)
 const buyingDropdownOpen = ref(false)
 const buyingOrdersDropdownOpen = ref(false)
 const crmDropdownOpen = ref(false)
@@ -444,6 +476,10 @@ const toggleSalesDropdown = () => {
 
 const toggleOrdersDropdown = () => {
   ordersDropdownOpen.value = !ordersDropdownOpen.value
+}
+
+const toggleStoresDropdown = () => {
+  storesDropdownOpen.value = !storesDropdownOpen.value
 }
 
 const toggleBuyingDropdown = () => {

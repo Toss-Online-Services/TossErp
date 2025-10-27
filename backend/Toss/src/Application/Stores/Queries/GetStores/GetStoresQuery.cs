@@ -80,3 +80,4 @@ public class GetStoresQueryHandler : IRequestHandler<GetStoresQuery, List<StoreL
     }
 }
 
+
