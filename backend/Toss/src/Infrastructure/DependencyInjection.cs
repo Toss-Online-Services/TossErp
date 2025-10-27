@@ -47,6 +47,7 @@ public static class DependencyInjection
 
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddTransient<IIdentityService, IdentityService>();
+        builder.Services.AddScoped<IUserManagementService, Toss.Infrastructure.Identity.Services.UserManagementService>();
 
         // AI Services
         builder.Services.AddScoped<Toss.Infrastructure.Services.ArtificialIntelligence.IAISettingsService, 

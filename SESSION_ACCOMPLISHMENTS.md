@@ -130,7 +130,7 @@ cd C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\toss-web
 npm run dev
 
 # Access at:
-# Frontend: http://localhost:3000
+# Frontend: http://localhost:3001
 # API: http://localhost:5001
 # Swagger: http://localhost:5001/swagger
 ```

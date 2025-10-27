@@ -21,27 +21,31 @@ public class GetProductBySkuQueryHandler : IRequestHandler<GetProductBySkuQuery,
     public async Task<ProductDetailDto?> Handle(GetProductBySkuQuery request, CancellationToken cancellationToken)
     {
         var product = await _context.Products
-            .Include(p => p.ProductCategory)
-            .FirstOrDefaultAsync(p =>
-                p.Sku == request.Sku && p.ShopId == request.ShopId,
-                cancellationToken);
+            .Include(p => p.Category)
+            .Include(p => p.StockLevels)
+            .FirstOrDefaultAsync(p => p.SKU == request.Sku, cancellationToken);
 
         if (product == null)
             return null;
+
+        // Filter stock levels for the specified shop
+        var shopStock = product.StockLevels
+            .Where(sl => sl.ShopId == request.ShopId)
+            .Sum(sl => sl.AvailableStock);
 
         return new ProductDetailDto
         {
             Id = product.Id,
             Name = product.Name,
-            Sku = product.Sku,
+            SKU = product.SKU,
             Barcode = product.Barcode,
             Description = product.Description,
-            Price = product.Price,
-            CategoryId = product.ProductCategoryId,
-            CategoryName = product.ProductCategory?.Name,
-            StockQuantity = product.StockQuantity,
-            ReorderLevel = product.ReorderLevel,
-            Published = product.Published
+            BasePrice = product.BasePrice,
+            CategoryId = product.CategoryId,
+            CategoryName = product.Category?.Name,
+            TotalStock = shopStock,
+            MinimumStockLevel = product.MinimumStockLevel,
+            IsActive = product.IsActive
         };
     }
 }

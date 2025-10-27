@@ -148,7 +148,7 @@ npm run dev
 bun dev
 ```
 
-Visit `http://localhost:3000`
+Visit `http://localhost:3001`
 
 ### Build for Production
 
@@ -307,7 +307,7 @@ npm run test:e2e
 docker build -t tosserp-web:latest .
 
 # Run container
-docker run -p 3000:3000 -e API_BASE_URL=https://api.tosserp.com tosserp-web:latest
+docker run -p 3000:3001 -e API_BASE_URL=https://api.tosserp.com tosserp-web:latest
 ```
 
 ### Static Hosting

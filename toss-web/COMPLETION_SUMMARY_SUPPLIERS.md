@@ -379,7 +379,7 @@ To verify completion:
 
 1. **Navigate to Suppliers**
    ```
-   http://localhost:3000/buying/suppliers
+   http://localhost:3001/buying/suppliers
    ```
 
 2. **Test Product Linking**

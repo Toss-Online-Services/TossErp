@@ -36,20 +36,19 @@ public class SearchCustomersQueryHandler : IRequestHandler<SearchCustomersQuery,
         var query = _context.Customers
             .Where(c => c.ShopId == request.ShopId)
             .Where(c =>
-                c.Name.ToLower().Contains(searchTerm) ||
-                c.Email.ToLower().Contains(searchTerm) ||
-                (c.Phone != null && c.Phone.Contains(searchTerm)) ||
-                (c.Address != null && c.Address.ToLower().Contains(searchTerm))
+                (c.FirstName + " " + c.LastName).ToLower().Contains(searchTerm) ||
+                (c.Email != null && c.Email.ToLower().Contains(searchTerm)) ||
+                (c.PhoneNumber != null && c.PhoneNumber.ToLower().Contains(searchTerm))
             );
 
         var customers = await query
             .Select(c => new CustomerSearchResultDto
             {
                 Id = c.Id,
-                Name = c.Name,
-                Email = c.Email,
-                Phone = c.Phone,
-                Address = c.Address,
+                Name = c.FirstName + " " + c.LastName,
+                Email = c.Email ?? string.Empty,
+                Phone = c.PhoneNumber,
+                Address = c.Address != null ? $"{c.Address.Street}, {c.Address.City}" : null,
                 ShopId = c.ShopId
             })
             .Take(50) // Limit search results to 50

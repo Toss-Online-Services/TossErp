@@ -11,7 +11,7 @@ public record SaleDetailDto
     public string ShopName { get; init; } = string.Empty;
     public DateTimeOffset SaleDate { get; init; }
     public string Status { get; init; } = string.Empty;
-    public decimal SubTotal { get; init; }
+    public decimal Subtotal { get; init; }
     public decimal TaxAmount { get; init; }
     public decimal DiscountAmount { get; init; }
     public decimal TotalAmount { get; init; }
@@ -62,11 +62,11 @@ public class GetSaleByIdQueryHandler : IRequestHandler<GetSaleByIdQuery, SaleDet
             ShopName = sale.Shop.Name,
             SaleDate = sale.SaleDate,
             Status = sale.Status.ToString(),
-            SubTotal = sale.SubTotal,
+            Subtotal = sale.Subtotal,
             TaxAmount = sale.TaxAmount,
             DiscountAmount = sale.DiscountAmount,
             TotalAmount = sale.TotalAmount,
-            PaymentMethod = sale.PaymentMethod ?? string.Empty,
+            PaymentMethod = sale.PaymentMethod.ToString(),
             CustomerId = sale.CustomerId,
             Items = sale.Items.Select(i => new SaleItemDto
             {

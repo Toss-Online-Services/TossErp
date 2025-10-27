@@ -1,22 +1,45 @@
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
+  const config = useRuntimeConfig()
   
-  // Validate required fields
-  const { businessName, firstName, lastName, email, phone, password, businessType } = body
+  // Validate required fields matching the multi-step registration form
+  const { 
+    shopName, 
+    area, 
+    zone, 
+    address, 
+    firstName, 
+    lastName, 
+    phone, 
+    email, 
+    password, 
+    whatsappAlerts 
+  } = body
   
-  if (!businessName || !firstName || !lastName || !email || !password || !businessType) {
+  if (!shopName || !area || !address || !firstName || !lastName || !phone || !password) {
     throw createError({
       statusCode: 400,
       statusMessage: 'All required fields must be provided'
     })
   }
 
-  // Validate email format
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(email)) {
+  // Validate email format (email is optional but validate if provided)
+  if (email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid email format'
+      })
+    }
+  }
+
+  // Validate phone format (basic South African format)
+  const phoneRegex = /^\+27\d{9}$/
+  if (!phoneRegex.test(phone)) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Invalid email format'
+      statusMessage: 'Invalid phone format. Use +27XXXXXXXXX format'
     })
   }
 
@@ -28,45 +51,39 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Check if user already exists (demo check)
-  const existingEmails = [
-    'owner@demo.toss.co.za',
-    'manager@demo.toss.co.za',
-    'employee@demo.toss.co.za'
-  ]
-  
-  if (existingEmails.includes(email)) {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'An account with this email already exists'
+  try {
+    // Call backend registration API
+    const backendUrl = config.public.apiBase || 'http://localhost:5000'
+    const response = await $fetch(`${backendUrl}/api/registration/store-owner`, {
+      method: 'POST',
+      body: {
+        shopName,
+        area,
+        zone,
+        address,
+        firstName,
+        lastName,
+        phone,
+        email,
+        password,
+        whatsappAlerts: whatsappAlerts !== false
+      }
     })
-  }
 
-  // In a real application, you would:
-  // 1. Hash the password
-  // 2. Save to database
-  // 3. Send verification email
-  // 4. Return user data
-
-  // For demo purposes, we'll simulate successful registration
-  const newUser = {
-    id: `user_${Date.now()}`,
-    email,
-    firstName,
-    lastName,
-    businessName,
-    businessId: `business_${Date.now()}`,
-    phone,
-    businessType,
-    role: 'owner', // First user of a business becomes owner
-    status: 'pending', // Requires email verification
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-
-  return {
-    success: true,
-    message: 'Account created successfully. Please check your email to verify your account.',
-    user: newUser
+    return {
+      success: true,
+      message: '✅ Registration successful! Welcome to TOSS!',
+      user: response.user,
+      shop: response.store,
+      token: response.token
+    }
+  } catch (error: any) {
+    console.error('Backend registration error:', error)
+    
+    // If backend is not available, throw error
+    throw createError({
+      statusCode: error.statusCode || 500,
+      statusMessage: error.message || error.data?.message || 'Registration failed. Please try again.'
+    })
   }
 })
