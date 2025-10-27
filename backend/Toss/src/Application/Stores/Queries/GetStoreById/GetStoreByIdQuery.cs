@@ -130,3 +130,4 @@ public class GetStoreByIdQueryHandler : IRequestHandler<GetStoreByIdQuery, Store
     }
 }
 
+

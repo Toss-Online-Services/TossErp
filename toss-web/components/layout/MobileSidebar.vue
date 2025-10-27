@@ -56,6 +56,16 @@
       </NuxtLink>
       
       <NuxtLink 
+        to="/stores" 
+        class="mobile-nav-link"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/stores') }"
+        @click="$emit('close')"
+      >
+        <BuildingStorefrontIcon class="h-5 w-5 mr-3 flex-shrink-0" />
+        <span class="truncate">Stores</span>
+      </NuxtLink>
+      
+      <NuxtLink 
         to="/buying" 
         class="mobile-nav-link"
         :class="{ 'mobile-nav-link-active': route.path.startsWith('/buying') }"
@@ -131,6 +141,7 @@ import {
   ArchiveBoxIcon, 
   ShoppingCartIcon, 
   ShoppingBagIcon,
+  BuildingStorefrontIcon,
   CogIcon,
   Cog6ToothIcon,
   TruckIcon,

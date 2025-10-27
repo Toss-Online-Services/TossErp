@@ -106,32 +106,86 @@ public class ApplicationDbContextInitialiser
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while seeding the database.");
-            throw;
+            // Don't throw - allow app to start even if seeding fails
+            _logger.LogWarning("Database seeding failed, but application will continue. " +
+                "Default users and roles will not be created until database is properly configured.");
         }
     }
 
     public async Task TrySeedAsync()
     {
-        // Default roles
-        var administratorRole = new IdentityRole(Roles.Administrator);
-
-        if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
+        try
         {
-            await _roleManager.CreateAsync(administratorRole);
-        }
-
-        // Default users
-        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
-
-        if (_userManager.Users.All(u => u.UserName != administrator.UserName))
-        {
-            await _userManager.CreateAsync(administrator, "Administrator1!");
-            if (!string.IsNullOrWhiteSpace(administratorRole.Name))
+            // Check if Identity tables exist before attempting to seed
+            var identityTablesExist = await CheckIdentityTablesExistAsync();
+            if (!identityTablesExist)
             {
-                await _userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
+                _logger.LogWarning("Identity tables do not exist. Skipping seed data. " +
+                    "Please run 'dotnet ef database update' to create the Identity schema.");
+                return;
             }
-        }
 
-        // TODO: Add TOSS seed data (shops, products, suppliers) here if needed
+            // Default roles
+            var administratorRole = new IdentityRole(Roles.Administrator);
+
+            if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
+            {
+                await _roleManager.CreateAsync(administratorRole);
+                _logger.LogInformation("Created Administrator role.");
+            }
+
+            // Default users
+            var administrator = new ApplicationUser 
+            { 
+                UserName = "administrator@localhost", 
+                Email = "administrator@localhost",
+                FirstName = "Admin",
+                LastName = "User"
+            };
+
+            if (_userManager.Users.All(u => u.UserName != administrator.UserName))
+            {
+                await _userManager.CreateAsync(administrator, "Administrator1!");
+                if (!string.IsNullOrWhiteSpace(administratorRole.Name))
+                {
+                    await _userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
+                }
+                _logger.LogInformation("Created default administrator user.");
+            }
+
+            // TODO: Add TOSS seed data (shops, products, suppliers) here if needed
+        }
+        catch (Npgsql.PostgresException pgEx) when (pgEx.SqlState == "42P01")
+        {
+            // Table does not exist
+            _logger.LogWarning(pgEx, 
+                "Identity tables do not exist. Skipping seed data. " +
+                "Please run 'dotnet ef database update' to create the Identity schema.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while seeding the database.");
+            throw;
+        }
+    }
+
+    private async Task<bool> CheckIdentityTablesExistAsync()
+    {
+        try
+        {
+            // Check if AspNetRoles table exists
+            var result = await _context.Database.ExecuteSqlRawAsync(
+                @"SELECT COUNT(*) 
+                  FROM information_schema.tables 
+                  WHERE table_schema = 'public' 
+                  AND table_name = 'AspNetRoles'");
+            
+            return result > 0;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not check for Identity tables existence.");
+            return false;
+        }
     }
 }
