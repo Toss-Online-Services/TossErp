@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Toss.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +15,18 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    await app.InitialiseDatabaseAsync();
+    // Microsoft's recommended approach: Apply migrations first, then seed
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        
+        // Apply all pending migrations
+        await context.Database.MigrateAsync();
+        
+        // Then seed the database
+        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+        await initialiser.SeedAsync();
+    }
 }
 else
 {
@@ -31,8 +43,18 @@ app.UseSwaggerUi(settings =>
     settings.DocumentPath = "/api/specification.json";
 });
 
-
 app.UseExceptionHandler(options => { });
+
+// Correct middleware order for CORS (per Microsoft best practices)
+app.UseRouting();
+
+// Enable CORS in Development only (must come after UseRouting and before UseAuthorization)
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("AllowFrontend");
+}
+
+app.UseAuthorization();
 
 app.Map("/", () => Results.Redirect("/api"));
 

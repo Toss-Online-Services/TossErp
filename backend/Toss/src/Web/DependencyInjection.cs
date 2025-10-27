@@ -30,6 +30,21 @@ public static class DependencyInjection
 
         builder.Services.AddEndpointsApiExplorer();
 
+        // Add CORS policy for frontend access (Development only)
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins("http://localhost:3001", "https://localhost:3001")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
+        }
+
         builder.Services.AddOpenApiDocument((configure, sp) =>
         {
             configure.Title = "Toss API";
