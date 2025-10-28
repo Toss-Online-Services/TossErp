@@ -88,6 +88,7 @@ public interface IApplicationDbContext
     DbSet<SaleItem> SaleItems { get; }
     DbSet<Receipt> Receipts { get; }
     DbSet<Invoice> Invoices { get; }
+    DbSet<ShoppingCartItem> ShoppingCartItems { get; }
 
     // Supplier entities (removed - now using Vendors)
 
