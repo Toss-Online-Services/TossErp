@@ -1,9 +1,18 @@
 /**
  * Sales API Composable
  * Connects to TOSS backend /api/sales endpoints
+ * 
+ * Note: This handles completed sales transactions (POS).
+ * For customer orders, use useCustomerOrdersAPI()
+ * For products, use useProductsAPI()
+ * For customers, use useCRMAPI()
  */
 export const useSalesAPI = () => {
-  const { get, post } = useApi()
+  const config = useRuntimeConfig()
+  const baseURL = (config.public.apiBase || 'https://localhost:5001') + '/api'
+  const productsAPI = useProductsAPI()
+  const crmAPI = useCRMAPI()
+  const ordersAPI = useCustomerOrdersAPI()
 
   /**
    * Create a new sale transaction (POS)
@@ -19,7 +28,10 @@ export const useSalesAPI = () => {
     paymentType: string
     totalAmount: number
   }) => {
-    return await post<{ id: number }>('/api/sales', saleData)
+    return await $fetch<{ id: number }>(`${baseURL}/Sales`, {
+      method: 'POST',
+      body: saleData
+    })
   }
 
   /**
@@ -32,51 +44,202 @@ export const useSalesAPI = () => {
     pageNumber?: number
     pageSize?: number
   }) => {
-    return await get<any>('/api/sales', params)
+    return await $fetch<any>(`${baseURL}/Sales`, {
+      method: 'GET',
+      params: params || {}
+    })
   }
 
   /**
    * Get daily sales summary for dashboard
    */
   const getDailySummary = async (shopId: number) => {
-    return await get<{
+    return await $fetch<{
       totalSales: number
       totalRevenue: number
       totalCustomers: number
       avgTransactionValue: number
-    }>('/api/sales/daily-summary', { shopId })
+    }>(`${baseURL}/Sales/daily-summary`, {
+      method: 'GET',
+      params: { shopId }
+    })
   }
 
   /**
    * Void/cancel a sale
    */
-  const voidSale = async (saleId: number) => {
-    return await post<any>(`/api/sales/${saleId}/void`, {})
+  const voidSale = async (saleId: number, reason?: string) => {
+    return await $fetch<any>(`${baseURL}/Sales/${saleId}/void`, {
+      method: 'POST',
+      body: { reason }
+    })
   }
 
   /**
    * Generate receipt for a sale
    */
   const generateReceipt = async (saleId: number) => {
-    return await post<{
+    return await $fetch<{
       receiptNumber: string
       receiptUrl: string
-    }>(`/api/sales/${saleId}/receipt`, {})
+    }>(`${baseURL}/Sales/${saleId}/receipt`, {
+      method: 'POST'
+    })
   }
 
   /**
    * Get sale by ID
    */
   const getSaleById = async (id: number) => {
-    return await get<any>(`/api/sales/${id}`)
+    return await $fetch<any>(`${baseURL}/Sales/${id}`)
+  }
+
+  /**
+   * Update sale status
+   */
+  const updateSaleStatus = async (saleId: number, newStatus: string, notes?: string) => {
+    return await $fetch<boolean>(`${baseURL}/Sales/${saleId}/status`, {
+      method: 'POST',
+      body: { newStatus, notes }
+    })
+  }
+
+  /**
+   * Process refund for a sale
+   */
+  const processRefund = async (saleId: number, refundAmount: number, reason: string, restockItems: boolean = false) => {
+    return await $fetch<{ refundId: number }>(`${baseURL}/Sales/${saleId}/refund`, {
+      method: 'POST',
+      body: { refundAmount, reason, restockItems }
+    })
+  }
+
+  // === PROXY METHODS FOR CONVENIENCE ===
+  // These delegate to the appropriate specialized composables
+
+  /**
+   * Get products (delegates to useProductsAPI)
+   */
+  const getProducts = async (shopId?: number) => {
+    return await productsAPI.getProducts(shopId)
+  }
+
+  /**
+   * Get customers (delegates to useCRMAPI)
+   */
+  const getCustomers = async (shopId: number) => {
+    return await crmAPI.getCustomers(shopId)
+  }
+
+  /**
+   * Get customer orders (delegates to useCustomerOrdersAPI)
+   */
+  const getOrders = async (params?: {
+    shopId?: number
+    customerId?: number
+    status?: string
+  }) => {
+    return await ordersAPI.getOrders(params)
+  }
+
+  /**
+   * Create customer order (delegates to useCustomerOrdersAPI)
+   */
+  const createOrder = async (orderData: any) => {
+    // Map the frontend order data to backend format
+    return await ordersAPI.createOrder({
+      customerId: orderData.customerId || 1, // TODO: Get from session
+      shopId: orderData.shopId || 1, // TODO: Get from session
+      items: orderData.orderItems?.map((item: any) => ({
+        productId: item.id,
+        quantity: item.quantity,
+        unitPrice: item.price
+      })) || [],
+      notes: orderData.notes,
+      paymentMethod: orderData.paymentMethod || 'Cash'
+    })
+  }
+
+  /**
+   * Update customer order status (delegates to useCustomerOrdersAPI)
+   */
+  const updateOrderStatus = async (orderId: number | string, newStatus: string) => {
+    return await ordersAPI.updateOrderStatus(Number(orderId), newStatus)
+  }
+
+  /**
+   * Complete a customer order (delegates to useCustomerOrdersAPI)
+   */
+  const completeOrder = async (orderId: number | string) => {
+    return await ordersAPI.updateOrderStatus(Number(orderId), 'Complete')
+  }
+
+  /**
+   * Cancel a customer order (delegates to useCustomerOrdersAPI)
+   */
+  const cancelOrder = async (orderId: number | string, reason?: string) => {
+    return await ordersAPI.cancelOrder(Number(orderId), reason)
+  }
+
+  /**
+   * Get invoices (sales can serve as invoices)
+   */
+  const getInvoices = async (shopId?: number) => {
+    const sales = await getSales({ shopId })
+    // Map sales to invoice format
+    return sales
+  }
+
+  /**
+   * Create invoice (creates a sale)
+   */
+  const createInvoice = async (invoiceData: {
+    customer: string
+    orderNumber?: string
+    total: number
+    status: string
+    dueDate: Date
+  }) => {
+    // For now, treat invoices as sales
+    // In production, you might have a separate Invoice entity
+    return await createSale({
+      shopId: 1, // TODO: Get from session
+      customerId: 1, // TODO: Map customer name to ID
+      items: [],
+      paymentType: 'Account',
+      totalAmount: invoiceData.total
+    })
+  }
+
+  /**
+   * Update invoice status (updates sale status)
+   */
+  const updateInvoiceStatus = async (invoiceId: number | string, newStatus: string) => {
+    return await updateSaleStatus(Number(invoiceId), newStatus)
   }
 
   return {
+    // Core sales methods
     createSale,
     getSales,
     getDailySummary,
     voidSale,
     generateReceipt,
-    getSaleById
+    getSaleById,
+    updateSaleStatus,
+    processRefund,
+    
+    // Proxy methods for convenience
+    getProducts,
+    getCustomers,
+    getOrders,
+    createOrder,
+    updateOrderStatus,
+    completeOrder,
+    cancelOrder,
+    getInvoices,
+    createInvoice,
+    updateInvoiceStatus
   }
 }
+

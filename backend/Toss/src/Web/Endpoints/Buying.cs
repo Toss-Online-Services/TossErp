@@ -1,5 +1,7 @@
 using Toss.Application.Buying.Commands.ApprovePurchaseOrder;
 using Toss.Application.Buying.Commands.CreatePurchaseOrder;
+using Toss.Application.Buying.Commands.UpdatePurchaseOrderStatus;
+using Toss.Application.Buying.Commands.ReceiveGoods;
 using Toss.Application.Buying.Queries.GetPurchaseOrderById;
 using Toss.Application.Buying.Queries.GetPurchaseOrders;
 
@@ -13,6 +15,8 @@ public class Buying : EndpointGroupBase
         group.MapPost("purchase-orders", CreatePurchaseOrder);
         group.MapGet("purchase-orders/{id}", GetPurchaseOrderById);
         group.MapPost("purchase-orders/{id}/approve", ApprovePurchaseOrder);
+        group.MapPost("purchase-orders/{id}/status", UpdatePurchaseOrderStatus);
+        group.MapPost("purchase-orders/{id}/receive", ReceiveGoods);
     }
 
     public async Task<IResult> GetPurchaseOrders(ISender sender, int? shopId, string? status, int? skip, int? take)
@@ -44,6 +48,18 @@ public class Buying : EndpointGroupBase
     {
         var result = await sender.Send(command with { PurchaseOrderId = id });
         return result ? Results.Ok() : Results.BadRequest("PO cannot be approved");
+    }
+
+    public async Task<IResult> UpdatePurchaseOrderStatus(ISender sender, int id, UpdatePurchaseOrderStatusCommand command)
+    {
+        var result = await sender.Send(command with { PurchaseOrderId = id });
+        return result ? Results.Ok() : Results.BadRequest("Status update failed");
+    }
+
+    public async Task<IResult> ReceiveGoods(ISender sender, int id, ReceiveGoodsCommand command)
+    {
+        var result = await sender.Send(command with { PurchaseOrderId = id });
+        return result ? Results.Ok() : Results.BadRequest("Goods receipt failed");
     }
 }
 

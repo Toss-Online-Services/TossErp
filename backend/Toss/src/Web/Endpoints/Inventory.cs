@@ -8,6 +8,8 @@ using Toss.Application.Inventory.Queries.GetProductBySku;
 using Toss.Application.Inventory.Queries.GetProducts;
 using Toss.Application.Inventory.Queries.GetStockLevels;
 using Toss.Application.Inventory.Queries.GetStockMovementHistory;
+using Toss.Application.Inventory.Queries.SearchProducts;
+using Toss.Application.Inventory.Queries.GetLowStockItems;
 
 namespace Toss.Web.Endpoints;
 
@@ -25,6 +27,21 @@ public class Inventory : EndpointGroupBase
         group.MapGet("low-stock-alerts", GetLowStockAlerts);
         group.MapPost("stock/adjust", AdjustStock);
         group.MapGet("stock/movements", GetStockMovementHistory);
+        group.MapPost("products/search", SearchProducts);
+        group.MapGet("low-stock-items", GetLowStockItems);
+    }
+
+    public async Task<IResult> SearchProducts(ISender sender, SearchProductsQuery query)
+    {
+        var result = await sender.Send(query);
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> GetLowStockItems(ISender sender, int shopId, int threshold = 10)
+    {
+        var query = new GetLowStockItemsQuery { ShopId = shopId, Threshold = threshold };
+        var result = await sender.Send(query);
+        return Results.Ok(result);
     }
 
     public async Task<IResult> CreateProduct(ISender sender, CreateProductCommand command)

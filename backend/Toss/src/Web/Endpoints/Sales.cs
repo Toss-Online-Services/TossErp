@@ -1,6 +1,8 @@
 using Toss.Application.Sales.Commands.CreateSale;
 using Toss.Application.Sales.Commands.GenerateReceipt;
 using Toss.Application.Sales.Commands.VoidSale;
+using Toss.Application.Sales.Commands.UpdateSaleStatus;
+using Toss.Application.Sales.Commands.ProcessRefund;
 using Toss.Application.Sales.Queries.GetDailySummary;
 using Toss.Application.Sales.Queries.GetSaleById;
 using Toss.Application.Sales.Queries.GetSales;
@@ -28,6 +30,12 @@ public class Sales : EndpointGroupBase
         
         group.MapPost("{id}/receipt", GenerateReceipt)
             .WithName("GenerateReceipt");
+        
+        group.MapPost("{id}/status", UpdateSaleStatus)
+            .WithName("UpdateSaleStatus");
+        
+        group.MapPost("{id}/refund", ProcessRefund)
+            .WithName("ProcessRefund");
     }
 
     public async Task<IResult> CreateSale(ISender sender, CreateSaleCommand command)
@@ -68,6 +76,18 @@ public class Sales : EndpointGroupBase
     {
         var result = await sender.Send(new GenerateReceiptCommand { SaleId = id });
         return Results.Ok(result);
+    }
+
+    public async Task<IResult> UpdateSaleStatus(ISender sender, int id, UpdateSaleStatusCommand command)
+    {
+        var result = await sender.Send(command with { SaleId = id });
+        return result ? Results.Ok() : Results.BadRequest("Status update failed");
+    }
+
+    public async Task<IResult> ProcessRefund(ISender sender, int id, ProcessRefundCommand command)
+    {
+        var refundId = await sender.Send(command with { SaleId = id });
+        return Results.Ok(new { refundId });
     }
 }
 
