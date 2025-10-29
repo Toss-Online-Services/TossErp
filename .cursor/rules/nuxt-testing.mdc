@@ -60,7 +60,8 @@
 - Test color contrast and readability
 - Test ARIA attributes and labels
 - Use accessibility testing tools
-
+- Always test in @browser and capture screenshots, to ensure the UI is accessible and readable and working as expected.
+ 
 ## Continuous Integration
 - Run tests on every commit
 - Enforce minimum test coverage

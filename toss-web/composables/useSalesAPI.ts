@@ -125,6 +125,13 @@ export const useSalesAPI = () => {
   }
 
   /**
+   * Get categories (delegates to useProductsAPI)
+   */
+  const getCategories = async (shopId: number) => {
+    return await productsAPI.getCategories(shopId)
+  }
+
+  /**
    * Get customers (delegates to useCRMAPI)
    */
   const getCustomers = async (shopId: number) => {
@@ -231,6 +238,7 @@ export const useSalesAPI = () => {
     
     // Proxy methods for convenience
     getProducts,
+    getCategories,
     getCustomers,
     getOrders,
     createOrder,

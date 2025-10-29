@@ -20,6 +20,11 @@ global.useState = vi.fn((key, init) => {
   const state = ref(typeof init === 'function' ? init() : init)
   return state
 })
+global.useRuntimeConfig = vi.fn(() => ({
+  public: {
+    apiBase: 'http://localhost:5000/api'
+  }
+}))
 
 // Mock Nuxt composables as modules too
 vi.mock('#app', () => ({
@@ -39,7 +44,12 @@ vi.mock('#app', () => ({
   useState: vi.fn((key, init) => {
     const state = ref(typeof init === 'function' ? init() : init)
     return state
-  })
+  }),
+  useRuntimeConfig: vi.fn(() => ({
+    public: {
+      apiBase: 'http://localhost:5000/api'
+    }
+  }))
 }))
 
 // Mock useToast composable

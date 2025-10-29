@@ -354,6 +354,7 @@ public class ApplicationDbContextInitialiser
         await _context.SaveChangesAsync();
 
         // Create stock levels for each product in each store
+        // Ensure all products have stock > 0
         var stockLevels = new List<StockLevel>();
         foreach (var product in products)
         {
@@ -363,7 +364,7 @@ public class ApplicationDbContextInitialiser
                 {
                     ProductId = product.Id,
                     ShopId = store.Id,
-                    CurrentStock = new Faker().Random.Int(0, 100),
+                    CurrentStock = new Faker().Random.Int(1, 100), // Always > 0
                     ReservedStock = 0,
                     ReorderPoint = product.MinimumStockLevel,
                     ReorderQuantity = product.ReorderQuantity ?? 50
@@ -592,8 +593,10 @@ public class ApplicationDbContextInitialiser
             return;
         }
 
+        // Generate unique sale numbers using counter to avoid duplicates
+        var saleNumberCounter = 10000;
         var saleFaker = new Faker<Sale>()
-            .RuleFor(s => s.SaleNumber, f => $"SALE-{f.Random.Number(10000, 99999)}")
+            .RuleFor(s => s.SaleNumber, f => $"SALE-{saleNumberCounter++}")
             .RuleFor(s => s.ShopId, f => f.PickRandom(stores).Id)
             .RuleFor(s => s.CustomerId, f => f.Random.Bool(0.7f) && customers.Any() ? f.PickRandom(customers).Id : null)
             .RuleFor(s => s.SaleDate, f => DateTimeOffset.UtcNow.AddDays(-f.Random.Int(0, 90)))

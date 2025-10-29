@@ -434,24 +434,75 @@ const todayTransactions = ref(48)
 const averageSale = ref(285)
 const cashFloat = ref(2500)
 
-// Categories
-const categories = ref([
-  { id: 'all', name: 'All' },
-  { id: 'groceries', name: 'Groceries' },
-  { id: 'beverages', name: 'Beverages' },
-  { id: 'snacks', name: 'Snacks' },
-  { id: 'household', name: 'Household' },
-  { id: 'personal', name: 'Personal Care' },
-  { id: 'frozen', name: 'Frozen' }
+// Categories - will be loaded from API
+const categories = ref<any[]>([
+  { id: 'all', name: 'All', productCount: 0 }
 ])
+
+// Shop ID - get from session or default to 1
+const shopId = ref(1)
 
 // Load data on mount
 const loadData = async () => {
   try {
-    products.value = await salesAPI.getProducts()
-    customers.value = await salesAPI.getCustomers()
+    // Get categories from backend API
+    const categoriesResponse = await salesAPI.getCategories(shopId.value)
+    
+    // Get products from backend API
+    const productsResponse = await salesAPI.getProducts(shopId.value)
+    
+    // Transform backend response to POS format
+    products.value = productsResponse.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      sku: p.sku,
+      price: p.basePrice,
+      categoryId: p.categoryId,
+      category: p.categoryName || 'Unknown',
+      stock: p.availableStock || 0,
+      image: p.imageUrl || null,
+      barcode: p.barcode || p.sku
+    }))
+    
+    // Count products per category
+    const productCountByCategory = products.value.reduce((acc: any, product: any) => {
+      if (product.categoryId) {
+        acc[product.categoryId] = (acc[product.categoryId] || 0) + 1
+      }
+      return acc
+    }, {})
+    
+    // Filter categories to only show those with products
+    const categoriesWithProducts = categoriesResponse.filter((cat: any) => 
+      productCountByCategory[cat.id] > 0
+    )
+    
+    // Add "All" category at the beginning with total product count
+    categories.value = [
+      { id: 'all', name: 'All', productCount: products.value.length },
+      ...categoriesWithProducts
+    ]
+    
+    // Get customers from backend API  
+    const customersResponse = await salesAPI.getCustomers(shopId.value)
+    
+    // Handle paginated response
+    const customersList = Array.isArray(customersResponse) 
+      ? customersResponse 
+      : customersResponse.items || []
+      
+    customers.value = customersList.map((c: any) => ({
+      id: c.id,
+      name: c.fullName || `${c.firstName} ${c.lastName}`.trim(),
+      phone: c.phoneNumber || '',
+      email: c.email || ''
+    }))
+    
+    console.log(`✅ Loaded ${categories.value.length - 1} categories (with products), ${products.value.length} products, and ${customers.value.length} customers from API`)
   } catch (error) {
     console.error('Failed to load POS data:', error)
+    // Show user-friendly error
+    showNotification('⚠️ Failed to load data from server. Using offline mode.', 'error')
   }
 }
 
@@ -468,7 +519,8 @@ const filteredProducts = computed(() => {
   let filtered = products.value
 
   if (selectedCategory.value !== 'all') {
-    filtered = filtered.filter((p: any) => p.category === selectedCategory.value)
+    // Filter by categoryId (numeric) from API
+    filtered = filtered.filter((p: any) => p.categoryId === selectedCategory.value)
   }
 
   if (searchQuery.value) {
@@ -697,30 +749,30 @@ const processPayment = async () => {
       await new Promise(resolve => setTimeout(resolve, 2000))
     }
 
-    // Create sale order via API
-    const customerName = selectedCustomer.value 
-      ? customers.value.find((c: any) => c.id == selectedCustomer.value)?.name || 'Walk-in Customer'
-      : 'Walk-in Customer'
+    // Get customer ID (use null for walk-in customers)
+    const customerId = selectedCustomer.value || null
 
-    await salesAPI.createOrder({
-      customer: customerName,
-      orderItems: cartItems.value.map((item: any) => ({
-        id: item.id,
-        name: item.name,
-        sku: item.sku || `SKU-${item.id}`,
+    // Create sale transaction via API
+    const saleData = {
+      shopId: shopId.value,
+      customerId: customerId,
+      items: cartItems.value.map((item: any) => ({
+        productId: item.id,
         quantity: item.quantity,
-        price: item.price,
-        stock: item.stock || 0
+        unitPrice: item.price
       })),
-      total: cartTotal.value,
-      status: 'completed',
-      paymentMethod: selectedPaymentMethod.value
-    })
+      paymentType: selectedPaymentMethod.value,
+      totalAmount: cartTotal.value
+    }
 
+    const result = await salesAPI.createSale(saleData)
+    
+    console.log(`✅ Sale ${result.id} created successfully`)
+    showNotification(`✓ Sale completed! Transaction #${result.id}`)
     showSuccessModal.value = true
   } catch (error) {
     console.error('Payment processing failed:', error)
-    showNotification('Payment failed', 'error')
+    showNotification('✗ Payment failed. Please try again.', 'error')
   }
 }
 
