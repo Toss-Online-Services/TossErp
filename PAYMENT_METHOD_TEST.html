@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Method Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Payment Method Enum Test</h1>
+    <p>This tests the PaymentType enum fix for the hold sale endpoint.</p>
+    
+    <div>
+        <button onclick="testPaymentMethod('Cash')">Test Cash</button>
+        <button onclick="testPaymentMethod('Card')">Test Card</button>
+        <button onclick="testPaymentMethod('MobileMoney')">Test MobileMoney</button>
+        <button onclick="testPaymentMethod('BankTransfer')">Test BankTransfer</button>
+        <button onclick="testPaymentMethod('PayLink')">Test PayLink</button>
+        <button onclick="testAllMethods()">Test All</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:5001/api';
+        
+        async function testPaymentMethod(method) {
+            const resultsDiv = document.getElementById('results');
+            const testData = {
+                shopId: 1,
+                items: [
+                    {
+                        productId: 1,
+                        quantity: 2,
+                        unitPrice: 10.00
+                    }
+                ],
+                paymentMethod: method,
+                totalAmount: 20.00,
+                notes: `Test ${method} payment`
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/Sales/hold`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'test-result';
+
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.className += ' success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ ${method}</strong> - SUCCESS<br>
+                        Sale ID: ${data.id}<br>
+                        Status: ${response.status} ${response.statusText}
+                    `;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.className += ' error';
+                    resultDiv.innerHTML = `
+                        <strong>❌ ${method}</strong> - FAILED<br>
+                        Status: ${response.status} ${response.statusText}<br>
+                        Error: ${errorText.substring(0, 200)}...
+                    `;
+                }
+
+                resultsDiv.insertBefore(resultDiv, resultsDiv.firstChild);
+
+            } catch (error) {
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'test-result error';
+                resultDiv.innerHTML = `
+                    <strong>❌ ${method}</strong> - NETWORK ERROR<br>
+                    Error: ${error.message}
+                `;
+                resultsDiv.insertBefore(resultDiv, resultsDiv.firstChild);
+            }
+        }
+
+        async function testAllMethods() {
+            document.getElementById('results').innerHTML = '<h3>Testing all payment methods...</h3>';
+            const methods = ['Cash', 'Card', 'MobileMoney', 'BankTransfer', 'PayLink'];
+            
+            for (const method of methods) {
+                await testPaymentMethod(method);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Small delay between requests
+            }
+        }
+
+        // Show instructions
+        window.onload = () => {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="test-result" style="background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb;">
+                    <strong>📋 Instructions:</strong><br>
+                    1. Make sure the backend is running on port 5001<br>
+                    2. Make sure the frontend is running on port 3001<br>
+                    3. Open the browser's Developer Tools (F12)<br>
+                    4. Go to the Network tab<br>
+                    5. Click any button above to test a payment method<br>
+                    6. Check the Network tab for any errors<br>
+                    <br>
+                    <strong>Expected Result:</strong> All payment methods should return ✅ SUCCESS
+                </div>
+            `;
+        };
+    </script>
+</body>
+</html>
+

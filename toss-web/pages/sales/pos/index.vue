@@ -139,7 +139,15 @@
 
           <!-- Category Filters -->
           <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6">
-            <div class="flex flex-wrap gap-2">
+            
+            <!-- Loading Categories -->
+            <div v-if="isLoadingCategories" class="flex items-center justify-center py-4">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
+              <span class="text-gray-600">Loading categories...</span>
+            </div>
+
+            <!-- Categories List -->
+            <div v-else class="flex flex-wrap gap-2">
               <button 
                 v-for="category in categories" 
                 :key="category.id"
@@ -158,7 +166,45 @@
 
           <!-- Products Grid -->
           <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6">
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            
+            <!-- Loading State -->
+            <div v-if="isLoading || isLoadingProducts" class="flex flex-col items-center justify-center py-20">
+              <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mb-4"></div>
+              <p class="text-gray-600 font-medium">Loading products...</p>
+              <p class="text-sm text-gray-400 mt-2">Please wait</p>
+            </div>
+
+            <!-- Error State -->
+            <div v-else-if="hasError" class="flex flex-col items-center justify-center py-20">
+              <div class="bg-red-50 border-2 border-red-200 rounded-full p-4 mb-4">
+                <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Unable to Load Data</h3>
+              <p class="text-gray-600 text-center mb-4 max-w-md">{{ error }}</p>
+              <button 
+                @click="loadData" 
+                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Retry</span>
+              </button>
+            </div>
+
+            <!-- Empty State -->
+            <div v-else-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center py-20">
+              <div class="bg-gray-100 rounded-full p-4 mb-4">
+                <CubeIcon class="w-12 h-12 text-gray-400" />
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">No Products Found</h3>
+              <p class="text-gray-500 text-sm">Try adjusting your search or filter</p>
+            </div>
+
+            <!-- Products Grid -->
+            <div v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               <button 
                 v-for="product in filteredProducts" 
                 :key="product.id"
@@ -459,7 +505,23 @@
     <div v-if="showHoldSaleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-xl p-6 max-w-md w-full">
         <h3 class="text-xl font-semibold text-gray-900 mb-4">Hold Sale</h3>
-        <p class="text-gray-600 mb-4">Enter a note for this held sale:</p>
+        
+        <!-- Sale Summary -->
+        <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm text-gray-600">Customer:</span>
+            <span class="font-medium text-gray-900">{{ selectedCustomerName }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Total Amount:</span>
+            <span class="font-bold text-blue-600">R{{ formatCurrency(cartTotal) }}</span>
+          </div>
+          <div class="text-sm text-gray-600 mt-1">
+            {{ cartItems.length }} items in cart
+          </div>
+        </div>
+        
+        <p class="text-gray-600 mb-2">Enter a note for this held sale:</p>
         <input 
           v-model="holdSaleNote"
           type="text"
@@ -513,37 +575,64 @@
 
     <!-- Held Sales Modal -->
     <div v-if="showHeldSalesModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-semibold text-gray-900">Held Sales</h3>
-          <button @click="showHeldSalesModal = false" class="text-gray-500 hover:text-gray-700">
+      <div class="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[80vh] flex flex-col">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-semibold text-gray-900">Held Sales ({{ heldSales.length }})</h3>
+          <button @click="showHeldSalesModal = false; heldSalesSearchQuery = ''" class="text-gray-500 hover:text-gray-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
         </div>
-        <div class="space-y-3">
+        
+        <!-- Search Field -->
+        <div class="mb-4">
+          <div class="relative">
+            <input
+              v-model="heldSalesSearchQuery"
+              type="text"
+              placeholder="Search by customer, note, or amount..."
+              class="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+            />
+            <svg class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          <p v-if="filteredHeldSales.length !== heldSales.length" class="text-xs text-gray-500 mt-1">
+            Showing {{ filteredHeldSales.length }} of {{ heldSales.length }} held sales
+          </p>
+        </div>
+        
+        <!-- Held Sales List -->
+        <div class="space-y-3 overflow-y-auto flex-1">
+          <div v-if="filteredHeldSales.length === 0" class="text-center py-8 text-gray-500">
+            <p>No held sales found</p>
+            <p class="text-sm mt-1">Try adjusting your search</p>
+          </div>
           <div 
-            v-for="(sale, index) in heldSales" 
+            v-for="(sale, index) in filteredHeldSales" 
             :key="index"
             class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 transition-colors"
           >
             <div class="flex justify-between items-start mb-2">
-              <div>
-                <p class="font-medium text-gray-900">R{{ formatCurrency(sale.total) }}</p>
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <p class="font-medium text-gray-900">R{{ formatCurrency(sale.total) }}</p>
+                  <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">{{ sale.customer }}</span>
+                </div>
                 <p class="text-sm text-gray-500">{{ sale.items.length }} items • {{ sale.timestamp }}</p>
-                <p v-if="sale.note" class="text-sm text-gray-600 mt-1">Note: {{ sale.note }}</p>
+                <p v-if="sale.note" class="text-sm text-gray-600 mt-1">📝 {{ sale.note }}</p>
               </div>
-              <div class="flex gap-2">
+              <div class="flex gap-2 ml-4">
                 <button 
-                  @click="retrieveHeldSale(index)"
-                  class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm"
+                  @click="retrieveHeldSale(getOriginalIndex(sale))"
+                  class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm whitespace-nowrap"
                 >
                   Retrieve
                 </button>
                 <button 
-                  @click="deleteHeldSale(index)"
-                  class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm"
+                  @click="deleteHeldSale(getOriginalIndex(sale))"
+                  class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm whitespace-nowrap"
                 >
                   Delete
                 </button>
@@ -610,7 +699,7 @@ const showBarcodeScanner = ref(false)
 const cartItems = ref<any[]>([])
 const selectedCustomer = ref('')
 const selectedCustomerName = ref('Walk-in Customer')
-const selectedPaymentMethod = ref('cash')
+const selectedPaymentMethod = ref('Cash')
 const showSuccessModal = ref(false)
 const showReports = ref(false)
 const searchInput = ref<HTMLInputElement>()
@@ -630,6 +719,7 @@ const showHeldSalesModal = ref(false)
 const holdSaleNote = ref('')
 const voidSaleReason = ref('')
 const heldSales = ref<any[]>([])
+const heldSalesSearchQuery = ref('')
 
 // POS Stats
 const todaySales = ref(18496)
@@ -645,14 +735,30 @@ const categories = ref<any[]>([
 // Shop ID - get from session or default to 1
 const shopId = ref(1)
 
+// Loading and error states
+const isLoading = ref(true)
+const isLoadingProducts = ref(false)
+const isLoadingCategories = ref(false)
+const isLoadingCustomers = ref(false)
+const error = ref<string | null>(null)
+const hasError = ref(false)
+
 // Load data on mount
 const loadData = async () => {
+  isLoading.value = true
+  error.value = null
+  hasError.value = false
+  
   try {
     // Get categories from backend API
+    isLoadingCategories.value = true
     const categoriesResponse = await salesAPI.getCategories(shopId.value)
+    isLoadingCategories.value = false
     
     // Get products from backend API
+    isLoadingProducts.value = true
     const productsResponse = await salesAPI.getProducts(shopId.value)
+    isLoadingProducts.value = false
     
     // Transform backend response to POS format
     products.value = productsResponse.map((p: any) => ({
@@ -686,8 +792,10 @@ const loadData = async () => {
       ...categoriesWithProducts
     ]
     
-    // Get customers from backend API  
+    // Get customers from backend API
+    isLoadingCustomers.value = true
     const customersResponse = await salesAPI.getCustomers(shopId.value)
+    isLoadingCustomers.value = false
     
     // Handle paginated response
     const customersList = Array.isArray(customersResponse) 
@@ -701,20 +809,35 @@ const loadData = async () => {
       email: c.email || ''
     }))
     
-    console.log(`✅ Loaded ${categories.value.length - 1} categories (with products), ${products.value.length} products, and ${customers.value.length} customers from API`)
-  } catch (error) {
-    console.error('Failed to load POS data:', error)
-    // Show user-friendly error
-    showNotification('⚠️ Failed to load data from server. Using offline mode.', 'error')
+    // Load held sales from database
+    await loadHeldSales()
+    
+    console.log(`✅ Loaded ${categories.value.length - 1} categories (with products), ${products.value.length} products, ${customers.value.length} customers, and ${heldSales.value.length} held sales from API`)
+    
+    isLoading.value = false
+  } catch (err: any) {
+    console.error('Failed to load POS data:', err)
+    
+    // Set error state
+    hasError.value = true
+    error.value = err.message || 'Failed to connect to server. Please check your connection and try again.'
+    isLoading.value = false
+    isLoadingProducts.value = false
+    isLoadingCategories.value = false
+    isLoadingCustomers.value = false
+    
+    // Show user-friendly error notification
+    showNotification('⚠️ Failed to load data from server. Please refresh the page.', 'error')
   }
 }
 
 // Payment methods
 const paymentMethods = ref([
-  { id: 'cash', name: 'Cash' },
-  { id: 'card', name: 'Card' },
-  { id: 'eft', name: 'EFT' },
-  { id: 'account', name: 'Account' }
+  { id: 'Cash', name: 'Cash' },
+  { id: 'Card', name: 'Card' },
+  { id: 'MobileMoney', name: 'Mobile Money' },
+  { id: 'BankTransfer', name: 'Bank Transfer' },
+  { id: 'PayLink', name: 'Pay Link' }
 ])
 
 // Computed properties
@@ -749,6 +872,19 @@ const filteredCustomers = computed(() => {
     c.name.toLowerCase().includes(query) ||
     c.phone.toLowerCase().includes(query) ||
     c.email.toLowerCase().includes(query)
+  )
+})
+
+const filteredHeldSales = computed(() => {
+  if (!heldSalesSearchQuery.value) {
+    return heldSales.value
+  }
+  const query = heldSalesSearchQuery.value.toLowerCase()
+  return heldSales.value.filter((sale: any) => 
+    sale.customer.toLowerCase().includes(query) ||
+    (sale.note && sale.note.toLowerCase().includes(query)) ||
+    sale.total.toString().includes(query) ||
+    formatCurrency(sale.total).includes(query)
   )
 })
 
@@ -797,7 +933,7 @@ const clearCart = () => {
   selectedCustomer.value = ''
   selectedCustomerName.value = 'Walk-in Customer'
   customerSearchQuery.value = 'Walk-in Customer'
-  selectedPaymentMethod.value = 'cash'
+  selectedPaymentMethod.value = 'Cash'
 }
 
 // Customer selection methods
@@ -981,7 +1117,7 @@ const processPayment = async () => {
   if (cartItems.value.length === 0) return
   
   try {
-    if (selectedPaymentMethod.value === 'card' && hardwareStatus.value.cardReader) {
+    if (selectedPaymentMethod.value === 'Card' && hardwareStatus.value.cardReader) {
       showNotification('Processing card payment...')
       await new Promise(resolve => setTimeout(resolve, 2000))
     }
@@ -1014,31 +1150,45 @@ const processPayment = async () => {
 }
 
 // Hold Sale functionality
-const confirmHoldSale = () => {
+const confirmHoldSale = async () => {
   if (cartItems.value.length === 0) return
   
-  const heldSale = {
-    items: [...cartItems.value],
-    customer: selectedCustomerName.value,
-    customerId: selectedCustomer.value,
-    paymentMethod: selectedPaymentMethod.value,
-    total: cartTotal.value,
-    note: holdSaleNote.value,
-    timestamp: new Date().toLocaleString('en-ZA')
+  try {
+    const customerId = selectedCustomer.value ? parseInt(selectedCustomer.value) : undefined
+    
+    // Save held sale to database
+    const result = await salesAPI.holdSale({
+      shopId: shopId.value,
+      customerId: customerId,
+      items: cartItems.value.map((item: any) => ({
+        productId: item.id,
+        quantity: item.quantity,
+        unitPrice: item.price
+      })),
+      paymentMethod: selectedPaymentMethod.value,
+      totalAmount: cartTotal.value,
+      notes: holdSaleNote.value
+    })
+    
+    // Reload held sales from database
+    await loadHeldSales()
+    
+    showNotification(`✓ Sale held successfully (ID: ${result.id})`)
+    showHoldSaleModal.value = false
+    holdSaleNote.value = ''
+    clearCart()
+  } catch (error) {
+    console.error('Failed to hold sale:', error)
+    showNotification('✗ Failed to hold sale', 'error')
   }
-  
-  heldSales.value.push(heldSale)
-  showNotification(`✓ Sale held successfully (${heldSales.value.length} held sales)`)
-  
-  showHoldSaleModal.value = false
-  holdSaleNote.value = ''
-  clearCart()
 }
 
 // Void Sale functionality
 const confirmVoidSale = () => {
   if (cartItems.value.length === 0) return
   
+  // Note: In the current flow, void is for current cart before it's saved
+  // For voiding completed sales, use the voidSale API with a sale ID
   console.log(`Sale voided. Reason: ${voidSaleReason.value}`)
   showNotification('✓ Sale voided successfully')
   
@@ -1047,28 +1197,82 @@ const confirmVoidSale = () => {
   clearCart()
 }
 
+// Load held sales from database
+const loadHeldSales = async () => {
+  try {
+    const held = await salesAPI.getHeldSales(shopId.value)
+    heldSales.value = held.map((sale: any) => ({
+      id: sale.id,
+      saleNumber: sale.saleNumber,
+      items: sale.items.map((item: any) => ({
+        id: item.productId,
+        name: item.productName,
+        quantity: item.quantity,
+        price: item.unitPrice
+      })),
+      customer: sale.customerName,
+      customerId: sale.customerId || '',
+      paymentMethod: sale.paymentMethod, // Keep enum value as-is (Cash, Card, etc.)
+      total: sale.total,
+      note: sale.notes || '',
+      timestamp: new Date(sale.heldAt).toLocaleString('en-ZA')
+    }))
+  } catch (error) {
+    console.error('Failed to load held sales:', error)
+  }
+}
+
+// Get original index from filtered array
+const getOriginalIndex = (sale: any) => {
+  return heldSales.value.findIndex((s: any) => s.id === sale.id)
+}
+
 // Retrieve held sale
-const retrieveHeldSale = (index: number) => {
+const retrieveHeldSale = async (index: number) => {
   const sale = heldSales.value[index]
   
-  cartItems.value = [...sale.items]
-  selectedCustomer.value = sale.customerId || ''
-  selectedCustomerName.value = sale.customer
-  customerSearchQuery.value = sale.customer
-  selectedPaymentMethod.value = sale.paymentMethod
-  
-  heldSales.value.splice(index, 1)
-  showHeldSalesModal.value = false
-  showNotification(`✓ Sale retrieved successfully`)
+  try {
+    // Update status in database from OnHold to Pending
+    await salesAPI.retrieveHeldSale(sale.id)
+    
+    // Load into cart
+    cartItems.value = [...sale.items]
+    selectedCustomer.value = sale.customerId || ''
+    selectedCustomerName.value = sale.customer
+    customerSearchQuery.value = sale.customer
+    selectedPaymentMethod.value = sale.paymentMethod
+    
+    // Reload held sales from database
+    await loadHeldSales()
+    
+    showHeldSalesModal.value = false
+    heldSalesSearchQuery.value = ''
+    showNotification(`✓ Sale retrieved successfully`)
+  } catch (error) {
+    console.error('Failed to retrieve held sale:', error)
+    showNotification('✗ Failed to retrieve sale', 'error')
+  }
 }
 
 // Delete held sale
-const deleteHeldSale = (index: number) => {
+const deleteHeldSale = async (index: number) => {
   if (confirm('Are you sure you want to delete this held sale?')) {
-    heldSales.value.splice(index, 1)
-    showNotification('✓ Held sale deleted')
-    if (heldSales.value.length === 0) {
-      showHeldSalesModal.value = false
+    const sale = heldSales.value[index]
+    
+    try {
+      await salesAPI.deleteHeldSale(sale.id)
+      
+      // Reload held sales from database
+      await loadHeldSales()
+      
+      showNotification('✓ Held sale deleted')
+      if (heldSales.value.length === 0) {
+        showHeldSalesModal.value = false
+        heldSalesSearchQuery.value = ''
+      }
+    } catch (error) {
+      console.error('Failed to delete held sale:', error)
+      showNotification('✗ Failed to delete sale', 'error')
     }
   }
 }
