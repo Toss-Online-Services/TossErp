@@ -84,14 +84,45 @@ export const useProductsAPI = () => {
      * Get all products
      */
     async getProducts(shopId?: number) {
+      const response = await $fetch<{
+        items: Array<{
+          id: number
+          name: string
+          sku: string
+          barcode?: string
+          categoryName?: string
+          basePrice: number
+          categoryId: number
+          isActive: boolean
+          availableStock: number
+        }>
+        pageNumber: number
+        totalPages: number
+        totalCount: number
+      }>(`${baseURL}/Inventory/products`, {
+        method: 'GET',
+        params: { 
+          ShopId: shopId,
+          PageNumber: 1,
+          PageSize: 1000,
+          IsActive: true
+        }
+      })
+      // Return just the items array for backwards compatibility
+      return response.items
+    },
+
+    /**
+     * Get all product categories
+     */
+    async getCategories(shopId: number) {
       return await $fetch<Array<{
         id: number
         name: string
-        sku: string
-        basePrice: number
-        categoryId: number
-        isActive: boolean
-      }>>(`${baseURL}/Inventory/products`, {
+        description?: string
+        parentCategoryId?: number
+        productCount: number
+      }>>(`${baseURL}/Inventory/categories`, {
         method: 'GET',
         params: { shopId }
       })
