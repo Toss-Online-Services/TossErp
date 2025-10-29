@@ -457,6 +457,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import { useSalesAPI } from '~/composables/useSalesAPI'
 import InvoiceTimeline from '~/components/sales/InvoiceTimeline.vue'
+import { getErrorNotification, logError } from '~/utils/errorHandler'
 
 // Page metadata
 useHead({
@@ -473,6 +474,8 @@ definePageMeta({
 
 // API
 const salesAPI = useSalesAPI()
+const config = useRuntimeConfig()
+const baseURL = (config.public.apiBase || 'https://localhost:5001') + '/api'
 
 // Reactive data
 const showNewInvoiceModal = ref(false)
@@ -491,9 +494,17 @@ onMounted(async () => {
 const loadInvoices = async () => {
   loading.value = true
   try {
-    invoices.value = await salesAPI.getInvoices()
+    const shopId = 1 // TODO: Get from session/auth
+    const result = await salesAPI.getInvoices(shopId)
+    invoices.value = result.items || result || []
   } catch (error) {
-    console.error('Failed to load invoices:', error)
+    logError(error, 'load_data', 'Failed to load invoices')
+    // Show user-friendly notification
+    const notification = document.createElement('div')
+    notification.textContent = '⚠️ Unable to load invoices. Please refresh the page.'
+    notification.className = 'fixed top-20 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50'
+    document.body.appendChild(notification)
+    setTimeout(() => notification.remove(), 5000)
   } finally {
     loading.value = false
   }
@@ -563,7 +574,7 @@ const filteredInvoices = computed(() => {
   if (periodFilter.value) {
     const now = new Date()
     filtered = filtered.filter(invoice => {
-      const issueDate = new Date(invoice.issueDate)
+      const issueDate = new Date(invoice.invoiceDate)
       switch (periodFilter.value) {
         case 'today':
           return issueDate.toDateString() === now.toDateString()
@@ -701,12 +712,33 @@ const removeInvoiceItem = (index: number) => {
 // Actions
 const createInvoice = async (sendImmediately = true) => {
   try {
-    await salesAPI.createInvoice({
-      customer: newInvoice.value.customerName,
-      orderNumber: '', // Can link to an order if needed
-      total: calculateInvoiceTotal(),
-      status: sendImmediately ? 'sent' : 'draft',
-      dueDate: new Date(newInvoice.value.dueDate)
+    const shopId = 1 // TODO: Get from session/auth
+    
+    // First create a sale with the invoice items
+    const saleItems = newInvoice.value.items.map((item: any) => ({
+      productId: 1, // TODO: Lookup product by name/SKU
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      discountAmount: 0
+    }))
+    
+    const saleId = await salesAPI.createSale({
+      shopId,
+      customerId: 1, // TODO: Lookup customer by name
+      items: saleItems,
+      paymentType: 'BankTransfer',
+      totalAmount: calculateInvoiceTotal()
+    })
+    
+    // Then create the invoice from the sale
+    await $fetch(`${baseURL}/Sales/invoices`, {
+      method: 'POST',
+      body: {
+        saleId,
+        invoiceNumber: newInvoice.value.invoiceNumber,
+        dueDate: newInvoice.value.dueDate,
+        notes: newInvoice.value.notes
+      }
     })
 
     await loadInvoices()
@@ -722,13 +754,13 @@ const createInvoice = async (sendImmediately = true) => {
       items: [{ description: '', quantity: 1, unitPrice: 0 }],
       taxRate: 15,
       discountRate: 0,
-      notes: 'Payment due within 30 * days. Thank you for your business!'
+      notes: 'Payment due within 30 days. Thank you for your business!'
     }
     
     alert(`Invoice ${sendImmediately ? 'created and sent' : 'saved as draft'} successfully!`)
   } catch (error) {
-    console.error('Error creating invoice:', error)
-    alert('Failed to create invoice. Please try again.')
+    logError(error, 'invoice_creation', 'Error creating invoice')
+    alert(getErrorNotification(error, 'invoice_creation').replace('⚠️ ', ''))
   }
 }
 
@@ -743,15 +775,18 @@ const viewInvoice = (invoice: any) => {
 const sendInvoice = async (invoice: any) => {
   try {
     if (invoice.status === 'draft') {
-      await salesAPI.updateInvoiceStatus(invoice.id, 'sent')
+      await $fetch(`${baseURL}/Sales/invoices/${invoice.id}/status`, {
+        method: 'POST',
+        body: { status: 'sent' }
+      })
       await loadInvoices()
       alert(`Invoice ${invoice.invoiceNumber} sent to ${invoice.customer}`)
     } else {
       alert(`Invoice ${invoice.invoiceNumber} resent to ${invoice.customer}`)
     }
   } catch (error) {
-    console.error('Failed to send invoice:', error)
-    alert('Failed to send invoice')
+    logError(error, 'save_data', 'Failed to send invoice')
+    alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
   }
 }
 
@@ -762,12 +797,15 @@ const printInvoice = (invoice: any) => {
 const markAsPaid = async (invoice: any) => {
   if (invoice.status !== 'paid') {
     try {
-      await salesAPI.updateInvoiceStatus(invoice.id, 'paid')
+      await $fetch(`${baseURL}/Sales/invoices/${invoice.id}/status`, {
+        method: 'POST',
+        body: { status: 'paid' }
+      })
       await loadInvoices()
       alert(`Invoice ${invoice.invoiceNumber} marked as paid`)
     } catch (error) {
-      console.error('Failed to mark as paid:', error)
-      alert('Failed to update invoice status')
+      logError(error, 'save_data', 'Failed to mark as paid')
+      alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
     }
   }
 }
@@ -775,12 +813,15 @@ const markAsPaid = async (invoice: any) => {
 const cancelInvoice = async (invoice: any) => {
   if (confirm(`Are you sure you want to cancel invoice ${invoice.invoiceNumber}?`)) {
     try {
-      await salesAPI.updateInvoiceStatus(invoice.id, 'cancelled')
+      await $fetch(`${baseURL}/Sales/invoices/${invoice.id}/status`, {
+        method: 'POST',
+        body: { status: 'cancelled' }
+      })
       await loadInvoices()
       alert(`Invoice ${invoice.invoiceNumber} cancelled`)
     } catch (error) {
-      console.error('Failed to cancel invoice:', error)
-      alert('Failed to cancel invoice')
+      logError(error, 'save_data', 'Failed to cancel invoice')
+      alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
     }
   }
 }
@@ -836,8 +877,8 @@ const exportInvoices = () => {
     
     alert(`✓ Exported ${invoicesToExport.length} invoices successfully!`)
   } catch (error) {
-    console.error('Export failed:', error)
-    alert('✗ Failed to export invoices')
+    logError(error, 'save_data', 'Export failed')
+    alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
   }
 }
 </script>

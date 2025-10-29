@@ -3,6 +3,7 @@ using Toss.Application.Common.Interfaces;
 using Toss.Infrastructure.Data;
 using Toss.Web.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
 
 using NSwag;
 using NSwag.Generation.Processors.Security;
@@ -23,6 +24,12 @@ public static class DependencyInjection
 
         builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
+        // Configure JSON options for enum string conversion
+        builder.Services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            options.SerializerOptions.PropertyNamingPolicy = null; // Keep original property names
+        });
 
         // Customise default API behaviour
         builder.Services.Configure<ApiBehaviorOptions>(options =>

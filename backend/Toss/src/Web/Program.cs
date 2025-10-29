@@ -43,7 +43,11 @@ app.UseSwaggerUi(settings =>
     settings.DocumentPath = "/api/specification.json";
 });
 
-app.UseExceptionHandler(options => { });
+// Configure exception handling based on environment
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+}
 
 // Correct middleware order for CORS (per Microsoft best practices)
 app.UseRouting();

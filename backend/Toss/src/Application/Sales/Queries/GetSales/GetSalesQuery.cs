@@ -33,10 +33,22 @@ public class GetSalesQueryHandler : IRequestHandler<GetSalesQuery, PaginatedList
             .Where(s => s.ShopId == request.ShopId);
 
         if (request.FromDate.HasValue)
-            query = query.Where(s => s.SaleDate >= request.FromDate.Value);
+        {
+            // Normalize to UTC for consistent querying
+            var fromDate = request.FromDate.Value.Offset != TimeSpan.Zero 
+                ? request.FromDate.Value.ToUniversalTime() 
+                : request.FromDate.Value;
+            query = query.Where(s => s.SaleDate >= fromDate);
+        }
 
         if (request.ToDate.HasValue)
-            query = query.Where(s => s.SaleDate <= request.ToDate.Value);
+        {
+            // Normalize to UTC for consistent querying
+            var toDate = request.ToDate.Value.Offset != TimeSpan.Zero 
+                ? request.ToDate.Value.ToUniversalTime() 
+                : request.ToDate.Value;
+            query = query.Where(s => s.SaleDate <= toDate);
+        }
 
         if (request.Status.HasValue)
             query = query.Where(s => s.Status == request.Status.Value);

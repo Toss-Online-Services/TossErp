@@ -194,9 +194,10 @@ export const useSalesAPI = () => {
    * Get invoices (sales can serve as invoices)
    */
   const getInvoices = async (shopId?: number) => {
-    const sales = await getSales({ shopId })
-    // Map sales to invoice format
-    return sales
+    return await $fetch<any>(`${baseURL}/Sales/invoices`, {
+      method: 'GET',
+      params: { shopId: shopId || 1 }
+    })
   }
 
   /**

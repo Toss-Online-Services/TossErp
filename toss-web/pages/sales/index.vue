@@ -103,8 +103,8 @@
             <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">Last 7 days sales activity</p>
           </div>
           <LineChart
-            :labels="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
-            :data="[3.2, 4.1, 3.8, 5.2, 4.8, 6.5, 5.9]"
+            :labels="salesTrendLabels.length > 0 ? salesTrendLabels : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+            :data="salesTrendData.length > 0 ? salesTrendData : [0, 0, 0, 0, 0, 0, 0]"
             label="Sales (R thousands)"
             color="#3B82F6"
             :height="280"
@@ -115,34 +115,31 @@
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300">
           <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4 sm:mb-6">Order Status</h3>
           <div class="space-y-4">
-            <div>
+            <div v-for="status in orderStatusDistribution" :key="status.status">
               <div class="flex justify-between text-xs sm:text-sm mb-2">
-                <span class="text-slate-600 dark:text-slate-400">Completed</span>
-                <span class="font-medium text-slate-900 dark:text-white">67%</span>
+                <span class="text-slate-600 dark:text-slate-400 capitalize">{{ status.status }}</span>
+                <span class="font-medium text-slate-900 dark:text-white">{{ Math.round(status.percentage) }}%</span>
               </div>
               <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
-                <div class="bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full transition-all duration-500" style="width: 67%"></div>
+                <div 
+                  class="h-3 rounded-full transition-all duration-500"
+                  :class="{
+                    'bg-gradient-to-r from-green-500 to-emerald-600': status.status === 'complete',
+                    'bg-gradient-to-r from-blue-500 to-purple-600': status.status === 'processing',
+                    'bg-gradient-to-r from-orange-500 to-amber-600': status.status === 'pending',
+                    'bg-gradient-to-r from-red-500 to-pink-600': status.status === 'cancelled'
+                  }"
+                  :style="`width: ${status.percentage}%`"
+                ></div>
               </div>
             </div>
-            <div>
+            <div v-if="orderStatusDistribution.length === 0">
               <div class="flex justify-between text-xs sm:text-sm mb-2">
-                <span class="text-slate-600 dark:text-slate-400">Processing</span>
-                <span class="font-medium text-slate-900 dark:text-white">19%</span>
-                    </div>
-              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
-                <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500" style="width: 19%"></div>
-                    </div>
-                  </div>
-            <div>
-              <div class="flex justify-between text-xs sm:text-sm mb-2">
-                <span class="text-slate-600 dark:text-slate-400">Pending</span>
-                <span class="font-medium text-slate-900 dark:text-white">14%</span>
-                  </div>
-              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
-                <div class="bg-gradient-to-r from-orange-500 to-amber-600 h-3 rounded-full transition-all duration-500" style="width: 14%"></div>
-              </div>
+                <span class="text-slate-600 dark:text-slate-400">No orders</span>
+                <span class="font-medium text-slate-900 dark:text-white">0%</span>
               </div>
             </div>
+          </div>
           </div>
         </div>
 
@@ -157,8 +154,8 @@
             </div>
                   </div>
           <BarChart
-            :labels="['Coca-Cola 2L', 'White Bread', 'Milk 1L', 'Simba Chips']"
-            :data="[145, 132, 118, 95]"
+            :labels="topProducts.length > 0 ? topProducts.map(p => p.name) : ['No products']"
+            :data="topProducts.length > 0 ? topProducts.map(p => p.quantity) : [0]"
             label="Units Sold"
             color="#8B5CF6"
             :height="280"
@@ -169,49 +166,29 @@
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300">
           <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4 sm:mb-6">Sales by Category</h3>
           <div class="space-y-4">
-            <div>
+            <div v-for="(category, index) in categorySales" :key="category.name">
               <div class="flex justify-between text-xs sm:text-sm mb-2">
-                <span class="text-slate-600 dark:text-slate-400">🛒 Groceries</span>
-                <span class="font-medium text-slate-900 dark:text-white">R8.5K (34%)</span>
-                  </div>
+                <span class="text-slate-600 dark:text-slate-400">{{ category.name }}</span>
+                <span class="font-medium text-slate-900 dark:text-white">R{{ formatCurrency(category.total / 1000) }}K ({{ Math.round(category.percentage) }}%)</span>
+              </div>
               <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
-                <div class="bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full transition-all duration-500" style="width: 34%"></div>
+                <div 
+                  class="h-3 rounded-full transition-all duration-500"
+                  :class="{
+                    'bg-gradient-to-r from-green-500 to-emerald-600': index === 0,
+                    'bg-gradient-to-r from-blue-500 to-purple-600': index === 1,
+                    'bg-gradient-to-r from-yellow-500 to-orange-600': index === 2,
+                    'bg-gradient-to-r from-purple-500 to-pink-600': index === 3,
+                    'bg-gradient-to-r from-pink-500 to-rose-600': index >= 4
+                  }"
+                  :style="`width: ${category.percentage}%`"
+                ></div>
               </div>
             </div>
-            <div>
+            <div v-if="categorySales.length === 0">
               <div class="flex justify-between text-xs sm:text-sm mb-2">
-                <span class="text-slate-600 dark:text-slate-400">🥤 Beverages</span>
-                <span class="font-medium text-slate-900 dark:text-white">R6.2K (25%)</span>
-              </div>
-              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
-                <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500" style="width: 25%"></div>
-          </div>
-            </div>
-                    <div>
-              <div class="flex justify-between text-xs sm:text-sm mb-2">
-                <span class="text-slate-600 dark:text-slate-400">🍿 Snacks</span>
-                <span class="font-medium text-slate-900 dark:text-white">R4.8K (20%)</span>
-              </div>
-              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
-                <div class="bg-gradient-to-r from-yellow-500 to-orange-600 h-3 rounded-full transition-all duration-500" style="width: 20%"></div>
-                    </div>
-                  </div>
-                    <div>
-              <div class="flex justify-between text-xs sm:text-sm mb-2">
-                <span class="text-slate-600 dark:text-slate-400">🧹 Household</span>
-                <span class="font-medium text-slate-900 dark:text-white">R3.2K (13%)</span>
-                    </div>
-              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
-                <div class="bg-gradient-to-r from-purple-500 to-pink-600 h-3 rounded-full transition-all duration-500" style="width: 13%"></div>
-                    </div>
-                  </div>
-                    <div>
-              <div class="flex justify-between text-xs sm:text-sm mb-2">
-                <span class="text-slate-600 dark:text-slate-400">🧴 Personal Care</span>
-                <span class="font-medium text-slate-900 dark:text-white">R2.0K (8%)</span>
-                    </div>
-              <div class="w-full bg-slate-200 rounded-full h-3 dark:bg-slate-700">
-                <div class="bg-gradient-to-r from-pink-500 to-rose-600 h-3 rounded-full transition-all duration-500" style="width: 8%"></div>
+                <span class="text-slate-600 dark:text-slate-400">No category data</span>
+                <span class="font-medium text-slate-900 dark:text-white">0%</span>
               </div>
             </div>
           </div>
@@ -289,7 +266,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { 
   CurrencyDollarIcon, 
   ShoppingBagIcon, 
@@ -301,6 +278,10 @@ import {
 } from '@heroicons/vue/24/outline'
 import LineChart from '~/components/charts/LineChart.vue'
 import BarChart from '~/components/charts/BarChart.vue'
+import { getErrorNotification, logError } from '~/utils/errorHandler'
+import { useSalesAPI } from '~/composables/useSalesAPI'
+import { useDashboard } from '~/composables/useDashboard'
+import { useCustomerOrdersAPI } from '~/composables/useCustomerOrdersAPI'
 
 // Page metadata
 useHead({
@@ -315,18 +296,112 @@ definePageMeta({
   layout: 'default'
 })
 
+// API
+const salesAPI = useSalesAPI()
+const dashboardAPI = useDashboard()
+const ordersAPI = useCustomerOrdersAPI()
+
 // State
 const loading = ref(false)
 
 // Sales statistics
-const todaysSales = ref(24500)
-const todaysGrowth = ref(15.8)
-const totalOrders = ref(42)
-const pendingOrders = ref(8)
-const totalInvoices = ref(35)
-const unpaidInvoices = ref(5)
-const averageOrder = ref(580)
-const conversionRate = ref(68)
+const todaysSales = ref(0)
+const todaysGrowth = ref(0)
+const totalOrders = ref(0)
+const pendingOrders = ref(0)
+const totalInvoices = ref(0)
+const unpaidInvoices = ref(0)
+const averageOrder = ref(0)
+const conversionRate = ref(0)
+
+// Chart data
+const salesTrendData = ref<number[]>([])
+const salesTrendLabels = ref<string[]>([])
+const orderStatusDistribution = ref<Array<{status: string, percentage: number}>>([])
+const topProducts = ref<Array<{name: string, quantity: number}>>([])
+const categorySales = ref<Array<{name: string, total: number, percentage: number}>>([])
+
+// Load data on mount
+onMounted(async () => {
+  await refreshStats()
+})
+
+// Load dashboard data
+const loadDashboardData = async () => {
+  try {
+    const shopId = 1 // TODO: Get from session/auth
+    
+    // Get dashboard summary
+    const summary = await dashboardAPI.getDashboardSummary(shopId)
+    todaysSales.value = summary.todayRevenue || 0
+    totalOrders.value = summary.todayTransactions || 0
+    averageOrder.value = summary.todayTransactions > 0 ? (summary.todayRevenue / summary.todayTransactions) : 0
+    
+    // Get sales trends (last 7 days)
+    const endDate = new Date()
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - 7)
+    const trends = await dashboardAPI.getSalesTrends({
+      shopId,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
+    })
+    
+    salesTrendData.value = trends.map(t => Number(t.totalSales) / 1000) // Convert to thousands
+    salesTrendLabels.value = trends.map(t => {
+      const date = new Date(t.date)
+      return date.toLocaleDateString('en-US', { weekday: 'short' })
+    })
+    
+    // Get top products
+    const topProductsData = await dashboardAPI.getTopProducts({
+      shopId,
+      limit: 4
+    })
+    topProducts.value = topProductsData.map(p => ({
+      name: p.productName,
+      quantity: p.quantitySold
+    }))
+    
+    // Get category sales
+    const categoryData = await dashboardAPI.getCategorySales({
+      shopId,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
+    })
+    categorySales.value = categoryData.map(c => ({
+      name: c.categoryName,
+      total: Number(c.totalSales),
+      percentage: Number(c.percentage)
+    }))
+    
+    // Get order status distribution
+    const orderStatus = await dashboardAPI.getOrderStatusDistribution({ shopId })
+    orderStatusDistribution.value = orderStatus.map(os => ({
+      status: os.statusName.toLowerCase(),
+      percentage: Number(os.percentage)
+    }))
+    
+    // Get orders
+    const orders = await ordersAPI.getOrders({ shopId })
+    totalOrders.value = orders.length
+    pendingOrders.value = orders.filter(o => o.orderStatus === 'Pending').length
+    
+    // Get invoices
+    const invoices = await salesAPI.getInvoices(shopId)
+    totalInvoices.value = invoices.items?.length || 0
+    unpaidInvoices.value = invoices.items?.filter((i: any) => i.status !== 'paid').length || 0
+    
+    // Calculate growth (mock for now - would need previous period data)
+    todaysGrowth.value = 0
+    
+    // Calculate conversion rate (mock)
+    conversionRate.value = 68
+    
+  } catch (error) {
+    logError(error, 'load_data', 'Failed to load dashboard data')
+  }
+}
 
 // Helper functions
 const formatCurrency = (amount: number) => {
@@ -338,9 +413,19 @@ const formatCurrency = (amount: number) => {
 
 const refreshStats = async () => {
   loading.value = true
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 500))
-  loading.value = false
+  try {
+    await loadDashboardData()
+  } catch (error) {
+    logError(error, 'load_data', 'Failed to refresh stats')
+    // Show user-friendly notification
+    const notification = document.createElement('div')
+    notification.textContent = getErrorNotification(error, 'load_data')
+    notification.className = 'fixed top-20 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50'
+    document.body.appendChild(notification)
+    setTimeout(() => notification.remove(), 3000)
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
