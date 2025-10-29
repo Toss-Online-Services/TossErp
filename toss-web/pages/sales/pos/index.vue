@@ -262,18 +262,38 @@
                 <span class="text-xl font-bold text-blue-600">R{{ formatCurrency(cartTotal) }}</span>
               </div>
               
-              <!-- Customer Selection -->
+              <!-- Customer Selection (Searchable) -->
               <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Customer</label>
-                <select 
-                  v-model="selectedCustomer"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
-                >
-                  <option value="">Walk-in Customer</option>
-                  <option v-for="customer in customers" :key="customer.id" :value="customer.id">
-                    {{ customer.name }}
-                  </option>
-                </select>
+                <div class="relative">
+                  <input
+                    v-model="customerSearchQuery"
+                    @focus="showCustomerDropdown = true"
+                    @blur="handleCustomerBlur"
+                    type="text"
+                    placeholder="Walk-in Customer"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+                  />
+                  <div 
+                    v-if="showCustomerDropdown" 
+                    class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto"
+                  >
+                    <div 
+                      @mousedown.prevent="selectCustomer(null)"
+                      class="px-3 py-2 hover:bg-blue-50 cursor-pointer text-gray-900"
+                    >
+                      Walk-in Customer
+                    </div>
+                    <div 
+                      v-for="customer in filteredCustomers" 
+                      :key="customer.id"
+                      @mousedown.prevent="selectCustomer(customer)"
+                      class="px-3 py-2 hover:bg-blue-50 cursor-pointer text-gray-900"
+                    >
+                      {{ customer.name }} <span class="text-xs text-gray-500">{{ customer.phone }}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- Payment Methods -->
@@ -313,22 +333,25 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
             <div class="space-y-3">
               <button 
-                @click="holdSale"
-                class="w-full py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                @click="showHoldSaleModal = true"
+                :disabled="cartItems.length === 0"
+                class="w-full py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 ⏸️ Hold Sale
               </button>
               <button 
-                @click="voidSale"
-                class="w-full py-2.5 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                @click="showVoidSaleModal = true"
+                :disabled="cartItems.length === 0"
+                class="w-full py-2.5 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 ❌ Void Sale
               </button>
               <button 
-                @click="showCustomerModal = true"
-                class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                v-if="heldSales.length > 0"
+                @click="showHeldSalesModal = true"
+                class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                👤 Add Customer
+                📋 Held Sales ({{ heldSales.length }})
               </button>
             </div>
           </div>
@@ -361,6 +384,174 @@
         </div>
       </div>
     </div>
+    </div>
+
+    <!-- Reports Modal -->
+    <div v-if="showReports" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-2xl font-semibold text-gray-900">Daily Sales Report</h3>
+          <button @click="showReports = false" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="bg-green-50 p-4 rounded-lg">
+            <p class="text-sm text-gray-600">Today's Sales</p>
+            <p class="text-2xl font-bold text-gray-900">R{{ formatCurrency(todaySales) }}</p>
+            <p class="text-xs text-green-600 mt-1">{{ todayTransactions }} transactions</p>
+          </div>
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <p class="text-sm text-gray-600">Average Sale</p>
+            <p class="text-2xl font-bold text-gray-900">R{{ formatCurrency(averageSale) }}</p>
+            <p class="text-xs text-blue-600 mt-1">Per transaction</p>
+          </div>
+          <div class="bg-purple-50 p-4 rounded-lg">
+            <p class="text-sm text-gray-600">Cash Float</p>
+            <p class="text-2xl font-bold text-gray-900">R{{ formatCurrency(cashFloat) }}</p>
+            <p class="text-xs text-purple-600 mt-1">In drawer</p>
+          </div>
+        </div>
+
+        <!-- Payment Methods Breakdown -->
+        <div class="mb-6">
+          <h4 class="text-lg font-semibold text-gray-900 mb-3">Payment Methods</h4>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="bg-gray-50 p-3 rounded-lg">
+              <p class="text-xs text-gray-600">Cash</p>
+              <p class="text-lg font-bold text-gray-900">R12,350.00</p>
+              <p class="text-xs text-gray-500">25 sales</p>
+            </div>
+            <div class="bg-gray-50 p-3 rounded-lg">
+              <p class="text-xs text-gray-600">Card</p>
+              <p class="text-lg font-bold text-gray-900">R5,246.00</p>
+              <p class="text-xs text-gray-500">18 sales</p>
+            </div>
+            <div class="bg-gray-50 p-3 rounded-lg">
+              <p class="text-xs text-gray-600">EFT</p>
+              <p class="text-lg font-bold text-gray-900">R750.00</p>
+              <p class="text-xs text-gray-500">3 sales</p>
+            </div>
+            <div class="bg-gray-50 p-3 rounded-lg">
+              <p class="text-xs text-gray-600">Account</p>
+              <p class="text-lg font-bold text-gray-900">R150.00</p>
+              <p class="text-xs text-gray-500">2 sales</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button @click="printReport" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+            Print Report
+          </button>
+          <button @click="showReports = false" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hold Sale Modal -->
+    <div v-if="showHoldSaleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl p-6 max-w-md w-full">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Hold Sale</h3>
+        <p class="text-gray-600 mb-4">Enter a note for this held sale:</p>
+        <input 
+          v-model="holdSaleNote"
+          type="text"
+          placeholder="e.g., Customer will return later"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-4"
+        />
+        <div class="flex space-x-3">
+          <button 
+            @click="confirmHoldSale"
+            class="flex-1 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors"
+          >
+            Hold Sale
+          </button>
+          <button 
+            @click="showHoldSaleModal = false; holdSaleNote = ''"
+            class="flex-1 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Void Sale Modal -->
+    <div v-if="showVoidSaleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl p-6 max-w-md w-full">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Void Sale</h3>
+        <p class="text-gray-600 mb-4">Enter a reason for voiding this sale:</p>
+        <textarea 
+          v-model="voidSaleReason"
+          placeholder="e.g., Customer changed mind"
+          rows="3"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-4"
+        ></textarea>
+        <div class="flex space-x-3">
+          <button 
+            @click="confirmVoidSale"
+            class="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+          >
+            Void Sale
+          </button>
+          <button 
+            @click="showVoidSaleModal = false; voidSaleReason = ''"
+            class="flex-1 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Held Sales Modal -->
+    <div v-if="showHeldSalesModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-semibold text-gray-900">Held Sales</h3>
+          <button @click="showHeldSalesModal = false" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="space-y-3">
+          <div 
+            v-for="(sale, index) in heldSales" 
+            :key="index"
+            class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 transition-colors"
+          >
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <p class="font-medium text-gray-900">R{{ formatCurrency(sale.total) }}</p>
+                <p class="text-sm text-gray-500">{{ sale.items.length }} items • {{ sale.timestamp }}</p>
+                <p v-if="sale.note" class="text-sm text-gray-600 mt-1">Note: {{ sale.note }}</p>
+              </div>
+              <div class="flex gap-2">
+                <button 
+                  @click="retrieveHeldSale(index)"
+                  class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm"
+                >
+                  Retrieve
+                </button>
+                <button 
+                  @click="deleteHeldSale(index)"
+                  class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Barcode Scanner Component -->
@@ -418,15 +609,27 @@ const scannerActive = ref(false)
 const showBarcodeScanner = ref(false)
 const cartItems = ref<any[]>([])
 const selectedCustomer = ref('')
+const selectedCustomerName = ref('Walk-in Customer')
 const selectedPaymentMethod = ref('cash')
 const showSuccessModal = ref(false)
-const showCustomerModal = ref(false)
 const showReports = ref(false)
 const searchInput = ref<HTMLInputElement>()
 const isFullscreen = ref(false)
 const showStatsDetails = ref(false)
 const products = ref<any[]>([])
 const customers = ref<any[]>([])
+
+// Customer search
+const customerSearchQuery = ref('Walk-in Customer')
+const showCustomerDropdown = ref(false)
+
+// Hold/Void Sale
+const showHoldSaleModal = ref(false)
+const showVoidSaleModal = ref(false)
+const showHeldSalesModal = ref(false)
+const holdSaleNote = ref('')
+const voidSaleReason = ref('')
+const heldSales = ref<any[]>([])
 
 // POS Stats
 const todaySales = ref(18496)
@@ -537,6 +740,18 @@ const cartTotal = computed(() => {
   return cartItems.value.reduce((total: number, item: any) => total + (item.price * item.quantity), 0)
 })
 
+const filteredCustomers = computed(() => {
+  if (!customerSearchQuery.value || customerSearchQuery.value === 'Walk-in Customer') {
+    return customers.value
+  }
+  const query = customerSearchQuery.value.toLowerCase()
+  return customers.value.filter((c: any) => 
+    c.name.toLowerCase().includes(query) ||
+    c.phone.toLowerCase().includes(query) ||
+    c.email.toLowerCase().includes(query)
+  )
+})
+
 // Methods
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-ZA', {
@@ -580,7 +795,29 @@ const updateQuantity = (productId: number | string, newQuantity: number) => {
 const clearCart = () => {
   cartItems.value = []
   selectedCustomer.value = ''
+  selectedCustomerName.value = 'Walk-in Customer'
+  customerSearchQuery.value = 'Walk-in Customer'
   selectedPaymentMethod.value = 'cash'
+}
+
+// Customer selection methods
+const selectCustomer = (customer: any) => {
+  if (customer === null) {
+    selectedCustomer.value = ''
+    selectedCustomerName.value = 'Walk-in Customer'
+    customerSearchQuery.value = 'Walk-in Customer'
+  } else {
+    selectedCustomer.value = customer.id
+    selectedCustomerName.value = customer.name
+    customerSearchQuery.value = customer.name
+  }
+  showCustomerDropdown.value = false
+}
+
+const handleCustomerBlur = () => {
+  setTimeout(() => {
+    showCustomerDropdown.value = false
+  }, 200)
 }
 
 const addFirstProductToCart = () => {
@@ -749,8 +986,8 @@ const processPayment = async () => {
       await new Promise(resolve => setTimeout(resolve, 2000))
     }
 
-    // Get customer ID (use null for walk-in customers)
-    const customerId = selectedCustomer.value || null
+    // Get customer ID (use undefined for walk-in customers)
+    const customerId = selectedCustomer.value ? parseInt(selectedCustomer.value) : undefined
 
     // Create sale transaction via API
     const saleData = {
@@ -776,20 +1013,70 @@ const processPayment = async () => {
   }
 }
 
-const holdSale = () => {
+// Hold Sale functionality
+const confirmHoldSale = () => {
   if (cartItems.value.length === 0) return
   
-  // In production, save to held transactions
-  alert('Sale held successfully')
+  const heldSale = {
+    items: [...cartItems.value],
+    customer: selectedCustomerName.value,
+    customerId: selectedCustomer.value,
+    paymentMethod: selectedPaymentMethod.value,
+    total: cartTotal.value,
+    note: holdSaleNote.value,
+    timestamp: new Date().toLocaleString('en-ZA')
+  }
+  
+  heldSales.value.push(heldSale)
+  showNotification(`✓ Sale held successfully (${heldSales.value.length} held sales)`)
+  
+  showHoldSaleModal.value = false
+  holdSaleNote.value = ''
   clearCart()
 }
 
-const voidSale = () => {
+// Void Sale functionality
+const confirmVoidSale = () => {
   if (cartItems.value.length === 0) return
   
-  if (confirm('Are you sure you want to void this sale?')) {
-    clearCart()
+  console.log(`Sale voided. Reason: ${voidSaleReason.value}`)
+  showNotification('✓ Sale voided successfully')
+  
+  showVoidSaleModal.value = false
+  voidSaleReason.value = ''
+  clearCart()
+}
+
+// Retrieve held sale
+const retrieveHeldSale = (index: number) => {
+  const sale = heldSales.value[index]
+  
+  cartItems.value = [...sale.items]
+  selectedCustomer.value = sale.customerId || ''
+  selectedCustomerName.value = sale.customer
+  customerSearchQuery.value = sale.customer
+  selectedPaymentMethod.value = sale.paymentMethod
+  
+  heldSales.value.splice(index, 1)
+  showHeldSalesModal.value = false
+  showNotification(`✓ Sale retrieved successfully`)
+}
+
+// Delete held sale
+const deleteHeldSale = (index: number) => {
+  if (confirm('Are you sure you want to delete this held sale?')) {
+    heldSales.value.splice(index, 1)
+    showNotification('✓ Held sale deleted')
+    if (heldSales.value.length === 0) {
+      showHeldSalesModal.value = false
+    }
   }
+}
+
+// Print report
+const printReport = () => {
+  showNotification('✓ Report sent to printer')
+  window.print()
 }
 
 const openDrawer = async () => {
