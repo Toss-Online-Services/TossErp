@@ -25,12 +25,14 @@ export const useSalesAPI = () => {
       quantity: number
       unitPrice: number
     }>
-    paymentType: string
+    paymentType: 'Cash' | 'Card' | 'MobileMoney' | 'BankTransfer' | 'PayLink'
     totalAmount: number
   }) => {
     return await $fetch<{ id: number }>(`${baseURL}/Sales`, {
       method: 'POST',
-      body: saleData
+      body: {
+        ...saleData
+      }
     })
   }
 
@@ -213,7 +215,7 @@ export const useSalesAPI = () => {
       shopId: 1, // TODO: Get from session
       customerId: 1, // TODO: Map customer name to ID
       items: [],
-      paymentType: 'Account',
+      paymentType: 'BankTransfer', // Account sales use bank transfer
       totalAmount: invoiceData.total
     })
   }
@@ -223,6 +225,73 @@ export const useSalesAPI = () => {
    */
   const updateInvoiceStatus = async (invoiceId: number | string, newStatus: string) => {
     return await updateSaleStatus(Number(invoiceId), newStatus)
+  }
+
+  /**
+   * Hold a sale (save to database with OnHold status)
+   */
+  const holdSale = async (saleData: {
+    shopId: number
+    customerId?: number
+    items: Array<{
+      productId: number
+      quantity: number
+      unitPrice: number
+    }>
+    paymentMethod: 'Cash' | 'Card' | 'MobileMoney' | 'BankTransfer' | 'PayLink'
+    totalAmount: number
+    notes?: string
+  }) => {
+    return await $fetch<{ id: number }>(`${baseURL}/Sales/hold`, {
+      method: 'POST',
+      body: {
+        ...saleData
+      }
+    })
+  }
+
+  /**
+   * Get all held sales for a shop
+   */
+  const getHeldSales = async (shopId: number) => {
+    return await $fetch<Array<{
+      id: number
+      saleNumber: string
+      customerId?: number
+      customerName: string
+      heldAt: string
+      total: number
+      paymentMethod: string
+      notes?: string
+      items: Array<{
+        productId: number
+        productName: string
+        quantity: number
+        unitPrice: number
+        total: number
+      }>
+    }>>(`${baseURL}/Sales/held`, {
+      method: 'GET',
+      params: { shopId }
+    })
+  }
+
+  /**
+   * Retrieve a held sale (change status from OnHold to Pending)
+   */
+  const retrieveHeldSale = async (saleId: number) => {
+    return await $fetch<boolean>(`${baseURL}/Sales/${saleId}/retrieve`, {
+      method: 'POST'
+    })
+  }
+
+  /**
+   * Delete a held sale
+   */
+  const deleteHeldSale = async (saleId: number) => {
+    return await $fetch<boolean>(`${baseURL}/Sales/${saleId}/held`, {
+      method: 'DELETE'
+    })
   }
 
   return {
@@ -235,6 +304,12 @@ export const useSalesAPI = () => {
     getSaleById,
     updateSaleStatus,
     processRefund,
+    
+    // Held sales methods
+    holdSale,
+    getHeldSales,
+    retrieveHeldSale,
+    deleteHeldSale,
     
     // Proxy methods for convenience
     getProducts,

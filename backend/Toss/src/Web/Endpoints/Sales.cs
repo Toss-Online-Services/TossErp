@@ -3,9 +3,13 @@ using Toss.Application.Sales.Commands.GenerateReceipt;
 using Toss.Application.Sales.Commands.VoidSale;
 using Toss.Application.Sales.Commands.UpdateSaleStatus;
 using Toss.Application.Sales.Commands.ProcessRefund;
+using Toss.Application.Sales.Commands.HoldSale;
+using Toss.Application.Sales.Commands.RetrieveHeldSale;
+using Toss.Application.Sales.Commands.DeleteHeldSale;
 using Toss.Application.Sales.Queries.GetDailySummary;
 using Toss.Application.Sales.Queries.GetSaleById;
 using Toss.Application.Sales.Queries.GetSales;
+using Toss.Application.Sales.Queries.GetHeldSales;
 
 namespace Toss.Web.Endpoints;
 
@@ -36,6 +40,18 @@ public class Sales : EndpointGroupBase
         
         group.MapPost("{id}/refund", ProcessRefund)
             .WithName("ProcessRefund");
+        
+        group.MapPost("hold", HoldSale)
+            .WithName("HoldSale");
+        
+        group.MapGet("held", GetHeldSales)
+            .WithName("GetHeldSales");
+        
+        group.MapPost("{id}/retrieve", RetrieveHeldSale)
+            .WithName("RetrieveHeldSale");
+        
+        group.MapDelete("{id}/held", DeleteHeldSale)
+            .WithName("DeleteHeldSale");
     }
 
     public async Task<IResult> CreateSale(ISender sender, CreateSaleCommand command)
@@ -88,6 +104,32 @@ public class Sales : EndpointGroupBase
     {
         var refundId = await sender.Send(command with { SaleId = id });
         return Results.Ok(new { refundId });
+    }
+
+    public async Task<IResult> HoldSale(ISender sender, HoldSaleCommand command)
+    {
+        var saleId = await sender.Send(command);
+        return Results.Created($"/api/sales/{saleId}", new { id = saleId });
+    }
+
+    public async Task<IResult> GetHeldSales(
+        ISender sender,
+        [AsParameters] GetHeldSalesQuery query)
+    {
+        var result = await sender.Send(query);
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> RetrieveHeldSale(ISender sender, int id)
+    {
+        var result = await sender.Send(new RetrieveHeldSaleCommand { SaleId = id });
+        return result ? Results.Ok() : Results.NotFound("Held sale not found");
+    }
+
+    public async Task<IResult> DeleteHeldSale(ISender sender, int id)
+    {
+        var result = await sender.Send(new DeleteHeldSaleCommand { SaleId = id });
+        return result ? Results.Ok() : Results.NotFound("Held sale not found");
     }
 }
 

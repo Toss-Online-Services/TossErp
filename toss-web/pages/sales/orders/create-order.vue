@@ -179,7 +179,7 @@ const showOrderQueue = ref(false)
 const cartItems = ref<any[]>([])
 const pendingOrders = ref<any[]>([])
 const selectedCustomer = ref('')
-const selectedPaymentMethod = ref('cash')
+const selectedPaymentMethod = ref('Cash')
 const products = ref<any[]>([])
 const customers = ref<any[]>([])
 
@@ -226,10 +226,11 @@ const loadPendingOrders = async () => {
 
 // Payment methods
 const paymentMethods = ref([
-  { id: 'cash', name: 'Cash' },
-  { id: 'card', name: 'Card' },
-  { id: 'eft', name: 'EFT' },
-  { id: 'account', name: 'Account' }
+  { id: 'Cash', name: 'Cash' },
+  { id: 'Card', name: 'Card' },
+  { id: 'MobileMoney', name: 'Mobile Money' },
+  { id: 'BankTransfer', name: 'Bank Transfer' },
+  { id: 'PayLink', name: 'Pay Link' }
 ])
 
 // Categories
@@ -343,7 +344,7 @@ const createOrder = async () => {
     // Clear form
     clearCart()
     selectedCustomer.value = ''
-    selectedPaymentMethod.value = 'cash'
+    selectedPaymentMethod.value = 'Cash'
     customer.value = { name: '', phone: '', notes: '' }
     
     showNotification(`✓ Order #${newOrder.orderNumber} created for ${customerName}`)

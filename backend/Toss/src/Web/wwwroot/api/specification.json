@@ -2510,6 +2510,106 @@
         }
       }
     },
+    "/api/Sales/hold": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "HoldSale",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HoldSaleCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/held": {
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetHeldSales",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/{id}/retrieve": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "RetrieveHeldSale",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/{id}/held": {
+      "delete": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "DeleteHeldSale",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/Settings/shop/{shopId}": {
       "get": {
         "tags": [
@@ -5050,13 +5150,15 @@
           "Pending",
           "Completed",
           "Voided",
-          "Refunded"
+          "Refunded",
+          "OnHold"
         ],
         "enum": [
           0,
           1,
           2,
-          3
+          3,
+          4
         ]
       },
       "VoidSaleCommand": {
@@ -5106,6 +5208,56 @@
           },
           "restockItems": {
             "type": "boolean"
+          }
+        }
+      },
+      "HoldSaleCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "shopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaleItemDto2"
+            }
+          },
+          "paymentMethod": {
+            "$ref": "#/components/schemas/PaymentType"
+          },
+          "totalAmount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "SaleItemDto2": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unitPrice": {
+            "type": "number",
+            "format": "decimal"
           }
         }
       },
