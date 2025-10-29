@@ -378,6 +378,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import SalesOrderTimeline from '~/components/sales/OrderTimeline.vue'
 import { useSalesAPI } from '~/composables/useSalesAPI'
+import { getErrorNotification, logError } from '~/utils/errorHandler'
 
 // Page metadata
 useHead({
@@ -413,7 +414,13 @@ const loadOrders = async () => {
   try {
     orders.value = await salesAPI.getOrders()
   } catch (error) {
-    console.error('Failed to load orders:', error)
+    logError(error, 'load_data', 'Failed to load orders')
+    // Show user-friendly notification for critical data loading failure
+    const notification = document.createElement('div')
+    notification.textContent = '⚠️ Unable to load orders. Please refresh the page.'
+    notification.className = 'fixed top-20 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50'
+    document.body.appendChild(notification)
+    setTimeout(() => notification.remove(), 5000)
   } finally {
     loading.value = false
   }
@@ -577,8 +584,8 @@ const cancelOrder = async (order: any) => {
       await loadOrders() // Reload to reflect changes
       alert(`✓ Order ${order.orderNumber} has been cancelled`)
     } catch (error) {
-      console.error('Failed to cancel order:', error)
-      alert('✗ Failed to cancel order')
+      logError(error, 'save_data', 'Failed to cancel order')
+      alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
     }
   }
 }

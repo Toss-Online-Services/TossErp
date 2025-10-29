@@ -173,6 +173,7 @@ import {
   PlusIcon
 } from '@heroicons/vue/24/outline'
 import { useSalesAPI } from '~/composables/useSalesAPI'
+import { getErrorNotification, logError } from '~/utils/errorHandler'
 
 // Page metadata
 useHead({
@@ -207,7 +208,13 @@ const loadQueue = async () => {
       o.status !== 'completed' && o.status !== 'cancelled'
     )
   } catch (error) {
-    console.error('Failed to load queue:', error)
+    logError(error, 'load_data', 'Failed to load queue')
+    // Show user-friendly notification
+    const notification = document.createElement('div')
+    notification.textContent = '⚠️ Unable to load order queue. Please refresh the page.'
+    notification.className = 'fixed top-20 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50'
+    document.body.appendChild(notification)
+    setTimeout(() => notification.remove(), 5000)
   } finally {
     loading.value = false
   }
@@ -252,8 +259,8 @@ const updateStatus = async (order: any, newStatus: string) => {
     const statusText = getStatusLabel(newStatus)
     alert(`✓ Order #${order.orderNumber} marked as ${statusText}`)
   } catch (error) {
-    console.error('Failed to update status:', error)
-    alert('✗ Failed to update order status')
+    logError(error, 'save_data', 'Failed to update status')
+    alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
   }
 }
 
@@ -263,8 +270,8 @@ const completeOrder = async (order: any) => {
     await loadQueue()
     alert(`✓ Order #${order.orderNumber} completed and removed from queue`)
   } catch (error) {
-    console.error('Failed to complete order:', error)
-    alert('✗ Failed to complete order')
+    logError(error, 'save_data', 'Failed to complete order')
+    alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
   }
 }
 
@@ -275,8 +282,8 @@ const cancelOrder = async (order: any) => {
       await loadQueue()
       alert(`✗ Order #${order.orderNumber} cancelled`)
     } catch (error) {
-      console.error('Failed to cancel order:', error)
-      alert('✗ Failed to cancel order')
+      logError(error, 'save_data', 'Failed to cancel order')
+      alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
     }
   }
 }

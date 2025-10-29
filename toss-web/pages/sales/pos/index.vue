@@ -181,8 +181,9 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-2">Unable to Load Data</h3>
-              <p class="text-gray-600 text-center mb-4 max-w-md">{{ error }}</p>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">{{ errorDetails.title }}</h3>
+              <p class="text-gray-600 text-center mb-2 max-w-md">{{ errorDetails.message }}</p>
+              <p class="text-sm text-gray-500 text-center mb-4 max-w-md">{{ errorDetails.action }}</p>
               <button 
                 @click="loadData" 
                 class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
@@ -190,7 +191,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                <span>Retry</span>
+                <span>Try Again</span>
               </button>
             </div>
 
@@ -675,6 +676,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
 import { useSalesAPI } from '~/composables/useSalesAPI'
+import { sanitizeError, getErrorNotification, getDetailedErrorMessage, logError } from '~/utils/errorHandler'
 
 // API
 const salesAPI = useSalesAPI()
@@ -742,6 +744,7 @@ const isLoadingCategories = ref(false)
 const isLoadingCustomers = ref(false)
 const error = ref<string | null>(null)
 const hasError = ref(false)
+const errorDetails = ref({ title: '', message: '', action: '' })
 
 // Load data on mount
 const loadData = async () => {
@@ -816,18 +819,20 @@ const loadData = async () => {
     
     isLoading.value = false
   } catch (err: any) {
-    console.error('Failed to load POS data:', err)
+    // Log the original error for debugging
+    logError(err, 'load_data', 'Failed to load POS data')
     
-    // Set error state
+    // Set error state with sanitized message
     hasError.value = true
-    error.value = err.message || 'Failed to connect to server. Please check your connection and try again.'
+    errorDetails.value = getDetailedErrorMessage(err, 'load_data')
+    error.value = errorDetails.value.message
     isLoading.value = false
     isLoadingProducts.value = false
     isLoadingCategories.value = false
     isLoadingCustomers.value = false
     
     // Show user-friendly error notification
-    showNotification('⚠️ Failed to load data from server. Please refresh the page.', 'error')
+    showNotification(getErrorNotification(err, 'load_data'), 'error')
   }
 }
 
@@ -1144,8 +1149,8 @@ const processPayment = async () => {
     showNotification(`✓ Sale completed! Transaction #${result.id}`)
     showSuccessModal.value = true
   } catch (error) {
-    console.error('Payment processing failed:', error)
-    showNotification('✗ Payment failed. Please try again.', 'error')
+    logError(error, 'payment', 'Payment processing failed')
+    showNotification(getErrorNotification(error, 'payment'), 'error')
   }
 }
 
@@ -1178,8 +1183,8 @@ const confirmHoldSale = async () => {
     holdSaleNote.value = ''
     clearCart()
   } catch (error) {
-    console.error('Failed to hold sale:', error)
-    showNotification('✗ Failed to hold sale', 'error')
+    logError(error, 'save_data', 'Failed to hold sale')
+    showNotification(getErrorNotification(error, 'save_data'), 'error')
   }
 }
 
@@ -1218,7 +1223,8 @@ const loadHeldSales = async () => {
       timestamp: new Date(sale.heldAt).toLocaleString('en-ZA')
     }))
   } catch (error) {
-    console.error('Failed to load held sales:', error)
+    logError(error, 'load_data', 'Failed to load held sales')
+    // Don't show notification for background loading failures
   }
 }
 
@@ -1249,8 +1255,8 @@ const retrieveHeldSale = async (index: number) => {
     heldSalesSearchQuery.value = ''
     showNotification(`✓ Sale retrieved successfully`)
   } catch (error) {
-    console.error('Failed to retrieve held sale:', error)
-    showNotification('✗ Failed to retrieve sale', 'error')
+    logError(error, 'load_data', 'Failed to retrieve held sale')
+    showNotification(getErrorNotification(error, 'load_data'), 'error')
   }
 }
 
@@ -1271,8 +1277,8 @@ const deleteHeldSale = async (index: number) => {
         heldSalesSearchQuery.value = ''
       }
     } catch (error) {
-      console.error('Failed to delete held sale:', error)
-      showNotification('✗ Failed to delete sale', 'error')
+      logError(error, 'save_data', 'Failed to delete held sale')
+      showNotification(getErrorNotification(error, 'save_data'), 'error')
     }
   }
 }

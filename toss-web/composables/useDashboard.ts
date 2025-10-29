@@ -58,10 +58,32 @@ export const useDashboard = () => {
     }>('/api/dashboard/cash-flow', params)
   }
 
+  /**
+   * Get order status distribution
+   */
+  const getOrderStatusDistribution = async (params: {
+    shopId: number
+  }) => {
+    return await get<any>('/api/dashboard/order-status-distribution', params)
+  }
+
+  /**
+   * Get category sales
+   */
+  const getCategorySales = async (params: {
+    shopId: number
+    startDate?: string
+    endDate?: string
+  }) => {
+    return await get<any>('/api/dashboard/category-sales', params)
+  }
+
   return {
     getDashboardSummary,
     getSalesTrends,
     getTopProducts,
-    getCashFlowSummary
+    getCashFlowSummary,
+    getOrderStatusDistribution,
+    getCategorySales
   }
 }

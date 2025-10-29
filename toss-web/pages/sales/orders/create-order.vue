@@ -154,6 +154,7 @@ import CustomerInfoModal from '~/components/sales/CustomerInfoModal.vue'
 import OrderQueue from '~/components/sales/OrderQueue.vue'
 import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
 import { useSalesAPI } from '~/composables/useSalesAPI'
+import { getErrorNotification, logError } from '~/utils/errorHandler'
 
 // Page metadata
 useHead({
@@ -201,7 +202,8 @@ const loadProducts = async () => {
   try {
     products.value = await salesAPI.getProducts()
   } catch (error) {
-    console.error('Failed to load products:', error)
+    logError(error, 'load_data', 'Failed to load products')
+    showNotification(getErrorNotification(error, 'product_search'), 'error')
   }
 }
 
@@ -209,7 +211,8 @@ const loadCustomers = async () => {
   try {
     customers.value = await salesAPI.getCustomers()
   } catch (error) {
-    console.error('Failed to load customers:', error)
+    logError(error, 'load_data', 'Failed to load customers')
+    showNotification(getErrorNotification(error, 'customer_lookup'), 'error')
   }
 }
 
@@ -220,7 +223,8 @@ const loadPendingOrders = async () => {
       o.status !== 'completed' && o.status !== 'cancelled'
     )
   } catch (error) {
-    console.error('Failed to load pending orders:', error)
+    logError(error, 'load_data', 'Failed to load pending orders')
+    // Don't show notification for background loading
   }
 }
 
@@ -349,8 +353,8 @@ const createOrder = async () => {
     
     showNotification(`✓ Order #${newOrder.orderNumber} created for ${customerName}`)
   } catch (error) {
-    console.error('Failed to create order:', error)
-    showNotification('✗ Failed to create order', 'error')
+    logError(error, 'order_creation', 'Failed to create order')
+    showNotification(getErrorNotification(error, 'order_creation'), 'error')
   }
 }
 
@@ -378,8 +382,8 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
     const statusText = newStatus === 'pending' ? 'Pending' : newStatus === 'in-progress' ? 'In Progress' : 'Ready'
     showNotification(`✓ Order marked as ${statusText}`)
   } catch (error) {
-    console.error('Failed to update order status:', error)
-    showNotification('✗ Failed to update order', 'error')
+    logError(error, 'save_data', 'Failed to update order status')
+    showNotification(getErrorNotification(error, 'save_data'), 'error')
   }
 }
 
@@ -389,8 +393,8 @@ const completeOrder = async (orderId: string) => {
     await loadPendingOrders()
     showNotification(`✓ Order completed`)
   } catch (error) {
-    console.error('Failed to complete order:', error)
-    showNotification('✗ Failed to complete order', 'error')
+    logError(error, 'save_data', 'Failed to complete order')
+    showNotification(getErrorNotification(error, 'save_data'), 'error')
   }
 }
 
@@ -401,8 +405,8 @@ const cancelOrder = async (orderId: string) => {
       await loadPendingOrders()
       showNotification(`✗ Order cancelled`)
     } catch (error) {
-      console.error('Failed to cancel order:', error)
-      showNotification('✗ Failed to cancel order', 'error')
+      logError(error, 'save_data', 'Failed to cancel order')
+      showNotification(getErrorNotification(error, 'save_data'), 'error')
     }
   }
 }

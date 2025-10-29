@@ -20,6 +20,7 @@ public static class DependencyInjection
 
         builder.Services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
         builder.Services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+        builder.Services.AddScoped<ISaveChangesInterceptor, DateTimeOffsetInterceptor>();
 
         builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {

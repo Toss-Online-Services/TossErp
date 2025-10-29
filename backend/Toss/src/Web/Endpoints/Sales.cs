@@ -6,10 +6,13 @@ using Toss.Application.Sales.Commands.ProcessRefund;
 using Toss.Application.Sales.Commands.HoldSale;
 using Toss.Application.Sales.Commands.RetrieveHeldSale;
 using Toss.Application.Sales.Commands.DeleteHeldSale;
+using Toss.Application.Sales.Commands.CreateInvoice;
+using Toss.Application.Sales.Commands.UpdateInvoiceStatus;
 using Toss.Application.Sales.Queries.GetDailySummary;
 using Toss.Application.Sales.Queries.GetSaleById;
 using Toss.Application.Sales.Queries.GetSales;
 using Toss.Application.Sales.Queries.GetHeldSales;
+using Toss.Application.Sales.Queries.GetInvoices;
 
 namespace Toss.Web.Endpoints;
 
@@ -23,11 +26,19 @@ public class Sales : EndpointGroupBase
         group.MapGet(string.Empty, GetSales)
             .WithName("GetSales");
 
-        group.MapGet("{id}", GetSaleById)
-            .WithName("GetSaleById");
-
+        // Specific routes must come before generic {id} routes
         group.MapGet("daily-summary", GetDailySummary)
             .WithName("GetDailySummary");
+        
+        group.MapPost("hold", HoldSale)
+            .WithName("HoldSale");
+        
+        group.MapGet("held", GetHeldSales)
+            .WithName("GetHeldSales");
+
+        // Generic {id} route comes after specific routes
+        group.MapGet("{id}", GetSaleById)
+            .WithName("GetSaleById");
         
         group.MapPost("{id}/void", VoidSale)
             .WithName("VoidSale");
@@ -41,17 +52,21 @@ public class Sales : EndpointGroupBase
         group.MapPost("{id}/refund", ProcessRefund)
             .WithName("ProcessRefund");
         
-        group.MapPost("hold", HoldSale)
-            .WithName("HoldSale");
-        
-        group.MapGet("held", GetHeldSales)
-            .WithName("GetHeldSales");
-        
         group.MapPost("{id}/retrieve", RetrieveHeldSale)
             .WithName("RetrieveHeldSale");
         
         group.MapDelete("{id}/held", DeleteHeldSale)
             .WithName("DeleteHeldSale");
+
+        // Invoice endpoints
+        group.MapGet("invoices", GetInvoices)
+            .WithName("GetInvoices");
+        
+        group.MapPost("invoices", CreateInvoice)
+            .WithName("CreateInvoice");
+        
+        group.MapPost("invoices/{id}/status", UpdateInvoiceStatus)
+            .WithName("UpdateInvoiceStatus");
     }
 
     public async Task<IResult> CreateSale(ISender sender, CreateSaleCommand command)
@@ -130,6 +145,26 @@ public class Sales : EndpointGroupBase
     {
         var result = await sender.Send(new DeleteHeldSaleCommand { SaleId = id });
         return result ? Results.Ok() : Results.NotFound("Held sale not found");
+    }
+
+    public async Task<IResult> GetInvoices(
+        ISender sender,
+        [AsParameters] GetInvoicesQuery query)
+    {
+        var result = await sender.Send(query);
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> CreateInvoice(ISender sender, CreateInvoiceCommand command)
+    {
+        var id = await sender.Send(command);
+        return Results.Created($"/api/sales/invoices/{id}", new { id });
+    }
+
+    public async Task<IResult> UpdateInvoiceStatus(ISender sender, int id, UpdateInvoiceStatusCommand command)
+    {
+        var result = await sender.Send(command with { InvoiceId = id });
+        return result ? Results.Ok() : Results.BadRequest("Invoice status update failed");
     }
 }
 
