@@ -84,7 +84,6 @@ export const useProductsAPI = () => {
      * Get all products
      */
     async getProducts(shopId?: number) {
-      try {
       const response = await $fetch<{
         items: Array<{
           id: number
@@ -110,15 +109,7 @@ export const useProductsAPI = () => {
         }
       })
       // Return just the items array for backwards compatibility
-      // The backend returns 'Items' (capital I) but our type expects 'items' (lowercase)
-      // Handle both cases for robustness and add null safety
-      const items = response?.items || (response as any)?.Items || []
-      return items
-      } catch (error) {
-        console.error('Error fetching products:', error)
-        // Return empty array on error to prevent map() errors
-        return []
-      }
+      return response.items
     },
 
     /**

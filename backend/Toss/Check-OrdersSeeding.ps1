@@ -42,3 +42,5 @@ Write-Host "  3. Check database connection string in appsettings.json" -Foregrou
 Write-Host "  4. Verify Customers and Products exist before Orders" -ForegroundColor White
 Write-Host "  5. Restart backend after ensuring database is accessible" -ForegroundColor White
 
+
+

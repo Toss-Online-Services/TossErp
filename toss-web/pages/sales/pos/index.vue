@@ -181,9 +181,8 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-2">{{ errorDetails.title }}</h3>
-              <p class="text-gray-600 text-center mb-2 max-w-md">{{ errorDetails.message }}</p>
-              <p class="text-sm text-gray-500 text-center mb-4 max-w-md">{{ errorDetails.action }}</p>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Unable to Load Data</h3>
+              <p class="text-gray-600 text-center mb-4 max-w-md">{{ error }}</p>
               <button 
                 @click="loadData" 
                 class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
@@ -191,7 +190,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                <span>Try Again</span>
+                <span>Retry</span>
               </button>
             </div>
 
@@ -676,7 +675,6 @@ import {
 } from '@heroicons/vue/24/outline'
 import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
 import { useSalesAPI } from '~/composables/useSalesAPI'
-import { sanitizeError, getErrorNotification, getDetailedErrorMessage, logError } from '~/utils/errorHandler'
 
 // API
 const salesAPI = useSalesAPI()
@@ -723,11 +721,11 @@ const voidSaleReason = ref('')
 const heldSales = ref<any[]>([])
 const heldSalesSearchQuery = ref('')
 
-// POS Stats - loaded from API
-const todaySales = ref(0)
-const todayTransactions = ref(0)
-const averageSale = ref(0)
-const cashFloat = ref(0)
+// POS Stats
+const todaySales = ref(18496)
+const todayTransactions = ref(48)
+const averageSale = ref(285)
+const cashFloat = ref(2500)
 
 // Categories - will be loaded from API
 const categories = ref<any[]>([
@@ -744,7 +742,6 @@ const isLoadingCategories = ref(false)
 const isLoadingCustomers = ref(false)
 const error = ref<string | null>(null)
 const hasError = ref(false)
-const errorDetails = ref({ title: '', message: '', action: '' })
 
 // Load data on mount
 const loadData = async () => {
@@ -753,18 +750,6 @@ const loadData = async () => {
   hasError.value = false
   
   try {
-    // Get daily summary from backend API
-    try {
-      const summary = await salesAPI.getDailySummary(shopId.value)
-      todaySales.value = summary.totalSales || 0
-      todayTransactions.value = summary.transactionCount || 0
-      averageSale.value = todayTransactions.value > 0 ? (todaySales.value / todayTransactions.value) : 0
-      cashFloat.value = summary.cashFloat || 0
-    } catch (summaryError) {
-      console.warn('Failed to load POS summary, using defaults:', summaryError)
-      // Continue with defaults if summary fails
-    }
-    
     // Get categories from backend API
     isLoadingCategories.value = true
     const categoriesResponse = await salesAPI.getCategories(shopId.value)
@@ -776,16 +761,16 @@ const loadData = async () => {
     isLoadingProducts.value = false
     
     // Transform backend response to POS format
-    products.value = productsResponse.map((p: any) => ({
-      id: p.id,
-      name: p.name,
-      sku: p.sku,
-      price: p.basePrice,
-      categoryId: p.categoryId,
+    products.value = (productsResponse || []).map((p: any) => ({
+      id: p.id || 0,
+      name: p.name || 'Unknown Product',
+      sku: p.sku || 'NO-SKU',
+      price: Number(p.basePrice) || 0,
+      categoryId: p.categoryId || 0,
       category: p.categoryName || 'Unknown',
-      stock: p.availableStock || 0,
+      stock: Number(p.availableStock) || 0,
       image: p.imageUrl || null,
-      barcode: p.barcode || p.sku
+      barcode: p.barcode || p.sku || 'NO-BARCODE'
     }))
     
     // Count products per category
@@ -797,7 +782,7 @@ const loadData = async () => {
     }, {})
     
     // Filter categories to only show those with products
-    const categoriesWithProducts = categoriesResponse.filter((cat: any) => 
+    const categoriesWithProducts = (categoriesResponse || []).filter((cat: any) =>      
       productCountByCategory[cat.id] > 0
     )
     
@@ -831,20 +816,18 @@ const loadData = async () => {
     
     isLoading.value = false
   } catch (err: any) {
-    // Log the original error for debugging
-    logError(err, 'load_data', 'Failed to load POS data')
+    console.error('Failed to load POS data:', err)
     
-    // Set error state with sanitized message
+    // Set error state
     hasError.value = true
-    errorDetails.value = getDetailedErrorMessage(err, 'load_data')
-    error.value = errorDetails.value.message
+    error.value = err.message || 'Failed to connect to server. Please check your connection and try again.'
     isLoading.value = false
     isLoadingProducts.value = false
     isLoadingCategories.value = false
     isLoadingCustomers.value = false
     
     // Show user-friendly error notification
-    showNotification(getErrorNotification(err, 'load_data'), 'error')
+    showNotification('⚠️ Failed to load data from server. Please refresh the page.', 'error')
   }
 }
 
@@ -1161,8 +1144,8 @@ const processPayment = async () => {
     showNotification(`✓ Sale completed! Transaction #${result.id}`)
     showSuccessModal.value = true
   } catch (error) {
-    logError(error, 'payment', 'Payment processing failed')
-    showNotification(getErrorNotification(error, 'payment'), 'error')
+    console.error('Payment processing failed:', error)
+    showNotification('✗ Payment failed. Please try again.', 'error')
   }
 }
 
@@ -1195,8 +1178,8 @@ const confirmHoldSale = async () => {
     holdSaleNote.value = ''
     clearCart()
   } catch (error) {
-    logError(error, 'save_data', 'Failed to hold sale')
-    showNotification(getErrorNotification(error, 'save_data'), 'error')
+    console.error('Failed to hold sale:', error)
+    showNotification('✗ Failed to hold sale', 'error')
   }
 }
 
@@ -1235,8 +1218,7 @@ const loadHeldSales = async () => {
       timestamp: new Date(sale.heldAt).toLocaleString('en-ZA')
     }))
   } catch (error) {
-    logError(error, 'load_data', 'Failed to load held sales')
-    // Don't show notification for background loading failures
+    console.error('Failed to load held sales:', error)
   }
 }
 
@@ -1267,8 +1249,8 @@ const retrieveHeldSale = async (index: number) => {
     heldSalesSearchQuery.value = ''
     showNotification(`✓ Sale retrieved successfully`)
   } catch (error) {
-    logError(error, 'load_data', 'Failed to retrieve held sale')
-    showNotification(getErrorNotification(error, 'load_data'), 'error')
+    console.error('Failed to retrieve held sale:', error)
+    showNotification('✗ Failed to retrieve sale', 'error')
   }
 }
 
@@ -1289,8 +1271,8 @@ const deleteHeldSale = async (index: number) => {
         heldSalesSearchQuery.value = ''
       }
     } catch (error) {
-      logError(error, 'save_data', 'Failed to delete held sale')
-      showNotification(getErrorNotification(error, 'save_data'), 'error')
+      console.error('Failed to delete held sale:', error)
+      showNotification('✗ Failed to delete sale', 'error')
     }
   }
 }
