@@ -723,11 +723,11 @@ const voidSaleReason = ref('')
 const heldSales = ref<any[]>([])
 const heldSalesSearchQuery = ref('')
 
-// POS Stats
-const todaySales = ref(18496)
-const todayTransactions = ref(48)
-const averageSale = ref(285)
-const cashFloat = ref(2500)
+// POS Stats - loaded from API
+const todaySales = ref(0)
+const todayTransactions = ref(0)
+const averageSale = ref(0)
+const cashFloat = ref(0)
 
 // Categories - will be loaded from API
 const categories = ref<any[]>([
@@ -753,6 +753,18 @@ const loadData = async () => {
   hasError.value = false
   
   try {
+    // Get daily summary from backend API
+    try {
+      const summary = await salesAPI.getDailySummary(shopId.value)
+      todaySales.value = summary.totalSales || 0
+      todayTransactions.value = summary.transactionCount || 0
+      averageSale.value = todayTransactions.value > 0 ? (todaySales.value / todayTransactions.value) : 0
+      cashFloat.value = summary.cashFloat || 0
+    } catch (summaryError) {
+      console.warn('Failed to load POS summary, using defaults:', summaryError)
+      // Continue with defaults if summary fails
+    }
+    
     // Get categories from backend API
     isLoadingCategories.value = true
     const categoriesResponse = await salesAPI.getCategories(shopId.value)
