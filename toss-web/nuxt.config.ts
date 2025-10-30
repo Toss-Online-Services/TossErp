@@ -65,7 +65,7 @@ export default defineNuxtConfig({
     apiSecret: '',
     // Public keys (exposed to client-side)
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://localhost:5001',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:5001',
       apiTimeout: 30000
     }
   },
@@ -93,7 +93,7 @@ export default defineNuxtConfig({
     },
     devProxy: {
       '/api': {
-        target: 'https://localhost:5001',
+        target: 'http://localhost:5001',
         changeOrigin: true,
         ws: true,
         secure: false  // Allow self-signed certificates in development

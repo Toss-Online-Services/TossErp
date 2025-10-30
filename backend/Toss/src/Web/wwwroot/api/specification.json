@@ -3445,6 +3445,19 @@
         }
       }
     },
+    "/api/TestOrders/test-orders": {
+      "get": {
+        "tags": [
+          "TestOrders"
+        ],
+        "operationId": "TestOrders",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/Users/register": {
       "post": {
         "tags": [

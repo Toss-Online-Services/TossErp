@@ -67,6 +67,7 @@ public class ApplicationDbContextInitialiser
             await SeedDriversAsync();
             await SeedPurchaseOrdersAsync();
             await SeedSalesAsync();
+            await SeedOrdersAsync();
             await SeedPaymentsAsync();
 
             _logger.LogInformation("✅ Database seeding completed successfully!");
@@ -648,6 +649,122 @@ public class ApplicationDbContextInitialiser
         _context.Set<Sale>().AddRange(sales);
         await _context.SaveChangesAsync();
         _logger.LogInformation("✅ Seeded {Count} sales.", sales.Count);
+    }
+
+    private async Task SeedOrdersAsync()
+    {
+        var existingCount = await _context.Set<Order>().CountAsync();
+        if (existingCount >= 100)
+        {
+            _logger.LogInformation("✅ Orders already seeded ({Count} existing).", existingCount);
+            return;
+        }
+
+        var customers = await _context.Set<Customer>().ToListAsync();
+        var products = await _context.Set<Product>().ToListAsync();
+
+        if (!customers.Any() || !products.Any())
+        {
+            _logger.LogWarning("⚠️  Missing required data (customers/products). Skipping orders seeding.");
+            return;
+        }
+
+        var orderFaker = new Faker<Order>()
+            .RuleFor(o => o.CustomerId, f => f.PickRandom(customers).Id)
+            .RuleFor(o => o.OrderStatus, f => f.PickRandom<OrderStatus>())
+            .RuleFor(o => o.PaymentStatus, f => f.PickRandom<Domain.Enums.PaymentStatus>())
+            .RuleFor(o => o.ShippingStatus, f => f.PickRandom<ShippingStatus>())
+            .RuleFor(o => o.PaymentMethodSystemName, f => f.PickRandom("Cash", "Card", "BankTransfer", "Wallet"))
+            .RuleFor(o => o.ShippingMethod, f => f.PickRandom("Standard", "Express", "SameDay", null))
+            .RuleFor(o => o.CustomerCurrencyCode, "ZAR")
+            .RuleFor(o => o.CustomerTaxDisplayType, TaxDisplayType.IncludingTax)
+            .RuleFor(o => o.CustomerIp, f => f.Internet.Ip())
+            .RuleFor(o => o.Deleted, false);
+
+        var orders = new List<Order>();
+        var ordersToCreate = Math.Max(0, 100 - existingCount);
+
+        for (int i = 0; i < ordersToCreate; i++)
+        {
+            var order = orderFaker.Generate();
+            
+            // Set Created date (from BaseAuditableEntity) to random date in past 90 days
+            // DateTimeOffset.UtcNow is already UTC, but ensure explicit UTC conversion for PostgreSQL
+            var createdDate = DateTimeOffset.UtcNow.AddDays(-new Faker().Random.Int(0, 90));
+            order.Created = createdDate.ToUniversalTime(); // Explicit UTC conversion
+            order.CreatedBy = null;
+            order.LastModified = createdDate.ToUniversalTime(); // Explicit UTC conversion
+            order.LastModifiedBy = null;
+
+            // Add 1-8 items to each order
+            var itemCount = new Faker().Random.Int(1, 8);
+            var orderProducts = new Faker().PickRandom(products, itemCount).ToList();
+
+            decimal subtotalExclTax = 0;
+            decimal subtotalInclTax = 0;
+            decimal taxAmount = 0;
+
+            foreach (var product in orderProducts)
+            {
+                var quantity = new Faker().Random.Int(1, 5);
+                var unitPriceExclTax = product.BasePrice;
+                var taxRate = product.IsTaxable ? 0.15m : 0m;
+                var unitTax = unitPriceExclTax * taxRate;
+                var unitPriceInclTax = unitPriceExclTax + unitTax;
+
+                var linePriceExclTax = quantity * unitPriceExclTax;
+                var lineTax = linePriceExclTax * taxRate;
+                var linePriceInclTax = linePriceExclTax + lineTax;
+
+                subtotalExclTax += linePriceExclTax;
+                taxAmount += lineTax;
+                subtotalInclTax += linePriceInclTax;
+
+                var orderItem = new OrderItem
+                {
+                    ProductId = product.Id,
+                    Quantity = quantity,
+                    UnitPriceExclTax = unitPriceExclTax,
+                    UnitPriceInclTax = unitPriceInclTax,
+                    PriceExclTax = linePriceExclTax,
+                    PriceInclTax = linePriceInclTax,
+                    DiscountAmountExclTax = 0,
+                    DiscountAmountInclTax = 0
+                };
+
+                order.OrderItems.Add(orderItem);
+            }
+
+            // Calculate order totals
+            order.OrderSubtotalExclTax = subtotalExclTax;
+            order.OrderSubtotalInclTax = subtotalInclTax;
+            order.OrderTax = taxAmount;
+            order.OrderTotal = subtotalInclTax;
+
+            // Set PaidDate if payment is completed
+            if (order.PaymentStatus == Domain.Enums.PaymentStatus.Completed || 
+                order.PaymentStatus == Domain.Enums.PaymentStatus.Captured)
+            {
+                // Use UtcDateTime to ensure UTC kind (PostgreSQL requirement)
+                order.PaidDateUtc = createdDate.AddMinutes(new Faker().Random.Int(1, 60)).UtcDateTime;
+            }
+
+            // Set shipping status based on order status
+            if (order.OrderStatus == OrderStatus.Complete)
+            {
+                order.ShippingStatus = ShippingStatus.Delivered;
+            }
+            else if (order.OrderStatus == OrderStatus.Processing)
+            {
+                order.ShippingStatus = ShippingStatus.Shipped;
+            }
+
+            orders.Add(order);
+        }
+
+        _context.Set<Order>().AddRange(orders);
+        await _context.SaveChangesAsync();
+        _logger.LogInformation("✅ Seeded {Count} orders.", orders.Count);
     }
 
     private async Task SeedPaymentsAsync()

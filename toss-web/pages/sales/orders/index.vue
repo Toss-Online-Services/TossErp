@@ -348,7 +348,7 @@
           <p class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No orders found</p>
           <p class="text-slate-600 dark:text-slate-400 mb-4">Start by creating your first sales order!</p>
           <NuxtLink
-            to="/sales/create-order"
+            to="/sales/orders/create-order"
             class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold"
           >
             <PlusIcon class="w-5 h-5 mr-2" />
@@ -412,7 +412,43 @@ onMounted(async () => {
 const loadOrders = async () => {
   loading.value = true
   try {
-    orders.value = await salesAPI.getOrders()
+    const shopId = 1 // TODO: Get from session/auth
+    const backendOrders = await salesAPI.getOrders({ shopId })
+    
+    // Transform backend data to match frontend expectations
+    orders.value = backendOrders.map((order: any) => {
+      // Map backend OrderStatus enum to frontend status strings
+      let status = 'pending'
+      if (order.orderStatus === 'Processing' || order.orderStatus === 'Processing') {
+        status = 'in-progress'
+      } else if (order.orderStatus === 'Complete' || order.orderStatus === 'Completed') {
+        status = 'completed'
+      } else if (order.orderStatus === 'Cancelled') {
+        status = 'cancelled'
+      } else {
+        status = order.orderStatus?.toLowerCase() || 'pending'
+      }
+      
+      return {
+        id: order.id,
+        orderNumber: order.orderNumber,
+        customer: order.customerName || 'Unknown',
+        customerId: order.customerId,
+        status: status,
+        orderStatus: order.orderStatus,
+        shippingStatus: order.shippingStatus,
+        paymentStatus: order.paymentStatus,
+        total: order.orderTotal || 0,
+        orderTotal: order.orderTotal,
+        orderDate: new Date(order.orderDate),
+        orderItems: [], // TODO: Fetch order items separately if needed
+        itemCount: order.itemCount || 0,
+        priority: 'normal', // Default priority
+        deliveryAddress: null, // TODO: Fetch delivery address if needed
+        expectedDelivery: null, // TODO: Calculate expected delivery
+        customerPhone: null // TODO: Fetch customer phone if needed
+      }
+    })
   } catch (error) {
     logError(error, 'load_data', 'Failed to load orders')
     // Show user-friendly notification for critical data loading failure
@@ -429,9 +465,9 @@ const loadOrders = async () => {
 // Order statistics (computed from actual orders)
 const totalOrders = computed(() => orders.value.length)
 const pendingOrders = computed(() => orders.value.filter((o: any) => o.status === 'pending').length)
-const inProgressOrders = computed(() => orders.value.filter((o: any) => o.status === 'in-progress').length)
-const readyOrders = computed(() => orders.value.filter((o: any) => o.status === 'ready').length)
-const completedOrders = computed(() => orders.value.filter((o: any) => o.status === 'completed').length)
+const inProgressOrders = computed(() => orders.value.filter((o: any) => o.status === 'in-progress' || o.status === 'processing').length)
+const readyOrders = computed(() => orders.value.filter((o: any) => o.status === 'ready' || o.status === 'readytoship').length)
+const completedOrders = computed(() => orders.value.filter((o: any) => o.status === 'completed' || o.status === 'complete').length)
 const totalOrderValue = computed(() => orders.value.reduce((sum: number, o: any) => sum + o.total, 0))
 
 // Computed
