@@ -154,12 +154,15 @@
                 @click="selectedCategory = category.id"
                 :class="[
                   'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-                  selectedCategory === category.id
+                  isCategorySelected(category.id)
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 ]"
               >
-                {{ category.name }}
+                {{ category.name }} 
+                <span v-if="category.productCount !== undefined" class="ml-1 text-xs opacity-75">
+                  ({{ category.productCount }})
+                </span>
               </button>
             </div>
           </div>
@@ -752,45 +755,80 @@ const loadData = async () => {
   try {
     // Get categories from backend API
     isLoadingCategories.value = true
+    console.log('🔍 Fetching categories for shopId:', shopId.value)
     const categoriesResponse = await salesAPI.getCategories(shopId.value)
+    console.log('📁 Categories response:', categoriesResponse)
     isLoadingCategories.value = false
     
     // Get products from backend API
     isLoadingProducts.value = true
+    console.log('🔍 Fetching products for shopId:', shopId.value)
     const productsResponse = await salesAPI.getProducts(shopId.value)
+    console.log('📦 Products response received:', productsResponse)
+    console.log('📦 Products response type:', Array.isArray(productsResponse) ? 'Array' : typeof productsResponse)
+    console.log('📦 Products response length:', productsResponse?.length || 0)
     isLoadingProducts.value = false
     
     // Transform backend response to POS format
-    products.value = (productsResponse || []).map((p: any) => ({
-      id: p.id || 0,
-      name: p.name || 'Unknown Product',
-      sku: p.sku || 'NO-SKU',
-      price: Number(p.basePrice) || 0,
-      categoryId: p.categoryId || 0,
-      category: p.categoryName || 'Unknown',
-      stock: Number(p.availableStock) || 0,
-      image: p.imageUrl || null,
-      barcode: p.barcode || p.sku || 'NO-BARCODE'
+    // API returns items array - handle both camelCase and PascalCase
+    const productsList = Array.isArray(productsResponse) ? productsResponse : []
+    console.log('📦 Raw products list length:', productsList.length)
+    if (productsList.length > 0) {
+      console.log('📝 Sample raw product:', productsList[0])
+    }
+    
+    products.value = productsList.map((p: any) => ({
+      id: p.id || p.Id || 0,
+      name: p.name || p.Name || 'Unknown Product',
+      sku: p.sku || p.SKU || 'NO-SKU',
+      price: Number(p.basePrice || p.BasePrice || 0),
+      categoryId: Number(p.categoryId || p.CategoryId || 0),
+      category: p.categoryName || p.CategoryName || 'Unknown',
+      stock: Number(p.availableStock || p.AvailableStock || 0),
+      image: p.imageUrl || p.ImageUrl || p.image || null,
+      barcode: p.barcode || p.Barcode || p.sku || p.SKU || 'NO-BARCODE'
     }))
+    console.log('✅ Transformed products:', products.value.length, 'items')
+    if (products.value.length > 0) {
+      console.log('📝 Sample transformed product:', products.value[0])
+      console.log('📝 Product categoryId:', products.value[0].categoryId, 'Type:', typeof products.value[0].categoryId)
+    }
     
-    // Count products per category
-    const productCountByCategory = products.value.reduce((acc: any, product: any) => {
-      if (product.categoryId) {
-        acc[product.categoryId] = (acc[product.categoryId] || 0) + 1
+    // Transform categories response - API returns array with id, name, productCount
+    const categoriesList = Array.isArray(categoriesResponse) ? categoriesResponse : []
+    console.log('📁 Raw categories response:', categoriesList)
+    console.log('📁 Categories count:', categoriesList.length)
+    
+    // Count products per category from actual products
+    const productCountByCategory: Record<number, number> = {}
+    products.value.forEach((product: any) => {
+      const catId = Number(product.categoryId)
+      if (catId > 0) {
+        productCountByCategory[catId] = (productCountByCategory[catId] || 0) + 1
       }
-      return acc
-    }, {})
+    })
+    console.log('📊 Product count by category:', productCountByCategory)
     
-    // Filter categories to only show those with products
-    const categoriesWithProducts = (categoriesResponse || []).filter((cat: any) =>      
-      productCountByCategory[cat.id] > 0
-    )
+    // Map categories and include product count from our count
+    const categoriesWithCounts = categoriesList.map((cat: any) => {
+      const catId = Number(cat.id || cat.Id || 0)
+      return {
+        id: catId,
+        name: cat.name || cat.Name || 'Unnamed Category',
+        productCount: productCountByCategory[catId] || 0
+      }
+    }).filter((cat: any) => cat.id > 0) // Filter out invalid categories
+    
+    console.log('📁 Categories with product counts:', categoriesWithCounts)
     
     // Add "All" category at the beginning with total product count
+    // Show ALL categories, not just those with products
     categories.value = [
       { id: 'all', name: 'All', productCount: products.value.length },
-      ...categoriesWithProducts
+      ...categoriesWithCounts
     ]
+    console.log('✅ Final categories:', categories.value.length, 'categories')
+    console.log('✅ Category IDs:', categories.value.map(c => ({ id: c.id, name: c.name, count: c.productCount })))
     
     // Get customers from backend API
     isLoadingCustomers.value = true
@@ -816,7 +854,8 @@ const loadData = async () => {
     
     isLoading.value = false
   } catch (err: any) {
-    console.error('Failed to load POS data:', err)
+    console.error('❌ Failed to load POS data:', err)
+    console.error('❌ Error details:', err?.response || err?.message || err)
     
     // Set error state
     hasError.value = true
@@ -842,20 +881,45 @@ const paymentMethods = ref([
 
 // Computed properties
 const filteredProducts = computed(() => {
+  console.log('🔄 Computing filteredProducts...')
+  console.log('   - Total products:', products.value.length)
+  console.log('   - Selected category:', selectedCategory.value, 'Type:', typeof selectedCategory.value)
+  console.log('   - Search query:', searchQuery.value)
+  
   let filtered = products.value
 
   if (selectedCategory.value !== 'all') {
     // Filter by categoryId (numeric) from API
-    filtered = filtered.filter((p: any) => p.categoryId === selectedCategory.value)
+    // Convert selectedCategory to number for comparison
+    const categoryId = typeof selectedCategory.value === 'string' 
+      ? parseInt(selectedCategory.value, 10) 
+      : Number(selectedCategory.value)
+    
+    if (!isNaN(categoryId) && categoryId > 0) {
+      console.log('   - Filtering by category ID:', categoryId)
+      filtered = filtered.filter((p: any) => {
+        const productCatId = Number(p.categoryId || 0)
+        const matches = productCatId === categoryId
+        return matches
+      })
+      console.log('   - After category filter:', filtered.length, 'products')
+    } else {
+      console.log('   - Invalid category ID, showing all products')
+    }
   }
 
-  if (searchQuery.value) {
+  if (searchQuery.value && searchQuery.value.trim()) {
+    console.log('   - Filtering by search...')
+    const query = searchQuery.value.toLowerCase().trim()
     filtered = filtered.filter((p: any) => 
-      p.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      p.sku.toLowerCase().includes(searchQuery.value.toLowerCase())
+      (p.name || '').toLowerCase().includes(query) ||
+      (p.sku || '').toLowerCase().includes(query) ||
+      (p.barcode || '').toLowerCase().includes(query)
     )
+    console.log('   - After search filter:', filtered.length, 'products')
   }
 
+  console.log('   ✅ Final filtered products:', filtered.length)
   return filtered
 })
 
@@ -894,6 +958,29 @@ const formatCurrency = (amount: number) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(amount)
+}
+
+const isCategorySelected = (categoryId: string | number) => {
+  // Handle "all" category
+  if (categoryId === 'all') {
+    return selectedCategory.value === 'all'
+  }
+  
+  // Handle numeric category IDs
+  const selectedNum = typeof selectedCategory.value === 'string' 
+    ? (selectedCategory.value === 'all' ? null : parseInt(selectedCategory.value, 10))
+    : Number(selectedCategory.value)
+  
+  const categoryNum = typeof categoryId === 'string' 
+    ? parseInt(categoryId, 10) 
+    : Number(categoryId)
+  
+  // Compare numeric IDs
+  if (!isNaN(categoryNum) && selectedNum !== null && !isNaN(selectedNum)) {
+    return categoryNum === selectedNum
+  }
+  
+  return false
 }
 
 const addToCart = (product: any) => {
@@ -1201,21 +1288,21 @@ const confirmVoidSale = () => {
 const loadHeldSales = async () => {
   try {
     const held = await salesAPI.getHeldSales(shopId.value)
-    heldSales.value = held.map((sale: any) => ({
-      id: sale.id,
-      saleNumber: sale.saleNumber,
-      items: sale.items.map((item: any) => ({
-        id: item.productId,
-        name: item.productName,
-        quantity: item.quantity,
-        price: item.unitPrice
+    heldSales.value = (held || []).map((sale: any) => ({
+      id: sale.id || sale.Id || 0,
+      saleNumber: sale.saleNumber || sale.SaleNumber || '',
+      items: (sale.items || sale.Items || []).map((item: any) => ({
+        id: item.productId || item.ProductId || 0,
+        name: item.productName || item.ProductName || 'Unknown',
+        quantity: item.quantity || item.Quantity || 0,
+        price: item.unitPrice || item.UnitPrice || 0
       })),
-      customer: sale.customerName,
-      customerId: sale.customerId || '',
-      paymentMethod: sale.paymentMethod, // Keep enum value as-is (Cash, Card, etc.)
-      total: sale.total,
-      note: sale.notes || '',
-      timestamp: new Date(sale.heldAt).toLocaleString('en-ZA')
+      customer: sale.customerName || sale.CustomerName || '',
+      customerId: sale.customerId || sale.CustomerId || '',
+      paymentMethod: sale.paymentMethod || sale.PaymentMethod || 'Cash',
+      total: sale.total || sale.Total || 0,
+      note: sale.notes || sale.Notes || '',
+      timestamp: new Date(sale.heldAt || sale.HeldAt).toLocaleString('en-ZA')
     }))
   } catch (error) {
     console.error('Failed to load held sales:', error)
