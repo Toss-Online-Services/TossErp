@@ -752,26 +752,35 @@ const loadData = async () => {
   try {
     // Get categories from backend API
     isLoadingCategories.value = true
+    console.log('🔍 Fetching categories for shopId:', shopId.value)
     const categoriesResponse = await salesAPI.getCategories(shopId.value)
+    console.log('📁 Categories response:', categoriesResponse)
     isLoadingCategories.value = false
     
     // Get products from backend API
     isLoadingProducts.value = true
+    console.log('🔍 Fetching products for shopId:', shopId.value)
     const productsResponse = await salesAPI.getProducts(shopId.value)
+    console.log('📦 Products response received:', productsResponse)
+    console.log('📦 Products response type:', Array.isArray(productsResponse) ? 'Array' : typeof productsResponse)
+    console.log('📦 Products response length:', productsResponse?.length || 0)
     isLoadingProducts.value = false
     
     // Transform backend response to POS format
+    // API returns PascalCase properties, handle both PascalCase and camelCase
     products.value = (productsResponse || []).map((p: any) => ({
-      id: p.id || 0,
-      name: p.name || 'Unknown Product',
-      sku: p.sku || 'NO-SKU',
-      price: Number(p.basePrice) || 0,
-      categoryId: p.categoryId || 0,
-      category: p.categoryName || 'Unknown',
-      stock: Number(p.availableStock) || 0,
-      image: p.imageUrl || null,
-      barcode: p.barcode || p.sku || 'NO-BARCODE'
+      id: p.id || p.Id || 0,
+      name: p.name || p.Name || 'Unknown Product',
+      sku: p.sku || p.SKU || 'NO-SKU',
+      price: Number(p.basePrice || p.BasePrice) || 0,
+      categoryId: p.categoryId || p.CategoryId || 0,
+      category: p.categoryName || p.CategoryName || 'Unknown',
+      stock: Number(p.availableStock || p.AvailableStock) || 0,
+      image: p.imageUrl || p.ImageUrl || null,
+      barcode: p.barcode || p.Barcode || p.SKU || p.sku || 'NO-BARCODE'
     }))
+    console.log('✅ Transformed products:', products.value.length, 'items')
+    console.log('📝 Sample product:', products.value[0])
     
     // Count products per category
     const productCountByCategory = products.value.reduce((acc: any, product: any) => {
@@ -816,7 +825,8 @@ const loadData = async () => {
     
     isLoading.value = false
   } catch (err: any) {
-    console.error('Failed to load POS data:', err)
+    console.error('❌ Failed to load POS data:', err)
+    console.error('❌ Error details:', err?.response || err?.message || err)
     
     // Set error state
     hasError.value = true
@@ -842,20 +852,30 @@ const paymentMethods = ref([
 
 // Computed properties
 const filteredProducts = computed(() => {
+  console.log('🔄 Computing filteredProducts...')
+  console.log('   - Total products:', products.value.length)
+  console.log('   - Selected category:', selectedCategory.value)
+  console.log('   - Search query:', searchQuery.value)
+  
   let filtered = products.value
 
   if (selectedCategory.value !== 'all') {
     // Filter by categoryId (numeric) from API
+    console.log('   - Filtering by category...')
     filtered = filtered.filter((p: any) => p.categoryId === selectedCategory.value)
+    console.log('   - After category filter:', filtered.length, 'products')
   }
 
   if (searchQuery.value) {
+    console.log('   - Filtering by search...')
     filtered = filtered.filter((p: any) => 
       p.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       p.sku.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
+    console.log('   - After search filter:', filtered.length, 'products')
   }
 
+  console.log('   ✅ Final filtered products:', filtered.length)
   return filtered
 })
 
@@ -1201,21 +1221,21 @@ const confirmVoidSale = () => {
 const loadHeldSales = async () => {
   try {
     const held = await salesAPI.getHeldSales(shopId.value)
-    heldSales.value = held.map((sale: any) => ({
-      id: sale.id,
-      saleNumber: sale.saleNumber,
-      items: sale.items.map((item: any) => ({
-        id: item.productId,
-        name: item.productName,
-        quantity: item.quantity,
-        price: item.unitPrice
+    heldSales.value = (held || []).map((sale: any) => ({
+      id: sale.id || sale.Id || 0,
+      saleNumber: sale.saleNumber || sale.SaleNumber || '',
+      items: (sale.items || sale.Items || []).map((item: any) => ({
+        id: item.productId || item.ProductId || 0,
+        name: item.productName || item.ProductName || 'Unknown',
+        quantity: item.quantity || item.Quantity || 0,
+        price: item.unitPrice || item.UnitPrice || 0
       })),
-      customer: sale.customerName,
-      customerId: sale.customerId || '',
-      paymentMethod: sale.paymentMethod, // Keep enum value as-is (Cash, Card, etc.)
-      total: sale.total,
-      note: sale.notes || '',
-      timestamp: new Date(sale.heldAt).toLocaleString('en-ZA')
+      customer: sale.customerName || sale.CustomerName || '',
+      customerId: sale.customerId || sale.CustomerId || '',
+      paymentMethod: sale.paymentMethod || sale.PaymentMethod || 'Cash',
+      total: sale.total || sale.Total || 0,
+      note: sale.notes || sale.Notes || '',
+      timestamp: new Date(sale.heldAt || sale.HeldAt).toLocaleString('en-ZA')
     }))
   } catch (error) {
     console.error('Failed to load held sales:', error)

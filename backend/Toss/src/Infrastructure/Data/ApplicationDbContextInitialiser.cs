@@ -689,11 +689,11 @@ public class ApplicationDbContextInitialiser
             var order = orderFaker.Generate();
             
             // Set Created date (from BaseAuditableEntity) to random date in past 90 days
-            // DateTimeOffset.UtcNow is already UTC, but ensure explicit UTC conversion for PostgreSQL
+            // DateTimeOffset.UtcNow is already UTC, but use UtcDateTime for PostgreSQL compatibility
             var createdDate = DateTimeOffset.UtcNow.AddDays(-new Faker().Random.Int(0, 90));
-            order.Created = createdDate.ToUniversalTime(); // Explicit UTC conversion
+            order.Created = createdDate.UtcDateTime; // Use UtcDateTime for PostgreSQL
             order.CreatedBy = null;
-            order.LastModified = createdDate.ToUniversalTime(); // Explicit UTC conversion
+            order.LastModified = createdDate.UtcDateTime; // Use UtcDateTime for PostgreSQL
             order.LastModifiedBy = null;
 
             // Add 1-8 items to each order
