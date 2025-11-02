@@ -1,6 +1,7 @@
 export const useProductsAPI = () => {
   const config = useRuntimeConfig()
   const baseURL = (config.public.apiBase || 'https://localhost:5001') + '/api'
+  console.log('🌐 useProductsAPI initialized with baseURL:', baseURL)
 
   return {
     /**
@@ -84,40 +85,42 @@ export const useProductsAPI = () => {
      * Get all products
      */
     async getProducts(shopId?: number) {
+      const params = { 
+        ShopId: shopId,
+        PageNumber: 1,
+        PageSize: 1000,
+        IsActive: true
+      }
+      console.log('🔍 useProductsAPI.getProducts() - Fetching with params:', params)
+      console.log('🔍 useProductsAPI.getProducts() - Request URL:', `${baseURL}/Inventory/products`)
+      
       try {
-      const response = await $fetch<{
-        items: Array<{
-          id: number
-          name: string
-          sku: string
-          barcode?: string
-          categoryName?: string
-          basePrice: number
-          categoryId: number
-          isActive: boolean
-          availableStock: number
-        }>
-        pageNumber: number
-        totalPages: number
-        totalCount: number
-      }>(`${baseURL}/Inventory/products`, {
-        method: 'GET',
-        params: { 
-          ShopId: shopId,
-          PageNumber: 1,
-          PageSize: 1000,
-          IsActive: true
-        }
-      })
-      // Return just the items array for backwards compatibility
-      // The backend returns 'Items' (capital I) but our type expects 'items' (lowercase)
-      // Handle both cases for robustness and add null safety
-      const items = response?.items || (response as any)?.Items || []
-      return items
+        const response = await $fetch<{
+          items: Array<{
+            id: number
+            name: string
+            sku: string
+            barcode?: string
+            categoryName?: string
+            basePrice: number
+            categoryId: number
+            isActive: boolean
+            availableStock: number
+          }>
+          pageNumber: number
+          totalPages: number
+          totalCount: number
+        }>(`${baseURL}/Inventory/products`, {
+          method: 'GET',
+          params
+        })
+        console.log('✅ useProductsAPI.getProducts() - Response received:', response)
+        console.log('✅ useProductsAPI.getProducts() - Items count:', response.items?.length || 0)
+        // Return just the items array for backwards compatibility
+        return response.items
       } catch (error) {
-        console.error('Error fetching products:', error)
-        // Return empty array on error to prevent map() errors
-        return []
+        console.error('❌ useProductsAPI.getProducts() - Error:', error)
+        throw error
       }
     },
 
@@ -125,16 +128,27 @@ export const useProductsAPI = () => {
      * Get all product categories
      */
     async getCategories(shopId: number) {
-      return await $fetch<Array<{
-        id: number
-        name: string
-        description?: string
-        parentCategoryId?: number
-        productCount: number
-      }>>(`${baseURL}/Inventory/categories`, {
-        method: 'GET',
-        params: { shopId }
-      })
+      console.log('🔍 useProductsAPI.getCategories() - Fetching for shopId:', shopId)
+      console.log('🔍 useProductsAPI.getCategories() - Request URL:', `${baseURL}/Inventory/categories`)
+      
+      try {
+        const response = await $fetch<Array<{
+          id: number
+          name: string
+          description?: string
+          parentCategoryId?: number
+          productCount: number
+        }>>(`${baseURL}/Inventory/categories`, {
+          method: 'GET',
+          params: { shopId }
+        })
+        console.log('✅ useProductsAPI.getCategories() - Response:', response)
+        console.log('✅ useProductsAPI.getCategories() - Categories count:', response?.length || 0)
+        return response
+      } catch (error) {
+        console.error('❌ useProductsAPI.getCategories() - Error:', error)
+        throw error
+      }
     }
   }
 }

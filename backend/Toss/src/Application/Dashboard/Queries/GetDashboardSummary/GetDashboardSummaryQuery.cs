@@ -19,9 +19,10 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
 
     public async Task<DashboardSummaryDto> Handle(GetDashboardSummaryQuery request, CancellationToken cancellationToken)
     {
-        var today = DateTimeOffset.UtcNow.Date;
-        var startOfDay = today;
-        var endOfDay = today.AddDays(1);
+        // Use UtcNow.Date then create DateTimeOffset in UTC for PostgreSQL compatibility
+        var todayDate = DateTime.UtcNow.Date;
+        var startOfDay = new DateTimeOffset(todayDate, TimeSpan.Zero);
+        var endOfDay = startOfDay.AddDays(1);
 
         // Today's sales
         var todaySales = await _context.Sales
@@ -51,7 +52,7 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
             .CountAsync(cancellationToken);
 
         // This week's revenue
-        var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
+        var startOfWeek = startOfDay.AddDays(-(int)todayDate.DayOfWeek);
         var weekRevenue = await _context.Sales
             .Where(s => s.ShopId == request.ShopId 
                 && s.SaleDate >= startOfWeek
