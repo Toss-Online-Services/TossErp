@@ -11,22 +11,26 @@ export const useCRMAPI = () => {
      * Get all customers for a shop
      */
     async getCustomers(shopId: number, searchTerm?: string, pageNumber: number = 1, pageSize: number = 100) {
-      return await $fetch<Array<{
-        id: number
-        shopId: number
-        firstName: string
-        lastName: string
-        fullName: string
-        phoneNumber: string | null
-        email: string | null
-        isActive: boolean
-        totalPurchaseAmount: number
-        totalPurchaseCount: number
-        lastPurchaseDate: string | null
-      }>>(`${baseURL}/CRM/customers`, {
+      const resp: any = await $fetch(`${baseURL}/CRM/customers`, {
         method: 'GET',
         params: { shopId, searchTerm, pageNumber, pageSize }
       })
+      const raw = resp?.items || resp?.Items || resp?.value || []
+      const arr = Array.isArray(raw) ? raw : []
+      // Normalize keys to camelCase for the UI
+      return arr.map((c: any) => ({
+        id: c.id ?? c.Id,
+        shopId: c.shopId ?? c.ShopId,
+        firstName: c.firstName ?? c.FirstName ?? '',
+        lastName: c.lastName ?? c.LastName ?? '',
+        fullName: c.fullName ?? c.FullName ?? `${(c.firstName ?? c.FirstName ?? '')} ${(c.lastName ?? c.LastName ?? '')}`.trim(),
+        phoneNumber: c.phoneNumber ?? c.PhoneNumber ?? null,
+        email: c.email ?? c.Email ?? null,
+        isActive: c.isActive ?? c.IsActive ?? true,
+        totalPurchaseAmount: c.totalPurchaseAmount ?? c.TotalPurchases ?? 0,
+        totalPurchaseCount: c.totalPurchaseCount ?? c.TotalPurchaseCount ?? undefined,
+        lastPurchaseDate: c.lastPurchaseDate ?? c.LastPurchaseDate ?? null
+      }))
     },
 
     /**

@@ -84,7 +84,7 @@ export const useProductsAPI = () => {
     /**
      * Get all products
      */
-    async getProducts(shopId?: number) {
+  async getProducts(shopId?: number) {
       const params = { 
         ShopId: shopId,
         PageNumber: 1,
@@ -95,29 +95,15 @@ export const useProductsAPI = () => {
       console.log('🔍 useProductsAPI.getProducts() - Request URL:', `${baseURL}/Inventory/products`)
       
       try {
-        const response = await $fetch<{
-          items: Array<{
-            id: number
-            name: string
-            sku: string
-            barcode?: string
-            categoryName?: string
-            basePrice: number
-            categoryId: number
-            isActive: boolean
-            availableStock: number
-          }>
-          pageNumber: number
-          totalPages: number
-          totalCount: number
-        }>(`${baseURL}/Inventory/products`, {
+        const response: any = await $fetch(`${baseURL}/Inventory/products`, {
           method: 'GET',
           params
         })
-        console.log('✅ useProductsAPI.getProducts() - Response received:', response)
-        console.log('✅ useProductsAPI.getProducts() - Items count:', response.items?.length || 0)
-        // Return just the items array for backwards compatibility
-        return response.items
+        // Backend may return Items (PascalCase) or items (camelCase) or value
+        const items = response?.items || response?.Items || response?.value || response?.Value || []
+        console.log('✅ useProductsAPI.getProducts() - Items count:', Array.isArray(items) ? items.length : 0)
+        // Normalize to array
+        return Array.isArray(items) ? items : []
       } catch (error) {
         console.error('❌ useProductsAPI.getProducts() - Error:', error)
         throw error
@@ -127,24 +113,20 @@ export const useProductsAPI = () => {
     /**
      * Get all product categories
      */
-    async getCategories(shopId: number) {
+  async getCategories(shopId: number) {
       console.log('🔍 useProductsAPI.getCategories() - Fetching for shopId:', shopId)
       console.log('🔍 useProductsAPI.getCategories() - Request URL:', `${baseURL}/Inventory/categories`)
       
       try {
-        const response = await $fetch<Array<{
-          id: number
-          name: string
-          description?: string
-          parentCategoryId?: number
-          productCount: number
-        }>>(`${baseURL}/Inventory/categories`, {
+        const response: any = await $fetch(`${baseURL}/Inventory/categories`, {
           method: 'GET',
           params: { shopId }
         })
-        console.log('✅ useProductsAPI.getCategories() - Response:', response)
-        console.log('✅ useProductsAPI.getCategories() - Categories count:', response?.length || 0)
-        return response
+        // Some backends wrap the array in { value: [...] }
+        const list = response?.value || response?.items || response?.Items || response || []
+        const categories = Array.isArray(list) ? list : []
+        console.log('✅ useProductsAPI.getCategories() - Categories count:', categories.length)
+        return categories
       } catch (error) {
         console.error('❌ useProductsAPI.getCategories() - Error:', error)
         throw error
