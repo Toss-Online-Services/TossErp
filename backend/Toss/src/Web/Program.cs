@@ -34,7 +34,13 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// Only redirect to HTTPS in non-development environments
+// In development, allow HTTP to avoid CORS issues with localhost
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseStaticFiles();
 
 app.UseSwaggerUi(settings =>

@@ -1,11 +1,24 @@
 <template>
-  <aside class="flex flex-col flex-shrink-0 w-64 border-r bg-white border-gray-200 shadow-sm">
+  <aside 
+    class="flex flex-col flex-shrink-0 border-r bg-white border-gray-200 shadow-sm transition-all duration-300"
+    :class="isCollapsed ? 'w-16' : 'w-64'"
+  >
     <!-- Logo Section -->
-    <div class="flex items-center justify-center h-16 px-4 border-b border-gray-200">
-      <div class="flex items-center justify-center w-8 h-8 mr-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600">
-        <span class="text-sm font-bold text-white">T</span>
+    <div class="flex items-center h-16 px-4 border-b border-gray-200" :class="isCollapsed ? 'justify-center' : 'justify-between'">
+      <div class="flex items-center">
+        <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600" :class="isCollapsed ? '' : 'mr-3'">
+          <span class="text-sm font-bold text-white">T</span>
+        </div>
+        <h1 v-if="!isCollapsed" class="text-xl font-bold text-gray-900">TOSS ERP</h1>
       </div>
-      <h1 class="text-xl font-bold text-gray-900">TOSS ERP</h1>
+      <button 
+        @click="toggleCollapse"
+        class="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+        :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+      >
+        <ChevronLeftIcon v-if="!isCollapsed" class="w-5 h-5" />
+        <ChevronRightIcon v-else class="w-5 h-5" />
+      </button>
     </div>
     
     <!-- Navigation -->
@@ -14,41 +27,49 @@
       <NuxtLink 
         to="/" 
         class="nav-link"
-        :class="{ 'nav-link-active': route.path === '/' }"
+        :class="{ 'nav-link-active': route.path === '/', 'justify-center': isCollapsed }"
+        :title="isCollapsed ? 'Home' : ''"
       >
-        <HomeIcon class="w-5 h-5 mr-3" />
-        Home
+        <HomeIcon class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
+        <span v-if="!isCollapsed">Home</span>
       </NuxtLink>
 
       <!-- Dashboard -->
       <NuxtLink 
         to="/dashboard" 
         class="nav-link"
-        :class="{ 'nav-link-active': route.path === '/dashboard' }"
+        :class="{ 'nav-link-active': route.path === '/dashboard', 'justify-center': isCollapsed }"
+        :title="isCollapsed ? 'Dashboard' : ''"
       >
-        <ChartBarIcon class="w-5 h-5 mr-3" />
-        Dashboard
+        <ChartBarIcon class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
+        <span v-if="!isCollapsed">Dashboard</span>
       </NuxtLink>
       
       <!-- Stock & Inventory Section -->
       <div class="space-y-1">
         <button 
           @click="toggleStockDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/stock') }"
+          class="w-full nav-link"
+          :class="{ 
+            'nav-link-active': route.path.startsWith('/stock'),
+            'justify-center': isCollapsed,
+            'justify-between': !isCollapsed
+          }"
+          :title="isCollapsed ? 'Stock & Inventory' : ''"
         >
           <div class="flex items-center">
-            <ArchiveBoxIcon class="w-5 h-5 mr-3" />
-            Stock & Inventory
+            <ArchiveBoxIcon class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
+            <span v-if="!isCollapsed">Stock & Inventory</span>
           </div>
           <ChevronDownIcon 
+            v-if="!isCollapsed"
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': stockDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="stockDropdownOpen"
+          v-show="stockDropdownOpen && !isCollapsed"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/stock" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock' }">
@@ -67,21 +88,27 @@
       <div class="space-y-1">
         <button 
           @click="toggleLogisticsDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/logistics') }"
+          class="w-full nav-link"
+          :class="{ 
+            'nav-link-active': route.path.startsWith('/logistics'),
+            'justify-center': isCollapsed,
+            'justify-between': !isCollapsed
+          }"
+          :title="isCollapsed ? 'Logistics' : ''"
         >
           <div class="flex items-center">
-            <TruckIcon class="w-5 h-5 mr-3" />
-            Logistics
+            <TruckIcon class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
+            <span v-if="!isCollapsed">Logistics</span>
           </div>
           <ChevronDownIcon 
+            v-if="!isCollapsed"
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': logisticsDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="logisticsDropdownOpen"
+          v-show="logisticsDropdownOpen && !isCollapsed"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/logistics" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/logistics' }">
@@ -103,21 +130,27 @@
       <div class="space-y-1">
         <button 
           @click="toggleSalesDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/sales') }"
+          class="w-full nav-link"
+          :class="{ 
+            'nav-link-active': route.path.startsWith('/sales'),
+            'justify-center': isCollapsed,
+            'justify-between': !isCollapsed
+          }"
+          :title="isCollapsed ? 'Sales' : ''"
         >
           <div class="flex items-center">
-            <ShoppingCartIcon class="w-5 h-5 mr-3" />
-            Sales
+            <ShoppingCartIcon class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
+            <span v-if="!isCollapsed">Sales</span>
           </div>
           <ChevronDownIcon 
+            v-if="!isCollapsed"
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': salesDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="salesDropdownOpen"
+          v-show="salesDropdownOpen && !isCollapsed"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/sales" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/sales' }">
@@ -162,6 +195,9 @@
           <NuxtLink to="/sales/pos" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path.startsWith('/sales/pos') }">
             Point of Sale
           </NuxtLink>
+          <NuxtLink to="/sales/reports" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path.startsWith('/sales/reports') }">
+            Reports
+          </NuxtLink>
         </div>
       </div>
 
@@ -169,21 +205,27 @@
       <div class="space-y-1">
         <button 
           @click="toggleStoresDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/stores') }"
+          class="w-full nav-link"
+          :class="{ 
+            'nav-link-active': route.path.startsWith('/stores'),
+            'justify-center': isCollapsed,
+            'justify-between': !isCollapsed
+          }"
+          :title="isCollapsed ? 'Stores' : ''"
         >
           <div class="flex items-center">
-            <BuildingStorefrontIcon class="w-5 h-5 mr-3" />
-            Stores
+            <BuildingStorefrontIcon class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
+            <span v-if="!isCollapsed">Stores</span>
           </div>
           <ChevronDownIcon 
+            v-if="!isCollapsed"
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': storesDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="storesDropdownOpen"
+          v-show="storesDropdownOpen && !isCollapsed"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/stores" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stores' }">
@@ -199,21 +241,27 @@
       <div class="space-y-1">
         <button 
           @click="toggleBuyingDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/buying') }"
+          class="w-full nav-link"
+          :class="{ 
+            'nav-link-active': route.path.startsWith('/buying'),
+            'justify-center': isCollapsed,
+            'justify-between': !isCollapsed
+          }"
+          :title="isCollapsed ? 'Buying' : ''"
         >
           <div class="flex items-center">
-            <ShoppingBagIcon class="w-5 h-5 mr-3" />
-            Buying
+            <ShoppingBagIcon class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
+            <span v-if="!isCollapsed">Buying</span>
           </div>
           <ChevronDownIcon 
+            v-if="!isCollapsed"
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': buyingDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="buyingDropdownOpen"
+          v-show="buyingDropdownOpen && !isCollapsed"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/buying" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/buying' }">
@@ -262,21 +310,27 @@
       <div class="space-y-1">
         <button 
           @click="toggleCrmDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/crm') }"
+          class="w-full nav-link"
+          :class="{ 
+            'nav-link-active': route.path.startsWith('/crm'),
+            'justify-center': isCollapsed,
+            'justify-between': !isCollapsed
+          }"
+          :title="isCollapsed ? 'CRM' : ''"
         >
           <div class="flex items-center">
-            <UsersIcon class="w-5 h-5 mr-3" />
-            CRM
+            <UsersIcon class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
+            <span v-if="!isCollapsed">CRM</span>
           </div>
           <ChevronDownIcon 
+            v-if="!isCollapsed"
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': crmDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="crmDropdownOpen"
+          v-show="crmDropdownOpen && !isCollapsed"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/crm" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/crm' }">
@@ -292,22 +346,28 @@
       <div class="space-y-1">
         <button 
           @click="toggleAutomationDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/automation') }"
+          class="w-full nav-link"
+          :class="{ 
+            'nav-link-active': route.path.startsWith('/automation'),
+            'justify-center': isCollapsed,
+            'justify-between': !isCollapsed
+          }"
+          :title="isCollapsed ? 'Automation' : ''"
         >
           <div class="flex items-center">
-            <CogIcon class="w-5 h-5 mr-3" />
-            Automation
-            <span class="ml-2 px-2 py-0.5 text-xs bg-blue-500 text-white rounded-full">AI</span>
+            <CogIcon class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
+            <span v-if="!isCollapsed">Automation</span>
+            <span v-if="!isCollapsed" class="ml-2 px-2 py-0.5 text-xs bg-blue-500 text-white rounded-full">AI</span>
           </div>
           <ChevronDownIcon 
+            v-if="!isCollapsed"
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': automationDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="automationDropdownOpen"
+          v-show="automationDropdownOpen && !isCollapsed"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/automation" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/automation' }">
@@ -332,22 +392,28 @@
       <div class="space-y-1">
         <button 
           @click="toggleOnboardingDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/onboarding') }"
+          class="w-full nav-link"
+          :class="{ 
+            'nav-link-active': route.path.startsWith('/onboarding'),
+            'justify-center': isCollapsed,
+            'justify-between': !isCollapsed
+          }"
+          :title="isCollapsed ? 'Onboarding' : ''"
         >
           <div class="flex items-center">
-            <UserPlusIcon class="w-5 h-5 mr-3" />
-            Onboarding
-            <span class="ml-2 px-2 py-0.5 text-xs bg-green-500 text-white rounded-full">New</span>
+            <UserPlusIcon class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
+            <span v-if="!isCollapsed">Onboarding</span>
+            <span v-if="!isCollapsed" class="ml-2 px-2 py-0.5 text-xs bg-green-500 text-white rounded-full">New</span>
           </div>
           <ChevronDownIcon 
+            v-if="!isCollapsed"
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': onboardingDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="onboardingDropdownOpen"
+          v-show="onboardingDropdownOpen && !isCollapsed"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/onboarding" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/onboarding' }">
@@ -360,21 +426,27 @@
       <div class="space-y-1">
         <button 
           @click="toggleSettingsDropdown"
-          class="justify-between w-full nav-link"
-          :class="{ 'nav-link-active': route.path.startsWith('/settings') }"
+          class="w-full nav-link"
+          :class="{ 
+            'nav-link-active': route.path.startsWith('/settings'),
+            'justify-center': isCollapsed,
+            'justify-between': !isCollapsed
+          }"
+          :title="isCollapsed ? 'Settings' : ''"
         >
           <div class="flex items-center">
-            <Cog6ToothIcon class="w-5 h-5 mr-3" />
-            Settings
+            <Cog6ToothIcon class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
+            <span v-if="!isCollapsed">Settings</span>
           </div>
           <ChevronDownIcon 
+            v-if="!isCollapsed"
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'transform rotate-180': settingsDropdownOpen }"
           />
         </button>
         
         <div 
-          v-show="settingsDropdownOpen"
+          v-show="settingsDropdownOpen && !isCollapsed"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
           <NuxtLink to="/settings" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/settings' }">
@@ -386,7 +458,7 @@
     
     <!-- Footer -->
     <div class="p-4 border-t border-slate-800">
-      <div class="text-xs text-center text-slate-400">
+      <div class="text-xs text-center text-slate-400" :class="isCollapsed ? 'hidden' : ''">
         TOSS ERP v1.0.0
       </div>
     </div>
@@ -403,6 +475,8 @@ import {
   ShoppingBagIcon, 
   BuildingStorefrontIcon,
   ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   CogIcon,
   Cog6ToothIcon,
   TruckIcon,
@@ -413,6 +487,28 @@ import {
 // Ensure router is available
 const router = useRouter()
 const route = useRoute()
+
+// Collapse state
+const isCollapsed = ref(false)
+
+// Toggle collapse function
+const toggleCollapse = () => {
+  isCollapsed.value = !isCollapsed.value
+  // Close all dropdowns when collapsing
+  if (isCollapsed.value) {
+    stockDropdownOpen.value = false
+    logisticsDropdownOpen.value = false
+    salesDropdownOpen.value = false
+    ordersDropdownOpen.value = false
+    storesDropdownOpen.value = false
+    buyingDropdownOpen.value = false
+    buyingOrdersDropdownOpen.value = false
+    crmDropdownOpen.value = false
+    automationDropdownOpen.value = false
+    onboardingDropdownOpen.value = false
+    settingsDropdownOpen.value = false
+  }
+}
 
 // Dropdown states
 const stockDropdownOpen = ref(false)

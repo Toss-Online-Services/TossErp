@@ -23,7 +23,7 @@
             <CurrencyDollarIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
             Open Drawer
           </button>
-          <button @click="showReports = true" 
+          <button @click="openReportsModal" 
                   class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-slate-600 to-gray-600 hover:from-slate-700 hover:to-gray-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base font-semibold">
             <ChartBarIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
             Reports
@@ -432,9 +432,9 @@
     </div>
     </div>
 
-    <!-- Reports Modal -->
+    <!-- Comprehensive Sales Report Modal -->
     <div v-if="showReports" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-white rounded-xl p-6 max-w-6xl w-full max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-2xl font-semibold text-gray-900">Daily Sales Report</h3>
           <button @click="showReports = false" class="text-gray-500 hover:text-gray-700">
@@ -490,7 +490,85 @@
           </div>
         </div>
 
-        <div class="flex justify-end gap-3">
+        <!-- Held Sales Section -->
+        <div class="mb-6 border-t pt-6">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-lg font-semibold text-gray-900">
+              Held Sales ({{ heldSales.length }})
+            </h4>
+            <span v-if="heldSales.length > 0" class="text-sm text-orange-600 font-medium">
+              Total: R{{ formatCurrency(heldSales.reduce((sum, sale) => sum + sale.total, 0)) }}
+            </span>
+          </div>
+          <div v-if="heldSales.length === 0" class="bg-gray-50 p-4 rounded-lg text-center text-gray-500">
+            No held sales today
+          </div>
+          <div v-else class="space-y-2 max-h-48 overflow-y-auto">
+            <div 
+              v-for="sale in heldSales" 
+              :key="sale.id"
+              class="bg-orange-50 p-3 rounded-lg flex items-center justify-between hover:bg-orange-100 transition-colors"
+            >
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-medium text-gray-900">{{ sale.saleNumber }}</span>
+                  <span class="text-sm text-gray-600">• {{ sale.customer }}</span>
+                </div>
+                <div class="text-xs text-gray-500 mt-1">
+                  {{ sale.items.length }} items • {{ sale.timestamp }}
+                </div>
+                <div v-if="sale.note" class="text-xs text-gray-600 mt-1 italic">
+                  "{{ sale.note }}"
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="font-bold text-orange-600">R{{ formatCurrency(sale.total) }}</div>
+                <div class="text-xs text-gray-500">{{ sale.paymentMethod }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Voided Sales Section -->
+        <div class="mb-6 border-t pt-6">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-lg font-semibold text-gray-900">
+              Voided Sales ({{ voidedSales.length }})
+            </h4>
+            <span v-if="voidedSales.length > 0" class="text-sm text-red-600 font-medium">
+              Total: R{{ formatCurrency(voidedSales.reduce((sum, sale) => sum + sale.total, 0)) }}
+            </span>
+          </div>
+          <div v-if="voidedSales.length === 0" class="bg-gray-50 p-4 rounded-lg text-center text-gray-500">
+            No voided sales today
+          </div>
+          <div v-else class="space-y-2 max-h-48 overflow-y-auto">
+            <div 
+              v-for="sale in voidedSales" 
+              :key="sale.id"
+              class="bg-red-50 p-3 rounded-lg flex items-center justify-between"
+            >
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-medium text-gray-900">{{ sale.saleNumber }}</span>
+                  <span class="text-sm text-gray-600">• {{ sale.customer }}</span>
+                </div>
+                <div class="text-xs text-gray-500 mt-1">
+                  {{ sale.items.length }} items • {{ sale.timestamp }}
+                </div>
+                <div v-if="sale.reason" class="text-xs text-red-600 mt-1 italic">
+                  Reason: "{{ sale.reason }}"
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="font-bold text-red-600">R{{ formatCurrency(sale.total) }}</div>
+                <div class="text-xs text-gray-500 line-through">{{ sale.paymentMethod }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3 border-t pt-4">
           <button @click="printReport" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
             Print Report
           </button>
@@ -719,6 +797,7 @@ const showHeldSalesModal = ref(false)
 const holdSaleNote = ref('')
 const voidSaleReason = ref('')
 const heldSales = ref<any[]>([])
+const voidedSales = ref<any[]>([])
 const heldSalesSearchQuery = ref('')
 
 // POS Stats
@@ -1242,6 +1321,31 @@ const loadHeldSales = async () => {
   }
 }
 
+// Load voided sales from database
+const loadVoidedSales = async () => {
+  try {
+    const voided = await salesAPI.getVoidedSales(shopId.value)
+    voidedSales.value = (voided || []).map((sale: any) => ({
+      id: sale.id || sale.Id || 0,
+      saleNumber: sale.saleNumber || sale.SaleNumber || '',
+      items: (sale.items || sale.Items || []).map((item: any) => ({
+        id: item.productId || item.ProductId || 0,
+        name: item.productName || item.ProductName || 'Unknown',
+        quantity: item.quantity || item.Quantity || 0,
+        price: item.unitPrice || item.UnitPrice || 0
+      })),
+      customer: sale.customerName || sale.CustomerName || '',
+      customerId: sale.customerId || sale.CustomerId || '',
+      paymentMethod: sale.paymentMethod || sale.PaymentMethod || 'Cash',
+      total: sale.total || sale.Total || 0,
+      reason: sale.voidReason || sale.VoidReason || '',
+      timestamp: new Date(sale.voidedAt || sale.VoidedAt).toLocaleString('en-ZA')
+    }))
+  } catch (error) {
+    console.error('Failed to load voided sales:', error)
+  }
+}
+
 // Get original index from filtered array
 const getOriginalIndex = (sale: any) => {
   return heldSales.value.findIndex((s: any) => s.id === sale.id)
@@ -1295,6 +1399,16 @@ const deleteHeldSale = async (index: number) => {
       showNotification('✗ Failed to delete sale', 'error')
     }
   }
+}
+
+// Open reports modal and load all report data
+const openReportsModal = async () => {
+  showReports.value = true
+  // Load held and voided sales data
+  await Promise.all([
+    loadHeldSales(),
+    loadVoidedSales()
+  ])
 }
 
 // Print report

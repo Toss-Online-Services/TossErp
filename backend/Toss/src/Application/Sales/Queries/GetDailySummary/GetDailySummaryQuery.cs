@@ -20,20 +20,23 @@ public class GetDailySummaryQueryHandler : IRequestHandler<GetDailySummaryQuery,
 
     public async Task<DailySummaryDto> Handle(GetDailySummaryQuery request, CancellationToken cancellationToken)
     {
-        var date = request.Date ?? DateTimeOffset.UtcNow;
-        var startOfDay = date.Date;
-        var endOfDay = startOfDay.AddDays(1);
+        // Normalize to UTC to satisfy PostgreSQL 'timestamptz' requirements (offset must be 0)
+        var dateUtc = (request.Date ?? DateTimeOffset.UtcNow).ToUniversalTime();
+        // Date strips the time component; reconstruct a DateTimeOffset at 00:00:00 with UTC offset
+        var startOfDayUtc = new DateTimeOffset(dateUtc.Date, TimeSpan.Zero);
+        var endOfDayUtc = startOfDayUtc.AddDays(1);
 
         var sales = await _context.Sales
             .Where(s => s.ShopId == request.ShopId 
-                && s.SaleDate >= startOfDay 
-                && s.SaleDate < endOfDay
+                && s.SaleDate >= startOfDayUtc 
+                && s.SaleDate < endOfDayUtc
                 && s.Status == SaleStatus.Completed)
             .ToListAsync(cancellationToken);
 
         return new DailySummaryDto
         {
-            Date = date,
+            // Return normalized UTC date to callers
+            Date = dateUtc,
             TotalSales = sales.Sum(s => s.Total),
             SaleCount = sales.Count,
             AverageSaleValue = sales.Any() ? sales.Average(s => s.Total) : 0,
