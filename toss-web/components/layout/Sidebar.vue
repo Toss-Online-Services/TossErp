@@ -466,7 +466,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { 
   HomeIcon,
   ChartBarIcon, 
@@ -601,6 +601,35 @@ const toggleOnboardingDropdown = () => {
 const toggleSettingsDropdown = () => {
   settingsDropdownOpen.value = !settingsDropdownOpen.value
 }
+
+// Listen for fullscreen collapse event
+onMounted(() => {
+  const handleCollapseEvent = (event) => {
+    if (event.detail?.collapse === true) {
+      isCollapsed.value = true
+      // Close all dropdowns
+      stockDropdownOpen.value = false
+      logisticsDropdownOpen.value = false
+      salesDropdownOpen.value = false
+      ordersDropdownOpen.value = false
+      storesDropdownOpen.value = false
+      buyingDropdownOpen.value = false
+      buyingOrdersDropdownOpen.value = false
+      crmDropdownOpen.value = false
+      automationDropdownOpen.value = false
+      onboardingDropdownOpen.value = false
+      settingsDropdownOpen.value = false
+    } else if (event.detail?.collapse === false) {
+      isCollapsed.value = false
+    }
+  }
+  
+  window.addEventListener('collapse-sidebar', handleCollapseEvent)
+  
+  onUnmounted(() => {
+    window.removeEventListener('collapse-sidebar', handleCollapseEvent)
+  })
+})
 </script>
 
 <style scoped>

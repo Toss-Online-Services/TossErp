@@ -18,88 +18,14 @@
             <component :is="isFullscreen ? ArrowsPointingInIcon : ArrowsPointingOutIcon" class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
             {{ isFullscreen ? 'Exit' : 'Fullscreen' }}
           </button>
-          <button @click="openDrawer" 
-                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base font-semibold">
-            <CurrencyDollarIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
-            Open Drawer
+          <button 
+            @click="showSettingsModal = true"
+            class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-slate-600 to-gray-600 hover:from-slate-700 hover:to-gray-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base font-semibold"
+            title="Settings & Hardware"
+          >
+            <CogIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
+            Settings
           </button>
-          <button @click="openReportsModal" 
-                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-slate-600 to-gray-600 hover:from-slate-700 hover:to-gray-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base font-semibold">
-            <ChartBarIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
-            Reports
-          </button>
-        </div>
-      </div>
-
-
-      <!-- Compact Status Bar with Hardware & Stats -->
-      <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-3">
-        <div class="flex items-center justify-between flex-wrap gap-3">
-          <!-- Hardware Status -->
-          <div class="flex items-center gap-4">
-            <div class="flex items-center gap-1.5">
-              <div class="w-2 h-2 rounded-full" :class="hardwareStatus.barcodeScanner ? 'bg-green-500' : 'bg-red-500'"></div>
-              <span class="text-xs text-gray-600">Scanner</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <div class="w-2 h-2 rounded-full" :class="hardwareStatus.cardReader ? 'bg-green-500' : 'bg-red-500'"></div>
-              <span class="text-xs text-gray-600">Card</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <div class="w-2 h-2 rounded-full" :class="hardwareStatus.printer ? 'bg-green-500' : 'bg-red-500'"></div>
-              <span class="text-xs text-gray-600">Printer</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <div class="w-2 h-2 rounded-full" :class="hardwareStatus.cashDrawer ? 'bg-green-500' : 'bg-red-500'"></div>
-              <span class="text-xs text-gray-600">Drawer</span>
-            </div>
-          </div>
-          
-          <!-- Quick Stats -->
-          <div class="flex items-center gap-4 text-xs">
-            <div class="flex items-center gap-1.5">
-              <span class="text-gray-600">Today:</span>
-              <span class="font-semibold text-emerald-600">R{{ formatCurrency(todaySales) }}</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="text-gray-600">Cart:</span>
-              <span class="font-semibold text-blue-600">R{{ formatCurrency(cartTotal) }}</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="text-gray-600">Float:</span>
-              <span class="font-semibold text-purple-600">R{{ formatCurrency(cashFloat) }}</span>
-            </div>
-          </div>
-          
-          <button @click="showStatsDetails = !showStatsDetails" 
-                  class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
-            <component :is="showStatsDetails ? 'ChevronUpIcon' : 'ChevronDownIcon'" class="w-3 h-3" />
-            {{ showStatsDetails ? 'Hide' : 'Details' }}
-          </button>
-        </div>
-        
-        <!-- Expandable Details -->
-        <div v-if="showStatsDetails" class="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-3 pt-3 border-t border-gray-200">
-          <div class="p-2">
-            <p class="text-xs text-gray-600">Today's Sales</p>
-            <p class="text-lg font-bold text-gray-900">R {{ formatCurrency(todaySales) }}</p>
-            <p class="text-xs text-emerald-600">{{ todayTransactions }} transactions</p>
-          </div>
-          <div class="p-2">
-            <p class="text-xs text-gray-600">Current Sale</p>
-            <p class="text-lg font-bold text-gray-900">R {{ formatCurrency(cartTotal) }}</p>
-            <p class="text-xs text-blue-600">{{ cartItems.length }} items</p>
-          </div>
-          <div class="p-2">
-            <p class="text-xs text-gray-600">Avg. Sale</p>
-            <p class="text-lg font-bold text-gray-900">R {{ formatCurrency(averageSale) }}</p>
-            <p class="text-xs text-yellow-600">Last hour</p>
-          </div>
-          <div class="p-2">
-            <p class="text-xs text-gray-600">Cash Float</p>
-            <p class="text-lg font-bold text-gray-900">R {{ formatCurrency(cashFloat) }}</p>
-            <p class="text-xs text-purple-600">In drawer</p>
-          </div>
         </div>
       </div>
 
@@ -126,13 +52,6 @@
                 class="p-3 rounded-xl transition-all duration-200 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl"
               >
                 <QrCodeIcon class="w-6 h-6" />
-              </button>
-              <button 
-                @click="requestHardwareAccess"
-                class="p-3 rounded-xl transition-all duration-200 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl"
-                title="Request Hardware Access"
-              >
-                <CogIcon class="w-6 h-6" />
               </button>
             </div>
           </div>
@@ -726,6 +645,143 @@
       v-model="showBarcodeScanner" 
       @barcode-scanned="handleBarcodeScanned"
     />
+
+    <!-- Settings Modal -->
+    <div v-if="showSettingsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl p-6 max-w-lg w-full">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-2xl font-semibold text-gray-900">Settings & Hardware</h3>
+          <button @click="showSettingsModal = false" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Hardware Status Section -->
+        <div class="mb-6">
+          <h4 class="text-lg font-semibold text-gray-900 mb-4">Hardware Status</h4>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <QrCodeIcon class="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <p class="font-medium text-gray-900">Barcode Scanner</p>
+                  <p class="text-xs text-gray-500">Keyboard wedge / USB scanner</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full" :class="hardwareStatus.barcodeScanner ? 'bg-green-500' : 'bg-red-500'"></div>
+                <span class="text-sm font-medium" :class="hardwareStatus.barcodeScanner ? 'text-green-600' : 'text-red-600'">
+                  {{ hardwareStatus.barcodeScanner ? 'Connected' : 'Disconnected' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                  <CreditCardIcon class="w-6 h-6 text-purple-600" />
+                </div>
+                <div>
+                  <p class="font-medium text-gray-900">Card Reader</p>
+                  <p class="text-xs text-gray-500">USB / HID card terminal</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full" :class="hardwareStatus.cardReader ? 'bg-green-500' : 'bg-red-500'"></div>
+                <span class="text-sm font-medium" :class="hardwareStatus.cardReader ? 'text-green-600' : 'text-red-600'">
+                  {{ hardwareStatus.cardReader ? 'Connected' : 'Disconnected' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                  <PrinterIcon class="w-6 h-6 text-orange-600" />
+                </div>
+                <div>
+                  <p class="font-medium text-gray-900">Receipt Printer</p>
+                  <p class="text-xs text-gray-500">ESC/POS thermal printer</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full" :class="hardwareStatus.printer ? 'bg-green-500' : 'bg-red-500'"></div>
+                <span class="text-sm font-medium" :class="hardwareStatus.printer ? 'text-green-600' : 'text-red-600'">
+                  {{ hardwareStatus.printer ? 'Connected' : 'Disconnected' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                  <CurrencyDollarIcon class="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <p class="font-medium text-gray-900">Cash Drawer</p>
+                  <p class="text-xs text-gray-500">Connected via printer</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full" :class="hardwareStatus.cashDrawer ? 'bg-green-500' : 'bg-red-500'"></div>
+                <span class="text-sm font-medium" :class="hardwareStatus.cashDrawer ? 'text-green-600' : 'text-red-600'">
+                  {{ hardwareStatus.cashDrawer ? 'Connected' : 'Disconnected' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions Section -->
+        <div class="mb-6 border-t pt-4">
+          <h4 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h4>
+          <div class="grid grid-cols-2 gap-3">
+            <button 
+              @click="requestHardwareAccess"
+              class="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <CogIcon class="w-5 h-5" />
+              Connect Hardware
+            </button>
+            <button 
+              @click="openDrawer"
+              class="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <CurrencyDollarIcon class="w-5 h-5" />
+              Open Drawer
+            </button>
+            <button 
+              @click="openReportsModal"
+              class="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <ChartBarIcon class="w-5 h-5" />
+              Reports
+            </button>
+            <button 
+              @click="testPrinter"
+              class="px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <PrinterIcon class="w-5 h-5" />
+              Test Print
+            </button>
+          </div>
+        </div>
+
+        <!-- Close Button -->
+        <div class="flex justify-end border-t pt-4">
+          <button 
+            @click="showSettingsModal = false" 
+            class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -747,9 +803,7 @@ import {
   PrinterIcon,
   CogIcon,
   ArrowsPointingOutIcon,
-  ArrowsPointingInIcon,
-  ChevronUpIcon,
-  ChevronDownIcon
+  ArrowsPointingInIcon
 } from '@heroicons/vue/24/outline'
 import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
 import { useSalesAPI } from '~/composables/useSalesAPI'
@@ -780,9 +834,9 @@ const selectedCustomerName = ref('Walk-in Customer')
 const selectedPaymentMethod = ref('Cash')
 const showSuccessModal = ref(false)
 const showReports = ref(false)
+const showSettingsModal = ref(false)
 const searchInput = ref<HTMLInputElement>()
 const isFullscreen = ref(false)
-const showStatsDetails = ref(false)
 const products = ref<any[]>([])
 const customers = ref<any[]>([])
 
@@ -1449,6 +1503,36 @@ const openDrawer = async () => {
   }
 }
 
+const testPrinter = async () => {
+  try {
+    if (hardwareStatus.value.printer) {
+      const testReceipt = {
+        storeName: "THABO'S SPAZA SHOP",
+        storeAddress: '123 Main Street, Soweto',
+        storePhone: '+27 11 123 4567',
+        receiptNumber: `TEST-${Date.now()}`,
+        date: new Date().toLocaleString('en-ZA'),
+        cashier: 'Thabo',
+        customer: 'Test Print',
+        items: [
+          { name: 'Test Item 1', quantity: 1, price: 10.00, total: 10.00 },
+          { name: 'Test Item 2', quantity: 2, price: 5.00, total: 10.00 }
+        ],
+        total: 20.00,
+        paymentMethod: 'Cash'
+      }
+      
+      await printESCPOSReceipt(testReceipt)
+      showNotification('✓ Test receipt printed successfully')
+    } else {
+      showNotification('⚠️ Printer not connected. Please connect hardware first.', 'error')
+    }
+  } catch (error) {
+    console.error('Test print failed:', error)
+    showNotification('✗ Test print failed', 'error')
+  }
+}
+
 const printReceipt = async () => {
   try {
     if (hardwareStatus.value.printer) {
@@ -1572,19 +1656,19 @@ const toggleFullscreen = async () => {
       // Enter fullscreen
       await document.documentElement.requestFullscreen()
       isFullscreen.value = true
-      showStatsDetails.value = false // Collapse stats in fullscreen
       
-      // Close sidebar/burger menu
-      const sidebar = document.querySelector('[data-sidebar]')
-      if (sidebar) {
-        sidebar.classList.remove('open')
-      }
+      // Trigger sidebar collapse by dispatching a custom event
+      window.dispatchEvent(new CustomEvent('collapse-sidebar', { detail: { collapse: true } }))
       
       showNotification('✓ Entered fullscreen mode. Press F11 or ESC to exit')
     } else {
       // Exit fullscreen
       await document.exitFullscreen()
       isFullscreen.value = false
+      
+      // Trigger sidebar expand by dispatching a custom event
+      window.dispatchEvent(new CustomEvent('collapse-sidebar', { detail: { collapse: false } }))
+      
       showNotification('✓ Exited fullscreen mode')
     }
   } catch (error) {
