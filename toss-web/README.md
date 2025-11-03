@@ -136,7 +136,7 @@ bun install
 Create a `.env` file:
 
 ```env
-API_BASE_URL=http://localhost:5000
+NUXT_PUBLIC_API_BASE=https://localhost:5001
 ```
 
 ### Development
@@ -307,7 +307,7 @@ npm run test:e2e
 docker build -t tosserp-web:latest .
 
 # Run container
-docker run -p 3000:3001 -e API_BASE_URL=https://api.tosserp.com tosserp-web:latest
+docker run -p 3000:3001 -e NUXT_PUBLIC_API_BASE=https://api.tosserp.com tosserp-web:latest
 ```
 
 ### Static Hosting

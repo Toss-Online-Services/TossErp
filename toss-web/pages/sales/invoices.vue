@@ -9,7 +9,7 @@
               Sales Invoices
             </h1>
             <p class="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-1">
-              Manage billing and payment tracking
+              Manage credit sales, billing and accounts receivable (For POS receipts, use POS interface)
             </p>
           </div>
           <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
@@ -307,7 +307,10 @@
       <div v-else class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-12 text-center">
         <DocumentTextIcon class="w-16 h-16 text-slate-400 mx-auto mb-4" />
         <p class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No invoices found</p>
-        <p class="text-slate-600 dark:text-slate-400">Create your first invoice to get started.</p>
+        <p class="text-slate-600 dark:text-slate-400 mb-4">Create invoices for credit sales or billing customers.</p>
+        <p class="text-sm text-blue-600 dark:text-blue-400">
+          💡 For immediate cash/card sales, use the <a href="/sales/pos" class="underline hover:text-blue-700">POS interface</a>
+        </p>
       </div>
     </div>
 
@@ -463,7 +466,7 @@ import { getErrorNotification, logError } from '~/utils/errorHandler'
 useHead({
   title: 'Sales Invoices - TOSS ERP',
   meta: [
-    { name: 'description', content: 'Manage billing and payments for Thabo\'s Spaza Shop' }
+    { name: 'description', content: 'Manage credit sales and accounts receivable for Thabo\'s Spaza Shop' }
   ]
 })
 
@@ -472,10 +475,30 @@ definePageMeta({
   layout: 'default'
 })
 
+/**
+ * SALES INVOICES vs POS RECEIPTS (ERPNext Standard):
+ * 
+ * Sales Invoices:
+ * - Formal billing documents for credit sales
+ * - Sent to customers for payment (due dates, payment terms)
+ * - Track accounts receivable
+ * - Statuses: Draft, Sent, Viewed, Paid, Overdue
+ * - Can be created from Sales Orders/Delivery Notes
+ * 
+ * POS Invoices/Receipts:
+ * - Immediate retail transactions (cash/card)
+ * - Created via POS interface (/sales/pos)
+ * - Payment collected immediately
+ * - Stock updated immediately
+ * - Less formal, more transactional
+ * 
+ * In ERPNext: POS Invoices are Sales Invoices with "Is POS" checkbox
+ */
+
 // API
 const salesAPI = useSalesAPI()
 const config = useRuntimeConfig()
-const baseURL = (config.public.apiBase || 'https://localhost:5001') + '/api'
+const baseURL = config.public.apiBase + '/api'
 
 // Reactive data
 const showNewInvoiceModal = ref(false)
@@ -511,13 +534,16 @@ const loadInvoices = async () => {
 }
 
 // Invoice statistics - computed from actual data
-const stats = computed(() => ({
-  totalInvoices: invoices.value.length,
-  draftInvoices: invoices.value.filter((i: any) => i.status === 'draft').length,
-  sentInvoices: invoices.value.filter((i: any) => i.status === 'sent').length,
-  paidInvoices: invoices.value.filter((i: any) => i.status === 'paid').length,
-  overdueInvoices: invoices.value.filter((i: any) => i.status === 'overdue').length
-}))
+const stats = computed(() => {
+  const invoiceList = Array.isArray(invoices.value) ? invoices.value : []
+  return {
+    totalInvoices: invoiceList.length,
+    draftInvoices: invoiceList.filter((i: any) => i.status === 'draft').length,
+    sentInvoices: invoiceList.filter((i: any) => i.status === 'sent').length,
+    paidInvoices: invoiceList.filter((i: any) => i.status === 'paid').length,
+    overdueInvoices: invoiceList.filter((i: any) => i.status === 'overdue').length
+  }
+})
 
 // Helper functions
 const toggleInvoiceExpansion = (invoiceId: string) => {

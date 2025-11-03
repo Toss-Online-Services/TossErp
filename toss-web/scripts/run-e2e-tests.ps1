@@ -9,7 +9,7 @@ $ErrorActionPreference = "Continue"
 # Configuration
 $BACKEND_DIR = "C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\backend\Toss"
 $FRONTEND_DIR = "C:\Users\PROBOOK\source\repos\Toss-Online-Services\TossErp\toss-web"
-$BACKEND_URL = "http://localhost:5000"
+$BACKEND_URL = "https://localhost:5001"
 $FRONTEND_URL = "http://localhost:3001"
 $MAX_WAIT = 60 # seconds
 

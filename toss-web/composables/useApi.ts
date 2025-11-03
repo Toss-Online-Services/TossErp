@@ -9,7 +9,7 @@ import type { UseFetchOptions } from 'nuxt/app'
  */
 export const useApi = () => {
   const config = useRuntimeConfig()
-  const apiBase = config.public.apiBase || 'http://localhost:5001'
+  const apiBase = config.public.apiBase
   const token = useCookie('auth-token')
 
   /**
@@ -25,7 +25,11 @@ export const useApi = () => {
       onRequest({ options }) {
         // Add auth token if available
         if (token.value && options.headers) {
-          (options.headers as Record<string, string>).Authorization = `Bearer ${token.value}`
+          if (options.headers instanceof Headers) {
+            options.headers.set('Authorization', `Bearer ${token.value}`)
+          } else {
+            (options.headers as Record<string, string>)['Authorization'] = `Bearer ${token.value}`
+          }
         }
       },
       onResponseError({ response }) {

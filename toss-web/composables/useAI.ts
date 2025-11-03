@@ -56,7 +56,7 @@ export interface AISettingsDto {
 
 export function useAI() {
   const config = useRuntimeConfig()
-  const apiBaseUrl = config.public.apiBase || 'http://localhost:5001'
+  const apiBaseUrl = config.public.apiBase
   
   const isLoading = ref(false)
   const error = ref<string | null>(null)

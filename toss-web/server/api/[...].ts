@@ -5,7 +5,7 @@
  */
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  const backendURL = config.public.apiBase || 'https://localhost:5001'
+  const backendURL = config.public.apiBase
   
   // Get the full path after /api/
   const path = event.path.replace(/^\/api\//, '')

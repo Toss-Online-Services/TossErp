@@ -9,10 +9,8 @@
  */
 export const useSalesAPI = () => {
   const config = useRuntimeConfig()
-  const devLocal = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
-    ? 'http://localhost:5000'
-    : ''
-  const apiBase = devLocal || config.public.apiBase || 'http://localhost:5000'
+  // Always derive API base from runtime config (enforced to https://localhost:5001 by default)
+  const apiBase = config.public.apiBase
   const baseURL = apiBase + '/api'
   const productsAPI = useProductsAPI()
   const crmAPI = useCRMAPI()
@@ -201,10 +199,15 @@ export const useSalesAPI = () => {
    * Get invoices (sales can serve as invoices)
    */
   const getInvoices = async (shopId?: number) => {
-    return await $fetch<any>(`${baseURL}/Sales/invoices`, {
+    const res = await $fetch<any>(`${baseURL}/Sales/invoices`, {
       method: 'GET',
-      params: { shopId: shopId || 1 }
+      params: { 
+        shopId: shopId || 1,
+        pageNumber: 1,
+        pageSize: 100
+      }
     })
+    return res
   }
 
   /**

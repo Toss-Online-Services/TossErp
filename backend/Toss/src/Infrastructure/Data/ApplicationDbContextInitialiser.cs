@@ -518,8 +518,10 @@ public class ApplicationDbContextInitialiser
             return;
         }
 
+        // Generate unique PO numbers using counter to avoid duplicates
+        var poNumberCounter = 1000;
         var poFaker = new Faker<PurchaseOrder>()
-            .RuleFor(po => po.PONumber, f => $"PO-{f.Random.Number(1000, 9999)}")
+            .RuleFor(po => po.PONumber, f => $"PO-{poNumberCounter++}")
             .RuleFor(po => po.ShopId, f => f.PickRandom(stores).Id)
             .RuleFor(po => po.VendorId, f => f.PickRandom(vendors).Id)
             .RuleFor(po => po.OrderDate, f => DateTimeOffset.UtcNow.AddDays(-f.Random.Int(1, 60)))

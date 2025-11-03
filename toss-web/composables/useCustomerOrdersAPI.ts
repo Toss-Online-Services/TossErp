@@ -4,10 +4,7 @@
  */
 export const useCustomerOrdersAPI = () => {
   const config = useRuntimeConfig()
-  const devLocal = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
-    ? 'http://localhost:5000'
-    : ''
-  const apiBase = devLocal || config.public.apiBase || 'http://localhost:5000'
+  const apiBase = config.public.apiBase
   const baseURL = apiBase + '/api'
 
   return {

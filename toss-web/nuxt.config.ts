@@ -71,6 +71,12 @@ export default defineNuxtConfig({
   },
   ssr: false,  // Disable SSR temporarily to fix router issues
   vite: {
+    server: {
+      watch: {
+        usePolling: false,
+        useFsEvents: true
+      }
+    },
     build: {
       rollupOptions: {
         output: {
@@ -84,7 +90,8 @@ export default defineNuxtConfig({
       chunkSizeWarningLimit: 1000
     },
     optimizeDeps: {
-      include: ['chart.js', 'xlsx', 'jspdf']
+      include: ['chart.js', 'xlsx', 'jspdf'],
+      force: false
     }
   },
   nitro: {
@@ -225,7 +232,7 @@ export default defineNuxtConfig({
       periodicSyncForUpdates: 20
     },
     devOptions: {
-      enabled: true,
+      enabled: false,  // Disabled in dev to prevent crashes on Windows
       type: 'module'
     }
   }
