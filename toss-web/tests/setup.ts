@@ -22,7 +22,7 @@ global.useState = vi.fn((key, init) => {
 })
 global.useRuntimeConfig = vi.fn(() => ({
   public: {
-    apiBase: 'http://localhost:5000/api'
+    apiBase: 'https://localhost:5001'
   }
 }))
 
@@ -47,7 +47,7 @@ vi.mock('#app', () => ({
   }),
   useRuntimeConfig: vi.fn(() => ({
     public: {
-      apiBase: 'http://localhost:5000/api'
+      apiBase: 'https://localhost:5001'
     }
   }))
 }))

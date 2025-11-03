@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     // Call backend registration API
-    const backendUrl = config.public.apiBase || 'http://localhost:5000'
+    const backendUrl = config.public.apiBase
     const response = await $fetch(`${backendUrl}/api/registration/driver`, {
       method: 'POST',
       body: {

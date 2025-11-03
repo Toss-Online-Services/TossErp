@@ -1,12 +1,9 @@
 export const useProductsAPI = () => {
   const config = useRuntimeConfig()
-  // Prefer local HTTP API in dev to avoid SSL/CORS issues without requiring a dev restart
-  const devLocal = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
-    ? 'http://localhost:5000'
-    : ''
-  const apiBase = devLocal || config.public.apiBase || 'http://localhost:5000'
+  // Always use the configured API base (defaults to https://localhost:5001)
+  const apiBase = config.public.apiBase
   const baseURL = apiBase + '/api'
-  console.log('🌐 useProductsAPI initialized with baseURL:', baseURL)
+  // Optional: enable targeted logging when needed
 
   return {
     /**
