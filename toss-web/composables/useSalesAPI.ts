@@ -9,7 +9,11 @@
  */
 export const useSalesAPI = () => {
   const config = useRuntimeConfig()
-  const baseURL = (config.public.apiBase || 'https://localhost:5001') + '/api'
+  const devLocal = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
+    ? 'http://localhost:5000'
+    : ''
+  const apiBase = devLocal || config.public.apiBase || 'http://localhost:5000'
+  const baseURL = apiBase + '/api'
   const productsAPI = useProductsAPI()
   const crmAPI = useCRMAPI()
   const ordersAPI = useCustomerOrdersAPI()
@@ -57,10 +61,13 @@ export const useSalesAPI = () => {
    */
   const getDailySummary = async (shopId: number) => {
     return await $fetch<{
+      date: string
       totalSales: number
-      totalRevenue: number
-      totalCustomers: number
-      avgTransactionValue: number
+      saleCount: number
+      averageSaleValue: number
+      cashSales: number
+      cardSales: number
+      mobileMoneySales: number
     }>(`${baseURL}/Sales/daily-summary`, {
       method: 'GET',
       params: { shopId }
@@ -295,6 +302,32 @@ export const useSalesAPI = () => {
     })
   }
 
+  /**
+   * Get all voided sales for a shop
+   */
+  const getVoidedSales = async (shopId: number) => {
+    return await $fetch<Array<{
+      id: number
+      saleNumber: string
+      customerId?: number
+      customerName: string
+      voidedAt: string
+      total: number
+      paymentMethod: string
+      voidReason?: string
+      items: Array<{
+        productId: number
+        productName: string
+        quantity: number
+        unitPrice: number
+        total: number
+      }>
+    }>>(`${baseURL}/Sales/voided`, {
+      method: 'GET',
+      params: { shopId }
+    })
+  }
+
   return {
     // Core sales methods
     createSale,
@@ -311,6 +344,9 @@ export const useSalesAPI = () => {
     getHeldSales,
     retrieveHeldSale,
     deleteHeldSale,
+    
+    // Voided sales methods
+    getVoidedSales,
     
     // Proxy methods for convenience
     getProducts,

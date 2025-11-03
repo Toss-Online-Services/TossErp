@@ -1,6 +1,11 @@
 export const useProductsAPI = () => {
   const config = useRuntimeConfig()
-  const baseURL = (config.public.apiBase || 'https://localhost:5001') + '/api'
+  // Prefer local HTTP API in dev to avoid SSL/CORS issues without requiring a dev restart
+  const devLocal = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
+    ? 'http://localhost:5000'
+    : ''
+  const apiBase = devLocal || config.public.apiBase || 'http://localhost:5000'
+  const baseURL = apiBase + '/api'
   console.log('🌐 useProductsAPI initialized with baseURL:', baseURL)
 
   return {
@@ -124,7 +129,15 @@ export const useProductsAPI = () => {
         })
         // Some backends wrap the array in { value: [...] }
         const list = response?.value || response?.items || response?.Items || response || []
-        const categories = Array.isArray(list) ? list : []
+        const raw = Array.isArray(list) ? list : []
+        // Normalize to expected shape with camelCase
+        const categories = raw.map((c: any) => ({
+          id: c.id ?? c.Id,
+          name: c.name ?? c.Name,
+          description: c.description ?? c.Description,
+          parentCategoryId: c.parentCategoryId ?? c.ParentCategoryId ?? null,
+          productCount: c.productCount ?? c.ProductCount ?? 0
+        }))
         console.log('✅ useProductsAPI.getCategories() - Categories count:', categories.length)
         return categories
       } catch (error) {

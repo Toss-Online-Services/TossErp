@@ -110,6 +110,15 @@
       <!-- Additional Mobile Links -->
       <div class="border-t border-slate-800 mt-4 pt-4">
         <h3 class="text-xs uppercase text-slate-400 font-semibold mb-2 px-3">More</h3>
+        <NuxtLink 
+          to="/sales/reports" 
+          class="mobile-nav-link"
+          :class="{ 'mobile-nav-link-active': route.path.startsWith('/sales/reports') }"
+          @click="$emit('close')"
+        >
+          <ChartBarIcon class="h-5 w-5 mr-3 flex-shrink-0" />
+          <span class="truncate">Sales Reports</span>
+        </NuxtLink>
         
         <NuxtLink 
           to="/settings" 
@@ -142,6 +151,7 @@ import {
   ShoppingCartIcon, 
   ShoppingBagIcon,
   BuildingStorefrontIcon,
+  ChartBarIcon,
   CogIcon,
   Cog6ToothIcon,
   TruckIcon,

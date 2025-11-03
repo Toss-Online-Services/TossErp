@@ -196,6 +196,7 @@
       </div>
 
       <!-- Quick Actions -->
+      <!-- Quick Actions -->
       <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6">
         <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-4">Quick Actions</h3>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -210,9 +211,9 @@
                   <div>
                 <p class="text-sm font-semibold text-slate-900 dark:text-white">New Sale</p>
                 <p class="text-xs text-slate-600 dark:text-slate-400">Point of Sale</p>
-                  </div>
-                </div>
-              </NuxtLink>
+              </div>
+            </div>
+          </NuxtLink>
 
           <NuxtLink 
             to="/sales/orders" 
@@ -221,13 +222,13 @@
             <div class="flex flex-col items-center text-center space-y-2">
               <div class="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-200">
                 <ShoppingBagIcon class="w-6 h-6 text-white" />
-                  </div>
-                  <div>
+              </div>
+              <div>
                 <p class="text-sm font-semibold text-slate-900 dark:text-white">Orders</p>
                 <p class="text-xs text-slate-600 dark:text-slate-400">Manage orders</p>
-                  </div>
-                </div>
-              </NuxtLink>
+              </div>
+            </div>
+          </NuxtLink>
 
           <NuxtLink 
             to="/sales/invoices" 
@@ -241,20 +242,20 @@
                 <p class="text-sm font-semibold text-slate-900 dark:text-white">Invoices</p>
                 <p class="text-xs text-slate-600 dark:text-slate-400">Manage billing</p>
               </div>
-                </div>
+            </div>
           </NuxtLink>
 
           <NuxtLink 
-            to="/stock/items" 
+            to="/sales/reports" 
             class="group p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border-2 border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-600 transition-all duration-200 hover:shadow-lg"
           >
             <div class="flex flex-col items-center text-center space-y-2">
               <div class="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <CubeIcon class="w-6 h-6 text-white" />
+                <DocumentTextIcon class="w-6 h-6 text-white" />
               </div>
               <div>
-                <p class="text-sm font-semibold text-slate-900 dark:text-white">Inventory</p>
-                <p class="text-xs text-slate-600 dark:text-slate-400">Check stock</p>
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">Reports</p>
+                <p class="text-xs text-slate-600 dark:text-slate-400">View analytics</p>
               </div>
             </div>
           </NuxtLink>
@@ -274,7 +275,8 @@ import {
   ArrowTrendingUpIcon,
   ShoppingCartIcon,
   CubeIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
+  XCircleIcon
 } from '@heroicons/vue/24/outline'
 import LineChart from '~/components/charts/LineChart.vue'
 import BarChart from '~/components/charts/BarChart.vue'
@@ -321,6 +323,23 @@ const orderStatusDistribution = ref<Array<{status: string, percentage: number}>>
 const topProducts = ref<Array<{name: string, quantity: number}>>([])
 const categorySales = ref<Array<{name: string, total: number, percentage: number}>>([])
 
+// Reports state
+const showReports = ref(false)
+const heldSales = ref<any[]>([])
+const voidedSales = ref<any[]>([])
+const paymentMethods = ref<any[]>([])
+const cashFloat = ref(2500)
+
+// Computed for reports
+const heldSalesCount = computed(() => heldSales.value.length)
+const heldSalesTotal = computed(() => 
+  heldSales.value.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0)
+)
+const voidedSalesCount = computed(() => voidedSales.value.length)
+const voidedSalesTotal = computed(() => 
+  voidedSales.value.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0)
+)
+
 // Load data on mount
 onMounted(async () => {
   await refreshStats()
@@ -334,8 +353,8 @@ const loadDashboardData = async () => {
     // Get dashboard summary
     const summary = await dashboardAPI.getDashboardSummary(shopId)
     todaysSales.value = summary.todayRevenue || 0
-    totalOrders.value = summary.todayTransactions || 0
-    averageOrder.value = summary.todayTransactions > 0 ? (summary.todayRevenue / summary.todayTransactions) : 0
+    totalOrders.value = summary.todaySales || 0
+    averageOrder.value = summary.todaySales > 0 ? (summary.todayRevenue / summary.todaySales) : 0
     
     // Get sales trends (last 7 days)
     const endDate = new Date()
@@ -347,8 +366,8 @@ const loadDashboardData = async () => {
       endDate: endDate.toISOString()
     })
     
-    salesTrendData.value = trends.map(t => Number(t.totalSales) / 1000) // Convert to thousands
-    salesTrendLabels.value = trends.map(t => {
+    salesTrendData.value = trends.map((t: any) => Number(t.totalSales) / 1000) // Convert to thousands
+    salesTrendLabels.value = trends.map((t: any) => {
       const date = new Date(t.date)
       return date.toLocaleDateString('en-US', { weekday: 'short' })
     })
@@ -358,7 +377,7 @@ const loadDashboardData = async () => {
       shopId,
       limit: 4
     })
-    topProducts.value = topProductsData.map(p => ({
+    topProducts.value = topProductsData.map((p: any) => ({
       name: p.productName,
       quantity: p.quantitySold
     }))
@@ -369,7 +388,7 @@ const loadDashboardData = async () => {
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString()
     })
-    categorySales.value = categoryData.map(c => ({
+    categorySales.value = categoryData.map((c: any) => ({
       name: c.categoryName,
       total: Number(c.totalSales),
       percentage: Number(c.percentage)
@@ -377,7 +396,7 @@ const loadDashboardData = async () => {
     
     // Get order status distribution
     const orderStatus = await dashboardAPI.getOrderStatusDistribution({ shopId })
-    orderStatusDistribution.value = orderStatus.map(os => ({
+    orderStatusDistribution.value = orderStatus.map((os: any) => ({
       status: os.statusName.toLowerCase(),
       percentage: Number(os.percentage)
     }))
@@ -427,5 +446,66 @@ const refreshStats = async () => {
     loading.value = false
   }
 }
+
+// Reports functions
+const openDailySalesReport = async () => {
+  try {
+    const shopId = 1 // TODO: Get from session/auth
+    
+    // Load held sales
+    await loadHeldSales()
+    
+    // Load voided sales
+    await loadVoidedSales()
+    
+    // Load payment methods breakdown
+    const salesData = await salesAPI.getSales({ shopId })
+    const sales = salesData.items || salesData || []
+    const paymentBreakdown = sales.reduce((acc: any, sale: any) => {
+      const method = sale.paymentMethod || 'Cash'
+      if (!acc[method]) {
+        acc[method] = { count: 0, total: 0 }
+      }
+      acc[method].count++
+      acc[method].total += sale.totalAmount || 0
+      return acc
+    }, {})
+    
+    paymentMethods.value = Object.entries(paymentBreakdown).map(([method, data]: [string, any]) => ({
+      method,
+      count: data.count,
+      total: data.total
+    }))
+    
+    showReports.value = true
+  } catch (error) {
+    logError(error, 'open_daily_sales_report', 'Failed to load sales report')
+  }
+}
+
+const loadHeldSales = async () => {
+  try {
+    const shopId = 1 // TODO: Get from session/auth
+    heldSales.value = await salesAPI.getHeldSales(shopId)
+  } catch (error) {
+    logError(error, 'load_held_sales', 'Failed to load held sales')
+    heldSales.value = []
+  }
+}
+
+const loadVoidedSales = async () => {
+  try {
+    const shopId = 1 // TODO: Get from session/auth
+    voidedSales.value = await salesAPI.getVoidedSales(shopId)
+  } catch (error) {
+    logError(error, 'load_voided_sales', 'Failed to load voided sales')
+    voidedSales.value = []
+  }
+}
+
+const printReport = () => {
+  window.print()
+}
+
 </script>
 
