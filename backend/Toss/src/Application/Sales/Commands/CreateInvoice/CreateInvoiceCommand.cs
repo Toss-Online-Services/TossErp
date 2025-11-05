@@ -38,8 +38,8 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
 
         var invoiceNumber = request.InvoiceNumber ?? await GenerateInvoiceNumber(sale.ShopId, cancellationToken);
 
-        // Unified path (dual-write): ensure SalesDocument is created with the same number
-        await _sender.Send(new CreateSalesDocumentCommand
+        // Create SalesDocument as Invoice - unified approach
+        var documentId = await _sender.Send(new CreateSalesDocumentCommand
         {
             SaleId = sale.Id,
             DocumentType = SalesDocumentType.Invoice,
@@ -48,31 +48,15 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
             Notes = request.Notes
         }, cancellationToken);
 
-        var invoice = new Invoice
-        {
-            InvoiceNumber = invoiceNumber,
-            SaleId = request.SaleId,
-            CustomerId = sale.CustomerId ?? throw new InvalidOperationException("Sale must have a customer to create invoice"),
-            InvoiceDate = DateTimeOffset.UtcNow,
-            DueDate = request.DueDate.HasValue ? request.DueDate.Value.ToUniversalTime() : DateTimeOffset.UtcNow.AddDays(30),
-            Subtotal = sale.Subtotal,
-            TaxAmount = sale.TaxAmount,
-            Total = sale.Total,
-            IsPaid = false,
-            Notes = request.Notes
-        };
-
-        _context.Invoices.Add(invoice);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return invoice.Id;
+        return documentId;
     }
 
     private async Task<string> GenerateInvoiceNumber(int shopId, CancellationToken cancellationToken)
     {
         var year = DateTimeOffset.UtcNow.Year;
-        var count = await _context.Invoices
-            .Where(i => i.Sale.ShopId == shopId && i.InvoiceDate.Year == year)
+        var count = await _context.SalesDocuments
+            .Where(i => i.DocumentType == SalesDocumentType.Invoice)
+            .Where(i => i.Sale.ShopId == shopId && i.DocumentDate.Year == year)
             .CountAsync(cancellationToken);
 
         return $"INV-{year}-{(count + 1):D3}";

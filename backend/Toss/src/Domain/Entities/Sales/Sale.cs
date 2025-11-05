@@ -37,6 +37,6 @@ public class Sale : BaseAuditableEntity
     
     // Relationships
     public ICollection<SaleItem> Items { get; private set; } = new List<SaleItem>();
-    public Receipt? Receipt { get; set; }
+    public ICollection<SalesDocument> Documents { get; set; } = new List<SalesDocument>();
 }
 

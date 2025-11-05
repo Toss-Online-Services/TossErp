@@ -53,10 +53,47 @@ export const useBuyingAPI = () => {
     return await get<any>('/api/buying/purchase-orders', params)
   }
 
+  /**
+   * Vendor Invoices (Purchase Documents)
+   */
+  const getVendorInvoices = async (params?: {
+    shopId?: number
+    vendorId?: number
+    status?: string
+    pageNumber?: number
+    pageSize?: number
+  }) => {
+    return await get<any>('/api/buying/invoices', params)
+  }
+
+  const createVendorInvoice = async (data: {
+    purchaseOrderId: number
+    vendorId: number
+    shopId?: number
+    invoiceNumber: string
+    invoiceDate?: string
+    dueDate?: string
+    subtotal: number
+    taxAmount: number
+    totalAmount: number
+    notes?: string
+  }) => {
+    return await post<{ id: number }>('/api/buying/invoices', data)
+  }
+
+  const updateVendorInvoiceStatus = async (id: number, status: string) => {
+    return await post(`/api/buying/invoices/${id}/status`, { status })
+  }
+
   return {
     createPurchaseOrder,
     getPurchaseOrderById,
     approvePurchaseOrder,
-    getPurchaseOrders
+    getPurchaseOrders,
+
+    // Vendor invoices
+    getVendorInvoices,
+    createVendorInvoice,
+    updateVendorInvoiceStatus
   }
 }
