@@ -1,5 +1,8 @@
 using Toss.Application.Common.Interfaces;
 using Toss.Domain.Entities.Sales;
+using MediatR;
+using Toss.Application.Sales.Commands.CreateSalesDocument;
+using Toss.Domain.Enums;
 
 namespace Toss.Application.Sales.Commands.GenerateReceipt;
 
@@ -29,10 +32,12 @@ public record GenerateReceiptCommand : IRequest<ReceiptDto>
 public class GenerateReceiptCommandHandler : IRequestHandler<GenerateReceiptCommand, ReceiptDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ISender _sender;
 
-    public GenerateReceiptCommandHandler(IApplicationDbContext context)
+    public GenerateReceiptCommandHandler(IApplicationDbContext context, ISender sender)
     {
         _context = context;
+        _sender = sender;
     }
 
     public async Task<ReceiptDto> Handle(GenerateReceiptCommand request, CancellationToken cancellationToken)
@@ -51,7 +56,14 @@ public class GenerateReceiptCommandHandler : IRequestHandler<GenerateReceiptComm
 
         if (existingReceipt != null)
         {
-            // Return existing receipt
+            // Ensure unified document exists (idempotent)
+            await _sender.Send(new CreateSalesDocumentCommand
+            {
+                SaleId = sale.Id,
+                DocumentType = SalesDocumentType.Receipt,
+                DocumentNumber = existingReceipt.ReceiptNumber
+            }, cancellationToken);
+
             return MapToDto(existingReceipt, sale);
         }
 
@@ -67,6 +79,14 @@ public class GenerateReceiptCommandHandler : IRequestHandler<GenerateReceiptComm
 
         _context.Receipts.Add(receipt);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Create unified SalesDocument with the same number
+        await _sender.Send(new CreateSalesDocumentCommand
+        {
+            SaleId = sale.Id,
+            DocumentType = SalesDocumentType.Receipt,
+            DocumentNumber = receipt.ReceiptNumber
+        }, cancellationToken);
 
         return MapToDto(receipt, sale);
     }

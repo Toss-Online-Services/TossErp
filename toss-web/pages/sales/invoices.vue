@@ -518,9 +518,38 @@ const loadInvoices = async () => {
   loading.value = true
   try {
     const shopId = 1 // TODO: Get from session/auth
-    const result = await salesAPI.getInvoices(shopId)
-    invoices.value = result.items || result || []
+    
+    // Try unified sales documents endpoint first (includes auto-generated receipts)
+    console.log('🔍 Loading sales documents from unified endpoint...')
+    const documentsResult = await $fetch<any>(`${baseURL}/Sales/documents`, {
+      method: 'GET',
+      params: { 
+        shopId,
+        type: 1, // SalesDocumentType.Invoice = 1
+        pageNumber: 1,
+        pageSize: 100
+      }
+    })
+    
+    console.log('📊 Sales documents result:', documentsResult)
+    
+    // Map unified sales documents to invoice format
+    const documents = documentsResult.items || documentsResult || []
+    invoices.value = documents.map((doc: any) => ({
+      id: doc.id,
+      invoiceNumber: doc.documentNumber,
+      customer: doc.customer || 'Walk-in Customer',
+      invoiceDate: doc.documentDate,
+      dueDate: doc.dueDate,
+      total: doc.totalAmount,
+      status: doc.isPaid ? 'paid' : (doc.dueDate && new Date(doc.dueDate) < new Date() ? 'overdue' : 'sent'),
+      orderNumber: doc.saleNumber,
+      invoiceItems: [] // TODO: Load sale items separately if needed
+    }))
+    
+    console.log('✅ Loaded invoices:', invoices.value.length)
   } catch (error) {
+    console.error('❌ Failed to load invoices:', error)
     logError(error, 'load_data', 'Failed to load invoices')
     // Show user-friendly notification
     const notification = document.createElement('div')

@@ -43,6 +43,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<SaleItem> SaleItems => Set<SaleItem>();
     public DbSet<Receipt> Receipts => Set<Receipt>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
+    public DbSet<SalesDocument> SalesDocuments => Set<SalesDocument>();
     public DbSet<ShoppingCartItem> ShoppingCartItems => Set<ShoppingCartItem>();
 
     // Supplier entities (removed - now using Vendors)

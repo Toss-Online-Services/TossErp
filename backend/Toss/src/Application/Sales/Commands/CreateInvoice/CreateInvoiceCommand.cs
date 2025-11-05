@@ -3,6 +3,8 @@ using Toss.Application.Common.Exceptions;
 using Toss.Domain.Entities.Sales;
 using Toss.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using MediatR;
+using Toss.Application.Sales.Commands.CreateSalesDocument;
 
 namespace Toss.Application.Sales.Commands.CreateInvoice;
 
@@ -17,10 +19,12 @@ public record CreateInvoiceCommand : IRequest<int>
 public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand, int>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ISender _sender;
 
-    public CreateInvoiceCommandHandler(IApplicationDbContext context)
+    public CreateInvoiceCommandHandler(IApplicationDbContext context, ISender sender)
     {
         _context = context;
+        _sender = sender;
     }
 
     public async Task<int> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
@@ -33,6 +37,16 @@ public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand,
             throw new Common.Exceptions.NotFoundException(nameof(Sale), request.SaleId.ToString());
 
         var invoiceNumber = request.InvoiceNumber ?? await GenerateInvoiceNumber(sale.ShopId, cancellationToken);
+
+        // Unified path (dual-write): ensure SalesDocument is created with the same number
+        await _sender.Send(new CreateSalesDocumentCommand
+        {
+            SaleId = sale.Id,
+            DocumentType = SalesDocumentType.Invoice,
+            DocumentNumber = invoiceNumber,
+            DueDate = request.DueDate,
+            Notes = request.Notes
+        }, cancellationToken);
 
         var invoice = new Invoice
         {

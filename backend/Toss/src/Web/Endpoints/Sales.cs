@@ -13,6 +13,9 @@ using Toss.Application.Sales.Queries.GetSaleById;
 using Toss.Application.Sales.Queries.GetSales;
 using Toss.Application.Sales.Queries.GetHeldSales;
 using Toss.Application.Sales.Queries.GetInvoices;
+using Toss.Application.Sales.Commands.CreateSalesDocument;
+using Toss.Domain.Enums;
+using Toss.Application.Sales.Queries.GetSalesDocuments;
 
 namespace Toss.Web.Endpoints;
 
@@ -67,6 +70,13 @@ public class Sales : EndpointGroupBase
         
         group.MapPost("invoices/{id}/status", UpdateInvoiceStatus)
             .WithName("UpdateInvoiceStatus");
+
+        // Unified sales documents endpoint (long-term API)
+        group.MapPost("documents", CreateSalesDocument)
+            .WithName("CreateSalesDocument");
+
+        group.MapGet("documents", GetSalesDocuments)
+            .WithName("GetSalesDocuments");
     }
 
     public async Task<IResult> CreateSale(ISender sender, CreateSaleCommand command)
@@ -165,6 +175,21 @@ public class Sales : EndpointGroupBase
     {
         var result = await sender.Send(command with { InvoiceId = id });
         return result ? Results.Ok() : Results.BadRequest("Invoice status update failed");
+    }
+
+    public async Task<IResult> CreateSalesDocument(ISender sender, CreateSalesDocumentCommand command)
+    {
+        // Note: validates per type; idempotent for one doc per sale/type
+        var id = await sender.Send(command);
+        return Results.Created($"/api/sales/documents/{id}", new { id });
+    }
+
+    public async Task<IResult> GetSalesDocuments(
+        ISender sender,
+        [AsParameters] GetSalesDocumentsQuery query)
+    {
+        var result = await sender.Send(query);
+        return Results.Ok(result);
     }
 }
 
