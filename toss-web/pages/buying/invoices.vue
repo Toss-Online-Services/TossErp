@@ -6,10 +6,10 @@
         <div class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div class="flex-1 min-w-0">
             <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-blue-600 bg-clip-text text-transparent truncate">
-              Sales Invoices
+              Vendor Invoices
             </h1>
             <p class="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-1">
-              Manage billing and payment tracking
+              Manage vendor bills and payment tracking
             </p>
           </div>
           <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
@@ -455,14 +455,14 @@ import {
   BanknotesIcon,
   XMarkIcon
 } from '@heroicons/vue/24/outline'
-import { useSalesAPI } from '~/composables/useSalesAPI'
+import { useBuyingAPI } from '~/composables/useBuyingAPI'
 import InvoiceTimeline from '~/components/sales/InvoiceTimeline.vue'
 
 // Page metadata
 useHead({
-  title: 'Sales Invoices - TOSS ERP',
+  title: 'Vendor Invoices - TOSS ERP',
   meta: [
-    { name: 'description', content: 'Manage billing and payments for Thabo\'s Spaza Shop' }
+    { name: 'description', content: 'Manage vendor invoices and payments for Thabo\'s Spaza Shop' }
   ]
 })
 
@@ -472,7 +472,7 @@ definePageMeta({
 })
 
 // API
-const salesAPI = useSalesAPI()
+const buyingAPI = useBuyingAPI()
 
 // Reactive data
 const showNewInvoiceModal = ref(false)
@@ -491,7 +491,20 @@ onMounted(async () => {
 const loadInvoices = async () => {
   loading.value = true
   try {
-    invoices.value = await salesAPI.getInvoices()
+    const res = await buyingAPI.getVendorInvoices({ pageNumber: 1, pageSize: 100 })
+    const list = Array.isArray(res?.items) ? res.items : (Array.isArray(res) ? res : [])
+    // Normalize to the same shape used by the sales page UI
+    invoices.value = list.map((d: any) => ({
+      id: d.id,
+      invoiceNumber: d.invoiceNumber ?? d.documentNumber,
+      customer: d.vendor ?? d.vendorName ?? 'Vendor',
+      invoiceDate: d.invoiceDate ?? d.documentDate,
+      dueDate: d.dueDate,
+      total: d.total ?? d.totalAmount,
+      status: d.status ?? (d.isPaid ? 'paid' : (d.dueDate && new Date(d.dueDate) < new Date() ? 'overdue' : 'sent')),
+      orderNumber: d.purchaseOrderNumber ?? '',
+      invoiceItems: d.invoiceItems ?? []
+    }))
   } catch (error) {
     console.error('Failed to load invoices:', error)
   } finally {
@@ -563,7 +576,7 @@ const filteredInvoices = computed(() => {
   if (periodFilter.value) {
     const now = new Date()
     filtered = filtered.filter(invoice => {
-      const issueDate = new Date(invoice.issueDate)
+      const issueDate = new Date(invoice.invoiceDate)
       switch (periodFilter.value) {
         case 'today':
           return issueDate.toDateString() === now.toDateString()
@@ -701,12 +714,17 @@ const removeInvoiceItem = (index: number) => {
 // Actions
 const createInvoice = async (sendImmediately = true) => {
   try {
-    await salesAPI.createInvoice({
-      customer: newInvoice.value.customerName,
-      orderNumber: '', // Can link to an order if needed
-      total: calculateInvoiceTotal(),
-      status: sendImmediately ? 'sent' : 'draft',
-      dueDate: new Date(newInvoice.value.dueDate)
+    // For vendor invoice, create a purchase document
+    await buyingAPI.createVendorInvoice({
+      purchaseOrderId: 1, // TODO: select PO in form
+      vendorId: 1, // TODO: select vendor in form
+      invoiceNumber: newInvoice.value.invoiceNumber,
+      invoiceDate: new Date().toISOString(),
+      dueDate: newInvoice.value.dueDate,
+      subtotal: calculateSubtotal(),
+      taxAmount: calculateTax(),
+      totalAmount: calculateInvoiceTotal(),
+      notes: newInvoice.value.notes
     })
 
     await loadInvoices()
@@ -743,7 +761,7 @@ const viewInvoice = (invoice: any) => {
 const sendInvoice = async (invoice: any) => {
   try {
     if (invoice.status === 'draft') {
-      await salesAPI.updateInvoiceStatus(invoice.id, 'sent')
+  await buyingAPI.updateVendorInvoiceStatus(invoice.id, 'sent')
       await loadInvoices()
       alert(`Invoice ${invoice.invoiceNumber} sent to ${invoice.customer}`)
     } else {
@@ -762,7 +780,7 @@ const printInvoice = (invoice: any) => {
 const markAsPaid = async (invoice: any) => {
   if (invoice.status !== 'paid') {
     try {
-      await salesAPI.updateInvoiceStatus(invoice.id, 'paid')
+  await buyingAPI.updateVendorInvoiceStatus(invoice.id, 'paid')
       await loadInvoices()
       alert(`Invoice ${invoice.invoiceNumber} marked as paid`)
     } catch (error) {
@@ -775,7 +793,7 @@ const markAsPaid = async (invoice: any) => {
 const cancelInvoice = async (invoice: any) => {
   if (confirm(`Are you sure you want to cancel invoice ${invoice.invoiceNumber}?`)) {
     try {
-      await salesAPI.updateInvoiceStatus(invoice.id, 'cancelled')
+  await buyingAPI.updateVendorInvoiceStatus(invoice.id, 'cancelled')
       await loadInvoices()
       alert(`Invoice ${invoice.invoiceNumber} cancelled`)
     } catch (error) {
@@ -796,20 +814,21 @@ const exportInvoices = () => {
     }
 
     // Create CSV header
-    const headers = ['Invoice #', 'Customer', 'Date', 'Due Date', 'Amount', 'Status', 'Items']
+  const headers = ['Invoice #', 'Customer/Vendor', 'Date', 'Due Date', 'Amount', 'Status', 'Items']
     
     // Create CSV rows
     const rows = invoicesToExport.map((inv: any) => {
-      const itemsSummary = inv.items.map((item: any) => 
-        `${item.description} (${item.quantity})`
+      const items = Array.isArray(inv.invoiceItems) ? inv.invoiceItems : []
+      const itemsSummary = items.map((item: any) => 
+        `${item.name ?? item.description ?? ''} (${item.quantity ?? 0})`
       ).join('; ')
       
       return [
         inv.invoiceNumber,
-        inv.customerName,
-        new Date(inv.date).toLocaleDateString(),
-        new Date(inv.dueDate).toLocaleDateString(),
-        `R${inv.total.toFixed(2)}`,
+        inv.customer ?? inv.vendor ?? '',
+        inv.invoiceDate ? new Date(inv.invoiceDate).toLocaleDateString() : '',
+        inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : '',
+        `R${Number(inv.total ?? 0).toFixed(2)}`,
         inv.status,
         itemsSummary
       ]
@@ -827,7 +846,7 @@ const exportInvoices = () => {
     const url = URL.createObjectURL(blob)
     
     link.setAttribute('href', url)
-    link.setAttribute('download', `invoices_${new Date().toISOString().split('T')[0]}.csv`)
+  link.setAttribute('download', `vendor_invoices_${new Date().toISOString().split('T')[0]}.csv`)
     link.style.visibility = 'hidden'
     
     document.body.appendChild(link)

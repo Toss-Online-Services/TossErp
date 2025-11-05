@@ -41,8 +41,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     // Sales entities
     public DbSet<Sale> Sales => Set<Sale>();
     public DbSet<SaleItem> SaleItems => Set<SaleItem>();
-    public DbSet<Receipt> Receipts => Set<Receipt>();
-    public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<SalesDocument> SalesDocuments => Set<SalesDocument>();
     public DbSet<ShoppingCartItem> ShoppingCartItems => Set<ShoppingCartItem>();
 
@@ -52,6 +50,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<PurchaseOrder> PurchaseOrders => Set<PurchaseOrder>();
     public DbSet<PurchaseOrderItem> PurchaseOrderItems => Set<PurchaseOrderItem>();
     public DbSet<PurchaseReceipt> PurchaseReceipts => Set<PurchaseReceipt>();
+    public DbSet<PurchaseDocument> PurchaseDocuments => Set<PurchaseDocument>();
 
     // Group Buying entities
     public DbSet<GroupBuyPool> GroupBuyPools => Set<GroupBuyPool>();

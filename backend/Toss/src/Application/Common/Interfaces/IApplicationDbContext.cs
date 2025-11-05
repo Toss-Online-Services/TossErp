@@ -86,8 +86,6 @@ public interface IApplicationDbContext
     // Sales entities
     DbSet<Sale> Sales { get; }
     DbSet<SaleItem> SaleItems { get; }
-    DbSet<Receipt> Receipts { get; }
-    DbSet<Invoice> Invoices { get; }
     DbSet<SalesDocument> SalesDocuments { get; }
     DbSet<ShoppingCartItem> ShoppingCartItems { get; }
 
@@ -97,6 +95,7 @@ public interface IApplicationDbContext
     DbSet<PurchaseOrder> PurchaseOrders { get; }
     DbSet<PurchaseOrderItem> PurchaseOrderItems { get; }
     DbSet<PurchaseReceipt> PurchaseReceipts { get; }
+    DbSet<PurchaseDocument> PurchaseDocuments { get; }
 
     // Group Buying entities
     DbSet<GroupBuyPool> GroupBuyPools { get; }

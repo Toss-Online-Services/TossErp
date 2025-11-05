@@ -1,4 +1,5 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Toss.Application.Sales.Commands.UpdateInvoiceStatus;
@@ -20,8 +21,9 @@ public class UpdateInvoiceStatusCommandHandler : IRequestHandler<UpdateInvoiceSt
 
     public async Task<bool> Handle(UpdateInvoiceStatusCommand request, CancellationToken cancellationToken)
     {
-        var invoice = await _context.Invoices
+        var invoice = await _context.SalesDocuments
             .Include(i => i.Sale)
+            .Where(i => i.DocumentType == SalesDocumentType.Invoice)
             .FirstOrDefaultAsync(i => i.Id == request.InvoiceId, cancellationToken);
 
         if (invoice == null)

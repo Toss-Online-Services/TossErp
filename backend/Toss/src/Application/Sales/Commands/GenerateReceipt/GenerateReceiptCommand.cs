@@ -51,54 +51,39 @@ public class GenerateReceiptCommandHandler : IRequestHandler<GenerateReceiptComm
             throw new NotFoundException(nameof(Sale), request.SaleId.ToString());
 
         // Check if receipt already exists
-        var existingReceipt = await _context.Receipts
+        var existingReceipt = await _context.SalesDocuments
+            .Where(r => r.DocumentType == SalesDocumentType.Receipt)
             .FirstOrDefaultAsync(r => r.SaleId == request.SaleId, cancellationToken);
 
         if (existingReceipt != null)
         {
-            // Ensure unified document exists (idempotent)
-            await _sender.Send(new CreateSalesDocumentCommand
-            {
-                SaleId = sale.Id,
-                DocumentType = SalesDocumentType.Receipt,
-                DocumentNumber = existingReceipt.ReceiptNumber
-            }, cancellationToken);
-
             return MapToDto(existingReceipt, sale);
         }
 
-        // Generate new receipt
-        var receipt = new Receipt
-        {
-            SaleId = sale.Id,
-            ReceiptNumber = $"RCP-{DateTime.UtcNow:yyyyMMdd}-{sale.Id:D6}",
-            IssuedDate = DateTime.UtcNow,
-            TotalAmount = sale.TotalAmount,
-            ShopId = sale.ShopId
-        };
-
-        _context.Receipts.Add(receipt);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        // Create unified SalesDocument with the same number
-        await _sender.Send(new CreateSalesDocumentCommand
+        // Generate new receipt as SalesDocument
+        var receiptNumber = $"RCP-{DateTime.UtcNow:yyyyMMdd}-{sale.Id:D6}";
+        
+        var documentId = await _sender.Send(new CreateSalesDocumentCommand
         {
             SaleId = sale.Id,
             DocumentType = SalesDocumentType.Receipt,
-            DocumentNumber = receipt.ReceiptNumber
+            DocumentNumber = receiptNumber
         }, cancellationToken);
 
-        return MapToDto(receipt, sale);
+        var receipt = await _context.SalesDocuments
+            .FirstOrDefaultAsync(d => d.Id == documentId, cancellationToken);
+
+        return MapToDto(receipt!, sale);
     }
 
-    private ReceiptDto MapToDto(Receipt receipt, Sale sale)
+    private ReceiptDto MapToDto(SalesDocument receipt, Sale sale)
     {
         return new ReceiptDto
         {
             Id = receipt.Id,
-            ReceiptNumber = receipt.ReceiptNumber,
+            ReceiptNumber = receipt.DocumentNumber,
             SaleId = receipt.SaleId,
-            IssuedDate = receipt.IssuedDate,
+            IssuedDate = receipt.DocumentDate,
             TotalAmount = receipt.TotalAmount,
             Items = sale.Items.Select(i => new ReceiptItemDto
             {

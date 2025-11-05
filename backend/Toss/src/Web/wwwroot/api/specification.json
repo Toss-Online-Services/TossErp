@@ -441,6 +441,130 @@
         }
       }
     },
+    "/api/Buying/invoices": {
+      "get": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "GetVendorInvoices",
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "vendorId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "CreateVendorInvoice",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVendorInvoiceCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Buying/invoices/{id}/status": {
+      "post": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "UpdateVendorInvoiceStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVendorInvoiceStatusCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/CRM/customers": {
       "post": {
         "tags": [
@@ -4581,6 +4705,66 @@
           "QuantityReceived": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "CreateVendorInvoiceCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "PurchaseOrderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "VendorId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ShopId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "InvoiceNumber": {
+            "type": "string"
+          },
+          "InvoiceDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "DueDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Subtotal": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "TaxAmount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "TotalAmount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateVendorInvoiceStatusCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Status": {
+            "type": "string"
           }
         }
       },

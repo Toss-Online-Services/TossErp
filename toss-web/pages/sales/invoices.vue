@@ -534,18 +534,55 @@ const loadInvoices = async () => {
     console.log('📊 Sales documents result:', documentsResult)
     
     // Map unified sales documents to invoice format
-    const documents = documentsResult.items || documentsResult || []
-    invoices.value = documents.map((doc: any) => ({
-      id: doc.id,
-      invoiceNumber: doc.documentNumber,
-      customer: doc.customer || 'Walk-in Customer',
-      invoiceDate: doc.documentDate,
-      dueDate: doc.dueDate,
-      total: doc.totalAmount,
-      status: doc.isPaid ? 'paid' : (doc.dueDate && new Date(doc.dueDate) < new Date() ? 'overdue' : 'sent'),
-      orderNumber: doc.saleNumber,
-      invoiceItems: [] // TODO: Load sale items separately if needed
-    }))
+    // Handle both camelCase and PascalCase property names from API
+    let documents: any[] = []
+    if (Array.isArray(documentsResult)) {
+      documents = documentsResult
+    } else if (documentsResult?.items && Array.isArray(documentsResult.items)) {
+      documents = documentsResult.items
+    } else if (documentsResult?.Items && Array.isArray(documentsResult.Items)) {
+      documents = documentsResult.Items
+    } else if (documentsResult?.data && Array.isArray(documentsResult.data)) {
+      documents = documentsResult.data
+    }
+    
+    console.log(`📦 Found ${documents.length} document(s) from API`)
+    
+    invoices.value = documents.map((doc: any) => {
+      // Handle both camelCase and PascalCase property names
+      const id = doc.id || doc.Id
+      const documentNumber = doc.documentNumber || doc.DocumentNumber || doc.invoiceNumber || doc.InvoiceNumber
+      const customer = doc.customer || doc.Customer || doc.customerName || doc.CustomerName || 'Walk-in Customer'
+      const documentDate = doc.documentDate || doc.DocumentDate || doc.invoiceDate || doc.InvoiceDate
+      const dueDate = doc.dueDate || doc.DueDate
+      const totalAmount = doc.totalAmount || doc.TotalAmount || doc.total || doc.Total
+      const isPaid = doc.isPaid || doc.IsPaid || false
+      const saleNumber = doc.saleNumber || doc.SaleNumber
+      
+      // Determine status
+      let status = 'sent'
+      if (isPaid) {
+        status = 'paid'
+      } else if (dueDate) {
+        const due = new Date(dueDate)
+        const now = new Date()
+        if (due < now) {
+          status = 'overdue'
+        }
+      }
+      
+      return {
+        id,
+        invoiceNumber: documentNumber,
+        customer,
+        invoiceDate: documentDate,
+        dueDate,
+        total: totalAmount || 0,
+        status,
+        orderNumber: saleNumber,
+        invoiceItems: [] // TODO: Load sale items separately if needed
+      }
+    })
     
     console.log('✅ Loaded invoices:', invoices.value.length)
   } catch (error) {
@@ -896,16 +933,17 @@ const exportInvoices = () => {
     
     // Create CSV rows
     const rows = invoicesToExport.map((inv: any) => {
-      const itemsSummary = inv.items.map((item: any) => 
-        `${item.description} (${item.quantity})`
+      const items = Array.isArray(inv.invoiceItems) ? inv.invoiceItems : []
+      const itemsSummary = items.map((item: any) => 
+        `${item.name ?? item.description ?? ''} (${item.quantity ?? 0})`
       ).join('; ')
       
       return [
         inv.invoiceNumber,
-        inv.customerName,
-        new Date(inv.date).toLocaleDateString(),
-        new Date(inv.dueDate).toLocaleDateString(),
-        `R${inv.total.toFixed(2)}`,
+        inv.customer, // display name from DTO mapping
+        new Date(inv.invoiceDate).toLocaleDateString(),
+        inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : '',
+        `R${Number(inv.total ?? 0).toFixed(2)}`,
         inv.status,
         itemsSummary
       ]
@@ -923,7 +961,7 @@ const exportInvoices = () => {
     const url = URL.createObjectURL(blob)
     
     link.setAttribute('href', url)
-    link.setAttribute('download', `sales_invoices_${new Date().toISOString().split('T')[0]}.csv`)
+  link.setAttribute('download', `sales_invoices_${new Date().toISOString().split('T')[0]}.csv`)
     link.style.visibility = 'hidden'
     
     document.body.appendChild(link)

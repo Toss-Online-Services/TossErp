@@ -60,10 +60,11 @@ public class GetInvoicesQueryHandler : IRequestHandler<GetInvoicesQuery, Paginat
 
     public async Task<PaginatedList<InvoiceDto>> Handle(GetInvoicesQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Invoices
+        var query = _context.SalesDocuments
             .Include(i => i.Sale)
                 .ThenInclude(s => s!.Items)
             .Include(i => i.Customer)
+            .Where(i => i.DocumentType == Domain.Enums.SalesDocumentType.Invoice)
             .Where(i => i.Sale.ShopId == request.ShopId);
 
         if (request.Status != null)
@@ -90,7 +91,7 @@ public class GetInvoicesQueryHandler : IRequestHandler<GetInvoicesQuery, Paginat
             var fromDate = request.FromDate.Value.Offset != TimeSpan.Zero 
                 ? request.FromDate.Value.ToUniversalTime() 
                 : request.FromDate.Value;
-            query = query.Where(i => i.InvoiceDate >= fromDate);
+            query = query.Where(i => i.DocumentDate >= fromDate);
         }
 
         if (request.ToDate.HasValue)
@@ -99,28 +100,28 @@ public class GetInvoicesQueryHandler : IRequestHandler<GetInvoicesQuery, Paginat
             var toDate = request.ToDate.Value.Offset != TimeSpan.Zero 
                 ? request.ToDate.Value.ToUniversalTime() 
                 : request.ToDate.Value;
-            query = query.Where(i => i.InvoiceDate <= toDate);
+            query = query.Where(i => i.DocumentDate <= toDate);
         }
 
         var totalCount = await query.CountAsync(cancellationToken);
 
         var invoices = await query
-            .OrderByDescending(i => i.InvoiceDate)
+            .OrderByDescending(i => i.DocumentDate)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(i => new InvoiceDto
             {
                 Id = i.Id,
-                InvoiceNumber = i.InvoiceNumber,
+                InvoiceNumber = i.DocumentNumber,
                 SaleId = i.SaleId,
                 SaleNumber = i.Sale.SaleNumber,
-                CustomerId = i.CustomerId,
-                Customer = i.Customer.FullName ?? i.Customer.Email ?? "Unknown",
-                InvoiceDate = i.InvoiceDate,
+                CustomerId = i.CustomerId!.Value,
+                Customer = i.Customer!.FullName ?? i.Customer.Email ?? "Unknown",
+                InvoiceDate = i.DocumentDate,
                 DueDate = i.DueDate,
                 Subtotal = i.Subtotal,
                 TaxAmount = i.TaxAmount,
-                Total = i.Total,
+                Total = i.TotalAmount,
                 Status = DetermineInvoiceStatus(i),
                 IsPaid = i.IsPaid,
                 PaidDate = i.PaidDate,
@@ -142,7 +143,7 @@ public class GetInvoicesQueryHandler : IRequestHandler<GetInvoicesQuery, Paginat
         return new PaginatedList<InvoiceDto>(invoices, totalCount, request.PageNumber, request.PageSize);
     }
 
-    private static string DetermineInvoiceStatus(Invoice invoice)
+    private static string DetermineInvoiceStatus(SalesDocument invoice)
     {
         if (invoice.IsPaid)
             return "paid";

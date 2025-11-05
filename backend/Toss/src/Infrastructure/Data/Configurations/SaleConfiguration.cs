@@ -45,9 +45,9 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
             .HasForeignKey(i => i.SaleId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(s => s.Receipt)
-            .WithOne(r => r.Sale)
-            .HasForeignKey<Receipt>(r => r.SaleId)
+        builder.HasMany(s => s.Documents)
+            .WithOne(d => d.Sale)
+            .HasForeignKey(d => d.SaleId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(s => s.SaleNumber)
