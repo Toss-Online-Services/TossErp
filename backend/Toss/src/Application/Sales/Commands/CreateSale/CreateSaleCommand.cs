@@ -35,6 +35,38 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, int>
 
     public async Task<int> Handle(CreateSaleCommand request, CancellationToken cancellationToken)
     {
+            // Retry logic to handle race conditions in sale number generation
+            const int maxRetries = 3;
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                try
+                {
+                    return await CreateSaleInternal(request, cancellationToken);
+                }
+                catch (DbUpdateException ex) when (attempt < maxRetries && IsDuplicateKeyException(ex))
+                {
+                    // Wait with exponential backoff before retrying
+                    await Task.Delay(TimeSpan.FromMilliseconds(50 * attempt), cancellationToken);
+                }
+            }
+        
+            // Final attempt without catching exception
+            return await CreateSaleInternal(request, cancellationToken);
+        }
+
+        private bool IsDuplicateKeyException(DbUpdateException ex)
+        {
+               // Check if it's a unique constraint violation
+               // Works for PostgreSQL (23505), SQL Server (2627/2601), and other databases
+               var message = ex.InnerException?.Message ?? ex.Message;
+               return message.Contains("duplicate key") 
+                  || message.Contains("unique constraint") 
+                  || message.Contains("IX_Sales_SaleNumber")
+                  || (ex.InnerException != null && ex.InnerException.GetType().Name.Contains("Postgres"));
+        }
+
+        private async Task<int> CreateSaleInternal(CreateSaleCommand request, CancellationToken cancellationToken)
+        {
         var sale = new Sale
         {
             SaleNumber = await GenerateSaleNumber(request.ShopId, cancellationToken),
@@ -93,11 +125,30 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, int>
     private async Task<string> GenerateSaleNumber(int shopId, CancellationToken cancellationToken)
     {
         var date = DateTimeOffset.UtcNow;
-        var count = await _context.Sales
-            .Where(s => s.ShopId == shopId && s.SaleDate.Date == date.Date)
-            .CountAsync(cancellationToken);
+        
+            // Use Max(SaleNumber) approach to avoid race condition
+            // Extract the sequence number from the last sale number for today
+            var prefix = $"SAL-{shopId}-{date:yyyyMMdd}-";
+            var lastSaleNumber = await _context.Sales
+                .Where(s => s.ShopId == shopId 
+                    && s.SaleDate.Date == date.Date
+                    && s.SaleNumber.StartsWith(prefix))
+                .OrderByDescending(s => s.SaleNumber)
+                .Select(s => s.SaleNumber)
+                .FirstOrDefaultAsync(cancellationToken);
 
-        return $"SAL-{shopId}-{date:yyyyMMdd}-{count + 1:D4}";
+            int nextSequence = 1;
+            if (!string.IsNullOrEmpty(lastSaleNumber))
+            {
+                // Extract sequence number from format: SAL-{shopId}-{date}-{sequence}
+                var parts = lastSaleNumber.Split('-');
+                if (parts.Length == 4 && int.TryParse(parts[3], out int lastSequence))
+                {
+                    nextSequence = lastSequence + 1;
+                }
+            }
+
+            return $"{prefix}{nextSequence:D4}";
     }
 }
 
