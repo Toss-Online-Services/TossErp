@@ -37,7 +37,7 @@ public class GetNearbyPoolOpportunitiesQueryHandler : IRequestHandler<GetNearbyP
     public async Task<List<PoolOpportunityDto>> Handle(GetNearbyPoolOpportunitiesQuery request, CancellationToken cancellationToken)
     {
         // Get requesting shop's location
-        var shop = await _context.Shops.FindAsync(new object[] { request.ShopId }, cancellationToken);
+        var shop = await _context.Stores.FindAsync(new object[] { request.ShopId }, cancellationToken);
         
         if (shop == null)
             throw new NotFoundException(nameof(Store), request.ShopId.ToString());

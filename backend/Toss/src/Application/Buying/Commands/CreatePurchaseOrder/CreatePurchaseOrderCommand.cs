@@ -38,7 +38,7 @@ public class CreatePurchaseOrderCommandHandler : IRequestHandler<CreatePurchaseO
     public async Task<int> Handle(CreatePurchaseOrderCommand request, CancellationToken cancellationToken)
     {
         // Validate shop exists
-        var shop = await _context.Shops.FindAsync(new object[] { request.ShopId }, cancellationToken);
+        var shop = await _context.Stores.FindAsync(new object[] { request.ShopId }, cancellationToken);
         if (shop == null)
             throw new NotFoundException(nameof(Store), request.ShopId.ToString());
 

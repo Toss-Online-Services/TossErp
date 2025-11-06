@@ -29,7 +29,7 @@ public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerComman
     public async Task<int> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
     {
         // Validate shop exists
-        var shop = await _context.Shops.FindAsync(new object[] { request.ShopId }, cancellationToken);
+        var shop = await _context.Stores.FindAsync(new object[] { request.ShopId }, cancellationToken);
         if (shop == null)
             throw new NotFoundException(nameof(Store), request.ShopId.ToString());
 

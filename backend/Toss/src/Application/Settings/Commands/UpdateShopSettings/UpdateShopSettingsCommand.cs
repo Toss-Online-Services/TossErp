@@ -26,7 +26,7 @@ public class UpdateShopSettingsCommandHandler : IRequestHandler<UpdateShopSettin
 
     public async Task<bool> Handle(UpdateShopSettingsCommand request, CancellationToken cancellationToken)
     {
-        var shop = await _context.Shops
+        var shop = await _context.Stores
             .FindAsync(new object[] { request.ShopId }, cancellationToken);
 
         if (shop == null)

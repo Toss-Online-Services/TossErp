@@ -20,8 +20,14 @@ namespace Toss.Application.Common.Interfaces;
 public interface IApplicationDbContext
 {
     // Core entities
-    DbSet<Store> Shops { get; }
-    DbSet<Store> Stores { get; } // Alias for Shops (for Store/Shop naming consistency)
+    /// <summary>
+    /// Stores/Shops in the system. Each store represents a physical or virtual shop location.
+    /// </summary>
+    DbSet<Store> Stores { get; }
+    
+    /// <summary>
+    /// Physical and billing addresses used throughout the system.
+    /// </summary>
     DbSet<Address> Addresses { get; }
 
     // AI entities

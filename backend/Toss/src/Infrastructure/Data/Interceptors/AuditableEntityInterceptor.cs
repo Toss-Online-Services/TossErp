@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Toss.Infrastructure.Data.Interceptors;
 
+/// <summary>
+/// Interceptor that automatically sets audit fields (Created, CreatedBy, LastModified, LastModifiedBy)
+/// on entities that inherit from BaseAuditableEntity during save operations.
+/// </summary>
 public class AuditableEntityInterceptor : SaveChangesInterceptor
 {
     private readonly IUser _user;
@@ -19,6 +23,9 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         _dateTime = dateTime;
     }
 
+    /// <summary>
+    /// Synchronous save changes interception point.
+    /// </summary>
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
         UpdateEntities(eventData.Context);
@@ -26,6 +33,9 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         return base.SavingChanges(eventData, result);
     }
 
+    /// <summary>
+    /// Asynchronous save changes interception point.
+    /// </summary>
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
         UpdateEntities(eventData.Context);
@@ -33,6 +43,10 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
+    /// <summary>
+    /// Updates audit fields on all auditable entities being saved.
+    /// </summary>
+    /// <param name="context">The database context.</param>
     public void UpdateEntities(DbContext? context)
     {
         if (context == null) return;
@@ -54,8 +68,16 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     }
 }
 
+/// <summary>
+/// Extension methods for entity entry operations.
+/// </summary>
 public static class Extensions
 {
+    /// <summary>
+    /// Determines if an entity has changed owned entities (value objects).
+    /// </summary>
+    /// <param name="entry">The entity entry to check.</param>
+    /// <returns>True if owned entities have been added or modified.</returns>
     public static bool HasChangedOwnedEntities(this EntityEntry entry) =>
         entry.References.Any(r => 
             r.TargetEntry != null && 

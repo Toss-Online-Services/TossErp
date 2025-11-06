@@ -56,7 +56,7 @@ public class CreateSharedDeliveryRunCommandHandler : IRequestHandler<CreateShare
         int sequenceNumber = 1;
         foreach (var stopDto in request.Stops)
         {
-            var shop = await _context.Shops.FindAsync(new object[] { stopDto.ShopId }, cancellationToken);
+            var shop = await _context.Stores.FindAsync(new object[] { stopDto.ShopId }, cancellationToken);
             if (shop == null)
                 throw new NotFoundException(nameof(Store), stopDto.ShopId.ToString());
 
