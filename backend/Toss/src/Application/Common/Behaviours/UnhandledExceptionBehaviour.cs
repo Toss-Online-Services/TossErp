@@ -2,6 +2,21 @@
 
 namespace Toss.Application.Common.Behaviours;
 
+/// <summary>
+/// MediatR pipeline behavior that catches and logs all unhandled exceptions.
+/// Provides a safety net for unexpected errors in the request pipeline.
+/// </summary>
+/// <typeparam name="TRequest">The request type being protected.</typeparam>
+/// <typeparam name="TResponse">The response type returned by the handler.</typeparam>
+/// <remarks>
+/// This behavior wraps the entire pipeline execution in try-catch.
+/// When an exception occurs:
+/// <list type="number">
+/// <item><description>Exception is logged with full context (request name and details)</description></item>
+/// <item><description>Exception is re-thrown to maintain proper error flow</description></item>
+/// </list>
+/// Executes early in the pipeline to catch errors from all subsequent behaviors and handlers.
+/// </remarks>
 public class UnhandledExceptionBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {

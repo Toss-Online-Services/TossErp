@@ -5,6 +5,23 @@ using Toss.Application.Common.Security;
 
 namespace Toss.Application.Common.Behaviours;
 
+/// <summary>
+/// MediatR pipeline behavior that enforces role-based and policy-based authorization.
+/// Prevents unauthorized users from executing protected commands and queries.
+/// </summary>
+/// <typeparam name="TRequest">The request type being authorized.</typeparam>
+/// <typeparam name="TResponse">The response type returned by the handler.</typeparam>
+/// <remarks>
+/// Authorization process:
+/// <list type="number">
+/// <item><description>Check for [Authorize] attribute on the request class</description></item>
+/// <item><description>If attribute present, verify user is authenticated</description></item>
+/// <item><description>Validate user has required roles (if Roles specified)</description></item>
+/// <item><description>Validate user meets required policies (if Policy specified)</description></item>
+/// </list>
+/// Throws <see cref="UnauthorizedAccessException"/> if user not authenticated.
+/// Throws <see cref="ForbiddenAccessException"/> if user lacks required roles or policies.
+/// </remarks>
 public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> 
     where TRequest : notnull
 {
