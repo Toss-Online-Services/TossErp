@@ -76,7 +76,7 @@ public class AskAIQueryHandler : IRequestHandler<AskAIQuery, AIResponseDto>
         var contextParts = new List<string>();
 
         // Get shop info
-        var shop = await _context.Shops
+        var shop = await _context.Stores
             .FirstOrDefaultAsync(s => s.Id == shopId, cancellationToken);
         
         if (shop != null)

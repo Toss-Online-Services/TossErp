@@ -43,7 +43,7 @@ public class InitiateMtnPaymentCommandHandler : IRequestHandler<InitiateMtnPayme
             request.ShopId, request.Amount, request.PhoneNumber);
 
         // Validate shop exists
-        var shop = await _context.Shops
+        var shop = await _context.Stores
             .FirstOrDefaultAsync(s => s.Id == request.ShopId, cancellationToken);
 
         if (shop == null)

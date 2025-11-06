@@ -32,7 +32,7 @@ public class GetShopSettingsQueryHandler : IRequestHandler<GetShopSettingsQuery,
 
     public async Task<ShopSettingsDto> Handle(GetShopSettingsQuery request, CancellationToken cancellationToken)
     {
-        var shop = await _context.Shops
+        var shop = await _context.Stores
             .FindAsync(new object[] { request.ShopId }, cancellationToken);
 
         if (shop == null)

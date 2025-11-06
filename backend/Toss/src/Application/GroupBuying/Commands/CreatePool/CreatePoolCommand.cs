@@ -41,7 +41,7 @@ public class CreatePoolCommandHandler : IRequestHandler<CreatePoolCommand, int>
             throw new NotFoundException(nameof(Product), request.ProductId.ToString());
 
         // Validate shop exists
-        var shop = await _context.Shops.FindAsync(new object[] { request.InitiatorShopId }, cancellationToken);
+        var shop = await _context.Stores.FindAsync(new object[] { request.InitiatorShopId }, cancellationToken);
         if (shop == null)
             throw new NotFoundException(nameof(Store), request.InitiatorShopId.ToString());
 

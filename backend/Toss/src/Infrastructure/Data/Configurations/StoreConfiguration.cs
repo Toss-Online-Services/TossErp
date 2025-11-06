@@ -5,7 +5,11 @@ using Toss.Domain.Entities;
 
 namespace Toss.Infrastructure.Data.Configurations;
 
-public class ShopConfiguration : IEntityTypeConfiguration<Store>
+/// <summary>
+/// Entity Framework Core configuration for the Store entity.
+/// Configures table mapping, properties, indexes, and relationships.
+/// </summary>
+public class StoreConfiguration : IEntityTypeConfiguration<Store>
 {
     public void Configure(EntityTypeBuilder<Store> builder)
     {

@@ -44,7 +44,7 @@ public class CreateCustomerOrderCommandHandler : IRequestHandler<CreateCustomerO
         if (customer == null)
             throw new Common.Exceptions.NotFoundException(nameof(Customer), request.CustomerId.ToString());
 
-        var shop = await _context.Shops.FindAsync(new object[] { request.ShopId }, cancellationToken);
+        var shop = await _context.Stores.FindAsync(new object[] { request.ShopId }, cancellationToken);
         if (shop == null)
             throw new Common.Exceptions.NotFoundException(nameof(Store), request.ShopId.ToString());
 
