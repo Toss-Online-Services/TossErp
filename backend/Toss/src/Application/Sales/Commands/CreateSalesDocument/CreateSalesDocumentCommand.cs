@@ -47,8 +47,8 @@ public class CreateSalesDocumentCommandHandler : IRequestHandler<CreateSalesDocu
                     attempt,
                     maxRetries);
                 
-                // Wait with exponential backoff before retrying
-                await Task.Delay(TimeSpan.FromMilliseconds(50 * attempt), cancellationToken);
+                // Wait with exponential backoff before retrying (increased delay)
+                await Task.Delay(TimeSpan.FromMilliseconds(100 * Math.Pow(2, attempt - 1)), cancellationToken);
             }
         }
 
@@ -130,7 +130,7 @@ public class CreateSalesDocumentCommandHandler : IRequestHandler<CreateSalesDocu
             _ => "DOC"
         };
 
-        // Use Max(DocumentNumber) approach to avoid race condition (similar to sale number generation)
+        // Use Max(DocumentNumber) approach with timestamp suffix to avoid race condition
         var prefixPattern = $"{prefix}-{year}-";
         var lastDocumentNumber = await _context.SalesDocuments
             .Where(d => d.ShopId == shopId 
@@ -144,14 +144,16 @@ public class CreateSalesDocumentCommandHandler : IRequestHandler<CreateSalesDocu
         int nextSequence = 1;
         if (!string.IsNullOrEmpty(lastDocumentNumber))
         {
-            // Extract sequence number from format: {prefix}-{year}-{sequence}
+            // Extract sequence number from format: {prefix}-{year}-{sequence}[-timestamp]
             var parts = lastDocumentNumber.Split('-');
-            if (parts.Length == 3 && int.TryParse(parts[2], out int lastSequence))
+            if (parts.Length >= 3 && int.TryParse(parts[2], out int lastSequence))
             {
                 nextSequence = lastSequence + 1;
             }
         }
 
-        return $"{prefixPattern}{nextSequence:D4}";
+        // Add microseconds timestamp to make the number unique in case of race conditions
+        var timestamp = DateTimeOffset.UtcNow.Ticks % 1000000; // Last 6 digits of ticks (microseconds)
+        return $"{prefixPattern}{nextSequence:D4}-{timestamp:D6}";
     }
 }
