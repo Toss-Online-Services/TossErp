@@ -18,10 +18,12 @@ public class SalesDocumentConfiguration : IEntityTypeConfiguration<SalesDocument
 
         builder.Property(d => d.Notes).HasMaxLength(1000);
 
+        // Explicitly configure Sale relationship to avoid EF Core auto-discovery conflicts
         builder.HasOne(d => d.Sale)
-            .WithMany()
+            .WithMany(s => s.Documents)
             .HasForeignKey(d => d.SaleId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
 
         builder.HasOne(d => d.Customer)
             .WithMany()

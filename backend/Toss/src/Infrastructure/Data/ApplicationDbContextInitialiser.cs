@@ -1,4 +1,6 @@
-﻿using Toss.Domain.Constants;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Toss.Domain.Constants;
 using Toss.Domain.Entities;
 using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities.Catalog;
@@ -17,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Bogus;
+using Npgsql;
 
 namespace Toss.Infrastructure.Data;
 
@@ -597,17 +600,49 @@ public class ApplicationDbContextInitialiser
             return;
         }
 
-        // Generate unique sale numbers using counter to avoid duplicates
-        var saleNumberCounter = 10000;
-        var saleFaker = new Faker<Sale>()
-            .RuleFor(s => s.SaleNumber, f => $"SALE-{saleNumberCounter++}")
-            .RuleFor(s => s.ShopId, f => f.PickRandom(stores).Id)
-            .RuleFor(s => s.CustomerId, f => f.Random.Bool(0.7f) && customers.Any() ? f.PickRandom(customers).Id : null)
-            .RuleFor(s => s.SaleDate, f => DateTimeOffset.UtcNow.AddDays(-f.Random.Int(0, 90)))
-            .RuleFor(s => s.Status, f => f.PickRandom<SaleStatus>())
-            .RuleFor(s => s.PaymentMethod, f => f.PickRandom<PaymentType>());
+        // Find the highest existing sale number to avoid duplicates
+        var existingSaleNumbers = await _context.Set<Sale>()
+            .Select(s => s.SaleNumber)
+            .ToListAsync();
+        
+        int saleNumberCounter = 10000;
+        if (existingSaleNumbers.Any())
+        {
+            // Extract numeric part from existing sale numbers (format: SALE-{number} or SAL-{shopId}-{date}-{number})
+            var maxNumber = existingSaleNumbers
+                .Select(sn => 
+                {
+                    // Try to extract number from SALE-{number} format
+                    if (sn.StartsWith("SALE-") && int.TryParse(sn.Substring(5), out int num))
+                        return num;
+                    // Try to extract from SAL-{shopId}-{date}-{number} format
+                    var parts = sn.Split('-');
+                    if (parts.Length == 4 && int.TryParse(parts[3], out int seq))
+                        return seq;
+                    return 0;
+                })
+                .DefaultIfEmpty(0)
+                .Max();
+            
+            saleNumberCounter = maxNumber + 1;
+        }
 
-        var sales = saleFaker.Generate(200);
+        var salesToCreate = Math.Max(0, 200 - existingCount);
+        var sales = new List<Sale>();
+        
+        for (int i = 0; i < salesToCreate; i++)
+        {
+            var sale = new Sale
+            {
+                SaleNumber = $"SALE-{saleNumberCounter++}",
+                ShopId = new Faker().PickRandom(stores).Id,
+                CustomerId = new Faker().Random.Bool(0.7f) && customers.Any() ? new Faker().PickRandom(customers).Id : null,
+                SaleDate = DateTimeOffset.UtcNow.AddDays(-new Faker().Random.Int(0, 90)),
+                Status = new Faker().PickRandom<SaleStatus>(),
+                PaymentMethod = new Faker().PickRandom<PaymentType>()
+            };
+            sales.Add(sale);
+        }
 
         foreach (var sale in sales)
         {
@@ -649,9 +684,65 @@ public class ApplicationDbContextInitialiser
             }
         }
 
-        _context.Set<Sale>().AddRange(sales);
-        await _context.SaveChangesAsync();
-        _logger.LogInformation("✅ Seeded {Count} sales.", sales.Count);
+        // Save in batches to handle potential duplicate key exceptions
+        const int batchSize = 50;
+        int savedCount = 0;
+        
+        for (int i = 0; i < sales.Count; i += batchSize)
+        {
+            var batch = sales.Skip(i).Take(batchSize).ToList();
+            try
+            {
+                _context.Set<Sale>().AddRange(batch);
+                await _context.SaveChangesAsync();
+                savedCount += batch.Count;
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex) when (
+                ex.InnerException is Npgsql.PostgresException pgEx && 
+                pgEx.SqlState == "23505" && 
+                (pgEx.ConstraintName == "IX_Sales_SaleNumber" || pgEx.Message.Contains("IX_Sales_SaleNumber")))
+            {
+                _logger.LogWarning("⚠️  Duplicate sale number detected in batch. Regenerating numbers...");
+                
+                // Remove the batch that failed
+                _context.ChangeTracker.Entries<Sale>()
+                    .Where(e => batch.Contains(e.Entity))
+                    .ToList()
+                    .ForEach(e => e.State = Microsoft.EntityFrameworkCore.EntityState.Detached);
+                
+                // Query database for current max sale number to avoid duplicates
+                var currentMaxNumbers = await _context.Set<Sale>()
+                    .Select(s => s.SaleNumber)
+                    .ToListAsync();
+                
+                var currentMax = currentMaxNumbers
+                    .Select(sn => 
+                    {
+                        if (sn.StartsWith("SALE-") && int.TryParse(sn.Substring(5), out int num))
+                            return num;
+                        var parts = sn.Split('-');
+                        if (parts.Length == 4 && int.TryParse(parts[3], out int seq))
+                            return seq;
+                        return 0;
+                    })
+                    .DefaultIfEmpty(saleNumberCounter - 1)
+                    .Max();
+                
+                // Regenerate sale numbers for the failed batch starting from current max + 1
+                int retryCounter = currentMax + 1;
+                foreach (var sale in batch)
+                {
+                    sale.SaleNumber = $"SALE-{retryCounter++}";
+                }
+                
+                // Retry the batch
+                _context.Set<Sale>().AddRange(batch);
+                await _context.SaveChangesAsync();
+                savedCount += batch.Count;
+            }
+        }
+        
+        _logger.LogInformation("✅ Seeded {Count} sales.", savedCount);
     }
 
     private async Task SeedSalesDocumentsAsync()
@@ -673,18 +764,70 @@ public class ApplicationDbContextInitialiser
             return;
         }
 
-        var documents = new List<SalesDocument>();
-        var faker = new Faker();
+        // Get existing document numbers to avoid duplicates
+        var existingDocumentNumbers = await _context.Set<SalesDocument>()
+            .Select(d => d.DocumentNumber)
+            .ToListAsync();
+
+        // Extract the highest counter values from existing documents
         var year = DateTimeOffset.UtcNow.Year;
         var receiptCounter = 1;
         var invoiceCounter = 1;
+
+        foreach (var docNumber in existingDocumentNumbers)
+        {
+            if (docNumber.StartsWith($"RCT-{year}-"))
+            {
+                var numberPart = docNumber.Substring($"RCT-{year}-".Length);
+                if (int.TryParse(numberPart, out var num) && num >= receiptCounter)
+                {
+                    receiptCounter = num + 1;
+                }
+            }
+            else if (docNumber.StartsWith($"INV-{year}-"))
+            {
+                var numberPart = docNumber.Substring($"INV-{year}-".Length);
+                if (int.TryParse(numberPart, out var num) && num >= invoiceCounter)
+                {
+                    invoiceCounter = num + 1;
+                }
+            }
+        }
+
+        // Get existing documents for these sales to avoid duplicates
+        var existingSaleDocuments = await _context.Set<SalesDocument>()
+            .Where(d => sales.Select(s => s.Id).Contains(d.SaleId))
+            .Select(d => new { d.SaleId, d.DocumentType })
+            .ToListAsync();
+        
+        var existingSaleDocumentKeys = existingSaleDocuments
+            .Select(d => (d.SaleId, d.DocumentType))
+            .ToHashSet();
+
+        var documents = new List<SalesDocument>();
+        var faker = new Faker();
+        var usedDocumentNumbers = new HashSet<string>(existingDocumentNumbers);
 
         foreach (var sale in sales)
         {
             // Create receipt for cash/card sales (immediate payment)
             if (sale.PaymentMethod == PaymentType.Cash || sale.PaymentMethod == PaymentType.Card)
             {
-                var receiptNumber = $"RCT-{year}-{receiptCounter++:D4}";
+                // Skip if receipt already exists for this sale
+                if (existingSaleDocumentKeys.Contains((sale.Id, SalesDocumentType.Receipt)))
+                {
+                    continue;
+                }
+
+                // Generate unique receipt number
+                string receiptNumber;
+                do
+                {
+                    receiptNumber = $"RCT-{year}-{receiptCounter++:D4}";
+                } while (usedDocumentNumbers.Contains(receiptNumber));
+                
+                usedDocumentNumbers.Add(receiptNumber);
+                
                 var receipt = new SalesDocument
                 {
                     DocumentType = SalesDocumentType.Receipt,
@@ -708,7 +851,21 @@ public class ApplicationDbContextInitialiser
             // Create invoice for credit sales (with customer)
             else if (sale.CustomerId.HasValue)
             {
-                var invoiceNumber = $"INV-{year}-{invoiceCounter++:D4}";
+                // Skip if invoice already exists for this sale
+                if (existingSaleDocumentKeys.Contains((sale.Id, SalesDocumentType.Invoice)))
+                {
+                    continue;
+                }
+
+                // Generate unique invoice number
+                string invoiceNumber;
+                do
+                {
+                    invoiceNumber = $"INV-{year}-{invoiceCounter++:D4}";
+                } while (usedDocumentNumbers.Contains(invoiceNumber));
+                
+                usedDocumentNumbers.Add(invoiceNumber);
+                
                 var paidDate = faker.Random.Bool(0.3f) ? sale.SaleDate.AddDays(faker.Random.Int(1, 30)) : (DateTimeOffset?)null;
                 var invoice = new SalesDocument
                 {

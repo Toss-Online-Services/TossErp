@@ -9,8 +9,10 @@ var postgres = builder
 
 var database = postgres.AddDatabase(databaseName);
 
-builder.AddProject<Projects.Web>("web")
+// Use AddProject with explicit configuration to avoid IDE execution mode issues
+var web = builder.AddProject<Projects.Web>("web")
     .WithReference(database)
-    .WaitFor(database);
+    .WaitFor(database)
+    .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development");
 
 builder.Build().Run();
