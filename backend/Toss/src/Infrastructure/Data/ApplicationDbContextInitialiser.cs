@@ -67,6 +67,7 @@ public class ApplicationDbContextInitialiser
             await SeedDriversAsync();
             await SeedPurchaseOrdersAsync();
             await SeedSalesAsync();
+            await SeedSalesDocumentsAsync();
             await SeedOrdersAsync();
             await SeedPaymentsAsync();
 
@@ -651,6 +652,95 @@ public class ApplicationDbContextInitialiser
         _context.Set<Sale>().AddRange(sales);
         await _context.SaveChangesAsync();
         _logger.LogInformation("✅ Seeded {Count} sales.", sales.Count);
+    }
+
+    private async Task SeedSalesDocumentsAsync()
+    {
+        var existingCount = await _context.Set<SalesDocument>().CountAsync();
+        if (existingCount >= 100)
+        {
+            _logger.LogInformation("✅ Sales documents already seeded ({Count} existing).", existingCount);
+            return;
+        }
+
+        var sales = await _context.Set<Sale>()
+            .Where(s => s.Status == SaleStatus.Completed)
+            .ToListAsync();
+
+        if (!sales.Any())
+        {
+            _logger.LogWarning("⚠️  No completed sales found. Skipping sales documents seeding.");
+            return;
+        }
+
+        var documents = new List<SalesDocument>();
+        var faker = new Faker();
+        var year = DateTimeOffset.UtcNow.Year;
+        var receiptCounter = 1;
+        var invoiceCounter = 1;
+
+        foreach (var sale in sales)
+        {
+            // Create receipt for cash/card sales (immediate payment)
+            if (sale.PaymentMethod == PaymentType.Cash || sale.PaymentMethod == PaymentType.Card)
+            {
+                var receiptNumber = $"RCT-{year}-{receiptCounter++:D4}";
+                var receipt = new SalesDocument
+                {
+                    DocumentType = SalesDocumentType.Receipt,
+                    DocumentNumber = receiptNumber,
+                    SaleId = sale.Id,
+                    CustomerId = sale.CustomerId,
+                    ShopId = sale.ShopId,
+                    DocumentDate = sale.SaleDate,
+                    DueDate = null,
+                    PaidDate = sale.SaleDate,
+                    Subtotal = sale.Subtotal,
+                    TaxAmount = sale.TaxAmount,
+                    TotalAmount = sale.Total,
+                    IsPaid = true,
+                    Notes = "Auto-generated receipt for completed sale",
+                    Created = sale.SaleDate,
+                    LastModified = sale.SaleDate
+                };
+                documents.Add(receipt);
+            }
+            // Create invoice for credit sales (with customer)
+            else if (sale.CustomerId.HasValue)
+            {
+                var invoiceNumber = $"INV-{year}-{invoiceCounter++:D4}";
+                var paidDate = faker.Random.Bool(0.3f) ? sale.SaleDate.AddDays(faker.Random.Int(1, 30)) : (DateTimeOffset?)null;
+                var invoice = new SalesDocument
+                {
+                    DocumentType = SalesDocumentType.Invoice,
+                    DocumentNumber = invoiceNumber,
+                    SaleId = sale.Id,
+                    CustomerId = sale.CustomerId,
+                    ShopId = sale.ShopId,
+                    DocumentDate = sale.SaleDate,
+                    DueDate = sale.SaleDate.AddDays(30),
+                    PaidDate = paidDate,
+                    Subtotal = sale.Subtotal,
+                    TaxAmount = sale.TaxAmount,
+                    TotalAmount = sale.Total,
+                    IsPaid = paidDate.HasValue,
+                    Notes = "Auto-generated invoice for credit sale",
+                    Created = sale.SaleDate,
+                    LastModified = paidDate ?? sale.SaleDate
+                };
+                documents.Add(invoice);
+            }
+        }
+
+        if (documents.Any())
+        {
+            _context.Set<SalesDocument>().AddRange(documents);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("✅ Seeded {Count} sales documents ({Receipts} receipts, {Invoices} invoices).", 
+                documents.Count, 
+                documents.Count(d => d.DocumentType == SalesDocumentType.Receipt),
+                documents.Count(d => d.DocumentType == SalesDocumentType.Invoice));
+        }
     }
 
     private async Task SeedOrdersAsync()

@@ -24,6 +24,18 @@ public record SalesDocumentDto
     public decimal TaxAmount { get; init; }
     public decimal TotalAmount { get; init; }
     public string? Notes { get; init; }
+    public List<SalesDocumentItemDto> InvoiceItems { get; init; } = new();
+}
+
+public record SalesDocumentItemDto
+{
+    public int Id { get; init; }
+    public string Name { get; init; } = string.Empty;
+    public string SKU { get; init; } = string.Empty;
+    public int Quantity { get; init; }
+    public decimal Price { get; init; }
+    public decimal Total { get; init; }
+    public int? Stock { get; init; }
 }
 
 public record GetSalesDocumentsQuery : IRequest<PaginatedList<SalesDocumentDto>>
@@ -49,41 +61,47 @@ public class GetSalesDocumentsQueryHandler : IRequestHandler<GetSalesDocumentsQu
 
     public async Task<PaginatedList<SalesDocumentDto>> Handle(GetSalesDocumentsQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.SalesDocuments
-            .Include(d => d.Sale)
-                .ThenInclude(s => s!.Items)
-            .Include(d => d.Customer)
-            .Where(d => d.ShopId == request.ShopId || d.Sale.ShopId == request.ShopId);
+        // Base query without collection includes to avoid duplicate rows in count
+        // Only filter by SalesDocument.ShopId, not by Sale.ShopId, to avoid cross-shop document leakage
+        var baseQuery = _context.SalesDocuments
+            .Where(d => d.ShopId == request.ShopId);
 
         if (request.Type.HasValue)
         {
             var type = request.Type.Value;
-            query = query.Where(d => d.DocumentType == type);
+            baseQuery = baseQuery.Where(d => d.DocumentType == type);
         }
 
         if (request.CustomerId.HasValue)
         {
-            query = query.Where(d => d.CustomerId == request.CustomerId.Value);
+            baseQuery = baseQuery.Where(d => d.CustomerId == request.CustomerId.Value);
         }
 
         if (request.FromDate.HasValue)
         {
             var fromDate = request.FromDate.Value.Offset != TimeSpan.Zero ? request.FromDate.Value.ToUniversalTime() : request.FromDate.Value;
-            query = query.Where(d => d.DocumentDate >= fromDate);
+            baseQuery = baseQuery.Where(d => d.DocumentDate >= fromDate);
         }
 
         if (request.ToDate.HasValue)
         {
             var toDate = request.ToDate.Value.Offset != TimeSpan.Zero ? request.ToDate.Value.ToUniversalTime() : request.ToDate.Value;
-            query = query.Where(d => d.DocumentDate <= toDate);
+            baseQuery = baseQuery.Where(d => d.DocumentDate <= toDate);
         }
 
         if (request.IsPaid.HasValue)
         {
-            query = query.Where(d => d.IsPaid == request.IsPaid.Value);
+            baseQuery = baseQuery.Where(d => d.IsPaid == request.IsPaid.Value);
         }
 
-        var totalCount = await query.CountAsync(cancellationToken);
+        // Count before including collections to avoid duplicate rows
+        var totalCount = await baseQuery.CountAsync(cancellationToken);
+
+        // Query with includes for data retrieval
+        var query = baseQuery
+            .Include(d => d.Sale)
+                .ThenInclude(s => s!.Items)
+            .Include(d => d.Customer);
 
         var docs = await query
             .OrderByDescending(d => d.DocumentDate)
@@ -97,7 +115,7 @@ public class GetSalesDocumentsQueryHandler : IRequestHandler<GetSalesDocumentsQu
                 SaleId = d.SaleId,
                 SaleNumber = d.Sale.SaleNumber,
                 CustomerId = d.CustomerId,
-                Customer = d.Customer != null ? (d.Customer.FullName ?? d.Customer.Email ?? "Unknown") : null,
+                Customer = d.Customer != null ? (d.Customer.FullName ?? d.Customer.Email ?? "Unknown") : null,                                                  
                 ShopId = d.ShopId,
                 DocumentDate = d.DocumentDate,
                 DueDate = d.DueDate,
@@ -106,7 +124,19 @@ public class GetSalesDocumentsQueryHandler : IRequestHandler<GetSalesDocumentsQu
                 Subtotal = d.Subtotal,
                 TaxAmount = d.TaxAmount,
                 TotalAmount = d.TotalAmount,
-                Notes = d.Notes
+                Notes = d.Notes,
+                InvoiceItems = d.Sale != null && d.Sale.Items != null 
+                    ? d.Sale.Items.Select(item => new SalesDocumentItemDto
+                    {
+                        Id = item.Id,
+                        Name = item.ProductName,
+                        SKU = item.ProductSKU ?? "",
+                        Quantity = item.Quantity,
+                        Price = item.UnitPrice,
+                        Total = item.LineTotal,
+                        Stock = null // Would need to lookup current stock
+                    }).ToList()
+                    : new List<SalesDocumentItemDto>()
             })
             .ToListAsync(cancellationToken);
 
