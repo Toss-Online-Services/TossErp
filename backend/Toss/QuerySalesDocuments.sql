@@ -40,3 +40,4 @@ LEFT JOIN "Sales" s ON sd."SaleId" = s."Id"
 WHERE sd."ShopId" = 1 OR s."ShopId" = 1;
 
 
+

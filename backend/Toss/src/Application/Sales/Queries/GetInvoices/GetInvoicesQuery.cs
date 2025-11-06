@@ -60,56 +60,50 @@ public class GetInvoicesQueryHandler : IRequestHandler<GetInvoicesQuery, Paginat
 
     public async Task<PaginatedList<InvoiceDto>> Handle(GetInvoicesQuery request, CancellationToken cancellationToken)
     {
-        // Base query without collection includes to avoid duplicate rows in count
-        // Only filter by SalesDocument.ShopId, not by Sale.ShopId, to avoid cross-shop document leakage
-        var baseQuery = _context.SalesDocuments
+        var query = _context.SalesDocuments
+            .Include(i => i.Sale)
+                .ThenInclude(s => s!.Items)
+            .Include(i => i.Customer)
             .Where(i => i.DocumentType == Domain.Enums.SalesDocumentType.Invoice)
-            .Where(i => i.ShopId == request.ShopId);
+            .Where(i => i.Sale.ShopId == request.ShopId);
 
         if (request.Status != null)
         {
-            baseQuery = request.Status.ToLower() switch
+            query = request.Status.ToLower() switch
             {
-                "draft" => baseQuery.Where(i => !i.IsPaid && i.Sale.Status == Domain.Enums.SaleStatus.Pending),
-                "sent" => baseQuery.Where(i => !i.IsPaid && i.Sale.Status == Domain.Enums.SaleStatus.Completed),
-                "paid" => baseQuery.Where(i => i.IsPaid),
-                "overdue" => baseQuery.Where(i => !i.IsPaid && i.DueDate.HasValue && i.DueDate < DateTimeOffset.UtcNow),
-                "cancelled" => baseQuery.Where(i => i.Sale.Status == Domain.Enums.SaleStatus.Voided),
-                _ => baseQuery
+                "draft" => query.Where(i => !i.IsPaid && i.Sale.Status == Domain.Enums.SaleStatus.Pending),
+                "sent" => query.Where(i => !i.IsPaid && i.Sale.Status == Domain.Enums.SaleStatus.Completed),
+                "paid" => query.Where(i => i.IsPaid),
+                "overdue" => query.Where(i => !i.IsPaid && i.DueDate.HasValue && i.DueDate < DateTimeOffset.UtcNow),
+                "cancelled" => query.Where(i => i.Sale.Status == Domain.Enums.SaleStatus.Voided),
+                _ => query
             };
         }
 
         if (request.CustomerId.HasValue)
         {
-            baseQuery = baseQuery.Where(i => i.CustomerId == request.CustomerId.Value); 
+            query = query.Where(i => i.CustomerId == request.CustomerId.Value);
         }
 
         if (request.FromDate.HasValue)
         {
             // Normalize to UTC for consistent querying
-            var fromDate = request.FromDate.Value.Offset != TimeSpan.Zero       
-                ? request.FromDate.Value.ToUniversalTime()
+            var fromDate = request.FromDate.Value.Offset != TimeSpan.Zero 
+                ? request.FromDate.Value.ToUniversalTime() 
                 : request.FromDate.Value;
-            baseQuery = baseQuery.Where(i => i.DocumentDate >= fromDate);
+            query = query.Where(i => i.DocumentDate >= fromDate);
         }
 
         if (request.ToDate.HasValue)
         {
             // Normalize to UTC for consistent querying
-            var toDate = request.ToDate.Value.Offset != TimeSpan.Zero
-                ? request.ToDate.Value.ToUniversalTime()
+            var toDate = request.ToDate.Value.Offset != TimeSpan.Zero 
+                ? request.ToDate.Value.ToUniversalTime() 
                 : request.ToDate.Value;
-            baseQuery = baseQuery.Where(i => i.DocumentDate <= toDate);
+            query = query.Where(i => i.DocumentDate <= toDate);
         }
 
-        // Count before including collections to avoid duplicate rows
-        var totalCount = await baseQuery.CountAsync(cancellationToken);
-
-        // Query with includes for data retrieval
-        var query = baseQuery
-            .Include(i => i.Sale)
-                .ThenInclude(s => s!.Items)
-            .Include(i => i.Customer);
+        var totalCount = await query.CountAsync(cancellationToken);
 
         var invoices = await query
             .OrderByDescending(i => i.DocumentDate)
