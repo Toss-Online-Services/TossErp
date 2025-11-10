@@ -1,17 +1,17 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 relative overflow-hidden">
+  <div class="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-green-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
     <!-- Mobile-First Page Container -->
-    <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
+    <div class="p-4 pb-20 space-y-4 sm:p-6 sm:space-y-6 lg:pb-6">
       <!-- Page Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
+      <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center sm:gap-0">
         <div>
-          <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Create Order</h1>
-          <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Customer orders for later fulfillment</p>
+          <h1 class="text-2xl font-bold text-transparent sm:text-3xl bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text">Create Order</h1>
+          <p class="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">Customer orders for later fulfillment</p>
         </div>
         <div class="flex flex-wrap gap-2 sm:gap-3">
           <button 
             @click="showOrderQueue = true"
-            class="px-4 py-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2"
+            class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 rounded-lg bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
           >
             📋 Order Queue
             <span v-if="pendingOrders.length > 0" class="px-2 py-0.5 bg-white/20 rounded-full text-xs">{{ pendingOrders.length }}</span>
@@ -20,7 +20,7 @@
       </div>
 
       <!-- Main Interface -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <!-- Product Selection -->
         <div class="lg:col-span-2">
           <ProductGrid
@@ -45,10 +45,10 @@
             <template #customer-section>
               <!-- Customer Selection -->
               <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Customer</label>
+                <label class="block mb-2 text-sm font-medium text-gray-700">Customer</label>
                 <select 
                   v-model="selectedCustomer"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+                  class="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Walk-in Customer</option>
                   <option v-for="customer in customers" :key="customer.id" :value="customer.id">
@@ -61,7 +61,7 @@
             <template #payment-section>
               <!-- Payment Methods -->
               <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                <label class="block mb-2 text-sm font-medium text-gray-700">Payment Method</label>
                 <div class="grid grid-cols-2 gap-2">
                   <button 
                     v-for="method in paymentMethods" 
@@ -85,7 +85,7 @@
               <button 
                 @click="createOrder"
                 :disabled="cartItems.length === 0"
-                class="w-full py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 text-white disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                class="w-full py-3 font-bold text-white transition-all duration-200 shadow-lg rounded-xl hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
               >
                 📦 Create Order - R{{ formatCurrency(cartTotal) }}
               </button>
@@ -93,8 +93,8 @@
           </CartDisplay>
 
           <!-- Quick Actions -->
-          <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+          <div class="p-4 border shadow-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl border-slate-200/50 dark:border-slate-700/50 sm:p-6">
+            <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Quick Actions</h3>
             <div class="space-y-3">
               <button 
                 @click="holdOrder"
