@@ -27,13 +27,32 @@ Thank you for contributing! This guide helps you set up the project, run it loca
 - Check formatting only: `pnpm format:check`
 
 ### Pre-commit Hooks (Husky + lint-staged)
-On commit, staged files are auto-formatted and linted:
-1. Husky hook runs `pnpm lint-staged` from repo root.
-2. JavaScript/TypeScript/Vue files: Prettier write + ESLint fix.
-3. JSON/CSS/Markdown/YAML: Prettier write.
-If any step fails, the commit aborts; fix issues and re-stage.
+Husky is installed automatically via the `prepare` script during `pnpm install` and creates the `.husky/` folder.
 
-To skip hooks temporarily (avoid unless urgent): `git commit -m "msg" --no-verify`.
+What happens on commit:
+1. `.husky/pre-commit` runs `pnpm lint-staged`.
+2. For `**/*.{js,jsx,ts,tsx,vue}`: Prettier write + ESLint fix.
+3. For `**/*.{json,css,scss,md,mdx,yml,yaml}`: Prettier write.
+4. If any step fails, the commit aborts; fix issues and re-stage.
+
+Verify setup:
+- Ensure `pnpm` is installed (`corepack enable` or `npm i -g pnpm`).
+- Ensure Git for Windows is installed (Husky uses the sh shell bundled with Git).
+- Confirm a hook exists at `toss-web/.husky/pre-commit` with:
+	```
+	#!/usr/bin/env sh
+	. "$(dirname -- "$0")/_/husky.sh"
+	pnpm lint-staged
+	```
+
+Regenerate hooks (if missing):
+1. From `toss-web/`: `pnpm dlx husky init` (or rerun `pnpm install`).
+2. Recreate `pre-commit` as above.
+
+Temporarily skip hooks (avoid unless urgent):
+```sh
+git commit -m "msg" --no-verify
+```
 
 ### Linting & Types
 - Type-check: `pnpm typecheck`
