@@ -1,7 +1,7 @@
 {
   "name": "toss-web",
   "version": "1.0.0",
-  "description": "TOSS ERP III - Township One-St op Solution - AI-powered collaborative business platform for South African SMMEs",
+  "description": "TOSS ERP III - Township One-Stop Solution. AI-powered ERP-III platform empowering South African SMMEs (spaza shops, chisa nyamas, rural retailers) with smart business management, collaborative networks for group buying and shared logistics, and embedded AI Copilot for decision support. Built with Nuxt 4, Vue 3, and offline-first PWA technology for low-connectivity township environments.",
   "type": "module",
   "private": true,
   "scripts": {

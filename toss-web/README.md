@@ -2,7 +2,24 @@
 
 ## Overview
 
-Modern web-based admin dashboard for TOSS ERP III built with Nuxt 4, Vue 3, and Tailwind CSS.
+Modern web-based admin dashboard for **TOSS ERP III** (Township One-Stop Solution) – an AI-powered collaborative business platform designed to empower small businesses in South African townships and rural areas.
+
+Built with Nuxt 4, Vue 3, and Tailwind CSS, TOSS is more than just software – it's a complete ecosystem connecting spaza shops, suppliers, drivers, and financial services to level the playing field for informal enterprises.
+
+### 📚 Documentation
+
+- **[Business Model](./docs/BUSINESS_MODEL.md)** - Mission, problems we solve, and our solution
+- **[Architecture](./docs/ARCHITECTURE.md)** - Technical architecture and system design
+- **[Quick Start](./QUICK_START.md)** - Get started in 5 minutes
+- **[Deployment Guide](./README_DEPLOYMENT.md)** - Production deployment
+
+### 🎯 What Makes TOSS Unique
+
+**ERP-III Platform**: Next-generation cloud-based business management system
+
+**AI Copilot**: Service-as-Software with embedded intelligence for automation and decision support
+
+**Collaborative Network**: Connects businesses with suppliers, logistics, and financial services for group buying, shared delivery, and credit access
 
 ## Tech Stack
 
