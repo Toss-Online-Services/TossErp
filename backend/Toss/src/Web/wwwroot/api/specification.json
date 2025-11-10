@@ -2593,6 +2593,31 @@
         }
       }
     },
+    "/api/Sales/queue": {
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetQueueOrders",
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/Sales/{id}": {
       "get": {
         "tags": [
@@ -5649,6 +5674,26 @@
             "items": {
               "$ref": "#/components/schemas/SaleItemDto"
             }
+          },
+          "SaleType": {
+            "$ref": "#/components/schemas/SaleType"
+          },
+          "CustomerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "CustomerPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "CustomerNotes": {
+            "type": "string",
+            "nullable": true
+          },
+          "EstimatedPreparationMinutes": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         }
       },
@@ -5674,11 +5719,29 @@
           }
         }
       },
+      "SaleType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "POS",
+          "QueueOrder",
+          "Delivery",
+          "PreOrder"
+        ],
+        "enum": [
+          "POS",
+          "QueueOrder",
+          "Delivery",
+          "PreOrder"
+        ]
+      },
       "SaleStatus": {
         "type": "string",
         "description": "",
         "x-enumNames": [
           "Pending",
+          "InProgress",
+          "Ready",
           "Completed",
           "Voided",
           "Refunded",
@@ -5686,6 +5749,8 @@
         ],
         "enum": [
           "Pending",
+          "InProgress",
+          "Ready",
           "Completed",
           "Voided",
           "Refunded",

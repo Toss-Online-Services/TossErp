@@ -13,6 +13,7 @@ using Toss.Application.Sales.Queries.GetSaleById;
 using Toss.Application.Sales.Queries.GetSales;
 using Toss.Application.Sales.Queries.GetHeldSales;
 using Toss.Application.Sales.Queries.GetInvoices;
+using Toss.Application.Sales.Queries.GetQueueOrders;
 using Toss.Application.Sales.Commands.CreateSalesDocument;
 using Toss.Domain.Enums;
 using Toss.Application.Sales.Queries.GetSalesDocuments;
@@ -38,6 +39,10 @@ public class Sales : EndpointGroupBase
         
         group.MapGet("held", GetHeldSales)
             .WithName("GetHeldSales");
+        
+        // Queue-based order endpoints
+        group.MapGet("queue", GetQueueOrders)
+            .WithName("GetQueueOrders");
 
         // Generic {id} route comes after specific routes
         group.MapGet("{id}", GetSaleById)
@@ -190,6 +195,12 @@ public class Sales : EndpointGroupBase
     {
         var result = await sender.Send(query);
         return Results.Ok(result);
+    }
+    
+    public async Task<IResult> GetQueueOrders(ISender sender, int shopId)
+    {
+        var result = await sender.Send(new GetQueueOrdersQuery { ShopId = shopId });
+        return TypedResults.Ok(result);
     }
 }
 

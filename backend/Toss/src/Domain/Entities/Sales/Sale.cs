@@ -1,3 +1,5 @@
+using Toss.Domain.Enums;
+
 namespace Toss.Domain.Entities.Sales;
 
 public class Sale : BaseAuditableEntity
@@ -11,6 +13,11 @@ public class Sale : BaseAuditableEntity
     
     public DateTimeOffset SaleDate { get; set; }
     public SaleStatus Status { get; set; } = SaleStatus.Pending;
+    
+    /// <summary>
+    /// Type of sale - POS, QueueOrder, Delivery, PreOrder
+    /// </summary>
+    public SaleType SaleType { get; set; } = SaleType.POS;
     
     // Amounts
     public decimal Subtotal { get; set; }
@@ -34,6 +41,32 @@ public class Sale : BaseAuditableEntity
     public DateTimeOffset? VoidedAt { get; set; }
     
     public string? Notes { get; set; }
+    
+    // Queue-based order fields
+    /// <summary>
+    /// Expected time when order will be ready (for queue orders)
+    /// </summary>
+    public DateTimeOffset? ExpectedCompletionTime { get; set; }
+    
+    /// <summary>
+    /// Position in the preparation queue
+    /// </summary>
+    public int? QueuePosition { get; set; }
+    
+    /// <summary>
+    /// Customer-specific notes for order preparation
+    /// </summary>
+    public string? CustomerNotes { get; set; }
+    
+    /// <summary>
+    /// Customer name for walk-in orders (when CustomerId is null)
+    /// </summary>
+    public string? CustomerName { get; set; }
+    
+    /// <summary>
+    /// Customer phone for notifications
+    /// </summary>
+    public string? CustomerPhone { get; set; }
     
     // Relationships
     public ICollection<SaleItem> Items { get; private set; } = new List<SaleItem>();

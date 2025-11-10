@@ -9,6 +9,13 @@
           <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Quick checkout system for Thabo's Spaza Shop</p>
         </div>
         <div class="flex flex-wrap gap-2 sm:gap-3">
+          <NuxtLink 
+            to="/sales/pos/queue"
+            class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base font-semibold"
+            title="View Order Queue"
+          >
+            📋 Order Queue
+          </NuxtLink>
           <button @click="toggleFullscreen" 
                   :class="[
                     'flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base font-semibold',
@@ -283,6 +290,13 @@
 
               <!-- Checkout Button -->
               <button 
+                @click="showCreateOrderModal = true"
+                :disabled="cartItems.length === 0"
+                class="w-full py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 text-white disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 mb-3"
+              >
+                📝 Create Order (Queue) - R{{ formatCurrency(cartTotal) }}
+              </button>
+              <button 
                 @click="processPayment"
                 :disabled="cartItems.length === 0"
                 class="w-full py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 text-white disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
@@ -543,6 +557,120 @@
     </div>
 
     <!-- Void Sale Modal -->
+    <div v-if="showVoidSaleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl p-6 max-w-md w-full">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Void Sale</h3>
+        <p class="text-gray-600 mb-2">Please provide a reason for voiding this sale:</p>
+        <input 
+          v-model="voidSaleReason"
+          type="text"
+          placeholder="e.g., Customer changed their mind"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 mb-4"
+        />
+        <div class="flex space-x-3">
+          <button 
+            @click="confirmVoidSale"
+            class="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+          >
+            Void Sale
+          </button>
+          <button 
+            @click="showVoidSaleModal = false; voidSaleReason = ''"
+            class="flex-1 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Order Modal (Queue-based) -->
+    <div v-if="showCreateOrderModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl p-6 max-w-md w-full">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">📝 Create Queue Order</h3>
+        
+        <!-- Order Summary -->
+        <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Total Amount:</span>
+            <span class="font-bold text-blue-600">R{{ formatCurrency(cartTotal) }}</span>
+          </div>
+          <div class="text-sm text-gray-600 mt-1">
+            {{ cartItems.length }} items in order
+          </div>
+        </div>
+        
+        <!-- Customer Name -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
+          <input 
+            v-model="orderCustomerName"
+            type="text"
+            placeholder="e.g., Thabo Nkosi"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        <!-- Customer Phone -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number (optional)</label>
+          <input 
+            v-model="orderCustomerPhone"
+            type="tel"
+            placeholder="e.g., 076 123 4567"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <!-- Special Instructions -->
+        <div class="mb-3">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Special Instructions (optional)</label>
+          <textarea 
+            v-model="orderCustomerNotes"
+            placeholder="e.g., Extra peri-peri sauce, no onions"
+            rows="2"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+        </div>
+
+        <!-- Estimated Preparation Time -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Estimated Prep Time: {{ orderEstimatedMinutes }} minutes
+          </label>
+          <input 
+            v-model.number="orderEstimatedMinutes"
+            type="range"
+            min="5"
+            max="60"
+            step="5"
+            class="w-full"
+          />
+          <div class="flex justify-between text-xs text-gray-500 mt-1">
+            <span>5 min</span>
+            <span>60 min</span>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex space-x-3">
+          <button 
+            @click="confirmCreateOrder"
+            :disabled="!orderCustomerName"
+            class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Create Order
+          </button>
+          <button 
+            @click="showCreateOrderModal = false; orderCustomerName = ''; orderCustomerPhone = ''; orderCustomerNotes = ''; orderEstimatedMinutes = 15"
+            class="flex-1 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
     <div v-if="showVoidSaleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-xl p-6 max-w-md w-full">
         <h3 class="text-xl font-semibold text-gray-900 mb-4">Void Sale</h3>
@@ -853,6 +981,13 @@ const voidSaleReason = ref('')
 const heldSales = ref<any[]>([])
 const voidedSales = ref<any[]>([])
 const heldSalesSearchQuery = ref('')
+
+// Create Order (Queue-based)
+const showCreateOrderModal = ref(false)
+const orderCustomerName = ref('')
+const orderCustomerPhone = ref('')
+const orderCustomerNotes = ref('')
+const orderEstimatedMinutes = ref(15)
 
 // POS Stats
 const todaySales = ref(18496)
@@ -1348,6 +1483,46 @@ const confirmVoidSale = () => {
   showVoidSaleModal.value = false
   voidSaleReason.value = ''
   clearCart()
+}
+
+// Create Queue Order functionality
+const confirmCreateOrder = async () => {
+  if (cartItems.value.length === 0) return
+  
+  try {
+    const customerId = selectedCustomer.value ? parseInt(selectedCustomer.value) : undefined
+    
+    // Create queue order via API
+    const result = await salesAPI.createQueueOrder({
+      shopId: shopId.value,
+      customerId: customerId,
+      customerName: orderCustomerName.value,
+      customerPhone: orderCustomerPhone.value,
+      customerNotes: orderCustomerNotes.value,
+      items: cartItems.value.map((item: any) => ({
+        productId: item.id,
+        quantity: item.quantity,
+        unitPrice: item.price
+      })),
+      paymentType: selectedPaymentMethod.value as any,
+      totalAmount: cartTotal.value,
+      estimatedPreparationMinutes: orderEstimatedMinutes.value
+    })
+    
+    console.log(`✅ Order ${result.id} created successfully (Queue-based)`)
+    showNotification(`✓ Order created! Order #${result.id} added to queue`)
+    
+    // Clear form and close modal
+    showCreateOrderModal.value = false
+    orderCustomerName.value = ''
+    orderCustomerPhone.value = ''
+    orderCustomerNotes.value = ''
+    orderEstimatedMinutes.value = 15
+    clearCart()
+  } catch (error) {
+    console.error('Failed to create queue order:', error)
+    showNotification('✗ Failed to create order', 'error')
+  }
 }
 
 // Load held sales from database

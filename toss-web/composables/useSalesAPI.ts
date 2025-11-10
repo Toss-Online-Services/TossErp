@@ -331,6 +331,89 @@ export const useSalesAPI = () => {
     })
   }
 
+  // === QUEUE-BASED ORDERS ===
+
+  /**
+   * Create a queue-based order (for chisa nyama, kota shops, etc.)
+   * These orders start with Pending status and go through preparation workflow
+   */
+  const createQueueOrder = async (orderData: {
+    shopId: number
+    customerId?: number
+    customerName?: string
+    customerPhone?: string
+    customerNotes?: string
+    items: Array<{
+      productId: number
+      quantity: number
+      unitPrice: number
+    }>
+    paymentType: 'Cash' | 'Card' | 'MobileMoney' | 'BankTransfer' | 'PayLink'
+    totalAmount: number
+    estimatedPreparationMinutes?: number
+  }) => {
+    return await $fetch<{ id: number }>(`${baseURL}/Sales`, {
+      method: 'POST',
+      body: {
+        ...orderData,
+        saleType: 1 // QueueOrder = 1 (from SaleType enum)
+      }
+    })
+  }
+
+  /**
+   * Get active queue orders for a shop
+   * Returns orders with status: Pending, InProgress, or Ready
+   */
+  const getQueueOrders = async (shopId: number) => {
+    return await $fetch<Array<{
+      id: number
+      saleNumber: string
+      shopId: number
+      customerId?: number
+      customerName: string
+      customerPhone?: string
+      saleDate: string
+      status: 'Pending' | 'InProgress' | 'Ready' | 'Completed'
+      saleType: number
+      total: number
+      paymentMethod: string
+      customerNotes?: string
+      expectedCompletionTime?: string
+      queuePosition?: number
+      items: Array<{
+        id: number
+        productName: string
+        productSKU: string
+        quantity: number
+        unitPrice: number
+        lineTotal: number
+      }>
+    }>>(`${baseURL}/Sales/queue`, {
+      method: 'GET',
+      params: { shopId }
+    })
+  }
+
+  /**
+   * Update queue order status (Pending → InProgress → Ready → Completed)
+   */
+  const updateQueueOrderStatus = async (
+    saleId: number, 
+    newStatus: 'Pending' | 'InProgress' | 'Ready' | 'Completed',
+    notes?: string
+  ) => {
+    return await updateSaleStatus(saleId, newStatus, notes)
+  }
+
+  /**
+   * Complete a queue order and process payment
+   * This moves the order from Ready → Completed
+   */
+  const completeQueueOrder = async (saleId: number) => {
+    return await updateSaleStatus(saleId, 'Completed')
+  }
+
   return {
     // Core sales methods
     createSale,
@@ -350,6 +433,12 @@ export const useSalesAPI = () => {
     
     // Voided sales methods
     getVoidedSales,
+    
+    // Queue-based orders methods
+    createQueueOrder,
+    getQueueOrders,
+    updateQueueOrderStatus,
+    completeQueueOrder,
     
     // Proxy methods for convenience
     getProducts,

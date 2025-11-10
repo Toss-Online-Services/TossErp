@@ -218,10 +218,23 @@ const loadCustomers = async () => {
 
 const loadPendingOrders = async () => {
   try {
-    const allOrders = await salesAPI.getOrders()
-    pendingOrders.value = allOrders.filter((o: any) => 
-      o.status !== 'completed' && o.status !== 'cancelled'
-    )
+    const shopId = 1 // TODO: Get from session/auth
+    const queueData = await salesAPI.getQueueOrders(shopId)
+    
+    // Transform backend data to match frontend expectations
+    pendingOrders.value = queueData.map((order: any) => ({
+      id: order.id,
+      orderNumber: order.saleNumber,
+      customer: order.customerName || 'Walk-in Customer',
+      customerPhone: order.customerPhone,
+      status: order.status.toLowerCase(),
+      total: order.total,
+      orderItems: order.items || [],
+      createdAt: new Date(order.saleDate),
+      notes: order.customerNotes,
+      expectedCompletion: order.expectedCompletionTime ? new Date(order.expectedCompletionTime) : null,
+      queuePosition: order.queuePosition
+    }))
   } catch (error) {
     logError(error, 'load_data', 'Failed to load pending orders')
     // Don't show notification for background loading
@@ -321,25 +334,24 @@ const createOrder = async () => {
   if (cartItems.value.length === 0) return
 
   const customerName = selectedCustomer.value 
-    ? customers.value.find((c: any) => c.id == selectedCustomer.value)?.name || 'Walk-in Customer'
-    : 'Walk-in Customer'
+    ? customers.value.find((c: any) => c.id == selectedCustomer.value)?.name || customer.value.name || 'Walk-in Customer'
+    : customer.value.name || 'Walk-in Customer'
 
   try {
-    const newOrder = await salesAPI.createOrder({
-      customer: customerName,
+    // Use createQueueOrder for queue-based orders
+    await salesAPI.createQueueOrder({
+      shopId: 1, // TODO: Get from session
+      customerName: customerName,
       customerPhone: customer.value.phone || '',
-      orderItems: cartItems.value.map((item: any) => ({
-        id: item.id,
-        name: item.name,
-        sku: item.sku || `SKU-${item.id}`,
+      customerNotes: customer.value.notes || '',
+      items: cartItems.value.map((item: any) => ({
+        productId: item.id,
         quantity: item.quantity,
-        price: item.price,
-        stock: item.stock || 0
+        unitPrice: item.price
       })),
-      total: cartTotal.value,
-      notes: customer.value.notes || '',
-      status: 'pending',
-      paymentMethod: selectedPaymentMethod.value
+      paymentType: selectedPaymentMethod.value as any,
+      totalAmount: cartTotal.value,
+      estimatedPreparationMinutes: 15 // Default 15 minutes
     })
 
     // Reload pending orders
@@ -351,7 +363,7 @@ const createOrder = async () => {
     selectedPaymentMethod.value = 'Cash'
     customer.value = { name: '', phone: '', notes: '' }
     
-    showNotification(`✓ Order #${newOrder.orderNumber} created for ${customerName}`)
+    showNotification(`✓ Order created for ${customerName}`)
   } catch (error) {
     logError(error, 'order_creation', 'Failed to create order')
     showNotification(getErrorNotification(error, 'order_creation'), 'error')
@@ -377,7 +389,14 @@ const voidOrder = () => {
 
 const updateOrderStatus = async (orderId: string, newStatus: string) => {
   try {
-    await salesAPI.updateOrderStatus(orderId, newStatus)
+    // Map frontend status to backend SaleStatus enum values
+    const statusMap: Record<string, string> = {
+      'pending': 'Pending',
+      'in-progress': 'InProgress',
+      'ready': 'Ready'
+    }
+    const backendStatus = statusMap[newStatus] || newStatus
+    await salesAPI.updateQueueOrderStatus(Number(orderId), backendStatus as any)
     await loadPendingOrders()
     const statusText = newStatus === 'pending' ? 'Pending' : newStatus === 'in-progress' ? 'In Progress' : 'Ready'
     showNotification(`✓ Order marked as ${statusText}`)
@@ -389,7 +408,7 @@ const updateOrderStatus = async (orderId: string, newStatus: string) => {
 
 const completeOrder = async (orderId: string) => {
   try {
-    await salesAPI.completeOrder(orderId)
+    await salesAPI.completeQueueOrder(Number(orderId))
     await loadPendingOrders()
     showNotification(`✓ Order completed`)
   } catch (error) {
@@ -401,7 +420,7 @@ const completeOrder = async (orderId: string) => {
 const cancelOrder = async (orderId: string) => {
   if (confirm('Cancel this order?')) {
     try {
-      await salesAPI.cancelOrder(orderId)
+      await salesAPI.voidSale(Number(orderId), 'Cancelled by user')
       await loadPendingOrders()
       showNotification(`✗ Order cancelled`)
     } catch (error) {

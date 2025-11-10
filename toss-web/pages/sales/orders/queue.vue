@@ -202,11 +202,23 @@ onMounted(async () => {
 const loadQueue = async () => {
   loading.value = true
   try {
-    const allOrders = await salesAPI.getOrders()
-    // Filter to only show non-completed orders
-    queueOrders.value = allOrders.filter((o: any) => 
-      o.status !== 'completed' && o.status !== 'cancelled'
-    )
+    const shopId = 1 // TODO: Get from session/auth
+    const queueData = await salesAPI.getQueueOrders(shopId)
+    
+    // Transform backend data to match frontend expectations
+    queueOrders.value = queueData.map((order: any) => ({
+      id: order.id,
+      orderNumber: order.saleNumber,
+      customer: order.customerName || 'Walk-in Customer',
+      customerPhone: order.customerPhone,
+      status: order.status.toLowerCase(),
+      total: order.total,
+      orderItems: order.items || [],
+      createdAt: new Date(order.saleDate),
+      notes: order.customerNotes,
+      expectedCompletion: order.expectedCompletionTime ? new Date(order.expectedCompletionTime) : null,
+      queuePosition: order.queuePosition
+    }))
   } catch (error) {
     logError(error, 'load_data', 'Failed to load queue')
     // Show user-friendly notification
@@ -254,7 +266,14 @@ const getStatusClass = (status: string) => {
 // Actions
 const updateStatus = async (order: any, newStatus: string) => {
   try {
-    await salesAPI.updateOrderStatus(order.id, newStatus)
+    // Map frontend status to backend SaleStatus enum values
+    const statusMap: Record<string, string> = {
+      'pending': 'Pending',
+      'in-progress': 'InProgress',
+      'ready': 'Ready'
+    }
+    const backendStatus = statusMap[newStatus] || newStatus
+    await salesAPI.updateQueueOrderStatus(order.id, backendStatus as any)
     await loadQueue()
     const statusText = getStatusLabel(newStatus)
     alert(`✓ Order #${order.orderNumber} marked as ${statusText}`)
@@ -266,7 +285,7 @@ const updateStatus = async (order: any, newStatus: string) => {
 
 const completeOrder = async (order: any) => {
   try {
-    await salesAPI.completeOrder(order.id)
+    await salesAPI.completeQueueOrder(order.id)
     await loadQueue()
     alert(`✓ Order #${order.orderNumber} completed and removed from queue`)
   } catch (error) {
@@ -278,7 +297,7 @@ const completeOrder = async (order: any) => {
 const cancelOrder = async (order: any) => {
   if (confirm(`Cancel order #${order.orderNumber}?`)) {
     try {
-      await salesAPI.cancelOrder(order.id)
+      await salesAPI.voidSale(order.id, 'Cancelled by user')
       await loadQueue()
       alert(`✗ Order #${order.orderNumber} cancelled`)
     } catch (error) {
