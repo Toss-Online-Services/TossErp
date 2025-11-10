@@ -2,6 +2,8 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-08-24',
+  // Enable hidden client source maps so Sentry can upload them without exposing references
+  sourcemap: { client: 'hidden' },
   typescript: {
     strict: false,
     typeCheck: false
@@ -25,8 +27,17 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    '@vite-pwa/nuxt'
+    '@vite-pwa/nuxt',
+    '@sentry/nuxt/module'
   ],
+  // Sentry module configuration for automatic source map upload on production build
+  // Values are read from environment variables. Provide SENTRY_AUTH_TOKEN only in CI (never commit).
+  sentry: {
+    org: process.env.SENTRY_ORG || 'your-org-slug',
+    project: process.env.SENTRY_PROJECT || 'your-project-slug',
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+    // Additional tuning could be added here (e.g. deploy, release) once backend release pipeline is in place.
+  },
   tailwindcss: {
     cssPath: '~/assets/css/main.css'
   },
@@ -66,7 +77,10 @@ export default defineNuxtConfig({
     // Public keys (exposed to client-side)
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://localhost:5001',
-      apiTimeout: 30000
+      apiTimeout: 30000,
+      sentry: {
+        dsn: process.env.NUXT_PUBLIC_SENTRY_DSN || ''
+      }
     }
   },
   ssr: false,  // Disable SSR temporarily to fix router issues
