@@ -15,6 +15,13 @@ public record CreateSaleCommand : IRequest<int>
     public string? PaymentReference { get; init; }
     public string? Notes { get; init; }
     public List<SaleItemDto> Items { get; init; } = new();
+    
+    // Queue-based order properties
+    public SaleType SaleType { get; init; } = SaleType.POS;
+    public string? CustomerName { get; init; }
+    public string? CustomerPhone { get; init; }
+    public string? CustomerNotes { get; init; }
+    public int? EstimatedPreparationMinutes { get; init; }
 }
 
 public record SaleItemDto
@@ -74,10 +81,17 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, int>
             ShopId = request.ShopId,
             CustomerId = request.CustomerId,
             SaleDate = DateTimeOffset.UtcNow,
-            Status = SaleStatus.Completed,
+            Status = request.SaleType == SaleType.POS ? SaleStatus.Completed : SaleStatus.Pending,
+            SaleType = request.SaleType,
             PaymentMethod = request.PaymentMethod,
             PaymentReference = request.PaymentReference,
-            Notes = request.Notes
+            Notes = request.Notes,
+            CustomerName = request.CustomerName,
+            CustomerPhone = request.CustomerPhone,
+            CustomerNotes = request.CustomerNotes,
+            ExpectedCompletionTime = request.EstimatedPreparationMinutes.HasValue 
+                ? DateTimeOffset.UtcNow.AddMinutes(request.EstimatedPreparationMinutes.Value)
+                : null
         };
 
         decimal subtotal = 0;

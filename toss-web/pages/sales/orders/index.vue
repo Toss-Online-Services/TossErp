@@ -377,7 +377,7 @@ import {
   PaperAirplaneIcon
 } from '@heroicons/vue/24/outline'
 import SalesOrderTimeline from '~/components/sales/OrderTimeline.vue'
-import { useSalesAPI } from '~/composables/useSalesAPI'
+import { useCustomerOrdersAPI } from '~/composables/useCustomerOrdersAPI'
 import { getErrorNotification, logError } from '~/utils/errorHandler'
 
 // Page metadata
@@ -394,7 +394,7 @@ definePageMeta({
 })
 
 // API
-const salesAPI = useSalesAPI()
+const ordersAPI = useCustomerOrdersAPI()
 
 // Reactive data
 const searchQuery = ref('')
@@ -413,7 +413,7 @@ const loadOrders = async () => {
   loading.value = true
   try {
     const shopId = 1 // TODO: Get from session/auth
-    const backendOrders = await salesAPI.getOrders({ shopId })
+    const backendOrders = await ordersAPI.getOrders({ shopId })
     
     // Transform backend data to match frontend expectations
     orders.value = backendOrders.map((order: any) => {
@@ -616,7 +616,7 @@ const sendOrder = (order: any) => {
 const cancelOrder = async (order: any) => {
   if (confirm(`Are you sure you want to cancel order ${order.orderNumber}?`)) {
     try {
-      await salesAPI.cancelOrder(order.id)
+      await ordersAPI.cancelOrder(order.id)
       await loadOrders() // Reload to reflect changes
       alert(`✓ Order ${order.orderNumber} has been cancelled`)
     } catch (error) {
