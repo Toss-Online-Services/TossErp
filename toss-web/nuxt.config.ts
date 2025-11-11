@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import tailwindcss from '@tailwindcss/vite'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-08-24',
@@ -16,49 +18,65 @@ export default defineNuxtConfig({
     componentIslands: true
   },
   modules: [
+    // shadcn-vue
+    'shadcn-nuxt',
+    
     // Core & Styling
-    '@nuxtjs/tailwindcss',
-    '@nuxtjs/color-mode',
-    '@nuxt/fonts',
-    '@nuxt/icon',
-    '@nuxt/image',
+    '@nuxtjs/tailwindcss', 
+    '@nuxtjs/color-mode', 
+    '@nuxt/fonts', 
+    '@nuxt/icon', 
+    '@nuxt/image', 
     
     // State Management
-    '@pinia/nuxt',
-    '@vueuse/nuxt',
+    '@pinia/nuxt', 
+    '@vueuse/nuxt', 
     
     // PWA & Performance
-    '@vite-pwa/nuxt',
-    '@nuxtjs/web-vitals',
-    '@nuxtjs/partytown',
+    '@vite-pwa/nuxt', 
+    '@nuxtjs/web-vitals', 
+    '@nuxtjs/partytown', 
     
     // Internationalization
-    '@nuxtjs/i18n',
+    '@nuxtjs/i18n', 
     
     // Forms & Validation
-    '@formkit/nuxt',
-    '@vee-validate/nuxt',
+    '@formkit/nuxt', 
+    '@vee-validate/nuxt', 
     
     // SEO & Analytics
-    '@nuxtjs/sitemap',
-    '@nuxtjs/robots',
-    'nuxt-schema-org',
-    'nuxt-gtag',
+    '@nuxtjs/sitemap', 
+    '@nuxtjs/robots', 
+    'nuxt-schema-org', 
+    'nuxt-gtag', 
     
     // Content & Utilities
-    '@nuxt/content',
-    'nuxt-lodash',
+    '@nuxt/content', 
+    'nuxt-lodash', 
     
     // Device Detection
-    '@nuxtjs/device',
+    '@nuxtjs/device', 
     
     // UI Components
-    'nuxt-swiper',
+    'nuxt-swiper', 
     
     // Security & Monitoring
-    'nuxt-security',
+    'nuxt-security', 
     '@sentry/nuxt/module'
   ],
+  
+  // shadcn-nuxt configuration
+  shadcn: {
+    /**
+     * Prefix for all the imported component
+     */
+    prefix: '',
+    /**
+     * Directory that the component lives in.
+     * @default "./components/ui"
+     */
+    componentDir: './components/ui'
+  },
   
   // Module Configurations
   
@@ -300,6 +318,9 @@ export default defineNuxtConfig({
   },
   ssr: false,  // Disable SSR temporarily to fix router issues
   vite: {
+    plugins: [
+      tailwindcss(),
+    ],
     server: {
       watch: {
         usePolling: false,

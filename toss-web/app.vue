@@ -27,16 +27,11 @@
     <!-- PWA Install Prompt -->
     <PwaInstallPrompt />
     
-    <!-- Toast Notifications -->
-    <ClientOnly>
-      <ToastContainer />
-    </ClientOnly>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import ToastContainer from '~/components/ui/ToastContainer.vue'
 
 // Offline detection
 const isOnline = ref(true)

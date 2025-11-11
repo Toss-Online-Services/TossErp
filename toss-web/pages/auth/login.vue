@@ -1,146 +1,120 @@
-<template>
-  <div class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 px-4">
-    <div class="max-w-md w-full space-y-8">
-      <!-- Logo and Title -->
-      <div class="text-center">
-        <div class="flex justify-center mb-4">
-          <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <span class="text-3xl font-bold text-white">T</span>
-          </div>
-        </div>
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white">TOSS ERP</h2>
-        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Township Operations Support System</p>
-      </div>
-
-      <!-- Login Form -->
-      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-8">
-        <form @submit.prevent="handleLogin" class="space-y-6">
-          <div>
-            <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Email or Phone
-            </label>
-            <input
-              id="email"
-              v-model="form.email"
-              type="text"
-              required
-              class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-              placeholder="Enter your email or phone"
-            />
-          </div>
-
-          <div>
-            <label for="password" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Password
-            </label>
-            <input
-              id="password"
-              v-model="form.password"
-              type="password"
-              required
-              class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-              placeholder="Enter your password"
-            />
-          </div>
-
-          <div class="flex items-center justify-between">
-            <label class="flex items-center">
-              <input
-                v-model="form.remember"
-                type="checkbox"
-                class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
-              />
-              <span class="ml-2 text-sm text-slate-600 dark:text-slate-400">Remember me</span>
-            </label>
-            <a href="#" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-              Forgot password?
-            </a>
-          </div>
-
-          <button
-            type="submit"
-            :disabled="loading"
-            class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {{ loading ? 'Signing in...' : 'Sign in' }}
-          </button>
-        </form>
-
-        <!-- Demo Mode -->
-        <div class="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-          <button
-            @click="handleDemoLogin"
-            class="w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
-          >
-            🚀 Try Demo Mode
-          </button>
-          <p class="mt-2 text-xs text-center text-slate-500 dark:text-slate-400">
-            Skip login and explore the system
-          </p>
-        </div>
-      </div>
-
-      <!-- Sign Up Link -->
-      <p class="text-center text-sm text-slate-600 dark:text-slate-400">
-        Don't have an account?
-        <NuxtLink to="/register" class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
-          Sign up
-        </NuxtLink>
-      </p>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref } from 'vue'
+import { Button } from '~/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { Separator } from '~/components/ui/separator'
 
 definePageMeta({
-  layout: false,
-  middleware: []
+  layout: 'auth',
 })
 
-useHead({
-  title: 'Login - TOSS ERP',
-  meta: [
-    { name: 'description', content: 'Sign in to TOSS ERP' }
-  ]
-})
-
-const form = ref({
-  email: '',
-  password: '',
-  remember: false
-})
-
-const loading = ref(false)
-const { login } = useAuth()
+const email = ref('')
+const password = ref('')
+const isLoading = ref(false)
 
 const handleLogin = async () => {
-  loading.value = true
+  isLoading.value = true
   try {
-    await login(form.value.email, form.value.password, form.value.remember)
-    navigateTo('/')
+    // TODO: Implement login logic
+    await navigateTo('/dashboard')
   } catch (error) {
     console.error('Login failed:', error)
-    alert('Login failed. Please try again or use Demo Mode.')
   } finally {
-    loading.value = false
+    isLoading.value = false
   }
 }
 
-const handleDemoLogin = async () => {
-  loading.value = true
-  try {
-    // Auto-login with demo credentials
-    await login('demo@toss.co.za', 'demo123', false)
-    navigateTo('/')
-  } catch (error) {
-    // If login fails, just navigate anyway (for development)
-    console.log('Demo mode - bypassing auth')
-    navigateTo('/')
-  } finally {
-    loading.value = false
-  }
+const handleGithubLogin = () => {
+  // TODO: Implement GitHub OAuth
+  console.log('GitHub login')
 }
 </script>
 
+<template>
+  <div class="min-h-screen flex items-center justify-center p-4 bg-muted/50">
+    <Card class="w-full max-w-md">
+      <CardHeader class="space-y-1">
+        <div class="flex justify-center mb-4">
+          <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+            <span class="text-2xl font-bold text-primary-foreground">T</span>
+          </div>
+        </div>
+        <CardTitle class="text-2xl text-center">Welcome back</CardTitle>
+        <CardDescription class="text-center">
+          Enter your email to sign in to your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent class="space-y-4">
+        <div class="space-y-2">
+          <Label for="email">Email</Label>
+          <Input
+            id="email"
+            v-model="email"
+            type="email"
+            placeholder="name@example.com"
+            autocomplete="email"
+          />
+        </div>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <Label for="password">Password</Label>
+            <NuxtLink
+              to="/auth/forgot-password"
+              class="text-sm text-primary hover:underline"
+            >
+              Forgot password?
+            </NuxtLink>
+          </div>
+          <Input
+            id="password"
+            v-model="password"
+            type="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            @keyup.enter="handleLogin"
+          />
+        </div>
+
+        <Button
+          class="w-full"
+          :disabled="isLoading"
+          @click="handleLogin"
+        >
+          <span v-if="isLoading" class="flex items-center gap-2">
+            <Icon name="mdi:loading" class="animate-spin" />
+            Signing in...
+          </span>
+          <span v-else>Sign In</span>
+        </Button>
+
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <Separator />
+          </div>
+          <div class="relative flex justify-center text-xs uppercase">
+            <span class="bg-card px-2 text-muted-foreground">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        <Button
+          variant="outline"
+          class="w-full"
+          @click="handleGithubLogin"
+        >
+          <Icon name="mdi:github" class="mr-2 h-4 w-4" />
+          GitHub
+        </Button>
+
+        <div class="text-center text-sm text-muted-foreground">
+          Don't have an account?
+          <NuxtLink to="/auth/register" class="text-primary hover:underline font-medium">
+            Sign up
+          </NuxtLink>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+</template>
