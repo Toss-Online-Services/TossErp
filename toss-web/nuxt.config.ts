@@ -79,7 +79,7 @@ export default defineNuxtConfig({
       redirectOn: 'root'
     },
     lazy: true,
-    langDir: 'locales/'
+    langDir: './locales'
   },
   
   // Icon Module
