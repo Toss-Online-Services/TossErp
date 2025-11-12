@@ -3,7 +3,8 @@
   "compilerOptions": {
     "strict": true,
     "types": [
-      "@types/node"
+      "@types/node",
+      "./types/global.d.ts"
     ],
     "paths": {
       "~/*": ["./*"],

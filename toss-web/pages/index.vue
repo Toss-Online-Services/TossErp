@@ -1,115 +1,146 @@
 <script setup lang="ts">
-import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
+import {
+  ArchiveBoxIcon,
+  ArrowTrendingUpIcon,
+  ChartBarIcon,
+  CurrencyDollarIcon,
+  ShoppingCartIcon,
+  UsersIcon,
+} from '@heroicons/vue/24/outline'
 
-definePageMeta({
-  layout: 'landing',
+// @ts-ignore -- Nuxt auto-injects useHead
+useHead({
+  title: 'TOSS - Township Operations Support System',
+  meta: [
+    { name: 'description', content: 'Manage your township business operations efficiently' },
+  ],
 })
-
-const features = [
-  {
-    title: 'Point of Sale',
-    description: 'Fast and efficient POS system for quick sales processing',
-    icon: 'mdi:cash-register',
-  },
-  {
-    title: 'Inventory Management',
-    description: 'Track stock levels, manage products, and automate reordering',
-    icon: 'mdi:package-variant-closed',
-  },
-  {
-    title: 'CRM',
-    description: 'Manage customer relationships and track interactions',
-    icon: 'mdi:account-group',
-  },
-  {
-    title: 'Group Buying',
-    description: 'Join forces with other shops for better supplier prices',
-    icon: 'mdi:account-multiple',
-  },
-  {
-    title: 'Last-Mile Delivery',
-    description: 'Coordinate deliveries with local drivers',
-    icon: 'mdi:truck-delivery',
-  },
-  {
-    title: 'AI Assistant',
-    description: 'Get help with business decisions and automation',
-    icon: 'mdi:robot',
-  },
-]
 </script>
 
 <template>
-  <div class="min-h-screen bg-background">
-    <!-- Hero Section -->
-    <section class="container mx-auto px-4 py-20 text-center">
-      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-        Welcome to TOSS ERP
-      </h1>
-      <p class="mt-6 text-lg text-muted-foreground max-w-3xl mx-auto">
-        The complete ERP solution for township and rural SMMEs in South Africa.
-        Manage sales, inventory, customers, and grow your business with AI-powered tools.
-      </p>
-      <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-        <Button size="lg" as-child>
-          <NuxtLink to="/auth/register">
-            Get Started
-          </NuxtLink>
-        </Button>
-        <Button size="lg" variant="outline" as-child>
-          <NuxtLink to="/auth/login">
-            Sign In
-          </NuxtLink>
-        </Button>
-      </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="container mx-auto px-4 py-20">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold tracking-tight">
-          Everything You Need to Run Your Business
-        </h2>
-        <p class="mt-4 text-lg text-muted-foreground">
-          Powerful features designed for South African township businesses
-        </p>
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div class="mb-12 text-center">
+        <h1 class="mb-3 text-4xl font-bold text-slate-900 dark:text-white">TOSS</h1>
+        <p class="text-xl text-slate-600 dark:text-slate-400">Township Operations Support System</p>
       </div>
 
-      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card v-for="feature in features" :key="feature.title">
-          <CardHeader>
-            <div class="flex items-center gap-3">
-              <div class="p-2 bg-primary/10 rounded-lg">
-                <Icon :name="feature.icon" class="h-6 w-6 text-primary" />
-              </div>
-              <CardTitle>{{ feature.title }}</CardTitle>
+      <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Today's Sales</p>
+              <p class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">R 1,245</p>
+              <p class="mt-1 text-sm text-green-600">+15% from yesterday</p>
             </div>
-          </CardHeader>
-          <CardContent>
-            <CardDescription>{{ feature.description }}</CardDescription>
-          </CardContent>
-        </Card>
-      </div>
-    </section>
+            <div class="rounded-lg bg-green-100 p-3 dark:bg-green-900/30">
+              <CurrencyDollarIcon class="h-8 w-8 text-green-600 dark:text-green-400" />
+            </div>
+          </div>
+        </div>
 
-    <!-- CTA Section -->
-    <section class="container mx-auto px-4 py-20">
-      <Card class="bg-primary text-primary-foreground">
-        <CardHeader class="text-center">
-          <CardTitle class="text-3xl">Ready to Transform Your Business?</CardTitle>
-          <CardDescription class="text-primary-foreground/80 text-lg">
-            Join thousands of South African businesses using TOSS ERP
-          </CardDescription>
-        </CardHeader>
-        <CardContent class="flex justify-center">
-          <Button size="lg" variant="secondary" as-child>
-            <NuxtLink to="/auth/register">
-              Start Free Trial
-            </NuxtLink>
-          </Button>
-        </CardContent>
-      </Card>
-    </section>
+        <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Stock Items</p>
+              <p class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">156</p>
+              <p class="mt-1 text-sm text-orange-600">12 items low</p>
+            </div>
+            <div class="rounded-lg bg-blue-100 p-3 dark:bg-blue-900/30">
+              <ArchiveBoxIcon class="h-8 w-8 text-blue-600 dark:text-blue-400" />
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Pending Orders</p>
+              <p class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">3</p>
+              <p class="mt-1 text-sm text-yellow-600">1 arrives today</p>
+            </div>
+            <div class="rounded-lg bg-yellow-100 p-3 dark:bg-yellow-900/30">
+              <ShoppingCartIcon class="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600 dark:text-slate-400">This Month</p>
+              <p class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">R 28.5K</p>
+              <p class="mt-1 text-sm text-purple-600">Best month yet!</p>
+            </div>
+            <div class="rounded-lg bg-purple-100 p-3 dark:bg-purple-900/30">
+              <ArrowTrendingUpIcon class="h-8 w-8 text-purple-600 dark:text-purple-400" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <NuxtLink
+          to="/dashboard"
+          class="flex items-center space-x-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-blue-500 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:hover:border-blue-400"
+        >
+          <div class="rounded-lg bg-blue-100 p-3 dark:bg-blue-900/30">
+            <ChartBarIcon class="h-8 w-8 text-blue-600 dark:text-blue-400" />
+          </div>
+          <div>
+            <p class="text-lg font-bold text-slate-900 dark:text-white">Dashboard</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400">View metrics</p>
+          </div>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/buying/group-buying"
+          class="flex items-center space-x-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-green-500 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:hover:border-green-400"
+        >
+          <div class="rounded-lg bg-green-100 p-3 dark:bg-green-900/30">
+            <ShoppingCartIcon class="h-8 w-8 text-green-600 dark:text-green-400" />
+          </div>
+          <div>
+            <p class="text-lg font-bold text-slate-900 dark:text-white">Purchasing</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Order stock</p>
+          </div>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/stock"
+          class="flex items-center space-x-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-purple-500 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:hover:border-purple-400"
+        >
+          <div class="rounded-lg bg-purple-100 p-3 dark:bg-purple-900/30">
+            <ArchiveBoxIcon class="h-8 w-8 text-purple-600 dark:text-purple-400" />
+          </div>
+          <div>
+            <p class="text-lg font-bold text-slate-900 dark:text-white">Stock</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Manage inventory</p>
+          </div>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/crm/customers"
+          class="flex items-center space-x-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-yellow-500 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:hover:border-yellow-400"
+        >
+          <div class="rounded-lg bg-yellow-100 p-3 dark:bg-yellow-900/30">
+            <UsersIcon class="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
+          </div>
+          <div>
+            <p class="text-lg font-bold text-slate-900 dark:text-white">Group Buy</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Save together</p>
+          </div>
+        </NuxtLink>
+      </div>
+
+      <div class="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <Button size="lg" class="px-10" as-child>
+          <NuxtLink to="/auth/register">Get Started</NuxtLink>
+        </Button>
+        <Button size="lg" variant="outline" class="px-10" as-child>
+          <NuxtLink to="/auth/login">Sign In</NuxtLink>
+        </Button>
+      </div>
+    </div>
   </div>
 </template>

@@ -1,6 +1,4 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import tailwindcss from '@tailwindcss/vite'
-
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-08-24',
@@ -18,51 +16,17 @@ export default defineNuxtConfig({
     componentIslands: true
   },
   modules: [
-    // shadcn-vue
+    // Essential: shadcn-vue components
     'shadcn-nuxt',
     
-    // Core & Styling
+    // Essential: Styling
     '@nuxtjs/tailwindcss', 
     '@nuxtjs/color-mode', 
-    '@nuxt/fonts', 
-    '@nuxt/icon', 
-    '@nuxt/image', 
+    '@nuxt/icon',
     
-    // State Management
-    '@pinia/nuxt', 
-    '@vueuse/nuxt', 
-    
-    // PWA & Performance
-    '@vite-pwa/nuxt', 
-    '@nuxtjs/web-vitals', 
-    '@nuxtjs/partytown', 
-    
-    // Internationalization
-    '@nuxtjs/i18n', 
-    
-    // Forms & Validation
-    '@formkit/nuxt', 
-    '@vee-validate/nuxt', 
-    
-    // SEO & Analytics
-    '@nuxtjs/sitemap', 
-    '@nuxtjs/robots', 
-    'nuxt-schema-org', 
-    'nuxt-gtag', 
-    
-    // Content & Utilities
-    '@nuxt/content', 
-    'nuxt-lodash', 
-    
-    // Device Detection
-    '@nuxtjs/device', 
-    
-    // UI Components
-    'nuxt-swiper', 
-    
-    // Security & Monitoring
-    'nuxt-security', 
-    '@sentry/nuxt/module'
+    // Essential: State Management
+    '@pinia/nuxt',
+    '@nuxt/test-utils/module'
   ],
   
   // shadcn-nuxt configuration
@@ -80,197 +44,6 @@ export default defineNuxtConfig({
   
   // Module Configurations
   
-  // Internationalization (i18n)
-  i18n: {
-    locales: [
-      { code: 'en', name: 'English', file: 'en.json' },
-      { code: 'zu', name: 'isiZulu', file: 'zu.json' },
-      { code: 'xh', name: 'isiXhosa', file: 'xh.json' },
-      { code: 'af', name: 'Afrikaans', file: 'af.json' },
-      { code: 'st', name: 'Sesotho', file: 'st.json' }
-    ],
-    defaultLocale: 'en',
-    strategy: 'no_prefix',
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'i18n_redirected',
-      redirectOn: 'root'
-    },
-    lazy: true,
-    langDir: './locales'
-  },
-  
-  // Icon Module
-  icon: {
-    size: '24px',
-    class: 'icon',
-    aliases: {
-      'nuxt': 'logos:nuxt-icon',
-      'cart': 'mdi:cart',
-      'user': 'mdi:account',
-      'dashboard': 'mdi:view-dashboard',
-      'sales': 'mdi:cash-register',
-      'inventory': 'mdi:package-variant',
-      'analytics': 'mdi:chart-line',
-      'settings': 'mdi:cog'
-    }
-  },
-  
-  // Image Optimization
-  image: {
-    quality: 80,
-    format: ['webp', 'png', 'jpg'],
-    screens: {
-      xs: 320,
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280,
-      xxl: 1536
-    },
-    providers: {
-      local: {
-        provider: 'ipx',
-        options: {
-          modifiers: {
-            fit: 'cover',
-            format: 'webp'
-          }
-        }
-      }
-    }
-  },
-  
-  // Fonts
-  fonts: {
-    families: [
-      { name: 'Inter', provider: 'google', weights: [300, 400, 500, 600, 700] },
-      { name: 'Roboto', provider: 'google', weights: [300, 400, 500, 700] }
-    ],
-    defaults: {
-      weights: [400, 700],
-      styles: ['normal', 'italic'],
-      subsets: ['latin', 'latin-ext']
-    }
-  },
-  
-  // FormKit
-  formkit: {
-    autoImport: true,
-    configFile: './formkit.config.ts'
-  },
-  
-  // Device Detection
-  device: {
-    refreshOnResize: true
-  },
-  
-  // SEO - Sitemap
-  sitemap: {
-    hostname: process.env.NUXT_PUBLIC_SITE_URL || 'https://toss-erp.com',
-    gzip: true,
-    routes: async () => {
-      return [
-        '/',
-        '/dashboard',
-        '/sales',
-        '/inventory',
-        '/customers',
-        '/suppliers',
-        '/reports'
-      ]
-    }
-  },
-  
-  // Robots.txt
-  robots: {
-    UserAgent: '*',
-    Disallow: ['/api/', '/admin/', '/private/'],
-    Sitemap: process.env.NUXT_PUBLIC_SITE_URL ? `${process.env.NUXT_PUBLIC_SITE_URL}/sitemap.xml` : undefined
-  },
-  
-  // Schema.org for SEO
-  schemaOrg: {
-    host: process.env.NUXT_PUBLIC_SITE_URL || 'https://toss-erp.com',
-    identity: {
-      type: 'Organization',
-      name: 'TOSS ERP III',
-      url: process.env.NUXT_PUBLIC_SITE_URL || 'https://toss-erp.com',
-      logo: '/logo.png'
-    }
-  },
-  
-  // Google Analytics
-  gtag: {
-    id: process.env.NUXT_PUBLIC_GTAG_ID || '',
-    enabled: !!process.env.NUXT_PUBLIC_GTAG_ID
-  },
-  
-  // Web Vitals
-  webVitals: {
-    provider: 'log',
-    debug: false,
-    disabled: false
-  },
-  
-  // Security Headers
-  security: {
-    headers: {
-      crossOriginEmbedderPolicy: process.env.NODE_ENV === 'development' ? 'unsafe-none' : 'require-corp',
-      contentSecurityPolicy: {
-        'base-uri': ["'self'"],
-        'font-src': ["'self'", 'https:', 'data:'],
-        'form-action': ["'self'"],
-        'frame-ancestors': ["'self'"],
-        'img-src': ["'self'", 'data:', 'https:'],
-        'object-src': ["'none'"],
-        'script-src-attr': ["'none'"],
-        'style-src': ["'self'", 'https:', "'unsafe-inline'"],
-        'upgrade-insecure-requests': true
-      }
-    },
-    rateLimiter: {
-      tokensPerInterval: 150,
-      interval: 60000,
-      fireImmediately: false
-    }
-  },
-  
-  // Content Module
-  content: {
-    documentDriven: false,
-    highlight: {
-      theme: 'github-dark',
-      preload: ['json', 'js', 'ts', 'html', 'css', 'vue']
-    },
-    markdown: {
-      toc: {
-        depth: 3,
-        searchDepth: 3
-      }
-    }
-  },
-  
-  // Lodash
-  lodash: {
-    prefix: '_',
-    prefixSkip: false,
-    upperAfterPrefix: false
-  },
-  
-  // Swiper
-  swiper: {
-    modules: ['navigation', 'pagination', 'autoplay', 'effect-fade']
-  },
-  
-  // Sentry module configuration for automatic source map upload on production build
-  // Values are read from environment variables. Provide SENTRY_AUTH_TOKEN only in CI (never commit).
-  sentry: {
-    org: process.env.SENTRY_ORG || 'your-org-slug',
-    project: process.env.SENTRY_PROJECT || 'your-project-slug',
-    authToken: process.env.SENTRY_AUTH_TOKEN,
-    // Additional tuning could be added here (e.g. deploy, release) once backend release pipeline is in place.
-  },
   tailwindcss: {
     cssPath: '~/assets/css/main.css'
   },
@@ -318,18 +91,35 @@ export default defineNuxtConfig({
   },
   ssr: false,  // Disable SSR temporarily to fix router issues
   vite: {
-    plugins: [
-      tailwindcss(),
-    ],
+    resolve: {
+      alias: {
+        // Ensure proper path resolution on Windows - use posix paths
+        '#app': '/node_modules/nuxt/dist/app',
+        '#head': '/node_modules/nuxt/dist/head/runtime'
+      }
+    },
     server: {
       watch: {
         usePolling: false,
         useFsEvents: true
+      },
+      fs: {
+        strict: false,
+        allow: ['..']
       }
     },
     build: {
       rollupOptions: {
         output: {
+          // Sanitize chunk names to prevent Windows path issues
+          sanitizeFileName(name: string): string {
+            // Remove absolute paths and use only the filename
+            const match = name.match(/([^/\\]+)$/);
+            return (match && match[1]) || name;
+          },
+          entryFileNames: '_nuxt/entry.[hash].js',
+          chunkFileNames: '_nuxt/[name].[hash].js',
+          assetFileNames: '_nuxt/[name].[hash].[ext]',
           manualChunks: {
             'chart': ['chart.js', 'chartjs-adapter-date-fns'],
             'export': ['xlsx', 'jspdf', 'jspdf-autotable', 'html2canvas'],
@@ -337,11 +127,13 @@ export default defineNuxtConfig({
           }
         }
       },
-      chunkSizeWarningLimit: 1000
+      chunkSizeWarningLimit: 1000,
+      // Prevent absolute paths in output
+      modulePreload: false
     },
     optimizeDeps: {
       include: ['chart.js', 'xlsx', 'jspdf'],
-      force: false
+      exclude: []
     }
   },
   nitro: {
@@ -355,135 +147,6 @@ export default defineNuxtConfig({
         ws: true,
         secure: false  // Allow self-signed certificates in development
       }
-    }
-  },
-  pwa: {
-    registerType: 'autoUpdate',
-    manifest: {
-      name: 'TOSS ERP III - Township One-Stop Solution',
-      short_name: 'TOSS ERP',
-      description: 'AI-powered collaborative business platform for South African SMMEs',
-      theme_color: '#1d4ed8',
-      background_color: '#0f172a',
-      display: 'standalone',
-      orientation: 'portrait',
-      scope: '/',
-      start_url: '/',
-      icons: [
-        {
-          src: '/icons/icon-72x72.png',
-          sizes: '72x72',
-          type: 'image/png',
-          purpose: 'any maskable'
-        },
-        {
-          src: '/icons/icon-96x96.png',
-          sizes: '96x96',
-          type: 'image/png',
-          purpose: 'any maskable'
-        },
-        {
-          src: '/icons/icon-128x128.png',
-          sizes: '128x128',
-          type: 'image/png',
-          purpose: 'any maskable'
-        },
-        {
-          src: '/icons/icon-144x144.png',
-          sizes: '144x144',
-          type: 'image/png',
-          purpose: 'any maskable'
-        },
-        {
-          src: '/icons/icon-152x152.png',
-          sizes: '152x152',
-          type: 'image/png',
-          purpose: 'any maskable'
-        },
-        {
-          src: '/icons/icon-192x192.png',
-          sizes: '192x192',
-          type: 'image/png',
-          purpose: 'any maskable'
-        },
-        {
-          src: '/icons/icon-384x384.png',
-          sizes: '384x384',
-          type: 'image/png',
-          purpose: 'any maskable'
-        },
-        {
-          src: '/icons/icon-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
-          purpose: 'any maskable'
-        }
-      ]
-    },
-    workbox: {
-      navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
-      runtimeCaching: [
-        {
-          urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'google-fonts-cache',
-            expiration: {
-              maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-            },
-            cacheableResponse: {
-              statuses: [0, 200]
-            }
-          }
-        },
-        {
-          urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'gstatic-fonts-cache',
-            expiration: {
-              maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-            },
-            cacheableResponse: {
-              statuses: [0, 200]
-            }
-          }
-        },
-        {
-          urlPattern: /^https:\/\/.*\.(?:png|jpg|jpeg|svg|gif)$/,
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'image-cache',
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-            }
-          }
-        },
-        {
-          urlPattern: /\/api\/.*/i,
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'api-cache',
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 60 * 5 // 5 minutes
-            },
-            networkTimeoutSeconds: 10
-          }
-        }
-      ]
-    },
-    client: {
-      installPrompt: true,
-      periodicSyncForUpdates: 20
-    },
-    devOptions: {
-      enabled: false,  // Disabled in dev to prevent crashes on Windows
-      type: 'module'
     }
   }
 })

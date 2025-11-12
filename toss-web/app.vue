@@ -1,57 +1,19 @@
 <template>
   <div>
-    <!-- Demo Mode Banner deploy-->
-    <DemoModeBanner />
-    
-      <!-- Offline Indicator - Improved -->
-      <div v-if="!isOnline" class="fixed right-0 left-0 top-12 z-40 bg-orange-500 border-b-2 border-orange-600 shadow-lg">
-        <div class="px-4 py-4 sm:py-3">
-          <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 text-white">
-            <div class="flex items-center gap-2">
-              <svg class="w-6 h-6 sm:w-5 sm:h-5 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 715.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
-              </svg>
-              <span class="font-bold text-base sm:text-sm">{{ $t('offline.title') }}</span>
-            </div>
-            <div class="text-center sm:text-left">
-              <p class="text-sm font-medium">{{ $t('offline.message') }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-    
-    <!-- PWA Install Prompt -->
-    <PwaInstallPrompt />
-    
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-
-// Offline detection
-const isOnline = ref(true)
+import { onMounted } from 'vue'
 
 onMounted(() => {
-  // Force light mode and clear any stored preferences
+  // Force light mode
   document.documentElement.classList.remove('dark')
   document.documentElement.classList.add('light')
   localStorage.setItem('nuxt-color-mode', 'light')
-  
-  // Offline detection
-  isOnline.value = navigator.onLine
-  
-  window.addEventListener('online', () => {
-    isOnline.value = true
-  })
-  
-  window.addEventListener('offline', () => {
-    isOnline.value = false
-  })
 })
 </script>
 

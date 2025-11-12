@@ -1,120 +1,146 @@
 <script setup lang="ts">
-import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
-import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
-import { Separator } from '~/components/ui/separator'
+import { ref } from 'vue'
 
-definePageMeta({
-  layout: 'auth',
+const form = ref({
+  email: '',
+  password: '',
+  remember: false,
 })
 
-const email = ref('')
-const password = ref('')
-const isLoading = ref(false)
+const loading = ref(false)
+// @ts-ignore -- Nuxt auto-injects useAuth composable
+const { login } = useAuth()
+
+// @ts-ignore -- Nuxt auto-injects definePageMeta in setup
+definePageMeta({
+  layout: false,
+  middleware: [],
+})
+
+// @ts-ignore -- Nuxt auto-injects useHead composable
+useHead({
+  title: 'Login - TOSS ERP',
+  meta: [{ name: 'description', content: 'Sign in to TOSS ERP' }],
+})
 
 const handleLogin = async () => {
-  isLoading.value = true
+  loading.value = true
   try {
-    // TODO: Implement login logic
-    await navigateTo('/dashboard')
+    await login({
+      email: form.value.email,
+      password: form.value.password,
+      rememberMe: form.value.remember,
+    })
+  // @ts-ignore -- Nuxt auto-injects navigateTo helper
+  await navigateTo('/dashboard')
   } catch (error) {
     console.error('Login failed:', error)
+    alert('Login failed. Please try again or use Demo Mode.')
   } finally {
-    isLoading.value = false
+    loading.value = false
   }
 }
 
-const handleGithubLogin = () => {
-  // TODO: Implement GitHub OAuth
-  console.log('GitHub login')
+const handleDemoLogin = async () => {
+  loading.value = true
+  try {
+  await login({ email: 'demo@toss.co.za', password: 'demo123', rememberMe: false })
+    // @ts-ignore -- Nuxt auto-injects navigateTo helper
+    await navigateTo('/dashboard')
+  } catch (error) {
+    console.log('Demo mode - bypassing auth')
+    // @ts-ignore -- Nuxt auto-injects navigateTo helper
+    await navigateTo('/dashboard')
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center p-4 bg-muted/50">
-    <Card class="w-full max-w-md">
-      <CardHeader class="space-y-1">
-        <div class="flex justify-center mb-4">
-          <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-            <span class="text-2xl font-bold text-primary-foreground">T</span>
+  <div class="flex min-h-screen items-center justify-center bg-slate-50 px-4 dark:bg-slate-900">
+    <div class="w-full max-w-md space-y-8">
+      <div class="text-center">
+        <div class="mb-4 flex justify-center">
+          <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-purple-600">
+            <span class="text-3xl font-bold text-white">T</span>
           </div>
         </div>
-        <CardTitle class="text-2xl text-center">Welcome back</CardTitle>
-        <CardDescription class="text-center">
-          Enter your email to sign in to your account
-        </CardDescription>
-      </CardHeader>
-      <CardContent class="space-y-4">
-        <div class="space-y-2">
-          <Label for="email">Email</Label>
-          <Input
-            id="email"
-            v-model="email"
-            type="email"
-            placeholder="name@example.com"
-            autocomplete="email"
-          />
-        </div>
-        <div class="space-y-2">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white">TOSS ERP</h2>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Township Operations Support System</p>
+      </div>
+
+      <div class="rounded-lg border border-slate-200 bg-white p-8 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+        <form class="space-y-6" @submit.prevent="handleLogin">
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300" for="email">
+              Email or Phone
+            </label>
+            <input
+              id="email"
+              v-model="form.email"
+              type="text"
+              required
+              class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+              placeholder="Enter your email or phone"
+            />
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300" for="password">
+              Password
+            </label>
+            <input
+              id="password"
+              v-model="form.password"
+              type="password"
+              required
+              class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+              placeholder="Enter your password"
+            />
+          </div>
+
           <div class="flex items-center justify-between">
-            <Label for="password">Password</Label>
+            <label class="flex items-center text-sm text-slate-600 dark:text-slate-400">
+              <input
+                v-model="form.remember"
+                type="checkbox"
+                class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span class="ml-2">Remember me</span>
+            </label>
             <NuxtLink
               to="/auth/forgot-password"
-              class="text-sm text-primary hover:underline"
+              class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >
               Forgot password?
             </NuxtLink>
           </div>
-          <Input
-            id="password"
-            v-model="password"
-            type="password"
-            placeholder="Enter your password"
-            autocomplete="current-password"
-            @keyup.enter="handleLogin"
-          />
-        </div>
 
-        <Button
-          class="w-full"
-          :disabled="isLoading"
-          @click="handleLogin"
+          <Button type="submit" class="w-full py-6 text-base" :disabled="loading">
+            {{ loading ? 'Signing in...' : 'Sign in' }}
+          </Button>
+        </form>
+
+        <div class="mt-6 border-t border-slate-200 pt-6 dark:border-slate-700">
+          <Button class="w-full py-6 text-base" variant="secondary" @click="handleDemoLogin">
+            🚀 Try Demo Mode
+          </Button>
+          <p class="mt-2 text-center text-xs text-slate-500 dark:text-slate-400">
+            Skip login and explore the system
+          </p>
+        </div>
+      </div>
+
+      <p class="text-center text-sm text-slate-600 dark:text-slate-400">
+        Don't have an account?
+        <NuxtLink
+          to="/auth/register"
+          class="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
         >
-          <span v-if="isLoading" class="flex items-center gap-2">
-            <Icon name="mdi:loading" class="animate-spin" />
-            Signing in...
-          </span>
-          <span v-else>Sign In</span>
-        </Button>
-
-        <div class="relative">
-          <div class="absolute inset-0 flex items-center">
-            <Separator />
-          </div>
-          <div class="relative flex justify-center text-xs uppercase">
-            <span class="bg-card px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        <Button
-          variant="outline"
-          class="w-full"
-          @click="handleGithubLogin"
-        >
-          <Icon name="mdi:github" class="mr-2 h-4 w-4" />
-          GitHub
-        </Button>
-
-        <div class="text-center text-sm text-muted-foreground">
-          Don't have an account?
-          <NuxtLink to="/auth/register" class="text-primary hover:underline font-medium">
-            Sign up
-          </NuxtLink>
-        </div>
-      </CardContent>
-    </Card>
+          Sign up
+        </NuxtLink>
+      </p>
+    </div>
   </div>
 </template>

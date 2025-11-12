@@ -1,0 +1,177 @@
+---
+description: Nuxt 4 best practices and patterns for modern full-stack Vue.js applications
+globs: **/*.vue, **/*.ts, **/*.js, nuxt.config.ts, app.vue, components/**/*, pages/**/*, layouts/**/*, composables/**/*, server/**/*, middleware/**/*
+alwaysApply: true
+---
+
+# Nuxt 4 Best Practices (Latest Features)
+
+## UI Component Library
+**IMPORTANT**: This project uses **shadcn-vue** for all UI components.
+- See `.cursor/rules/shadcn-vue.mdc` for detailed component usage
+- **ALWAYS** use shadcn-vue components instead of custom UI components
+- Use `Button`, `Card`, `Input`, `Label`, etc. from `~/components/ui/`
+- Follow shadcn-vue patterns for consistent, accessible UI
+
+## Latest Nuxt 4 Features
+- **App Router**: Modern file-based routing with app/ directory
+- **Vue 3.5+**: Latest Vue.js features and Composition API
+- **Vite 5**: Ultra-fast build tool and development server
+- **Nitro 3**: Powerful server engine with edge runtime support
+- **Nuxt DevTools**: Built-in development tools and debugging
+- **Auto-imports**: Automatic component and composable imports
+- **TypeScript**: Full TypeScript support with type inference
+- **PWA Support**: Built-in Progressive Web App capabilities
+
+## Project Structure
+- Use the new Nuxt 4 directory structure with `app/` as the main entry point
+- Place components in `components/` directory with auto-imports
+- Use `pages/` for file-based routing (or `app/` for app router)
+- Place layouts in `layouts/` directory
+- Store composables in `composables/` directory
+- Use `server/` directory for API routes and server-side logic
+- Place middleware in `middleware/` directory
+- Use `utils/` for utility functions
+- Store types in `types/` directory
+
+## App Router (Nuxt 4)
+- Use `app/` directory for app router structure
+- Implement proper route groups with `(group)` syntax
+- Use `[id].vue` for dynamic routes
+- Implement proper loading states with `loading.vue`
+- Use `error.vue` for error boundaries
+- Implement proper layouts with `layout.vue`
+- **Route Middleware**: Use `middleware/` directory for route guards
+- **API Routes**: Use `server/api/` for backend API endpoints
+- **Server Middleware**: Use `server/middleware/` for server-side logic
+- **Edge Runtime**: Support for edge computing with Nitro 3
+
+## Components
+- Use auto-imports for components (no manual imports needed)
+- Follow Vue 3 Composition API best practices
+- Use `<script setup>` syntax for all components
+- Implement proper TypeScript integration
+- Use proper prop validation with defineProps
+- Implement proper emit declarations with defineEmits
+- Keep components small and focused (single responsibility)
+
+## Composition API & Composables
+- Use `ref()` for primitive values
+- Use `reactive()` for objects
+- Create reusable composables in `composables/` directory
+- Use `useState()` for shared state across components
+- Implement proper lifecycle hooks (onMounted, onUnmounted)
+- Use `computed()` for derived state
+- Implement proper watchers with `watch()` and `watchEffect()`
+
+## State Management
+- Use Nuxt's built-in state management with `useState()`
+- Use Pinia for complex state management
+- Keep stores modular and focused
+- Implement proper state composition
+- Use proper actions and getters
+- Handle async state properly with loading states
+
+## Server-Side Features
+- Use `server/api/` for API routes
+- Implement proper server middleware
+- Use `server/utils/` for server-side utilities
+- Handle authentication properly on server side
+- Use proper error handling and validation
+- Implement proper CORS and security headers
+
+## Data Fetching
+- Use `useFetch()` for client-side data fetching
+- Use `$fetch()` for programmatic API calls
+- Use `useLazyFetch()` for lazy loading
+- Implement proper error handling
+- Use proper loading states
+- Implement proper caching strategies
+
+## Routing & Navigation
+- Use file-based routing with `pages/` or `app/`
+- Implement proper navigation guards
+- Use `useRouter()` and `useRoute()` composables
+- Handle route params properly
+- Implement proper lazy loading
+- Use proper navigation methods
+
+## Middleware
+- Place middleware in `middleware/` directory
+- Use route middleware for specific routes
+- Implement proper authentication middleware
+- Handle errors properly in middleware
+- Use proper async/await patterns
+- Implement proper redirects
+
+## Styling & UI
+- Use Tailwind CSS with proper configuration
+- Implement proper responsive design
+- Use CSS modules or scoped styles
+- Implement proper dark mode support
+- Use proper CSS custom properties
+- Implement proper accessibility features
+
+## Performance Optimization (Nuxt 4)
+- Use proper component lazy loading with `defineAsyncComponent`
+- Implement proper image optimization with `@nuxt/image`
+- Use proper code splitting and route-based splitting
+- Implement proper caching strategies with `useState` and `useLazyFetch`
+- Use proper bundle analysis with Nuxt DevTools
+- Monitor Core Web Vitals and performance metrics
+- **Edge Runtime**: Leverage Nitro 3 edge runtime for global performance
+- **Service Worker**: Built-in PWA support with offline capabilities
+- **Tree Shaking**: Remove unused code automatically
+- **Hot Module Replacement**: Fast development with Vite 5
+
+## TypeScript Integration
+- Use proper type definitions
+- Implement proper prop types
+- Use proper emit declarations
+- Handle proper type inference
+- Use proper composable types
+- Implement proper store types
+
+## Testing
+- Write proper unit tests with Vitest
+- Implement proper component tests
+- Use proper mocking strategies
+- Test composables properly
+- Implement proper E2E tests
+- Use proper test coverage
+
+## Security
+- Implement proper authentication
+- Use proper authorization patterns
+- Handle sensitive data properly
+- Implement proper CORS policies
+- Use proper HTTPS in production
+- Implement proper input validation
+
+## Build & Deployment
+- Use proper environment variables
+- Configure proper build optimization
+- Implement proper asset handling
+- Use proper deployment strategies
+- Monitor build performance
+- Implement proper CI/CD
+
+## Best Practices
+- Follow Vue 3 and Nuxt 4 style guides
+- Use proper naming conventions
+- Keep code organized and modular
+- Implement proper error handling
+- Use proper logging and monitoring
+- Document complex logic and APIs
+
+## Migration from Nuxt 3
+- Update to Nuxt 4 syntax and patterns
+- Use new app router when appropriate
+- Update deprecated APIs and methods
+- Implement new performance features
+- Use new TypeScript improvements
+- Follow latest security best practices
+description: Nuxt 4 best practices and patterns for modern full-stack Vue.js applications
+globs: **/*.vue, **/*.ts, **/*.js, nuxt.config.ts, app.vue, components/**/*, pages/**/*, layouts/**/*, composables/**/*, server/**/*, middleware/**/*
+alwaysApply: true
+---

@@ -25,6 +25,12 @@ global.useRuntimeConfig = vi.fn(() => ({
     apiBase: 'https://localhost:5001'
   }
 }))
+global.useApi = vi.fn(() => ({
+  get: vi.fn().mockResolvedValue({ data: {}, error: null }),
+  post: vi.fn().mockResolvedValue({ data: {}, error: null }),
+  put: vi.fn().mockResolvedValue({ data: {}, error: null }),
+  delete: vi.fn().mockResolvedValue({ data: {}, error: null })
+}))
 
 // Mock Nuxt composables as modules too
 vi.mock('#app', () => ({

@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "apply backendUrl base fix",
+			"type": "shell",
+			"command": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"(Get-Content 'toss-web/server/api/auth/register.post.ts') -replace \"\\|\\| 'http://localhost:5000'\",\"\" | Set-Content 'toss-web/server/api/auth/register.post.ts'; (Get-Content 'toss-web/server/api/auth/register-driver.post.ts') -replace \"\\|\\| 'http://localhost:5000'\",\"\" | Set-Content 'toss-web/server/api/auth/register-driver.post.ts'; (Get-Content 'toss-web/server/api/auth/register-vendor.post.ts') -replace \"\\|\\| 'http://localhost:5000'\",\"\" | Set-Content 'toss-web/server/api/auth/register-vendor.post.ts'\"",
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "none"
+		}
+	]
+}

@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
-import { Input } from '~/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table'
-import { Badge } from '~/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import { computed, ref } from 'vue'
 
+// @ts-ignore -- Nuxt auto-injects definePageMeta
 definePageMeta({
+ 
   middleware: 'auth',
 })
 
@@ -19,6 +16,19 @@ const customers = [
   { id: 4, name: 'Lerato Khumalo', email: 'lerato@email.com', phone: '+27 84 567 8901', totalSpent: 3200.75, visits: 15, status: 'vip' },
   { id: 5, name: 'Bongani Mthembu', email: 'bongani@email.com', phone: '+27 76 678 9012', totalSpent: 450.00, visits: 2, status: 'new' },
 ]
+
+const filteredCustomers = computed(() => {
+  if (!searchQuery.value) {
+    return customers
+  }
+
+  const query = searchQuery.value.toLowerCase()
+  return customers.filter(customer =>
+    customer.name.toLowerCase().includes(query) ||
+    customer.email.toLowerCase().includes(query) ||
+    customer.phone.toLowerCase().includes(query),
+  )
+})
 
 const getStatusVariant = (status: string) => {
   switch (status) {
@@ -131,7 +141,7 @@ const getInitials = (name: string) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="customer in customers" :key="customer.id">
+            <TableRow v-for="customer in filteredCustomers" :key="customer.id">
               <TableCell>
                 <div class="flex items-center gap-3">
                   <Avatar>
