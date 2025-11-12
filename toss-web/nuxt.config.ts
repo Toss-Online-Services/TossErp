@@ -25,7 +25,8 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     
     // Essential: State Management
-    '@pinia/nuxt'
+    '@pinia/nuxt',
+    '@nuxt/test-utils/module'
   ],
   
   // shadcn-nuxt configuration

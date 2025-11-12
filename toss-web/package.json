@@ -20,6 +20,7 @@
     "format:check": "prettier -c ."
   },
   "dependencies": {
+    "@formkit/core": "^1.6.9",
     "@formkit/themes": "^1.6.9",
     "@formkit/vue": "^1.6.9",
     "@headlessui/vue": "^1.7.23",
