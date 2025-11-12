@@ -15,7 +15,7 @@ import {
 
 // @ts-ignore -- Nuxt auto-injects definePageMeta in setup
 definePageMeta({
-  layout: 'dashboard',
+ 
   middleware: 'auth',
 })
 
@@ -114,13 +114,13 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
-    <div class="sticky top-0 z-10 border-b border-slate-200/50 bg-white/80 backdrop-blur-xl shadow-sm dark:border-slate-700/50 dark:bg-slate-800/80">
-      <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
+    <div class="sticky top-0 z-10 border-b shadow-sm border-slate-200/50 bg-white/80 backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-800/80">
+      <div class="flex items-center justify-between px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div>
-          <h1 class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-3xl font-bold text-transparent">
+          <h1 class="text-3xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
             Business Analytics
           </h1>
-          <p class="mt-1 flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
+          <p class="flex items-center mt-1 space-x-2 text-sm text-slate-600 dark:text-slate-400">
             <span>{{ formatDate(new Date()) }}</span>
             <span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
               <span class="mr-1.5 h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
@@ -131,7 +131,7 @@ onBeforeUnmount(() => {
         <div class="flex items-center space-x-3">
           <Button
             variant="outline"
-            class="rounded-xl border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50 hover:shadow-md dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+            class="px-4 py-2 text-sm font-medium transition-all bg-white rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 hover:shadow-md dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
             @click="refreshData"
           >
             <ArrowPathIcon :class="['mr-2 h-4 w-4', loading ? 'animate-spin' : '']" />
@@ -141,9 +141,9 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div v-if="loading" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <div v-for="index in 4" :key="index" class="h-32 animate-pulse rounded-2xl bg-white shadow-lg dark:bg-slate-800" />
+        <div v-for="index in 4" :key="index" class="h-32 bg-white shadow-lg animate-pulse rounded-2xl dark:bg-slate-800" />
       </div>
 
       <div v-else class="space-y-6">
@@ -190,8 +190,8 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div class="lg:col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-lg transition-shadow duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-800">
-            <div class="mb-6 flex items-center justify-between">
+          <div class="p-6 transition-shadow duration-300 bg-white border shadow-lg lg:col-span-2 rounded-2xl border-slate-200 hover:shadow-xl dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center justify-between mb-6">
               <div>
                 <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Daily Sales</h3>
                 <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
@@ -200,7 +200,7 @@ onBeforeUnmount(() => {
                 </p>
               </div>
               <div class="flex items-center space-x-2 text-xs text-slate-500">
-                <ClockIcon class="h-4 w-4" />
+                <ClockIcon class="w-4 h-4" />
                 <span>Updated {{ minutesAgo }} min ago</span>
               </div>
             </div>
@@ -215,36 +215,36 @@ onBeforeUnmount(() => {
             </ClientOnly>
           </div>
 
-          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg transition-shadow duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-800">
+          <div class="p-6 transition-shadow duration-300 bg-white border shadow-lg rounded-2xl border-slate-200 hover:shadow-xl dark:border-slate-700 dark:bg-slate-800">
             <h3 class="mb-6 text-lg font-semibold text-slate-900 dark:text-white">Quick Stats</h3>
             <div class="space-y-4">
-              <div class="flex items-center justify-between rounded-xl border border-blue-200/50 bg-gradient-to-r from-blue-50 to-blue-100/50 p-4 dark:border-blue-800/50 dark:from-blue-900/20 dark:to-blue-900/10">
+              <div class="flex items-center justify-between p-4 border rounded-xl border-blue-200/50 bg-gradient-to-r from-blue-50 to-blue-100/50 dark:border-blue-800/50 dark:from-blue-900/20 dark:to-blue-900/10">
                 <div>
                   <p class="text-sm text-slate-600 dark:text-slate-400">Stock Value</p>
                   <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(metrics.stockValue) }}</p>
                 </div>
-                <div class="rounded-lg bg-blue-500 p-3">
-                  <CubeIcon class="h-6 w-6 text-white" />
+                <div class="p-3 bg-blue-500 rounded-lg">
+                  <CubeIcon class="w-6 h-6 text-white" />
                 </div>
               </div>
 
-              <div class="flex items-center justify-between rounded-xl border border-purple-200/50 bg-gradient-to-r from-purple-50 to-purple-100/50 p-4 dark:border-purple-800/50 dark:from-purple-900/20 dark:to-purple-900/10">
+              <div class="flex items-center justify-between p-4 border rounded-xl border-purple-200/50 bg-gradient-to-r from-purple-50 to-purple-100/50 dark:border-purple-800/50 dark:from-purple-900/20 dark:to-purple-900/10">
                 <div>
                   <p class="text-sm text-slate-600 dark:text-slate-400">Active Pools</p>
                   <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ metrics.activePoolsCount }}</p>
                 </div>
-                <div class="rounded-lg bg-purple-500 p-3">
-                  <UsersIcon class="h-6 w-6 text-white" />
+                <div class="p-3 bg-purple-500 rounded-lg">
+                  <UsersIcon class="w-6 h-6 text-white" />
                 </div>
               </div>
 
-              <div class="flex items-center justify-between rounded-xl border border-orange-200/50 bg-gradient-to-r from-orange-50 to-orange-100/50 p-4 dark:border-orange-800/50 dark:from-orange-900/20 dark:to-orange-900/10">
+              <div class="flex items-center justify-between p-4 border rounded-xl border-orange-200/50 bg-gradient-to-r from-orange-50 to-orange-100/50 dark:border-orange-800/50 dark:from-orange-900/20 dark:to-orange-900/10">
                 <div>
                   <p class="text-sm text-slate-600 dark:text-slate-400">Deliveries</p>
                   <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ metrics.totalDeliveries }}</p>
                 </div>
-                <div class="rounded-lg bg-orange-500 p-3">
-                  <TruckIcon class="h-6 w-6 text-white" />
+                <div class="p-3 bg-orange-500 rounded-lg">
+                  <TruckIcon class="w-6 h-6 text-white" />
                 </div>
               </div>
             </div>
@@ -252,8 +252,8 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg transition-shadow duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-800">
-            <div class="mb-6 flex items-center justify-between">
+          <div class="p-6 transition-shadow duration-300 bg-white border shadow-lg rounded-2xl border-slate-200 hover:shadow-xl dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Sales by Category</h3>
               <Button variant="link" class="text-sm text-blue-600 dark:text-blue-400">View All</Button>
             </div>
@@ -268,10 +268,10 @@ onBeforeUnmount(() => {
             </ClientOnly>
           </div>
 
-          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg transition-shadow duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-800">
-            <div class="mb-6 flex items-center justify-between">
+          <div class="p-6 transition-shadow duration-300 bg-white border shadow-lg rounded-2xl border-slate-200 hover:shadow-xl dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Low Stock Items</h3>
-              <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800 dark:bg-red-900/30 dark:text-red-400">
+              <span class="inline-flex items-center px-3 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full dark:bg-red-900/30 dark:text-red-400">
                 {{ lowStockItems.length }} items
               </span>
             </div>
@@ -279,11 +279,11 @@ onBeforeUnmount(() => {
               <div
                 v-for="item in lowStockItems.slice(0, 5)"
                 :key="item.id"
-                class="flex cursor-pointer items-center justify-between rounded-xl bg-slate-50 p-4 transition-colors hover:bg-slate-100 dark:bg-slate-700/50 dark:hover:bg-slate-700"
+                class="flex items-center justify-between p-4 transition-colors cursor-pointer rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-700/50 dark:hover:bg-slate-700"
               >
                 <div class="flex items-center space-x-3">
-                  <div class="rounded-lg bg-orange-100 p-2 dark:bg-orange-900/30">
-                    <ExclamationTriangleIcon class="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                  <div class="p-2 bg-orange-100 rounded-lg dark:bg-orange-900/30">
+                    <ExclamationTriangleIcon class="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   </div>
                   <div>
                     <p class="font-medium text-slate-900 dark:text-white">{{ item.name }}</p>
@@ -293,20 +293,20 @@ onBeforeUnmount(() => {
                 <Button variant="link" class="text-sm text-blue-600 dark:text-blue-400">Reorder</Button>
               </div>
             </div>
-            <NuxtLink to="/stock" class="mt-4 block text-center text-sm text-blue-600 hover:underline dark:text-blue-400">
+            <NuxtLink to="/stock" class="block mt-4 text-sm text-center text-blue-600 hover:underline dark:text-blue-400">
               View all items →
             </NuxtLink>
           </div>
         </div>
 
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-8 text-white shadow-2xl">
-          <div class="absolute right-0 top-0 h-64 w-64 -translate-y-1/3 translate-x-1/3 rounded-full bg-white/10" />
-          <div class="absolute bottom-0 left-0 h-48 w-48 -translate-x-1/3 translate-y-1/3 rounded-full bg-black/10" />
+        <div class="relative p-8 overflow-hidden text-white shadow-2xl rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+          <div class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/3 translate-x-1/3 bg-white/10" />
+          <div class="absolute bottom-0 left-0 w-48 h-48 rounded-full -translate-x-1/3 translate-y-1/3 bg-black/10" />
           <div class="relative z-10">
             <div class="flex items-start justify-between">
-              <div class="mb-4 flex items-center space-x-3">
-                <div class="rounded-xl bg-white/20 p-3 backdrop-blur-sm">
-                  <SparklesIcon class="h-6 w-6 text-white" />
+              <div class="flex items-center mb-4 space-x-3">
+                <div class="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
+                  <SparklesIcon class="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h3 class="text-xl font-bold">AI Copilot Insights</h3>
@@ -314,18 +314,18 @@ onBeforeUnmount(() => {
                 </div>
               </div>
             </div>
-            <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-              <div class="rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
+            <div class="grid grid-cols-1 gap-4 mt-6 md:grid-cols-3">
+              <div class="p-4 border rounded-xl border-white/20 bg-white/10 backdrop-blur-sm">
                 <p class="mb-2 text-sm text-white/80">Cost Savings Opportunity</p>
                 <p class="text-2xl font-bold">R{{ formatNumber(aiInsights.potentialSavings) }}</p>
                 <p class="mt-2 text-xs text-white/70">Join 3 active group buying pools</p>
               </div>
-              <div class="rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
+              <div class="p-4 border rounded-xl border-white/20 bg-white/10 backdrop-blur-sm">
                 <p class="mb-2 text-sm text-white/80">Reorder Suggestion</p>
                 <p class="text-2xl font-bold">{{ aiInsights.itemsToReorder }} items</p>
                 <p class="mt-2 text-xs text-white/70">Will run out in 3-5 days</p>
               </div>
-              <div class="rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
+              <div class="p-4 border rounded-xl border-white/20 bg-white/10 backdrop-blur-sm">
                 <p class="mb-2 text-sm text-white/80">Delivery Optimization</p>
                 <p class="text-2xl font-bold">{{ aiInsights.deliveryOptimization }}%</p>
                 <p class="mt-2 text-xs text-white/70">Share next delivery with 2 neighbors</p>

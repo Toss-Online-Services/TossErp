@@ -16,7 +16,6 @@ const overviewSection: NavSection = {
   title: 'Overview',
   items: [
     { label: 'Dashboard', to: '/dashboard', icon: 'mdi:view-dashboard-outline', exact: true },
-    { label: 'AI Copilot', to: '/automation', icon: 'mdi:robot-excited-outline' },
   ],
 }
 
@@ -27,7 +26,7 @@ const salesSection: NavSection = {
       label: 'Sales Workspace',
       icon: 'mdi:shopping-outline',
       children: [
-        { label: 'Sales Overview', to: '/sales', icon: 'mdi:chart-line-variant' },
+        { label: 'Sales Analytics', to: '/sales/analytics', icon: 'mdi:chart-line-variant' },
         { label: 'Orders', to: '/sales/orders', icon: 'mdi:clipboard-text-outline' },
         { label: 'Point of Sale', to: '/sales/pos', icon: 'mdi:cash-register' },
         { label: 'Invoices', to: '/sales/invoices', icon: 'mdi:file-invoice-outline' },
@@ -37,7 +36,8 @@ const salesSection: NavSection = {
       label: 'Customer Operations',
       icon: 'mdi:account-group-outline',
       children: [
-        { label: 'CRM Dashboard', to: '/crm', icon: 'mdi:view-dashboard-outline' },
+        { label: 'Leads', to: '/crm/leads', icon: 'mdi:account-search-outline' },
+        { label: 'Campaigns', to: '/crm/campaigns', icon: 'mdi:megaphone-outline' },
         { label: 'Customers', to: '/crm/customers', icon: 'mdi:account-multiple-outline' },
       ],
     },
@@ -48,26 +48,27 @@ const procurementSection: NavSection = {
   title: 'Procurement',
   items: [
     {
-      label: 'Buying Workspace',
+      label: 'Purchasing Workspace',
       icon: 'mdi:cart-arrow-down',
       children: [
-        { label: 'Buying Overview', to: '/buying', icon: 'mdi:view-dashboard-outline' },
+        { label: 'Suppliers', to: '/purchasing/suppliers', icon: 'mdi:truck-delivery-outline' },
+        { label: 'Receiving', to: '/purchasing/receiving', icon: 'mdi:package-variant-closed' },
         { label: 'Purchase Orders', to: '/buying/orders', icon: 'mdi:clipboard-list-outline' },
-        { label: 'Suppliers', to: '/buying/suppliers', icon: 'mdi:truck-delivery-outline' },
       ],
     },
   ],
 }
 
 const operationsSection: NavSection = {
-  title: 'Inventory & Logistics',
+  title: 'Inventory & Operations',
   items: [
     {
-      label: 'Inventory',
+      label: 'Inventory Management',
       icon: 'mdi:warehouse',
       children: [
-        { label: 'Stock Dashboard', to: '/stock', icon: 'mdi:view-dashboard-outline' },
-        { label: 'Stock Movements', to: '/stock/movements', icon: 'mdi:swap-horizontal' },
+        { label: 'Products', to: '/inventory/products', icon: 'mdi:package-variant' },
+        { label: 'Adjustments', to: '/inventory/adjustments', icon: 'mdi:swap-horizontal' },
+        { label: 'Stock Movements', to: '/stock/movements', icon: 'mdi:transfer' },
       ],
     },
     {
@@ -85,13 +86,27 @@ const financeSection: NavSection = {
   title: 'Finance',
   items: [
     {
-      label: 'Accounting Workspace',
+      label: 'Financial Management',
       icon: 'mdi:finance',
       children: [
-        { label: 'Accounting Overview', to: '/accounting', icon: 'mdi:view-dashboard-outline' },
+        { label: 'Accounts', to: '/finance/accounts', icon: 'mdi:bank-outline' },
+        { label: 'Reports', to: '/finance/reports', icon: 'mdi:file-chart-outline' },
         { label: 'Receivables', to: '/accounting/receivables', icon: 'mdi:cash-clock' },
         { label: 'Payables', to: '/accounting/payables', icon: 'mdi:cash-fast' },
-        { label: 'Financial Reports', to: '/accounting/reports', icon: 'mdi:file-chart-outline' },
+      ],
+    },
+  ],
+}
+
+const aiSection: NavSection = {
+  title: 'AI & Automation',
+  items: [
+    {
+      label: 'AI Assistant',
+      icon: 'mdi:robot-excited-outline',
+      children: [
+        { label: 'AI Chat', to: '/ai/chat', icon: 'mdi:message-text-outline' },
+        { label: 'Automations', to: '/ai/automations', icon: 'mdi:cog-sync-outline' },
       ],
     },
   ],
@@ -101,6 +116,7 @@ const adminSection: NavSection = {
   title: 'Administration',
   items: [
     { label: 'Settings', to: '/settings', icon: 'mdi:cog-outline' },
+    { label: 'Profile', to: '/profile', icon: 'mdi:account-outline' },
   ],
 }
 
@@ -118,6 +134,7 @@ export const navigation: NavSection[] = [
   procurementSection,
   operationsSection,
   financeSection,
+  aiSection,
   adminSection,
 ]
 

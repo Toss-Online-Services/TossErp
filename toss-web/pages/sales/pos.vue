@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 
 // @ts-ignore -- Nuxt auto-injects definePageMeta
 definePageMeta({
-  layout: 'dashboard',
+ 
   middleware: 'auth',
 })
 

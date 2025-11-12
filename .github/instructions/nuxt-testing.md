@@ -1,4 +1,4 @@
-# Nuxt 4 Testing Guidelines
+<!-- # Nuxt 4 Testing Guidelines
 
 ## Testing Stack
 - **Unit Testing**: Vitest for fast, modern unit testing
@@ -72,3 +72,4 @@ description: Comprehensive testing guidelines for Nuxt 4 applications including 
 globs: **/*.test.ts, **/*.spec.ts, **/*.test.js, **/*.spec.js, **/*.test.vue, **/*.spec.vue, vitest.config.*, playwright.config.*
 alwaysApply: true
 ---
+ -->
