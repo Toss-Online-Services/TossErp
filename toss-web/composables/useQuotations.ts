@@ -1,339 +1,293 @@
-/**
- * Quotations Composable
- * Manages quotation operations including CRUD, status updates, and conversion to sales orders
- */
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useNuxtApp } from 'nuxt/app'
+import type {
+  Quotation,
+  QuotationCustomer,
+  QuotationStatus,
+  SalesOrder
+} from '~/types/sales'
 
-interface QuotationItem {
-  id?: string
-  productId: string
-  productName: string
-  description?: string
-  quantity: number
-  rate: number
-  uom: string
-  discount?: number
-  discountType?: 'percentage' | 'amount'
-  taxRate?: number
-  amount: number
+interface QuotationFilters {
+  status?: QuotationStatus | 'all'
+  customerId?: string
+  dateFrom?: string
+  dateTo?: string
+  search?: string
 }
 
-interface Quotation {
-  id?: string
-  quotationNumber?: string
-  customerId: string
-  customerName: string
-  date: string
-  validUntil: string
-  status: 'draft' | 'submitted' | 'approved' | 'rejected' | 'expired' | 'converted'
-  items: QuotationItem[]
-  subtotal: number
-  taxAmount: number
-  discountAmount: number
-  total: number
+interface QuotationItemInput {
+  productId: string
+  name: string
+  quantity: number
+  unitPrice: number
+  sku?: string
+  description?: string
+  discountRate?: number
+  taxRate?: number
+}
+
+interface CreateQuotationPayload {
+  customer: QuotationCustomer
+  items: QuotationItemInput[]
+  discountRate?: number
+  vatRate?: number
   terms?: string
   notes?: string
   salesPerson?: string
-  territory?: string
-  currency: string
-  conversionRate: number
-  priceList?: string
-  shippingAddress?: string
-  billingAddress?: string
-  createdAt?: string
-  updatedAt?: string
-  convertedToOrder?: string
-  approvedBy?: string
-  approvedAt?: string
+  date?: string
+  validUntil?: string
+  status?: QuotationStatus
+  attachments?: string[]
 }
 
+interface UpdateQuotationPayload extends Partial<CreateQuotationPayload> {}
+
+interface EmailPayload {
+  to: string
+  subject: string
+  message: string
+  cc?: string[]
+  bcc?: string[]
+}
+
+interface PdfResponse {
+  filename: string
+  base64: string
+}
+
+interface EmailResponse {
+  sentAt: string
+}
+
+interface QuotationStats {
+  draft: number
+  sent: number
+  accepted: number
+  rejected: number
+  expired: number
+  converted: number
+}
+
+const unwrap = <T>(response: { data: T } | T): T =>
+  response && typeof response === 'object' && 'data' in response ? (response as { data: T }).data : (response as T)
+
 export const useQuotations = () => {
-  const { $api } = useNuxtApp()
+  const nuxtApp = useNuxtApp()
+  const apiFetch = nuxtApp.$fetch as typeof globalThis.$fetch
   const { t } = useI18n()
-  
-  // State
+
   const quotations = ref<Quotation[]>([])
   const currentQuotation = ref<Quotation | null>(null)
+  const stats = ref<QuotationStats | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  // Fetch all quotations
-  const fetchQuotations = async (filters?: {
-    status?: string
-    customerId?: string
-    dateFrom?: string
-    dateTo?: string
-  }) => {
+  const runWithState = async <T>(callback: () => Promise<T>): Promise<T> => {
     loading.value = true
     error.value = null
-    
     try {
-      const response = await $api('/api/sales/quotations', {
-        method: 'GET',
-        params: filters
-      })
-      quotations.value = response.data || []
-      return quotations.value
+      return await callback()
     } catch (err: any) {
-      error.value = err.message || t('errors.fetchFailed')
+      error.value = err?.message ?? t('errors.unexpectedError', 'Unexpected error')
       throw err
     } finally {
       loading.value = false
     }
   }
 
-  // Fetch single quotation
-  const fetchQuotation = async (id: string) => {
-    loading.value = true
-    error.value = null
-    
-    try {
-      const response = await $api(`/api/sales/quotations/${id}`)
-      currentQuotation.value = response.data
-      return currentQuotation.value
-    } catch (err: any) {
-      error.value = err.message || t('errors.fetchFailed')
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Create quotation
-  const createQuotation = async (quotation: Quotation) => {
-    loading.value = true
-    error.value = null
-    
-    try {
-      const response = await $api('/api/sales/quotations', {
-        method: 'POST',
-        body: quotation
-      })
-      
-      quotations.value.unshift(response.data)
-      return response.data
-    } catch (err: any) {
-      error.value = err.message || t('errors.createFailed')
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Update quotation
-  const updateQuotation = async (id: string, updates: Partial<Quotation>) => {
-    loading.value = true
-    error.value = null
-    
-    try {
-      const response = await $api(`/api/sales/quotations/${id}`, {
-        method: 'PUT',
-        body: updates
-      })
-      
-      const index = quotations.value.findIndex(q => q.id === id)
-      if (index !== -1) {
-        quotations.value[index] = response.data
-      }
-      
-      return response.data
-    } catch (err: any) {
-      error.value = err.message || t('errors.updateFailed')
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Delete quotation
-  const deleteQuotation = async (id: string) => {
-    loading.value = true
-    error.value = null
-    
-    try {
-      await $api(`/api/sales/quotations/${id}`, {
-        method: 'DELETE'
-      })
-      
-      quotations.value = quotations.value.filter(q => q.id !== id)
-    } catch (err: any) {
-      error.value = err.message || t('errors.deleteFailed')
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Change quotation status
-  const changeStatus = async (id: string, status: Quotation['status'], notes?: string) => {
-    loading.value = true
-    error.value = null
-    
-    try {
-      const response = await $api(`/api/sales/quotations/${id}/status`, {
-        method: 'PATCH',
-        body: { status, notes }
-      })
-      
-      const index = quotations.value.findIndex(q => q.id === id)
-      if (index !== -1) {
-        quotations.value[index].status = status
-      }
-      
-      return response.data
-    } catch (err: any) {
-      error.value = err.message || t('errors.statusChangeFailed')
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Convert quotation to sales order
-  const convertToSalesOrder = async (quotationId: string) => {
-    loading.value = true
-    error.value = null
-    
-    try {
-      const response = await $api(`/api/sales/quotations/${quotationId}/convert`, {
-        method: 'POST'
-      })
-      
-      const index = quotations.value.findIndex(q => q.id === quotationId)
-      if (index !== -1) {
-        quotations.value[index].status = 'converted'
-        quotations.value[index].convertedToOrder = response.data.orderId
-      }
-      
-      return response.data
-    } catch (err: any) {
-      error.value = err.message || t('errors.conversionFailed')
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Calculate quotation totals
-  const calculateTotals = (items: QuotationItem[]) => {
-    let subtotal = 0
-    let taxAmount = 0
-    let discountAmount = 0
-
-    items.forEach(item => {
-      let itemAmount = item.quantity * item.rate
-      
-      // Apply discount
-      if (item.discount) {
-        if (item.discountType === 'percentage') {
-          const discount = (itemAmount * item.discount) / 100
-          discountAmount += discount
-          itemAmount -= discount
-        } else {
-          discountAmount += item.discount
-          itemAmount -= item.discount
+  const fetchQuotations = async (filters?: QuotationFilters) =>
+    runWithState(async () => {
+      const response = await apiFetch<{ data: Quotation[] } | Quotation[]>(
+        '/api/sales/quotations',
+        {
+          method: 'GET',
+          params: filters
         }
-      }
-      
-      // Calculate tax
-      if (item.taxRate) {
-        const tax = (itemAmount * item.taxRate) / 100
-        taxAmount += tax
-      }
-      
-      subtotal += item.quantity * item.rate
-      item.amount = itemAmount
+      )
+      const data = unwrap(response) ?? []
+      quotations.value = data
+      return data
     })
 
-    const total = subtotal - discountAmount + taxAmount
+  const fetchStats = async () =>
+    runWithState(async () => {
+      const response = await apiFetch<{ data: QuotationStats } | QuotationStats>(
+        '/api/sales/quotations/stats',
+        {
+          method: 'GET'
+        }
+      )
+      const data = unwrap(response)
+      stats.value = data
+      return data
+    })
 
-    return {
-      subtotal,
-      taxAmount,
-      discountAmount,
-      total
-    }
-  }
+  const fetchQuotation = async (id: string) =>
+    runWithState(async () => {
+      const response = await apiFetch<{ data: Quotation } | Quotation>(
+        `/api/sales/quotations/${id}`,
+        {
+          method: 'GET'
+        }
+      )
+      const data = unwrap(response) ?? null
+      currentQuotation.value = data
+      return data
+    })
 
-  // Generate PDF
-  const generatePDF = async (quotationId: string) => {
-    loading.value = true
-    error.value = null
-    
-    try {
-      const response = await $api(`/api/sales/quotations/${quotationId}/pdf`, {
-        method: 'GET',
-        responseType: 'blob'
+  const createQuotation = async (payload: CreateQuotationPayload) =>
+    runWithState(async () => {
+      const response = await apiFetch<{ data: Quotation } | Quotation>(
+        '/api/sales/quotations',
+        {
+          method: 'POST',
+          body: payload
+        }
+      )
+      const created = unwrap(response)
+      quotations.value = [created, ...quotations.value]
+      currentQuotation.value = created
+      return created
+    })
+
+  const updateQuotation = async (id: string, payload: UpdateQuotationPayload) =>
+    runWithState(async () => {
+      const response = await apiFetch<{ data: Quotation } | Quotation>(
+        `/api/sales/quotations/${id}`,
+        {
+          method: 'PUT',
+          body: payload
+        }
+      )
+      const updated = unwrap(response)
+      const index = quotations.value.findIndex((quotation) => quotation.id === id)
+      if (index !== -1) {
+        quotations.value.splice(index, 1, updated)
+      }
+      if (currentQuotation.value?.id === id) {
+        currentQuotation.value = updated
+      }
+      return updated
+    })
+
+  const deleteQuotation = async (id: string) =>
+    runWithState(async () => {
+      await apiFetch(`/api/sales/quotations/${id}`, {
+        method: 'DELETE'
       })
-      
-      return response
-    } catch (err: any) {
-      error.value = err.message || t('errors.pdfGenerationFailed')
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
+      quotations.value = quotations.value.filter((quotation) => quotation.id !== id)
+      if (currentQuotation.value?.id === id) {
+        currentQuotation.value = null
+      }
+    })
 
-  // Send quotation via email
-  const sendEmail = async (quotationId: string, emailData: {
-    to: string
-    subject: string
-    message: string
-  }) => {
-    loading.value = true
-    error.value = null
-    
-    try {
-      await $api(`/api/sales/quotations/${quotationId}/email`, {
-        method: 'POST',
-        body: emailData
-      })
-    } catch (err: any) {
-      error.value = err.message || t('errors.emailSendFailed')
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
+  const changeStatus = async (id: string, status: QuotationStatus, notes?: string) =>
+    runWithState(async () => {
+      const response = await apiFetch<{ data: Quotation } | Quotation>(
+        `/api/sales/quotations/${id}/status`,
+        {
+          method: 'PATCH',
+          body: { status, notes }
+        }
+      )
+      const updated = unwrap(response)
+      const index = quotations.value.findIndex((quotation) => quotation.id === id)
+      if (index !== -1) {
+        quotations.value.splice(index, 1, updated)
+      }
+      if (currentQuotation.value?.id === id) {
+        currentQuotation.value = updated
+      }
+      return updated
+    })
 
-  // Duplicate quotation
-  const duplicateQuotation = async (quotationId: string) => {
-    loading.value = true
-    error.value = null
-    
-    try {
-      const response = await $api(`/api/sales/quotations/${quotationId}/duplicate`, {
-        method: 'POST'
-      })
-      
-      quotations.value.unshift(response.data)
-      return response.data
-    } catch (err: any) {
-      error.value = err.message || t('errors.duplicateFailed')
-      throw err
-    } finally {
-      loading.value = false
-    }
+  const duplicateQuotation = async (id: string) =>
+    runWithState(async () => {
+      const response = await apiFetch<{ data: Quotation } | Quotation>(
+        `/api/sales/quotations/${id}/duplicate`,
+        {
+          method: 'POST'
+        }
+      )
+      const duplicated = unwrap(response)
+      quotations.value = [duplicated, ...quotations.value]
+      return duplicated
+    })
+
+  const convertToSalesOrder = async (id: string) =>
+    runWithState(async () => {
+      const response = await apiFetch<{ data: SalesOrder } | SalesOrder>(
+        `/api/sales/quotations/${id}/convert`,
+        {
+          method: 'POST'
+        }
+      )
+      const order = unwrap(response)
+      await fetchQuotation(id)
+      return order
+    })
+
+  const sendEmail = async (id: string, payload: EmailPayload) =>
+    runWithState(async () => {
+      const response = await apiFetch<{ data: EmailResponse } | EmailResponse>(
+        `/api/sales/quotations/${id}/email`,
+        {
+          method: 'POST',
+          body: payload
+        }
+      )
+      return unwrap(response)
+    })
+
+  const generatePDF = async (id: string) =>
+    runWithState(async () => {
+      const response = await apiFetch<{ data: PdfResponse } | PdfResponse>(
+        `/api/sales/quotations/${id}/pdf`,
+        {
+          method: 'GET'
+        }
+      )
+      return unwrap(response)
+    })
+
+  const calculateTotals = (items: Array<{ quantity: number; unitPrice: number; discountRate?: number; taxRate?: number }>) => {
+    let subtotal = 0
+    let discountAmount = 0
+    let vatAmount = 0
+
+    items.forEach((item) => {
+      const base = Number(item.quantity ?? 0) * Number(item.unitPrice ?? 0)
+      const discount = (base * Number(item.discountRate ?? 0)) / 100
+      const net = base - discount
+      const vat = (net * Number(item.taxRate ?? 0)) / 100
+
+      subtotal += base
+      discountAmount += discount
+      vatAmount += vat
+    })
+
+    const total = subtotal - discountAmount + vatAmount
+    return { subtotal, discountAmount, vatAmount, total }
   }
 
   return {
-    // State
     quotations,
     currentQuotation,
+    stats,
     loading,
     error,
-    
-    // Methods
     fetchQuotations,
+    fetchStats,
     fetchQuotation,
     createQuotation,
     updateQuotation,
     deleteQuotation,
     changeStatus,
+    duplicateQuotation,
     convertToSalesOrder,
-    calculateTotals,
-    generatePDF,
     sendEmail,
-    duplicateQuotation
+    generatePDF,
+    calculateTotals
   }
 }

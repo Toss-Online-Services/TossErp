@@ -368,3 +368,373 @@ export interface CreateSalesPartnerRequest {
     serviceTypes: string[]
   }
 }
+
+export type QuotationStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired' | 'converted'
+
+export interface QuotationCustomer {
+  id: string
+  name: string
+  email?: string
+  phone?: string
+  address?: string
+  billingAddress?: string
+  shippingAddress?: string
+  territory?: string
+  customerGroup?: string
+  creditLimit?: number
+  creditUsed?: number
+  paymentTerms?: number
+  primaryContact?: string
+}
+
+export interface QuotationItem {
+  id: string
+  productId: string
+  sku?: string
+  name: string
+  description?: string
+  quantity: number
+  unitPrice: number
+  uom?: string
+  discountRate?: number
+  discountAmount?: number
+  vatRate?: number
+  vatAmount?: number
+  total: number
+}
+
+export interface Quotation {
+  id: string
+  number: string
+  status: QuotationStatus
+  date: string
+  validUntil: string
+  salesPerson?: string
+  terms?: string
+  notes?: string
+  customer: QuotationCustomer
+  items: QuotationItem[]
+  subtotal: number
+  discountRate?: number
+  discountAmount: number
+  vatRate: number
+  vatAmount: number
+  grandTotal: number
+  createdAt: string
+  updatedAt: string
+  convertedToOrderId?: string
+  lastSentAt?: string
+  lastViewedAt?: string
+  attachments?: string[]
+}
+
+export type SalesOrderStatus = 'draft' | 'pending' | 'confirmed' | 'processing' | 'completed' | 'cancelled' | 'on_hold'
+export type PaymentStatus = 'unpaid' | 'partial' | 'paid'
+
+export interface SalesOrderItem extends QuotationItem {
+  deliveredQuantity: number
+  invoicedQuantity: number
+  warehouse?: string
+}
+
+export interface SalesOrderHistoryEntry {
+  id: string
+  timestamp: string
+  action: string
+  user: string
+  notes?: string
+}
+
+export interface SalesOrderFulfillment {
+  expectedDeliveryDate: string
+  deliveryWindow?: {
+    start: string
+    end: string
+  }
+  shippingAddress: string
+  instructions?: string
+  assignedDriverId?: string
+  assignedDriverName?: string
+  status: 'pending' | 'scheduled' | 'in_transit' | 'delivered' | 'failed'
+}
+
+export interface SalesOrderPayment {
+  id: string
+  method: 'cash' | 'card' | 'mobile_money' | 'eft' | 'account'
+  amount: number
+  status: 'pending' | 'authorised' | 'completed' | 'failed'
+  reference?: string
+  paidAt?: string
+}
+
+export interface SalesOrder {
+  id: string
+  number: string
+  quotationId?: string
+  customer: QuotationCustomer
+  status: SalesOrderStatus
+  paymentStatus: PaymentStatus
+  items: SalesOrderItem[]
+  subtotal: number
+  discountAmount: number
+  vatAmount: number
+  grandTotal: number
+  outstandingBalance: number
+  fulfillment: SalesOrderFulfillment
+  payments: SalesOrderPayment[]
+  notes?: string
+  createdAt: string
+  updatedAt: string
+  history: SalesOrderHistoryEntry[]
+}
+
+export type DeliveryNoteStatus = 'draft' | 'scheduled' | 'in_transit' | 'completed' | 'cancelled' | 'returned'
+
+export interface DeliveryNoteItem {
+  id: string
+  salesOrderItemId?: string
+  productId: string
+  name: string
+  description?: string
+  orderedQuantity: number
+  deliveredQuantity: number
+  uom?: string
+  warehouse?: string
+  serialNumbers?: string[]
+  batchNumbers?: string[]
+}
+
+export interface ProofOfDelivery {
+  signatureUrl?: string
+  photoUrl?: string
+  deliveredAt?: string
+  receivedBy?: string
+  notes?: string
+  geoLocation?: {
+    lat: number
+    lng: number
+    accuracy?: number
+  }
+}
+
+export interface DeliveryNote {
+  id: string
+  number: string
+  salesOrderId?: string
+  customer: QuotationCustomer
+  status: DeliveryNoteStatus
+  scheduledDate: string
+  shippedAt?: string
+  deliveredAt?: string
+  shippingAddress: string
+  billingAddress?: string
+  driverId?: string
+  driverName?: string
+  vehicleNumber?: string
+  instructions?: string
+  items: DeliveryNoteItem[]
+  proofOfDelivery?: ProofOfDelivery
+  createdAt: string
+  updatedAt: string
+}
+
+export type SalesInvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+
+export interface SalesInvoicePayment extends SalesOrderPayment {
+  dueDate?: string
+}
+
+export interface SalesInvoice {
+  id: string
+  number: string
+  salesOrderId?: string
+  customer: QuotationCustomer
+  status: SalesInvoiceStatus
+  issueDate: string
+  dueDate: string
+  items: SalesOrderItem[]
+  subtotal: number
+  discountAmount: number
+  vatAmount: number
+  total: number
+  paidAmount: number
+  balanceDue: number
+  payments: SalesInvoicePayment[]
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type SalesReturnStatus = 'requested' | 'approved' | 'declined' | 'received' | 'completed'
+
+export interface SalesReturnItem {
+  id: string
+  invoiceItemId: string
+  productId: string
+  productName: string
+  quantity: number
+  unitPrice: number
+  reason: string
+  condition: 'damaged' | 'expired' | 'wrong_item' | 'customer_return'
+  restockable: boolean
+  lineTotal: number
+}
+
+export interface SalesReturn {
+  id: string
+  number: string
+  status: SalesReturnStatus
+  invoiceId: string
+  customer: QuotationCustomer
+  requestedAt: string
+  approvedAt?: string
+  inspectedAt?: string
+  completedAt?: string
+  items: SalesReturnItem[]
+  refundMethod: 'cash' | 'store_credit' | 'exchange' | 'bank'
+  refundAmount: number
+  warehouseAction: 'restock' | 'scrap' | 'supplier_return'
+  notes?: string
+  attachments?: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface PricingRule {
+  id: string
+  name: string
+  description?: string
+  type: 'percentage' | 'amount' | 'buy_x_get_y' | 'bundle'
+  active: boolean
+  startDate?: string
+  endDate?: string
+  conditions: {
+    minimumQuantity?: number
+    minimumAmount?: number
+    customerGroups?: string[]
+    territories?: string[]
+    paymentMethods?: Array<'cash' | 'card' | 'mobile_money' | 'eft' | 'account'>
+    daysOfWeek?: number[]
+    timeRange?: {
+      start: string
+      end: string
+    }
+    eligibleProducts?: string[]
+    eligibleCategories?: string[]
+  }
+  reward: {
+    discountRate?: number
+    discountAmount?: number
+    freeProductId?: string
+    freeQuantity?: number
+  }
+  createdAt: string
+  updatedAt: string
+}
+
+export interface PosProfile {
+  id: string
+  name: string
+  description?: string
+  defaultWarehouse: string
+  defaultPriceList: string
+  allowedPaymentMethods: Array<'cash' | 'card' | 'mobile_money' | 'eft' | 'account'>
+  receiptTemplate: string
+  autoLogoutMinutes: number
+  cashierRoles: string[]
+  loyaltyProgramId?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface PosSessionPaymentSummary {
+  method: 'cash' | 'card' | 'mobile_money' | 'eft' | 'account'
+  amount: number
+}
+
+export interface PosSessionCashDrop {
+  id: string
+  amount: number
+  reason?: string
+  recordedAt: string
+}
+
+export interface PosSessionExpense {
+  id: string
+  amount: number
+  reason: string
+  recordedAt: string
+}
+
+export interface PosSession {
+  id: string
+  profileId: string
+  cashierId: string
+  cashierName: string
+  openedAt: string
+  closedAt?: string
+  openingFloat: number
+  closingFloat?: number
+  payments: PosSessionPaymentSummary[]
+  cashDrops: PosSessionCashDrop[]
+  expenses: PosSessionExpense[]
+  status: 'open' | 'closed' | 'pending_approval'
+  variance?: number
+  approvals?: Array<{
+    id: string
+    approver: string
+    approvedAt: string
+    notes?: string
+  }>
+}
+
+export interface LoyaltyTier {
+  id: string
+  name: string
+  minimumPoints: number
+  benefits: string[]
+}
+
+export interface LoyaltyProgram {
+  id: string
+  name: string
+  description?: string
+  earnRatio: number
+  redeemRatio: number
+  minimumRedemptionPoints: number
+  tiers: LoyaltyTier[]
+  expiresAfterDays?: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface SalesAnalyticsSnapshot {
+  from: string
+  to: string
+  totalRevenue: number
+  totalOrders: number
+  averageOrderValue: number
+  quotationConversionRate: number
+  repeatCustomerRate: number
+  returnsRate: number
+  topProducts: Array<{
+    productId: string
+    productName: string
+    revenue: number
+    quantity: number
+  }>
+  salesByTerritory: Array<{
+    territory: string
+    revenue: number
+    orders: number
+  }>
+  paymentMix: Array<{
+    method: 'cash' | 'card' | 'mobile_money' | 'eft' | 'account'
+    amount: number
+  }>
+  dailyTrend: Array<{
+    date: string
+    revenue: number
+    orders: number
+  }>
+}

@@ -1,151 +1,371 @@
 <template>
-  <div class="p-4 sm:p-6">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+  <div class="p-4 sm:p-6 space-y-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-          Sales Quotations
+        <h1 class="text-2xl font-bold tracking-tight text-foreground">
+          {{ $t('sales.quotations.title', 'Sales Quotations') }}
         </h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          Manage quotes and proposals for customers
+        <p class="text-muted-foreground">
+          {{ $t('sales.quotations.subtitle', 'Manage quotes and proposals for customers') }}
         </p>
       </div>
       <div class="flex items-center gap-2">
-        <NuxtLink to="/sales/quotations/create" class="btn btn-primary">
-          <Icon name="heroicons:plus" class="w-4 h-4 mr-2" />
-          New Quotation
-        </NuxtLink>
+        <Button variant="outline" @click="handleRefresh" :disabled="pending">
+          <RefreshCcw class="mr-2 h-4 w-4" />
+          {{ $t('common.refresh', 'Refresh') }}
+        </Button>
+        <Button as-child>
+          <NuxtLink to="/sales/quotations/create">
+            <Plus class="mr-2 h-4 w-4" />
+            {{ $t('sales.quotations.actions.new', 'New Quotation') }}
+          </NuxtLink>
+        </Button>
       </div>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <div v-for="stat in stats" :key="stat.name" class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-4 flex items-start justify-between">
-        <div>
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ stat.name }}</p>
-          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stat.value }}</p>
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <Card v-for="stat in stats" :key="stat.key">
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle class="text-sm font-medium text-muted-foreground">
+            {{ stat.label }}
+          </CardTitle>
+          <component :is="stat.icon" class="h-5 w-5 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <p class="text-2xl font-bold">{{ stat.value }}</p>
+          <p v-if="stat.caption" class="text-xs text-muted-foreground mt-1">
+            {{ stat.caption }}
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+
+    <Card>
+      <CardHeader>
+        <CardTitle>{{ $t('common.filters', 'Filters') }}</CardTitle>
+      </CardHeader>
+      <CardContent class="space-y-4">
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div class="space-y-2">
+            <Label for="quotation-search">{{ $t('common.search', 'Search') }}</Label>
+            <Input
+              id="quotation-search"
+              v-model="filters.search"
+              :placeholder="$t('sales.quotations.filters.searchPlaceholder', 'Search by customer or number')"
+            />
+          </div>
+          <div class="space-y-2">
+            <Label>{{ $t('common.status', 'Status') }}</Label>
+            <Select v-model="filters.status">
+              <SelectTrigger>
+                <SelectValue :placeholder="$t('common.allStatuses', 'All statuses')" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{{ $t('common.all', 'All') }}</SelectItem>
+                <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div class="space-y-2">
+            <Label for="quotation-start-date">{{ $t('common.startDate', 'Start date') }}</Label>
+            <Input id="quotation-start-date" type="date" v-model="filters.startDate" />
+          </div>
+          <div class="space-y-2">
+            <Label for="quotation-end-date">{{ $t('common.endDate', 'End date') }}</Label>
+            <Input id="quotation-end-date" type="date" v-model="filters.endDate" />
+          </div>
         </div>
-        <div class="p-2 rounded-full" :class="stat.bgColor">
-          <Icon :name="stat.icon" class="w-6 h-6" :class="stat.iconColor" />
+        <div class="flex flex-wrap items-center gap-2">
+          <Button variant="outline" @click="resetFilters">
+            <RotateCcw class="mr-2 h-4 w-4" />
+            {{ $t('common.reset', 'Reset filters') }}
+          </Button>
+          <span v-if="activeFiltersCount > 0" class="text-sm text-muted-foreground">
+            {{ activeFiltersLabel }}
+          </span>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
 
-    <!-- Filters and Search -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-4 mb-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <FormKit
-          type="search"
-          placeholder="Search..."
-          v-model="filters.search"
-        />
-        <FormKit
-          type="select"
-          label="Status"
-          v-model="filters.status"
-          :options="['All', 'Draft', 'Sent', 'Accepted', 'Expired']"
-        />
-        <FormKit
-          type="date"
-          label="Start Date"
-          v-model="filters.startDate"
-        />
-        <FormKit
-          type="date"
-          label="End Date"
-          v-model="filters.endDate"
-        />
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{{ $t('sales.quotations.listTitle', 'Quotations') }}</CardTitle>
+        <CardDescription>
+          {{
+            $t(
+              'sales.quotations.listSubtitle',
+              'Track quotation progress and follow up with customers'
+            )
+          }}
+        </CardDescription>
+      </CardHeader>
+      <CardContent class="space-y-4">
+        <Alert v-if="error">
+          <AlertTitle>{{ $t('common.error', 'Something went wrong') }}</AlertTitle>
+          <AlertDescription>{{ errorMessage }}</AlertDescription>
+        </Alert>
 
-    <!-- Quotations Table -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
-      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead class="bg-gray-50 dark:bg-gray-700">
-          <tr>
-            <th class="table-header">Quotation #</th>
-            <th class="table-header">Customer</th>
-            <th class="table-header">Date</th>
-            <th class="table-header text-right">Amount</th>
-            <th class="table-header text-center">Status</th>
-            <th class="table-header text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="q in filteredQuotations" :key="q.id">
-            <td class="table-cell font-medium">{{ q.id }}</td>
-            <td class="table-cell">{{ q.customerName }}</td>
-            <td class="table-cell">{{ formatDate(q.date) }}</td>
-            <td class="table-cell text-right">{{ formatCurrency(q.amount) }}</td>
-            <td class="table-cell text-center">
-              <span :class="statusClasses(q.status)" class="px-2.5 py-0.5 text-xs font-medium rounded-full">
-                {{ q.status }}
-              </span>
-            </td>
-            <td class="table-cell text-right">
-              <NuxtLink :to="`/sales/quotations/${q.id}`" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                View
+        <div v-else>
+          <Table v-if="!pending && quotations.length">
+            <TableHeader>
+              <TableRow>
+                <TableHead>{{ $t('sales.quotations.number', 'Quotation #') }}</TableHead>
+                <TableHead>{{ $t('sales.quotations.customer', 'Customer') }}</TableHead>
+                <TableHead>{{ $t('common.date', 'Date') }}</TableHead>
+                <TableHead class="text-right">{{ $t('common.amount', 'Amount') }}</TableHead>
+                <TableHead class="text-center">{{ $t('common.status', 'Status') }}</TableHead>
+                <TableHead class="text-right">{{ $t('common.actions', 'Actions') }}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow v-for="quotation in quotations" :key="quotation.id">
+                <TableCell class="font-medium">
+                  {{ quotation.number ?? quotation.id }}
+                </TableCell>
+                <TableCell>
+                  <div class="flex flex-col">
+                    <span class="font-medium">{{ quotation.customer.name }}</span>
+                    <span v-if="quotation.customer.email" class="text-xs text-muted-foreground">
+                      {{ quotation.customer.email }}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell>{{ formatDate(quotation.date) }}</TableCell>
+                <TableCell class="text-right">{{ formatCurrency(quotation.grandTotal) }}</TableCell>
+                <TableCell class="text-center">
+                  <Badge :variant="statusVariant(quotation.status)">
+                    {{ formatStatus(quotation.status) }}
+                  </Badge>
+                </TableCell>
+                <TableCell class="text-right">
+                  <Button variant="ghost" size="sm" @click="goToDetail(quotation.id)">
+                    <Eye class="mr-2 h-4 w-4" />
+                    {{ $t('common.view', 'View') }}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+
+          <div v-else-if="pending" class="space-y-3">
+            <Skeleton class="h-12 w-full" />
+            <Skeleton class="h-12 w-full" />
+            <Skeleton class="h-12 w-full" />
+          </div>
+
+          <div v-else class="flex flex-col items-center justify-center gap-2 py-12 text-center">
+            <FileQuestion class="h-10 w-10 text-muted-foreground" />
+            <p class="text-sm text-muted-foreground">
+              {{
+                $t(
+                  'sales.quotations.emptyState',
+                  'No quotations match your filters. Try adjusting them or create a new quotation.'
+                )
+              }}
+            </p>
+            <Button as-child>
+              <NuxtLink to="/sales/quotations/create">
+                <Plus class="mr-2 h-4 w-4" />
+                {{ $t('sales.quotations.actions.new', 'New Quotation') }}
               </NuxtLink>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { FormKit } from '@formkit/vue'
+import { computed, reactive } from 'vue'
+import { useAsyncData } from '#app'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+import {
+  RefreshCcw,
+  Plus,
+  RotateCcw,
+  Eye,
+  FileQuestion,
+  FileText,
+  Send,
+  CheckCircle2,
+  AlertTriangle
+} from 'lucide-vue-next'
 
-useHead({
-  title: 'Sales Quotations',
-})
+import { Button } from '~/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
+import { Badge } from '~/components/ui/badge'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert'
+import { Skeleton } from '~/components/ui/skeleton'
 
-// Mock Data
-const stats = ref([
-  { name: 'Draft', value: 5, icon: 'heroicons:document', bgColor: 'bg-yellow-100', iconColor: 'text-yellow-600' },
-  { name: 'Sent', value: 23, icon: 'heroicons:paper-airplane', bgColor: 'bg-blue-100', iconColor: 'text-blue-600' },
-  { name: 'Accepted', value: 15, icon: 'heroicons:check-circle', bgColor: 'bg-green-100', iconColor: 'text-green-600' },
-  { name: 'Expired', value: 2, icon: 'heroicons:exclamation-circle', bgColor: 'bg-red-100', iconColor: 'text-red-600' },
-])
+import type { Quotation } from '~/types/sales'
 
-const quotations = ref([
-  { id: 'Q-2025-001', customerName: 'Jabu\'s Spaza', date: '2025-11-10', amount: 1907.78, status: 'Accepted' },
-  { id: 'Q-2025-002', customerName: 'Sipho\'s Tavern', date: '2025-11-11', amount: 5430.00, status: 'Sent' },
-  { id: 'Q-2025-003', customerName: 'The Gogo Shop', date: '2025-11-12', amount: 850.50, status: 'Draft' },
-  { id: 'Q-2025-004', customerName: 'Jabu\'s Spaza', date: '2025-10-01', amount: 1200.00, status: 'Expired' },
-])
+const { t } = useI18n()
+const router = useRouter()
 
-const filters = ref({
+const filters = reactive({
   search: '',
-  status: 'All',
+  status: 'all',
   startDate: '',
-  endDate: '',
+  endDate: ''
 })
 
-const filteredQuotations = computed(() => {
-  return quotations.value.filter(q => {
-    const searchMatch = filters.value.search ? q.customerName.toLowerCase().includes(filters.value.search.toLowerCase()) || q.id.toLowerCase().includes(filters.value.search.toLowerCase()) : true
-    const statusMatch = filters.value.status !== 'All' ? q.status === filters.value.status : true
-    const startDateMatch = filters.value.startDate ? new Date(q.date) >= new Date(filters.value.startDate) : true
-    const endDateMatch = filters.value.endDate ? new Date(q.date) <= new Date(filters.value.endDate) : true
-    return searchMatch && statusMatch && startDateMatch && endDateMatch
+const statusOptions = [
+  { value: 'draft', label: t('sales.quotations.status.draft', 'Draft') },
+  { value: 'sent', label: t('sales.quotations.status.sent', 'Sent') },
+  { value: 'accepted', label: t('sales.quotations.status.accepted', 'Accepted') },
+  { value: 'rejected', label: t('sales.quotations.status.rejected', 'Rejected') },
+  { value: 'expired', label: t('sales.quotations.status.expired', 'Expired') },
+  { value: 'converted', label: t('sales.quotations.status.converted', 'Converted') }
+]
+
+const fetchQuotations = () => {
+  const params: Record<string, string> = {}
+  if (filters.search) params.search = filters.search
+  if (filters.status && filters.status !== 'all') params.status = filters.status
+  if (filters.startDate) params.dateFrom = filters.startDate
+  if (filters.endDate) params.dateTo = filters.endDate
+  return $fetch('/api/sales/quotations', { params })
+}
+
+const { data, pending, error, refresh } = await useAsyncData('sales-quotations-list', fetchQuotations, {
+  watch: [
+    () => filters.search,
+    () => filters.status,
+    () => filters.startDate,
+    () => filters.endDate
+  ]
+})
+
+const quotations = computed<Quotation[]>(() => data.value?.data ?? [])
+
+const statusCounts = computed(() => {
+  const counts: Record<string, number> = {
+    draft: 0,
+    sent: 0,
+    accepted: 0,
+    rejected: 0,
+    expired: 0,
+    converted: 0
+  }
+  quotations.value.forEach((quotation) => {
+    const status = quotation.status ?? 'draft'
+    counts[status] = (counts[status] ?? 0) + 1
+  })
+  return counts
+})
+
+const stats = computed(() => [
+  {
+    key: 'draft',
+    label: t('sales.quotations.status.draft', 'Draft'),
+    value: statusCounts.value.draft ?? 0,
+    icon: FileText
+  },
+  {
+    key: 'sent',
+    label: t('sales.quotations.status.sent', 'Sent'),
+    value: statusCounts.value.sent ?? 0,
+    icon: Send
+  },
+  {
+    key: 'accepted',
+    label: t('sales.quotations.status.accepted', 'Accepted'),
+    value: statusCounts.value.accepted ?? 0,
+    icon: CheckCircle2
+  },
+  {
+    key: 'expired',
+    label: t('sales.quotations.status.expired', 'Expired'),
+    value: (statusCounts.value.expired ?? 0) + (statusCounts.value.rejected ?? 0),
+    icon: AlertTriangle,
+    caption: t('sales.quotations.expiredCaption', 'Includes rejected or expired quotations')
+  }
+])
+
+const activeFiltersCount = computed(() => {
+  let count = 0
+  if (filters.search) count += 1
+  if (filters.status !== 'all') count += 1
+  if (filters.startDate) count += 1
+  if (filters.endDate) count += 1
+  return count
+})
+
+const activeFiltersLabel = computed(() => {
+  if (!activeFiltersCount.value) return ''
+  return t('sales.quotations.activeFilters', '{count} filters applied', {
+    count: activeFiltersCount.value
   })
 })
 
-// Helper functions
-const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('en-ZA')
-const formatCurrency = (amount: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount)
+const errorMessage = computed(
+  () => (error.value as Error | null)?.message ?? t('common.unexpectedError', 'Unexpected error loading quotations.')
+)
 
-const statusClasses = (status: string) => {
+const formatStatus = (status: string) => {
   switch (status) {
-    case 'Draft': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-    case 'Sent': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-    case 'Accepted': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-    case 'Expired': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-    default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+    case 'draft':
+      return t('sales.quotations.status.draft', 'Draft')
+    case 'sent':
+      return t('sales.quotations.status.sent', 'Sent')
+    case 'accepted':
+      return t('sales.quotations.status.accepted', 'Accepted')
+    case 'rejected':
+      return t('sales.quotations.status.rejected', 'Rejected')
+    case 'expired':
+      return t('sales.quotations.status.expired', 'Expired')
+    case 'converted':
+      return t('sales.quotations.status.converted', 'Converted')
+    default:
+      return status
   }
+}
+
+const statusVariant = (status: string) => {
+  switch (status) {
+    case 'draft':
+      return 'outline'
+    case 'sent':
+      return 'secondary'
+    case 'accepted':
+    case 'converted':
+      return 'default'
+    case 'rejected':
+    case 'expired':
+      return 'destructive'
+    default:
+      return 'secondary'
+  }
+}
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(value ?? 0)
+
+const formatDate = (value: string) =>
+  new Date(value).toLocaleDateString('en-ZA', { year: 'numeric', month: 'short', day: 'numeric' })
+
+const goToDetail = (id: string) => {
+  router.push(`/sales/quotations/${id}`)
+}
+
+const resetFilters = () => {
+  filters.search = ''
+  filters.status = 'all'
+  filters.startDate = ''
+  filters.endDate = ''
+  refresh()
+}
+
+const handleRefresh = () => {
+  refresh()
 }
 </script>
 
