@@ -70,8 +70,23 @@ interface POSCartItem {
 
 export const usePOS = () => {
   const { api } = useApi()
-  const { t } = useI18n()
   const { user } = useAuth()
+  
+  // Simple translation function
+  const t = (key: string) => {
+    const translations: Record<string, string> = {
+      'errors.fetchFailed': 'Failed to fetch data',
+      'errors.createFailed': 'Failed to create item',
+      'errors.updateFailed': 'Failed to update item',
+      'errors.deleteFailed': 'Failed to delete item',
+      'errors.sessionNotFound': 'Session not found',
+      'errors.invalidPayment': 'Invalid payment details',
+      'errors.insufficientStock': 'Insufficient stock',
+      'errors.sessionClosed': 'Session is closed',
+      'errors.invalidDiscount': 'Invalid discount amount'
+    }
+    return translations[key] || key
+  }
   
   // State
   const profiles = ref<POSProfile[]>([])

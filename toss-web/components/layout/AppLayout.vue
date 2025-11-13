@@ -222,7 +222,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { 
   Menu, 
@@ -249,7 +248,6 @@ import { Button } from '../ui/button'
 import { Badge } from '../ui/badge'
 
 // State
-const { t } = useI18n()
 const route = useRoute()
 const sidebarOpen = ref(false)
 const showUserMenu = ref(false)

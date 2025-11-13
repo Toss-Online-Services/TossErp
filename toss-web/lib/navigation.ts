@@ -23,22 +23,62 @@ const salesSection: NavSection = {
   title: 'Sales & CRM',
   items: [
     {
-      label: 'Sales Workspace',
-      icon: 'mdi:shopping-outline',
+      label: 'Sales Dashboard',
+      to: '/sales',
+      icon: 'mdi:view-dashboard-outline'
+    },
+    {
+      label: 'Point of Sale',
+      to: '/sales/pos',
+      icon: 'mdi:cash-register'
+    },
+    {
+      label: 'Sales Transactions',
+      icon: 'mdi:receipt-outline',
       children: [
-        { label: 'Sales Analytics', to: '/sales/analytics', icon: 'mdi:chart-line-variant' },
-        { label: 'Orders', to: '/sales/orders', icon: 'mdi:clipboard-text-outline' },
-        { label: 'Point of Sale', to: '/sales/pos', icon: 'mdi:cash-register' },
-        { label: 'Invoices', to: '/sales/invoices', icon: 'mdi:file-invoice-outline' },
+        { label: 'Quotations', to: '/sales/quotations', icon: 'mdi:file-document-edit-outline' },
+        { label: 'Sales Orders', to: '/sales/orders', icon: 'mdi:clipboard-text-outline' },
+        { label: 'Delivery Notes', to: '/sales/delivery-notes', icon: 'mdi:truck-delivery-outline' },
+        { label: 'Sales Invoices', to: '/sales/invoices', icon: 'mdi:file-invoice-outline' },
+        { label: 'Credit Notes', to: '/sales/credit-notes', icon: 'mdi:file-restore-outline' },
+        { label: 'Returns & Refunds', to: '/sales/returns', icon: 'mdi:keyboard-return' },
       ],
     },
     {
-      label: 'Customer Operations',
+      label: 'Customer Management',
       icon: 'mdi:account-group-outline',
       children: [
+        { label: 'Customers', to: '/sales/customers', icon: 'mdi:account-multiple-outline' },
+        { label: 'Customer Groups', to: '/sales/customer-groups', icon: 'mdi:account-supervisor-outline' },
+        { label: 'Sales Territories', to: '/sales/territories', icon: 'mdi:map-marker-radius-outline' },
+        { label: 'Sales Partners', to: '/sales/partners', icon: 'mdi:handshake-outline' },
+      ],
+    },
+    {
+      label: 'Pricing & Promotions',
+      icon: 'mdi:tag-multiple-outline',
+      children: [
+        { label: 'Pricing Rules', to: '/sales/pricing-rules', icon: 'mdi:currency-usd' },
+        { label: 'Promotional Schemes', to: '/sales/promotional-schemes', icon: 'mdi:gift-outline' },
+        { label: 'Discount Campaigns', to: '/sales/discounts', icon: 'mdi:percent-outline' },
+      ],
+    },
+    {
+      label: 'CRM & Leads',
+      icon: 'mdi:account-search-outline',
+      children: [
         { label: 'Leads', to: '/crm/leads', icon: 'mdi:account-search-outline' },
+        { label: 'Opportunities', to: '/crm/opportunities', icon: 'mdi:target-account' },
         { label: 'Campaigns', to: '/crm/campaigns', icon: 'mdi:megaphone-outline' },
-        { label: 'Customers', to: '/crm/customers', icon: 'mdi:account-multiple-outline' },
+      ],
+    },
+    {
+      label: 'Analytics & Reports',
+      icon: 'mdi:chart-line-variant',
+      children: [
+        { label: 'Sales Analytics', to: '/sales/analytics', icon: 'mdi:chart-line-variant' },
+        { label: 'Sales Reports', to: '/sales/reports', icon: 'mdi:file-chart-outline' },
+        { label: 'Customer Reports', to: '/sales/reports/customers', icon: 'mdi:account-details-outline' },
       ],
     },
   ],
@@ -98,6 +138,24 @@ const financeSection: NavSection = {
   ],
 }
 
+const hrSection: NavSection = {
+  title: 'HR & People',
+  items: [
+    {
+      label: 'Human Resources',
+      icon: 'mdi:account-group',
+      children: [
+        { label: 'HR Dashboard', to: '/hr', icon: 'mdi:view-dashboard-outline' },
+        { label: 'Employees', to: '/hr/employees', icon: 'mdi:account-multiple' },
+        { label: 'Attendance', to: '/hr/attendance', icon: 'mdi:clock-check-outline' },
+        { label: 'Leave Requests', to: '/hr/leave', icon: 'mdi:calendar-remove' },
+        { label: 'Payroll', to: '/hr/payroll', icon: 'mdi:cash-multiple' },
+        { label: 'Performance', to: '/hr/performance', icon: 'mdi:chart-line-variant' },
+      ],
+    },
+  ],
+}
+
 const aiSection: NavSection = {
   title: 'AI & Automation',
   items: [
@@ -134,6 +192,7 @@ export const navigation: NavSection[] = [
   procurementSection,
   operationsSection,
   financeSection,
+  hrSection,
   aiSection,
   adminSection,
 ]

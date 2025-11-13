@@ -49,8 +49,23 @@ interface DeliveryNote {
 }
 
 export const useDeliveryNotes = () => {
-  const { $api } = useApi()
-  const { t } = useI18n()
+  const { get, post, put, delete: del, api } = useApi()
+  
+  // Simple translation fallbacks
+  const t = (key: string) => {
+    const translations: Record<string, string> = {
+      'errors.fetchFailed': 'Failed to fetch data',
+      'errors.createFailed': 'Failed to create item',
+      'errors.updateFailed': 'Failed to update item',
+      'errors.deleteFailed': 'Failed to delete item',
+      'errors.statusChangeFailed': 'Failed to change status',
+      'errors.proofSubmissionFailed': 'Failed to submit proof',
+      'errors.assignmentFailed': 'Failed to assign driver',
+      'errors.pdfGenerationFailed': 'Failed to generate PDF',
+      'errors.trackingFailed': 'Failed to track delivery'
+    }
+    return translations[key] || key
+  }
   
   // State
   const deliveryNotes = ref<DeliveryNote[]>([])
@@ -70,11 +85,8 @@ export const useDeliveryNotes = () => {
     error.value = null
     
     try {
-      const response = await $api('/api/sales/delivery-notes', {
-        method: 'GET',
-        params: filters
-      })
-      deliveryNotes.value = response.data || []
+      const response = await get<DeliveryNote[]>('/api/sales/delivery-notes', filters)
+      deliveryNotes.value = response || []
       return deliveryNotes.value
     } catch (err: any) {
       error.value = err.message || t('errors.fetchFailed')
@@ -90,8 +102,8 @@ export const useDeliveryNotes = () => {
     error.value = null
     
     try {
-      const response = await $api(`/api/sales/delivery-notes/${id}`)
-      currentDeliveryNote.value = response.data
+      const response = await get<DeliveryNote>(`/api/sales/delivery-notes/${id}`)
+      currentDeliveryNote.value = response
       return currentDeliveryNote.value
     } catch (err: any) {
       error.value = err.message || t('errors.fetchFailed')
@@ -107,13 +119,10 @@ export const useDeliveryNotes = () => {
     error.value = null
     
     try {
-      const response = await $api('/api/sales/delivery-notes', {
-        method: 'POST',
-        body: deliveryNote
-      })
+      const response = await post<DeliveryNote>('/api/sales/delivery-notes', deliveryNote)
       
-      deliveryNotes.value.unshift(response.data)
-      return response.data
+      deliveryNotes.value.unshift(response)
+      return response
     } catch (err: any) {
       error.value = err.message || t('errors.createFailed')
       throw err
@@ -128,12 +137,10 @@ export const useDeliveryNotes = () => {
     error.value = null
     
     try {
-      const response = await $api(`/api/sales/sales-orders/${salesOrderId}/delivery-note`, {
-        method: 'POST'
-      })
+      const response = await post<DeliveryNote>(`/api/sales/sales-orders/${salesOrderId}/delivery-note`)
       
-      deliveryNotes.value.unshift(response.data)
-      return response.data
+      deliveryNotes.value.unshift(response)
+      return response
     } catch (err: any) {
       error.value = err.message || t('errors.createFailed')
       throw err
@@ -148,17 +155,14 @@ export const useDeliveryNotes = () => {
     error.value = null
     
     try {
-      const response = await $api(`/api/sales/delivery-notes/${id}`, {
-        method: 'PUT',
-        body: updates
-      })
+      const response = await put<DeliveryNote>(`/api/sales/delivery-notes/${id}`, updates)
       
       const index = deliveryNotes.value.findIndex(dn => dn.id === id)
       if (index !== -1) {
-        deliveryNotes.value[index] = response.data
+        deliveryNotes.value[index] = response
       }
       
-      return response.data
+      return response
     } catch (err: any) {
       error.value = err.message || t('errors.updateFailed')
       throw err
@@ -173,9 +177,7 @@ export const useDeliveryNotes = () => {
     error.value = null
     
     try {
-      await $api(`/api/sales/delivery-notes/${id}`, {
-        method: 'DELETE'
-      })
+      await del(`/api/sales/delivery-notes/${id}`)
       
       deliveryNotes.value = deliveryNotes.value.filter(dn => dn.id !== id)
     } catch (err: any) {
@@ -192,17 +194,17 @@ export const useDeliveryNotes = () => {
     error.value = null
     
     try {
-      const response = await $api(`/api/sales/delivery-notes/${id}/status`, {
+      const response = await api(`/api/sales/delivery-notes/${id}/status`, {
         method: 'PATCH',
         body: { status }
       })
       
       const index = deliveryNotes.value.findIndex(dn => dn.id === id)
-      if (index !== -1) {
-        deliveryNotes.value[index].status = status
+      if (index !== -1 && deliveryNotes.value[index]) {
+        deliveryNotes.value[index]!.status = status
       }
       
-      return response.data
+      return response
     } catch (err: any) {
       error.value = err.message || t('errors.statusChangeFailed')
       throw err
@@ -222,21 +224,18 @@ export const useDeliveryNotes = () => {
     error.value = null
     
     try {
-      const response = await $api(`/api/sales/delivery-notes/${id}/proof`, {
-        method: 'POST',
-        body: {
-          ...proof,
-          deliveredAt: new Date().toISOString()
-        }
+      const response = await post(`/api/sales/delivery-notes/${id}/proof`, {
+        ...proof,
+        deliveredAt: new Date().toISOString()
       })
       
       const index = deliveryNotes.value.findIndex(dn => dn.id === id)
-      if (index !== -1) {
-        deliveryNotes.value[index].proofOfDelivery = response.data.proofOfDelivery
-        deliveryNotes.value[index].status = 'completed'
+      if (index !== -1 && deliveryNotes.value[index]) {
+        deliveryNotes.value[index]!.proofOfDelivery = (response as any).proofOfDelivery
+        deliveryNotes.value[index]!.status = 'completed'
       }
       
-      return response.data
+      return response
     } catch (err: any) {
       error.value = err.message || t('errors.proofSubmissionFailed')
       throw err
@@ -251,18 +250,18 @@ export const useDeliveryNotes = () => {
     error.value = null
     
     try {
-      const response = await $api(`/api/sales/delivery-notes/${id}/assign-driver`, {
+      const response = await api(`/api/sales/delivery-notes/${id}/assign-driver`, {
         method: 'PATCH',
         body: { driverId, vehicleNumber }
       })
       
       const index = deliveryNotes.value.findIndex(dn => dn.id === id)
-      if (index !== -1) {
-        deliveryNotes.value[index].driverId = driverId
-        deliveryNotes.value[index].vehicleNumber = vehicleNumber
+      if (index !== -1 && deliveryNotes.value[index]) {
+        deliveryNotes.value[index]!.driverId = driverId
+        deliveryNotes.value[index]!.vehicleNumber = vehicleNumber
       }
       
-      return response.data
+      return response
     } catch (err: any) {
       error.value = err.message || t('errors.assignmentFailed')
       throw err
@@ -277,10 +276,7 @@ export const useDeliveryNotes = () => {
     error.value = null
     
     try {
-      const response = await $api(`/api/sales/delivery-notes/${id}/packing-slip`, {
-        method: 'GET',
-        responseType: 'blob'
-      })
+      const response = await get(`/api/sales/delivery-notes/${id}/packing-slip`)
       
       return response
     } catch (err: any) {
@@ -297,8 +293,8 @@ export const useDeliveryNotes = () => {
     error.value = null
     
     try {
-      const response = await $api(`/api/sales/delivery-notes/track/${trackingNumber}`)
-      return response.data
+      const response = await get(`/api/sales/delivery-notes/track/${trackingNumber}`)
+      return response
     } catch (err: any) {
       error.value = err.message || t('errors.trackingFailed')
       throw err

@@ -3,23 +3,23 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
       <div>
-        <h1 class="text-3xl font-bold">{{ $t('purchasing.title', 'Purchase Orders') }}</h1>
+        <h1 class="text-3xl font-bold">Purchase Orders</h1>
         <p class="text-muted-foreground mt-1">
-          {{ $t('purchasing.subtitle', 'Manage supplier orders and procurement') }}
+          Manage supplier orders and procurement
         </p>
       </div>
       <div class="flex gap-2 mt-4 sm:mt-0">
         <Button variant="outline" @click="showGroupBuyingModal = true">
           <Users class="mr-2 h-4 w-4" />
-          {{ $t('purchasing.groupBuying') }}
+          Group Buying
         </Button>
         <Button variant="outline" @click="showReorderWizard = true">
           <Zap class="mr-2 h-4 w-4" />
-          {{ $t('purchasing.smartReorder') }}
+          Smart Reorder
         </Button>
         <Button @click="showCreatePOModal = true">
           <Plus class="mr-2 h-4 w-4" />
-          {{ $t('purchasing.createPO') }}
+          Create PO
         </Button>
       </div>
     </div>
@@ -105,7 +105,7 @@
             <input
               v-model="searchTerm"
               type="text"
-              :placeholder="$t('common.search')"
+              placeholder="Search orders..."
               class="pl-10 w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </div>
@@ -270,7 +270,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { 
   Plus, 
   Search, 
@@ -334,7 +333,6 @@ interface GroupBuyingOpportunity {
 }
 
 // State
-const { t } = useI18n()
 const searchTerm = ref('')
 const statusFilter = ref('')
 const supplierFilter = ref('')

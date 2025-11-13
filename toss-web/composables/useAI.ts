@@ -5,7 +5,7 @@
 
 import type { Ref } from 'vue'
 
-export interface AIMessage {
+export interface TossAIMessage {
   role: 'user' | 'assistant'
   content: string
   timestamp: Date

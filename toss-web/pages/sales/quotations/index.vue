@@ -4,16 +4,16 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-          {{ $t('sales.quotations.list.title') }}
+          Sales Quotations
         </h1>
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          {{ $t('sales.quotations.list.description') }}
+          Manage quotes and proposals for customers
         </p>
       </div>
       <div class="flex items-center gap-2">
         <NuxtLink to="/sales/quotations/create" class="btn btn-primary">
           <Icon name="heroicons:plus" class="w-4 h-4 mr-2" />
-          {{ $t('sales.quotations.list.newQuotation') }}
+          New Quotation
         </NuxtLink>
       </div>
     </div>
@@ -36,23 +36,23 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <FormKit
           type="search"
-          :placeholder="$t('common.search') + '...'"
+          placeholder="Search..."
           v-model="filters.search"
         />
         <FormKit
           type="select"
-          :label="$t('common.status')"
+          label="Status"
           v-model="filters.status"
           :options="['All', 'Draft', 'Sent', 'Accepted', 'Expired']"
         />
         <FormKit
           type="date"
-          :label="$t('common.startDate')"
+          label="Start Date"
           v-model="filters.startDate"
         />
         <FormKit
           type="date"
-          :label="$t('common.endDate')"
+          label="End Date"
           v-model="filters.endDate"
         />
       </div>
@@ -63,12 +63,12 @@
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
           <tr>
-            <th class="table-header">{{ $t('sales.quotations.list.quotation') }} #</th>
-            <th class="table-header">{{ $t('sales.quotations.list.customer') }}</th>
-            <th class="table-header">{{ $t('sales.quotations.list.date') }}</th>
-            <th class="table-header text-right">{{ $t('sales.quotations.list.amount') }}</th>
-            <th class="table-header text-center">{{ $t('common.status') }}</th>
-            <th class="table-header text-right">{{ $t('common.actions') }}</th>
+            <th class="table-header">Quotation #</th>
+            <th class="table-header">Customer</th>
+            <th class="table-header">Date</th>
+            <th class="table-header text-right">Amount</th>
+            <th class="table-header text-center">Status</th>
+            <th class="table-header text-right">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -84,7 +84,7 @@
             </td>
             <td class="table-cell text-right">
               <NuxtLink :to="`/sales/quotations/${q.id}`" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                {{ $t('common.view') }}
+                View
               </NuxtLink>
             </td>
           </tr>
@@ -98,17 +98,16 @@
 import { ref, computed } from 'vue'
 import { FormKit } from '@formkit/vue'
 
-const { t } = useI18n()
 useHead({
-  title: t('sales.quotations.list.pageTitle'),
+  title: 'Sales Quotations',
 })
 
 // Mock Data
 const stats = ref([
-  { name: t('sales.quotations.list.draft'), value: 5, icon: 'heroicons:document', bgColor: 'bg-yellow-100', iconColor: 'text-yellow-600' },
-  { name: t('sales.quotations.list.sent'), value: 23, icon: 'heroicons:paper-airplane', bgColor: 'bg-blue-100', iconColor: 'text-blue-600' },
-  { name: t('sales.quotations.list.accepted'), value: 15, icon: 'heroicons:check-circle', bgColor: 'bg-green-100', iconColor: 'text-green-600' },
-  { name: t('sales.quotations.list.expired'), value: 2, icon: 'heroicons:exclamation-circle', bgColor: 'bg-red-100', iconColor: 'text-red-600' },
+  { name: 'Draft', value: 5, icon: 'heroicons:document', bgColor: 'bg-yellow-100', iconColor: 'text-yellow-600' },
+  { name: 'Sent', value: 23, icon: 'heroicons:paper-airplane', bgColor: 'bg-blue-100', iconColor: 'text-blue-600' },
+  { name: 'Accepted', value: 15, icon: 'heroicons:check-circle', bgColor: 'bg-green-100', iconColor: 'text-green-600' },
+  { name: 'Expired', value: 2, icon: 'heroicons:exclamation-circle', bgColor: 'bg-red-100', iconColor: 'text-red-600' },
 ])
 
 const quotations = ref([

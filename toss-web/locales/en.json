@@ -85,7 +85,10 @@
     "template": "Template",
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "amount": "Amount",
+    "startDate": "Start Date",
+    "endDate": "End Date"
   },
   "sales": {
     "quotations": {
@@ -225,7 +228,20 @@
       "processing": "Processing",
       "completed": "Completed",
       "cancelled": "Cancelled",
-      "noOrders": "No orders found"
+      "noOrders": "No orders found",
+      "list": {
+        "title": "Sales Orders",
+        "description": "Manage customer orders and track delivery status",
+        "pageTitle": "Sales Orders - TOSS ERP",
+        "newOrder": "New Order",
+        "order": "Order",
+        "customer": "Customer",
+        "date": "Date",
+        "pending": "Pending Orders",
+        "processing": "Processing Orders", 
+        "shipped": "Shipped Orders",
+        "revenueMonth": "Monthly Revenue"
+      }
     },
     "deliveryNotes": {
       "title": "Delivery Notes",

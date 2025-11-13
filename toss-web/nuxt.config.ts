@@ -24,6 +24,9 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode', 
     '@nuxt/icon',
     
+    // Essential: Internationalization
+    '@nuxtjs/i18n',
+    
     // Essential: State Management
     '@pinia/nuxt',
     '@nuxt/test-utils/module'
@@ -40,6 +43,36 @@ export default defineNuxtConfig({
      * @default "./components/ui"
      */
     componentDir: './components/ui'
+  },
+  
+  // i18n configuration
+  i18n: {
+    locales: [
+      {
+        code: 'en',
+        file: 'en.json',
+        name: 'English'
+      },
+      {
+        code: 'af', 
+        file: 'af.json',
+        name: 'Afrikaans'
+      },
+      {
+        code: 'zu',
+        file: 'zu.json',
+        name: 'isiZulu'
+      }
+    ],
+    lazy: true,
+    langDir: 'locales/',
+    defaultLocale: 'en',
+    strategy: 'prefix_except_default',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'toss_locale',
+      redirectOn: 'root'
+    }
   },
   
   // Module Configurations
