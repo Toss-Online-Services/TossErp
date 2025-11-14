@@ -1,261 +1,121 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { FormKit } from '@formkit/vue'
+import { computed, ref, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useHead } from '#imports'
 
-const { t } = useI18n()
+import { Button } from '~/components/ui/button'
+import { Card, CardContent } from '~/components/ui/card'
+import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert'
+import { Skeleton } from '~/components/ui/skeleton'
+import QuotationForm from '~/components/sales/quotations/QuotationForm.vue'
+import { useQuotations } from '~/composables/useQuotations'
+import { useToast } from '~/composables/useToast'
+import type { Quotation } from '~/types/sales'
+
 const route = useRoute()
-const quotationId = route.params.id
+const router = useRouter()
+const { t } = useI18n()
+const toast = useToast()
 
-useHead({
-  title: t('sales.quotations.edit.pageTitle', { id: quotationId }),
-})
-
-// MOCK: Fetch existing quotation data
-const existingQuotation = ref({
-  customerId: 1,
-  items: [
-    { productId: 1, quantity: 20, unitPrice: 15.50 },
-    { productId: 2, quantity: 10, unitPrice: 45.00 },
-  ],
-  discountRate: 5,
-  terms: 'Payment due within 30 days. Prices valid for 14 days.',
-  notes: 'Customer requested early morning delivery.',
-})
-
-// Mock data for options
-const customers = [
-  { label: 'Jabu\'s Spaza', value: 1, creditLimit: 5000, balance: 1200 },
-  { label: 'Sipho\'s Tavern', value: 2, creditLimit: 10000, balance: 8500 },
-  { label: 'The Gogo Shop', value: 3, creditLimit: 2500, balance: 0 },
-]
-const products = [
-  { label: 'White Bread', value: 1, price: 15.50 },
-  { label: 'Maize Meal 5kg', value: 2, price: 45.00 },
-  { label: 'Cooking Oil 2L', value: 3, price: 65.75 },
-  { label: 'Coca-Cola 2L', value: 4, price: 22.00 },
-]
-
-const vatRate = ref(15)
-const form = ref()
-const formNode = computed(() => form.value?.node)
-
-const selectedCustomer = computed(() => {
-  const customerId = formNode.value?.value?.customerId
-  return customers.find(c => c.value === customerId) || null
-})
-
-const totals = computed(() => {
-    const items = formNode.value?.value?.items || []
-    const discountRate = formNode.value?.value?.discountRate || 0
-
-    const subtotal = items.reduce((acc: number, item: any) => acc + (item.quantity || 0) * (item.unitPrice || 0), 0)
-    const discountAmount = subtotal * (discountRate / 100)
-    const taxableAmount = subtotal - discountAmount
-    const vatAmount = taxableAmount * (vatRate.value / 100)
-    const grandTotal = taxableAmount + vatAmount
-    return { subtotal, discountAmount, vatAmount, grandTotal }
-})
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-ZA', {
-    style: 'currency',
-    currency: 'ZAR',
-  }).format(amount || 0)
+const translate = (key: string, fallback: string, params?: Record<string, unknown>) => {
+  const result = t(key, params ?? {})
+  return result === key ? fallback : result
 }
 
-async function updateQuotation(data: any, node: any) {
-  const submitter = node.target.dataset.name
-  console.log('Updating quotation with data:', data)
-  console.log('Submitter:', submitter)
-  const payload = { ...data, totals: totals.value }
+const quotationId = computed(() => String(route.params.id))
 
-  if (submitter === 'update_send') {
-    alert(`${t('sales.quotations.edit.updateAndSendSuccess')}!\n\n${JSON.stringify(payload, null, 2)}`)
-  } else {
-    alert(`${t('sales.quotations.edit.updateDraftSuccess')}!\n\n${JSON.stringify(payload, null, 2)}`)
+const {
+  fetchQuotation,
+  currentQuotation,
+  updateQuotation
+} = useQuotations()
+
+const quotation = computed(() => currentQuotation.value as Quotation | null)
+const loadError = ref<string | null>(null)
+const isInitialLoading = ref(true)
+
+const loadQuotation = async () => {
+  if (!quotationId.value) {
+    loadError.value = translate('sales.quotations.edit.missingId', 'Quotation identifier is missing.')
+    isInitialLoading.value = false
+    return
+  }
+
+  loadError.value = null
+  isInitialLoading.value = true
+  try {
+    await fetchQuotation(quotationId.value)
+  } catch (err: any) {
+    loadError.value = err?.message ?? translate('sales.quotations.edit.loadFailed', 'Unable to load quotation. Try again later.')
+  } finally {
+    isInitialLoading.value = false
   }
 }
 
-onMounted(() => {
-  form.value = document.querySelector('[data-formkit-type="form"]')
-  
-  watch(() => formNode.value?.value?.items, (newItems, oldItems) => {
-    if (!newItems) return
+onMounted(loadQuotation)
 
-    newItems.forEach((item: any, index: number) => {
-      const oldItem = oldItems?.[index]
-      if (item.productId && item.productId !== oldItem?.productId) {
-        const product = products.find(p => p.value === item.productId)
-        if (product) {
-          formNode.value?.at(`items.${index}.unitPrice`)?.input(product.price)
-        }
-      }
-    })
-  }, { deep: true })
-})
+watch(
+  () => route.params.id,
+  async () => {
+    await loadQuotation()
+  }
+)
+
+const handleSubmitted = (quotation: Quotation) => {
+  toast.success(translate('sales.quotations.edit.success', 'Quotation updated successfully.'))
+  router.push(`/sales/quotations/${quotation.id}`)
+}
+
+const handleCancel = () => {
+  router.push('/sales/quotations')
+}
 </script>
 
 <template>
-  <div class="p-4 sm:p-6">
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-        {{ $t('sales.quotations.edit.title') }} #{{ quotationId }}
-      </h1>
+  <div class="p-4 sm:p-6 space-y-6">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-foreground">
+          {{ translate('sales.quotations.edit.title', 'Edit quotation') }} #{{ quotationId }}
+        </h1>
+        <p class="text-muted-foreground">
+          {{ translate('sales.quotations.edit.subtitle', 'Update pricing, items, and notes before confirming with the customer') }}
+        </p>
+      </div>
+      <Button variant="ghost" as-child>
+        <NuxtLink to="/sales/quotations">
+          {{ translate('common.viewList', 'Back to list') }}
+        </NuxtLink>
+      </Button>
     </div>
 
-    <FormKit type="form" :value="existingQuotation" @submit="updateQuotation" form-class="space-y-8" ref="form">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Main Content -->
-        <div class="lg:col-span-2 space-y-8">
-          <!-- Customer Section -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">{{ $t('sales.quotations.create.customerDetails') }}</h3>
-            </div>
-            <div class="card-body">
-              <FormKit
-                type="select"
-                name="customerId"
-                :label="$t('sales.quotations.create.customer')"
-                placeholder="Select a customer"
-                :options="customers"
-                validation="required"
-              />
-              <div v-if="selectedCustomer" class="mt-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-sm">
-                <p><strong>{{ $t('sales.quotations.create.creditLimit') }}:</strong> {{ formatCurrency(selectedCustomer.creditLimit) }}</p>
-                <p><strong>{{ $t('sales.quotations.create.outstandingBalance') }}:</strong> {{ formatCurrency(selectedCustomer.balance) }}</p>
-              </div>
-            </div>
-          </div>
+    <Alert v-if="loadError" variant="destructive">
+      <AlertTitle>{{ translate('common.error', 'Something went wrong') }}</AlertTitle>
+      <AlertDescription>{{ loadError }}</AlertDescription>
+    </Alert>
 
-          <!-- Line Items Section -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">{{ $t('sales.quotations.create.lineItems') }}</h3>
-            </div>
-            <div class="card-body">
-              <FormKit type="list" name="items" dynamic #default="{ items, node, value: listValue }">
-                <div v-for="(item, index) in items" :key="item" class="flex flex-col sm:flex-row gap-4 items-start mb-4 p-4 border dark:border-gray-700 rounded-lg">
-                  <div class="flex-grow grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
-                    <FormKit
-                      type="select"
-                      :index="index"
-                      name="productId"
-                      :label="$t('sales.quotations.create.product')"
-                      placeholder="Select a product"
-                      :options="products"
-                      validation="required"
-                    />
-                    <FormKit
-                      type="number"
-                      :index="index"
-                      name="quantity"
-                      :label="$t('sales.quotations.create.quantity')"
-                      min="1"
-                      validation="required|min:1"
-                    />
-                    <FormKit
-                      type="number"
-                      :index="index"
-                      name="unitPrice"
-                      :label="$t('sales.quotations.create.unitPrice')"
-                      step="0.01"
-                      validation="required|min:0"
-                    />
-                  </div>
-                  <button type="button" @click="() => node.input(listValue.filter((_, i) => i !== index))" class="btn btn-danger-outline mt-6 sm:mt-0">
-                    <Icon name="heroicons:trash" class="w-4 h-4" />
-                  </button>
-                </div>
-                <button type="button" @click="() => node.input([...listValue, {}])" class="btn btn-secondary">
-                  <Icon name="heroicons:plus" class="w-4 h-4 mr-2" />
-                  {{ $t('sales.quotations.create.addLineItem') }}
-                </button>
-              </FormKit>
-            </div>
-          </div>
-        </div>
+    <Card v-if="isInitialLoading">
+      <CardContent class="space-y-4 py-6">
+        <Skeleton class="h-6 w-56" />
+        <Skeleton class="h-4 w-72" />
+        <Skeleton class="h-32 w-full" />
+        <Skeleton class="h-32 w-full" />
+      </CardContent>
+    </Card>
 
-        <!-- Sidebar -->
-        <div class="lg:col-span-1 space-y-8">
-          <!-- Summary & Actions -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">{{ $t('sales.quotations.create.summary') }}</h3>
-            </div>
-            <div class="card-body space-y-4">
-              <div class="flex justify-between py-2 border-b">
-                <span>{{ $t('sales.quotations.create.subtotal') }}:</span>
-                <span class="font-medium">{{ formatCurrency(totals.subtotal) }}</span>
-              </div>
-              <div class="flex justify-between items-center py-2 border-b">
-                <label for="discountRate">{{ $t('sales.quotations.create.discount') }} (%):</label>
-                <FormKit
-                  type="number"
-                  name="discountRate"
-                  outer-class="!mb-0"
-                  inner-class="max-w-[80px]"
-                  input-class="text-right"
-                  min="0"
-                  max="100"
-                />
-              </div>
-               <div class="flex justify-between py-2 border-b">
-                <span>{{ $t('sales.quotations.create.discountAmount') }}:</span>
-                <span class="font-medium text-red-500">-{{ formatCurrency(totals.discountAmount) }}</span>
-              </div>
-              <div class="flex justify-between py-2 border-b">
-                <span>{{ $t('sales.quotations.create.vat') }} ({{ vatRate }}%):</span>
-                <span class="font-medium">{{ formatCurrency(totals.vatAmount) }}</span>
-              </div>
-              <div class="flex justify-between py-3">
-                <span class="text-lg font-bold">{{ $t('sales.quotations.create.grandTotal') }}:</span>
-                <span class="text-lg font-bold">{{ formatCurrency(totals.grandTotal) }}</span>
-              </div>
-            </div>
-            <div class="card-footer flex flex-col sm:flex-row gap-2">
-                <FormKit
-                  type="submit"
-                  :label="$t('sales.quotations.edit.updateAndSend')"
-                  name="update_send"
-                  outer-class="flex-grow"
-                  input-class="w-full"
-                />
-                <FormKit
-                  type="submit"
-                  :label="$t('sales.quotations.edit.updateDraft')"
-                  name="update_draft"
-                  :classes="{
-                    input: 'w-full justify-center btn-secondary'
-                  }"
-                  outer-class="flex-grow"
-                />
-            </div>
-          </div>
+    <QuotationForm
+      v-else-if="quotation"
+      mode="edit"
+      :quotation="quotation"
+      @submitted="handleSubmitted"
+      @cancel="handleCancel"
+    />
 
-          <!-- Other Details -->
-          <div class="card">
-            <div class="card-body">
-              <FormKit
-                type="textarea"
-                name="terms"
-                :label="$t('sales.quotations.create.termsAndConditions')"
-                :rows="4"
-              />
-              <FormKit
-                type="textarea"
-                name="notes"
-                :label="$t('sales.quotations.create.internalNotes')"
-                :rows="3"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </FormKit>
+    <Card v-else>
+      <CardContent class="py-10 text-center text-muted-foreground">
+        {{ translate('sales.quotations.details.notFound', 'Quotation not found.') }}
+      </CardContent>
+    </Card>
   </div>
 </template>
 
