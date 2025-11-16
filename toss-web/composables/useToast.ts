@@ -73,6 +73,15 @@ export const useToast = () => {
     toasts.value = []
   }
 
+  // Add toast method that accepts options with title, description, variant
+  const toast = (options: { title: string; description?: string; variant?: 'default' | 'destructive' }) => {
+    if (options.variant === 'destructive') {
+      return error(options.description || options.title, options.title)
+    } else {
+      return success(options.description || options.title, options.title)
+    }
+  }
+
   return {
     toasts,
     show,
@@ -81,7 +90,8 @@ export const useToast = () => {
     error,
     warning,
     info,
-    clear
+    clear,
+    toast
   }
 }
 

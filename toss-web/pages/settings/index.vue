@@ -3,13 +3,14 @@ import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
-import { Switch } from '~/components/ui/switch'
+import { Checkbox } from '~/components/ui/checkbox'
 import { Separator } from '~/components/ui/separator'
 
 definePageMeta({
   middleware: 'auth',
 })
+
+const activeTab = ref('business')
 
 const businessSettings = ref({
   name: 'My Spaza Shop',
@@ -42,24 +43,41 @@ const saveSettings = () => {
       </p>
     </div>
 
-    <Tabs default-value="business" class="space-y-4">
-      <TabsList>
-        <TabsTrigger value="business">
+    <div class="space-y-4">
+      <!-- Tab Navigation -->
+      <div class="flex gap-2 border-b">
+        <Button
+          :variant="activeTab === 'business' ? 'default' : 'ghost'"
+          class="rounded-b-none"
+          @click="activeTab = 'business'"
+        >
           Business
-        </TabsTrigger>
-        <TabsTrigger value="notifications">
+        </Button>
+        <Button
+          :variant="activeTab === 'notifications' ? 'default' : 'ghost'"
+          class="rounded-b-none"
+          @click="activeTab = 'notifications'"
+        >
           Notifications
-        </TabsTrigger>
-        <TabsTrigger value="security">
+        </Button>
+        <Button
+          :variant="activeTab === 'security' ? 'default' : 'ghost'"
+          class="rounded-b-none"
+          @click="activeTab = 'security'"
+        >
           Security
-        </TabsTrigger>
-        <TabsTrigger value="billing">
+        </Button>
+        <Button
+          :variant="activeTab === 'billing' ? 'default' : 'ghost'"
+          class="rounded-b-none"
+          @click="activeTab = 'billing'"
+        >
           Billing
-        </TabsTrigger>
-      </TabsList>
+        </Button>
+      </div>
 
       <!-- Business Settings -->
-      <TabsContent value="business" class="space-y-4">
+      <div v-show="activeTab === 'business'" class="space-y-4">
         <Card>
           <CardHeader>
             <CardTitle>Business Information</CardTitle>
@@ -125,10 +143,10 @@ const saveSettings = () => {
             </div>
           </CardContent>
         </Card>
-      </TabsContent>
+      </div>
 
       <!-- Notifications Settings -->
-      <TabsContent value="notifications" class="space-y-4">
+      <div v-show="activeTab === 'notifications'" class="space-y-4">
         <Card>
           <CardHeader>
             <CardTitle>Notification Preferences</CardTitle>
@@ -138,49 +156,57 @@ const saveSettings = () => {
           </CardHeader>
           <CardContent class="space-y-4">
             <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <Label>Email Alerts</Label>
-                <p class="text-sm text-muted-foreground">
-                  Receive email notifications for important events
-                </p>
+              <div class="flex items-center gap-2">
+                <Checkbox :checked="notifications.emailAlerts" @update:checked="notifications.emailAlerts = $event" id="emailAlerts" />
+                <div class="space-y-0.5">
+                  <Label for="emailAlerts" class="cursor-pointer">Email Alerts</Label>
+                  <p class="text-sm text-muted-foreground">
+                    Receive email notifications for important events
+                  </p>
+                </div>
               </div>
-              <Switch v-model:checked="notifications.emailAlerts" />
             </div>
 
             <Separator />
 
             <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <Label>SMS Alerts</Label>
-                <p class="text-sm text-muted-foreground">
-                  Get SMS notifications for critical updates
-                </p>
+              <div class="flex items-center gap-2">
+                <Checkbox :checked="notifications.smsAlerts" @update:checked="notifications.smsAlerts = $event" id="smsAlerts" />
+                <div class="space-y-0.5">
+                  <Label for="smsAlerts" class="cursor-pointer">SMS Alerts</Label>
+                  <p class="text-sm text-muted-foreground">
+                    Get SMS notifications for critical updates
+                  </p>
+                </div>
               </div>
-              <Switch v-model:checked="notifications.smsAlerts" />
             </div>
 
             <Separator />
 
             <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <Label>Low Stock Alerts</Label>
-                <p class="text-sm text-muted-foreground">
-                  Get notified when products are running low
-                </p>
+              <div class="flex items-center gap-2">
+                <Checkbox :checked="notifications.lowStockAlerts" @update:checked="notifications.lowStockAlerts = $event" id="lowStockAlerts" />
+                <div class="space-y-0.5">
+                  <Label for="lowStockAlerts" class="cursor-pointer">Low Stock Alerts</Label>
+                  <p class="text-sm text-muted-foreground">
+                    Get notified when products are running low
+                  </p>
+                </div>
               </div>
-              <Switch v-model:checked="notifications.lowStockAlerts" />
             </div>
 
             <Separator />
 
             <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <Label>Daily Summary</Label>
-                <p class="text-sm text-muted-foreground">
-                  Receive a daily summary of sales and activity
-                </p>
+              <div class="flex items-center gap-2">
+                <Checkbox :checked="notifications.dailySummary" @update:checked="notifications.dailySummary = $event" id="dailySummary" />
+                <div class="space-y-0.5">
+                  <Label for="dailySummary" class="cursor-pointer">Daily Summary</Label>
+                  <p class="text-sm text-muted-foreground">
+                    Receive a daily summary of sales and activity
+                  </p>
+                </div>
               </div>
-              <Switch v-model:checked="notifications.dailySummary" />
             </div>
 
             <Separator />
@@ -191,10 +217,10 @@ const saveSettings = () => {
             </div>
           </CardContent>
         </Card>
-      </TabsContent>
+      </div>
 
       <!-- Security Settings -->
-      <TabsContent value="security" class="space-y-4">
+      <div v-show="activeTab === 'security'" class="space-y-4">
         <Card>
           <CardHeader>
             <CardTitle>Security Settings</CardTitle>
@@ -238,10 +264,10 @@ const saveSettings = () => {
             </div>
           </CardContent>
         </Card>
-      </TabsContent>
+      </div>
 
       <!-- Billing Settings -->
-      <TabsContent value="billing" class="space-y-4">
+      <div v-show="activeTab === 'billing'" class="space-y-4">
         <Card>
           <CardHeader>
             <CardTitle>Billing & Subscription</CardTitle>
@@ -267,7 +293,7 @@ const saveSettings = () => {
             </p>
           </CardContent>
         </Card>
-      </TabsContent>
-    </Tabs>
+      </div>
+    </div>
   </div>
 </template>
