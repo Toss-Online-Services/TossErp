@@ -84,7 +84,7 @@
         </Button>
       </CardHeader>
       <CardContent class="space-y-4">
-        <Alert v-if="!lineItems.length" variant="warning">
+        <Alert v-if="!lineItems.length" variant="default">
           <AlertTitle>{{ t('sales.quotations.form.noItemsTitle', 'No line items yet') }}</AlertTitle>
           <AlertDescription>
             {{ t('sales.quotations.form.noItemsDescription', 'Add at least one item to create a quotation.') }}
@@ -99,7 +99,7 @@
           <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div class="flex-1 space-y-2">
               <Label>{{ t('sales.quotations.form.product', 'Product') }}</Label>
-              <Select v-model="item.productId" @update:modelValue="value => handleProductChange(item, value)">
+              <Select v-model="item.productId" @update:modelValue="(value: any) => handleProductChange(item, value as string | undefined)">
                 <SelectTrigger>
                   <SelectValue :placeholder="t('sales.quotations.form.productPlaceholder', 'Select a product')" />
                 </SelectTrigger>
@@ -275,6 +275,7 @@ import { useCustomers } from '~/composables/useCustomers'
 import { useQuotations } from '~/composables/useQuotations'
 import { useToast } from '~/composables/useToast'
 import { mockStockItems } from '~/services/mock'
+import type { StockItem } from '~/services/mock/stock'
 import type { Quotation, QuotationCustomer, SalesProductSummary } from '~/types/sales'
 
 interface LineItemForm {
@@ -333,7 +334,7 @@ const createEmptyItem = (): LineItemForm => ({
 })
 
 const products = ref<SalesProductSummary[]>(
-  mockStockItems.map((item) => ({
+  mockStockItems.map((item: StockItem) => ({
     id: String(item.id),
     sku: item.sku,
     name: item.name,
@@ -347,7 +348,7 @@ const products = ref<SalesProductSummary[]>(
 
 const productMap = computed(() => {
   const map = new Map<string, SalesProductSummary>()
-  products.value.forEach((product) => map.set(product.id, product))
+  products.value.forEach((product: SalesProductSummary) => map.set(product.id, product))
   return map
 })
 
@@ -445,25 +446,40 @@ const hasItemContent = (item: LineItemForm) => {
   return Boolean(item.productId?.trim()) || Boolean(item.name?.trim())
 }
 
-const mapCustomer = (input: any): QuotationCustomer => ({
-  id: String(input.id ?? input.customerId ?? input.fullName ?? input.name ?? Math.random().toString(36).slice(2)),
-  name:
+const mapCustomer = (input: Record<string, any>): QuotationCustomer => {
+  const fallbackFromNames = [input.firstName, input.lastName]
+    .filter((value: string | undefined) => Boolean(value))
+    .join(' ')
+    .trim()
+
+  const resolvedName =
     input.fullName ??
     input.name ??
-    [input.firstName, input.lastName].filter((value: string | undefined) => Boolean(value)).join(' ').trim() ||
-    t('sales.quotations.form.unknownCustomer', 'Unknown customer'),
-  email: input.email,
-  phone: input.phone,
-  address: input.address,
-  billingAddress: input.billingAddress ?? input.address,
-  shippingAddress: input.shippingAddress ?? input.address,
-  territory: input.territory ?? '',
-  customerGroup: input.segment ?? input.customerGroup ?? '',
-  creditLimit: Number(input.creditLimit ?? input.totalSpent ?? 0),
-  creditUsed: Number(input.creditUsed ?? 0),
-  paymentTerms: Number(input.paymentTerms ?? 0),
-  primaryContact: input.primaryContact ?? undefined
-})
+    (fallbackFromNames.length ? fallbackFromNames : undefined) ??
+    t('sales.quotations.form.unknownCustomer', 'Unknown customer')
+
+  return {
+    id: String(
+      input.id ??
+      input.customerId ??
+      input.fullName ??
+      input.name ??
+      Math.random().toString(36).slice(2)
+    ),
+    name: resolvedName,
+    email: input.email,
+    phone: input.phone,
+    address: input.address,
+    billingAddress: input.billingAddress ?? input.address,
+    shippingAddress: input.shippingAddress ?? input.address,
+    territory: input.territory ?? '',
+    customerGroup: input.segment ?? input.customerGroup ?? '',
+    creditLimit: Number(input.creditLimit ?? input.totalSpent ?? 0),
+    creditUsed: Number(input.creditUsed ?? 0),
+    paymentTerms: Number(input.paymentTerms ?? 0),
+    primaryContact: input.primaryContact ?? undefined
+  }
+}
 
 const ensureCustomerInList = (customer: QuotationCustomer) => {
   if (!customersMap.value.has(customer.id)) {
@@ -509,7 +525,7 @@ const loadCustomers = async () => {
   loadError.value = null
   try {
     const response = await getCustomers({ pageSize: 100 })
-    const raw = Array.isArray(response)
+    const raw: any[] = Array.isArray(response)
       ? response
       : Array.isArray((response as any)?.data)
         ? (response as any).data
@@ -517,7 +533,7 @@ const loadCustomers = async () => {
           ? (response as any).customers
           : []
     const mapped = raw.map(mapCustomer)
-    customers.value = Array.from(new Map(mapped.map((customer) => [customer.id, customer])).values())
+    customers.value = Array.from(new Map(mapped.map((customer: QuotationCustomer) => [customer.id, customer])).values())
     if (props.quotation) {
       ensureCustomerInList(props.quotation.customer)
     }

@@ -9,7 +9,7 @@ export const useApiInterceptor = () => {
   const createAuthenticatedFetch = () => {
     return $fetch.create({
       // Request interceptor
-      onRequest: async ({ options }) => {
+      onRequest: async ({ options }: { options: any }) => {
         // Add auth header if token exists and is not expired
         if (token.value && !isTokenExpired()) {
           options.headers = {
@@ -33,7 +33,7 @@ export const useApiInterceptor = () => {
       },
 
       // Response interceptor
-      onResponseError: async ({ response, options }) => {
+      onResponseError: async ({ response, options }: { response: any; options: any }) => {
         // Handle 401 Unauthorized responses
         if (response.status === 401) {
           // Try to refresh token once
@@ -48,7 +48,7 @@ export const useApiInterceptor = () => {
                   ...getAuthHeader()
                 },
                 retry: true // Mark as retry to prevent infinite loops
-              })
+              } as any)
             }
           }
           
@@ -67,11 +67,11 @@ export const useApiInterceptor = () => {
    * Enhanced API fetch with automatic authentication and retry
    */
   const authenticatedFetch = async <T = any>(
-    url: string, 
+    url: string,
     options: FetchOptions = {}
   ): Promise<T> => {
     const authFetch = createAuthenticatedFetch()
-    return authFetch<T>(url, options)
+    return authFetch<T>(url, options as any)
   }
 
   /**

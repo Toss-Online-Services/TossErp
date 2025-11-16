@@ -102,6 +102,7 @@
     "nuxt-schema-org": "^5.0.9",
     "nuxt-security": "^2.4.0",
     "nuxt-swiper": "^2.0.1",
+    "ofetch": "^1.5.1",
     "playwright-core": "^1.48.2",
     "postcss": "^8.4.49",
     "prettier": "^3.6.2",

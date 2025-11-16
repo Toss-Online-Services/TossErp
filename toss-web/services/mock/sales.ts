@@ -25,7 +25,9 @@ import type {
   SalesReturn,
   SalesReturnItem,
   SalesReturnStatus,
-  PaymentStatus
+  PaymentStatus,
+  PosSale,
+  PosParkedSale
 } from '~/types/sales'
 
 const VAT_RATE_DEFAULT = 15
@@ -993,6 +995,9 @@ const mockPosSessions: PosSession[] = [
   }
 ]
 
+const mockPosSales: PosSale[] = []
+const mockParkedPosSales: PosParkedSale[] = []
+
 const mockSalesAnalytics: SalesAnalyticsSnapshot = {
   from: '2025-11-01',
   to: '2025-11-13',
@@ -1851,8 +1856,7 @@ export class MockSalesService {
     const { invoice } = ensureInvoiceRef(id)
     invoice.payments.push({
       ...payment,
-      id: payment.id ?? `${invoice.id}-pay-${invoice.payments.length + 1}`
-    })
+      id: payment.id ?? `${invoice.id}-pay-${invoice.payments.length + 1}`    })
     recalculateInvoiceTotals(invoice)
     return clone(invoice)
   }
@@ -2015,4 +2019,5 @@ export class MockSalesService {
     return clone(mockSalesAnalytics)
   }
 }
+
 

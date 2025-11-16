@@ -5,7 +5,7 @@ import { reactiveOmit } from "@vueuse/core"
 import { ScrollAreaScrollbar, ScrollAreaThumb } from "reka-ui"
 import { cn } from '~/lib/utils'
 
-const props = withDefaults(defineProps<ScrollAreaScrollbarProps & { class?: HTMLAttributes["class"] }>(), {
+const props = withDefaults(defineProps</* @vue-ignore */ ScrollAreaScrollbarProps & { class?: HTMLAttributes["class"] }>(), {
   orientation: "vertical",
 })
 

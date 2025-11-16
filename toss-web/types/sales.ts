@@ -371,6 +371,17 @@ export interface CreateSalesPartnerRequest {
 
 export type QuotationStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired' | 'converted'
 
+export interface SalesProductSummary {
+  id: string
+  sku: string
+  name: string
+  description: string
+  unitPrice: number
+  vatRate: number
+  uom: string
+  stockOnHand: number
+}
+
 export interface QuotationCustomer {
   id: string
   name: string
@@ -686,6 +697,53 @@ export interface PosSession {
     approvedAt: string
     notes?: string
   }>
+}
+
+export interface PosSaleItem {
+  productId: string
+  productName: string
+  sku?: string
+  quantity: number
+  rate: number
+  discount?: number
+  discountType?: 'percentage' | 'amount'
+  taxRate: number
+  total: number
+}
+
+export interface PosPaymentEntry {
+  mode: 'cash' | 'card' | 'mobile' | 'credit' | 'other'
+  amount: number
+  reference?: string
+  accountNumber?: string
+}
+
+export interface PosSale {
+  id: string
+  reference: string
+  sessionId?: string
+  profileId?: string
+  cashierId?: string
+  cashierName?: string
+  customerId?: string
+  customerName?: string
+  items: PosSaleItem[]
+  payments: PosPaymentEntry[]
+  subtotal: number
+  discount: number
+  tax: number
+  total: number
+  notes?: string
+  createdAt: string
+  status: 'completed' | 'refunded'
+}
+
+export interface PosParkedSale {
+  reference: string
+  createdAt: string
+  customerId?: string
+  items: PosSaleItem[]
+  payments: PosPaymentEntry[]
 }
 
 export interface LoyaltyTier {

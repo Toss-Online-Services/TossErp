@@ -22,17 +22,17 @@ export const useApi = () => {
         'Content-Type': 'application/json',
         ...(token.value ? { Authorization: `Bearer ${token.value}` } : {})
       },
-      onRequest({ options }) {
+      onRequest({ options }: { options: any }) {
         // Add auth token if available
         if (token.value && options.headers) {
           if (options.headers instanceof Headers) {
-            options.headers.set('Authorization', `Bearer ${token.value}`)
+            options.headers.set('Authorization', `Bearer ${token.value}`)       
           } else {
-            (options.headers as Record<string, string>)['Authorization'] = `Bearer ${token.value}`
+            (options.headers as Record<string, string>)['Authorization'] = `Bearer ${token.value}`                                                              
           }
         }
       },
-      onResponseError({ response }) {
+      onResponseError({ response }: { response: any }) {
         // Handle common error scenarios
         if (response.status === 401) {
           // Unauthorized - redirect to login

@@ -8,6 +8,8 @@ declare global {
   var useState: typeof vi.fn
   var useRuntimeConfig: typeof vi.fn
   var useApi: typeof vi.fn
+  // $fetch is auto-imported by Nuxt
+  const $fetch: typeof import('ofetch').$fetch
 }
 
 declare module 'h3' {
