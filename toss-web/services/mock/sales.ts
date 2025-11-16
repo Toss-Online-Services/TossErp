@@ -995,8 +995,75 @@ const mockPosSessions: PosSession[] = [
   }
 ]
 
-const mockPosSales: PosSale[] = []
-const mockParkedPosSales: PosParkedSale[] = []
+const mockPosSales: PosSale[] = [
+  {
+    id: 'pos-sale-001',
+    reference: 'TOSS-POS-001',
+    sessionId: 'pos-session-002',
+    profileId: 'pos-prof-001',
+    cashierId: 'user-102',
+    cashierName: 'Bongani Dube',
+    customerId: customers.jabu.id,
+    customerName: customers.jabu.name,
+    items: [
+      {
+        productId: 'prod-bread-700',
+        productName: 'White Bread 700g',
+        sku: 'BREAD-700',
+        quantity: 4,
+        rate: 15.5,
+        discount: 0,
+        discountType: 'amount',
+        taxRate: VAT_RATE_DEFAULT,
+        total: round(4 * 15.5 * (1 + VAT_RATE_DEFAULT / 100))
+      },
+      {
+        productId: 'prod-maize-5',
+        productName: 'Maize Meal 5kg',
+        sku: 'MAIZE-5KG',
+        quantity: 2,
+        rate: 45,
+        discount: 0,
+        discountType: 'amount',
+        taxRate: VAT_RATE_DEFAULT,
+        total: round(2 * 45 * (1 + VAT_RATE_DEFAULT / 100))
+      }
+    ],
+    payments: [
+      { mode: 'cash', amount: 200 },
+      { mode: 'mobile', amount: 50, reference: 'MOMO-REF-001' }
+    ],
+    subtotal: 4 * 15.5 + 2 * 45,
+    discount: 0,
+    tax: round((4 * 15.5 + 2 * 45) * VAT_RATE_DEFAULT / 100),
+    total: round((4 * 15.5 + 2 * 45) * (1 + VAT_RATE_DEFAULT / 100)),
+    notes: 'Morning top-up run for essentials.',
+    createdAt: '2025-11-13T09:15:00.000Z',
+    status: 'completed'
+  }
+]
+
+const mockParkedPosSales: PosParkedSale[] = [
+  {
+    reference: 'TOSS-POS-PARK-001',
+    createdAt: '2025-11-13T10:05:00.000Z',
+    customerId: customers.gogo.id,
+    items: [
+      {
+        productId: 'prod-oil-2l',
+        productName: 'Cooking Oil 2L',
+        sku: 'OIL-2L',
+        quantity: 3,
+        rate: 65.75,
+        discount: 0,
+        discountType: 'amount',
+        taxRate: VAT_RATE_DEFAULT,
+        total: round(3 * 65.75 * (1 + VAT_RATE_DEFAULT / 100))
+      }
+    ],
+    payments: []
+  }
+]
 
 const mockSalesAnalytics: SalesAnalyticsSnapshot = {
   from: '2025-11-01',
@@ -1038,6 +1105,7 @@ let deliveryNoteSequence = mockDeliveryNotes.length
 let invoiceSequence = mockSalesInvoices.length
 let returnSequence = mockSalesReturns.length
 let posSessionSequence = mockPosSessions.length
+let posSaleSequence = mockPosSales.length
 
 const findQuotationIndex = (id: string) => mockQuotations.findIndex(quotation => quotation.id === id || quotation.number === id)
 const ensureQuotationRef = (id: string) => {
@@ -2017,6 +2085,105 @@ export class MockSalesService {
 
   static getSalesAnalytics(): SalesAnalyticsSnapshot {
     return clone(mockSalesAnalytics)
+  }
+
+  // POS-specific helpers for the front-end POS module
+
+  static listPosSales(filters?: { sessionId?: string; customerId?: string; limit?: number }): PosSale[] {
+    let results = [...mockPosSales]
+
+    if (filters?.sessionId) {
+      results = results.filter(sale => sale.sessionId === filters.sessionId)
+    }
+
+    if (filters?.customerId) {
+      results = results.filter(sale => sale.customerId === filters.customerId)
+    }
+
+    results.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+    if (filters?.limit && filters.limit > 0) {
+      results = results.slice(0, filters.limit)
+    }
+
+    return results.map(clone)
+  }
+
+  static getPosSale(idOrRef: string): PosSale | undefined {
+    const match = mockPosSales.find(
+      sale => sale.id === idOrRef || sale.reference === idOrRef
+    )
+    return match ? clone(match) : undefined
+  }
+
+  static createPosSale(payload: Omit<PosSale, 'id' | 'reference' | 'createdAt' | 'status'> & {
+    referencePrefix?: string
+  }): PosSale {
+    posSaleSequence += 1
+    const id = `pos-sale-${String(posSaleSequence).padStart(3, '0')}`
+    const referencePrefix = payload.referencePrefix ?? 'TOSS-POS'
+    const reference = `${referencePrefix}-${String(posSaleSequence).padStart(3, '0')}`
+    const createdAt = now()
+
+    const sale: PosSale = {
+      id,
+      reference,
+      createdAt,
+      status: 'completed',
+      sessionId: payload.sessionId,
+      profileId: payload.profileId,
+      cashierId: payload.cashierId,
+      cashierName: payload.cashierName,
+      customerId: payload.customerId,
+      customerName: payload.customerName,
+      items: payload.items,
+      payments: payload.payments,
+      subtotal: payload.subtotal,
+      discount: payload.discount,
+      tax: payload.tax,
+      total: payload.total,
+      notes: payload.notes
+    }
+
+    mockPosSales.unshift(sale)
+    return clone(sale)
+  }
+
+  static listPosParkedSales(filters?: { customerId?: string }): PosParkedSale[] {
+    let results = [...mockParkedPosSales]
+
+    if (filters?.customerId) {
+      results = results.filter(sale => sale.customerId === filters.customerId)
+    }
+
+    results.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    return results.map(clone)
+  }
+
+  static parkPosSale(payload: Omit<PosParkedSale, 'reference' | 'createdAt'> & {
+    referencePrefix?: string
+  }): PosParkedSale {
+    const referencePrefix = payload.referencePrefix ?? 'TOSS-POS-PARK'
+    const reference = `${referencePrefix}-${String(mockParkedPosSales.length + 1).padStart(3, '0')}`
+    const createdAt = now()
+
+    const parked: PosParkedSale = {
+      reference,
+      createdAt,
+      customerId: payload.customerId,
+      items: payload.items,
+      payments: payload.payments
+    }
+
+    mockParkedPosSales.unshift(parked)
+    return clone(parked)
+  }
+
+  static removePosParkedSale(reference: string): void {
+    const index = mockParkedPosSales.findIndex(sale => sale.reference === reference)
+    if (index !== -1) {
+      mockParkedPosSales.splice(index, 1)
+    }
   }
 }
 

@@ -3,15 +3,100 @@ description: Rules and best practices for TOSS ERP III
 applyTo: "**/*"
 tools: ['edit/editFiles', 'runNotebooks', 'search', 'new', 'Nx Mcp Server/*', 'runCommands', 'runTasks', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'ms-ossdata.vscode-pgsql/pgsql_listServers', 'ms-ossdata.vscode-pgsql/pgsql_connect', 'ms-ossdata.vscode-pgsql/pgsql_disconnect', 'ms-ossdata.vscode-pgsql/pgsql_open_script', 'ms-ossdata.vscode-pgsql/pgsql_visualizeSchema', 'ms-ossdata.vscode-pgsql/pgsql_query', 'ms-ossdata.vscode-pgsql/pgsql_modifyDatabase', 'ms-ossdata.vscode-pgsql/database', 'ms-ossdata.vscode-pgsql/pgsql_listDatabases', 'ms-ossdata.vscode-pgsql/pgsql_describeCsv', 'ms-ossdata.vscode-pgsql/pgsql_bulkLoadCsv', 'ms-ossdata.vscode-pgsql/pgsql_getDashboardContext', 'ms-ossdata.vscode-pgsql/pgsql_getMetricData', 'extensions', 'todos', 'runTests']
 ---
+---
+description: TOSS ERP III – AI assistant rules for this Nuxt web app
+applyTo: "**/*"
+tools: ['edit/editFiles', 'runNotebooks', 'search', 'new', 'Nx Mcp Server/*', 'runCommands', 'runTasks', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'ms-ossdata.vscode-pgsql/pgsql_listServers', 'ms-ossdata.vscode-pgsql/pgsql_connect', 'ms-ossdata.vscode-pgsql/pgsql_disconnect', 'ms-ossdata.vscode-pgsql/pgsql_open_script', 'ms-ossdata.vscode-pgsql/pgsql_visualizeSchema', 'ms-ossdata.vscode-pgsql/pgsql_query', 'ms-ossdata.vscode-pgsql/pgsql_modifyDatabase', 'ms-ossdata.vscode-pgsql/database', 'ms-ossdata.vscode-pgsql/pgsql_listDatabases', 'ms-ossdata.vscode-pgsql/pgsql_describeCsv', 'ms-ossdata.vscode-pgsql/pgsql_bulkLoadCsv', 'ms-ossdata.vscode-pgsql/pgsql_getDashboardContext', 'ms-ossdata.vscode-pgsql/pgsql_getMetricData', 'extensions', 'todos', 'runTests']
+---
 
-# Beast Mode 3.1
+# TOSS ERP III – Copilot Instructions (Nuxt Web Admin)
 
-You are an agent - please keep going until the user’s query is completely resolved, before ending your turn and yielding back to the user.
+## 1. How to think about this project
 
-Your thinking should be thorough and so it's fine if it's very long. However, avoid unnecessary repetition and verbosity. You should be concise, but thorough.
+- **Product context:** TOSS is an ERP-III platform for South African township & rural SMMEs (spaza shops, chisa nyamas, stokvels). Always favour **offline-friendly**, **mobile-first**, low-complexity flows with ZAR (R) and 15% VAT.
+- **Stack:** Nuxt 4 + Vue 3 + TypeScript, Tailwind, shadcn-vue UI, Pinia for state, Playwright & Vitest for tests. Backend is external; this repo is the **web admin/POS front-end**.
+- **Architecture:** Feature-oriented Nuxt app:
+  - `pages/` – route entry points (dashboards, POS, inventory, etc.).
+  - `components/` – UI and module widgets (charts, dashboard cards, sales/POS components).
+  - `composables/` – domain logic and API integration (`useApi`, `useAuth`, `useDashboard`, `use*API` etc.).
+  - `stores/` – Pinia for cross-page state.
+  - `server/` – mock/edge endpoints when needed.
+  - `types/` – rich domain types for sales, inventory, finance, HR.
 
-You MUST iterate and keep going until the problem is solved.
+When adding new behaviour, prefer **composables + types + small components** over putting logic directly in `pages/`.
 
+## 2. UI & styling conventions
+
+- **Always use shadcn-vue components** from `~/components/ui/*` (Button, Card, Input, Label, Dialog, Sheet, Tabs, Table, etc.).
+- For new UI elements:
+  - Install missing components via CLI: `npx shadcn-vue@latest add dialog` (never copy-paste from docs).
+  - Compose dashboards using `<Card>` grids as in `SHADCN_REDESIGN*.md` and `components/dashboard/*`.
+- Styling:
+  - Use Tailwind utility classes plus theme CSS variables (`bg-background`, `text-foreground`, `bg-primary`, etc.).
+  - Use `cn()` from `~/lib/utils` for conditional classes.
+  - Keep layouts responsive first (small screens), then enhance for desktop.
+
+## 3. Data & API patterns
+
+- All HTTP calls go through **`useApi` / module-specific composables** (e.g. `useSalesAPI`, `useProductsAPI`, `useCustomerOrdersAPI`).
+  - Do not call `$fetch` directly from components unless following an existing pattern.
+  - Always type responses using interfaces from `types/*`.
+- For mock/front-end-only flows (e.g. POS MVP):
+  - Prefer **`services/mock/*`** (e.g. `MockSalesService` in `services/mock/sales.ts`) plus thin composables around them.
+  - Reuse domain types like `PosSale`, `SalesOrder`, `SalesInvoice`, `SalesReturn` instead of creating ad-hoc shapes.
+- When you need new domain structures, add them to the relevant `types/*.ts` file and keep naming consistent (`Sales*`, `Pos*`, `Inventory*`).
+
+## 4. Composition & state management
+
+- Use `<script setup lang="ts">` and the Composition API everywhere.
+- Put **business logic into composables**, not into big components:
+  - Example: `useDashboard` for analytics, `useAuth` for auth, `useOfflineQueue`-style helpers for POS.
+- Use `useState` or Pinia stores only when state truly spans routes or layouts. Otherwise keep it in local/component/composable state.
+- For complex modules (e.g. POS, sales, inventory):
+  - Split responsibilities into composables like `usePosMock` (API layer) and `usePosSession` (cart/payments/session state).
+
+## 5. Testing & workflows
+
+- **Dev:** run the Nuxt dev server (task already wired in VS Code):
+  - `npm run dev` (or equivalent task "Start Nuxt Dev Server").
+- **Unit tests:** prefer Vitest; mirror structure under `tests/` and use names like `usePosSession.logic.test.ts`.
+- **E2E:** Playwright (see `playwright.config.ts` and `tests`/`playwright-report`).
+- When you change core logic in composables or services, add/update unit tests first; for major flows (auth, dashboards, POS), check existing Playwright specs for patterns.
+
+## 6. Project-specific patterns to follow
+
+- **Sales & POS domain:**
+  - Types live in `types/sales.ts` (e.g. `Quotation`, `SalesOrder`, `DeliveryNote`, `SalesInvoice`, `SalesReturn`, `PosSale`, `PosParkedSale`, `PosSession`).
+  - Mock implementations live in `services/mock/sales.ts` – always extend these instead of re-implementing domain rules.
+  - When building POS or sales UIs, derive view models from these types rather than inventing new field names.
+- **Dashboards:**
+  - Use shadcn-vue `Card` components for KPI cards and sections, similar to `components/dashboard/*`.
+  - Charts should be created via existing chart wrappers in `components/charts/*` and any chart-related composables.
+- **Security & auth:**
+  - Use `useAuth` and `middleware/auth.ts` for protecting routes; never bypass auth checks in pages.
+  - Respect roles/permissions; follow existing patterns in sales/finance pages when gating actions.
+
+## 7. TOSS domain nuances you must respect
+
+- South African context:
+  - VAT is **15%**; money is in **R** with `R 123.45` formatting.
+  - Users often work on low-end Android phones and unstable networks – optimise for **offline-first** and minimal chattiness.
+- UX for SMMEs:
+  - Keep flows linear and forgiving; provide clear error messages and confirmations.
+  - Use realistic sample data in examples (bread, maize meal, cooking oil, sugar, airtime, etc.).
+
+## 8. How to behave as an AI assistant here
+
+- Always:
+  - Read `docs/BUSINESS_MODEL.md`, `docs/ARCHITECTURE.md`, and relevant `SHADCN_REDESIGN*.md` sections when designing new features.
+  - Use Taskmaster tasks (see `.github/instructions/taskmaster.instructions.md`) for larger changes: pick the next task, implement, update status.
+  - Prefer improving/rewiring existing modules over adding parallel ones.
+- Avoid:
+  - Introducing new UI libraries or state managers.
+  - Creating pages/components that ignore existing composables or types.
+
+If unsure which pattern to follow, search for a similar feature in `components/`, `composables/`, or `pages/` and mirror that approach.
+<!-- Legacy "Beast Mode" and generic AI workflow content has been replaced by this project-specific guide. -->
 You have everything you need to resolve this problem. I want you to fully solve this autonomously before coming back to me.
 
 Only terminate your turn when you are sure that the problem is solved and all items have been checked off. Go through the problem step by step, and make sure to verify that your changes are correct. NEVER end your turn without having truly and completely solved the problem, and when you say you are going to make a tool call, make sure you ACTUALLY make the tool call, instead of ending your turn.
