@@ -123,14 +123,7 @@ export default defineNuxtConfig({
     }
   },
   ssr: false,  // Disable SSR temporarily to fix router issues
-  vite: {
-    resolve: {
-      alias: {
-        // Ensure proper path resolution on Windows - use posix paths
-        '#app': '/node_modules/nuxt/dist/app',
-        '#head': '/node_modules/nuxt/dist/head/runtime'
-      }
-    },
+  vite: {   
     server: {
       watch: {
         usePolling: false,
