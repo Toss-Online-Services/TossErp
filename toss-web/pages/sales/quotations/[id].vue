@@ -1,9 +1,9 @@
 <template>
-  <div class="p-4 sm:p-6 space-y-6">
+  <div class="p-4 space-y-6 sm:p-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <Button variant="ghost" size="sm" class="w-fit px-0 text-muted-foreground" @click="goBack">
-          <ArrowLeft class="mr-2 h-4 w-4" />
+        <Button variant="ghost" size="sm" class="px-0 w-fit text-muted-foreground" @click="goBack">
+          <ArrowLeft class="mr-2 w-4 h-4" />
           {{ t('common.back', 'Back to quotations') }}
         </Button>
         <div>
@@ -17,19 +17,60 @@
           </p>
         </div>
       </div>
-      <div class="flex flex-col items-start gap-3 sm:items-end">
+      <div class="flex flex-col gap-3 items-start sm:items-end">
         <Badge v-if="quotation" :variant="statusVariant(quotation.status)">
           {{ statusLabel(quotation.status) }}
         </Badge>
         <div class="flex flex-wrap gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button
+                variant="outline"
+                size="sm"
+                :disabled="pending || !quotation"
+                class="min-w-[150px] justify-between"
+              >
+                <span class="flex gap-2 items-center">
+                  <Loader2 v-if="statusChanging" class="w-4 h-4 animate-spin" />
+                  <span v-else>{{ t('sales.quotations.details.statusMenu', 'Status') }}</span>
+                </span>
+                <span class="text-xs text-muted-foreground">{{ statusLabel(quotation?.status ?? 'draft') }}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" class="w-60">
+              <DropdownMenuLabel>{{ t('sales.quotations.details.statusLabel', 'Update status') }}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                v-for="option in availableStatuses"
+                :key="option.value"
+                :disabled="Boolean(statusChanging && statusChanging !== option.value)"
+                @click="handleStatusChange(option.value)"
+              >
+                <Loader2 v-if="statusChanging === option.value" class="mr-2 w-4 h-4 animate-spin" />
+                <span
+                  v-else
+                  class="inline-block mr-2 w-2 h-2 rounded-full"
+                  :class="statusIndicatorClass(option.value)"
+                />
+                {{ option.label }}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>{{ t('sales.quotations.details.moreActions', 'More actions') }}</DropdownMenuLabel>
+              <DropdownMenuItem :disabled="duplicateLoading" @click="handleDuplicateQuotation">
+                <Loader2 v-if="duplicateLoading" class="mr-2 w-4 h-4 animate-spin" />
+                <Copy v-else class="mr-2 w-4 h-4" />
+                {{ t('sales.quotations.details.duplicateQuotation', 'Duplicate quotation') }}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="outline" size="sm" :disabled="pending || !quotation" @click="navigateToEdit">
-            <PenSquare class="mr-2 h-4 w-4" />
+            <PenSquare class="mr-2 w-4 h-4" />
             {{ t('common.edit') }}
           </Button>
           <Dialog v-model:open="emailDialogOpen">
             <DialogTrigger as-child>
               <Button variant="secondary" size="sm" :disabled="pending || !quotation">
-                <Mail class="mr-2 h-4 w-4" />
+                <Mail class="mr-2 w-4 h-4" />
                 {{ t('common.send') }}
               </Button>
             </DialogTrigger>
@@ -40,10 +81,30 @@
                   {{ t('sales.quotations.details.emailDescription', 'Send this quotation to the customer.') }}
                 </DialogDescription>
               </DialogHeader>
-              <div class="space-y-4 py-2">
+              <div class="py-2 space-y-4">
                 <div class="space-y-2">
                   <Label for="quotation-email-to">{{ t('common.to', 'To') }}</Label>
                   <Input id="quotation-email-to" v-model="emailForm.to" type="email" required />
+                </div>
+                <div class="grid gap-3 md:grid-cols-2">
+                  <div class="space-y-2">
+                    <Label for="quotation-email-cc">{{ t('common.cc', 'CC') }}</Label>
+                    <Input
+                      id="quotation-email-cc"
+                      v-model="emailForm.cc"
+                      :placeholder="t('sales.quotations.details.ccPlaceholder', 'Separate addresses with commas')"
+                      type="text"
+                    />
+                  </div>
+                  <div class="space-y-2">
+                    <Label for="quotation-email-bcc">{{ t('common.bcc', 'BCC') }}</Label>
+                    <Input
+                      id="quotation-email-bcc"
+                      v-model="emailForm.bcc"
+                      :placeholder="t('sales.quotations.details.bccPlaceholder', 'Separate addresses with commas')"
+                      type="text"
+                    />
+                  </div>
                 </div>
                 <div class="space-y-2">
                   <Label for="quotation-email-subject">{{ t('common.subject', 'Subject') }}</Label>
@@ -59,26 +120,26 @@
                   {{ t('common.cancel', 'Cancel') }}
                 </Button>
                 <Button :disabled="emailSubmitting" @click="handleSendEmail">
-                  <Loader2 v-if="emailSubmitting" class="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 v-if="emailSubmitting" class="mr-2 w-4 h-4 animate-spin" />
                   {{ t('sales.quotations.details.sendEmail', 'Send email') }}
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
           <Button size="sm" :disabled="pending || !quotation || convertLoading" @click="handleConvertToOrder">
-            <Loader2 v-if="convertLoading" class="mr-2 h-4 w-4 animate-spin" />
-            <ArrowRightCircle v-else class="mr-2 h-4 w-4" />
+            <Loader2 v-if="convertLoading" class="mr-2 w-4 h-4 animate-spin" />
+            <ArrowRightCircle v-else class="mr-2 w-4 h-4" />
             {{ t('sales.quotations.details.convertToOrder', 'Convert to order') }}
           </Button>
           <Button variant="outline" size="sm" :disabled="pending || !quotation || pdfLoading" @click="handleDownloadPdf">
-            <Loader2 v-if="pdfLoading" class="mr-2 h-4 w-4 animate-spin" />
-            <FileDown v-else class="mr-2 h-4 w-4" />
+            <Loader2 v-if="pdfLoading" class="mr-2 w-4 h-4 animate-spin" />
+            <FileDown v-else class="mr-2 w-4 h-4" />
             {{ t('sales.quotations.details.downloadPdf', 'Download PDF') }}
           </Button>
           <AlertDialog v-model:open="deleteDialogOpen">
             <AlertDialogTrigger as-child>
               <Button variant="destructive" size="sm" :disabled="pending || !quotation">
-                <Trash2 class="mr-2 h-4 w-4" />
+                <Trash2 class="mr-2 w-4 h-4" />
                 {{ t('common.delete') }}
               </Button>
             </AlertDialogTrigger>
@@ -92,7 +153,7 @@
               <AlertDialogFooter>
                 <AlertDialogCancel>{{ t('common.cancel', 'Cancel') }}</AlertDialogCancel>
                 <AlertDialogAction :disabled="deleteLoading" @click="handleDeleteQuotation">
-                  <Loader2 v-if="deleteLoading" class="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 v-if="deleteLoading" class="mr-2 w-4 h-4 animate-spin" />
                   {{ t('common.delete') }}
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -108,20 +169,35 @@
     </Alert>
 
     <Card v-if="pending">
-      <CardContent class="space-y-6 p-6">
-        <Skeleton class="h-6 w-48" />
-        <Skeleton class="h-20 w-full" />
+      <CardContent class="p-6 space-y-6">
+        <Skeleton class="w-48 h-6" />
+        <Skeleton class="w-full h-20" />
         <div class="space-y-3">
-          <Skeleton class="h-5 w-32" />
-          <Skeleton class="h-32 w-full" />
+          <Skeleton class="w-32 h-5" />
+          <Skeleton class="w-full h-32" />
         </div>
-        <Skeleton class="h-5 w-32" />
-        <Skeleton class="h-24 w-full" />
+        <Skeleton class="w-32 h-5" />
+        <Skeleton class="w-full h-24" />
       </CardContent>
     </Card>
 
     <Card v-else-if="quotation">
-      <CardContent class="space-y-8 pt-6">
+      <CardContent class="pt-6 space-y-8">
+        <div class="grid gap-3 text-sm text-muted-foreground md:grid-cols-3">
+          <div>
+            <span class="font-medium text-foreground">{{ t('sales.quotations.details.createdOn', 'Created on') }}</span>
+            <div>{{ formatDate(quotation.date) }}</div>
+          </div>
+          <div v-if="quotation.validUntil">
+            <span class="font-medium text-foreground">{{ t('sales.quotations.details.validUntil', 'Valid until') }}</span>
+            <div>{{ formatDate(quotation.validUntil) }}</div>
+          </div>
+          <div v-if="quotation.salesPerson">
+            <span class="font-medium text-foreground">{{ t('sales.quotations.details.salesPerson', 'Sales representative') }}</span>
+            <div>{{ quotation.salesPerson }}</div>
+          </div>
+        </div>
+
         <div class="grid gap-6 md:grid-cols-2">
           <div class="space-y-2">
             <CardTitle>{{ t('sales.quotations.details.billTo', 'Bill to') }}</CardTitle>
@@ -167,19 +243,19 @@
         </div>
 
         <div class="flex justify-end">
-          <div class="w-full max-w-sm space-y-2">
-            <div class="flex items-center justify-between text-sm">
+          <div class="space-y-2 w-full max-w-sm">
+            <div class="flex justify-between items-center text-sm">
               <span class="text-muted-foreground">{{ t('sales.quotations.create.subtotal', 'Subtotal') }}</span>
               <span class="font-medium">{{ formatCurrency(quotation.subtotal ?? 0) }}</span>
             </div>
-            <div class="flex items-center justify-between text-sm">
+            <div class="flex justify-between items-center text-sm">
               <span class="text-muted-foreground">
                 {{ t('sales.quotations.create.discount', 'Discount') }}
                 <template v-if="quotation.discountRate"> ({{ quotation.discountRate }}%)</template>
               </span>
               <span class="font-medium">-{{ formatCurrency(quotation.discountAmount ?? 0) }}</span>
             </div>
-            <div class="flex items-center justify-between text-sm">
+            <div class="flex justify-between items-center text-sm">
               <span class="text-muted-foreground">
                 {{ t('sales.quotations.create.vat', 'VAT') }}
                 <template v-if="quotation.vatRate"> ({{ quotation.vatRate }}%)</template>
@@ -187,7 +263,7 @@
               <span class="font-medium">{{ formatCurrency(quotation.vatAmount ?? 0) }}</span>
             </div>
             <Separator />
-            <div class="flex items-center justify-between text-lg font-semibold">
+            <div class="flex justify-between items-center text-lg font-semibold">
               <span>{{ t('sales.quotations.create.grandTotal', 'Grand total') }}</span>
               <span>{{ formatCurrency(quotation.grandTotal ?? 0) }}</span>
             </div>
@@ -201,7 +277,7 @@
             <CardTitle class="mb-2 text-sm font-semibold">
               {{ t('sales.quotations.create.termsAndConditions', 'Terms & conditions') }}
             </CardTitle>
-            <p class="text-sm text-muted-foreground whitespace-pre-wrap">
+            <p class="text-sm whitespace-pre-wrap text-muted-foreground">
               {{ quotation.terms || t('sales.quotations.details.noTerms', 'No terms provided.') }}
             </p>
           </div>
@@ -209,7 +285,7 @@
             <CardTitle class="mb-2 text-sm font-semibold">
               {{ t('sales.quotations.create.internalNotes', 'Internal notes') }}
             </CardTitle>
-            <p class="text-sm text-muted-foreground whitespace-pre-wrap">
+            <p class="text-sm whitespace-pre-wrap text-muted-foreground">
               {{ quotation.notes || t('sales.quotations.details.noNotes', 'No notes recorded.') }}
             </p>
           </div>
@@ -232,10 +308,11 @@ import { useAsyncData } from '#app'
 import { useHead, useI18n } from '#imports'
 import type { Quotation, QuotationStatus } from '~/types/sales'
 import { useQuotations } from '~/composables/useQuotations'
-import { useToast } from '~/components/ui/use-toast'
+import { useToast } from '~/composables/useToast'
 import {
   ArrowLeft,
   ArrowRightCircle,
+  Copy,
   FileDown,
   Loader2,
   Mail,
@@ -272,17 +349,35 @@ import {
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Textarea } from '~/components/ui/textarea'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '~/components/ui/dropdown-menu'
 
 interface EmailPayload {
   to: string
   subject: string
   message: string
+  cc?: string[]
+  bcc?: string[]
+}
+
+interface EmailFormState {
+  to: string
+  subject: string
+  message: string
+  cc: string
+  bcc: string
 }
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
-const { toast } = useToast()
+const toast = useToast()
 const quotationId = computed(() => route.params.id as string)
 
 const {
@@ -291,15 +386,12 @@ const {
   generatePDF,
   sendEmail,
   convertToSalesOrder,
-  deleteQuotation
+  deleteQuotation,
+  changeStatus,
+  duplicateQuotation
 } = useQuotations()
 
-const {
-  data,
-  pending,
-  error,
-  refresh
-} = await useAsyncData<Quotation | null>(
+const { data, pending, error, refresh } = await useAsyncData<Quotation | null>(
   () => fetchQuotation(quotationId.value),
   {
     watch: [quotationId]
@@ -307,6 +399,23 @@ const {
 )
 
 const quotation = computed(() => data.value ?? null)
+
+const emailDialogOpen = ref(false)
+const deleteDialogOpen = ref(false)
+const emailSubmitting = ref(false)
+const convertLoading = ref(false)
+const pdfLoading = ref(false)
+const deleteLoading = ref(false)
+const statusChanging = ref<QuotationStatus | null>(null)
+const duplicateLoading = ref(false)
+
+const emailForm = reactive<EmailFormState>({
+  to: '',
+  subject: '',
+  message: '',
+  cc: '',
+  bcc: ''
+})
 
 watch(
   () => quotation.value,
@@ -325,6 +434,8 @@ watch(
         name: value.customer.name
       }
     )
+    emailForm.cc = ''
+    emailForm.bcc = ''
     useHead({
       title: t('sales.quotations.details.pageTitle', 'Quotation {{id}}', {
         id: value.number ?? value.id
@@ -333,19 +444,6 @@ watch(
   },
   { immediate: true }
 )
-
-const emailDialogOpen = ref(false)
-const deleteDialogOpen = ref(false)
-const emailSubmitting = ref(false)
-const convertLoading = ref(false)
-const pdfLoading = ref(false)
-const deleteLoading = ref(false)
-
-const emailForm = reactive<EmailPayload>({
-  to: '',
-  subject: '',
-  message: ''
-})
 
 const statusVariant = (status: QuotationStatus | string = 'draft') => {
   switch (status) {
@@ -383,6 +481,39 @@ const statusLabel = (status: QuotationStatus | string = 'draft') => {
   }
 }
 
+const statusIndicatorClass = (status: QuotationStatus) => {
+  switch (status) {
+    case 'draft':
+      return 'bg-muted-foreground/40'
+    case 'sent':
+      return 'bg-blue-500'
+    case 'accepted':
+      return 'bg-emerald-500'
+    case 'converted':
+      return 'bg-primary'
+    case 'rejected':
+      return 'bg-destructive'
+    case 'expired':
+      return 'bg-orange-500'
+    default:
+      return 'bg-muted-foreground/40'
+  }
+}
+
+const availableStatuses = computed(() => {
+  const current = quotation.value?.status ?? 'draft'
+  const ordered: QuotationStatus[] = ['draft', 'sent', 'accepted', 'converted', 'rejected', 'expired']
+  return ordered
+    .filter((status) => status !== current)
+    .map((status) => ({ value: status, label: statusLabel(status) }))
+})
+
+const parseRecipients = (input: string) =>
+  input
+    .split(',')
+    .map((value) => value.trim())
+    .filter((value) => Boolean(value))
+
 const errorMessage = computed(() => {
   const value = error.value
   if (!value) {
@@ -415,23 +546,76 @@ const navigateToEdit = () => {
   router.push(`/sales/quotations/${quotationId.value}/edit`)
 }
 
+const handleStatusChange = async (status: QuotationStatus) => {
+  if (!quotation.value || statusChanging.value === status) {
+    return
+  }
+  statusChanging.value = status
+  try {
+    await changeStatus(quotationId.value, status)
+    toast.success(
+      t('sales.quotations.details.statusUpdated', 'Quotation status updated to {{status}}.', {
+        status: statusLabel(status)
+      })
+    )
+    await refresh()
+    await fetchStats()
+  } catch (err: any) {
+    console.error(err)
+    toast.error(
+      err?.message ?? t('sales.quotations.details.statusUpdateError', 'Unable to update quotation status.')
+    )
+  } finally {
+    statusChanging.value = null
+  }
+}
+
+const handleDuplicateQuotation = async () => {
+  if (!quotation.value) {
+    return
+  }
+  duplicateLoading.value = true
+  try {
+    const duplicate = await duplicateQuotation(quotationId.value)
+    toast.success(
+      t('sales.quotations.details.duplicateSuccess', 'Quotation duplicated as {{id}}.', {
+        id: duplicate.number ?? duplicate.id
+      })
+    )
+    await fetchStats()
+    router.push(`/sales/quotations/${duplicate.id}`)
+  } catch (err: any) {
+    console.error(err)
+    toast.error(err?.message ?? t('sales.quotations.details.duplicateError', 'Failed to duplicate quotation.'))
+  } finally {
+    duplicateLoading.value = false
+  }
+}
+
 const handleSendEmail = async () => {
   if (!quotation.value) {
     return
   }
   emailSubmitting.value = true
+  const payload: EmailPayload = {
+    to: emailForm.to,
+    subject: emailForm.subject,
+    message: emailForm.message,
+    cc: parseRecipients(emailForm.cc),
+    bcc: parseRecipients(emailForm.bcc)
+  }
   try {
-    await sendEmail(quotationId.value, emailForm)
-    toast({
-      description: t('sales.quotations.details.emailSuccess', 'Quotation emailed successfully.')
-    })
+    const response = await sendEmail(quotationId.value, payload)
+    const timestamp = new Date(response.sentAt ?? Date.now()).toLocaleString()
+    toast.success(
+      t('sales.quotations.details.emailSuccess', 'Quotation emailed successfully at {{time}}.', {
+        time: timestamp
+      })
+    )
     emailDialogOpen.value = false
-  } catch (err) {
+  } catch (err: any) {
     console.error(err)
-    toast({
-      variant: 'destructive',
-      description: t('sales.quotations.details.emailError', 'Failed to send quotation email.')
-    })
+    toast.error(err?.message ?? t('sales.quotations.details.emailError', 'Failed to send quotation email.'))
   } finally {
     emailSubmitting.value = false
   }
@@ -448,15 +632,10 @@ const handleDownloadPdf = async () => {
     link.href = `data:application/pdf;base64,${pdf.base64}`
     link.download = pdf.filename
     link.click()
-    toast({
-      description: t('sales.quotations.details.downloadSuccess', 'Quotation PDF downloaded.')
-    })
-  } catch (err) {
+    toast.success(t('sales.quotations.details.downloadSuccess', 'Quotation PDF downloaded.'))
+  } catch (err: any) {
     console.error(err)
-    toast({
-      variant: 'destructive',
-      description: t('sales.quotations.details.downloadError', 'Failed to download PDF.')
-    })
+    toast.error(err?.message ?? t('sales.quotations.details.downloadError', 'Failed to download PDF.'))
   } finally {
     pdfLoading.value = false
   }
@@ -469,23 +648,16 @@ const handleConvertToOrder = async () => {
   convertLoading.value = true
   try {
     const order = await convertToSalesOrder(quotationId.value)
-    toast({
-      description: t(
-        'sales.quotations.details.convertSuccess',
-        'Quotation converted to order {{id}}.',
-        {
-          id: order.number ?? order.id
-        }
-      )
-    })
-    await refresh()
+    toast.success(
+      t('sales.quotations.details.convertSuccess', 'Quotation converted to order {{id}}.', {
+        id: order.number ?? order.id
+      })
+    )
     await fetchStats()
-  } catch (err) {
+    router.push(`/sales/orders/${order.id}`)
+  } catch (err: any) {
     console.error(err)
-    toast({
-      variant: 'destructive',
-      description: t('sales.quotations.details.convertError', 'Failed to convert quotation.')
-    })
+    toast.error(err?.message ?? t('sales.quotations.details.convertError', 'Failed to convert quotation.'))
   } finally {
     convertLoading.value = false
   }
@@ -498,17 +670,12 @@ const handleDeleteQuotation = async () => {
   deleteLoading.value = true
   try {
     await deleteQuotation(quotationId.value)
-    toast({
-      description: t('sales.quotations.details.deleteSuccess', 'Quotation deleted successfully.')
-    })
+    toast.success(t('sales.quotations.details.deleteSuccess', 'Quotation deleted successfully.'))
     deleteDialogOpen.value = false
     router.push('/sales/quotations')
-  } catch (err) {
+  } catch (err: any) {
     console.error(err)
-    toast({
-      variant: 'destructive',
-      description: t('sales.quotations.details.deleteError', 'Failed to delete quotation.')
-    })
+    toast.error(err?.message ?? t('sales.quotations.details.deleteError', 'Failed to delete quotation.'))
   } finally {
     deleteLoading.value = false
   }
