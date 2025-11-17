@@ -2,23 +2,96 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-08-24',
+  // Enable hidden client source maps so Sentry can upload them without exposing references
+  sourcemap: { client: 'hidden' },
+  typescript: {
+    strict: false,
+    typeCheck: false
+  },
+  devServer: {
+    port: 3001
+  },
+  experimental: {
+    payloadExtraction: true,
+    componentIslands: true
+  },
   modules: [
-    '@nuxtjs/tailwindcss',
-    '@nuxtjs/color-mode',
+    // Essential: shadcn-vue components
+    'shadcn-nuxt',
+    
+    // Essential: Styling
+    '@nuxtjs/tailwindcss', 
+    '@nuxtjs/color-mode', 
+    '@nuxt/icon',
+    
+    // Essential: Internationalization
+    '@nuxtjs/i18n',
+    
+    // Essential: State Management
     '@pinia/nuxt',
-    '@vueuse/nuxt'
+    '@nuxt/test-utils/module'
   ],
+  
+  // shadcn-nuxt configuration
+  shadcn: {
+    /**
+     * Prefix for all the imported component
+     */
+    prefix: '',
+    /**
+     * Directory that the component lives in.
+     * @default "./components/ui"
+     */
+    componentDir: './components/ui'
+  },
+  
+  // i18n configuration
+  i18n: {
+    locales: [
+      {
+        code: 'en',
+        file: 'en.json',
+        name: 'English'
+      },
+      {
+        code: 'af', 
+        file: 'af.json',
+        name: 'Afrikaans'
+      },
+      {
+        code: 'zu',
+        file: 'zu.json',
+        name: 'isiZulu'
+      }
+    ],
+    lazy: true,
+    langDir: 'locales/',
+    defaultLocale: 'en',
+    strategy: 'prefix_except_default',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'toss_locale',
+      redirectOn: 'root'
+    }
+  },
+  
+  // Module Configurations
+  
   tailwindcss: {
     cssPath: '~/assets/css/main.css'
   },
   colorMode: {
-    classSuffix: ''
+    preference: 'light',
+    fallback: 'light',
+    classSuffix: '',
+    storageKey: 'nuxt-color-mode'
   },
   components: {
     global: true,
     dirs: [
       '~/components',
-      '~/components/icons'
+      '~/components/icons',
+      '~/components/charts'
     ]
   },
   imports: {
@@ -42,90 +115,63 @@ export default defineNuxtConfig({
     apiSecret: '',
     // Public keys (exposed to client-side)
     public: {
-      apiBase: '/api'
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://localhost:5001',
+      apiTimeout: 30000,
+      sentry: {
+        dsn: process.env.NUXT_PUBLIC_SENTRY_DSN || ''
+      }
     }
   },
   ssr: false,  // Disable SSR temporarily to fix router issues
+  vite: {   
+    server: {
+      watch: {
+        usePolling: false,
+        useFsEvents: true
+      },
+      fs: {
+        strict: false,
+        allow: ['..']
+      }
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          // Sanitize chunk names to prevent Windows path issues
+          sanitizeFileName(name: string): string {
+            // Remove absolute paths and use only the filename
+            const match = name.match(/([^/\\]+)$/);
+            return (match && match[1]) || name;
+          },
+          entryFileNames: '_nuxt/entry.[hash].js',
+          chunkFileNames: '_nuxt/[name].[hash].js',
+          assetFileNames: '_nuxt/[name].[hash].[ext]',
+          manualChunks: {
+            'chart': ['chart.js', 'chartjs-adapter-date-fns'],
+            'export': ['xlsx', 'jspdf', 'jspdf-autotable', 'html2canvas'],
+            'vendor': ['vue', 'vue-router', 'pinia']
+          }
+        }
+      },
+      chunkSizeWarningLimit: 1000,
+      // Prevent absolute paths in output
+      modulePreload: false
+    },
+    optimizeDeps: {
+      include: ['chart.js', 'xlsx', 'jspdf'],
+      exclude: []
+    }
+  },
   nitro: {
     experimental: {
       wasm: true
     },
     devProxy: {
-      '/api/crm': {
-        target: 'http://localhost:5049/api',
-        changeOrigin: true
-      },
-      '/api/analytics': {
-        target: 'http://localhost:8081/api/analytics',
-        changeOrigin: true
-      },
-      '/api/auth': {
-        target: 'http://localhost:8081/api/auth',
-        changeOrigin: true
-      },
-      '/api/hr': {
-        target: 'http://localhost:8081/api/hr',
-        changeOrigin: true
-      },
-      '/api/sales': {
-        target: 'http://localhost:8081/api/sales',
-        changeOrigin: true
-      },
-      '/api/stock': {
-        target: 'http://localhost:8081/api/stock',
-        changeOrigin: true
-      },
-      '/api/inventory': {
-        target: 'http://localhost:8081/api/inventory',
-        changeOrigin: true
-      },
-      '/api/financial': {
-        target: 'http://localhost:8081/api/financial',
-        changeOrigin: true
-      },
-      '/api/logistics': {
-        target: 'http://localhost:8081/api/logistics',
-        changeOrigin: true
-      },
-      '/api/ai': {
-        target: 'http://localhost:8081/api/ai',
-        changeOrigin: true
-      },
-      '/api/collaboration': {
-        target: 'http://localhost:8081/api/collaboration',
-        changeOrigin: true
-      },
-      '/api/projects': {
-        target: 'http://localhost:8081/api/projects',
-        changeOrigin: true
-      },
-      '/api/accounts': {
-        target: 'http://localhost:8081/api/accounts',
-        changeOrigin: true
-      },
-      '/api/assets': {
-        target: 'http://localhost:8081/api/assets',
-        changeOrigin: true
-      },
-      '/api/setup': {
-        target: 'http://localhost:8081/api/setup',
-        changeOrigin: true
-      },
-      '/api/notifications': {
-        target: 'http://localhost:8081/api/notifications',
-        changeOrigin: true
-      },
-      '/api/manufacturing': {
-        target: 'http://localhost:8081/api/manufacturing',
-        changeOrigin: true
-      },
-      '/api/group-buying': {
-        target: 'http://localhost:8081/api/group-buying',
-        changeOrigin: true
-      },
-      '/api/services': {
-        target: 'http://localhost:8081/api/services',
-        changeOrigin: true
+      '/api': {
+        target: 'https://localhost:5001',
+        changeOrigin: true,
+        ws: true,
+        secure: false  // Allow self-signed certificates in development
       }
     }
   }

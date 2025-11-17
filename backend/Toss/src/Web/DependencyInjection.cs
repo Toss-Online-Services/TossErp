@@ -1,0 +1,86 @@
+﻿using Azure.Identity;
+using Toss.Application.Common.Interfaces;
+using Toss.Infrastructure.Data;
+using Toss.Web.Services;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
+
+using NSwag;
+using NSwag.Generation.Processors.Security;
+
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class DependencyInjection
+{
+    public static void AddWebServices(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+        builder.Services.AddScoped<IUser, CurrentUser>();
+
+
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddHttpClient();
+
+        builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
+        // Configure JSON options for enum string conversion
+        builder.Services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            options.SerializerOptions.PropertyNamingPolicy = null; // Keep original property names
+        });
+
+        // Customise default API behaviour
+        builder.Services.Configure<ApiBehaviorOptions>(options =>
+            options.SuppressModelStateInvalidFilter = true);
+
+        builder.Services.AddEndpointsApiExplorer();
+
+        // Add CORS policy for frontend access (Development only)
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins(
+                            "http://localhost:3000",
+                            "https://localhost:3000",
+                            "http://localhost:3001",
+                            "https://localhost:3001")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
+        }
+
+        builder.Services.AddOpenApiDocument((configure, sp) =>
+        {
+            configure.Title = "Toss API";
+
+            // Add JWT
+            configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+            {
+                Type = OpenApiSecuritySchemeType.ApiKey,
+                Name = "Authorization",
+                In = OpenApiSecurityApiKeyLocation.Header,
+                Description = "Type into the textbox: Bearer {your JWT token}."
+            });
+
+            configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+        });
+    }
+
+    public static void AddKeyVaultIfConfigured(this IHostApplicationBuilder builder)
+    {
+        var keyVaultUri = builder.Configuration["AZURE_KEY_VAULT_ENDPOINT"];
+        if (!string.IsNullOrWhiteSpace(keyVaultUri))
+        {
+            builder.Configuration.AddAzureKeyVault(
+                new Uri(keyVaultUri),
+                new DefaultAzureCredential());
+        }
+    }
+}

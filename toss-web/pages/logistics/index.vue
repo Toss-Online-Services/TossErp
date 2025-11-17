@@ -1,179 +1,489 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Logistics Management</h1>
-        <p class="mt-2 text-gray-600 dark:text-gray-400">Community-driven deliveries (Uber/Mr D style) and supply chain orchestration</p>
+  <div class="p-6">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+          Logistics Overview
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400">
+          Monitor delivery operations, driver performance and route optimization
+        </p>
+      </div>
+      <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+        <Icon name="heroicons:plus" class="w-4 h-4 mr-2" />
+        Create Delivery
+      </button>
+    </div>
+
+    <!-- Logistics Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+        <div class="flex items-center">
+          <div class="p-2 bg-blue-100 rounded-full">
+            <Icon name="heroicons:truck" class="w-5 h-5 text-blue-600" />
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-gray-600 dark:text-gray-400">Active Deliveries</p>
+            <p class="text-lg font-semibold text-gray-900 dark:text-white">23</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+        <div class="flex items-center">
+          <div class="p-2 bg-green-100 rounded-full">
+            <Icon name="heroicons:users" class="w-5 h-5 text-green-600" />
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-gray-600 dark:text-gray-400">Active Drivers</p>
+            <p class="text-lg font-semibold text-gray-900 dark:text-white">18</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+        <div class="flex items-center">
+          <div class="p-2 bg-purple-100 rounded-full">
+            <Icon name="heroicons:clock" class="w-5 h-5 text-purple-600" />
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-gray-600 dark:text-gray-400">On-Time Rate</p>
+            <p class="text-lg font-semibold text-gray-900 dark:text-white">94.2%</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+        <div class="flex items-center">
+          <div class="p-2 bg-orange-100 rounded-full">
+            <Icon name="heroicons:banknotes" class="w-5 h-5 text-orange-600" />
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-gray-600 dark:text-gray-400">Daily Revenue</p>
+            <p class="text-lg font-semibold text-gray-900 dark:text-white">R 15.2K</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+        <div class="flex items-center">
+          <div class="p-2 bg-indigo-100 rounded-full">
+            <Icon name="heroicons:map-pin" class="w-5 h-5 text-indigo-600" />
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-gray-600 dark:text-gray-400">Coverage Areas</p>
+            <p class="text-lg font-semibold text-gray-900 dark:text-white">15</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <!-- Active Deliveries Map -->
+      <div class="lg:col-span-2">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+          <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+            Live Delivery Tracking
+          </h2>
+          
+          <!-- Map Placeholder -->
+          <div class="h-96 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mb-4">
+            <div class="text-center">
+              <Icon name="heroicons:map" class="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <p class="text-gray-600 dark:text-gray-400">Live delivery tracking map</p>
+              <p class="text-sm text-gray-500 dark:text-gray-500">Showing 23 active deliveries</p>
+            </div>
+          </div>
+          
+          <!-- Map Legend -->
+          <div class="flex flex-wrap gap-3">
+            <div class="flex items-center">
+              <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+              <span class="text-sm text-gray-600 dark:text-gray-400">On Route (15)</span>
+            </div>
+            <div class="flex items-center">
+              <div class="w-3 h-3 bg-orange-500 rounded-full mr-2"></div>
+              <span class="text-sm text-gray-600 dark:text-gray-400">Delayed (3)</span>
+            </div>
+            <div class="flex items-center">
+              <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+              <span class="text-sm text-gray-600 dark:text-gray-400">Loading (5)</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Driver Onboarding & Availability -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-1">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Join as Driver</h3>
+      <!-- Driver Performance -->
+      <div class="space-y-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+            Top Drivers Today
+          </h3>
+          
           <div class="space-y-3">
-            <input v-model="driver.fullName" class="form-input" placeholder="Full name" />
-            <input v-model="driver.phone" class="form-input" placeholder="Phone" />
-            <select v-model="driver.vehicleType" class="form-input">
-              <option value="">Select vehicle type</option>
-              <option value="bakkie">Bakkie</option>
-              <option value="truck">Truck</option>
-              <option value="van">Van</option>
-              <option value="bike">Bike</option>
-            </select>
-            <button :disabled="loading.register" @click="registerDriver" class="btn-primary w-full">
-              {{ loading.register ? 'Registering...' : (driverId ? 'Re-register' : 'Register as Driver') }}
-            </button>
-            <div v-if="driverId" class="text-xs text-green-600 dark:text-green-400">Driver ID: {{ driverId }}</div>
-          </div>
-          <div class="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-700 dark:text-gray-300">Availability</span>
-              <label class="inline-flex items-center cursor-pointer">
-                <input type="checkbox" class="sr-only" v-model="availability" @change="toggleAvailability" :disabled="!driverId || loading.availability" />
-                <span class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                  <span :class="['absolute block w-6 h-6 transform bg-white rounded-full shadow left-0 top-0 transition', availability ? 'translate-x-4' : '']"></span>
-                  <span :class="['block overflow-hidden h-6 rounded-full', availability ? 'bg-green-500' : 'bg-gray-300']"></span>
-                </span>
-                <span class="text-sm text-gray-700 dark:text-gray-300">{{ availability ? 'Online' : 'Offline' }}</span>
-              </label>
+            <div v-for="driver in topDrivers" :key="driver.id" 
+                 class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
+                  <span class="text-white font-bold text-sm">
+                    {{ driver.name.charAt(0) }}
+                  </span>
+                </div>
+                <div>
+                  <p class="font-medium text-gray-900 dark:text-white text-sm">{{ driver.name }}</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-400">{{ driver.deliveries }} deliveries</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="font-medium text-green-600">R {{ driver.earnings }}</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">{{ driver.rating }}/5</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Jobs: Available -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Available Jobs</h3>
-            <button class="btn-secondary" @click="loadJobs" :disabled="loading.jobs">Refresh</button>
-          </div>
-          <div v-if="availableJobs.length === 0" class="text-sm text-gray-500 dark:text-gray-400">No open jobs right now.</div>
-          <div v-else class="space-y-3">
-            <div v-for="job in availableJobs" :key="job.id" class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center justify-between">
-              <div>
-                <div class="text-sm text-gray-700 dark:text-gray-300">Pickup: <span class="font-medium">{{ job.pickup?.name }}</span></div>
-                <div class="text-sm text-gray-700 dark:text-gray-300">Dropoff: <span class="font-medium">{{ job.dropoff?.name }}</span></div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">Weight: {{ job.weightKg }}kg • Payout: R{{ job.payout }}</div>
-              </div>
-              <div class="flex items-center gap-2">
-                <button class="btn-primary" @click="accept(job.id)" :disabled="!driverId || loading.accept">Accept</button>
-              </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+            Delivery Status
+          </h3>
+          
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-gray-600 dark:text-gray-400">Completed Today</span>
+              <span class="font-medium text-gray-900 dark:text-white">127</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600 dark:text-gray-400">In Progress</span>
+              <span class="font-medium text-gray-900 dark:text-white">23</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600 dark:text-gray-400">Scheduled</span>
+              <span class="font-medium text-gray-900 dark:text-white">45</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600 dark:text-gray-400">Failed Attempts</span>
+              <span class="font-medium text-red-600">3</span>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Assigned Jobs -->
-      <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">My Assigned Jobs</h3>
-          <button class="btn-secondary" @click="loadAssigned" :disabled="loading.assigned">Refresh</button>
-        </div>
-        <div v-if="assignedJobs.length === 0" class="text-sm text-gray-500 dark:text-gray-400">No assigned jobs yet.</div>
-        <div v-else class="space-y-3">
-          <div v-for="job in assignedJobs" :key="job.id" class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <div class="text-sm text-gray-700 dark:text-gray-300">Pickup: <span class="font-medium">{{ job.pickup?.name }}</span></div>
-                <div class="text-sm text-gray-700 dark:text-gray-300">Dropoff: <span class="font-medium">{{ job.dropoff?.name }}</span></div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">Status: {{ job.status }}</div>
+    <!-- Active Deliveries List -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+      <div class="p-6">
+        <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+          Current Deliveries
+        </h2>
+        
+        <div class="space-y-4">
+          <div v-for="delivery in mockDeliveries" :key="delivery.id" 
+               class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center mb-3">
+                  <div class="w-12 h-12 rounded-lg flex items-center justify-center mr-4"
+                       :class="getStatusColor(delivery.status)">
+                    <Icon name="heroicons:truck" class="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 class="font-medium text-gray-900 dark:text-white text-lg">
+                      Delivery #{{ delivery.deliveryNumber }}
+                    </h3>
+                    <div class="flex items-center space-x-3">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                            :class="getStatusClass(delivery.status)">
+                        {{ formatStatus(delivery.status) }}
+                      </span>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                            :class="getPriorityClass(delivery.priority)">
+                        {{ formatPriority(delivery.priority) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Driver:</span>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                      {{ delivery.driver.name }}<br>
+                      {{ delivery.driver.phone }}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Destination:</span>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                      {{ delivery.destination.customer }}<br>
+                      {{ delivery.destination.area }}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Schedule:</span>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                      Started: {{ formatTime(delivery.startTime) }}<br>
+                      ETA: {{ formatTime(delivery.estimatedArrival) }}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Value & Items:</span>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                      R {{ delivery.value.toLocaleString() }}<br>
+                      {{ delivery.items }} item(s)
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="mt-3">
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Route:</span>
+                  <div class="flex items-center space-x-2 mt-1">
+                    <span v-for="stop in delivery.route" :key="stop.id" 
+                          class="inline-flex items-center px-2 py-1 text-xs rounded"
+                          :class="stop.completed ? 
+                            'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 
+                            'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'">
+                      {{ stop.location }}
+                      <Icon v-if="stop.completed" name="heroicons:check" class="w-3 h-3 ml-1" />
+                    </span>
+                  </div>
+                </div>
+                
+                <div v-if="delivery.tracking" class="mt-3">
+                  <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                      <Icon name="heroicons:map-pin" class="w-4 h-4 text-blue-600 mr-1" />
+                      <span class="text-sm text-gray-600 dark:text-gray-400">
+                        {{ delivery.tracking.currentLocation }}
+                      </span>
+                    </div>
+                    <div class="flex items-center">
+                      <Icon name="heroicons:clock" class="w-4 h-4 text-green-600 mr-1" />
+                      <span class="text-sm text-gray-600 dark:text-gray-400">
+                        {{ delivery.tracking.progress }}% complete
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <button class="btn-secondary" @click="track(job.id)">Track</button>
-                <button class="btn-success" @click="markDelivered(job.id)">Mark Delivered</button>
+              
+              <div class="flex items-center space-x-2 ml-4">
+                <button class="text-blue-600 hover:text-blue-800 text-sm px-3 py-1 border border-blue-200 rounded">
+                  Track
+                </button>
+                <button class="text-green-600 hover:text-green-800 text-sm px-3 py-1 border border-green-200 rounded">
+                  Contact
+                </button>
+                <button class="text-purple-600 hover:text-purple-800 text-sm px-3 py-1 border border-purple-200 rounded">
+                  Details
+                </button>
               </div>
-            </div>
-            <div v-if="tracking[job.id]" class="mt-2 text-xs text-gray-600 dark:text-gray-400">
-              Last location: lat {{ tracking[job.id].driverLocation.lat }}, lng {{ tracking[job.id].driverLocation.lng }} ({{ tracking[job.id].lastUpdate }})
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Supply Chain Shortcuts -->
-      <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Shipments</h3>
-          <p class="text-gray-600 dark:text-gray-400">Track inbound and outbound shipments, consolidate routes.</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Shared Warehousing</h3>
-          <p class="text-gray-600 dark:text-gray-400">Book shared storage space in community hubs.</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Provider Marketplace</h3>
-          <p class="text-gray-600 dark:text-gray-400">Add drivers now; expand to couriers and maintenance providers.</p>
         </div>
       </div>
     </div>
   </div>
-  </template>
+</template>
 
-<script setup>
-const driver = reactive({ fullName: '', phone: '', vehicleType: '' })
-const driverId = useCookie('drv-id')
-const availability = ref(false)
-const availableJobs = ref([])
-const assignedJobs = ref([])
-const tracking = reactive({})
-const loading = reactive({ register: false, availability: false, jobs: false, assigned: false, accept: false })
+<script setup lang="ts">
+import { ref } from 'vue'
 
-useHead({ title: 'Logistics Management - TOSS ERP III' })
-
-async function registerDriver() {
-  if (!driver.fullName || !driver.vehicleType) return
-  loading.register = true
-  try {
-    const res = await $fetch('/api/logistics/drivers/register', { method: 'POST', body: driver })
-    driverId.value = res.id
-  } finally { loading.register = false }
-}
-
-async function toggleAvailability() {
-  if (!driverId.value) return
-  loading.availability = true
-  try {
-    await $fetch('/api/logistics/drivers/availability', { method: 'POST', body: { driverId: driverId.value, available: availability.value } })
-  } finally { loading.availability = false }
-}
-
-async function loadJobs() {
-  loading.jobs = true
-  try {
-    const res = await $fetch('/api/logistics/jobs', { query: { status: 'open' } })
-    availableJobs.value = res
-  } finally { loading.jobs = false }
-}
-
-async function loadAssigned() {
-  loading.assigned = true
-  try {
-    const res = await $fetch('/api/logistics/jobs', { query: { status: 'assigned' } })
-    // Filter to my driver if id exists (mock allows any)
-    assignedJobs.value = res.filter(j => !j.driverId || j.driverId === driverId.value)
-  } finally { loading.assigned = false }
-}
-
-async function accept(id) {
-  if (!driverId.value) return
-  loading.accept = true
-  try {
-    await $fetch(`/api/logistics/jobs/${id}/accept`, { method: 'POST', body: { driverId: driverId.value } })
-    await Promise.all([loadJobs(), loadAssigned()])
-  } finally { loading.accept = false }
-}
-
-async function track(id) {
-  const res = await $fetch(`/api/logistics/jobs/${id}/track`)
-  tracking[id] = res
-}
-
-async function markDelivered(id) {
-  await $fetch(`/api/logistics/jobs/${id}/status`, { method: 'POST', body: { status: 'delivered' } })
-  await loadAssigned()
-}
-
-onMounted(async () => {
-  await Promise.all([loadJobs(), loadAssigned()])
+useHead({
+  title: 'Logistics Overview - TOSS ERP'
 })
+
+// Top drivers data
+const topDrivers = ref([
+  { id: 1, name: 'Themba Mthembu', deliveries: 8, earnings: '785', rating: 4.9 },
+  { id: 2, name: 'Nomsa Dlamini', deliveries: 7, earnings: '692', rating: 4.8 },
+  { id: 3, name: 'Mpho Molefe', deliveries: 6, earnings: '578', rating: 4.7 }
+])
+
+// Mock deliveries data
+const mockDeliveries = ref([
+  {
+    id: 'del-001',
+    deliveryNumber: 'DEL-2024-0156',
+    status: 'in-transit',
+    priority: 'high',
+    driver: {
+      name: 'Themba Mthembu',
+      phone: '+27 82 345 6789',
+      vehicle: 'Toyota Hilux - GP 123 ABC'
+    },
+    destination: {
+      customer: 'Soweto Spaza Shops',
+      area: 'Diepkloof Extension',
+      address: '123 Main Road, Diepkloof'
+    },
+    startTime: new Date('2024-01-14T08:30:00'),
+    estimatedArrival: new Date('2024-01-14T11:45:00'),
+    value: 12450,
+    items: 15,
+    route: [
+      { id: 1, location: 'Warehouse', completed: true },
+      { id: 2, location: 'Orlando East', completed: true },
+      { id: 3, location: 'Diepkloof', completed: false },
+      { id: 4, location: 'Soweto Central', completed: false }
+    ],
+    tracking: {
+      currentLocation: 'Orlando East - En route to Diepkloof',
+      progress: 65,
+      lastUpdate: new Date('2024-01-14T10:15:00')
+    }
+  },
+  {
+    id: 'del-002',
+    deliveryNumber: 'DEL-2024-0157',
+    status: 'loading',
+    priority: 'medium',
+    driver: {
+      name: 'Nomsa Dlamini',
+      phone: '+27 76 789 0123',
+      vehicle: 'Nissan NP200 - GP 456 DEF'
+    },
+    destination: {
+      customer: 'Alexandra Mini Markets',
+      area: 'Alexandra',
+      address: '45 Roosevelt Road, Alexandra'
+    },
+    startTime: new Date('2024-01-14T09:00:00'),
+    estimatedArrival: new Date('2024-01-14T12:30:00'),
+    value: 8750,
+    items: 12,
+    route: [
+      { id: 1, location: 'Warehouse', completed: false },
+      { id: 2, location: 'Wynberg', completed: false },
+      { id: 3, location: 'Alexandra', completed: false }
+    ],
+    tracking: {
+      currentLocation: 'Main Warehouse - Loading dock 3',
+      progress: 15,
+      lastUpdate: new Date('2024-01-14T09:45:00')
+    }
+  },
+  {
+    id: 'del-003',
+    deliveryNumber: 'DEL-2024-0158',
+    status: 'delayed',
+    priority: 'low',
+    driver: {
+      name: 'Mpho Molefe',
+      phone: '+27 72 123 4567',
+      vehicle: 'Ford Ranger - GP 789 GHI'
+    },
+    destination: {
+      customer: 'Tembisa Community Store',
+      area: 'Tembisa',
+      address: '78 Mthembu Street, Tembisa'
+    },
+    startTime: new Date('2024-01-14T07:45:00'),
+    estimatedArrival: new Date('2024-01-14T11:00:00'),
+    value: 15600,
+    items: 22,
+    route: [
+      { id: 1, location: 'Warehouse', completed: true },
+      { id: 2, location: 'Kempton Park', completed: true },
+      { id: 3, location: 'Ivory Park', completed: false },
+      { id: 4, location: 'Tembisa', completed: false }
+    ],
+    tracking: {
+      currentLocation: 'Kempton Park - Traffic delay on R21',
+      progress: 45,
+      lastUpdate: new Date('2024-01-14T10:30:00')
+    }
+  },
+  {
+    id: 'del-004',
+    deliveryNumber: 'DEL-2024-0159',
+    status: 'completed',
+    priority: 'high',
+    driver: {
+      name: 'Lucky Mahlangu',
+      phone: '+27 83 456 7890',
+      vehicle: 'Isuzu KB - GP 321 JKL'
+    },
+    destination: {
+      customer: 'Orange Farm Markets',
+      area: 'Orange Farm',
+      address: '12 Extension 7, Orange Farm'
+    },
+    startTime: new Date('2024-01-14T06:30:00'),
+    estimatedArrival: new Date('2024-01-14T09:30:00'),
+    value: 9850,
+    items: 18,
+    route: [
+      { id: 1, location: 'Warehouse', completed: true },
+      { id: 2, location: 'Lenasia', completed: true },
+      { id: 3, location: 'Orange Farm', completed: true }
+    ],
+    tracking: {
+      currentLocation: 'Delivered successfully',
+      progress: 100,
+      lastUpdate: new Date('2024-01-14T09:15:00')
+    }
+  }
+])
+
+const getStatusColor = (status: string) => {
+  const colorMap: Record<string, string> = {
+    loading: 'bg-gradient-to-br from-blue-500 to-blue-600',
+    'in-transit': 'bg-gradient-to-br from-purple-500 to-purple-600',
+    delayed: 'bg-gradient-to-br from-orange-500 to-orange-600',
+    completed: 'bg-gradient-to-br from-green-500 to-green-600',
+    failed: 'bg-gradient-to-br from-red-500 to-red-600'
+  }
+  return colorMap[status] || 'bg-gradient-to-br from-gray-500 to-gray-600'
+}
+
+const getStatusClass = (status: string) => {
+  const classMap: Record<string, string> = {
+    loading: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    'in-transit': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+    delayed: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+    completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    failed: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+  }
+  return classMap[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+}
+
+const getPriorityClass = (priority: string) => {
+  const classMap: Record<string, string> = {
+    high: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+    medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+    low: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+  }
+  return classMap[priority] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+}
+
+const formatStatus = (status: string) => {
+  const statusMap: Record<string, string> = {
+    loading: 'Loading',
+    'in-transit': 'In Transit',
+    delayed: 'Delayed',
+    completed: 'Completed',
+    failed: 'Failed'
+  }
+  return statusMap[status] || status
+}
+
+const formatPriority = (priority: string) => {
+  const priorityMap: Record<string, string> = {
+    high: 'High Priority',
+    medium: 'Medium Priority',
+    low: 'Low Priority'
+  }
+  return priorityMap[priority] || priority
+}
+
+const formatTime = (date: Date) => {
+  return new Date(date).toLocaleTimeString('en-ZA', { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  })
+}
 </script>

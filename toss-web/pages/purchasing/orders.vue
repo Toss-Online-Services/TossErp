@@ -1,674 +1,571 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- Page Header -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="py-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Purchase Orders</h1>
-              <p class="text-gray-600 dark:text-gray-400">Manage and track purchase orders with suppliers</p>
-            </div>
-            <div class="flex space-x-3">
-              <button @click="openCreatePOModal" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
-                <PlusIcon class="w-5 h-5 mr-2" />
-                Create PO
-              </button>
-              <button @click="exportPOs" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center">
-                <DocumentArrowDownIcon class="w-5 h-5 mr-2" />
-                Export
-              </button>
-            </div>
-          </div>
-        </div>
+  <div class="container mx-auto p-6 max-w-7xl">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+      <div>
+        <h1 class="text-3xl font-bold">Purchase Orders</h1>
+        <p class="text-muted-foreground mt-1">
+          Manage supplier orders and procurement
+        </p>
+      </div>
+      <div class="flex gap-2 mt-4 sm:mt-0">
+        <Button variant="outline" @click="showGroupBuyingModal = true">
+          <Users class="mr-2 h-4 w-4" />
+          Group Buying
+        </Button>
+        <Button variant="outline" @click="showReorderWizard = true">
+          <Zap class="mr-2 h-4 w-4" />
+          Smart Reorder
+        </Button>
+        <Button @click="showCreatePOModal = true">
+          <Plus class="mr-2 h-4 w-4" />
+          Create PO
+        </Button>
       </div>
     </div>
 
-    <!-- PO Stats -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30">
-              <DocumentTextIcon class="w-6 h-6 text-blue-600 dark:text-blue-400" />
+    <!-- Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+      <Card>
+        <CardContent class="p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-muted-foreground">Active Orders</p>
+              <h3 class="text-2xl font-bold">{{ activeOrders.length }}</h3>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total POs</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.totalPOs }}</p>
-            </div>
+            <ShoppingCart class="h-8 w-8 text-blue-600" />
           </div>
-        </div>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900/30">
-              <ClockIcon class="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent class="p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-muted-foreground">Pending Approvals</p>
+              <h3 class="text-2xl font-bold text-orange-600">{{ pendingApprovals.length }}</h3>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Pending</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.pendingPOs }}</p>
-            </div>
+            <Clock class="h-8 w-8 text-orange-600" />
           </div>
-        </div>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-green-100 dark:bg-green-900/30">
-              <CheckCircleIcon class="w-6 h-6 text-green-600 dark:text-green-400" />
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent class="p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-muted-foreground">This Month</p>
+              <h3 class="text-2xl font-bold">{{ formatCurrency(monthlySpend) }}</h3>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Delivered</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.deliveredPOs }}</p>
-            </div>
+            <DollarSign class="h-8 w-8 text-green-600" />
           </div>
-        </div>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900/30">
-              <CurrencyDollarIcon class="w-6 h-6 text-purple-600 dark:text-purple-400" />
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent class="p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-muted-foreground">Avg Delivery</p>
+              <h3 class="text-2xl font-bold">{{ averageDeliveryDays }} days</h3>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Value</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ stats.totalValue }}</p>
-            </div>
+            <Truck class="h-8 w-8 text-purple-600" />
           </div>
-        </div>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-orange-100 dark:bg-orange-900/30">
-              <TruckIcon class="w-6 h-6 text-orange-600 dark:text-orange-400" />
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">In Transit</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.inTransitPOs }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
+    </div>
 
-      <!-- Filters -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+    <!-- Smart Recommendations -->
+    <Card v-if="smartRecommendations.length > 0" class="mb-6 border-blue-200 bg-blue-50/50">
+      <CardContent class="p-6">
+        <div class="flex items-start gap-3">
+          <Lightbulb class="h-5 w-5 text-blue-600 mt-1" />
+          <div class="flex-1">
+            <h3 class="font-medium text-blue-800 mb-2">Smart Purchase Recommendations</h3>
+            <div class="space-y-3">
+              <div v-for="rec in smartRecommendations" :key="rec.id" class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                <div class="flex-1">
+                  <p class="font-medium text-blue-900">{{ rec.title }}</p>
+                  <p class="text-sm text-blue-700">{{ rec.description }}</p>
+                  <p class="text-xs text-blue-600 mt-1">Potential savings: {{ formatCurrency(rec.savings) }}</p>
+                </div>
+                <Button size="sm" @click="applyRecommendation(rec)">
+                  Apply
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
+    <!-- Filters -->
+    <Card class="mb-6">
+      <CardContent class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
-            <div class="relative">
-              <MagnifyingGlassIcon class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input 
-                v-model="searchQuery"
-                type="text" 
-                placeholder="Search PO number or supplier..."
-                class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              />
-            </div>
+          <div class="relative">
+            <Search class="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <input
+              v-model="searchTerm"
+              type="text"
+              placeholder="Search orders..."
+              class="pl-10 w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
-            <select v-model="selectedStatus" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-              <option value="">All Status</option>
-              <option value="draft">Draft</option>
-              <option value="sent">Sent to Supplier</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="partial">Partially Received</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Supplier</label>
-            <select v-model="selectedSupplier" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-              <option value="">All Suppliers</option>
-              <option value="Tech Solutions Inc">Tech Solutions Inc</option>
-              <option value="Raw Materials Corp">Raw Materials Corp</option>
-              <option value="Service Pro LLC">Service Pro LLC</option>
-              <option value="Consumables Direct">Consumables Direct</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Range</label>
-            <select v-model="selectedDateRange" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-              <option value="">All Dates</option>
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-              <option value="quarter">This Quarter</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority</label>
-            <select v-model="selectedPriority" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-              <option value="">All Priorities</option>
-              <option value="urgent">Urgent</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
-          </div>
+          <select v-model="statusFilter" class="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
+            <option value="">All Statuses</option>
+            <option value="draft">Draft</option>
+            <option value="pending">Pending Approval</option>
+            <option value="approved">Approved</option>
+            <option value="sent">Sent to Supplier</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <select v-model="supplierFilter" class="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
+            <option value="">All Suppliers</option>
+            <option v-for="supplier in suppliers" :key="supplier" :value="supplier">
+              {{ supplier }}
+            </option>
+          </select>
+          <input
+            type="date"
+            v-model="dateFilter"
+            class="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+          />
+          <Button variant="outline" @click="resetFilters" class="h-10">
+            <X class="mr-2 h-4 w-4" />
+            Reset
+          </Button>
         </div>
-      </div>
+      </CardContent>
+    </Card>
 
-      <!-- Purchase Orders Table -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Purchase Orders</h2>
-        </div>
+    <!-- Purchase Orders Table -->
+    <Card>
+      <CardContent class="p-0">
         <div class="overflow-x-auto">
           <table class="w-full">
-            <thead class="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">PO Number</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supplier</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Items</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Amount</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Expected Date</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Progress</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+            <thead>
+              <tr class="border-b">
+                <th class="text-left p-4 font-medium">PO Number</th>
+                <th class="text-left p-4 font-medium">Supplier</th>
+                <th class="text-left p-4 font-medium">Date</th>
+                <th class="text-left p-4 font-medium">Total</th>
+                <th class="text-left p-4 font-medium">Status</th>
+                <th class="text-left p-4 font-medium">Expected Delivery</th>
+                <th class="text-left p-4 font-medium">Progress</th>
+                <th class="text-left p-4 font-medium">Actions</th>
               </tr>
             </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr v-for="po in filteredPOs" :key="po.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900 dark:text-white">{{ po.number }}</div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(po.createdAt) }}</div>
+            <tbody>
+              <tr 
+                v-for="order in filteredOrders" 
+                :key="order.id"
+                class="border-b hover:bg-muted/50"
+              >
+                <td class="p-4">
+                  <div>
+                    <p class="font-medium">{{ order.poNumber }}</p>
+                    <p class="text-sm text-muted-foreground">{{ order.items.length }} items</p>
+                  </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
-                    <div class="flex-shrink-0 h-8 w-8">
-                      <div class="h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                        <span class="text-xs font-medium text-white">{{ po.supplier.charAt(0) }}</span>
-                      </div>
+                <td class="p-4">
+                  <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Building class="h-4 w-4" />
                     </div>
-                    <div class="ml-3">
-                      <div class="text-sm font-medium text-gray-900 dark:text-white">{{ po.supplier }}</div>
-                      <div class="text-sm text-gray-500 dark:text-gray-400">{{ po.supplierCode }}</div>
+                    <div>
+                      <p class="font-medium">{{ order.supplier.name }}</p>
+                      <p class="text-sm text-muted-foreground">{{ order.supplier.contact }}</p>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4">
-                  <div class="text-sm text-gray-900 dark:text-white">{{ po.items.length }} item(s)</div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400">{{ po.items[0]?.name }}{{ po.items.length > 1 ? ` +${po.items.length - 1} more` : '' }}</div>
+                <td class="p-4">{{ formatDate(order.createdDate) }}</td>
+                <td class="p-4 font-medium">{{ formatCurrency(order.total) }}</td>
+                <td class="p-4">
+                  <Badge :variant="getStatusVariant(order.status)">
+                    {{ order.status }}
+                  </Badge>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                  ${{ po.totalAmount.toLocaleString() }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                  {{ formatDate(po.expectedDelivery) }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                        :class="getStatusClass(po.status)">
-                    {{ po.status }}
+                <td class="p-4">
+                  <span v-if="order.expectedDelivery" class="text-sm">
+                    {{ formatDate(order.expectedDelivery) }}
                   </span>
+                  <span v-else class="text-sm text-muted-foreground">TBD</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
-                    <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                      <div class="bg-blue-600 h-2 rounded-full" :style="{ width: po.progress + '%' }"></div>
-                    </div>
-                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ po.progress }}%</span>
+                <td class="p-4">
+                  <div class="w-full bg-muted rounded-full h-2">
+                    <div 
+                      class="bg-primary rounded-full h-2 transition-all" 
+                      :style="{ width: `${getProgressPercentage(order)}%` }"
+                    ></div>
                   </div>
+                  <p class="text-xs text-muted-foreground mt-1">{{ getProgressPercentage(order) }}%</p>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div class="flex space-x-2">
-                    <button @click="viewPO(po)" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
-                      <EyeIcon class="w-5 h-5" />
-                    </button>
-                    <button v-if="po.status === 'draft'" @click="sendPO(po)" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
-                      <PaperAirplaneIcon class="w-5 h-5" />
-                    </button>
-                    <button @click="editPO(po)" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
-                      <PencilIcon class="w-5 h-5" />
-                    </button>
-                    <button @click="downloadPO(po)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">
-                      <DocumentArrowDownIcon class="w-5 h-5" />
-                    </button>
-                    <button v-if="po.status !== 'cancelled'" @click="cancelPO(po)" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
-                      <XCircleIcon class="w-5 h-5" />
-                    </button>
+                <td class="p-4">
+                  <div class="flex gap-1">
+                    <Button size="sm" variant="ghost" @click="viewOrder(order)">
+                      <Eye class="h-4 w-4" />
+                    </Button>
+                    <Button size="sm" variant="ghost" @click="editOrder(order)">
+                      <Edit class="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      v-if="order.status === 'approved'"
+                      size="sm" 
+                      variant="ghost" 
+                      @click="sendToSupplier(order)"
+                    >
+                      <Send class="h-4 w-4" />
+                    </Button>
                   </div>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
 
-    <!-- Create PO Modal -->
-    <div v-if="showCreateModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div class="relative top-10 mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 shadow-lg rounded-md bg-white dark:bg-gray-800">
-        <div class="mt-3">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Create Purchase Order</h3>
-            <button @click="closeCreateModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-              <XMarkIcon class="w-6 h-6" />
-            </button>
+    <!-- Group Buying Opportunities -->
+    <Card v-if="groupBuyingOps.length > 0" class="mt-6">
+      <CardContent class="p-6">
+        <h3 class="font-medium mb-4 flex items-center gap-2">
+          <Users class="h-5 w-5" />
+          Group Buying Opportunities
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div v-for="opp in groupBuyingOps" :key="opp.id" class="p-4 border rounded-lg">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-medium">{{ opp.product }}</h4>
+              <Badge variant="secondary">{{ opp.participants }} shops</Badge>
+            </div>
+            <p class="text-sm text-muted-foreground mb-2">{{ opp.description }}</p>
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-green-600">Save {{ opp.savings }}%</span>
+              <Button size="sm" @click="joinGroupBuy(opp)">
+                Join Group Buy
+              </Button>
+            </div>
           </div>
-          
-          <form @submit.prevent="submitPO" class="space-y-6">
-            <!-- PO Header -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PO Number</label>
-                <input 
-                  v-model="newPO.number"
-                  type="text" 
-                  readonly
-                  class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-white"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Supplier *</label>
-                <select 
-                  v-model="newPO.supplier"
-                  required
-                  class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <option value="">Select Supplier</option>
-                  <option value="Tech Solutions Inc">Tech Solutions Inc</option>
-                  <option value="Raw Materials Corp">Raw Materials Corp</option>
-                  <option value="Service Pro LLC">Service Pro LLC</option>
-                  <option value="Consumables Direct">Consumables Direct</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Expected Delivery</label>
-                <input 
-                  v-model="newPO.expectedDelivery"
-                  type="date" 
-                  class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-              </div>
-            </div>
-
-            <!-- PO Items -->
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <h4 class="text-md font-medium text-gray-900 dark:text-white">Order Items</h4>
-                <button type="button" @click="addPOItem" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
-                  Add Item
-                </button>
-              </div>
-              
-              <div class="space-y-3">
-                <div v-for="(item, index) in newPO.items" :key="index" class="grid grid-cols-1 md:grid-cols-6 gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
-                  <div>
-                    <input 
-                      v-model="item.name"
-                      type="text" 
-                      placeholder="Item name"
-                      required
-                      class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-                    />
-                  </div>
-                  <div>
-                    <input 
-                      v-model="item.description"
-                      type="text" 
-                      placeholder="Description"
-                      class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-                    />
-                  </div>
-                  <div>
-                    <input 
-                      v-model="item.quantity"
-                      type="number" 
-                      placeholder="Qty"
-                      min="1"
-                      required
-                      class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-                    />
-                  </div>
-                  <div>
-                    <input 
-                      v-model="item.unitPrice"
-                      type="number" 
-                      step="0.01"
-                      placeholder="Unit Price"
-                      required
-                      class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-                    />
-                  </div>
-                  <div>
-                    <input 
-                      :value="(item.quantity || 0) * (item.unitPrice || 0)"
-                      type="text" 
-                      readonly
-                      class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-white text-sm"
-                    />
-                  </div>
-                  <div>
-                    <button type="button" @click="removePOItem(index)" class="w-full text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-sm">
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Terms and Notes -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Terms</label>
-                <select 
-                  v-model="newPO.paymentTerms"
-                  class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <option value="net30">Net 30</option>
-                  <option value="net60">Net 60</option>
-                  <option value="net90">Net 90</option>
-                  <option value="cod">Cash on Delivery</option>
-                  <option value="advance">Advance Payment</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Delivery Terms</label>
-                <select 
-                  v-model="newPO.deliveryTerms"
-                  class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <option value="fob">FOB Destination</option>
-                  <option value="cif">CIF</option>
-                  <option value="exw">Ex Works</option>
-                  <option value="ddp">Delivered Duty Paid</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes/Special Instructions</label>
-              <textarea 
-                v-model="newPO.notes"
-                rows="3"
-                class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                placeholder="Special delivery instructions, terms, or notes..."
-              ></textarea>
-            </div>
-            
-            <div class="flex items-center justify-end space-x-3 pt-4">
-              <button 
-                type="button"
-                @click="closeCreateModal"
-                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                Cancel
-              </button>
-              <button 
-                type="submit"
-                class="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700"
-              >
-                Create Purchase Order
-              </button>
-            </div>
-          </form>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
+
+    <!-- Modals -->
+    <CreatePurchaseOrderModal
+      v-model="showCreatePOModal"
+      @created="handlePOCreated"
+    />
+
+    <GroupBuyingModal
+      v-model="showGroupBuyingModal"
+      :opportunities="groupBuyingOps"
+      @join="joinGroupBuy"
+    />
+
+    <SmartReorderWizard
+      v-model="showReorderWizard"
+      @complete="handleReorderComplete"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import {
-  PlusIcon,
-  DocumentArrowDownIcon,
-  DocumentTextIcon,
-  ClockIcon,
-  CheckCircleIcon,
-  CurrencyDollarIcon,
-  TruckIcon,
-  MagnifyingGlassIcon,
-  EyeIcon,
-  PencilIcon,
-  PaperAirplaneIcon,
-  XCircleIcon,
-  XMarkIcon
-} from '@heroicons/vue/24/outline'
+import { 
+  Plus, 
+  Search, 
+  X,
+  ShoppingCart,
+  Clock,
+  DollarSign,
+  Truck,
+  Users,
+  Lightbulb,
+  Building,
+  Eye,
+  Edit,
+  Send,
+  Zap
+} from 'lucide-vue-next'
 
-// Page metadata
-definePageMeta({
-  title: 'Purchase Orders - TOSS ERP',
-  description: 'Manage purchase orders and supplier deliveries in TOSS ERP'
-})
+import { Button } from '../../components/ui/button'
+import { Card, CardContent } from '../../components/ui/card'
+import { Badge } from '../../components/ui/badge'
 
-// Reactive data
-const searchQuery = ref('')
-const selectedStatus = ref('')
-const selectedSupplier = ref('')
-const selectedDateRange = ref('')
-const selectedPriority = ref('')
-const showCreateModal = ref(false)
+// Types
+interface PurchaseOrder {
+  id: string
+  poNumber: string
+  supplier: {
+    id: string
+    name: string
+    contact: string
+  }
+  items: {
+    id: string
+    name: string
+    quantity: number
+    unitPrice: number
+    total: number
+  }[]
+  total: number
+  status: 'draft' | 'pending' | 'approved' | 'sent' | 'delivered' | 'cancelled'
+  createdDate: Date
+  expectedDelivery?: Date
+  progress: number
+}
 
-// Stats data
-const stats = ref({
-  totalPOs: 167,
-  pendingPOs: 34,
-  deliveredPOs: 98,
-  totalValue: '2.4M',
-  inTransitPOs: 23
-})
+interface SmartRecommendation {
+  id: string
+  title: string
+  description: string
+  savings: number
+  type: 'group_buy' | 'bulk_discount' | 'seasonal'
+}
 
-// New PO form
-const newPO = ref({
-  number: '',
-  supplier: '',
-  expectedDelivery: '',
-  items: [{ name: '', description: '', quantity: 1, unitPrice: 0 }],
-  paymentTerms: 'net30',
-  deliveryTerms: 'fob',
-  notes: ''
-})
+interface GroupBuyingOpportunity {
+  id: string
+  product: string
+  description: string
+  participants: number
+  savings: number
+  minQuantity: number
+  deadline: Date
+}
 
-// Mock PO data
-const purchaseOrders = ref([
+// State
+const searchTerm = ref('')
+const statusFilter = ref('')
+const supplierFilter = ref('')
+const dateFilter = ref('')
+const showCreatePOModal = ref(false)
+const showGroupBuyingModal = ref(false)
+const showReorderWizard = ref(false)
+
+// Mock data
+const purchaseOrders = ref<PurchaseOrder[]>([
   {
-    id: 1,
-    number: 'PO-2024-001',
-    supplier: 'Tech Solutions Inc',
-    supplierCode: 'SUP-001',
+    id: '1',
+    poNumber: 'PO-2024-001',
+    supplier: {
+      id: 'sup1',
+      name: 'Township Wholesalers',
+      contact: '+27114567890'
+    },
     items: [
-      { name: 'Dell Laptops', description: 'High-performance laptops', quantity: 10, unitPrice: 1200 }
+      { id: '1', name: 'Maize Meal 5kg', quantity: 50, unitPrice: 38.50, total: 1925 },
+      { id: '2', name: 'Cooking Oil 750ml', quantity: 24, unitPrice: 28.00, total: 672 }
     ],
-    totalAmount: 12000,
-    expectedDelivery: new Date('2024-02-15'),
-    status: 'confirmed',
-    progress: 75,
-    paymentTerms: 'net30',
-    deliveryTerms: 'fob',
-    createdAt: new Date('2024-01-15')
-  },
-  {
-    id: 2,
-    number: 'PO-2024-002',
-    supplier: 'Raw Materials Corp',
-    supplierCode: 'SUP-002',
-    items: [
-      { name: 'Steel Sheets', description: 'Grade A steel sheets', quantity: 100, unitPrice: 50 }
-    ],
-    totalAmount: 5000,
-    expectedDelivery: new Date('2024-02-20'),
-    status: 'sent',
-    progress: 25,
-    paymentTerms: 'net60',
-    deliveryTerms: 'cif',
-    createdAt: new Date('2024-01-14')
-  },
-  {
-    id: 3,
-    number: 'PO-2024-003',
-    supplier: 'Service Pro LLC',
-    supplierCode: 'SUP-003',
-    items: [
-      { name: 'Maintenance Service', description: 'Annual maintenance contract', quantity: 1, unitPrice: 15000 }
-    ],
-    totalAmount: 15000,
-    expectedDelivery: new Date('2024-03-01'),
-    status: 'draft',
-    progress: 0,
-    paymentTerms: 'advance',
-    deliveryTerms: 'ddp',
-    createdAt: new Date('2024-01-13')
-  },
-  {
-    id: 4,
-    number: 'PO-2024-004',
-    supplier: 'Consumables Direct',
-    supplierCode: 'SUP-004',
-    items: [
-      { name: 'Office Supplies', description: 'Monthly office supply package', quantity: 1, unitPrice: 850 }
-    ],
-    totalAmount: 850,
-    expectedDelivery: new Date('2024-02-10'),
+    total: 2597,
     status: 'delivered',
-    progress: 100,
-    paymentTerms: 'net30',
-    deliveryTerms: 'fob',
-    createdAt: new Date('2024-01-12')
+    createdDate: new Date(2024, 0, 10),
+    expectedDelivery: new Date(2024, 0, 12),
+    progress: 100
   },
   {
-    id: 5,
-    number: 'PO-2024-005',
-    supplier: 'Tech Solutions Inc',
-    supplierCode: 'SUP-001',
+    id: '2',
+    poNumber: 'PO-2024-002',
+    supplier: {
+      id: 'sup2',
+      name: 'Albany Bakeries',
+      contact: '+27118887766'
+    },
     items: [
-      { name: 'Server Hardware', description: 'High-capacity server equipment', quantity: 2, unitPrice: 8500 }
+      { id: '3', name: 'White Bread', quantity: 100, unitPrice: 8.50, total: 850 }
     ],
-    totalAmount: 17000,
-    expectedDelivery: new Date('2024-02-25'),
-    status: 'partial',
-    progress: 50,
-    paymentTerms: 'net30',
-    deliveryTerms: 'exw',
-    createdAt: new Date('2024-01-11')
+    total: 850,
+    status: 'sent',
+    createdDate: new Date(2024, 0, 15),
+    expectedDelivery: new Date(2024, 0, 17),
+    progress: 75
+  },
+  {
+    id: '3',
+    poNumber: 'PO-2024-003',
+    supplier: {
+      id: 'sup3',
+      name: 'Sunfoil Distributors',
+      contact: '+27124569988'
+    },
+    items: [
+      { id: '4', name: 'Cooking Oil 2L', quantity: 30, unitPrice: 65.00, total: 1950 }
+    ],
+    total: 1950,
+    status: 'pending',
+    createdDate: new Date(2024, 0, 16),
+    progress: 25
   }
 ])
 
-// Computed filtered POs
-const filteredPOs = computed(() => {
-  return purchaseOrders.value.filter(po => {
-    const matchesSearch = !searchQuery.value || 
-      po.number.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      po.supplier.toLowerCase().includes(searchQuery.value.toLowerCase())
+const smartRecommendations = ref<SmartRecommendation[]>([
+  {
+    id: '1',
+    title: 'Group Buy: Maize Meal',
+    description: 'Join 3 other shops to buy maize meal in bulk. Minimum order: 200 units.',
+    savings: 450,
+    type: 'group_buy'
+  },
+  {
+    id: '2',
+    title: 'Seasonal Discount: Soft Drinks',
+    description: 'Summer season approaching. Stock up on beverages with 15% early bird discount.',
+    savings: 320,
+    type: 'seasonal'
+  }
+])
+
+const groupBuyingOps = ref<GroupBuyingOpportunity[]>([
+  {
+    id: '1',
+    product: 'Maize Meal 5kg',
+    description: 'Bulk purchase with 3 other township shops. Minimum 200 units total.',
+    participants: 3,
+    savings: 15,
+    minQuantity: 200,
+    deadline: new Date(2024, 1, 25)
+  },
+  {
+    id: '2',
+    product: 'Cooking Oil 750ml',
+    description: 'Weekly group purchase every Monday. Join standing order.',
+    participants: 5,
+    savings: 12,
+    minQuantity: 100,
+    deadline: new Date(2024, 1, 20)
+  }
+])
+
+// Computed
+const activeOrders = computed(() => 
+  purchaseOrders.value.filter(po => !['delivered', 'cancelled'].includes(po.status))
+)
+
+const pendingApprovals = computed(() =>
+  purchaseOrders.value.filter(po => po.status === 'pending')
+)
+
+const monthlySpend = computed(() =>
+  purchaseOrders.value
+    .filter(po => {
+      const poMonth = po.createdDate.getMonth()
+      const currentMonth = new Date().getMonth()
+      return poMonth === currentMonth && po.status !== 'cancelled'
+    })
+    .reduce((sum, po) => sum + po.total, 0)
+)
+
+const averageDeliveryDays = computed(() => {
+  const deliveredOrders = purchaseOrders.value.filter(po => po.status === 'delivered' && po.expectedDelivery)
+  if (deliveredOrders.length === 0) return 0
+  
+  const totalDays = deliveredOrders.reduce((sum, po) => {
+    const days = Math.ceil((po.expectedDelivery!.getTime() - po.createdDate.getTime()) / (1000 * 60 * 60 * 24))
+    return sum + days
+  }, 0)
+  
+  return Math.round(totalDays / deliveredOrders.length)
+})
+
+const suppliers = computed(() => {
+  const sups = purchaseOrders.value.map(po => po.supplier.name)
+  return [...new Set(sups)].sort()
+})
+
+const filteredOrders = computed(() => {
+  return purchaseOrders.value.filter(order => {
+    const matchesSearch = !searchTerm.value || 
+      order.poNumber.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      order.supplier.name.toLowerCase().includes(searchTerm.value.toLowerCase())
     
-    const matchesStatus = !selectedStatus.value || po.status === selectedStatus.value
-    const matchesSupplier = !selectedSupplier.value || po.supplier === selectedSupplier.value
-    // Add date range and priority filtering logic here if needed
+    const matchesStatus = !statusFilter.value || order.status === statusFilter.value
+    const matchesSupplier = !supplierFilter.value || order.supplier.name === supplierFilter.value
     
-    return matchesSearch && matchesStatus && matchesSupplier
+    let matchesDate = true
+    if (dateFilter.value) {
+      const filterDate = new Date(dateFilter.value)
+      matchesDate = order.createdDate.toDateString() === filterDate.toDateString()
+    }
+    
+    return matchesSearch && matchesStatus && matchesSupplier && matchesDate
   })
 })
 
-// Helper functions
-const getStatusClass = (status: string) => {
-  const classes = {
-    draft: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
-    sent: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-    confirmed: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    partial: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-    delivered: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-    cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+// Methods
+const getStatusVariant = (status: string) => {
+  switch (status) {
+    case 'delivered': return 'default'
+    case 'sent': return 'secondary'
+    case 'approved': return 'outline'
+    case 'pending': return 'destructive'
+    case 'draft': return 'secondary'
+    case 'cancelled': return 'outline'
+    default: return 'outline'
   }
-  return classes[status as keyof typeof classes] || 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+}
+
+const getProgressPercentage = (order: PurchaseOrder) => {
+  const statusProgress = {
+    draft: 10,
+    pending: 25,
+    approved: 50,
+    sent: 75,
+    delivered: 100,
+    cancelled: 0
+  }
+  return statusProgress[order.status] || 0
+}
+
+const viewOrder = (order: PurchaseOrder) => {
+  console.log('Viewing order:', order.poNumber)
+}
+
+const editOrder = (order: PurchaseOrder) => {
+  console.log('Editing order:', order.poNumber)
+}
+
+const sendToSupplier = (order: PurchaseOrder) => {
+  console.log('Sending to supplier:', order.poNumber)
+}
+
+const applyRecommendation = (rec: SmartRecommendation) => {
+  console.log('Applying recommendation:', rec.title)
+}
+
+const joinGroupBuy = (opp: GroupBuyingOpportunity) => {
+  console.log('Joining group buy:', opp.product)
+}
+
+const resetFilters = () => {
+  searchTerm.value = ''
+  statusFilter.value = ''
+  supplierFilter.value = ''
+  dateFilter.value = ''
+}
+
+const handlePOCreated = (po: any) => {
+  console.log('PO created:', po)
+}
+
+const handleReorderComplete = (orders: any) => {
+  console.log('Reorder complete:', orders)
+}
+
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-ZA', {
+    style: 'currency',
+    currency: 'ZAR',
+    minimumFractionDigits: 0
+  }).format(amount)
 }
 
 const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'short', 
-    day: 'numeric' 
-  })
-}
-
-// Generate new PO number
-const generatePONumber = () => {
-  const year = new Date().getFullYear()
-  const count = purchaseOrders.value.length + 1
-  return `PO-${year}-${count.toString().padStart(3, '0')}`
-}
-
-// Modal functions
-const openCreatePOModal = () => {
-  newPO.value.number = generatePONumber()
-  showCreateModal.value = true
-}
-
-const closeCreateModal = () => {
-  showCreateModal.value = false
-  newPO.value = {
-    number: '',
-    supplier: '',
-    expectedDelivery: '',
-    items: [{ name: '', description: '', quantity: 1, unitPrice: 0 }],
-    paymentTerms: 'net30',
-    deliveryTerms: 'fob',
-    notes: ''
-  }
-}
-
-// Item management
-const addPOItem = () => {
-  newPO.value.items.push({ name: '', description: '', quantity: 1, unitPrice: 0 })
-}
-
-const removePOItem = (index: number) => {
-  if (newPO.value.items.length > 1) {
-    newPO.value.items.splice(index, 1)
-  }
-}
-
-// Form submission
-const submitPO = () => {
-  const totalAmount = newPO.value.items.reduce((sum, item) => 
-    sum + (item.quantity * item.unitPrice), 0
-  )
-  
-  const po = {
-    id: purchaseOrders.value.length + 1,
-    ...newPO.value,
-    supplierCode: 'SUP-XXX', // This would be fetched based on supplier
-    totalAmount,
-    expectedDelivery: new Date(newPO.value.expectedDelivery),
-    status: 'draft',
-    progress: 0,
-    createdAt: new Date()
-  }
-  
-  purchaseOrders.value.unshift(po)
-  closeCreateModal()
-  alert('Purchase Order created successfully!')
-}
-
-// Action functions
-const viewPO = (po: any) => {
-  console.log('View PO:', po)
-}
-
-const editPO = (po: any) => {
-  console.log('Edit PO:', po)
-}
-
-const sendPO = (po: any) => {
-  po.status = 'sent'
-  po.progress = 25
-  alert(`PO ${po.number} sent to supplier!`)
-}
-
-const downloadPO = (po: any) => {
-  console.log('Download PO PDF:', po)
-  alert('PO PDF download will be implemented')
-}
-
-const cancelPO = (po: any) => {
-  if (confirm(`Are you sure you want to cancel ${po.number}?`)) {
-    po.status = 'cancelled'
-    po.progress = 0
-  }
-}
-
-const exportPOs = () => {
-  console.log('Export POs')
-  alert('Export functionality will be implemented')
+  return new Intl.DateTimeFormat('en-ZA', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  }).format(date)
 }
 
 onMounted(() => {
-  console.log('Purchase Orders page mounted')
+  console.log('Purchase Orders loaded')
 })
 </script>

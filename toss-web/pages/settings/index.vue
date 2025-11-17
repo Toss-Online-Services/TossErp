@@ -1,120 +1,299 @@
+<script setup lang="ts">
+import { Button } from '~/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { Checkbox } from '~/components/ui/checkbox'
+import { Separator } from '~/components/ui/separator'
+
+definePageMeta({
+  middleware: 'auth',
+})
+
+const activeTab = ref('business')
+
+const businessSettings = ref({
+  name: 'My Spaza Shop',
+  email: 'shop@example.com',
+  phone: '+27 71 234 5678',
+  address: 'Township, Johannesburg',
+  vatNumber: 'VAT123456',
+})
+
+const notifications = ref({
+  emailAlerts: true,
+  smsAlerts: false,
+  lowStockAlerts: true,
+  dailySummary: true,
+})
+
+const saveSettings = () => {
+  console.log('Saving settings...')
+}
+</script>
+
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
-        <p class="mt-2 text-gray-600 dark:text-gray-400">Configure your application preferences and system settings</p>
+  <div class="flex-1 space-y-4 p-4 md:p-8 pt-6">
+    <div>
+      <h2 class="text-3xl font-bold tracking-tight">
+        Settings
+      </h2>
+      <p class="text-muted-foreground">
+        Manage your account and application preferences
+      </p>
+    </div>
+
+    <div class="space-y-4">
+      <!-- Tab Navigation -->
+      <div class="flex gap-2 border-b">
+        <Button
+          :variant="activeTab === 'business' ? 'default' : 'ghost'"
+          class="rounded-b-none"
+          @click="activeTab = 'business'"
+        >
+          Business
+        </Button>
+        <Button
+          :variant="activeTab === 'notifications' ? 'default' : 'ghost'"
+          class="rounded-b-none"
+          @click="activeTab = 'notifications'"
+        >
+          Notifications
+        </Button>
+        <Button
+          :variant="activeTab === 'security' ? 'default' : 'ghost'"
+          class="rounded-b-none"
+          @click="activeTab = 'security'"
+        >
+          Security
+        </Button>
+        <Button
+          :variant="activeTab === 'billing' ? 'default' : 'ghost'"
+          class="rounded-b-none"
+          @click="activeTab = 'billing'"
+        >
+          Billing
+        </Button>
       </div>
 
-      <!-- Settings Sections -->
-      <div class="space-y-6">
-        <!-- Appearance -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Appearance</h3>
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Theme</label>
-              <select class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm">
-                <option>Light</option>
-                <option>Dark</option>
-                <option>System</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Language</label>
-              <select class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm">
-                <option>English</option>
-                <option>Afrikaans</option>
-                <option>Zulu</option>
-                <option>Xhosa</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Notifications -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Notifications</h3>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Email Notifications</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Receive important updates via email</p>
+      <!-- Business Settings -->
+      <div v-show="activeTab === 'business'" class="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Business Information</CardTitle>
+            <CardDescription>
+              Update your business details and contact information
+            </CardDescription>
+          </CardHeader>
+          <CardContent class="space-y-4">
+            <div class="grid gap-4 md:grid-cols-2">
+              <div class="space-y-2">
+                <Label for="businessName">Business Name</Label>
+                <Input
+                  id="businessName"
+                  v-model="businessSettings.name"
+                  placeholder="My Spaza Shop"
+                />
               </div>
-              <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 shadow-sm">
-            </div>
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Push Notifications</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Get instant notifications in your browser</p>
-              </div>
-              <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 shadow-sm">
-            </div>
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">SMS Alerts</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Receive critical alerts via SMS</p>
-              </div>
-              <input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm">
-            </div>
-          </div>
-        </div>
 
-        <!-- Security -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Security</h3>
-          <div class="space-y-4">
-            <div>
-              <button class="w-full text-left bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Change Password</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Update your account password</p>
-              </button>
-            </div>
-            <div>
-              <button class="w-full text-left bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Two-Factor Authentication</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Add an extra layer of security</p>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- AI Copilot -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">AI Copilot</h3>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Enable AI Assistance</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Get intelligent suggestions and automation</p>
+              <div class="space-y-2">
+                <Label for="email">Email</Label>
+                <Input
+                  id="email"
+                  v-model="businessSettings.email"
+                  type="email"
+                  placeholder="shop@example.com"
+                />
               </div>
-              <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 shadow-sm">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">AI Model</label>
-              <select class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm">
-                <option>GPT-4</option>
-                <option>Claude</option>
-                <option>Gemini</option>
-              </select>
-            </div>
-          </div>
-        </div>
 
-        <!-- Save Button -->
-        <div class="flex justify-end">
-          <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            Save Settings
-          </button>
-        </div>
+              <div class="space-y-2">
+                <Label for="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  v-model="businessSettings.phone"
+                  type="tel"
+                  placeholder="+27 XX XXX XXXX"
+                />
+              </div>
+
+              <div class="space-y-2">
+                <Label for="vat">VAT Number</Label>
+                <Input
+                  id="vat"
+                  v-model="businessSettings.vatNumber"
+                  placeholder="VAT123456"
+                />
+              </div>
+
+              <div class="space-y-2 md:col-span-2">
+                <Label for="address">Address</Label>
+                <Input
+                  id="address"
+                  v-model="businessSettings.address"
+                  placeholder="Full business address"
+                />
+              </div>
+            </div>
+
+            <Separator />
+
+            <div class="flex justify-end gap-2">
+              <Button variant="outline">Cancel</Button>
+              <Button @click="saveSettings">Save Changes</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- Notifications Settings -->
+      <div v-show="activeTab === 'notifications'" class="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Notification Preferences</CardTitle>
+            <CardDescription>
+              Choose how you want to be notified about important events
+            </CardDescription>
+          </CardHeader>
+          <CardContent class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <Checkbox :checked="notifications.emailAlerts" @update:checked="notifications.emailAlerts = $event" id="emailAlerts" />
+                <div class="space-y-0.5">
+                  <Label for="emailAlerts" class="cursor-pointer">Email Alerts</Label>
+                  <p class="text-sm text-muted-foreground">
+                    Receive email notifications for important events
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <Checkbox :checked="notifications.smsAlerts" @update:checked="notifications.smsAlerts = $event" id="smsAlerts" />
+                <div class="space-y-0.5">
+                  <Label for="smsAlerts" class="cursor-pointer">SMS Alerts</Label>
+                  <p class="text-sm text-muted-foreground">
+                    Get SMS notifications for critical updates
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <Checkbox :checked="notifications.lowStockAlerts" @update:checked="notifications.lowStockAlerts = $event" id="lowStockAlerts" />
+                <div class="space-y-0.5">
+                  <Label for="lowStockAlerts" class="cursor-pointer">Low Stock Alerts</Label>
+                  <p class="text-sm text-muted-foreground">
+                    Get notified when products are running low
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <Checkbox :checked="notifications.dailySummary" @update:checked="notifications.dailySummary = $event" id="dailySummary" />
+                <div class="space-y-0.5">
+                  <Label for="dailySummary" class="cursor-pointer">Daily Summary</Label>
+                  <p class="text-sm text-muted-foreground">
+                    Receive a daily summary of sales and activity
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div class="flex justify-end gap-2">
+              <Button variant="outline">Cancel</Button>
+              <Button @click="saveSettings">Save Preferences</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- Security Settings -->
+      <div v-show="activeTab === 'security'" class="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Security Settings</CardTitle>
+            <CardDescription>
+              Manage your password and security options
+            </CardDescription>
+          </CardHeader>
+          <CardContent class="space-y-4">
+            <div class="space-y-2">
+              <Label for="currentPassword">Current Password</Label>
+              <Input
+                id="currentPassword"
+                type="password"
+                placeholder="Enter current password"
+              />
+            </div>
+
+            <div class="space-y-2">
+              <Label for="newPassword">New Password</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                placeholder="Enter new password"
+              />
+            </div>
+
+            <div class="space-y-2">
+              <Label for="confirmPassword">Confirm New Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Confirm new password"
+              />
+            </div>
+
+            <Separator />
+
+            <div class="flex justify-end gap-2">
+              <Button variant="outline">Cancel</Button>
+              <Button>Update Password</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- Billing Settings -->
+      <div v-show="activeTab === 'billing'" class="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Billing & Subscription</CardTitle>
+            <CardDescription>
+              Manage your subscription and payment methods
+            </CardDescription>
+          </CardHeader>
+          <CardContent class="space-y-4">
+            <div class="rounded-lg border p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="font-medium">Current Plan: Free</p>
+                  <p class="text-sm text-muted-foreground">Limited features available</p>
+                </div>
+                <Button>Upgrade Plan</Button>
+              </div>
+            </div>
+
+            <Separator />
+
+            <p class="text-sm text-muted-foreground">
+              Billing features will be available soon
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   </div>
 </template>
-
-<script setup>
-useHead({
-  title: 'Settings - TOSS ERP III'
-})
-</script>

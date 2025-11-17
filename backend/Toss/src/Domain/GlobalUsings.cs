@@ -1,0 +1,14 @@
+﻿global using Toss.Domain.Common;
+global using Toss.Domain.Entities;
+global using Toss.Domain.Entities.Orders;
+global using Toss.Domain.Entities.CRM;
+global using Toss.Domain.Entities.GroupBuying;
+global using Toss.Domain.Entities.Catalog;
+global using Toss.Domain.Entities.Logistics;
+global using Toss.Domain.Entities.Payments;
+global using Toss.Domain.Entities.Sales;
+global using Toss.Domain.Entities.Stores;
+global using Toss.Domain.Entities.Vendors;
+global using Toss.Domain.Enums;
+global using Toss.Domain.Events;
+global using Toss.Domain.ValueObjects;

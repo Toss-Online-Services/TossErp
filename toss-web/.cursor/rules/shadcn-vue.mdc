@@ -1,0 +1,366 @@
+---
+description: shadcn-vue component library best practices for Nuxt 4 applications
+globs: **/*.vue, **/*.ts, **/*.js, components/**/*, pages/**/*
+alwaysApply: true
+---
+
+# shadcn-vue Best Practices & Usage Guidelines
+
+## Overview
+shadcn-vue is a collection of re-usable components built with Radix Vue and Tailwind CSS. Components are NOT installed as dependencies - they're copied directly into your project for full customization.
+
+## Core Principles
+
+### 1. **Always Use shadcn-vue Components**
+- **MANDATORY**: Use shadcn-vue components for ALL UI elements instead of creating custom components
+- Use `Button` from `~/components/ui/button` instead of custom button implementations
+- Use `Card` components instead of custom card wrappers
+- Use `Input`, `Label`, `Select`, `Dialog`, `Sheet`, etc. from shadcn-vue
+
+### 2. **Component Import Pattern**
+```vue
+<script setup lang="ts">
+// Import shadcn-vue components
+import { Button } from '~/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+</script>
+
+<template>
+  <Card>
+    <CardHeader>
+      <CardTitle>Title</CardTitle>
+      <CardDescription>Description</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <Label for="name">Name</Label>
+      <Input id="name" placeholder="Enter name" />
+    </CardContent>
+    <CardFooter>
+      <Button>Submit</Button>
+    </CardFooter>
+  </Card>
+</template>
+```
+
+### 3. **Styling with Tailwind CSS Variables**
+- Use CSS variables for theming (defined in `assets/css/main.css`)
+- Available theme colors:
+  - `bg-background`, `text-foreground`
+  - `bg-primary`, `text-primary-foreground`
+  - `bg-secondary`, `text-secondary-foreground`
+  - `bg-muted`, `text-muted-foreground`
+  - `bg-accent`, `text-accent-foreground`
+  - `bg-destructive`, `text-destructive-foreground`
+  - `bg-card`, `text-card-foreground`
+  - `border-border`, `border-input`
+  - `ring-ring`
+
+### 4. **Button Variants**
+```vue
+<Button>Default</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="destructive">Delete</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="link">Link</Button>
+
+<!-- Sizes -->
+<Button size="sm">Small</Button>
+<Button size="default">Default</Button>
+<Button size="lg">Large</Button>
+<Button size="icon">🔍</Button>
+```
+
+### 5. **Utility Function - cn()**
+- Use the `cn()` utility for conditional classes
+- Located in `~/lib/utils.ts`
+```vue
+<script setup lang="ts">
+import { cn } from '~/lib/utils'
+
+const props = defineProps<{
+  variant?: 'default' | 'error'
+}>()
+</script>
+
+<template>
+  <div :class="cn(
+    'base-styles',
+    variant === 'error' && 'error-styles'
+  )">
+    Content
+  </div>
+</template>
+```
+
+## Common shadcn-vue Components
+
+### Available Components to Use:
+1. **Button** - All clickable actions
+2. **Card** - Content containers with header/footer
+3. **Input** - Text inputs, emails, passwords
+4. **Label** - Form labels
+5. **Select** - Dropdowns and select menus
+6. **Dialog** - Modal dialogs
+7. **Sheet** - Slide-out panels
+8. **Table** - Data tables
+9. **Tabs** - Tabbed interfaces
+10. **Alert** - Alert messages
+11. **Badge** - Status indicators
+12. **Checkbox** - Checkboxes
+13. **RadioGroup** - Radio buttons
+14. **Switch** - Toggle switches
+15. **Textarea** - Multi-line text inputs
+16. **Tooltip** - Tooltips
+17. **Popover** - Popovers
+18. **DropdownMenu** - Dropdown menus
+19. **Command** - Command palette
+20. **Separator** - Dividers
+
+## Form Example with shadcn-vue
+```vue
+<script setup lang="ts">
+import { Button } from '~/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+
+const formData = ref({
+  name: '',
+  email: '',
+  role: ''
+})
+
+const handleSubmit = () => {
+  console.log('Form submitted:', formData.value)
+}
+</script>
+
+<template>
+  <Card class="w-full max-w-md">
+    <CardHeader>
+      <CardTitle>Create Account</CardTitle>
+      <CardDescription>Enter your details below</CardDescription>
+    </CardHeader>
+    <CardContent class="space-y-4">
+      <div class="space-y-2">
+        <Label for="name">Name</Label>
+        <Input id="name" v-model="formData.name" placeholder="John Doe" />
+      </div>
+      
+      <div class="space-y-2">
+        <Label for="email">Email</Label>
+        <Input id="email" v-model="formData.email" type="email" placeholder="john@example.com" />
+      </div>
+      
+      <div class="space-y-2">
+        <Label for="role">Role</Label>
+        <Select v-model="formData.role">
+          <SelectTrigger>
+            <SelectValue placeholder="Select a role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="admin">Admin</SelectItem>
+            <SelectItem value="user">User</SelectItem>
+            <SelectItem value="guest">Guest</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </CardContent>
+    <CardFooter class="flex justify-between">
+      <Button variant="outline">Cancel</Button>
+      <Button @click="handleSubmit">Submit</Button>
+    </CardFooter>
+  </Card>
+</template>
+```
+
+## Layout Patterns
+
+### Dashboard Card Grid
+```vue
+<template>
+  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <Card>
+      <CardHeader>
+        <CardTitle>Total Revenue</CardTitle>
+        <CardDescription>+20.1% from last month</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div class="text-2xl font-bold">R45,231.89</div>
+      </CardContent>
+    </Card>
+    
+    <Card>
+      <CardHeader>
+        <CardTitle>Sales</CardTitle>
+        <CardDescription>+10.5% from last month</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div class="text-2xl font-bold">+12,234</div>
+      </CardContent>
+    </Card>
+    
+    <Card>
+      <CardHeader>
+        <CardTitle>Active Users</CardTitle>
+        <CardDescription>+15% from last month</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div class="text-2xl font-bold">+2,350</div>
+      </CardContent>
+    </Card>
+  </div>
+</template>
+```
+
+### Action Bar with Buttons
+```vue
+<template>
+  <div class="flex justify-between items-center">
+    <div class="flex gap-2 items-center">
+      <Button variant="outline" size="sm">
+        <Icon name="mdi:filter" class="mr-2 w-4 h-4" />
+        Filter
+      </Button>
+      <Button variant="outline" size="sm">
+        <Icon name="mdi:sort" class="mr-2 w-4 h-4" />
+        Sort
+      </Button>
+    </div>
+    
+    <div class="flex gap-2 items-center">
+      <Button variant="outline" size="sm">
+        <Icon name="mdi:export" class="mr-2 w-4 h-4" />
+        Export
+      </Button>
+      <Button size="sm">
+        <Icon name="mdi:plus" class="mr-2 w-4 h-4" />
+        Add New
+      </Button>
+    </div>
+  </div>
+</template>
+```
+
+## Migration from Custom Components
+
+### Before (Custom Components) ❌
+```vue
+<button class="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
+  Click me
+</button>
+
+<div class="p-6 bg-white rounded-lg shadow">
+  <h3 class="text-lg font-bold">Title</h3>
+  <p class="text-gray-600">Description</p>
+</div>
+```
+
+### After (shadcn-vue) ✅
+```vue
+<Button>Click me</Button>
+
+<Card>
+  <CardHeader>
+    <CardTitle>Title</CardTitle>
+    <CardDescription>Description</CardDescription>
+  </CardHeader>
+</Card>
+```
+
+## Component Customization
+
+### Extending shadcn-vue Components
+Since components are in your codebase, you can modify them directly:
+
+```typescript
+// components/ui/button/index.ts
+export const buttonVariants = cva(
+  'base-styles-here',
+  {
+    variants: {
+      variant: {
+        default: 'bg-primary text-primary-foreground',
+        // Add your custom variant
+        custom: 'bg-gradient-to-r from-blue-600 to-purple-600',
+      },
+    },
+  },
+)
+```
+
+## Dark Mode Support
+shadcn-vue components automatically support dark mode through CSS variables:
+
+```css
+/* assets/css/main.css */
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  /* ... other dark mode colors */
+}
+```
+
+## Adding New Components
+
+### **CRITICAL: Always Use CLI to Install Components**
+
+**MANDATORY RULE**: When a new shadcn-vue component is needed, ALWAYS install it using the CLI:
+
+```bash
+npx shadcn-vue@latest add [component-name]
+```
+
+**✅ CORRECT Examples:**
+```bash
+# Install single component
+npx shadcn-vue@latest add dialog
+
+# Install multiple components at once
+npx shadcn-vue@latest add dialog sheet tabs table
+
+# Install all form components
+npx shadcn-vue@latest add input label textarea select checkbox switch radio-group
+
+# Install navigation components
+npx shadcn-vue@latest add breadcrumb tabs dropdown-menu command
+```
+
+**❌ NEVER** manually create shadcn-vue components - always use the CLI
+**❌ NEVER** copy/paste component code from documentation - use the CLI
+**❌ NEVER** use `pnpm dlx` if it fails - use `npx` instead
+
+### Why Use CLI?
+1. Ensures correct component structure and dependencies
+2. Automatically handles imports and exports
+3. Maintains consistency across the project
+4. Includes all necessary TypeScript types
+5. Sets up proper Radix Vue primitives
+
+### Installation Workflow
+When you need a component that doesn't exist:
+1. Identify the component name from [shadcn-vue.com](https://www.shadcn-vue.com/docs/components)
+2. Run: `npx shadcn-vue@latest add [component-name]`
+3. Import and use in your Vue files
+4. **DO NOT** manually modify installed components unless absolutely necessary
+
+## Best Practices Summary
+
+1. ✅ **DO** use shadcn-vue components for all UI elements
+2. ✅ **DO** use the `cn()` utility for conditional styling
+3. ✅ **DO** use CSS variables for theming
+4. ✅ **DO** compose complex UIs from shadcn-vue primitives
+5. ❌ **DON'T** create custom button/input/card components
+6. ❌ **DON'T** use inline Tailwind classes for complex styling patterns
+7. ❌ **DON'T** hardcode colors - use theme variables
+8. ❌ **DON'T** duplicate component logic - extend existing shadcn-vue components
+
+## Resources
+- [shadcn-vue Documentation](https://www.shadcn-vue.com)
+- [Radix Vue Primitives](https://www.radix-vue.com)
+- [Component Examples](https://www.shadcn-vue.com/examples)
+- [Theming Guide](https://www.shadcn-vue.com/docs/theming)

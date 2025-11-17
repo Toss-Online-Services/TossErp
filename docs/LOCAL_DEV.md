@@ -16,7 +16,7 @@ docker compose -f infra/docker/docker-compose.yml up -d --build
 Services:
 
 - Gateway: http://localhost:8080
-- Web (Nuxt dev): http://localhost:3000
+- Web (Nuxt dev): http://localhost:3001
 - Inventory API (Stock): http://localhost:5001 (container internal 8080)
 - Postgres: localhost:5432 (user/pass in `.env`)
 - Redis: localhost:6379

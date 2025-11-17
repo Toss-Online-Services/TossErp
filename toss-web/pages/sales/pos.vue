@@ -1,571 +1,767 @@
-<template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
-    <!-- Mobile-First Page Container -->
-    <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 lg:pb-6">
-      <!-- Page Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Point of Sale</h1>
-          <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">Quick checkout system for Thabo's Spaza Shop</p>
-        </div>
-        <div class="flex flex-wrap gap-2 sm:gap-3">
-          <button @click="openDrawer" 
-                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm sm:text-base">
-            <CurrencyDollarIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
-            Open Drawer
-          </button>
-          <button @click="viewReports" 
-                  class="flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm sm:text-base">
-            <ChartBarIcon class="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
-            Reports
-          </button>
-        </div>
-      </div>
-
-      <!-- Current Sale Stats -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <div class="text-center">
-            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Today's Sales</p>
-            <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R {{ formatCurrency(todaysSales) }}</p>
-            <p class="text-xs sm:text-sm text-green-600">{{ todaysTransactions }} transactions</p>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <div class="text-center">
-            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Current Sale</p>
-            <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R {{ formatCurrency(currentSaleTotal) }}</p>
-            <p class="text-xs sm:text-sm text-blue-600">{{ currentSaleItems.length }} items</p>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <div class="text-center">
-            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Avg. Sale</p>
-            <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R {{ formatCurrency(avgSaleValue) }}</p>
-            <p class="text-xs sm:text-sm text-purple-600">Last hour</p>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <div class="text-center">
-            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Cash Float</p>
-            <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">R {{ formatCurrency(cashFloat) }}</p>
-            <p class="text-xs sm:text-sm text-yellow-600">In drawer</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <!-- Product Search & Categories -->
-        <div class="lg:col-span-2 space-y-4">
-          <!-- Product Search -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
-            <div class="flex gap-3 mb-4">
-              <div class="flex-1">
-                <input v-model="productSearch" @input="searchProducts" type="text" placeholder="Scan barcode or search products..." 
-                       class="w-full px-3 sm:px-4 py-3 text-lg border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white">
-              </div>
-              <button @click="toggleScanner" class="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-                <QrCodeIcon class="w-5 h-5" />
-              </button>
-            </div>
-
-            <!-- Quick Categories -->
-            <div class="flex flex-wrap gap-2 mb-4">
-              <button v-for="category in productCategories" :key="category.id"
-                      @click="filterByCategory(category.id)"
-                      :class="[selectedCategory === category.id ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300']"
-                      class="px-3 py-2 rounded-lg text-sm hover:bg-blue-500 hover:text-white transition-colors">
-                {{ category.name }}
-              </button>
-            </div>
-
-            <!-- Product Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              <div v-for="product in filteredProducts" :key="product.id"
-                   @click="addToSale(product)"
-                   class="bg-slate-50 dark:bg-slate-700 p-3 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900 transition-colors border-2 border-transparent hover:border-blue-300 dark:hover:border-blue-600">
-                <div class="text-center">
-                  <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-2">
-                    <TagIcon class="w-6 h-6 text-blue-600" />
-                  </div>
-                  <p class="font-medium text-sm text-slate-900 dark:text-white truncate">{{ product.name }}</p>
-                  <p class="text-xs text-slate-600 dark:text-slate-400">{{ product.sku }}</p>
-                  <p class="text-sm font-bold text-blue-600 dark:text-blue-400 mt-1">R {{ formatCurrency(product.price) }}</p>
-                  <p class="text-xs text-slate-500">Stock: {{ product.stock }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Current Sale Cart -->
-        <div class="space-y-4">
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-            <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
-              <div class="flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Current Sale</h3>
-                <button @click="clearSale" class="text-red-600 hover:text-red-700 text-sm">
-                  Clear All
-                </button>
-              </div>
-            </div>
-            
-            <div class="p-4 sm:p-6">
-              <div v-if="currentSaleItems.length === 0" class="text-center py-8">
-                <ShoppingCartIcon class="w-12 h-12 text-slate-400 mx-auto mb-3" />
-                <p class="text-slate-500 dark:text-slate-400">No items in cart</p>
-                <p class="text-sm text-slate-400 dark:text-slate-500">Scan or click products to add</p>
-              </div>
-
-              <div v-else class="space-y-3 max-h-96 overflow-y-auto">
-                <div v-for="(item, index) in currentSaleItems" :key="index"
-                     class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                  <div class="flex-1 min-w-0">
-                    <p class="font-medium text-sm text-slate-900 dark:text-white truncate">{{ item.name }}</p>
-                    <p class="text-xs text-slate-600 dark:text-slate-400">R {{ formatCurrency(item.price) }} each</p>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <button @click="decreaseQuantity(index)" class="w-6 h-6 bg-red-100 dark:bg-red-900 text-red-600 rounded-full flex items-center justify-center text-sm">
-                      -
-                    </button>
-                    <span class="w-8 text-center text-sm font-medium text-slate-900 dark:text-white">{{ item.quantity }}</span>
-                    <button @click="increaseQuantity(index)" class="w-6 h-6 bg-green-100 dark:bg-green-900 text-green-600 rounded-full flex items-center justify-center text-sm">
-                      +
-                    </button>
-                    <button @click="removeFromSale(index)" class="w-6 h-6 bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-400 rounded-full flex items-center justify-center text-sm ml-1">
-                      <XMarkIcon class="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Sale Totals -->
-              <div v-if="currentSaleItems.length > 0" class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
-                <div class="space-y-2">
-                  <div class="flex justify-between">
-                    <span class="text-sm text-slate-600 dark:text-slate-400">Subtotal:</span>
-                    <span class="text-sm font-medium text-slate-900 dark:text-white">R {{ formatCurrency(currentSaleSubtotal) }}</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm text-slate-600 dark:text-slate-400">Tax (15%):</span>
-                    <span class="text-sm font-medium text-slate-900 dark:text-white">R {{ formatCurrency(currentSaleTax) }}</span>
-                  </div>
-                  <div class="flex justify-between text-lg font-bold border-t pt-2 border-slate-200 dark:border-slate-700">
-                    <span class="text-slate-900 dark:text-white">Total:</span>
-                    <span class="text-blue-600 dark:text-blue-400">R {{ formatCurrency(currentSaleTotal) }}</span>
-                  </div>
-                </div>
-
-                <!-- Payment Buttons -->
-                <div class="grid grid-cols-1 gap-2 mt-4">
-                  <button @click="processPayment('cash')" 
-                          class="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium">
-                    <BanknotesIcon class="w-5 h-5 inline mr-2" />
-                    Cash Payment
-                  </button>
-                  <button @click="processPayment('card')" 
-                          class="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
-                    <CreditCardIcon class="w-5 h-5 inline mr-2" />
-                    Card Payment
-                  </button>
-                  <button @click="processPayment('split')" 
-                          class="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium">
-                    <CurrencyDollarIcon class="w-5 h-5 inline mr-2" />
-                    Split Payment
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Quick Actions -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
-            <h4 class="text-sm font-semibold text-slate-900 dark:text-white mb-3">Quick Actions</h4>
-            <div class="grid grid-cols-2 gap-2">
-              <button @click="holdSale" class="px-3 py-2 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-lg text-sm">
-                Hold Sale
-              </button>
-              <button @click="voidSale" class="px-3 py-2 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-lg text-sm">
-                Void Sale
-              </button>
-              <button @click="applyDiscount" class="px-3 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-lg text-sm">
-                Discount
-              </button>
-              <button @click="addCustomer" class="px-3 py-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-lg text-sm">
-                Customer
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Transactions -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
-          <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Recent Transactions</h3>
-        </div>
-        <div class="p-4 sm:p-6">
-          <div class="space-y-3">
-            <div v-for="transaction in recentTransactions" :key="transaction.id" 
-                 class="flex items-center justify-between p-3 rounded-lg border border-slate-100 dark:border-slate-700">
-              <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center" :class="getPaymentMethodColor(transaction.paymentMethod)">
-                  <BanknotesIcon v-if="transaction.paymentMethod === 'cash'" class="w-4 h-4 text-white" />
-                  <CreditCardIcon v-else class="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-slate-900 dark:text-white">Transaction #{{ transaction.id }}</p>
-                  <p class="text-xs text-slate-600 dark:text-slate-400">{{ transaction.items }} items • {{ formatTime(transaction.timestamp) }}</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="text-sm font-semibold text-slate-900 dark:text-white">R {{ formatCurrency(transaction.total) }}</p>
-                <p class="text-xs text-slate-600 dark:text-slate-400">{{ transaction.paymentMethod }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Payment Modal -->
-    <div v-if="showPaymentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-xl max-w-md w-full mx-4">
-        <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
-          <h3 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white">Process Payment</h3>
-        </div>
-        <div class="p-4 sm:p-6">
-          <div class="text-center mb-6">
-            <p class="text-3xl font-bold text-blue-600 dark:text-blue-400">R {{ formatCurrency(currentSaleTotal) }}</p>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Total Amount</p>
-          </div>
-
-          <div v-if="paymentMethod === 'cash'" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Amount Received</label>
-              <input v-model.number="amountReceived" type="number" step="0.01" placeholder="0.00"
-                     class="w-full px-3 py-2 text-lg text-center border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white">
-            </div>
-            <div v-if="amountReceived >= currentSaleTotal" class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-              <p class="text-center text-lg font-semibold text-green-700 dark:text-green-300">
-                Change: R {{ formatCurrency(amountReceived - currentSaleTotal) }}
-              </p>
-            </div>
-          </div>
-
-          <div class="flex justify-end space-x-3 mt-6">
-            <button @click="showPaymentModal = false" type="button" 
-                    class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">
-              Cancel
-            </button>
-            <button @click="completeSale" 
-                    :disabled="paymentMethod === 'cash' && amountReceived < currentSaleTotal"
-                    class="px-6 py-2 bg-green-600 hover:bg-green-700 disabled:bg-slate-400 text-white rounded-lg">
-              Complete Sale
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { 
-  CurrencyDollarIcon,
-  ChartBarIcon,
-  QrCodeIcon,
-  TagIcon,
-  ShoppingCartIcon,
-  XMarkIcon,
-  BanknotesIcon,
-  CreditCardIcon
-} from '@heroicons/vue/24/outline'
+import { nextTick, onBeforeUnmount } from 'vue'
+import { usePosSession } from '~/composables/usePosSession'
+import { usePosMock } from '~/composables/usePosMock'
+import type { Customer } from '~/composables/usePosMock'
+import type { PosSale } from '~/types/sales'
+import { useToast } from '~/composables/useToast'
+import ProductSearch from '~/components/sales/pos/ProductSearch.vue'
+import ProductGrid from '~/components/sales/pos/ProductGrid.vue'
+import CartPanel from '~/components/sales/pos/CartPanel.vue'
+import PaymentPanel from '~/components/sales/pos/PaymentPanel.vue'
+import QuickActions from '~/components/sales/pos/QuickActions.vue'
+import ReceiptPreview from '~/components/sales/pos/ReceiptPreview.vue'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
+import { Badge } from '~/components/ui/badge'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '~/components/ui/dialog'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table'
+import { Button } from '~/components/ui/button'
+import { Loader2, Printer, Scan, UserRound } from 'lucide-vue-next'
 
-// Page metadata
-useHead({
-  title: 'Point of Sale - TOSS ERP',
-  meta: [
-    { name: 'description', content: 'Quick checkout system for Thabo\'s Spaza Shop' }
-  ]
-})
-
-// Layout
 definePageMeta({
-  layout: 'dashboard'
+  middleware: 'auth',
 })
 
-// Reactive data
-const productSearch = ref('')
-const selectedCategory = ref('')
-const showPaymentModal = ref(false)
-const paymentMethod = ref('')
-const amountReceived = ref(0)
+const { toast } = useToast()
+const posSession = usePosSession()
+const posMock = usePosMock()
 
-// POS statistics
-const todaysSales = ref(18450)
-const todaysTransactions = ref(47)
-const avgSaleValue = ref(285)
-const cashFloat = ref(2500)
+// State
+const products = ref<any[]>([])
+const categories = ref<any[]>([])
+const loadingProducts = ref(false)
+const selectedCategory = ref<number | undefined>()
+const searchTerm = ref('')
+const shopId = ref(1) // TODO: Get from auth/shop context
+const showHeldSales = ref(false)
+const showRecentSales = ref(false)
+const heldSales = ref<any[]>([])
+const recentSales = ref<any[]>([])
+const productSearchRef = ref<InstanceType<typeof ProductSearch> | null>(null)
 
-// Current sale
-const currentSaleItems = ref([])
+const barcodeDialogOpen = ref(false)
+const barcodeValue = ref('')
+const barcodeError = ref('')
+const barcodeLoading = ref(false)
+const barcodeInputRef = ref<{ focus: () => void } | null>(null)
 
-// Product categories for Thabo's Spaza Shop
-const productCategories = ref([
-  { id: '', name: 'All' },
-  { id: 'groceries', name: 'Groceries' },
-  { id: 'beverages', name: 'Beverages' },
-  { id: 'snacks', name: 'Snacks' },
-  { id: 'household', name: 'Household' },
-  { id: 'personal', name: 'Personal Care' },
-  { id: 'frozen', name: 'Frozen' }
-])
+const customerDialogOpen = ref(false)
+const customerQuery = ref('')
+const customerLookupResult = ref<Customer | null>(null)
+const customerLookupLoading = ref(false)
+const customerLookupError = ref('')
+const customerInputRef = ref<{ focus: () => void } | null>(null)
 
-// Sample products for Thabo's Spaza Shop
-const products = ref([
-  { id: '1', name: 'Coca Cola 2L', sku: 'CC2L001', price: 35, stock: 24, category: 'beverages', barcode: '123456789' },
-  { id: '2', name: 'White Bread 700g', sku: 'WB700', price: 18, stock: 15, category: 'groceries', barcode: '234567890' },
-  { id: '3', name: 'Milk 1L', sku: 'MLK1L', price: 22, stock: 12, category: 'groceries', barcode: '345678901' },
-  { id: '4', name: 'Simba Chips 125g', sku: 'SC125', price: 12, stock: 30, category: 'snacks', barcode: '456789012' },
-  { id: '5', name: 'Sunlight Soap 250g', sku: 'SS250', price: 15, stock: 20, category: 'household', barcode: '567890123' },
-  { id: '6', name: 'Maggi 2-Minute Noodles', sku: 'MGN2M', price: 8, stock: 48, category: 'groceries', barcode: '678901234' },
-  { id: '7', name: 'Castle Lager 440ml', sku: 'CL440', price: 28, stock: 18, category: 'beverages', barcode: '789012345' },
-  { id: '8', name: 'Purity Baby Food', sku: 'PBF001', price: 25, stock: 10, category: 'groceries', barcode: '890123456' },
-  { id: '9', name: 'Colgate Toothpaste', sku: 'CT001', price: 32, stock: 8, category: 'personal', barcode: '901234567' },
-  { id: '10', name: 'Frozen Chicken 1kg', sku: 'FCK1K', price: 65, stock: 6, category: 'frozen', barcode: '012345678' }
-])
+const receiptDialogOpen = ref(false)
+const lastCompletedSale = ref<PosSale | null>(null)
+const receiptContentRef = ref<HTMLElement | null>(null)
 
-// Recent transactions
-const recentTransactions = ref([
-  { id: '001', total: 156, items: 8, paymentMethod: 'cash', timestamp: new Date() },
-  { id: '002', total: 89, items: 4, paymentMethod: 'card', timestamp: new Date(Date.now() - 15 * 60 * 1000) },
-  { id: '003', total: 245, items: 12, paymentMethod: 'cash', timestamp: new Date(Date.now() - 32 * 60 * 1000) },
-  { id: '004', total: 67, items: 3, paymentMethod: 'card', timestamp: new Date(Date.now() - 45 * 60 * 1000) },
-  { id: '005', total: 134, items: 7, paymentMethod: 'cash', timestamp: new Date(Date.now() - 58 * 60 * 1000) }
-])
-
-// Computed
-const filteredProducts = computed(() => {
-  let filtered = products.value
-
-  if (selectedCategory.value) {
-    filtered = filtered.filter(product => product.category === selectedCategory.value)
+const remainingCredit = computed(() => {
+  const currentCustomer = posSession.customer.value
+  if (!currentCustomer?.creditLimit) {
+    return null
   }
-
-  if (productSearch.value) {
-    const search = productSearch.value.toLowerCase()
-    filtered = filtered.filter(product => 
-      product.name.toLowerCase().includes(search) ||
-      product.sku.toLowerCase().includes(search) ||
-      product.barcode.includes(search)
-    )
-  }
-
-  return filtered
+  const used = currentCustomer.creditBalance ?? 0
+  return currentCustomer.creditLimit - used
 })
 
-const currentSaleSubtotal = computed(() => {
-  return currentSaleItems.value.reduce((total, item) => {
-    return total + (item.price * item.quantity)
-  }, 0)
-})
-
-const currentSaleTax = computed(() => {
-  return currentSaleSubtotal.value * 0.15
-})
-
-const currentSaleTotal = computed(() => {
-  return currentSaleSubtotal.value + currentSaleTax.value
-})
-
-// Helper functions
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-ZA', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount)
+const focusSearchInput = () => {
+  productSearchRef.value?.focusSearch?.()
 }
 
-const formatTime = (date: Date) => {
-  return new Intl.DateTimeFormat('en-ZA', {
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date)
-}
-
-const getPaymentMethodColor = (method: string) => {
-  return method === 'cash' ? 'bg-green-600' : 'bg-blue-600'
-}
-
-// Product functions
-const searchProducts = () => {
-  // Auto-select if exact barcode match
-  const exactMatch = products.value.find(p => p.barcode === productSearch.value)
-  if (exactMatch) {
-    addToSale(exactMatch)
-    productSearch.value = ''
-  }
-}
-
-const filterByCategory = (categoryId: string) => {
-  selectedCategory.value = categoryId
-}
-
-const toggleScanner = () => {
-  alert('Barcode scanner feature coming soon!')
-}
-
-// Sale functions
-const addToSale = (product: any) => {
-  const existingItem = currentSaleItems.value.find(item => item.id === product.id)
-  
-  if (existingItem) {
-    if (existingItem.quantity < product.stock) {
-      existingItem.quantity += 1
-    } else {
-      alert(`Only ${product.stock} units available in stock`)
-    }
-  } else {
-    if (product.stock > 0) {
-      currentSaleItems.value.push({
-        ...product,
-        quantity: 1
-      })
-    } else {
-      alert('Product out of stock')
-    }
-  }
-}
-
-const removeFromSale = (index: number) => {
-  currentSaleItems.value.splice(index, 1)
-}
-
-const increaseQuantity = (index: number) => {
-  const item = currentSaleItems.value[index]
-  const product = products.value.find(p => p.id === item.id)
-  
-  if (item.quantity < product.stock) {
-    item.quantity += 1
-  } else {
-    alert(`Only ${product.stock} units available in stock`)
-  }
-}
-
-const decreaseQuantity = (index: number) => {
-  const item = currentSaleItems.value[index]
-  if (item.quantity > 1) {
-    item.quantity -= 1
-  } else {
-    removeFromSale(index)
-  }
-}
-
-const clearSale = () => {
-  if (currentSaleItems.value.length > 0) {
-    if (confirm('Clear all items from current sale?')) {
-      currentSaleItems.value = []
-    }
-  }
-}
-
-// Payment functions
-const processPayment = (method: string) => {
-  if (currentSaleItems.value.length === 0) {
-    alert('No items in cart')
+watch(barcodeDialogOpen, (open) => {
+  if (open) {
+    barcodeError.value = ''
+    barcodeValue.value = ''
+    nextTick(() => barcodeInputRef.value?.focus?.())
     return
   }
-  
-  paymentMethod.value = method
-  amountReceived.value = method === 'cash' ? 0 : currentSaleTotal.value
-  showPaymentModal.value = true
+  barcodeLoading.value = false
+  barcodeValue.value = ''
+  barcodeError.value = ''
+})
+
+watch(customerDialogOpen, (open) => {
+  if (open) {
+    customerLookupError.value = ''
+    nextTick(() => customerInputRef.value?.focus?.())
+    return
+  }
+  customerLookupLoading.value = false
+  customerLookupResult.value = null
+  customerLookupError.value = ''
+})
+
+const handleShortcuts = (event: KeyboardEvent) => {
+  const actionableKeys = ['F2', 'F4', 'F6', 'F8', 'F9', 'Escape']
+  if (!actionableKeys.includes(event.key)) {
+    return
+  }
+
+  if ((barcodeDialogOpen.value || customerDialogOpen.value) && event.key !== 'Escape') {
+    return
+  }
+
+  event.preventDefault()
+
+  switch (event.key) {
+    case 'F2':
+      focusSearchInput()
+      break
+    case 'F4':
+      if (posSession.canHoldSale.value) {
+        handleHoldSale()
+      }
+      break
+    case 'F6':
+      openBarcodeDialog()
+      break
+    case 'F8':
+      handleViewHeldSales()
+      break
+    case 'F9':
+      if (posSession.canCompleteSale.value) {
+        handleCompleteSale()
+      }
+      break
+    case 'Escape':
+      if (posSession.cart.value.length > 0) {
+        handleVoidSale()
+      }
+      break
+  }
 }
 
-const completeSale = () => {
-  try {
-    // Process the sale
-    const transaction = {
-      id: (recentTransactions.value.length + 1).toString().padStart(3, '0'),
-      total: currentSaleTotal.value,
-      items: currentSaleItems.value.length,
-      paymentMethod: paymentMethod.value,
-      timestamp: new Date()
-    }
-
-    // Update stock levels
-    currentSaleItems.value.forEach(saleItem => {
-      const product = products.value.find(p => p.id === saleItem.id)
-      if (product) {
-        product.stock -= saleItem.quantity
-      }
+// Initialize session
+onMounted(async () => {
+  const sessionId = `SESSION-${Date.now()}`
+  posSession.initSession(sessionId)
+  
+  // Try to restore from localStorage
+  const restored = posSession.restoreFromLocalStorage()
+  if (restored) {
+    toast({
+      title: 'Session Restored',
+      description: 'Your previous POS session has been restored.',
     })
-
-    // Add to recent transactions
-    recentTransactions.value.unshift(transaction)
-    
-    // Update daily stats
-    todaysSales.value += currentSaleTotal.value
-    todaysTransactions.value += 1
-
-    // Clear current sale
-    currentSaleItems.value = []
-    showPaymentModal.value = false
-    amountReceived.value = 0
-
-    // Show success message
-    alert(`Sale completed successfully! Transaction #${transaction.id}`)
-
-    // Print receipt (placeholder)
-    if (confirm('Print receipt?')) {
-      printReceipt(transaction)
-    }
-
-  } catch (error) {
-    console.error('Error completing sale:', error)
-    alert('Failed to complete sale. Please try again.')
   }
+  
+  // Load initial data
+  await loadProducts()
+  await loadCategories()
+
+  window.addEventListener('keydown', handleShortcuts)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleShortcuts)
+})
+
+// Load products
+const loadProducts = async () => {
+  loadingProducts.value = true
+  try {
+    products.value = await posMock.fetchProducts(
+      shopId.value,
+      searchTerm.value || undefined,
+      selectedCategory.value
+    )
+  } catch (error) {
+    toast({
+      title: 'Error',
+      description: 'Failed to load products',
+      variant: 'destructive',
+    })
+  } finally {
+    loadingProducts.value = false
+  }
+}
+
+// Load categories
+const loadCategories = async () => {
+  try {
+    categories.value = await posMock.fetchCategories(shopId.value)
+  } catch (error) {
+    console.error('Failed to load categories:', error)
+  }
+}
+
+// Product selection
+const handleProductSelect = (product: any) => {
+  posSession.addToCart(product, 1)
+  toast({
+    title: 'Added to Cart',
+    description: `${product.name} added to cart`,
+  })
+}
+
+// Search
+const handleSearch = (term: string) => {
+  searchTerm.value = term
+  loadProducts()
+}
+
+const openBarcodeDialog = () => {
+  barcodeDialogOpen.value = true
+}
+
+const handleScanBarcode = () => {
+  openBarcodeDialog()
+}
+
+const submitBarcode = async () => {
+  if (!barcodeValue.value) {
+    barcodeError.value = 'Enter or scan a barcode first'
+    return
+  }
+
+  barcodeLoading.value = true
+  barcodeError.value = ''
+
+  try {
+    const product = await posMock.getProductByBarcode(barcodeValue.value, shopId.value)
+    if (!product) {
+      barcodeError.value = 'No product found for that barcode'
+      return
+    }
+    handleProductSelect(product)
+    barcodeDialogOpen.value = false
+    toast({
+      title: 'Product Added',
+      description: `${product.name} scanned successfully`,
+    })
+  } catch (error) {
+    barcodeError.value = 'Failed to read barcode'
+    console.error(error)
+  } finally {
+    barcodeLoading.value = false
+  }
+}
+
+// Category filter
+const filterByCategory = (categoryId: number | undefined) => {
+  selectedCategory.value = categoryId
+  loadProducts()
+}
+
+const openCustomerDialog = () => {
+  customerDialogOpen.value = true
+  const existing = posSession.customer.value
+  customerLookupResult.value = existing
+  customerQuery.value = existing?.phone || existing?.name || ''
+}
+
+const searchCustomer = async () => {
+  if (!customerQuery.value) {
+    customerLookupResult.value = null
+    customerLookupError.value = 'Enter a phone number or business name'
+    return
+  }
+
+  customerLookupLoading.value = true
+  customerLookupError.value = ''
+  try {
+    const found = await posMock.fetchCustomerByPhoneOrName(customerQuery.value)
+    if (found) {
+      customerLookupResult.value = found
+    } else {
+      customerLookupResult.value = null
+      customerLookupError.value = 'No customer found'
+    }
+  } catch (error) {
+    console.error(error)
+    customerLookupError.value = 'Failed to search customers'
+  } finally {
+    customerLookupLoading.value = false
+  }
+}
+
+const assignCustomer = () => {
+  if (!customerLookupResult.value) return
+  posSession.setCustomer(customerLookupResult.value)
+  toast({
+    title: 'Customer Assigned',
+    description: `${customerLookupResult.value.name} linked to this sale.`,
+  })
+  customerDialogOpen.value = false
+}
+
+const clearCustomerSelection = () => {
+  posSession.setCustomer(null)
+  toast({
+    title: 'Customer Cleared',
+    description: 'Customer removed from the active sale.',
+  })
+}
+
+// Payment
+const handleAddPayment = (payment: any) => {
+  posSession.addPayment(payment)
+}
+
+const handleRemovePayment = (paymentId: number) => {
+  posSession.removePayment(paymentId)
+}
+
+const handleCompleteSale = async () => {
+  try {
+    const sale = await posSession.completeSale()
+    lastCompletedSale.value = sale
+    receiptDialogOpen.value = true
+    toast({
+      title: 'Sale Complete',
+      description: `Sale ${sale.reference} completed successfully`,
+    })
+    posSession.clearLocalStorage()
+  } catch (error: any) {
+    toast({
+      title: 'Error',
+      description: error.message || 'Failed to complete sale',
+      variant: 'destructive',
+    })
+  }
+}
+
+const openReceiptDialog = () => {
+  if (!lastCompletedSale.value) return
+  receiptDialogOpen.value = true
+}
+
+const printReceipt = () => {
+  if (!receiptContentRef.value) return
+  const html = receiptContentRef.value.innerHTML
+  const printWindow = window.open('', 'PRINT', 'height=600,width=400')
+  if (!printWindow) return
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Receipt</title>
+        <style>
+          body {
+            font-family: ${getComputedStyle(document.documentElement).getPropertyValue('--font-mono') || 'monospace'};
+            padding: 16px;
+            background: white;
+            color: #111;
+          }
+          .receipt-paper {
+            width: 280px;
+            margin: 0 auto;
+          }
+        </style>
+      </head>
+      <body>
+        ${html}
+      </body>
+    </html>
+  `)
+
+  printWindow.document.close()
+  printWindow.focus()
+  printWindow.print()
+  printWindow.close()
 }
 
 // Quick actions
-const holdSale = () => {
-  if (currentSaleItems.value.length > 0) {
-    alert('Sale held successfully')
-    // In a real app, you'd save this to held sales
-    currentSaleItems.value = []
+const handleHoldSale = () => {
+  try {
+    const parkedSale = posSession.holdSale()
+    toast({
+      title: 'Sale Held',
+      description: `Sale ${parkedSale.reference} has been parked`,
+    })
+    posSession.clearLocalStorage()
+  } catch (error: any) {
+    toast({
+      title: 'Error',
+      description: error.message || 'Failed to hold sale',
+      variant: 'destructive',
+    })
   }
 }
 
-const voidSale = () => {
-  if (currentSaleItems.value.length > 0) {
-    if (confirm('Void current sale?')) {
-      currentSaleItems.value = []
-    }
-  }
+const handleVoidSale = () => {
+  posSession.voidSale()
+  posSession.clearLocalStorage()
+  toast({
+    title: 'Sale Voided',
+    description: 'The current sale has been cancelled',
+  })
 }
 
-const applyDiscount = () => {
-  alert('Discount feature coming soon!')
+const handleViewHeldSales = () => {
+  heldSales.value = posMock.listHeldSales()
+  showHeldSales.value = true
 }
 
-const addCustomer = () => {
-  alert('Customer lookup feature coming soon!')
+const handleViewRecentSales = () => {
+  recentSales.value = posMock.listRecentSales(posSession.sessionId.value)
+  showRecentSales.value = true
 }
 
-// Utility functions
-const openDrawer = () => {
-  alert('Cash drawer opened')
+const recallHeldSale = (sale: any) => {
+  posSession.recallSale(sale)
+  showHeldSales.value = false
+  toast({
+    title: 'Sale Recalled',
+    description: `Sale ${sale.reference} has been restored`,
+  })
 }
 
-const viewReports = () => {
-  alert('Navigating to sales reports...')
+const formatPrice = (price: number) => {
+  return `R ${price.toFixed(2)}`
 }
 
-const printReceipt = (transaction: any) => {
-  alert(`Printing receipt for transaction #${transaction.id}`)
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleString()
 }
 </script>
+
+<template>
+  <div class="flex flex-col h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <!-- Top Bar -->
+    <div class="border-b shadow-sm bg-card">
+      <div class="px-4 py-3 space-y-3 md:px-6">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div class="flex flex-wrap gap-3 items-center">
+            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-primary/10">
+              <span class="text-xl font-bold text-primary">₵</span>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold tracking-tight">Point of Sale</h1>
+              <p class="text-xs text-muted-foreground">Session {{ posSession.sessionId.value?.slice(-8) }}</p>
+            </div>
+
+            <div class="flex flex-wrap gap-2 items-center ml-0 lg:ml-4">
+              <Button variant="outline" size="sm" class="flex gap-2 items-center" @click="openCustomerDialog">
+                <UserRound class="w-4 h-4" />
+                <span>
+                  {{ posSession.customer.value ? posSession.customer.value.name : 'Walk-in customer' }}
+                </span>
+              </Button>
+              <Badge
+                v-if="remainingCredit !== null"
+                variant="secondary"
+                :class="remainingCredit < 0 ? 'text-destructive border-destructive/50' : 'text-green-700 border-green-200'"
+              >
+                Credit left: R {{ Number(remainingCredit ?? 0).toFixed(2) }}
+              </Badge>
+              <Button
+                v-if="posSession.customer.value"
+                variant="ghost"
+                size="sm"
+                class="text-muted-foreground"
+                @click="clearCustomerSelection"
+              >
+                Clear
+              </Button>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <div class="flex flex-wrap gap-2 justify-end">
+              <Button variant="outline" size="sm" class="hidden md:flex" @click="focusSearchInput" title="Shortcut F2">
+                F2 Focus Search
+              </Button>
+              <Button variant="outline" size="sm" @click="openBarcodeDialog" title="Shortcut F6">
+                <Scan class="mr-2 w-4 h-4" />
+                Scan Barcode
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                :disabled="!lastCompletedSale"
+                @click="openReceiptDialog"
+                title="View last receipt"
+              >
+                <Printer class="mr-2 w-4 h-4" />
+                Last Receipt
+              </Button>
+            </div>
+            <QuickActions
+              :can-hold="posSession.canHoldSale.value"
+              :can-void="posSession.cart.value.length > 0"
+              :can-complete="posSession.canCompleteSale.value"
+              @hold-sale="handleHoldSale"
+              @void-sale="handleVoidSale"
+              @view-held-sales="handleViewHeldSales"
+              @view-recent-sales="handleViewRecentSales"
+            />
+          </div>
+        </div>
+        <p class="text-xs text-muted-foreground">
+          Hotkeys: F2 Focus Search • F4 Hold Sale • F6 Scan Barcode • F8 Held Sales • F9 Complete Sale
+        </p>
+      </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="overflow-hidden flex-1">
+      <div class="h-full grid gap-0 lg:grid-cols-[1fr,420px]">
+        <!-- Left: Products -->
+        <div class="flex flex-col h-full border-r bg-background">
+          <div class="flex-none p-4 space-y-3 border-b bg-card/50">
+            <ProductSearch
+              ref="productSearchRef"
+              @search="handleSearch"
+              @scan-barcode="handleScanBarcode"
+            />
+
+            <!-- Category Pills -->
+            <div class="flex overflow-x-auto gap-2 pb-1 scrollbar-hide">
+              <Button
+                variant="ghost"
+                size="sm"
+                :class="[
+                  'rounded-full px-4 transition-all',
+                  !selectedCategory 
+                    ? 'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90' 
+                    : 'hover:bg-accent'
+                ]"
+                @click="filterByCategory(undefined)"
+              >
+                All Products
+              </Button>
+              <Button
+                v-for="category in categories"
+                :key="category.id"
+                variant="ghost"
+                size="sm"
+                :class="[
+                  'rounded-full px-4 whitespace-nowrap transition-all',
+                  selectedCategory === category.id 
+                    ? 'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90' 
+                    : 'hover:bg-accent'
+                ]"
+                @click="filterByCategory(category.id)"
+              >
+                {{ category.name }}
+              </Button>
+            </div>
+          </div>
+
+          <div class="overflow-y-auto flex-1 p-4">
+            <ProductGrid
+              :products="products"
+              :loading="loadingProducts"
+              @select-product="handleProductSelect"
+            />
+          </div>
+        </div>
+
+        <!-- Right: Cart & Payment -->
+        <div class="flex flex-col h-full min-h-0 backdrop-blur-sm bg-card/30">
+          <div class="flex-1 min-h-0">
+            <CartPanel
+              :items="posSession.cart.value"
+              :subtotal="posSession.subtotal.value"
+              :total-tax="posSession.totalTax.value"
+              :total-discount="posSession.totalDiscount.value"
+              :total="posSession.total.value"
+              @update-quantity="posSession.updateQuantity"
+              @remove-item="posSession.removeFromCart"
+              @apply-discount="posSession.applyDiscount"
+            />
+          </div>
+
+          <div class="flex-none border-t bg-card">
+            <PaymentPanel
+              :total="posSession.total.value"
+              :payments="posSession.payments.value"
+              :total-paid="posSession.totalPaid.value"
+              :balance="posSession.balance.value"
+              :is-complete="posSession.isPaymentComplete.value"
+              @add-payment="handleAddPayment"
+              @remove-payment="handleRemovePayment"
+              @complete-sale="handleCompleteSale"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Held Sales Dialog -->
+    <Dialog v-model:open="showHeldSales">
+      <DialogContent class="max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>Held Sales</DialogTitle>
+          <DialogDescription>Select a sale to recall</DialogDescription>
+        </DialogHeader>
+        <div class="max-h-[60vh] overflow-y-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Reference</TableHead>
+                <TableHead>Items</TableHead>
+                <TableHead>Total</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow v-for="sale in heldSales" :key="sale.reference">
+                <TableCell>{{ sale.reference }}</TableCell>
+                <TableCell>{{ sale.items.length }}</TableCell>
+                <TableCell>{{ formatPrice(sale.total) }}</TableCell>
+                <TableCell>{{ formatDate(sale.createdAt) }}</TableCell>
+                <TableCell>
+                  <Button size="sm" @click="recallHeldSale(sale)">Recall</Button>
+                </TableCell>
+              </TableRow>
+              <TableRow v-if="heldSales.length === 0">
+                <TableCell colspan="5" class="text-center text-muted-foreground">
+                  No held sales
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Recent Sales Dialog -->
+    <Dialog v-model:open="showRecentSales">
+      <DialogContent class="max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>Recent Sales</DialogTitle>
+          <DialogDescription>Sales from this session</DialogDescription>
+        </DialogHeader>
+        <div class="max-h-[60vh] overflow-y-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Reference</TableHead>
+                <TableHead>Items</TableHead>
+                <TableHead>Total</TableHead>
+                <TableHead>Payment</TableHead>
+                <TableHead>Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow v-for="sale in recentSales" :key="sale.reference">
+                <TableCell>{{ sale.reference }}</TableCell>
+                <TableCell>{{ sale.items.length }}</TableCell>
+                <TableCell>{{ formatPrice(sale.total) }}</TableCell>
+                <TableCell>
+                  <div class="flex flex-wrap gap-1">
+                    <Badge v-for="payment in sale.payments" :key="payment.id" variant="secondary" class="text-xs">
+                      {{ payment.method }}: {{ formatPrice(payment.amount) }}
+                    </Badge>
+                  </div>
+                </TableCell>
+                <TableCell>{{ formatDate(sale.createdAt) }}</TableCell>
+              </TableRow>
+              <TableRow v-if="recentSales.length === 0">
+                <TableCell colspan="5" class="text-center text-muted-foreground">
+                  No recent sales
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Barcode Scanner Dialog -->
+    <Dialog v-model:open="barcodeDialogOpen">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Scan Barcode</DialogTitle>
+          <DialogDescription>Use a scanner or type the barcode manually.</DialogDescription>
+        </DialogHeader>
+        <form class="space-y-4" @submit.prevent="submitBarcode">
+          <div class="space-y-2">
+            <Label for="barcode-input">Barcode</Label>
+            <Input
+              id="barcode-input"
+              ref="barcodeInputRef"
+              v-model="barcodeValue"
+              placeholder="Scan or type barcode"
+              autocomplete="off"
+            />
+          </div>
+          <p v-if="barcodeError" class="text-sm text-destructive">{{ barcodeError }}</p>
+          <div class="flex flex-wrap gap-2 justify-between items-center text-xs text-muted-foreground">
+            <span>Shortcut: press F6 to focus this scanner.</span>
+            <div class="flex gap-2">
+              <Button variant="ghost" type="button" @click="barcodeDialogOpen = false">Cancel</Button>
+              <Button type="submit" :disabled="barcodeLoading || !barcodeValue">
+                <Loader2 v-if="barcodeLoading" class="mr-2 w-4 h-4 animate-spin" />
+                Add Product
+              </Button>
+            </div>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Customer Lookup Dialog -->
+    <Dialog v-model:open="customerDialogOpen">
+      <DialogContent class="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Select Customer</DialogTitle>
+          <DialogDescription>Search mock customers by phone number or business name.</DialogDescription>
+        </DialogHeader>
+        <form class="space-y-4" @submit.prevent="searchCustomer">
+          <div class="space-y-2">
+            <Label for="customer-query">Phone or Name</Label>
+            <Input
+              id="customer-query"
+              ref="customerInputRef"
+              v-model="customerQuery"
+              placeholder="+2782 123 4567 or Jabu's Spaza"
+            />
+          </div>
+          <div class="flex gap-2 justify-end">
+            <Button type="submit" :disabled="customerLookupLoading">
+              <Loader2 v-if="customerLookupLoading" class="mr-2 w-4 h-4 animate-spin" />
+              Find Customer
+            </Button>
+          </div>
+        </form>
+        <p v-if="customerLookupError" class="text-sm text-destructive">{{ customerLookupError }}</p>
+        <div
+          v-if="customerLookupResult"
+          class="p-4 space-y-2 rounded-lg border border-border"
+        >
+          <div>
+            <p class="font-semibold">{{ customerLookupResult.name }}</p>
+            <p class="text-xs text-muted-foreground">
+              {{ customerLookupResult.phone || 'No phone on record' }}
+            </p>
+          </div>
+          <div class="space-y-1 text-xs text-muted-foreground">
+            <p>Credit Limit: R {{ Number(customerLookupResult.creditLimit ?? 0).toFixed(2) }}</p>
+            <p>Balance Used: R {{ Number(customerLookupResult.creditBalance ?? 0).toFixed(2) }}</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <Button size="sm" @click="assignCustomer">Assign to Sale</Button>
+            <Button size="sm" variant="outline" @click="clearCustomerSelection">Clear Customer</Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Receipt Preview Dialog -->
+    <Dialog v-model:open="receiptDialogOpen">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Receipt Preview</DialogTitle>
+          <DialogDescription>Printable summary of the last completed sale.</DialogDescription>
+        </DialogHeader>
+        <div ref="receiptContentRef" class="max-h-[60vh] overflow-y-auto p-2 bg-white rounded">
+          <ReceiptPreview :sale="lastCompletedSale" />
+        </div>
+        <div class="flex gap-2 justify-end">
+          <Button variant="outline" :disabled="!lastCompletedSale" @click="printReceipt">
+            <Printer class="mr-2 w-4 h-4" />
+            Print Receipt
+          </Button>
+          <Button variant="ghost" @click="receiptDialogOpen = false">Close</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  </div>
+</template>

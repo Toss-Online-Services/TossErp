@@ -1,15 +1,5 @@
 <template>
   <div>
-    <!-- Offline Indicator -->
-    <div v-if="!isOnline" class="fixed top-0 left-0 right-0 z-50 bg-orange-500 text-white text-center py-2 text-sm">
-      <div class="flex items-center justify-center">
-        <svg class="w-4 h-4 mr-2 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 715.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
-        </svg>
-        You're offline - Some features may be limited
-      </div>
-    </div>
-    
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
@@ -17,67 +7,134 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-
-// Offline detection
-const isOnline = ref(true)
+import { onMounted } from 'vue'
 
 onMounted(() => {
-  // Enable dark mode by default to match the main dashboard
-  document.documentElement.classList.add('dark')
-  
-  // Offline detection
-  isOnline.value = navigator.onLine
-  
-  window.addEventListener('online', () => {
-    isOnline.value = true
-  })
-  
-  window.addEventListener('offline', () => {
-    isOnline.value = false
-  })
+  // Force light mode
+  document.documentElement.classList.remove('dark')
+  document.documentElement.classList.add('light')
+  localStorage.setItem('nuxt-color-mode', 'light')
 })
 </script>
 
 <style>
-/* Mobile-First Global Styles */
+/* Mobile-First Global Styles - WCAG 2.1 Compliant */
 html {
-  font-size: 16px;
+  font-size: 18px; /* Increased from 16px for better readability */
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.6;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6; /* Increased line height for readability */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #1a1a1a; /* Darker text for better contrast (WCAG AAA) */
 }
 
-/* Touch-friendly interactions */
+/* Touch-friendly interactions - Larger tap targets */
 button, a, input, textarea, select {
   touch-action: manipulation;
+  min-height: 44px; /* iOS/WCAG recommended minimum */
+  min-width: 44px;
 }
 
-/* Better focus styles for keyboard navigation */
+/* Better focus styles for keyboard navigation - WCAG 2.1 compliant */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+  outline: 3px solid #2563eb; /* Increased to 3px for better visibility */
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Responsive text utilities */
+/* Ensure links are identifiable without relying on color alone */
+/* Exclude navigation, buttons, and cards from default underline */
+a:not(.button):not(.btn):not(.nav-link):not(.nav-sub-link):not(.mobile-nav-link):not(.mobile-bottom-nav-item):not([class*='nav-']):not([class*='card']) {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Remove underline on hover/focus for better UX */
+a:hover:not(.button):not(.btn):not(.nav-link):not(.nav-sub-link):not(.mobile-nav-link):not(.mobile-bottom-nav-item):not([class*='nav-']):not([class*='card']),
+a:focus:not(.button):not(.btn):not(.nav-link):not(.nav-sub-link):not(.mobile-nav-link):not(.mobile-bottom-nav-item):not([class*='nav-']):not([class*='card']) {
+  text-decoration: none;
+}
+
+/* Explicitly ensure navigation and action links never have underlines */
+.nav-link,
+.nav-sub-link,
+.mobile-nav-link,
+.mobile-bottom-nav-item,
+[class*='nav-'],
+a.block,
+a[class*='card'],
+.block[class*='rounded'],
+a[class*='rounded-xl'],
+a[class*='rounded-lg'],
+a[class*='p-4'],
+button[class*='nav'] {
+  text-decoration: none !important;
+}
+
+.nav-link:hover,
+.nav-sub-link:hover,
+.mobile-nav-link:hover,
+.mobile-bottom-nav-item:hover,
+[class*='nav-']:hover,
+a.block:hover,
+a[class*='card']:hover,
+.block[class*='rounded']:hover,
+a[class*='rounded-xl']:hover,
+a[class*='rounded-lg']:hover,
+a[class*='p-4']:hover,
+button[class*='nav']:hover {
+  text-decoration: none !important;
+}
+
+.nav-link:focus,
+.nav-sub-link:focus,
+.mobile-nav-link:focus,
+.mobile-bottom-nav-item:focus,
+[class*='nav-']:focus,
+a.block:focus,
+a[class*='card']:focus,
+.block[class*='rounded']:focus,
+a[class*='rounded-xl']:focus,
+a[class*='rounded-lg']:focus,
+a[class*='p-4']:focus,
+button[class*='nav']:focus {
+  text-decoration: none !important;
+}
+
+/* Responsive text utilities - Larger base sizes */
 .text-responsive {
-  font-size: 14px;
+  font-size: 16px; /* Increased from 14px */
 }
 
 @media (min-width: 640px) {
   .text-responsive {
-    font-size: 16px;
+    font-size: 18px; /* Increased from 16px */
   }
+}
+
+/* Base text sizes for better readability */
+.text-base {
+  font-size: 1rem; /* 18px */
+  line-height: 1.75;
+}
+
+.text-lg {
+  font-size: 1.125rem; /* 20.25px */
+  line-height: 1.75;
+}
+
+.text-xl {
+  font-size: 1.25rem; /* 22.5px */
+  line-height: 1.75;
 }
 
 /* Mobile-safe area support (iOS) */
@@ -182,16 +239,43 @@ select:focus-visible {
   }
 }
 
-/* High contrast mode support */
+/* High contrast mode support - WCAG 2.1 */
 @media (prefers-contrast: high) {
-  .text-slate-600 {
+  .text-slate-600, .text-gray-600, .text-gray-700 {
     color: #000 !important;
   }
   
-  .dark .text-slate-400 {
+  .dark .text-slate-400, .dark .text-gray-400 {
     color: #fff !important;
   }
+  
+  /* Ensure all borders are visible */
+  * {
+    border-color: currentColor !important;
+  }
 }
+
+/* Color contrast improvements - WCAG AA/AAA compliant */
+:root {
+  /* Text colors with proper contrast ratios */
+  --text-primary: #1a1a1a; /* AAA on white */
+  --text-secondary: #4a4a4a; /* AAA on white */
+  --text-tertiary: #737373; /* AA on white */
+  
+  /* Status colors with improved contrast */
+  --status-success: #047857; /* Green 700 */
+  --status-warning: #b45309; /* Orange 700 */
+  --status-error: #b91c1c; /* Red 700 */
+  --status-info: #1e40af; /* Blue 700 */
+}
+
+/* Apply improved color contrasts */
+.text-gray-600 { color: var(--text-secondary) !important; }
+.text-gray-700 { color: var(--text-primary) !important; }
+.text-green-600 { color: var(--status-success) !important; }
+.text-orange-600 { color: var(--status-warning) !important; }
+.text-red-600 { color: var(--status-error) !important; }
+.text-blue-600 { color: var(--status-info) !important; }
 
 /* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
@@ -204,20 +288,33 @@ select:focus-visible {
 
 /* Mobile-specific adjustments */
 @media (max-width: 640px) {
-  /* Larger touch targets */
+  /* Larger touch targets - WCAG 2.5.5 Level AAA */
   button, a {
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 48px; /* Increased to 48px for better accessibility */
+    min-width: 48px;
   }
   
   /* Better spacing for mobile */
   .mobile-spacing {
-    padding: 1rem;
+    padding: 1.25rem; /* Increased spacing */
   }
   
   /* Mobile-optimized forms */
   input, textarea, select {
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 18px; /* Increased to prevent zoom on iOS and improve readability */
+    padding: 0.75rem 1rem; /* More padding for easier interaction */
+  }
+  
+  /* Larger base font for mobile */
+  html {
+    font-size: 18px;
+  }
+  
+  /* Increase button text size */
+  button, .btn {
+    font-size: 1.125rem; /* 20.25px */
+    font-weight: 600;
+    padding: 0.875rem 1.5rem;
   }
 }
 

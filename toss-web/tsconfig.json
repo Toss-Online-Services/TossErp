@@ -1,0 +1,21 @@
+{
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "types": [
+      "@types/node",
+      "./types/global.d.ts"
+    ],
+    "paths": {
+      "~/*": ["./*"],
+      "@/*": ["./*"],
+      "~~/*": ["./*"],
+      "@@/*": ["./*"],
+      "h3": ["./node_modules/.pnpm/node_modules/h3"],
+      "nitro/types": ["./node_modules/.pnpm/nitropack@2.12.9_better-sqlite3@12.4.1/node_modules/nitropack/dist/types"]
+    }
+  }
+}
+

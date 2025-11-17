@@ -1,0 +1,6835 @@
+{
+  "x-generator": "NSwag v14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))",
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Toss API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/AICopilot/ask": {
+      "post": {
+        "tags": [
+          "AICopilot"
+        ],
+        "operationId": "PostApiAICopilotAsk",
+        "requestBody": {
+          "x-name": "query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskAIQuery"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/AICopilot/suggestions": {
+      "get": {
+        "tags": [
+          "AICopilot"
+        ],
+        "operationId": "GetApiAICopilotSuggestions",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "MaxSuggestions",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/AICopilot/meta-tags": {
+      "post": {
+        "tags": [
+          "AICopilot"
+        ],
+        "operationId": "PostApiAICopilotMetaTags",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateMetaTagsCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/AICopilot/settings/{shopId}": {
+      "get": {
+        "tags": [
+          "AICopilot"
+        ],
+        "operationId": "GetApiAICopilotSettings",
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/AICopilot/settings": {
+      "put": {
+        "tags": [
+          "AICopilot"
+        ],
+        "operationId": "PutApiAICopilotSettings",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAISettingsCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Audit/log": {
+      "post": {
+        "tags": [
+          "Audit"
+        ],
+        "operationId": "LogAuditEvent",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogAuditEventCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "PostApiAuthLogin",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "PostApiAuthRefresh",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "PostApiAuthLogout",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Auth/verify": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "GetApiAuthVerify",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Buying/purchase-orders": {
+      "get": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "GetApiBuyingPurchaseOrders",
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "take",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 4
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "PostApiBuyingPurchaseOrders",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePurchaseOrderCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Buying/purchase-orders/{id}": {
+      "get": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "GetApiBuyingPurchaseOrders2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Buying/purchase-orders/{id}/approve": {
+      "post": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "PostApiBuyingPurchaseOrdersApprove",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprovePurchaseOrderCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Buying/purchase-orders/{id}/status": {
+      "post": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "PostApiBuyingPurchaseOrdersStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePurchaseOrderStatusCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Buying/purchase-orders/{id}/receive": {
+      "post": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "PostApiBuyingPurchaseOrdersReceive",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReceiveGoodsCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Buying/invoices": {
+      "get": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "GetVendorInvoices",
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "vendorId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "CreateVendorInvoice",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVendorInvoiceCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Buying/invoices/{id}/status": {
+      "post": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "UpdateVendorInvoiceStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVendorInvoiceStatusCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/CRM/customers": {
+      "post": {
+        "tags": [
+          "CRM"
+        ],
+        "operationId": "PostApiCRMCustomers",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCustomerCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "CRM"
+        ],
+        "operationId": "GetApiCRMCustomers",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "SearchTerm",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 3
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 4
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/CRM/customers/search": {
+      "get": {
+        "tags": [
+          "CRM"
+        ],
+        "operationId": "GetApiCRMCustomersSearch",
+        "parameters": [
+          {
+            "name": "searchTerm",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "shopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/CRM/customers/{id}": {
+      "get": {
+        "tags": [
+          "CRM"
+        ],
+        "operationId": "GetApiCRMCustomers2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/CustomerOrders": {
+      "post": {
+        "tags": [
+          "CustomerOrders"
+        ],
+        "operationId": "CreateCustomerOrder",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCustomerOrderCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "CustomerOrders"
+        ],
+        "operationId": "GetCustomerOrders",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "CustomerId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/OrderStatus"
+                }
+              ]
+            },
+            "x-position": 3
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 4
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/CustomerOrders/{id}/status": {
+      "post": {
+        "tags": [
+          "CustomerOrders"
+        ],
+        "operationId": "UpdateCustomerOrderStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCustomerOrderStatusCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/CustomerOrders/{id}/cancel": {
+      "post": {
+        "tags": [
+          "CustomerOrders"
+        ],
+        "operationId": "CancelCustomerOrder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelCustomerOrderCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Dashboard/summary": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "operationId": "GetApiDashboardSummary",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Dashboard/sales-trends": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "operationId": "GetApiDashboardSalesTrends",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "StartDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Dashboard/top-products": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "operationId": "GetApiDashboardTopProducts",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "StartDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "TopN",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 4
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Dashboard/cash-flow": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "operationId": "GetApiDashboardCashFlow",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "StartDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Dashboard/order-status-distribution": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "operationId": "GetApiDashboardOrderStatusDistribution",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Dashboard/category-sales": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "operationId": "GetApiDashboardCategorySales",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "StartDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/GroupBuying/pools": {
+      "post": {
+        "tags": [
+          "GroupBuying"
+        ],
+        "operationId": "PostApiGroupBuyingPools",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePoolCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/GroupBuying/pools/active": {
+      "get": {
+        "tags": [
+          "GroupBuying"
+        ],
+        "operationId": "GetApiGroupBuyingPoolsActive",
+        "parameters": [
+          {
+            "name": "AreaGroup",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "ProductId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/GroupBuying/pools/{id}": {
+      "get": {
+        "tags": [
+          "GroupBuying"
+        ],
+        "operationId": "GetApiGroupBuyingPools",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/GroupBuying/pools/{poolId}/join": {
+      "post": {
+        "tags": [
+          "GroupBuying"
+        ],
+        "operationId": "PostApiGroupBuyingPoolsJoin",
+        "parameters": [
+          {
+            "name": "poolId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinPoolCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/GroupBuying/pools/{poolId}/confirm": {
+      "post": {
+        "tags": [
+          "GroupBuying"
+        ],
+        "operationId": "PostApiGroupBuyingPoolsConfirm",
+        "parameters": [
+          {
+            "name": "poolId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/GroupBuying/pools/{poolId}/generate-po": {
+      "post": {
+        "tags": [
+          "GroupBuying"
+        ],
+        "operationId": "PostApiGroupBuyingPoolsGeneratePo",
+        "parameters": [
+          {
+            "name": "poolId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/GroupBuying/participations": {
+      "get": {
+        "tags": [
+          "GroupBuying"
+        ],
+        "operationId": "GetApiGroupBuyingParticipations",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "ActiveOnly",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/GroupBuying/opportunities": {
+      "get": {
+        "tags": [
+          "GroupBuying"
+        ],
+        "operationId": "GetApiGroupBuyingOpportunities",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "MaxDistanceKm",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "ProductId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Inventory/products": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "PostApiInventoryProducts",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "GetApiInventoryProducts",
+        "parameters": [
+          {
+            "name": "SearchTerm",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "CategoryId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "IsActive",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "ShopId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 5
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 6
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Inventory/products/{id}": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "GetApiInventoryProducts2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Inventory/products/by-sku": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "GetApiInventoryProductsBySku",
+        "parameters": [
+          {
+            "name": "sku",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "shopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Inventory/products/by-barcode": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "GetApiInventoryProductsByBarcode",
+        "parameters": [
+          {
+            "name": "barcode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "shopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Inventory/categories": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "GetApiInventoryCategories",
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Inventory/stock-levels": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "GetApiInventoryStockLevels",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "OnlyLowStock",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Inventory/low-stock-alerts": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "GetApiInventoryLowStockAlerts",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "OnlyUnacknowledged",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Inventory/stock/adjust": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "PostApiInventoryStockAdjust",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdjustStockCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Inventory/stock/movements": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "GetApiInventoryStockMovements",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "ProductId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "StartDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 5
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 6
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Inventory/products/search": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "PostApiInventoryProductsSearch",
+        "requestBody": {
+          "x-name": "query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchProductsQuery"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Inventory/low-stock-items": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "GetApiInventoryLowStockItems",
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "threshold",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Logistics/delivery-runs": {
+      "post": {
+        "tags": [
+          "Logistics"
+        ],
+        "operationId": "PostApiLogisticsDeliveryRuns",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSharedDeliveryRunCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Logistics"
+        ],
+        "operationId": "GetApiLogisticsDeliveryRuns",
+        "parameters": [
+          {
+            "name": "StartDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/DeliveryStatus"
+                }
+              ]
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Logistics/delivery-runs/{id}/driver-view": {
+      "get": {
+        "tags": [
+          "Logistics"
+        ],
+        "operationId": "GetApiLogisticsDeliveryRunsDriverView",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "RunId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "DriverId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Logistics/delivery-runs/{runId}/tracking": {
+      "get": {
+        "tags": [
+          "Logistics"
+        ],
+        "operationId": "GetApiLogisticsDeliveryRunsTracking",
+        "parameters": [
+          {
+            "name": "runId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Logistics/delivery-runs/{id}/status": {
+      "post": {
+        "tags": [
+          "Logistics"
+        ],
+        "operationId": "PostApiLogisticsDeliveryRunsStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDeliveryStatusCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Logistics/delivery-runs/{id}/assign-driver": {
+      "post": {
+        "tags": [
+          "Logistics"
+        ],
+        "operationId": "PostApiLogisticsDeliveryRunsAssignDriver",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignDriverCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Logistics/delivery-stops/{stopId}/proof": {
+      "post": {
+        "tags": [
+          "Logistics"
+        ],
+        "operationId": "PostApiLogisticsDeliveryStopsProof",
+        "parameters": [
+          {
+            "name": "stopId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureProofOfDeliveryCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Payments/pay-links": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "PostApiPaymentsPayLinks",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneratePayLinkCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Payments/record": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "PostApiPaymentsRecord",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordPaymentCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Payments": {
+      "get": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "GetApiPayments",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "StartDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 5
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 6
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Payments/{id}": {
+      "get": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "GetApiPayments2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Payments/mpesa/initiate": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "PostApiPaymentsMpesaInitiate",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitiateMpesaPaymentCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Payments/airtel/initiate": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "PostApiPaymentsAirtelInitiate",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitiateAirtelPaymentCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Payments/mtn/initiate": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "PostApiPaymentsMtnInitiate",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitiateMtnPaymentCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Payments/{provider}/status/{transactionId}": {
+      "get": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "GetApiPaymentsStatus",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "transactionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Payments/qr/generate": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "PostApiPaymentsQrGenerate",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneratePaymentQRCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Registration/store-owner": {
+      "post": {
+        "tags": [
+          "Registration"
+        ],
+        "operationId": "RegisterStoreOwner",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterStoreOwnerCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Registration/vendor": {
+      "post": {
+        "tags": [
+          "Registration"
+        ],
+        "operationId": "RegisterVendor",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterVendorCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Registration/driver": {
+      "post": {
+        "tags": [
+          "Registration"
+        ],
+        "operationId": "RegisterDriver",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDriverCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "CreateSale",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSaleCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetSales",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "FromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "ToDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/SaleStatus"
+                }
+              ]
+            },
+            "x-position": 4
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 5
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 6
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/daily-summary": {
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetDailySummary",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/hold": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "HoldSale",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HoldSaleCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/held": {
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetHeldSales",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/queue": {
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetQueueOrders",
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/{id}": {
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetSaleById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/{id}/void": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "VoidSale",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoidSaleCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/{id}/receipt": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GenerateReceipt",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/{id}/status": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "UpdateSaleStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSaleStatusCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/{id}/refund": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "ProcessRefund",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessRefundCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/{id}/retrieve": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "RetrieveHeldSale",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/{id}/held": {
+      "delete": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "DeleteHeldSale",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/invoices": {
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetInvoices",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "CustomerId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "FromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "ToDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 6
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 7
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "CreateInvoice",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvoiceCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/invoices/{id}/status": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "UpdateInvoiceStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInvoiceStatusCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Sales/documents": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "CreateSalesDocument",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSalesDocumentCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetSalesDocuments",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Type",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/SalesDocumentType"
+                }
+              ]
+            },
+            "x-position": 2
+          },
+          {
+            "name": "CustomerId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "FromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "ToDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
+            "name": "IsPaid",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 6
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 7
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 8
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Settings/shop/{shopId}": {
+      "get": {
+        "tags": [
+          "Settings"
+        ],
+        "operationId": "GetApiSettingsShop",
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Settings"
+        ],
+        "operationId": "PutApiSettingsShop",
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateShopSettingsCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/ShoppingCart/add": {
+      "post": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Add product to shopping cart",
+        "operationId": "AddToCart",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToCartCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddToCartResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ShoppingCart/update": {
+      "put": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Update cart item quantity",
+        "operationId": "UpdateCartItem",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCartItemCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateCartItemResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ShoppingCart/get": {
+      "post": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Get shopping cart contents",
+        "operationId": "GetCart",
+        "requestBody": {
+          "x-name": "query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetCartQuery"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCartResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ShoppingCart/checkout": {
+      "post": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Complete checkout and create sale",
+        "operationId": "Checkout",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckoutResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ShoppingCart/clear": {
+      "delete": {
+        "tags": [
+          "ShoppingCart"
+        ],
+        "summary": "Clear shopping cart",
+        "operationId": "ClearCart",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "shopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Stores": {
+      "get": {
+        "tags": [
+          "Stores"
+        ],
+        "operationId": "GetStores",
+        "parameters": [
+          {
+            "name": "searchTerm",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "activeOnly",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 4
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Stores"
+        ],
+        "operationId": "CreateStore",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStoreCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Stores/{id}": {
+      "get": {
+        "tags": [
+          "Stores"
+        ],
+        "operationId": "GetStoreById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Stores"
+        ],
+        "operationId": "UpdateStore",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStoreCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Stores"
+        ],
+        "operationId": "DeleteStore",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Suppliers": {
+      "get": {
+        "tags": [
+          "Suppliers"
+        ],
+        "operationId": "GetSuppliers",
+        "parameters": [
+          {
+            "name": "searchTerm",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "activeOnly",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 4
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Suppliers"
+        ],
+        "operationId": "CreateSupplier",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVendorCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Suppliers/{id}": {
+      "get": {
+        "tags": [
+          "Suppliers"
+        ],
+        "operationId": "GetSupplierById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Suppliers/{id}/products": {
+      "get": {
+        "tags": [
+          "Suppliers"
+        ],
+        "operationId": "GetSupplierProducts",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Suppliers"
+        ],
+        "operationId": "LinkSupplierProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkVendorProductCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Suppliers/products/{productId}/pricing": {
+      "put": {
+        "tags": [
+          "Suppliers"
+        ],
+        "operationId": "UpdateSupplierPricing",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVendorPricingCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/TestOrders/test-orders": {
+      "get": {
+        "tags": [
+          "TestOrders"
+        ],
+        "operationId": "TestOrders",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Users/register": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "PostApiUsersRegister",
+        "requestBody": {
+          "x-name": "registration",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "PostApiUsersLogin",
+        "parameters": [
+          {
+            "name": "useCookies",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "useSessionCookies",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
+        "requestBody": {
+          "x-name": "login",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessTokenResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/refresh": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "PostApiUsersRefresh",
+        "requestBody": {
+          "x-name": "refreshRequest",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessTokenResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/confirmEmail": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "GetApiUsersConfirmEmail",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "changedEmail",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Users/resendConfirmationEmail": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "PostApiUsersResendConfirmationEmail",
+        "requestBody": {
+          "x-name": "resendRequest",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendConfirmationEmailRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Users/forgotPassword": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "PostApiUsersForgotPassword",
+        "requestBody": {
+          "x-name": "resetRequest",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/resetPassword": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "PostApiUsersResetPassword",
+        "requestBody": {
+          "x-name": "resetRequest",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/manage/2fa": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "PostApiUsersManage2fa",
+        "requestBody": {
+          "x-name": "tfaRequest",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwoFactorRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwoFactorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Users/manage/info": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "GetApiUsersManageInfo",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InfoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "PostApiUsersManageInfo",
+        "requestBody": {
+          "x-name": "infoRequest",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InfoRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InfoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Users/list": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "GetUsers",
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "take",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "searchTerm",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Users/details/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "GetUserById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Users/{id}/roles": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "UpdateUserRoles",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRolesCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Vendors": {
+      "post": {
+        "tags": [
+          "Vendors"
+        ],
+        "operationId": "PostApiVendors",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVendorCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Vendors"
+        ],
+        "operationId": "GetApiVendors",
+        "parameters": [
+          {
+            "name": "SearchTerm",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "ActiveOnly",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 3
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 4
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Vendors/{id}": {
+      "get": {
+        "tags": [
+          "Vendors"
+        ],
+        "operationId": "GetApiVendors2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Vendors/{id}/products": {
+      "post": {
+        "tags": [
+          "Vendors"
+        ],
+        "operationId": "PostApiVendorsProducts",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkVendorProductCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Vendors"
+        ],
+        "operationId": "GetApiVendorsProducts",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "VendorId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "ActiveOnly",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Vendors/products/{productId}/pricing": {
+      "put": {
+        "tags": [
+          "Vendors"
+        ],
+        "operationId": "PutApiVendorsProductsPricing",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVendorPricingCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AskAIQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Question": {
+            "type": "string"
+          },
+          "Context": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "GenerateMetaTagsCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "EntityType": {
+            "type": "string"
+          },
+          "EntityId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "LanguageId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateAISettingsCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Enabled": {
+            "type": "boolean"
+          },
+          "ProviderType": {
+            "type": "string"
+          },
+          "ApiKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "ApiEndpoint": {
+            "type": "string",
+            "nullable": true
+          },
+          "RequestTimeoutSeconds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "AllowSalesForecasting": {
+            "type": "boolean"
+          },
+          "AllowInventoryPrediction": {
+            "type": "boolean"
+          },
+          "AllowBusinessInsights": {
+            "type": "boolean"
+          },
+          "AllowPriceSuggestions": {
+            "type": "boolean"
+          },
+          "AllowProductDescriptionGeneration": {
+            "type": "boolean"
+          },
+          "SupportedLanguages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "LogAuditEventCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Action": {
+            "type": "string"
+          },
+          "Severity": {
+            "type": "string"
+          },
+          "UserId": {
+            "type": "string",
+            "nullable": true
+          },
+          "UserEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "IpAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "UserAgent": {
+            "type": "string",
+            "nullable": true
+          },
+          "Resource": {
+            "type": "string",
+            "nullable": true
+          },
+          "ResourceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Details": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {}
+          },
+          "Success": {
+            "type": "boolean"
+          },
+          "ErrorMessage": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreatePurchaseOrderCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "VendorId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ExpectedDeliveryDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ShippingCost": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "GroupBuyPoolId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "Items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PurchaseOrderItemDto"
+            }
+          }
+        }
+      },
+      "PurchaseOrderItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "UnitPrice": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "ApprovePurchaseOrderCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "PurchaseOrderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ApprovedBy": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdatePurchaseOrderStatusCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "PurchaseOrderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "NewStatus": {
+            "$ref": "#/components/schemas/PurchaseOrderStatus"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "PurchaseOrderStatus": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Draft",
+          "Pending",
+          "Approved",
+          "Confirmed",
+          "PartiallyReceived",
+          "Received",
+          "Cancelled"
+        ],
+        "enum": [
+          "Draft",
+          "Pending",
+          "Approved",
+          "Confirmed",
+          "PartiallyReceived",
+          "Received",
+          "Cancelled"
+        ]
+      },
+      "ReceiveGoodsCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "PurchaseOrderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReceivedItem"
+            }
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ReceivedItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "QuantityReceived": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CreateVendorInvoiceCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "PurchaseOrderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "VendorId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ShopId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "InvoiceNumber": {
+            "type": "string"
+          },
+          "InvoiceDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "DueDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Subtotal": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "TaxAmount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "TotalAmount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateVendorInvoiceStatusCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Status": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateCustomerCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "FirstName": {
+            "type": "string"
+          },
+          "LastName": {
+            "type": "string"
+          },
+          "PhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "Email": {
+            "type": "string",
+            "nullable": true
+          },
+          "AllowsMarketing": {
+            "type": "boolean"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateCustomerOrderCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "CustomerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderItemDto"
+            }
+          },
+          "ShippingMethod": {
+            "type": "string",
+            "nullable": true
+          },
+          "ShippingAddressId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "BillingAddressId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "PaymentMethod": {
+            "type": "string"
+          }
+        }
+      },
+      "OrderItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "UnitPrice": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "OrderStatus": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Pending",
+          "Processing",
+          "Complete",
+          "Cancelled"
+        ],
+        "enum": [
+          "Pending",
+          "Processing",
+          "Complete",
+          "Cancelled"
+        ]
+      },
+      "UpdateCustomerOrderStatusCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "OrderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "NewStatus": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CancelCustomerOrderCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "OrderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Reason": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreatePoolCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Title": {
+            "type": "string"
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "ProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "InitiatorShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "VendorId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "MinimumQuantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "MaximumQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "UnitPrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "BulkDiscountPercentage": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "CloseDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "EstimatedShippingCost": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "MaxDistanceKm": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "JoinPoolCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "GroupBuyPoolId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "QuantityCommitted": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateProductCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SKU": {
+            "type": "string"
+          },
+          "Barcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string"
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CategoryId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "BasePrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "CostPrice": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "Unit": {
+            "type": "string",
+            "nullable": true
+          },
+          "MinimumStockLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ReorderQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "IsTaxable": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AdjustStockCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "QuantityAdjustment": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "MovementType": {
+            "$ref": "#/components/schemas/StockMovementType"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "StockMovementType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Sale",
+          "Purchase",
+          "Adjustment",
+          "Return",
+          "Transfer",
+          "Damage",
+          "Expiry"
+        ],
+        "enum": [
+          "Sale",
+          "Purchase",
+          "Adjustment",
+          "Return",
+          "Transfer",
+          "Damage",
+          "Expiry"
+        ]
+      },
+      "SearchProductsQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SearchTerm": {
+            "type": "string",
+            "nullable": true
+          },
+          "CategoryId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "InStock": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "LowStock": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "MinPrice": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "MaxPrice": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "PageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PageSize": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CreateSharedDeliveryRunCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "GroupBuyPoolId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "ScheduledDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "AreaGroup": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalDeliveryCost": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Stops": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeliveryStopDto"
+            }
+          }
+        }
+      },
+      "DeliveryStopDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "Longitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "DeliveryInstructions": {
+            "type": "string",
+            "nullable": true
+          },
+          "PurchaseOrderId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "PoolParticipationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "DeliveryStatus": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Scheduled",
+          "Assigned",
+          "InProgress",
+          "Completed",
+          "Failed",
+          "Cancelled"
+        ],
+        "enum": [
+          "Scheduled",
+          "Assigned",
+          "InProgress",
+          "Completed",
+          "Failed",
+          "Cancelled"
+        ]
+      },
+      "UpdateDeliveryStatusCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "DeliveryRunId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "NewStatus": {
+            "$ref": "#/components/schemas/DeliveryStatus"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "AssignDriverCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "DeliveryRunId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "DriverId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CaptureProofOfDeliveryCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "DeliveryStopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ProofType": {
+            "$ref": "#/components/schemas/ProofOfDeliveryType"
+          },
+          "ProofData": {
+            "type": "string",
+            "nullable": true
+          },
+          "RecipientName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ProofOfDeliveryType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "PIN",
+          "Photo",
+          "Signature"
+        ],
+        "enum": [
+          "PIN",
+          "Photo",
+          "Signature"
+        ]
+      },
+      "GeneratePayLinkCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Description": {
+            "type": "string"
+          },
+          "SourceType": {
+            "type": "string",
+            "nullable": true
+          },
+          "SourceId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "CustomerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "CustomerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "CustomerPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "CustomerEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "ExpiryHours": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RecordPaymentCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SaleId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "PurchaseOrderId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "Amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "PaymentType": {
+            "$ref": "#/components/schemas/PaymentType"
+          },
+          "TransactionRef": {
+            "type": "string",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "PaymentType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Cash",
+          "Card",
+          "MobileMoney",
+          "BankTransfer",
+          "PayLink"
+        ],
+        "enum": [
+          "Cash",
+          "Card",
+          "MobileMoney",
+          "BankTransfer",
+          "PayLink"
+        ]
+      },
+      "InitiateMpesaPaymentCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "PhoneNumber": {
+            "type": "string"
+          },
+          "AccountReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "TransactionDesc": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "InitiateAirtelPaymentCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "PhoneNumber": {
+            "type": "string"
+          },
+          "Reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "InitiateMtnPaymentCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "PhoneNumber": {
+            "type": "string"
+          },
+          "Reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "GeneratePaymentQRCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CustomerName": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "RegisterStoreOwnerCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopName": {
+            "type": "string"
+          },
+          "Area": {
+            "type": "string"
+          },
+          "Zone": {
+            "type": "string",
+            "nullable": true
+          },
+          "Address": {
+            "type": "string"
+          },
+          "FirstName": {
+            "type": "string"
+          },
+          "LastName": {
+            "type": "string"
+          },
+          "Phone": {
+            "type": "string"
+          },
+          "Email": {
+            "type": "string",
+            "nullable": true
+          },
+          "Password": {
+            "type": "string"
+          },
+          "WhatsappAlerts": {
+            "type": "boolean"
+          },
+          "Latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        }
+      },
+      "RegisterVendorCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "CompanyName": {
+            "type": "string"
+          },
+          "CompanyRegNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "VATNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Website": {
+            "type": "string",
+            "nullable": true
+          },
+          "ContactPerson": {
+            "type": "string"
+          },
+          "Phone": {
+            "type": "string"
+          },
+          "Email": {
+            "type": "string"
+          },
+          "Password": {
+            "type": "string"
+          },
+          "AddressStreet": {
+            "type": "string",
+            "nullable": true
+          },
+          "AddressCity": {
+            "type": "string",
+            "nullable": true
+          },
+          "AddressProvince": {
+            "type": "string",
+            "nullable": true
+          },
+          "AddressPostalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "AddressCountry": {
+            "type": "string",
+            "nullable": true
+          },
+          "PaymentTermsDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CreditLimit": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          }
+        }
+      },
+      "RegisterDriverCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "FirstName": {
+            "type": "string"
+          },
+          "LastName": {
+            "type": "string"
+          },
+          "Phone": {
+            "type": "string"
+          },
+          "Email": {
+            "type": "string",
+            "nullable": true
+          },
+          "LicenseNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "VehicleType": {
+            "type": "string",
+            "nullable": true
+          },
+          "VehicleRegistration": {
+            "type": "string",
+            "nullable": true
+          },
+          "Password": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateSaleCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CustomerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "PaymentMethod": {
+            "$ref": "#/components/schemas/PaymentType"
+          },
+          "PaymentReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "Items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaleItemDto"
+            }
+          },
+          "SaleType": {
+            "$ref": "#/components/schemas/SaleType"
+          },
+          "CustomerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "CustomerPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "CustomerNotes": {
+            "type": "string",
+            "nullable": true
+          },
+          "EstimatedPreparationMinutes": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "SaleItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "UnitPrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "DiscountAmount": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "SaleType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "POS",
+          "QueueOrder",
+          "Delivery",
+          "PreOrder"
+        ],
+        "enum": [
+          "POS",
+          "QueueOrder",
+          "Delivery",
+          "PreOrder"
+        ]
+      },
+      "SaleStatus": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Pending",
+          "InProgress",
+          "Ready",
+          "Completed",
+          "Voided",
+          "Refunded",
+          "OnHold"
+        ],
+        "enum": [
+          "Pending",
+          "InProgress",
+          "Ready",
+          "Completed",
+          "Voided",
+          "Refunded",
+          "OnHold"
+        ]
+      },
+      "HoldSaleCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CustomerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "Items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaleItemDto2"
+            }
+          },
+          "PaymentMethod": {
+            "$ref": "#/components/schemas/PaymentType"
+          },
+          "TotalAmount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "SaleItemDto2": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "UnitPrice": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "VoidSaleCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SaleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Reason": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateSaleStatusCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SaleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "NewStatus": {
+            "$ref": "#/components/schemas/SaleStatus"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ProcessRefundCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SaleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "RefundAmount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Reason": {
+            "type": "string"
+          },
+          "RestockItems": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateInvoiceCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SaleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "InvoiceNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "DueDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateInvoiceStatusCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "InvoiceId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Status": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateSalesDocumentCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SaleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "DocumentType": {
+            "$ref": "#/components/schemas/SalesDocumentType"
+          },
+          "DocumentNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "DueDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "SalesDocumentType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Invoice",
+          "Receipt",
+          "CreditNote"
+        ],
+        "enum": [
+          "Invoice",
+          "Receipt",
+          "CreditNote"
+        ]
+      },
+      "UpdateShopSettingsCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "TaxRate": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "Language": {
+            "type": "string",
+            "nullable": true
+          },
+          "Timezone": {
+            "type": "string",
+            "nullable": true
+          },
+          "EnableGroupBuying": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "EnableSharedLogistics": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "AddToCartResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "CartItemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalItems": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CartTotal": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Message": {
+            "type": "string"
+          }
+        }
+      },
+      "HttpValidationProblemDetails": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProblemDetails"
+          },
+          {
+            "type": "object",
+            "additionalProperties": {
+              "nullable": true
+            },
+            "properties": {
+              "errors": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "AddToCartCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SessionId": {
+            "type": "string"
+          },
+          "CustomerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "Attributes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateCartItemResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "TotalItems": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CartTotal": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Message": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateCartItemCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "CartItemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SessionId": {
+            "type": "string"
+          }
+        }
+      },
+      "GetCartResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CartItemDto"
+            }
+          },
+          "TotalItems": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Subtotal": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "TotalTax": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "TotalDiscount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "GrandTotal": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "CartItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ProductName": {
+            "type": "string"
+          },
+          "ProductSku": {
+            "type": "string"
+          },
+          "ProductImage": {
+            "type": "string",
+            "nullable": true
+          },
+          "Quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "UnitPrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "TaxRate": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "DiscountAmount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Subtotal": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Tax": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Total": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Attributes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "GetCartQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SessionId": {
+            "type": "string"
+          },
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CheckoutResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SaleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SaleNumber": {
+            "type": "string"
+          },
+          "Total": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "AmountPaid": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Change": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "CompletedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CheckoutCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SessionId": {
+            "type": "string"
+          },
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CustomerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "PaymentMethod": {
+            "type": "string"
+          },
+          "AmountPaid": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateStoreCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Name": {
+            "type": "string"
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "OwnerId": {
+            "type": "string"
+          },
+          "Url": {
+            "type": "string",
+            "nullable": true
+          },
+          "SslEnabled": {
+            "type": "boolean"
+          },
+          "Hosts": {
+            "type": "string",
+            "nullable": true
+          },
+          "DisplayOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CompanyName": {
+            "type": "string",
+            "nullable": true
+          },
+          "CompanyAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "CompanyPhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "CompanyVat": {
+            "type": "string",
+            "nullable": true
+          },
+          "ContactPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "Email": {
+            "type": "string",
+            "nullable": true
+          },
+          "Currency": {
+            "type": "string"
+          },
+          "TaxRate": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Language": {
+            "type": "string"
+          },
+          "Timezone": {
+            "type": "string"
+          },
+          "AreaGroup": {
+            "type": "string",
+            "nullable": true
+          },
+          "OpeningTime": {
+            "type": "string",
+            "format": "time",
+            "nullable": true
+          },
+          "ClosingTime": {
+            "type": "string",
+            "format": "time",
+            "nullable": true
+          },
+          "WhatsAppAlertsEnabled": {
+            "type": "boolean"
+          },
+          "GroupBuyingEnabled": {
+            "type": "boolean"
+          },
+          "AIAssistantEnabled": {
+            "type": "boolean"
+          },
+          "Latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "AddressStreet": {
+            "type": "string",
+            "nullable": true
+          },
+          "AddressCity": {
+            "type": "string",
+            "nullable": true
+          },
+          "AddressProvince": {
+            "type": "string",
+            "nullable": true
+          },
+          "AddressPostalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "AddressCountry": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateStoreCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Name": {
+            "type": "string"
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Url": {
+            "type": "string",
+            "nullable": true
+          },
+          "SslEnabled": {
+            "type": "boolean"
+          },
+          "Hosts": {
+            "type": "string",
+            "nullable": true
+          },
+          "DisplayOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CompanyName": {
+            "type": "string",
+            "nullable": true
+          },
+          "CompanyAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "CompanyPhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "CompanyVat": {
+            "type": "string",
+            "nullable": true
+          },
+          "ContactPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "Email": {
+            "type": "string",
+            "nullable": true
+          },
+          "Currency": {
+            "type": "string"
+          },
+          "TaxRate": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Language": {
+            "type": "string"
+          },
+          "Timezone": {
+            "type": "string"
+          },
+          "AreaGroup": {
+            "type": "string",
+            "nullable": true
+          },
+          "OpeningTime": {
+            "type": "string",
+            "format": "time",
+            "nullable": true
+          },
+          "ClosingTime": {
+            "type": "string",
+            "format": "time",
+            "nullable": true
+          },
+          "WhatsAppAlertsEnabled": {
+            "type": "boolean"
+          },
+          "GroupBuyingEnabled": {
+            "type": "boolean"
+          },
+          "AIAssistantEnabled": {
+            "type": "boolean"
+          },
+          "IsActive": {
+            "type": "boolean"
+          },
+          "Latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "Longitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "AddressStreet": {
+            "type": "string",
+            "nullable": true
+          },
+          "AddressCity": {
+            "type": "string",
+            "nullable": true
+          },
+          "AddressProvince": {
+            "type": "string",
+            "nullable": true
+          },
+          "AddressPostalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "AddressCountry": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateVendorCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Name": {
+            "type": "string"
+          },
+          "Email": {
+            "type": "string"
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CompanyRegNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "VATNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "ContactPerson": {
+            "type": "string",
+            "nullable": true
+          },
+          "PhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "Website": {
+            "type": "string",
+            "nullable": true
+          },
+          "PaymentTermsDays": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "CreditLimit": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "AdminComment": {
+            "type": "string",
+            "nullable": true
+          },
+          "Active": {
+            "type": "boolean"
+          },
+          "DisplayOrder": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "LinkVendorProductCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "VendorId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "VendorSKU": {
+            "type": "string",
+            "nullable": true
+          },
+          "BasePrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "LeadTimeDays": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "MinOrderQuantity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateVendorPricingCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "VendorProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "NewBasePrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "NewLeadTimeDays": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "NewMinOrderQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "EffectiveDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Email": {
+            "type": "string"
+          },
+          "Password": {
+            "type": "string"
+          }
+        }
+      },
+      "AccessTokenResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "TokenType": {
+            "type": "string"
+          },
+          "AccessToken": {
+            "type": "string"
+          },
+          "ExpiresIn": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "RefreshToken": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Email": {
+            "type": "string"
+          },
+          "Password": {
+            "type": "string"
+          },
+          "TwoFactorCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "TwoFactorRecoveryCode": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "RefreshToken": {
+            "type": "string"
+          }
+        }
+      },
+      "ResendConfirmationEmailRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Email": {
+            "type": "string"
+          }
+        }
+      },
+      "ForgotPasswordRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Email": {
+            "type": "string"
+          }
+        }
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Email": {
+            "type": "string"
+          },
+          "ResetCode": {
+            "type": "string"
+          },
+          "NewPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "TwoFactorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SharedKey": {
+            "type": "string"
+          },
+          "RecoveryCodesLeft": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "RecoveryCodes": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "IsTwoFactorEnabled": {
+            "type": "boolean"
+          },
+          "IsMachineRemembered": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TwoFactorRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Enable": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "TwoFactorCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "ResetSharedKey": {
+            "type": "boolean"
+          },
+          "ResetRecoveryCodes": {
+            "type": "boolean"
+          },
+          "ForgetMachine": {
+            "type": "boolean"
+          }
+        }
+      },
+      "InfoResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Email": {
+            "type": "string"
+          },
+          "IsEmailConfirmed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "InfoRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "NewEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "NewPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "OldPassword": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateUserRolesCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "UserId": {
+            "type": "string"
+          },
+          "Roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "JWT": {
+        "type": "apiKey",
+        "description": "Type into the textbox: Bearer {your JWT token}.",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "JWT": []
+    }
+  ]
+}
