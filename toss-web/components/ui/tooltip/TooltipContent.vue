@@ -13,7 +13,7 @@ const props = withDefaults(defineProps</* @vue-ignore */ TooltipContentProps & {
   sideOffset: 4,
 })
 
-const emits = defineEmits<TooltipContentEmits>()
+const emits = defineEmits</* @vue-ignore */ TooltipContentEmits>()
 
 const delegatedProps = reactiveOmit(props, "class")
 

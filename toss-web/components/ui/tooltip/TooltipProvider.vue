@@ -2,7 +2,7 @@
 import type { TooltipProviderProps } from "reka-ui"
 import { TooltipProvider } from "reka-ui"
 
-const props = defineProps<TooltipProviderProps>()
+const props = defineProps</* @vue-ignore */ TooltipProviderProps>()
 </script>
 
 <template>

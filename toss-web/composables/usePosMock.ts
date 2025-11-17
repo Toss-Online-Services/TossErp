@@ -40,15 +40,42 @@ export const usePosMock = () => {
    */
   const fetchProducts = async (shopId: number, searchTerm?: string, categoryId?: number) => {
     try {
-      const response = await productsAPI.searchProducts({
-        shopId,
-        searchTerm,
-        categoryId,
-        inStock: true,
-        pageNumber: 1,
-        pageSize: 100
-      })
-      return response.products
+      console.log('[usePosMock] fetchProducts called:', { shopId, searchTerm, categoryId, mockProductsLength: mockProducts.length })
+      
+      // Use mock products for testing/development
+      let filteredProducts = [...mockProducts]
+      
+      // Filter by search term
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase()
+        filteredProducts = filteredProducts.filter(p =>
+          p.name.toLowerCase().includes(term) ||
+          p.sku.toLowerCase().includes(term) ||
+          (p.barcode && p.barcode.toLowerCase().includes(term))
+        )
+      }
+      
+      // Filter by category
+      if (categoryId) {
+        filteredProducts = filteredProducts.filter(p => p.categoryId === categoryId)
+      }
+      
+      const result = filteredProducts.map(p => ({
+        id: p.id,
+        name: p.name,
+        sku: p.sku,
+        barcode: p.barcode,
+        basePrice: p.basePrice,
+        imageUrl: p.imageUrl,
+        categoryId: p.categoryId,
+        categoryName: mockCategories.find((c: any) => c.id === p.categoryId)?.name || 'Unknown',
+        availableStock: p.currentStock || 100,
+        isActive: true,
+        isTaxable: p.isTaxable
+      }))
+      
+      console.log('[usePosMock] fetchProducts returning:', result.length, 'products')
+      return result
     } catch (error) {
       console.error('Error fetching products:', error)
       return []
@@ -60,7 +87,11 @@ export const usePosMock = () => {
    */
   const fetchCategories = async (shopId: number) => {
     try {
-      return await productsAPI.getCategories(shopId)
+      // Return mock categories for testing/development
+      return mockCategories.map((c: any) => ({
+        id: c.id,
+        name: c.name
+      }))
     } catch (error) {
       console.error('Error fetching categories:', error)
       return []
@@ -72,7 +103,22 @@ export const usePosMock = () => {
    */
   const getProductByBarcode = async (barcode: string, shopId: number) => {
     try {
-      return await productsAPI.getProductByBarcode(barcode, shopId)
+      // Use mock data for testing/development
+      const product = getMockProductByBarcode(barcode)
+      if (!product) return null
+      
+      return {
+        id: product.id,
+        name: product.name,
+        sku: product.sku,
+        barcode: product.barcode,
+        basePrice: product.basePrice,
+        categoryId: product.categoryId,
+        categoryName: mockCategories.find((c: any) => c.id === product.categoryId)?.name || 'Unknown',
+        availableStock: product.currentStock || 100,
+        unit: product.unit,
+        isTaxable: product.isTaxable
+      }
     } catch (error) {
       console.error('Error fetching product by barcode:', error)
       return null
@@ -104,6 +150,7 @@ export const usePosMock = () => {
     cartItems: CartItem[],
     payments: PosPaymentEntry[],
     customerId?: number,
+    customerName?: string,
     notes?: string
   ): PosSale => {
     // Convert cart items to POS sale items
@@ -129,14 +176,20 @@ export const usePosMock = () => {
     const total = subtotal + totalTax
 
     // Create the sale
+    const normalizedPayments = payments.map(payment => ({
+      ...payment,
+      mode: (payment as any).method ?? payment.mode ?? 'cash'
+    }))
+
     const sale = MockSalesService.createPosSale({
       sessionId,
       customerId,
+      customerName,
       items,
-      payments,
+      payments: normalizedPayments,
       subtotal,
-      totalTax,
-      totalDiscount,
+      discount: totalDiscount,
+      tax: totalTax,
       total,
       notes
     })

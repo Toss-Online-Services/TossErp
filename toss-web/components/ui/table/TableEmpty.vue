@@ -5,7 +5,7 @@ import { cn } from '~/lib/utils'
 import TableCell from "./TableCell.vue"
 import TableRow from "./TableRow.vue"
 
-const props = withDefaults(defineProps<{
+const props = withDefaults(defineProps</* @vue-ignore */ {
   class?: HTMLAttributes["class"]
   colspan?: number
 }>(), {

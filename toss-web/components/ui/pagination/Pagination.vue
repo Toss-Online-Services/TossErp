@@ -5,10 +5,10 @@ import { reactiveOmit } from "@vueuse/core"
 import { PaginationRoot, useForwardPropsEmits } from "reka-ui"
 import { cn } from '~/lib/utils'
 
-const props = defineProps<PaginationRootProps & {
+const props = defineProps</* @vue-ignore */ PaginationRootProps & {
   class?: HTMLAttributes["class"]
 }>()
-const emits = defineEmits<PaginationRootEmits>()
+const emits = defineEmits</* @vue-ignore */ PaginationRootEmits>()
 
 const delegatedProps = reactiveOmit(props, "class")
 const forwarded = useForwardPropsEmits(delegatedProps, emits)

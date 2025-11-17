@@ -11,7 +11,7 @@ const props = withDefaults(defineProps</* @vue-ignore */ ListboxRootProps & { cl
   modelValue: "",
 })
 
-const emits = defineEmits<ListboxRootEmits>()
+const emits = defineEmits</* @vue-ignore */ ListboxRootEmits>()
 
 const delegatedProps = reactiveOmit(props, "class")
 

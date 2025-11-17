@@ -33,6 +33,11 @@ const salesSection: NavSection = {
       icon: 'mdi:cash-register'
     },
     {
+      label: 'Ecommerce Blocks',
+      to: '/sales/ecommerce-blocks',
+      icon: 'mdi:cart-outline'
+    },
+    {
       label: 'Sales Transactions',
       icon: 'mdi:receipt-outline',
       children: [

@@ -10,7 +10,7 @@ import {
 import { cn } from '~/lib/utils'
 
 const props = withDefaults(
-  defineProps<ProgressRootProps & { class?: HTMLAttributes["class"] }>(),
+  defineProps</* @vue-ignore */ ProgressRootProps & { class?: HTMLAttributes["class"] }>(),
   {
     modelValue: 0,
   },

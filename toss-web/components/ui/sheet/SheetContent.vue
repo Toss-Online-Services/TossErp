@@ -24,9 +24,9 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const props = defineProps<SheetContentProps>()
+const props = defineProps</* @vue-ignore */ SheetContentProps>()
 
-const emits = defineEmits<DialogContentEmits>()
+const emits = defineEmits</* @vue-ignore */ DialogContentEmits>()
 
 const delegatedProps = reactiveOmit(props, "class", "side")
 

@@ -12,7 +12,7 @@ interface Props extends /* @vue-ignore */ PrimitiveProps {
   class?: HTMLAttributes["class"]
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps</* @vue-ignore */ Props>(), {
   as: "button",
 })
 </script>

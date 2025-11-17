@@ -89,6 +89,7 @@ Main POS interface:
 ✅ Recent sales history
 ✅ Session persistence (localStorage)
 ✅ Auto-restore on page refresh
+✅ Manual + scanner-friendly barcode capture with product lookup
 
 ### Payment Methods
 - **Cash**: Manual entry
@@ -111,6 +112,9 @@ Main POS interface:
 ✅ Responsive design (mobile-first)
 ✅ ZAR currency formatting
 ✅ Clean, accessible UI using shadcn-vue
+✅ Receipt preview dialog + printer-friendly markup for completed sales
+✅ Keyboard shortcuts (F2 search, F4 hold, F6 scan, F8 held, F9 complete)
+✅ Customer selection and credit badge surfaced in the header
 
 ## Data Flow
 
@@ -192,10 +196,14 @@ The mock composable (`usePosMock`) can be replaced with a real API composable:
 ## Next Steps
 
 ### Immediate
-1. Add keyboard shortcuts (F2=search, F9=complete, etc.)
-2. Implement barcode scanning
-3. Add receipt printing
-4. Customer selection UI
+~~1. Add keyboard shortcuts (F2=search, F9=complete, etc.)~~ ✅
+
+~~2. Implement barcode scanning~~ ✅
+
+~~3. Add receipt printing~~ ✅
+
+~~4. Customer selection UI~~ ✅
+
 5. Returns/refunds interface
 
 ### Short-Term

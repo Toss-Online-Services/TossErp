@@ -4,7 +4,7 @@ import type { AlertVariants } from "."
 import { cn } from '~/lib/utils'
 import { alertVariants } from "."
 
-const props = defineProps<{
+const props = defineProps</* @vue-ignore */ {
   class?: HTMLAttributes["class"]
   variant?: AlertVariants["variant"]
 }>()

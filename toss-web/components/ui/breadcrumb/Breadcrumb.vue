@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { HTMLAttributes } from "vue"
 
-const props = defineProps<{
+const props = defineProps</* @vue-ignore */ {
   class?: HTMLAttributes["class"]
 }>()
 </script>

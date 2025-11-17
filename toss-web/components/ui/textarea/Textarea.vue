@@ -3,13 +3,13 @@ import type { HTMLAttributes } from "vue"
 import { useVModel } from "@vueuse/core"
 import { cn } from '~/lib/utils'
 
-const props = defineProps<{
+const props = defineProps</* @vue-ignore */ {
   class?: HTMLAttributes["class"]
   defaultValue?: string | number
   modelValue?: string | number
 }>()
 
-const emits = defineEmits<{
+const emits = defineEmits</* @vue-ignore */ {
   (e: "update:modelValue", payload: string | number): void
 }>()
 

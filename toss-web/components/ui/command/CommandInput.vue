@@ -11,7 +11,7 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const props = defineProps<ListboxFilterProps & {
+const props = defineProps</* @vue-ignore */ ListboxFilterProps & {
   class?: HTMLAttributes["class"]
 }>()
 

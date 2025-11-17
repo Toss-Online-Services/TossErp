@@ -2,7 +2,7 @@
 import type { CalendarGridBodyProps } from "reka-ui"
 import { CalendarGridBody } from "reka-ui"
 
-const props = defineProps<CalendarGridBodyProps>()
+const props = defineProps</* @vue-ignore */ CalendarGridBodyProps>()
 </script>
 
 <template>

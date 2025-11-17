@@ -7,8 +7,8 @@ import { computed, onMounted, onUnmounted, ref } from "vue"
 import { cn } from '~/lib/utils'
 import { useCommand, useCommandGroup } from "."
 
-const props = defineProps<ListboxItemProps & { class?: HTMLAttributes["class"] }>()
-const emits = defineEmits<ListboxItemEmits>()
+const props = defineProps</* @vue-ignore */ ListboxItemProps & { class?: HTMLAttributes["class"] }>()
+const emits = defineEmits</* @vue-ignore */ ListboxItemEmits>()
 
 const delegatedProps = reactiveOmit(props, "class")
 

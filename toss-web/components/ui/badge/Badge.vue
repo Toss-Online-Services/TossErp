@@ -4,7 +4,7 @@ import type { BadgeVariants } from "."
 import { cn } from '~/lib/utils'
 import { badgeVariants } from "."
 
-const props = defineProps<{
+const props = defineProps</* @vue-ignore */ {
   variant?: BadgeVariants["variant"]
   class?: HTMLAttributes["class"]
 }>()

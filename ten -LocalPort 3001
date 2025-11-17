@@ -1,0 +1,112 @@
+[1mdiff --git a/toss-web/eslint.config.js b/toss-web/eslint.config.js[m
+[1mindex 17f9ee45..cf9f8e7a 100644[m
+[1m--- a/toss-web/eslint.config.js[m
+[1m+++ b/toss-web/eslint.config.js[m
+[36m@@ -1,81 +1,28 @@[m
+[31m-import js from '@eslint/js'[m
+[31m-import globals from 'globals'[m
+[32m+[m[32mimport nuxt from '@nuxt/eslint-config'[m
+ [m
+[31m-export default [[m
+[31m-  // Base configuration[m
+[31m-  js.configs.recommended,[m
+[31m-  [m
+[31m-  // Global settings[m
+[31m-  {[m
+[31m-    languageOptions: {[m
+[31m-      globals: {[m
+[31m-        ...globals.browser,[m
+[31m-        ...globals.node,[m
+[31m-        ...globals.es2022,[m
+[31m-        // Nuxt globals[m
+[31m-        'useHead': 'readonly',[m
+[31m-        'useRouter': 'readonly',[m
+[31m-        'useRoute': 'readonly',[m
+[31m-        'navigateTo': 'readonly',[m
+[31m-        'useCookie': 'readonly',[m
+[31m-        'useState': 'readonly',[m
+[31m-        'useFetch': 'readonly',[m
+[31m-        'useLazyFetch': 'readonly',[m
+[31m-        '$fetch': 'readonly',[m
+[31m-        'definePageMeta': 'readonly',[m
+[31m-        'defineNuxtComponent': 'readonly',[m
+[31m-        'defineNuxtPlugin': 'readonly',[m
+[31m-        'defineNuxtRouteMiddleware': 'readonly',[m
+[31m-        // Vue globals[m
+[31m-        'ref': 'readonly',[m
+[31m-        'reactive': 'readonly',[m
+[31m-        'computed': 'readonly',[m
+[31m-        'watch': 'readonly',[m
+[31m-        'watchEffect': 'readonly',[m
+[31m-        'onMounted': 'readonly',[m
+[31m-        'onUnmounted': 'readonly',[m
+[31m-        'onBeforeMount': 'readonly',[m
+[31m-        'onBeforeUnmount': 'readonly',[m
+[31m-        'nextTick': 'readonly',[m
+[31m-        'defineProps': 'readonly',[m
+[31m-        'defineEmits': 'readonly',[m
+[31m-        'defineExpose': 'readonly',[m
+[31m-        'withDefaults': 'readonly'[m
+[31m-      }[m
+[31m-    },[m
+[31m-    rules: {[m
+[31m-      // Very relaxed rules for MVP[m
+[31m-      'no-console': 'off',[m
+[31m-      'no-unused-vars': 'off',[m
+[31m-      'prefer-const': 'off',[m
+[31m-      'no-undef': 'off'[m
+[31m-    }[m
+[31m-  },[m
+[31m-  [m
+[31m-  // Ignore patterns - ignore most files for MVP[m
+[31m-  {[m
+[31m-    ignores: [[m
+[31m-      'node_modules/**',[m
+[31m-      '.nuxt/**',[m
+[31m-      '.output/**',[m
+[31m-      'dist/**',[m
+[31m-      'coverage/**',[m
+[31m-      'playwright-report/**',[m
+[31m-      'test-results/**',[m
+[31m-      'public/**',[m
+[31m-      'scripts/**',[m
+[31m-      'components/**',[m
+[31m-      'pages/**',[m
+[31m-      'composables/**',[m
+[31m-      'middleware/**',[m
+[31m-      'plugins/**',[m
+[31m-      'server/**',[m
+[31m-      'utils/**',[m
+[31m-      'types/**',[m
+[31m-      'assets/**',[m
+[31m-      '**/*.vue',[m
+[31m-      '**/*.ts',[m
+[31m-      '**/*.js'[m
+[31m-    ][m
+[32m+[m[32mexport default nuxt({[m
+[32m+[m[32m  ignores: [[m
+[32m+[m[32m    'node_modules/**',[m
+[32m+[m[32m    '.nuxt/**',[m
+[32m+[m[32m    '.output/**',[m
+[32m+[m[32m    'dist/**',[m
+[32m+[m[32m    'coverage/**',[m
+[32m+[m[32m    'playwright-report/**',[m
+[32m+[m[32m    'test-results/**',[m
+[32m+[m[32m    'public/**',[m
+[32m+[m[32m    'scripts/**',[m
+[32m+[m[32m    'backup-old-code/**'[m
+[32m+[m[32m  ],[m
+[32m+[m[32m  rules: {[m
+[32m+[m[32m    '@typescript-eslint/no-explicit-any': 'off',[m
+[32m+[m[32m    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],[m
+[32m+[m[32m    '@typescript-eslint/no-extraneous-class': 'off',[m
+[32m+[m[32m    'vue/html-self-closing': 'off',[m
+[32m+[m[32m    'vue/attributes-order': 'off',[m
+[32m+[m[32m    'vue/first-attribute-linebreak': 'off',[m
+[32m+[m[32m    'vue/v-slot-style': 'off',[m
+[32m+[m[32m    'vue/no-unused-vars': ['warn', { ignorePattern: '^_' }],[m
+[32m+[m[32m    'nuxt/prefer-import-meta': 'off',[m
+[32m+[m[32m    'no-useless-catch': 'off'[m
+   }[m
+[31m-][m
+[32m+[m[32m})[m

@@ -2,7 +2,7 @@
 import type { AspectRatioProps } from "reka-ui"
 import { AspectRatio } from "reka-ui"
 
-const props = defineProps<AspectRatioProps>()
+const props = defineProps</* @vue-ignore */ AspectRatioProps>()
 </script>
 
 <template>

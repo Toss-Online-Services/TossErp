@@ -11,8 +11,8 @@ import {
 } from "reka-ui"
 import { cn } from '~/lib/utils'
 
-const props = defineProps<DropdownMenuCheckboxItemProps & { class?: HTMLAttributes["class"] }>()
-const emits = defineEmits<DropdownMenuCheckboxItemEmits>()
+const props = defineProps</* @vue-ignore */ DropdownMenuCheckboxItemProps & { class?: HTMLAttributes["class"] }>()
+const emits = defineEmits</* @vue-ignore */ DropdownMenuCheckboxItemEmits>()
 
 const delegatedProps = reactiveOmit(props, "class")
 

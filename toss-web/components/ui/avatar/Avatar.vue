@@ -5,7 +5,7 @@ import { AvatarRoot } from "reka-ui"
 import { cn } from '~/lib/utils'
 import { avatarVariant } from "."
 
-const props = withDefaults(defineProps<{
+const props = withDefaults(defineProps</* @vue-ignore */ {
   class?: HTMLAttributes["class"]
   size?: AvatarVariants["size"]
   shape?: AvatarVariants["shape"]

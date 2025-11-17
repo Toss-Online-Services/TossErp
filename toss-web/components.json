@@ -8,6 +8,9 @@
     "cssVariables": true,
     "prefix": ""
   },
+  "registries": {
+    "@creative-tim": "https://www.creative-tim.com/ui/{name}.json"
+  },
   "aliases": {
     "components": "~/components",
     "utils": "~/lib/utils",

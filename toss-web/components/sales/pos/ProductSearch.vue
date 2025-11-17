@@ -9,6 +9,7 @@ const emit = defineEmits<{
 }>()
 
 const searchTerm = ref('')
+const searchInputRef = ref<{ focus: () => void } | null>(null)
 
 const handleSearch = () => {
   emit('search', searchTerm.value)
@@ -17,6 +18,20 @@ const handleSearch = () => {
 const handleScan = () => {
   emit('scanBarcode')
 }
+
+const focusSearch = () => {
+  searchInputRef.value?.focus?.()
+}
+
+const clearSearch = () => {
+  searchTerm.value = ''
+  emit('search', '')
+}
+
+defineExpose({
+  focusSearch,
+  clearSearch,
+})
 
 watch(searchTerm, (newValue) => {
   if (newValue.length >= 2) {
@@ -32,6 +47,7 @@ watch(searchTerm, (newValue) => {
     <div class="relative flex-1">
       <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
       <Input
+        ref="searchInputRef"
         v-model="searchTerm"
         type="search"
         placeholder="Search products by name, SKU, or barcode..."

@@ -220,25 +220,25 @@ const handleSubmit = () => {
 ### Action Bar with Buttons
 ```vue
 <template>
-  <div class="flex items-center justify-between">
-    <div class="flex items-center gap-2">
+  <div class="flex justify-between items-center">
+    <div class="flex gap-2 items-center">
       <Button variant="outline" size="sm">
-        <Icon name="mdi:filter" class="mr-2 h-4 w-4" />
+        <Icon name="mdi:filter" class="mr-2 w-4 h-4" />
         Filter
       </Button>
       <Button variant="outline" size="sm">
-        <Icon name="mdi:sort" class="mr-2 h-4 w-4" />
+        <Icon name="mdi:sort" class="mr-2 w-4 h-4" />
         Sort
       </Button>
     </div>
     
-    <div class="flex items-center gap-2">
+    <div class="flex gap-2 items-center">
       <Button variant="outline" size="sm">
-        <Icon name="mdi:export" class="mr-2 h-4 w-4" />
+        <Icon name="mdi:export" class="mr-2 w-4 h-4" />
         Export
       </Button>
       <Button size="sm">
-        <Icon name="mdi:plus" class="mr-2 h-4 w-4" />
+        <Icon name="mdi:plus" class="mr-2 w-4 h-4" />
         Add New
       </Button>
     </div>
@@ -250,11 +250,11 @@ const handleSubmit = () => {
 
 ### Before (Custom Components) ❌
 ```vue
-<button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+<button class="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
   Click me
 </button>
 
-<div class="bg-white rounded-lg shadow p-6">
+<div class="p-6 bg-white rounded-lg shadow">
   <h3 class="text-lg font-bold">Title</h3>
   <p class="text-gray-600">Description</p>
 </div>

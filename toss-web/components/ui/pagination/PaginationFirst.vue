@@ -8,7 +8,7 @@ import { PaginationFirst, useForwardProps } from "reka-ui"
 import { cn } from '~/lib/utils'
 import { buttonVariants } from '~/components/ui/button'
 
-const props = withDefaults(defineProps<PaginationFirstProps & {
+const props = withDefaults(defineProps</* @vue-ignore */ PaginationFirstProps & {
   size?: ButtonVariants["size"]
   class?: HTMLAttributes["class"]
 }>(), {

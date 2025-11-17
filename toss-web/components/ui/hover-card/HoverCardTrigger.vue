@@ -2,7 +2,7 @@
 import type { HoverCardTriggerProps } from "reka-ui"
 import { HoverCardTrigger } from "reka-ui"
 
-const props = defineProps<HoverCardTriggerProps>()
+const props = defineProps</* @vue-ignore */ HoverCardTriggerProps>()
 </script>
 
 <template>

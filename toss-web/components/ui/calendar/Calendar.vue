@@ -6,9 +6,9 @@ import { CalendarRoot, useForwardPropsEmits } from "reka-ui"
 import { cn } from '~/lib/utils'
 import { CalendarCell, CalendarCellTrigger, CalendarGrid, CalendarGridBody, CalendarGridHead, CalendarGridRow, CalendarHeadCell, CalendarHeader, CalendarHeading, CalendarNextButton, CalendarPrevButton } from "."
 
-const props = defineProps<CalendarRootProps & { class?: HTMLAttributes["class"] }>()
+const props = defineProps</* @vue-ignore */ CalendarRootProps & { class?: HTMLAttributes["class"] }>()
 
-const emits = defineEmits<CalendarRootEmits>()
+const emits = defineEmits</* @vue-ignore */ CalendarRootEmits>()
 
 const delegatedProps = reactiveOmit(props, "class")
 

@@ -15,6 +15,11 @@
 				"OLLAMA_API_KEY": "YOUR_OLLAMA_API_KEY_HERE"
 			}
 		},
+		"shadcn": {
+			"command": "npx",
+			"args": ["shadcn@latest", "mcp"],
+			"env": {}
+		},
 		"filesystem": {
 			"command": "npx",
 			"args": ["-y", "--package=@modelcontextprotocol/server-filesystem", "mcp-server-filesystem"],

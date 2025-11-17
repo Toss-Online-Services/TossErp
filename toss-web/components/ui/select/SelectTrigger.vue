@@ -6,7 +6,7 @@ import { ChevronDownIcon } from '@radix-icons/vue'
 import { SelectIcon, SelectTrigger, useForwardProps } from "reka-ui"
 import { cn } from '~/lib/utils'
 
-const props = defineProps<SelectTriggerProps & { class?: HTMLAttributes["class"] }>()
+const props = defineProps</* @vue-ignore */ SelectTriggerProps & { class?: HTMLAttributes["class"] }>()
 
 const delegatedProps = reactiveOmit(props, "class")
 

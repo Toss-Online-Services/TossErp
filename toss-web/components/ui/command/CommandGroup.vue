@@ -7,7 +7,7 @@ import { computed, onMounted, onUnmounted } from "vue"
 import { cn } from '~/lib/utils'
 import { provideCommandGroupContext, useCommand } from "."
 
-const props = defineProps<ListboxGroupProps & {
+const props = defineProps</* @vue-ignore */ ListboxGroupProps & {
   class?: HTMLAttributes["class"]
   heading?: string
 }>()

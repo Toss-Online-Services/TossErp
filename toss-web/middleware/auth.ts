@@ -1,6 +1,7 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  // Bypass auth in development mode
-  if (process.dev) {
+  // Bypass auth in non-production environments
+  // @ts-ignore - import.meta.dev is available in Nuxt
+  if (import.meta.dev) {
     return
   }
 

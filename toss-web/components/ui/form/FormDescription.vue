@@ -3,7 +3,7 @@ import type { HTMLAttributes } from "vue"
 import { cn } from '~/lib/utils'
 import { useFormField } from "./useFormField"
 
-const props = defineProps<{
+const props = defineProps</* @vue-ignore */ {
   class?: HTMLAttributes["class"]
 }>()
 

@@ -5,7 +5,7 @@ import { reactiveOmit } from "@vueuse/core"
 import { TabsList } from "reka-ui"
 import { cn } from '~/lib/utils'
 
-const props = defineProps<TabsListProps & { class?: HTMLAttributes["class"] }>()
+const props = defineProps</* @vue-ignore */ TabsListProps & { class?: HTMLAttributes["class"] }>()
 
 const delegatedProps = reactiveOmit(props, "class")
 </script>

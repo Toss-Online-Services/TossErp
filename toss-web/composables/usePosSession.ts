@@ -191,6 +191,7 @@ export const usePosSession = () => {
       cart.value,
       payments.value,
       customer.value?.id,
+      customer.value?.name,
       notes.value
     )
 

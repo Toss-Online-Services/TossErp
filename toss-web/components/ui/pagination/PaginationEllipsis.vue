@@ -6,7 +6,7 @@ import { DotsHorizontalIcon } from '@radix-icons/vue'
 import { PaginationEllipsis } from "reka-ui"
 import { cn } from '~/lib/utils'
 
-const props = defineProps<PaginationEllipsisProps & { class?: HTMLAttributes["class"] }>()
+const props = defineProps</* @vue-ignore */ PaginationEllipsisProps & { class?: HTMLAttributes["class"] }>()
 
 const delegatedProps = reactiveOmit(props, "class")
 </script>
