@@ -432,7 +432,7 @@ definePageMeta({
 
 // SEO
 useHead({
-  title: computed(() => quotation.value ? quotation.value.quotationNo : t('sales.quotations.title'))
+  title: computed(() => quotation.value ? quotation.value.quotationNumber : t('sales.quotations.title'))
 })
 </script>
 

@@ -3,11 +3,14 @@ using Toss.Domain.Constants;
 using Toss.Infrastructure.Data;
 using Toss.Infrastructure.Data.Interceptors;
 using Toss.Infrastructure.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -18,15 +21,15 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class DependencyInjection
 {
     /// <summary>
-    /// Adds all infrastructure services to the host application builder.
+    /// Adds all infrastructure services to the host application builder.       
     /// </summary>
     /// <param name="builder">The host application builder.</param>
-    /// <exception cref="ArgumentNullException">Thrown when connection string 'TossDb' is not found.</exception>
-    public static void AddInfrastructureServices(this IHostApplicationBuilder builder)
+    /// <exception cref="ArgumentNullException">Thrown when connection string 'TossDb' is not found.</exception>                                                
+    public static void AddInfrastructureServices(this IHostApplicationBuilder builder)                                                                          
     {
         // Validate connection string exists
-        var connectionString = builder.Configuration.GetConnectionString("TossDb");
-        Guard.Against.Null(connectionString, message: "Connection string 'TossDb' not found.");
+        var connectionString = builder.Configuration.GetConnectionString("TossDb");                                                                             
+        Guard.Against.Null(connectionString, message: "Connection string 'TossDb' not found.");                                                                 
 
         // Register EF Core interceptors for cross-cutting concerns
         RegisterInterceptors(builder.Services);
@@ -35,7 +38,7 @@ public static class DependencyInjection
         RegisterDbContext(builder, connectionString);
 
         // Register Identity and Authentication services
-        RegisterIdentityServices(builder.Services);
+        RegisterIdentityServices(builder.Services, builder.Configuration);
 
         // Register infrastructure services (AI, User Management)
         RegisterInfrastructureServices(builder.Services);
@@ -87,28 +90,48 @@ public static class DependencyInjection
     /// <summary>
     /// Registers ASP.NET Core Identity and authentication services.
     /// </summary>
-    private static void RegisterIdentityServices(IServiceCollection services)
+    private static void RegisterIdentityServices(IServiceCollection services, IConfiguration configuration)   
     {
-        // Configure bearer token authentication
-        services.AddAuthentication()
-            .AddBearerToken(IdentityConstants.BearerScheme);
-
-        // Add authorization builder for policy configuration
-        services.AddAuthorizationBuilder();
-
-        // Configure Identity Core with roles
+        // Configure Identity Core with roles first (needed for BearerToken)
         services
             .AddIdentityCore<ApplicationUser>()
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddApiEndpoints();
 
+        // Configure authentication with both BearerToken and JWT Bearer schemes
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;                           
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddBearerToken(IdentityConstants.BearerScheme)
+        .AddJwtBearer(options =>
+        {
+            var jwtSettings = configuration.GetSection("JwtSettings");
+            
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtSettings["Issuer"] ?? "TossErp",
+                ValidAudience = jwtSettings["Audience"] ?? "TossErp",
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not configured")))
+            };
+        });
+
+        // Add authorization builder for policy configuration
+        services.AddAuthorizationBuilder();
+
         // Register time provider
         services.AddSingleton(TimeProvider.System);
-        
+
         // Register identity services
         services.AddTransient<IIdentityService, IdentityService>();
-        services.AddScoped<IUserManagementService, Toss.Infrastructure.Identity.Services.UserManagementService>();
+        services.AddScoped<IUserManagementService, Toss.Infrastructure.Identity.Services.UserManagementService>();                                              
     }
 
     /// <summary>
@@ -129,10 +152,35 @@ public static class DependencyInjection
     /// <summary>
     /// Configures authorization policies for the application.
     /// </summary>
-    private static void ConfigureAuthorization(IServiceCollection services)
+    private static void ConfigureAuthorization(IServiceCollection services)     
     {
         services.AddAuthorization(options =>
-            options.AddPolicy(Policies.CanPurge, policy => 
-                policy.RequireRole(Roles.Administrator)));
+        {
+            options.AddPolicy(Policies.CanPurge, policy =>
+                policy.RequireRole(Roles.Administrator));
+            
+            // Role-based policies
+            options.AddPolicy("RequireAdmin", policy =>
+                policy.RequireRole(Roles.Administrator));
+            
+            options.AddPolicy("RequireRetailer", policy =>
+                policy.RequireRole(Roles.Retailer));
+            
+            options.AddPolicy("RequireSupplier", policy =>
+                policy.RequireRole(Roles.Supplier));
+            
+            options.AddPolicy("RequireDriver", policy =>
+                policy.RequireRole(Roles.Driver));
+            
+            // Combined role policies
+            options.AddPolicy("RequireRetailerOrAdmin", policy =>
+                policy.RequireRole(Roles.Retailer, Roles.Administrator));
+            
+            options.AddPolicy("RequireSupplierOrAdmin", policy =>
+                policy.RequireRole(Roles.Supplier, Roles.Administrator));
+            
+            options.AddPolicy("RequireDriverOrAdmin", policy =>
+                policy.RequireRole(Roles.Driver, Roles.Administrator));
+        });
     }
 }

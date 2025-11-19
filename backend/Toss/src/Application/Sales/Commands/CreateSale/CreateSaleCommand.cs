@@ -134,6 +134,57 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, int>
         _context.Sales.Add(sale);
         await _context.SaveChangesAsync(cancellationToken);
 
+        // Update inventory for POS sales (immediate stock reduction)
+        if (request.SaleType == SaleType.POS && sale.Status == SaleStatus.Completed)
+        {
+            foreach (var itemDto in request.Items)
+            {
+                // Get or create stock level for this product
+                var stockLevel = await _context.StockLevels
+                    .FirstOrDefaultAsync(sl => sl.ShopId == request.ShopId && sl.ProductId == itemDto.ProductId, cancellationToken);
+
+                if (stockLevel == null)
+                {
+                    var product = await _context.Products
+                        .FindAsync(new object[] { itemDto.ProductId }, cancellationToken);
+
+                    stockLevel = new StockLevel
+                    {
+                        ShopId = request.ShopId,
+                        ProductId = itemDto.ProductId,
+                        Quantity = 0,
+                        ReorderPoint = product?.MinimumStockLevel ?? 10,
+                        ReorderQuantity = product?.ReorderQuantity ?? 20
+                    };
+                    _context.StockLevels.Add(stockLevel);
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
+
+                var quantityBefore = stockLevel.Quantity;
+                stockLevel.Quantity -= itemDto.Quantity;
+                if (stockLevel.Quantity < 0) stockLevel.Quantity = 0; // Prevent negative stock
+
+                // Create stock movement record
+                var stockMovement = new StockMovement
+                {
+                    ProductId = itemDto.ProductId,
+                    ShopId = request.ShopId,
+                    QuantityChange = -itemDto.Quantity,
+                    MovementType = StockMovementType.Sale,
+                    MovementDate = DateTimeOffset.UtcNow,
+                    ReferenceType = "Sale",
+                    ReferenceId = sale.Id,
+                    Notes = $"POS Sale - {sale.SaleNumber}",
+                    QuantityBefore = quantityBefore,
+                    QuantityAfter = stockLevel.Quantity
+                };
+
+                _context.StockMovements.Add(stockMovement);
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
         return sale.Id;
     }
 

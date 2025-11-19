@@ -15,17 +15,25 @@ public class UserManagementService : IUserManagementService
         _roleManager = roleManager;
     }
 
-    public async Task<List<UserListItemDto>> GetUsersAsync(int skip, int take, string? searchTerm, CancellationToken cancellationToken)
+    public async Task<List<UserListItemDto>> GetUsersAsync(int skip, int take, string? searchTerm, string? role = null, CancellationToken cancellationToken = default)                         
     {
         IQueryable<ApplicationUser> query = _userManager.Users;
 
         if (!string.IsNullOrEmpty(searchTerm))
         {
             query = query.Where(u =>
-                (u.UserName != null && u.UserName.Contains(searchTerm)) ||
+                (u.UserName != null && u.UserName.Contains(searchTerm)) ||      
                 (u.Email != null && u.Email.Contains(searchTerm)) ||
-                (u.PhoneNumber != null && u.PhoneNumber.Contains(searchTerm))
+                (u.PhoneNumber != null && u.PhoneNumber.Contains(searchTerm))   
             );
+        }
+
+        // Filter by role if specified
+        if (!string.IsNullOrEmpty(role))
+        {
+            var usersInRole = await _userManager.GetUsersInRoleAsync(role);
+            var userIdsInRole = usersInRole.Select(u => u.Id).ToList();
+            query = query.Where(u => userIdsInRole.Contains(u.Id));
         }
 
         var users = await query
@@ -79,7 +87,7 @@ public class UserManagementService : IUserManagementService
         );
     }
 
-    public async Task<bool> UpdateUserRolesAsync(string userId, List<string> roles, CancellationToken cancellationToken)
+    public async Task<bool> UpdateUserRolesAsync(string userId, List<string> roles, CancellationToken cancellationToken)                                        
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -89,13 +97,43 @@ public class UserManagementService : IUserManagementService
         var currentRoles = await _userManager.GetRolesAsync(user);
 
         // Remove user from all current roles
-        var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+        var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);                                                                         
         if (!removeResult.Succeeded)
             return false;
 
         // Add user to new roles
-        var addResult = await _userManager.AddToRolesAsync(user, roles);
+        var addResult = await _userManager.AddToRolesAsync(user, roles);        
         return addResult.Succeeded;
+    }
+
+    public async Task<bool> ActivateUserAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return false;
+
+        // Remove lockout to activate user
+        var result = await _userManager.SetLockoutEndDateAsync(user, null);
+        if (result.Succeeded)
+        {
+            // Reset access failed count
+            await _userManager.ResetAccessFailedCountAsync(user);
+        }
+        
+        return result.Succeeded;
+    }
+
+    public async Task<bool> DeactivateUserAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return false;
+
+        // Set lockout to deactivate user (lockout until year 9999 effectively disables)
+        var lockoutEnd = DateTimeOffset.UtcNow.AddYears(100);
+        var result = await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);
+        
+        return result.Succeeded;
     }
 }
 
