@@ -173,6 +173,7 @@ import {
   PlusIcon
 } from '@heroicons/vue/24/outline'
 import { useSalesAPI } from '~/composables/useSalesAPI'
+import { getErrorNotification, logError } from '~/utils/errorHandler'
 
 // Page metadata
 useHead({
@@ -201,13 +202,31 @@ onMounted(async () => {
 const loadQueue = async () => {
   loading.value = true
   try {
-    const allOrders = await salesAPI.getOrders()
-    // Filter to only show non-completed orders
-    queueOrders.value = allOrders.filter((o: any) => 
-      o.status !== 'completed' && o.status !== 'cancelled'
-    )
+    const shopId = 1 // TODO: Get from session/auth
+    const queueData = await salesAPI.getQueueOrders(shopId)
+    
+    // Transform backend data to match frontend expectations
+    queueOrders.value = queueData.map((order: any) => ({
+      id: order.id,
+      orderNumber: order.saleNumber,
+      customer: order.customerName || 'Walk-in Customer',
+      customerPhone: order.customerPhone,
+      status: order.status.toLowerCase(),
+      total: order.total,
+      orderItems: order.items || [],
+      createdAt: new Date(order.saleDate),
+      notes: order.customerNotes,
+      expectedCompletion: order.expectedCompletionTime ? new Date(order.expectedCompletionTime) : null,
+      queuePosition: order.queuePosition
+    }))
   } catch (error) {
-    console.error('Failed to load queue:', error)
+    logError(error, 'load_data', 'Failed to load queue')
+    // Show user-friendly notification
+    const notification = document.createElement('div')
+    notification.textContent = '⚠️ Unable to load order queue. Please refresh the page.'
+    notification.className = 'fixed top-20 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50'
+    document.body.appendChild(notification)
+    setTimeout(() => notification.remove(), 5000)
   } finally {
     loading.value = false
   }
@@ -247,36 +266,43 @@ const getStatusClass = (status: string) => {
 // Actions
 const updateStatus = async (order: any, newStatus: string) => {
   try {
-    await salesAPI.updateOrderStatus(order.id, newStatus)
+    // Map frontend status to backend SaleStatus enum values
+    const statusMap: Record<string, string> = {
+      'pending': 'Pending',
+      'in-progress': 'InProgress',
+      'ready': 'Ready'
+    }
+    const backendStatus = statusMap[newStatus] || newStatus
+    await salesAPI.updateQueueOrderStatus(order.id, backendStatus as any)
     await loadQueue()
     const statusText = getStatusLabel(newStatus)
     alert(`✓ Order #${order.orderNumber} marked as ${statusText}`)
   } catch (error) {
-    console.error('Failed to update status:', error)
-    alert('✗ Failed to update order status')
+    logError(error, 'save_data', 'Failed to update status')
+    alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
   }
 }
 
 const completeOrder = async (order: any) => {
   try {
-    await salesAPI.completeOrder(order.id)
+    await salesAPI.completeQueueOrder(order.id)
     await loadQueue()
     alert(`✓ Order #${order.orderNumber} completed and removed from queue`)
   } catch (error) {
-    console.error('Failed to complete order:', error)
-    alert('✗ Failed to complete order')
+    logError(error, 'save_data', 'Failed to complete order')
+    alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
   }
 }
 
 const cancelOrder = async (order: any) => {
   if (confirm(`Cancel order #${order.orderNumber}?`)) {
     try {
-      await salesAPI.cancelOrder(order.id)
+      await salesAPI.voidSale(order.id, 'Cancelled by user')
       await loadQueue()
       alert(`✗ Order #${order.orderNumber} cancelled`)
     } catch (error) {
-      console.error('Failed to cancel order:', error)
-      alert('✗ Failed to cancel order')
+      logError(error, 'save_data', 'Failed to cancel order')
+      alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
     }
   }
 }

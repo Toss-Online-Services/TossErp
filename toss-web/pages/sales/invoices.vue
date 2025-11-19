@@ -6,10 +6,10 @@
         <div class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div class="flex-1 min-w-0">
             <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-blue-600 bg-clip-text text-transparent truncate">
-              Sales Invoices
+              Sales Documents
             </h1>
             <p class="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-1">
-              Manage billing and payment tracking
+              Manage invoices, receipts, and accounts receivable
             </p>
           </div>
           <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
@@ -122,10 +122,17 @@
       <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div class="flex-1">
-            <input v-model="searchQuery" type="text" placeholder="Search invoices..." 
+            <input v-model="searchQuery" type="text" placeholder="Search documents..." 
                    class="w-full px-3 sm:px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white">
           </div>
           <div class="flex gap-2 sm:gap-3">
+            <select v-model="documentTypeFilter" 
+                    @change="loadInvoices"
+                    class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white">
+              <option value="all">All Documents</option>
+              <option value="invoice">Invoices Only</option>
+              <option value="receipt">Receipts Only</option>
+            </select>
             <select v-model="statusFilter" 
                     class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white">
               <option value="">All Status</option>
@@ -166,7 +173,17 @@
                   </div>
                 </div>
                 <div>
-                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ invoice.invoiceNumber }}</h3>
+                  <div class="flex items-center gap-2 mb-1">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ invoice.invoiceNumber }}</h3>
+                    <span v-if="invoice.documentType === 2" 
+                          class="px-2 py-0.5 text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full">
+                      Receipt
+                    </span>
+                    <span v-else-if="invoice.documentType === 1"
+                          class="px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
+                      Invoice
+                    </span>
+                  </div>
                   <p class="text-sm text-slate-600 dark:text-slate-400">{{ invoice.customer }}</p>
                 </div>
               </div>
@@ -178,9 +195,17 @@
                   {{ getStatusLabel(invoice.status) }}
                 </span>
                 <div class="text-right">
-                  <p class="text-2xl font-bold text-slate-900 dark:text-white">R{{ formatCurrency(invoice.total) }}</p>
-                  <p class="text-xs text-slate-500 dark:text-slate-400">
-                    {{ expandedInvoices.includes(invoice.id) ? '▲ Click to collapse' : '▼ Click to expand' }}
+                  <p class="text-2xl font-bold text-slate-900 dark:text-white mb-1">R{{ formatCurrency(invoice.total) }}</p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center justify-end gap-1">
+                    <ChevronDownIcon 
+                      v-if="!expandedInvoices.includes(invoice.id)" 
+                      class="w-3 h-3 transition-transform"
+                    />
+                    <ChevronUpIcon 
+                      v-else 
+                      class="w-3 h-3 transition-transform"
+                    />
+                    <span>{{ expandedInvoices.includes(invoice.id) ? 'Collapse' : 'Expand' }}</span>
                   </p>
                 </div>
               </div>
@@ -198,22 +223,24 @@
           >
             <div v-if="expandedInvoices.includes(invoice.id)" class="px-6 py-4">
               <!-- Key Invoice Details -->
-              <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div>
-                  <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Invoice Date</p>
-                  <p class="text-sm font-medium text-slate-900 dark:text-white">{{ formatDate(invoice.invoiceDate) }}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                  <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Invoice Date</p>
+                  <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ formatDate(invoice.invoiceDate) }}</p>
                 </div>
-                <div>
-                  <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Due Date</p>
-                  <p class="text-sm font-medium text-slate-900 dark:text-white">{{ formatDate(invoice.dueDate) }}</p>
+                <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                  <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Due Date</p>
+                  <p class="text-sm font-semibold text-slate-900 dark:text-white" :class="{'text-orange-600 dark:text-orange-400': invoice.dueDate && new Date(invoice.dueDate) < new Date() && invoice.status !== 'paid'}">
+                    {{ formatDate(invoice.dueDate) }}
+                  </p>
                 </div>
-                <div>
-                  <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Order Reference</p>
-                  <p class="text-sm font-medium text-slate-900 dark:text-white">{{ invoice.orderNumber || 'N/A' }}</p>
+                <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                  <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Order Reference</p>
+                  <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ invoice.orderNumber || 'N/A' }}</p>
                 </div>
-                <div>
-                  <p class="text-xs text-slate-500 dark:text-slate-500 mb-1">Items</p>
-                  <p class="text-sm font-medium text-slate-900 dark:text-white">{{ invoice.invoiceItems?.length || 0 }} items</p>
+                <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                  <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Items</p>
+                  <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ invoice.invoiceItems?.length || 0 }} item{{ (invoice.invoiceItems?.length || 0) !== 1 ? 's' : '' }}</p>
                 </div>
               </div>
 
@@ -223,27 +250,78 @@
                   <span class="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
                   Invoice Items
                 </h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div 
-                    v-for="item in invoice.invoiceItems" 
-                    :key="item.id"
-                    class="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 border border-slate-200 dark:border-slate-700"
-                  >
-                    <div class="flex justify-between items-start mb-2">
-                      <h5 class="font-semibold text-slate-900 dark:text-white">{{ item.name }}</h5>
-                      <span 
-                        class="text-xs px-2 py-1 rounded-full"
-                        :class="getStockClass(item.stock)"
+                
+                <!-- Professional Table Layout -->
+                <div class="relative -mx-6 px-6">
+                  <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-slate-100 dark:scrollbar-track-slate-800">
+                    <table class="w-full border-collapse min-w-[600px]">
+                    <thead>
+                      <tr class="border-b-2 border-slate-200 dark:border-slate-700">
+                        <th class="text-left py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Item</th>
+                        <th class="text-left py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">SKU</th>
+                        <th class="text-right py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Quantity</th>
+                        <th class="text-right py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Unit Price</th>
+                        <th class="text-right py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Total</th>
+                        <th v-if="invoice.invoiceItems.some((item: any) => item.stock !== null && item.stock !== undefined)" class="text-right py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Stock</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                      <tr 
+                        v-for="item in invoice.invoiceItems" 
+                        :key="item.id"
+                        class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                       >
-                        Stock: {{ item.stock }}
-                      </span>
-                    </div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">SKU: {{ item.sku }}</p>
-                    <div class="text-sm text-slate-700 dark:text-slate-300">
-                      <p>{{ item.quantity }}x @ R{{ item.price.toFixed(2) }}</p>
-                      <p class="font-bold text-blue-600 dark:text-blue-400 mt-1">
-                        Total: R{{ (item.quantity * item.price).toFixed(2) }}
-                      </p>
+                        <td class="py-4 px-4">
+                          <div class="font-medium text-slate-900 dark:text-white">{{ item.name }}</div>
+                        </td>
+                        <td class="py-4 px-4">
+                          <div class="text-sm text-slate-500 dark:text-slate-400">{{ item.sku || 'N/A' }}</div>
+                        </td>
+                        <td class="py-4 px-4 text-right">
+                          <div class="text-sm font-medium text-slate-900 dark:text-white">{{ item.quantity }}</div>
+                        </td>
+                        <td class="py-4 px-4 text-right">
+                          <div class="text-sm text-slate-700 dark:text-slate-300">R{{ formatCurrency(item.price) }}</div>
+                        </td>
+                        <td class="py-4 px-4 text-right">
+                          <div class="text-sm font-semibold text-slate-900 dark:text-white">R{{ formatCurrency(item.total) }}</div>
+                        </td>
+                        <td v-if="invoice.invoiceItems.some((item: any) => item.stock !== null && item.stock !== undefined)" class="py-4 px-4 text-right">
+                          <span 
+                            v-if="item.stock !== null && item.stock !== undefined"
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                            :class="getStockClass(item.stock)"
+                          >
+                            {{ item.stock }}
+                          </span>
+                          <span v-else class="text-xs text-slate-400">—</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  </div>
+                  <!-- Scroll indicator for mobile -->
+                  <div class="absolute top-0 right-0 h-full w-8 bg-gradient-to-r from-transparent to-slate-50 dark:to-slate-800 pointer-events-none md:hidden"></div>
+                </div>
+                
+                <!-- Invoice Summary -->
+                <div class="mt-6 flex justify-end">
+                  <div class="w-full max-w-md">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-5 border border-slate-200 dark:border-slate-700">
+                      <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                          <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Subtotal:</span>
+                          <span class="text-sm font-semibold text-slate-900 dark:text-white">R{{ formatCurrency(invoice.subtotal || 0) }}</span>
+                        </div>
+                        <div v-if="invoice.taxAmount && invoice.taxAmount > 0" class="flex justify-between items-center">
+                          <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Tax ({{ invoice.taxAmount && invoice.subtotal ? Math.round((invoice.taxAmount / invoice.subtotal) * 100) : 0 }}%):</span>
+                          <span class="text-sm font-semibold text-slate-900 dark:text-white">R{{ formatCurrency(invoice.taxAmount) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-3 border-t-2 border-slate-300 dark:border-slate-600">
+                          <span class="text-base font-bold text-slate-900 dark:text-white">Total:</span>
+                          <span class="text-xl font-bold text-blue-600 dark:text-blue-400">R{{ formatCurrency(invoice.total) }}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -306,8 +384,30 @@
       <!-- Empty State -->
       <div v-else class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-12 text-center">
         <DocumentTextIcon class="w-16 h-16 text-slate-400 mx-auto mb-4" />
-        <p class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No invoices found</p>
-        <p class="text-slate-600 dark:text-slate-400">Create your first invoice to get started.</p>
+        <p class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No documents found</p>
+        <div class="max-w-md mx-auto space-y-3 text-left">
+          <p class="text-slate-600 dark:text-slate-400">
+            Sales documents (invoices and receipts) will appear here once created. Here's how to get started:
+          </p>
+          <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-2 list-disc list-inside">
+            <li><strong>Receipts:</strong> Automatically generated when you complete a sale via the <a href="/sales/pos" class="text-blue-600 dark:text-blue-400 underline hover:text-blue-700">POS interface</a></li>
+            <li><strong>Invoices:</strong> Create invoices for credit sales or billing customers using the "New Invoice" button above</li>
+            <li><strong>Existing Sales:</strong> If you have completed sales without documents, invoices can be created from those sales</li>
+          </ul>
+        </div>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="/sales/pos" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-orange-600 to-blue-600 text-white rounded-lg hover:from-orange-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 text-sm font-semibold">
+            <PlusIcon class="w-4 h-4 mr-2" />
+            Go to POS
+          </a>
+          <button 
+            @click="showNewInvoiceModal = true" 
+            class="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-all duration-200 text-sm font-semibold"
+          >
+            <DocumentTextIcon class="w-4 h-4 mr-2" />
+            Create Invoice
+          </button>
+        </div>
       </div>
     </div>
 
@@ -453,16 +553,19 @@ import {
   PaperAirplaneIcon,
   PrinterIcon,
   BanknotesIcon,
-  XMarkIcon
+  XMarkIcon,
+  ChevronDownIcon,
+  ChevronUpIcon
 } from '@heroicons/vue/24/outline'
 import { useSalesAPI } from '~/composables/useSalesAPI'
 import InvoiceTimeline from '~/components/sales/InvoiceTimeline.vue'
+import { getErrorNotification, logError } from '~/utils/errorHandler'
 
 // Page metadata
 useHead({
-  title: 'Sales Invoices - TOSS ERP',
+  title: 'Sales Documents - TOSS ERP',
   meta: [
-    { name: 'description', content: 'Manage billing and payments for Thabo\'s Spaza Shop' }
+    { name: 'description', content: 'Manage invoices, receipts, and accounts receivable for Thabo\'s Spaza Shop' }
   ]
 })
 
@@ -471,14 +574,37 @@ definePageMeta({
   layout: 'default'
 })
 
+/**
+ * SALES INVOICES vs POS RECEIPTS (ERPNext Standard):
+ * 
+ * Sales Invoices:
+ * - Formal billing documents for credit sales
+ * - Sent to customers for payment (due dates, payment terms)
+ * - Track accounts receivable
+ * - Statuses: Draft, Sent, Viewed, Paid, Overdue
+ * - Can be created from Sales Orders/Delivery Notes
+ * 
+ * POS Invoices/Receipts:
+ * - Immediate retail transactions (cash/card)
+ * - Created via POS interface (/sales/pos)
+ * - Payment collected immediately
+ * - Stock updated immediately
+ * - Less formal, more transactional
+ * 
+ * In ERPNext: POS Invoices are Sales Invoices with "Is POS" checkbox
+ */
+
 // API
 const salesAPI = useSalesAPI()
+const config = useRuntimeConfig()
+const baseURL = config.public.apiBase + '/api'
 
 // Reactive data
 const showNewInvoiceModal = ref(false)
 const searchQuery = ref('')
 const statusFilter = ref('')
 const periodFilter = ref('')
+const documentTypeFilter = ref<'all' | 'invoice' | 'receipt'>('all') // Filter by document type
 const expandedInvoices = ref<string[]>([])
 const invoices = ref<any[]>([])
 const loading = ref(true)
@@ -491,22 +617,212 @@ onMounted(async () => {
 const loadInvoices = async () => {
   loading.value = true
   try {
-    invoices.value = await salesAPI.getInvoices()
+    const shopId = 1 // TODO: Get from session/auth
+    
+    // Try unified sales documents endpoint first (includes auto-generated receipts)
+    console.log('🔍 Loading sales documents from unified endpoint...')
+    console.log('🔍 Request params:', { 
+      shopId, 
+      type: documentTypeFilter.value === 'invoice' ? 1 : documentTypeFilter.value === 'receipt' ? 2 : undefined,
+      pageNumber: 1,
+      pageSize: 100
+    })
+    
+    const documentsResult = await $fetch<any>(`${baseURL}/Sales/documents`, {
+      method: 'GET',
+      params: { 
+        shopId,
+        // Only filter by type if not showing all documents
+        ...(documentTypeFilter.value === 'invoice' ? { type: 1 } : // Invoice
+            documentTypeFilter.value === 'receipt' ? { type: 2 } : // Receipt
+            {}), // All documents
+        pageNumber: 1,
+        pageSize: 100
+      }
+    })
+    
+    console.log('📊 Sales documents result:', documentsResult)
+    console.log('📊 Result type:', typeof documentsResult)
+    console.log('📊 Result keys:', documentsResult ? Object.keys(documentsResult) : 'null')
+    console.log('📊 Full response:', JSON.stringify(documentsResult, null, 2))
+    
+    // Map unified sales documents to invoice format
+    // Handle both camelCase and PascalCase property names from API
+    // Backend returns PaginatedList<T> with Items property (PascalCase)
+    let documents: any[] = []
+    
+    // Check for PaginatedList structure first (most common case)
+    if (documentsResult?.Items && Array.isArray(documentsResult.Items)) {
+      documents = documentsResult.Items
+      console.log('✅ Using Items (PascalCase) property from PaginatedList')
+      console.log(`📊 TotalCount: ${documentsResult.TotalCount}, PageNumber: ${documentsResult.PageNumber}, TotalPages: ${documentsResult.TotalPages}`)
+    } else if (documentsResult?.items && Array.isArray(documentsResult.items)) {
+      documents = documentsResult.items
+      console.log('✅ Using items (camelCase) property')
+    } else if (Array.isArray(documentsResult)) {
+      documents = documentsResult
+      console.log('✅ Using array directly')
+    } else if (documentsResult?.data && Array.isArray(documentsResult.data)) {
+      documents = documentsResult.data
+      console.log('✅ Using data property')
+    } else {
+      console.warn('⚠️ No documents array found in response structure')
+      console.warn('Response structure:', JSON.stringify(documentsResult, null, 2))
+      documents = []
+    }
+    
+    console.log(`📦 Found ${documents.length} document(s) from API`)
+    
+    // If no documents found, log helpful information
+    if (documents.length === 0) {
+      console.info('ℹ️ No sales documents found. This could mean:')
+      console.info('  1. No sales have been completed yet')
+      console.info('  2. No invoices have been created for credit sales')
+      console.info('  3. Receipts are auto-generated when sales are completed via POS')
+      console.info('  4. Documents need to be created from existing sales')
+    }
+    
+    invoices.value = documents.map((doc: any) => {
+      // Handle both camelCase and PascalCase property names
+      const id = doc.id || doc.Id
+      const documentNumber = doc.documentNumber || doc.DocumentNumber || doc.invoiceNumber || doc.InvoiceNumber
+      const documentType = doc.documentType || doc.DocumentType || 1
+      const customer = doc.customer || doc.Customer || doc.customerName || doc.CustomerName || 'Walk-in Customer'
+      const documentDate = doc.documentDate || doc.DocumentDate || doc.invoiceDate || doc.InvoiceDate
+      const dueDate = doc.dueDate || doc.DueDate
+      const subtotal = doc.subtotal || doc.Subtotal || 0
+      const taxAmount = doc.taxAmount || doc.TaxAmount || 0
+      const totalAmount = doc.totalAmount || doc.TotalAmount || doc.total || doc.Total || 0
+      const isPaid = doc.isPaid || doc.IsPaid || false
+      const paidDate = doc.paidDate || doc.PaidDate || null
+      const saleNumber = doc.saleNumber || doc.SaleNumber
+      const notes = doc.notes || doc.Notes || null
+      
+      // Extract InvoiceItems from API response (handle both camelCase and PascalCase)
+      const invoiceItemsArray = doc.InvoiceItems || doc.invoiceItems || []
+      const invoiceItems = invoiceItemsArray.map((item: any) => ({
+        id: item.id || item.Id || 0,
+        name: item.name || item.Name || item.productName || item.ProductName || 'Unknown Product',
+        sku: item.sku || item.SKU || item.productSku || item.ProductSKU || '',
+        quantity: item.quantity || item.Quantity || 0,
+        price: item.price || item.Price || item.unitPrice || item.UnitPrice || 0,
+        total: item.total || item.Total || item.lineTotal || item.LineTotal || 0,
+        stock: item.stock || item.Stock || null
+      }))
+      
+      // Determine status - use API status if available, otherwise calculate
+      // Receipts are always "paid" since they're generated after payment
+      let status = doc.status || doc.Status || 'sent'
+      if (documentType === 2) { // Receipt
+        status = 'paid'
+      } else if (isPaid) {
+        status = 'paid'
+      } else if (status === 'sent' && dueDate) {
+        // Check if sent invoice is overdue
+        const due = new Date(dueDate)
+        const now = new Date()
+        if (due < now) {
+          status = 'overdue'
+        }
+      }
+      
+      return {
+        id,
+        invoiceNumber: documentNumber,
+        documentType, // 1 = Invoice, 2 = Receipt, 3 = CreditNote
+        customer,
+        customerId: doc.customerId || doc.CustomerId || null,
+        invoiceDate: documentDate,
+        dueDate,
+        subtotal,
+        taxAmount,
+        total: totalAmount,
+        status,
+        isPaid,
+        paidDate,
+        notes,
+        orderNumber: saleNumber,
+        saleId: doc.saleId || doc.SaleId || null,
+        invoiceItems
+      }
+    })
+    
+    console.log('✅ Loaded invoices:', invoices.value.length)
+    if (invoices.value.length > 0) {
+      const firstInvoice = invoices.value[0]
+      console.log('✅ First invoice sample:', {
+        id: firstInvoice.id,
+        invoiceNumber: firstInvoice.invoiceNumber,
+        documentType: firstInvoice.documentType,
+        customer: firstInvoice.customer,
+        total: firstInvoice.total,
+        subtotal: firstInvoice.subtotal,
+        taxAmount: firstInvoice.taxAmount,
+        itemsCount: firstInvoice.invoiceItems?.length || 0,
+        items: firstInvoice.invoiceItems,
+        itemsRaw: firstInvoice.invoiceItems
+      })
+      
+      // Debug: Check if items are being extracted from API
+      if (documents.length > 0) {
+        const firstDoc = documents[0]
+        console.log('🔍 First document from API:', {
+          id: firstDoc.id || firstDoc.Id,
+          hasInvoiceItems: !!(firstDoc.InvoiceItems || firstDoc.invoiceItems),
+          invoiceItemsCount: (firstDoc.InvoiceItems || firstDoc.invoiceItems || []).length,
+          invoiceItems: firstDoc.InvoiceItems || firstDoc.invoiceItems
+        })
+      }
+    }
+    
+    // Log summary of all documents
+    const invoiceCount = invoices.value.filter((inv: any) => inv.documentType === 1).length
+    const receiptCount = invoices.value.filter((inv: any) => inv.documentType === 2).length
+    console.log('📊 Document breakdown:', {
+      total: invoices.value.length,
+      invoices: invoiceCount,
+      receipts: receiptCount,
+      documentTypeFilter: documentTypeFilter.value
+    })
+    
+    // Log all invoice numbers and sources
+    console.log('📋 All documents:', invoices.value.map((inv: any) => ({
+      id: inv.id,
+      number: inv.invoiceNumber,
+      type: inv.documentType === 1 ? 'Invoice' : inv.documentType === 2 ? 'Receipt' : 'Unknown',
+      customer: inv.customer,
+      date: inv.invoiceDate,
+      total: inv.total,
+      saleId: inv.saleId,
+      orderNumber: inv.orderNumber
+    })))
+    
+    console.log('✅ Filtered invoices count:', filteredInvoices.value.length)
   } catch (error) {
-    console.error('Failed to load invoices:', error)
+    console.error('❌ Failed to load invoices:', error)
+    logError(error, 'load_data', 'Failed to load invoices')
+    // Show user-friendly notification
+    const notification = document.createElement('div')
+    notification.textContent = '⚠️ Unable to load invoices. Please refresh the page.'
+    notification.className = 'fixed top-20 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50'
+    document.body.appendChild(notification)
+    setTimeout(() => notification.remove(), 5000)
   } finally {
     loading.value = false
   }
 }
 
 // Invoice statistics - computed from actual data
-const stats = computed(() => ({
-  totalInvoices: invoices.value.length,
-  draftInvoices: invoices.value.filter((i: any) => i.status === 'draft').length,
-  sentInvoices: invoices.value.filter((i: any) => i.status === 'sent').length,
-  paidInvoices: invoices.value.filter((i: any) => i.status === 'paid').length,
-  overdueInvoices: invoices.value.filter((i: any) => i.status === 'overdue').length
-}))
+const stats = computed(() => {
+  const invoiceList = Array.isArray(invoices.value) ? invoices.value : []
+  return {
+    totalInvoices: invoiceList.length,
+    draftInvoices: invoiceList.filter((i: any) => i.status === 'draft').length,
+    sentInvoices: invoiceList.filter((i: any) => i.status === 'sent').length,
+    paidInvoices: invoiceList.filter((i: any) => i.status === 'paid').length,
+    overdueInvoices: invoiceList.filter((i: any) => i.status === 'overdue').length
+  }
+})
 
 // Helper functions
 const toggleInvoiceExpansion = (invoiceId: string) => {
@@ -563,7 +879,7 @@ const filteredInvoices = computed(() => {
   if (periodFilter.value) {
     const now = new Date()
     filtered = filtered.filter(invoice => {
-      const issueDate = new Date(invoice.issueDate)
+      const issueDate = new Date(invoice.invoiceDate)
       switch (periodFilter.value) {
         case 'today':
           return issueDate.toDateString() === now.toDateString()
@@ -586,19 +902,44 @@ const filteredInvoices = computed(() => {
 })
 
 // More helper functions
-const formatCurrency = (amount: number) => {
+const formatCurrency = (amount: number | null | undefined) => {
+  if (amount === null || amount === undefined) return '0.00'
   return new Intl.NumberFormat('en-ZA', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   }).format(amount)
 }
 
-const formatDate = (date: Date) => {
-  return new Date(date).toLocaleDateString('en-ZA', { 
-    year: 'numeric', 
-    month: 'short', 
-    day: 'numeric' 
-  })
+const formatDate = (date: Date | string | null | undefined) => {
+  if (!date) return 'N/A'
+  try {
+    const dateObj = typeof date === 'string' ? new Date(date) : date
+    if (isNaN(dateObj.getTime())) return 'Invalid Date'
+    return dateObj.toLocaleDateString('en-ZA', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    })
+  } catch (error) {
+    return 'Invalid Date'
+  }
+}
+
+const formatDateTime = (date: Date | string | null | undefined) => {
+  if (!date) return 'N/A'
+  try {
+    const dateObj = typeof date === 'string' ? new Date(date) : date
+    if (isNaN(dateObj.getTime())) return 'Invalid Date'
+    return dateObj.toLocaleDateString('en-ZA', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  } catch (error) {
+    return 'Invalid Date'
+  }
 }
 
 const formatDueDate = (date: Date) => {
@@ -701,12 +1042,33 @@ const removeInvoiceItem = (index: number) => {
 // Actions
 const createInvoice = async (sendImmediately = true) => {
   try {
-    await salesAPI.createInvoice({
-      customer: newInvoice.value.customerName,
-      orderNumber: '', // Can link to an order if needed
-      total: calculateInvoiceTotal(),
-      status: sendImmediately ? 'sent' : 'draft',
-      dueDate: new Date(newInvoice.value.dueDate)
+    const shopId = 1 // TODO: Get from session/auth
+    
+    // First create a sale with the invoice items
+    const saleItems = newInvoice.value.items.map((item: any) => ({
+      productId: 1, // TODO: Lookup product by name/SKU
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      discountAmount: 0
+    }))
+    
+    const saleId = await salesAPI.createSale({
+      shopId,
+      customerId: 1, // TODO: Lookup customer by name
+      items: saleItems,
+      paymentType: 'BankTransfer',
+      totalAmount: calculateInvoiceTotal()
+    })
+    
+    // Then create the invoice from the sale
+    await $fetch(`${baseURL}/Sales/invoices`, {
+      method: 'POST',
+      body: {
+        saleId,
+        invoiceNumber: newInvoice.value.invoiceNumber,
+        dueDate: newInvoice.value.dueDate,
+        notes: newInvoice.value.notes
+      }
     })
 
     await loadInvoices()
@@ -722,13 +1084,13 @@ const createInvoice = async (sendImmediately = true) => {
       items: [{ description: '', quantity: 1, unitPrice: 0 }],
       taxRate: 15,
       discountRate: 0,
-      notes: 'Payment due within 30 * days. Thank you for your business!'
+      notes: 'Payment due within 30 days. Thank you for your business!'
     }
     
     alert(`Invoice ${sendImmediately ? 'created and sent' : 'saved as draft'} successfully!`)
   } catch (error) {
-    console.error('Error creating invoice:', error)
-    alert('Failed to create invoice. Please try again.')
+    logError(error, 'invoice_creation', 'Error creating invoice')
+    alert(getErrorNotification(error, 'invoice_creation').replace('⚠️ ', ''))
   }
 }
 
@@ -743,15 +1105,18 @@ const viewInvoice = (invoice: any) => {
 const sendInvoice = async (invoice: any) => {
   try {
     if (invoice.status === 'draft') {
-      await salesAPI.updateInvoiceStatus(invoice.id, 'sent')
+      await $fetch(`${baseURL}/Sales/invoices/${invoice.id}/status`, {
+        method: 'POST',
+        body: { status: 'sent' }
+      })
       await loadInvoices()
       alert(`Invoice ${invoice.invoiceNumber} sent to ${invoice.customer}`)
     } else {
       alert(`Invoice ${invoice.invoiceNumber} resent to ${invoice.customer}`)
     }
   } catch (error) {
-    console.error('Failed to send invoice:', error)
-    alert('Failed to send invoice')
+    logError(error, 'save_data', 'Failed to send invoice')
+    alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
   }
 }
 
@@ -762,12 +1127,15 @@ const printInvoice = (invoice: any) => {
 const markAsPaid = async (invoice: any) => {
   if (invoice.status !== 'paid') {
     try {
-      await salesAPI.updateInvoiceStatus(invoice.id, 'paid')
+      await $fetch(`${baseURL}/Sales/invoices/${invoice.id}/status`, {
+        method: 'POST',
+        body: { status: 'paid' }
+      })
       await loadInvoices()
       alert(`Invoice ${invoice.invoiceNumber} marked as paid`)
     } catch (error) {
-      console.error('Failed to mark as paid:', error)
-      alert('Failed to update invoice status')
+      logError(error, 'save_data', 'Failed to mark as paid')
+      alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
     }
   }
 }
@@ -775,12 +1143,15 @@ const markAsPaid = async (invoice: any) => {
 const cancelInvoice = async (invoice: any) => {
   if (confirm(`Are you sure you want to cancel invoice ${invoice.invoiceNumber}?`)) {
     try {
-      await salesAPI.updateInvoiceStatus(invoice.id, 'cancelled')
+      await $fetch(`${baseURL}/Sales/invoices/${invoice.id}/status`, {
+        method: 'POST',
+        body: { status: 'cancelled' }
+      })
       await loadInvoices()
       alert(`Invoice ${invoice.invoiceNumber} cancelled`)
     } catch (error) {
-      console.error('Failed to cancel invoice:', error)
-      alert('Failed to cancel invoice')
+      logError(error, 'save_data', 'Failed to cancel invoice')
+      alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
     }
   }
 }
@@ -800,16 +1171,17 @@ const exportInvoices = () => {
     
     // Create CSV rows
     const rows = invoicesToExport.map((inv: any) => {
-      const itemsSummary = inv.items.map((item: any) => 
-        `${item.description} (${item.quantity})`
+      const items = Array.isArray(inv.invoiceItems) ? inv.invoiceItems : []
+      const itemsSummary = items.map((item: any) => 
+        `${item.name ?? item.description ?? ''} (${item.quantity ?? 0})`
       ).join('; ')
       
       return [
         inv.invoiceNumber,
-        inv.customerName,
-        new Date(inv.date).toLocaleDateString(),
-        new Date(inv.dueDate).toLocaleDateString(),
-        `R${inv.total.toFixed(2)}`,
+        inv.customer, // display name from DTO mapping
+        new Date(inv.invoiceDate).toLocaleDateString(),
+        inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : '',
+        `R${Number(inv.total ?? 0).toFixed(2)}`,
         inv.status,
         itemsSummary
       ]
@@ -827,7 +1199,7 @@ const exportInvoices = () => {
     const url = URL.createObjectURL(blob)
     
     link.setAttribute('href', url)
-    link.setAttribute('download', `sales_invoices_${new Date().toISOString().split('T')[0]}.csv`)
+  link.setAttribute('download', `sales_invoices_${new Date().toISOString().split('T')[0]}.csv`)
     link.style.visibility = 'hidden'
     
     document.body.appendChild(link)
@@ -836,8 +1208,8 @@ const exportInvoices = () => {
     
     alert(`✓ Exported ${invoicesToExport.length} invoices successfully!`)
   } catch (error) {
-    console.error('Export failed:', error)
-    alert('✗ Failed to export invoices')
+    logError(error, 'save_data', 'Export failed')
+    alert(getErrorNotification(error, 'save_data').replace('⚠️ ', ''))
   }
 }
 </script>

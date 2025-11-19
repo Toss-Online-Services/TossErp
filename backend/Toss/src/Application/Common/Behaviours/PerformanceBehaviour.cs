@@ -4,6 +4,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Toss.Application.Common.Behaviours;
 
+/// <summary>
+/// MediatR pipeline behavior that monitors request execution time and logs warnings for slow requests.
+/// Helps identify performance bottlenecks in the application.
+/// </summary>
+/// <typeparam name="TRequest">The request type being monitored.</typeparam>
+/// <typeparam name="TResponse">The response type returned by the handler.</typeparam>
+/// <remarks>
+/// Performance monitoring thresholds:
+/// <list type="bullet">
+/// <item><description>Threshold: 500 milliseconds</description></item>
+/// <item><description>Action: Log warning with user context and elapsed time</description></item>
+/// </list>
+/// Logs include request name, execution time, user ID, username, and full request object
+/// for debugging slow operations.
+/// </remarks>
 public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {

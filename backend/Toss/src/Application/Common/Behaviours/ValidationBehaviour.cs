@@ -2,6 +2,17 @@
 
 namespace Toss.Application.Common.Behaviours;
 
+/// <summary>
+/// MediatR pipeline behavior that validates requests using FluentValidation.
+/// Executes all registered validators and throws ValidationException if any fail.
+/// </summary>
+/// <typeparam name="TRequest">The request type to validate.</typeparam>
+/// <typeparam name="TResponse">The response type returned by the handler.</typeparam>
+/// <remarks>
+/// This behavior runs BEFORE the request handler executes. If validation fails,
+/// the handler is never called. Validation failures are collected and thrown as
+/// a single ValidationException containing all error details.
+/// </remarks>
 public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {

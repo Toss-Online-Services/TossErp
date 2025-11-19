@@ -187,6 +187,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useAI } from '~/composables/useAI'
 import { 
   SparklesIcon, 
   XMarkIcon, 
@@ -208,12 +209,16 @@ const chatContainer = ref<HTMLElement>()
 const draggableButton = ref<HTMLElement>()
 const draggablePanel = ref<HTMLElement>()
 
+// AI Service
+const { askAI, getSuggestions, isLoading: aiLoading, error: aiError } = useAI()
+
 // State
 const isOpen = ref(false)
 const isMinimized = ref(false)
 const isTyping = ref(false)
 const newMessage = ref('')
 const unreadCount = ref(3)
+const shopId = ref(1) // TODO: Get from auth/store context
 
 // Drag state
 const isDragging = ref(false)
@@ -482,23 +487,118 @@ const sendMessage = async () => {
   isTyping.value = true
   await scrollToBottom()
 
-  // Simulate AI processing time
-  setTimeout(() => {
-    const response = generateContextualResponse(userMessage)
+  try {
+    // Call backend AI service
+    const response = await askAI(userMessage, shopId.value, `Current module: ${currentModule.value}`)
     
+    if (response) {
+      // Transform backend response to include contextual data
+      const contextualData = generateContextualData(userMessage, response)
+      
+      messages.value.push({
+        id: (Date.now() + 1).toString(),
+        type: 'assistant',
+        content: response.answer,
+        timestamp: new Date(),
+        data: contextualData
+      })
+    } else {
+      // Fallback to local response if backend fails
+      const fallbackResponse = generateContextualResponse(userMessage)
+      messages.value.push({
+        id: (Date.now() + 1).toString(),
+        type: 'assistant',
+        content: fallbackResponse.content,
+        timestamp: new Date(),
+        data: fallbackResponse.data
+      })
+    }
+  } catch (err) {
+    console.error('AI Error:', err)
+    // Use fallback on error
+    const fallbackResponse = generateContextualResponse(userMessage)
     messages.value.push({
       id: (Date.now() + 1).toString(),
       type: 'assistant',
-      content: response.content,
+      content: fallbackResponse.content,
       timestamp: new Date(),
-      data: response.data
+      data: fallbackResponse.data
     })
-    
+  } finally {
     isTyping.value = false
-    scrollToBottom()
-  }, 1000 + Math.random() * 1000)
+    await scrollToBottom()
+  }
 }
 
+/**
+ * Generate contextual data (metrics and actions) based on the AI response
+ * This adds UI-friendly data structures to the AI response
+ */
+const generateContextualData = (userMessage: string, aiResponse: any) => {
+  const lowerMessage = userMessage.toLowerCase()
+  const module = currentModule.value.toLowerCase()
+  
+  // Context-aware data based on current module and question
+  if (module.includes('sales') || lowerMessage.includes('sales') || lowerMessage.includes('revenue')) {
+    return {
+      metrics: [
+        { label: 'Daily Revenue', value: `R${businessData.revenue.daily.toLocaleString()}` },
+        { label: 'Weekly Revenue', value: `R${businessData.revenue.weekly.toLocaleString()}` },
+        { label: 'Growth', value: `+${businessData.revenue.growth}%` }
+      ],
+      actions: [
+        { title: 'View Sales Analytics', route: '/sales/analytics' },
+        { title: 'Check Inventory', route: '/inventory' }
+      ]
+    }
+  }
+  
+  if (module.includes('customer') || module.includes('crm') || lowerMessage.includes('customer')) {
+    return {
+      metrics: [
+        { label: 'Total Customers', value: businessData.customers.total.toString() },
+        { label: 'Repeat Rate', value: `${businessData.customers.repeatRate}%` },
+        { label: 'Active Today', value: businessData.customers.active.toString() }
+      ],
+      actions: [
+        { title: 'View Customer List', route: '/crm/customers' },
+        { title: 'Create Campaign', route: '/crm/automation' }
+      ]
+    }
+  }
+  
+  if (module.includes('inventory') || lowerMessage.includes('inventory') || lowerMessage.includes('stock')) {
+    return {
+      metrics: [
+        { label: 'Total Items', value: businessData.inventory.totalItems.toString() },
+        { label: 'Low Stock Alerts', value: businessData.inventory.lowStockAlerts.toString() },
+        { label: 'Critical Items', value: businessData.inventory.criticalItems.length.toString() }
+      ],
+      actions: [
+        { title: 'View Inventory', route: '/inventory' },
+        { title: 'Create Purchase Order', route: '/purchasing/orders' }
+      ]
+    }
+  }
+  
+  // Default actions from AI suggestions if available
+  const actions = aiResponse.suggestions?.map((suggestion: string) => ({
+    title: suggestion,
+    action: suggestion.toLowerCase()
+  })) || []
+  
+  return {
+    actions: actions.length > 0 ? actions.slice(0, 3) : [
+      { title: `Go to ${currentModule.value}`, route: route.path },
+      { title: 'View Dashboard', route: '/' }
+    ]
+  }
+}
+
+/**
+ * Fallback response generator when backend is unavailable
+ * Keeps existing mock functionality as graceful degradation
+ */
 const generateContextualResponse = (userMessage: string) => {
   const lowerMessage = userMessage.toLowerCase()
   const module = currentModule.value.toLowerCase()
@@ -507,7 +607,7 @@ const generateContextualResponse = (userMessage: string) => {
   if (module.includes('sales') || lowerMessage.includes('sales') || lowerMessage.includes('revenue')) {
     if (lowerMessage.includes('forecast') || lowerMessage.includes('predict')) {
       return {
-        content: `Based on Thabo's Spaza Shop sales patterns, I predict next week's revenue will be R${businessData.revenue.weekly.toLocaleString()} with 87% confidence.`,
+        content: `Based on sales patterns, I predict next week's revenue will be R${businessData.revenue.weekly.toLocaleString()} with 87% confidence.`,
         data: {
           metrics: [
             { label: 'Next Week', value: `R${businessData.revenue.weekly.toLocaleString()}` },
@@ -566,7 +666,7 @@ const generateContextualResponse = (userMessage: string) => {
         ],
         actions: [
           { title: 'View Inventory', route: '/inventory' },
-          { title: 'Create Purchase Order', route: '/buying/orders' }
+          { title: 'Create Purchase Order', route: '/purchasing/orders' }
         ]
       }
     }
@@ -609,7 +709,7 @@ const generateContextualResponse = (userMessage: string) => {
   // General business overview
   if (lowerMessage.includes('overview') || lowerMessage.includes('business') || lowerMessage.includes('summary')) {
     return {
-      content: `Thabo's Spaza Shop overview: Daily revenue R${businessData.revenue.daily.toLocaleString()}, ${businessData.customers.active} customers today, ${businessData.inventory.lowStockAlerts} stock alerts.`,
+      content: `Business overview: Daily revenue R${businessData.revenue.daily.toLocaleString()}, ${businessData.customers.active} customers today, ${businessData.inventory.lowStockAlerts} stock alerts.`,
       data: {
         metrics: [
           { label: 'Daily Revenue', value: `R${businessData.revenue.daily.toLocaleString()}` },

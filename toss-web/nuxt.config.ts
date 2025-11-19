@@ -2,6 +2,8 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-08-24',
+  // Enable hidden client source maps so Sentry can upload them without exposing references
+  sourcemap: { client: 'hidden' },
   typescript: {
     strict: false,
     typeCheck: false
@@ -13,20 +15,244 @@ export default defineNuxtConfig({
     payloadExtraction: true,
     componentIslands: true
   },
-  optimization: {
-    splitChunks: {
-      layouts: true,
-      pages: true,
-      commons: true
-    }
-  },
   modules: [
+    // Core & Styling
     '@nuxtjs/tailwindcss',
     '@nuxtjs/color-mode',
+    '@nuxt/fonts',
+    '@nuxt/icon',
+    '@nuxt/image',
+    
+    // State Management
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    '@vite-pwa/nuxt'
+    
+    // PWA & Performance
+    '@vite-pwa/nuxt',
+    '@nuxtjs/web-vitals',
+    '@nuxtjs/partytown',
+    
+    // Internationalization
+    '@nuxtjs/i18n',
+    
+    // Forms & Validation
+    '@formkit/nuxt',
+    '@vee-validate/nuxt',
+    
+    // SEO & Analytics
+    '@nuxtjs/sitemap',
+    '@nuxtjs/robots',
+    'nuxt-schema-org',
+    'nuxt-gtag',
+    
+    // Content & Utilities
+    '@nuxt/content',
+    'nuxt-lodash',
+    
+    // Device Detection
+    '@nuxtjs/device',
+    
+    // UI Components
+    'nuxt-swiper',
+    
+    // Security & Monitoring
+    'nuxt-security',
+    '@sentry/nuxt/module'
   ],
+  
+  // Module Configurations
+  
+  // Internationalization (i18n)
+  i18n: {
+    locales: [
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'zu', name: 'isiZulu', file: 'zu.json' },
+      { code: 'xh', name: 'isiXhosa', file: 'xh.json' },
+      { code: 'af', name: 'Afrikaans', file: 'af.json' },
+      { code: 'st', name: 'Sesotho', file: 'st.json' }
+    ],
+    defaultLocale: 'en',
+    strategy: 'no_prefix',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root'
+    },
+    lazy: true,
+    langDir: './locales'
+  },
+  
+  // Icon Module
+  icon: {
+    size: '24px',
+    class: 'icon',
+    aliases: {
+      'nuxt': 'logos:nuxt-icon',
+      'cart': 'mdi:cart',
+      'user': 'mdi:account',
+      'dashboard': 'mdi:view-dashboard',
+      'sales': 'mdi:cash-register',
+      'inventory': 'mdi:package-variant',
+      'analytics': 'mdi:chart-line',
+      'settings': 'mdi:cog'
+    }
+  },
+  
+  // Image Optimization
+  image: {
+    quality: 80,
+    format: ['webp', 'png', 'jpg'],
+    screens: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      xxl: 1536
+    },
+    providers: {
+      local: {
+        provider: 'ipx',
+        options: {
+          modifiers: {
+            fit: 'cover',
+            format: 'webp'
+          }
+        }
+      }
+    }
+  },
+  
+  // Fonts
+  fonts: {
+    families: [
+      { name: 'Inter', provider: 'google', weights: [300, 400, 500, 600, 700] },
+      { name: 'Roboto', provider: 'google', weights: [300, 400, 500, 700] }
+    ],
+    defaults: {
+      weights: [400, 700],
+      styles: ['normal', 'italic'],
+      subsets: ['latin', 'latin-ext']
+    }
+  },
+  
+  // FormKit
+  formkit: {
+    autoImport: true,
+    configFile: './formkit.config.ts'
+  },
+  
+  // Device Detection
+  device: {
+    refreshOnResize: true
+  },
+  
+  // SEO - Sitemap
+  sitemap: {
+    hostname: process.env.NUXT_PUBLIC_SITE_URL || 'https://toss-erp.com',
+    gzip: true,
+    routes: async () => {
+      return [
+        '/',
+        '/dashboard',
+        '/sales',
+        '/inventory',
+        '/customers',
+        '/suppliers',
+        '/reports'
+      ]
+    }
+  },
+  
+  // Robots.txt
+  robots: {
+    UserAgent: '*',
+    Disallow: ['/api/', '/admin/', '/private/'],
+    Sitemap: process.env.NUXT_PUBLIC_SITE_URL ? `${process.env.NUXT_PUBLIC_SITE_URL}/sitemap.xml` : undefined
+  },
+  
+  // Schema.org for SEO
+  schemaOrg: {
+    host: process.env.NUXT_PUBLIC_SITE_URL || 'https://toss-erp.com',
+    identity: {
+      type: 'Organization',
+      name: 'TOSS ERP III',
+      url: process.env.NUXT_PUBLIC_SITE_URL || 'https://toss-erp.com',
+      logo: '/logo.png'
+    }
+  },
+  
+  // Google Analytics
+  gtag: {
+    id: process.env.NUXT_PUBLIC_GTAG_ID || '',
+    enabled: !!process.env.NUXT_PUBLIC_GTAG_ID
+  },
+  
+  // Web Vitals
+  webVitals: {
+    provider: 'log',
+    debug: false,
+    disabled: false
+  },
+  
+  // Security Headers
+  security: {
+    headers: {
+      crossOriginEmbedderPolicy: process.env.NODE_ENV === 'development' ? 'unsafe-none' : 'require-corp',
+      contentSecurityPolicy: {
+        'base-uri': ["'self'"],
+        'font-src': ["'self'", 'https:', 'data:'],
+        'form-action': ["'self'"],
+        'frame-ancestors': ["'self'"],
+        'img-src': ["'self'", 'data:', 'https:'],
+        'object-src': ["'none'"],
+        'script-src-attr': ["'none'"],
+        'style-src': ["'self'", 'https:', "'unsafe-inline'"],
+        'upgrade-insecure-requests': true
+      }
+    },
+    rateLimiter: {
+      tokensPerInterval: 150,
+      interval: 60000,
+      fireImmediately: false
+    }
+  },
+  
+  // Content Module
+  content: {
+    documentDriven: false,
+    highlight: {
+      theme: 'github-dark',
+      preload: ['json', 'js', 'ts', 'html', 'css', 'vue']
+    },
+    markdown: {
+      toc: {
+        depth: 3,
+        searchDepth: 3
+      }
+    }
+  },
+  
+  // Lodash
+  lodash: {
+    prefix: '_',
+    prefixSkip: false,
+    upperAfterPrefix: false
+  },
+  
+  // Swiper
+  swiper: {
+    modules: ['navigation', 'pagination', 'autoplay', 'effect-fade']
+  },
+  
+  // Sentry module configuration for automatic source map upload on production build
+  // Values are read from environment variables. Provide SENTRY_AUTH_TOKEN only in CI (never commit).
+  sentry: {
+    org: process.env.SENTRY_ORG || 'your-org-slug',
+    project: process.env.SENTRY_PROJECT || 'your-project-slug',
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+    // Additional tuning could be added here (e.g. deploy, release) once backend release pipeline is in place.
+  },
   tailwindcss: {
     cssPath: '~/assets/css/main.css'
   },
@@ -65,12 +291,21 @@ export default defineNuxtConfig({
     apiSecret: '',
     // Public keys (exposed to client-side)
     public: {
-      apiBase: '/api',
-      apiBaseUrl: process.env.API_BASE_URL || ''
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://localhost:5001',
+      apiTimeout: 30000,
+      sentry: {
+        dsn: process.env.NUXT_PUBLIC_SENTRY_DSN || ''
+      }
     }
   },
   ssr: false,  // Disable SSR temporarily to fix router issues
   vite: {
+    server: {
+      watch: {
+        usePolling: false,
+        useFsEvents: true
+      }
+    },
     build: {
       rollupOptions: {
         output: {
@@ -84,7 +319,8 @@ export default defineNuxtConfig({
       chunkSizeWarningLimit: 1000
     },
     optimizeDeps: {
-      include: ['chart.js', 'xlsx', 'jspdf']
+      include: ['chart.js', 'xlsx', 'jspdf'],
+      force: false
     }
   },
   nitro: {
@@ -92,77 +328,11 @@ export default defineNuxtConfig({
       wasm: true
     },
     devProxy: {
-      '/api/crm': {
-        target: 'http://localhost:5049/api',
-        changeOrigin: true
-      },
-      '/api/analytics': {
-        target: 'http://localhost:8081/api/analytics',
-        changeOrigin: true
-      },
-      '/api/hr': {
-        target: 'http://localhost:8081/api/hr',
-        changeOrigin: true
-      },
-      '/api/sales': {
-        target: 'http://localhost:8081/api/sales',
-        changeOrigin: true
-      },
-      '/api/stock': {
-        target: 'http://localhost:8081/api/stock',
-        changeOrigin: true
-      },
-      '/api/inventory': {
-        target: 'http://localhost:8081/api/inventory',
-        changeOrigin: true
-      },
-      '/api/financial': {
-        target: 'http://localhost:8081/api/financial',
-        changeOrigin: true
-      },
-      '/api/logistics': {
-        target: 'http://localhost:8081/api/logistics',
-        changeOrigin: true
-      },
-      '/api/ai': {
-        target: 'http://localhost:8081/api/ai',
-        changeOrigin: true
-      },
-      '/api/collaboration': {
-        target: 'http://localhost:8081/api/collaboration',
-        changeOrigin: true
-      },
-      '/api/projects': {
-        target: 'http://localhost:8081/api/projects',
-        changeOrigin: true
-      },
-      '/api/accounts': {
-        target: 'http://localhost:8081/api/accounts',
-        changeOrigin: true
-      },
-      '/api/assets': {
-        target: 'http://localhost:8081/api/assets',
-        changeOrigin: true
-      },
-      '/api/setup': {
-        target: 'http://localhost:8081/api/setup',
-        changeOrigin: true
-      },
-      '/api/notifications': {
-        target: 'http://localhost:8081/api/notifications',
-        changeOrigin: true
-      },
-      '/api/manufacturing': {
-        target: 'http://localhost:8081/api/manufacturing',
-        changeOrigin: true
-      },
-      '/api/group-buying': {
-        target: 'http://localhost:8081/api/group-buying',
-        changeOrigin: true
-      },
-      '/api/services': {
-        target: 'http://localhost:8081/api/services',
-        changeOrigin: true
+      '/api': {
+        target: 'https://localhost:5001',
+        changeOrigin: true,
+        ws: true,
+        secure: false  // Allow self-signed certificates in development
       }
     }
   },
@@ -291,7 +461,7 @@ export default defineNuxtConfig({
       periodicSyncForUpdates: 20
     },
     devOptions: {
-      enabled: true,
+      enabled: false,  // Disabled in dev to prevent crashes on Windows
       type: 'module'
     }
   }

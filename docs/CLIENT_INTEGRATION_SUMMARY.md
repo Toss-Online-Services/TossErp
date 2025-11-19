@@ -69,7 +69,7 @@ This document summarizes all the fixes implemented to make the client applicatio
 #### 2. CORS Policy Enhancement
 ```csharp
 .WithOrigins(
-  "http://localhost:3000",    // Admin Panel
+  "http://localhost:3001",    // Admin Panel
   "http://localhost:5173",    // Web App (Nuxt)
   "http://localhost:8080",    // Gateway
   "http://localhost:5000",    // Mobile App

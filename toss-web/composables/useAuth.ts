@@ -18,7 +18,7 @@ export const useAuth = () => {
   const error = ref<string | null>(null)
   const refreshTimer = ref<NodeJS.Timeout | null>(null)
 
-  const apiBaseUrl = useRuntimeConfig().public.apiBaseUrl || ''
+  const apiBaseUrl = useRuntimeConfig().public.apiBase
 
   /**
    * Check if token is expired
@@ -171,7 +171,7 @@ export const useAuth = () => {
       // Log failed login
       if (process.client) {
         const { logLogin } = useAudit()
-        await logLogin(false, error.value)
+  await logLogin(false, error.value || undefined)
       }
       
       return false
@@ -334,8 +334,8 @@ export const useAuth = () => {
   /**
    * Get authorization header for API calls
    */
-  const getAuthHeader = () => {
-    return token.value ? { Authorization: `Bearer ${token.value}` } : {}
+  const getAuthHeader = (): HeadersInit | undefined => {
+    return token.value ? { Authorization: `Bearer ${token.value}` } : undefined
   }
 
   return {

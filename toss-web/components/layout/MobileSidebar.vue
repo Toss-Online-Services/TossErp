@@ -56,13 +56,33 @@
       </NuxtLink>
       
       <NuxtLink 
-        to="/purchasing" 
+        to="/stores" 
         class="mobile-nav-link"
-        :class="{ 'mobile-nav-link-active': route.path.startsWith('/purchasing') }"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/stores') }"
+        @click="$emit('close')"
+      >
+        <BuildingStorefrontIcon class="h-5 w-5 mr-3 flex-shrink-0" />
+        <span class="truncate">Stores</span>
+      </NuxtLink>
+      
+      <NuxtLink 
+        to="/buying" 
+        class="mobile-nav-link"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/buying') }"
         @click="$emit('close')"
       >
         <ShoppingBagIcon class="h-5 w-5 mr-3 flex-shrink-0" />
-        <span class="truncate">Purchasing</span>
+        <span class="truncate">Buying</span>
+      </NuxtLink>
+      
+      <NuxtLink 
+        to="/crm" 
+        class="mobile-nav-link"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/crm') }"
+        @click="$emit('close')"
+      >
+        <UsersIcon class="h-5 w-5 mr-3 flex-shrink-0" />
+        <span class="truncate">CRM</span>
       </NuxtLink>
       
       <NuxtLink 
@@ -90,6 +110,15 @@
       <!-- Additional Mobile Links -->
       <div class="border-t border-slate-800 mt-4 pt-4">
         <h3 class="text-xs uppercase text-slate-400 font-semibold mb-2 px-3">More</h3>
+        <NuxtLink 
+          to="/sales/reports" 
+          class="mobile-nav-link"
+          :class="{ 'mobile-nav-link-active': route.path.startsWith('/sales/reports') }"
+          @click="$emit('close')"
+        >
+          <ChartBarIcon class="h-5 w-5 mr-3 flex-shrink-0" />
+          <span class="truncate">Sales Reports</span>
+        </NuxtLink>
         
         <NuxtLink 
           to="/settings" 
@@ -121,10 +150,13 @@ import {
   ArchiveBoxIcon, 
   ShoppingCartIcon, 
   ShoppingBagIcon,
+  BuildingStorefrontIcon,
+  ChartBarIcon,
   CogIcon,
   Cog6ToothIcon,
   TruckIcon,
   UserPlusIcon,
+  UsersIcon,
   XMarkIcon
 } from '@heroicons/vue/24/outline'
 import ThemeSwitcher from '~/components/common/ThemeSwitcher.vue'
