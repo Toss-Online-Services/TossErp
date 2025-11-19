@@ -9,7 +9,8 @@ export default defineNuxtConfig({
     typeCheck: false
   },
   devServer: {
-    port: 3001
+    port: 3001,
+    host: 'localhost'
   },
   experimental: {
     payloadExtraction: true,
@@ -274,6 +275,8 @@ export default defineNuxtConfig({
     autoImport: true
   },
   app: {
+    baseURL: '/',
+    buildAssetsDir: '/_nuxt/',
     head: {
       title: 'TOSS ERP III - Township One-Stop Solution',
       meta: [
@@ -304,6 +307,10 @@ export default defineNuxtConfig({
       watch: {
         usePolling: false,
         useFsEvents: true
+      },
+      fs: {
+        strict: false,
+        allow: ['..']
       }
     },
     build: {

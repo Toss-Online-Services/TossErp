@@ -115,12 +115,12 @@ const completeOnboarding = async () => {
   try {
     await put(`/api/onboarding/${userStore.user?.id}`, {
       userId: userStore.user?.id,
-      userRole: 'Driver',
-      step1Completed: true,
-      step2Completed: true,
-      step3Completed: true
+      role: 'Driver',
+      completedSteps: ['step1'],
+      currentStep: 1,
+      onboardingData: JSON.stringify(form.value)
     })
-    await post(`/api/onboarding/${userStore.user?.id}/complete`)
+    await post(`/api/onboarding/${userStore.user?.id}/complete?role=Driver`)
     router.push('/driver/deliveries')
   } catch (error) {
     console.error('Failed to complete onboarding:', error)

@@ -44,21 +44,22 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   const onboardingRoutes = ['/retailer', '/supplier', '/driver']
   const needsOnboarding = onboardingRoutes.some(route => to.path.startsWith(route))
   
-  if (needsOnboarding && user.value) {
+  if (needsOnboarding && user.value && !to.path.includes('/onboarding')) {
     const userRole = user.value.roles?.[0] // Get primary role
     if (userRole) {
       const { get } = useApi()
       try {
         const onboardingStatus = await get<{ isCompleted: boolean }>(
-          `/api/onboarding/status?userId=${user.value.id}&role=${userRole}`
+          `/api/onboarding/${user.value.id}?role=${userRole}`
         )
         
         // If onboarding not completed and not already on onboarding page
-        if (!onboardingStatus?.isCompleted && !to.path.includes('/onboarding')) {
+        if (!onboardingStatus?.isCompleted) {
           return navigateTo(`/${userRole.toLowerCase()}/onboarding`)
         }
       } catch (error) {
-        // If error, allow through (onboarding check is optional)
+        // If error (e.g., 404 means no onboarding status), allow through
+        // User will be redirected to onboarding if needed
         console.warn('Onboarding check failed:', error)
       }
     }

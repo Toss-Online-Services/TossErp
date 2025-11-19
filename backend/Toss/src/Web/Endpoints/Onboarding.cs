@@ -1,22 +1,25 @@
 using Toss.Application.Onboarding.Commands.CompleteOnboarding;
 using Toss.Application.Onboarding.Commands.UpdateOnboardingStatus;
 using Toss.Application.Onboarding.Queries.GetOnboardingStatus;
+using System.Security.Claims;
 
 namespace Toss.Web.Endpoints;
 
 public class Onboarding : EndpointGroupBase
 {
+    public override string? GroupName => "onboarding";
+
     public override void Map(RouteGroupBuilder group)
     {
-        group.MapGet("status", GetOnboardingStatus)
+        group.MapGet("{userId}", GetOnboardingStatus)
             .WithName("GetOnboardingStatus")
             .RequireAuthorization();
 
-        group.MapPost("update", UpdateOnboardingStatus)
+        group.MapPut("{userId}", UpdateOnboardingStatus)
             .WithName("UpdateOnboardingStatus")
             .RequireAuthorization();
 
-        group.MapPost("complete", CompleteOnboarding)
+        group.MapPost("{userId}/complete", CompleteOnboarding)
             .WithName("CompleteOnboarding")
             .RequireAuthorization();
     }
@@ -24,32 +27,48 @@ public class Onboarding : EndpointGroupBase
     public async Task<IResult> GetOnboardingStatus(
         ISender sender,
         string userId,
-        string role)
+        string? role)
     {
         var query = new GetOnboardingStatusQuery
         {
             UserId = userId,
-            Role = role
+            Role = role ?? string.Empty
         };
         var result = await sender.Send(query);
-        return result != null ? Results.Ok(result) : Results.NotFound();
+        return result != null ? Results.Ok(result) : Results.NotFound();        
     }
 
     public async Task<IResult> UpdateOnboardingStatus(
         ISender sender,
+        string userId,
         UpdateOnboardingStatusCommand command)
     {
-        var id = await sender.Send(command);
-        return Results.Ok(new { id });
+        var result = await sender.Send(command with { UserId = userId, Role = command.Role });
+        return result ? Results.Ok(new { message = "Onboarding status updated successfully" })
+                     : Results.BadRequest(new { message = "Failed to update onboarding status" });
     }
 
     public async Task<IResult> CompleteOnboarding(
         ISender sender,
-        CompleteOnboardingCommand command)
+        HttpContext httpContext,
+        string userId,
+        string? role)
     {
-        var result = await sender.Send(command);
-        return result ? Results.Ok(new { message = "Onboarding completed successfully" })
-                     : Results.BadRequest(new { message = "Failed to complete onboarding" });
+        // If role not provided, try to get it from the user's claims
+        if (string.IsNullOrEmpty(role))
+        {
+            var user = httpContext.User;
+            var roleClaim = user.FindFirst(ClaimTypes.Role);
+            role = roleClaim?.Value ?? string.Empty;
+        }
+
+        var result = await sender.Send(new CompleteOnboardingCommand 
+        { 
+            UserId = userId,
+            Role = role
+        });
+        return result ? Results.Ok(new { message = "Onboarding completed successfully" })                                                                       
+                     : Results.BadRequest(new { message = "Failed to complete onboarding" });                                                                   
     }
 }
 
