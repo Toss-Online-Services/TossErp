@@ -22,13 +22,23 @@
         @click="$emit('close')"
       >
         <HomeIcon class="h-5 w-5 mr-3 flex-shrink-0" />
+        <span class="truncate">Home</span>
+      </NuxtLink>
+      
+      <NuxtLink 
+        to="/retailer/dashboard" 
+        class="mobile-nav-link"
+        :class="{ 'mobile-nav-link-active': route.path === '/retailer/dashboard' || route.path === '/dashboard' }"
+        @click="$emit('close')"
+      >
+        <ChartBarIcon class="h-5 w-5 mr-3 flex-shrink-0" />
         <span class="truncate">Dashboard</span>
       </NuxtLink>
       
       <NuxtLink 
-        to="/stock" 
+        to="/retailer/inventory" 
         class="mobile-nav-link"
-        :class="{ 'mobile-nav-link-active': route.path.startsWith('/stock') }"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/stock') || route.path.startsWith('/retailer/inventory') || route.path.startsWith('/retailer/products') }"
         @click="$emit('close')"
       >
         <ArchiveBoxIcon class="h-5 w-5 mr-3 flex-shrink-0" />
@@ -66,9 +76,9 @@
       </NuxtLink>
       
       <NuxtLink 
-        to="/buying" 
+        to="/retailer/orders" 
         class="mobile-nav-link"
-        :class="{ 'mobile-nav-link-active': route.path.startsWith('/buying') }"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/buying') || route.path.startsWith('/retailer/orders') }"
         @click="$emit('close')"
       >
         <ShoppingBagIcon class="h-5 w-5 mr-3 flex-shrink-0" />
@@ -97,9 +107,9 @@
       </NuxtLink>
       
       <NuxtLink 
-        to="/onboarding" 
+        to="/retailer/onboarding" 
         class="mobile-nav-link"
-        :class="{ 'mobile-nav-link-active': route.path.startsWith('/onboarding') }"
+        :class="{ 'mobile-nav-link-active': route.path.startsWith('/onboarding') || route.path.startsWith('/retailer/onboarding') }"
         @click="$emit('close')"
       >
         <UserPlusIcon class="h-5 w-5 mr-3 flex-shrink-0" />
@@ -146,7 +156,7 @@
 
 <script setup>
 import { 
-  HomeIcon, 
+  HomeIcon,
   ArchiveBoxIcon, 
   ShoppingCartIcon, 
   ShoppingBagIcon,

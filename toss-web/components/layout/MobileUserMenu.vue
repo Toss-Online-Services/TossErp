@@ -10,10 +10,10 @@
         <!-- User info -->
         <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
           <div class="flex items-center">
-            <img class="h-10 w-10 rounded-full" src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp" alt="User">
+            <img class="h-10 w-10 rounded-full" :src="userAvatar" alt="User">
             <div class="ml-3">
-              <p class="text-sm font-medium text-slate-900 dark:text-white">John Doe</p>
-              <p class="text-xs text-slate-600 dark:text-slate-400">john@example.com</p>
+              <p class="text-sm font-medium text-slate-900 dark:text-white">{{ userName }}</p>
+              <p class="text-xs text-slate-600 dark:text-slate-400">{{ userEmail }}</p>
             </div>
           </div>
         </div>
@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { 
   UserIcon, 
   CogIcon, 
@@ -79,10 +79,18 @@ onMounted(() => {
   })
 })
 
-function logout() {
+const { user, logout: authLogout } = useAuth()
+
+const userName = computed(() => user.value?.name || 'User')
+const userEmail = computed(() => user.value?.email || '')
+const userAvatar = computed(() => {
+  if (user.value?.avatar) return user.value.avatar
+  return `https://www.gravatar.com/avatar/${user.value?.email ? btoa(user.value.email).replace(/[^a-zA-Z0-9]/g, '') : '00000000000000000000000000000000'}?d=mp`
+})
+
+async function logout() {
   isOpen.value = false
-  // Handle logout logic
-  console.log('Logging out...')
+  await authLogout()
 }
 </script>
 

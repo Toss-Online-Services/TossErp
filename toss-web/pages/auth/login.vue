@@ -83,7 +83,7 @@
       <!-- Sign Up Link -->
       <p class="text-center text-sm text-slate-600 dark:text-slate-400">
         Don't have an account?
-        <NuxtLink to="/register" class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
+        <NuxtLink to="/auth/register" class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
           Sign up
         </NuxtLink>
       </p>
@@ -118,8 +118,24 @@ const { login } = useAuth()
 const handleLogin = async () => {
   loading.value = true
   try {
-    await login(form.value.email, form.value.password, form.value.remember)
-    navigateTo('/')
+    const success = await login({
+      email: form.value.email,
+      password: form.value.password,
+      rememberMe: form.value.remember
+    })
+    
+    if (success) {
+      // Check user role and redirect accordingly
+      const { user } = useAuth()
+      if (user.value?.roles && user.value.roles.length > 0) {
+        const primaryRole = user.value.roles[0].toLowerCase()
+        navigateTo(`/${primaryRole}/dashboard`)
+      } else {
+        navigateTo('/retailer/dashboard')
+      }
+    } else {
+      alert('Login failed. Please check your credentials and try again.')
+    }
   } catch (error) {
     console.error('Login failed:', error)
     alert('Login failed. Please try again or use Demo Mode.')
@@ -132,12 +148,29 @@ const handleDemoLogin = async () => {
   loading.value = true
   try {
     // Auto-login with demo credentials
-    await login('demo@toss.co.za', 'demo123', false)
-    navigateTo('/')
+    const success = await login({
+      email: 'demo@toss.co.za',
+      password: 'demo123',
+      rememberMe: false
+    })
+    
+    if (success) {
+      const { user } = useAuth()
+      if (user.value?.roles && user.value.roles.length > 0) {
+        const primaryRole = user.value.roles[0].toLowerCase()
+        navigateTo(`/${primaryRole}/dashboard`)
+      } else {
+        navigateTo('/retailer/dashboard')
+      }
+    } else {
+      // If login fails, just navigate anyway (for development)
+      console.log('Demo mode - bypassing auth')
+      navigateTo('/retailer/dashboard')
+    }
   } catch (error) {
     // If login fails, just navigate anyway (for development)
     console.log('Demo mode - bypassing auth')
-    navigateTo('/')
+    navigateTo('/retailer/dashboard')
   } finally {
     loading.value = false
   }

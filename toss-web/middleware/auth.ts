@@ -1,7 +1,7 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
   // Skip middleware for login, register, and public pages
-  const publicPages = ['/login', '/register', '/', '/unauthorized']
-  if (publicPages.includes(to.path)) {
+  const publicPages = ['/auth/login', '/auth/register', '/auth/forgot-password', '/unauthorized']
+  if (publicPages.includes(to.path) || to.path.startsWith('/auth/')) {
     return
   }
 
@@ -15,14 +15,14 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     
     // Check again after restore
     if (!isAuthenticated.value) {
-      return navigateTo('/login')
+      return navigateTo('/auth/login')
     }
   }
 
   // Verify session is still valid
   const sessionValid = await checkSession()
   if (!sessionValid) {
-    return navigateTo('/login')
+    return navigateTo('/auth/login')
   }
 
   // Check role-based access
