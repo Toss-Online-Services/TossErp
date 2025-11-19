@@ -13,7 +13,15 @@ export { MockDashboardService } from './dashboard'
 export type { StockItem, StockMovement, Warehouse } from './stock'
 export type { Driver, DeliveryJob, TrackingInfo } from './logistics'
 export type { Supplier, PurchaseOrder, PurchaseInvoice, GroupBuyOpportunity } from './purchasing'
-export type { SalesOrder, Quotation, SalesInvoice, POSTransaction, Product } from './sales'
+export type {
+  SalesOrder,
+  QuotationSummary,
+  QuotationDetail,
+  SalesInvoice,
+  POSTransaction,
+  Product,
+  SalesCustomer
+} from './sales'
 export type { Workflow, Trigger, WorkflowExecution, AIRecommendation } from './automation'
 export type { DashboardMetrics, TopProduct, RecentActivity } from './dashboard'
 
