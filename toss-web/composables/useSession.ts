@@ -130,7 +130,7 @@ export const useSession = () => {
     })
     
     // Redirect to login
-    await navigateTo('/login')
+    await navigateTo('/auth/login')
   }
 
   const stopSessionMonitoring = () => {

@@ -229,7 +229,7 @@ export const useAuth = () => {
       console.info('Logout reason:', reason)
     }
 
-    await navigateTo('/login')
+    await navigateTo('/auth/login')
   }
 
   /**

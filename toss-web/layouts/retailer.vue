@@ -78,7 +78,7 @@ const { logout } = useAuth()
 
 const handleLogout = async () => {
   await logout()
-  await navigateTo('/login')
+  await navigateTo('/auth/login')
 }
 </script>
 

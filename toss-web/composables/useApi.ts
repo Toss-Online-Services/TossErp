@@ -37,7 +37,7 @@ export const useApi = () => {
         if (response.status === 401) {
           // Unauthorized - redirect to login
           if (process.client) {
-            navigateTo('/login')
+            navigateTo('/auth/login')
           }
         }
         console.error('API Error:', response._data)

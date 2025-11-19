@@ -36,9 +36,9 @@
 
       <!-- Dashboard -->
       <NuxtLink 
-        to="/dashboard" 
+        to="/retailer/dashboard" 
         class="nav-link"
-        :class="{ 'nav-link-active': route.path === '/dashboard', 'justify-center': isCollapsed }"
+        :class="{ 'nav-link-active': route.path === '/retailer/dashboard' || route.path === '/dashboard', 'justify-center': isCollapsed }"
         :title="isCollapsed ? 'Dashboard' : ''"
       >
         <ChartBarIcon class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
@@ -51,7 +51,7 @@
           @click="toggleStockDropdown"
           class="w-full nav-link"
           :class="{ 
-            'nav-link-active': route.path.startsWith('/stock'),
+            'nav-link-active': route.path.startsWith('/stock') || route.path.startsWith('/retailer/inventory') || route.path.startsWith('/retailer/products'),
             'justify-center': isCollapsed,
             'justify-between': !isCollapsed
           }"
@@ -72,13 +72,13 @@
           v-show="stockDropdownOpen && !isCollapsed"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
-          <NuxtLink to="/stock" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock' }">
+          <NuxtLink to="/retailer/inventory" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/retailer/inventory' || route.path === '/stock' }">
             Stock Dashboard
           </NuxtLink>
-          <NuxtLink to="/stock/items" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/items' }">
-            Items
+          <NuxtLink to="/retailer/products" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path.startsWith('/retailer/products') || route.path === '/stock/items' }">
+            Products
           </NuxtLink>
-          <NuxtLink to="/stock/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/suppliers' }">
+          <NuxtLink to="/buying/suppliers" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/stock/suppliers' || route.path === '/buying/suppliers' }">
             Suppliers
           </NuxtLink>
         </div>
@@ -243,7 +243,7 @@
           @click="toggleBuyingDropdown"
           class="w-full nav-link"
           :class="{ 
-            'nav-link-active': route.path.startsWith('/buying'),
+            'nav-link-active': route.path.startsWith('/buying') || route.path.startsWith('/retailer/orders'),
             'justify-center': isCollapsed,
             'justify-between': !isCollapsed
           }"
@@ -268,15 +268,15 @@
             Buy Dashboard
           </NuxtLink>
           
-          <!-- Orders Submenu -->
+          <!-- Purchase Orders Submenu -->
           <div class="space-y-1">
             <button 
               @click="toggleBuyingOrdersDropdown"
               class="justify-between w-full nav-sub-link"
-              :class="{ 'nav-sub-link-active': route.path.startsWith('/buying/orders') }"
+              :class="{ 'nav-sub-link-active': route.path.startsWith('/buying/orders') || route.path.startsWith('/retailer/orders') }"
             >
               <div class="flex items-center w-full">
-                <span class="flex-1 text-left">Orders</span>
+                <span class="flex-1 text-left">Purchase Orders</span>
                 <ChevronDownIcon 
                   class="w-3 h-3 transition-transform duration-200"
                   :class="{ 'transform rotate-180': buyingOrdersDropdownOpen }"
@@ -288,10 +288,10 @@
               v-show="buyingOrdersDropdownOpen"
               class="pl-3 ml-3 space-y-1 border-l border-slate-600"
             >
-              <NuxtLink to="/buying/orders" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/buying/orders' }">
-                Orders
+              <NuxtLink to="/retailer/orders" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/retailer/orders' || route.path === '/buying/orders' }">
+                All Orders
               </NuxtLink>
-              <NuxtLink to="/buying/orders/create-order" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/buying/orders/create-order' }">
+              <NuxtLink to="/retailer/orders/new" class="nav-sub-sub-link" :class="{ 'nav-sub-sub-link-active': route.path === '/retailer/orders/new' || route.path === '/buying/orders/create-order' }">
                 Create Order
               </NuxtLink>
             </div>
@@ -394,7 +394,7 @@
           @click="toggleOnboardingDropdown"
           class="w-full nav-link"
           :class="{ 
-            'nav-link-active': route.path.startsWith('/onboarding'),
+            'nav-link-active': route.path.startsWith('/onboarding') || route.path.startsWith('/retailer/onboarding'),
             'justify-center': isCollapsed,
             'justify-between': !isCollapsed
           }"
@@ -416,11 +416,12 @@
           v-show="onboardingDropdownOpen && !isCollapsed"
           class="pl-3 ml-6 space-y-1 border-l border-slate-700"
         >
-          <NuxtLink to="/onboarding" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path === '/onboarding' }">
+          <NuxtLink to="/retailer/onboarding" class="nav-sub-link" :class="{ 'nav-sub-link-active': route.path.startsWith('/retailer/onboarding') || route.path === '/onboarding' }">
             Onboarding Dashboard
           </NuxtLink>
         </div>
       </div>
+
 
       <!-- Settings Section -->
       <div class="space-y-1">
@@ -525,7 +526,7 @@ const settingsDropdownOpen = ref(false)
 
 // Auto-open dropdowns if we're on a page within that section
 watch(() => route.path, (newPath) => {
-  if (newPath.startsWith('/stock')) {
+  if (newPath.startsWith('/stock') || newPath.startsWith('/retailer/inventory') || newPath.startsWith('/retailer/products')) {
     stockDropdownOpen.value = true
   }
   if (newPath.startsWith('/logistics')) {
@@ -537,9 +538,12 @@ watch(() => route.path, (newPath) => {
       ordersDropdownOpen.value = true
     }
   }
-  if (newPath.startsWith('/buying')) {
+  if (newPath.startsWith('/stores')) {
+    storesDropdownOpen.value = true
+  }
+  if (newPath.startsWith('/buying') || newPath.startsWith('/retailer/orders')) {
     buyingDropdownOpen.value = true
-    if (newPath.startsWith('/buying/orders')) {
+    if (newPath.startsWith('/buying/orders') || newPath.startsWith('/retailer/orders')) {
       buyingOrdersDropdownOpen.value = true
     }
   }
@@ -549,7 +553,7 @@ watch(() => route.path, (newPath) => {
   if (newPath.startsWith('/automation')) {
     automationDropdownOpen.value = true
   }
-  if (newPath.startsWith('/onboarding')) {
+  if (newPath.startsWith('/onboarding') || newPath.startsWith('/retailer/onboarding')) {
     onboardingDropdownOpen.value = true
   }
   if (newPath.startsWith('/settings')) {
