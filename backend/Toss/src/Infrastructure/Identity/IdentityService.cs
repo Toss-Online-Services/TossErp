@@ -3,6 +3,7 @@ using Toss.Application.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,17 +14,20 @@ namespace Toss.Infrastructure.Identity;
 public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
+    private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;                                                                  
     private readonly IAuthorizationService _authorizationService;
+    private readonly IConfiguration _configuration;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IConfiguration configuration)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         _authorizationService = authorizationService;
+        _configuration = configuration;
     }
 
     public async Task<string?> GetUserNameAsync(string userId)
@@ -142,15 +146,20 @@ public class IdentityService : IIdentityService
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
 
-        // TODO: Move these to configuration
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TossErpSecretKeyMinimum32CharactersLongForSecurity!"));
+        var jwtSettings = _configuration.GetSection("JwtSettings");
+        var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not configured");
+        var issuer = jwtSettings["Issuer"] ?? "TossErp";
+        var audience = jwtSettings["Audience"] ?? "TossErp";
+        var expirationDays = int.Parse(jwtSettings["ExpirationInDays"] ?? "7");
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        
+
         var token = new JwtSecurityToken(
-            issuer: "TossErp",
-            audience: "TossErp",
+            issuer: issuer,
+            audience: audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddDays(7),
+            expires: DateTime.UtcNow.AddDays(expirationDays),
             signingCredentials: credentials
         );
 

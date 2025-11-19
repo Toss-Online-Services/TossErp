@@ -3,6 +3,7 @@ using Toss.Application.Common.Interfaces;
 using Toss.Domain.Entities.Catalog;
 using Toss.Domain.Entities.Sales;
 using Toss.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Toss.Application.ShoppingCart.Commands.Checkout;
 
@@ -89,17 +90,47 @@ public class CheckoutCommandHandler : IRequestHandler<CheckoutCommand, CheckoutR
 
             sale.Items.Add(saleItem);
 
-            // Update stock using StockMovement
+            // Update stock level
+            var stockLevel = await _context.StockLevels
+                .FirstOrDefaultAsync(
+                    sl => sl.ShopId == request.ShopId && sl.ProductId == cartItem.ProductId,
+                    cancellationToken);
+
+            var quantityBefore = stockLevel?.Quantity ?? 0;
+            var quantityChange = -cartItem.Quantity; // Negative for sales
+            var quantityAfter = Math.Max(0, quantityBefore + quantityChange);
+
+            if (stockLevel == null)
+            {
+                // Create new stock level if doesn't exist
+                stockLevel = new StockLevel
+                {
+                    ShopId = request.ShopId,
+                    ProductId = cartItem.ProductId,
+                    Quantity = quantityAfter,
+                    ReorderPoint = cartItem.Product?.MinimumStockLevel ?? 10,
+                    ReorderQuantity = cartItem.Product?.ReorderQuantity ?? 20
+                };
+                _context.StockLevels.Add(stockLevel);
+            }
+            else
+            {
+                stockLevel.Quantity = quantityAfter;
+            }
+
+            // Record stock movement
             var stockMovement = new StockMovement
             {
                 ProductId = cartItem.ProductId,
                 ShopId = request.ShopId,
-                Quantity = -cartItem.Quantity,
+                QuantityBefore = quantityBefore,
+                QuantityChange = quantityChange,
+                QuantityAfter = quantityAfter,
                 MovementType = StockMovementType.Sale,
                 MovementDate = DateTimeOffset.UtcNow,
                 ReferenceType = "Sale",
                 ReferenceId = sale.Id,
-                Notes = $"POS Sale checkout - Session: {request.SessionId}"
+                Notes = $"POS Sale checkout - Session: {request.SessionId}"     
             };
 
             _context.StockMovements.Add(stockMovement);

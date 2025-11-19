@@ -3,6 +3,7 @@ using Toss.Application.Common.Interfaces;
 using Toss.Domain.Enums;
 using Toss.Domain.Entities.Catalog;
 using Toss.Domain.Entities.Orders;
+using Microsoft.EntityFrameworkCore;
 
 namespace Toss.Application.Buying.Commands.ReceiveGoods;
 
@@ -45,14 +46,45 @@ public class ReceiveGoodsCommandHandler : IRequestHandler<ReceiveGoodsCommand, b
         {
             var poItem = po.Items?.FirstOrDefault(i => i.ProductId == receivedItem.ProductId);
             if (poItem == null)
-                throw new BadRequestException($"Product {receivedItem.ProductId} not found in PO");
+                throw new BadRequestException($"Product {receivedItem.ProductId} not found in PO");                                                             
+
+            // Update stock level
+            var stockLevel = await _context.StockLevels
+                .FirstOrDefaultAsync(
+                    sl => sl.ShopId == po.ShopId && sl.ProductId == receivedItem.ProductId,
+                    cancellationToken);
+
+            var product = await _context.Products.FindAsync(new object[] { receivedItem.ProductId }, cancellationToken);
+            var quantityBefore = stockLevel?.Quantity ?? 0;
+            var quantityChange = receivedItem.QuantityReceived; // Positive for purchases
+            var quantityAfter = quantityBefore + quantityChange;
+
+            if (stockLevel == null)
+            {
+                // Create new stock level if doesn't exist
+                stockLevel = new StockLevel
+                {
+                    ShopId = po.ShopId,
+                    ProductId = receivedItem.ProductId,
+                    Quantity = quantityAfter,
+                    ReorderPoint = product?.MinimumStockLevel ?? 10,
+                    ReorderQuantity = product?.ReorderQuantity ?? 20
+                };
+                _context.StockLevels.Add(stockLevel);
+            }
+            else
+            {
+                stockLevel.Quantity = quantityAfter;
+            }
 
             // Create stock movement for received goods
             var stockMovement = new StockMovement
             {
                 ProductId = receivedItem.ProductId,
                 ShopId = po.ShopId,
-                QuantityChange = receivedItem.QuantityReceived,
+                QuantityBefore = quantityBefore,
+                QuantityChange = quantityChange,
+                QuantityAfter = quantityAfter,
                 MovementType = StockMovementType.Purchase,
                 Notes = $"PO {po.PONumber} - Goods Received",
                 ReferenceType = "PurchaseOrder",

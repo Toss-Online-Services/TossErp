@@ -67,12 +67,13 @@ public interface IUserManagementService
     /// <summary>
     /// Retrieves a paginated and searchable list of users.
     /// </summary>
-    /// <param name="skip">Number of users to skip for pagination.</param>
-    /// <param name="take">Number of users to take for pagination.</param>
+    /// <param name="skip">Number of users to skip for pagination.</param>      
+    /// <param name="take">Number of users to take for pagination.</param>      
     /// <param name="searchTerm">Optional search term to filter users by username or email.</param>
-    /// <param name="cancellationToken">Cancellation token for the async operation.</param>
+    /// <param name="role">Optional role name to filter users by role.</param>                                                             
+    /// <param name="cancellationToken">Cancellation token for the async operation.</param>                                                                     
     /// <returns>List of users matching the criteria.</returns>
-    Task<List<UserListItemDto>> GetUsersAsync(int skip, int take, string? searchTerm, CancellationToken cancellationToken = default);
+    Task<List<UserListItemDto>> GetUsersAsync(int skip, int take, string? searchTerm, string? role = null, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Retrieves comprehensive information about a specific user.
@@ -86,10 +87,26 @@ public interface IUserManagementService
     /// Updates the complete list of roles assigned to a user.
     /// </summary>
     /// <param name="userId">The unique identifier of the user.</param>
-    /// <param name="roles">The complete list of role names to assign (replaces existing roles).</param>
-    /// <param name="cancellationToken">Cancellation token for the async operation.</param>
-    /// <returns>True if roles were updated successfully, false otherwise.</returns>
+    /// <param name="roles">The complete list of role names to assign (replaces existing roles).</param>                                                        
+    /// <param name="cancellationToken">Cancellation token for the async operation.</param>                                                                     
+    /// <returns>True if roles were updated successfully, false otherwise.</returns>                                                                            
     Task<bool> UpdateUserRolesAsync(string userId, List<string> roles, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Activates a user account by removing lockout.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <param name="cancellationToken">Cancellation token for the async operation.</param>
+    /// <returns>True if user was activated successfully, false otherwise.</returns>
+    Task<bool> ActivateUserAsync(string userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deactivates a user account by setting lockout.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <param name="cancellationToken">Cancellation token for the async operation.</param>
+    /// <returns>True if user was deactivated successfully, false otherwise.</returns>
+    Task<bool> DeactivateUserAsync(string userId, CancellationToken cancellationToken = default);
 }
 
 

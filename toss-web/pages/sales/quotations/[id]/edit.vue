@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="container px-4 py-8 mx-auto">
     <div class="mb-8">
       <div class="flex items-center gap-2 mb-2">
         <NuxtLink :to="`/sales/quotations/${route.params.id}`" class="text-gray-600 hover:text-gray-900">
@@ -10,10 +10,10 @@
       <p class="text-gray-600">{{ t('sales.quotations.editSubtitle') }}</p>
     </div>
 
-    <div v-if="loading" class="bg-white rounded-lg shadow-sm p-6">
-      <div class="animate-pulse space-y-4">
-        <div class="h-6 bg-gray-200 rounded w-1/3" />
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div v-if="loading" class="p-6 bg-white rounded-lg shadow-sm">
+      <div class="space-y-4 animate-pulse">
+        <div class="w-1/3 h-6 bg-gray-200 rounded" />
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div class="h-10 bg-gray-200 rounded" />
           <div class="h-10 bg-gray-200 rounded" />
         </div>
@@ -21,9 +21,9 @@
       </div>
     </div>
 
-    <div v-else-if="loadError" class="bg-white rounded-lg shadow-sm p-6 text-center">
-      <Icon name="mdi:alert" class="text-red-500 mx-auto mb-4" size="32" />
-      <p class="text-gray-700 mb-4">{{ loadError }}</p>
+    <div v-else-if="loadError" class="p-6 text-center bg-white rounded-lg shadow-sm">
+      <Icon name="mdi:alert" class="mx-auto mb-4 text-red-500" size="32" />
+      <p class="mb-4 text-gray-700">{{ loadError }}</p>
       <div class="flex justify-center gap-3">
         <button class="btn btn-secondary" @click="handleCancel">{{ t('common.back') }}</button>
         <button class="btn btn-primary" @click="loadResources">{{ t('common.retry') }}</button>

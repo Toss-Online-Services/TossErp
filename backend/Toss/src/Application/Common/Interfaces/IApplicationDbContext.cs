@@ -7,6 +7,7 @@ using Toss.Domain.Entities.Directory;
 using Toss.Domain.Entities.GroupBuying;
 using Toss.Domain.Entities.Localization;
 using Toss.Domain.Entities.Logistics;
+using Toss.Domain.Entities.Onboarding;
 using Toss.Domain.Entities.Payments;
 using Toss.Domain.Entities.Sales;
 using Toss.Domain.Entities.Security;
@@ -122,6 +123,9 @@ public interface IApplicationDbContext
     // Payment entities
     DbSet<Payment> Payments { get; }
     DbSet<PayLink> PayLinks { get; }
+
+    // Onboarding entities
+    DbSet<OnboardingStatus> OnboardingStatuses { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
