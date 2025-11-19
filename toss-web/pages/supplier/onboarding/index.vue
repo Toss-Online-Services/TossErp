@@ -142,11 +142,16 @@ const handleNext = async () => {
 
 const saveStepProgress = async () => {
   try {
+    const completedSteps: string[] = []
+    if (currentStep.value >= 0) completedSteps.push('step1')
+    if (currentStep.value >= 1) completedSteps.push('step2')
+
     await put(`/api/onboarding/${userStore.user?.id}`, {
       userId: userStore.user?.id,
-      userRole: 'Supplier',
-      step1Completed: currentStep.value >= 0,
-      step2Completed: currentStep.value >= 1
+      role: 'Supplier',
+      completedSteps,
+      currentStep: currentStep.value,
+      onboardingData: JSON.stringify(form.value)
     })
   } catch (error) {
     console.error('Failed to save onboarding progress:', error)
@@ -156,7 +161,7 @@ const saveStepProgress = async () => {
 const completeOnboarding = async () => {
   try {
     await saveStepProgress()
-    await post(`/api/onboarding/${userStore.user?.id}/complete`)
+    await post(`/api/onboarding/${userStore.user?.id}/complete?role=Supplier`)
     router.push('/supplier/dashboard')
   } catch (error) {
     console.error('Failed to complete onboarding:', error)

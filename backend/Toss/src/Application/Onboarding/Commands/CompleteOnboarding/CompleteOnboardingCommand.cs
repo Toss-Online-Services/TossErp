@@ -1,6 +1,7 @@
 using Toss.Application.Common.Interfaces;
 using Toss.Domain.Entities.Onboarding;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Toss.Application.Onboarding.Commands.CompleteOnboarding;
 
@@ -19,12 +20,17 @@ public class CompleteOnboardingCommandHandler : IRequestHandler<CompleteOnboardi
         _context = context;
     }
 
-    public async Task<bool> Handle(CompleteOnboardingCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(CompleteOnboardingCommand request, CancellationToken cancellationToken)                                                      
     {
-        var status = await _context.OnboardingStatuses
-            .FirstOrDefaultAsync(
-                s => s.UserId == request.UserId && s.Role == request.Role,
-                cancellationToken);
+        var query = _context.OnboardingStatuses.Where(s => s.UserId == request.UserId);
+        
+        // If role is provided, filter by it; otherwise get the first one for this user
+        if (!string.IsNullOrEmpty(request.Role))
+        {
+            query = query.Where(s => s.Role == request.Role);
+        }
+
+        var status = await query.FirstOrDefaultAsync(cancellationToken);
 
         if (status == null)
         {

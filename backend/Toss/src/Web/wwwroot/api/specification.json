@@ -1453,6 +1453,64 @@
       }
     },
     "/api/Inventory/products/{id}": {
+      "put": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "PutApiInventoryProducts",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "DeleteApiInventoryProducts",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
       "get": {
         "tags": [
           "Inventory"
@@ -2048,6 +2106,121 @@
             "description": ""
           }
         }
+      }
+    },
+    "/api/onboarding/{userId}": {
+      "get": {
+        "tags": [
+          "onboarding"
+        ],
+        "operationId": "GetOnboardingStatus",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "onboarding"
+        ],
+        "operationId": "UpdateOnboardingStatus",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOnboardingStatusCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/onboarding/{userId}/complete": {
+      "post": {
+        "tags": [
+          "onboarding"
+        ],
+        "operationId": "CompleteOnboarding",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Payments/pay-links": {
@@ -4156,6 +4329,15 @@
               "nullable": true
             },
             "x-position": 3
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
           }
         ],
         "responses": {
@@ -4228,6 +4410,64 @@
           "required": true,
           "x-position": 2
         },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Users/{id}/activate": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "ActivateUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Users/{id}/deactivate": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "DeactivateUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
@@ -5057,6 +5297,63 @@
           }
         }
       },
+      "UpdateProductCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SKU": {
+            "type": "string"
+          },
+          "Barcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string"
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "CategoryId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "BasePrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "CostPrice": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "Unit": {
+            "type": "string",
+            "nullable": true
+          },
+          "MinimumStockLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ReorderQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "IsTaxable": {
+            "type": "boolean"
+          },
+          "IsActive": {
+            "type": "boolean"
+          }
+        }
+      },
       "AdjustStockCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -5299,6 +5596,32 @@
           "Photo",
           "Signature"
         ]
+      },
+      "UpdateOnboardingStatusCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "UserId": {
+            "type": "string"
+          },
+          "Role": {
+            "type": "string"
+          },
+          "CompletedSteps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "CurrentStep": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "OnboardingData": {
+            "type": "string",
+            "nullable": true
+          }
+        }
       },
       "GeneratePayLinkCommand": {
         "type": "object",

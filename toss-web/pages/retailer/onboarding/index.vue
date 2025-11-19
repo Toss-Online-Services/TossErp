@@ -264,12 +264,17 @@ const previousStep = () => {
 
 const saveStepProgress = async () => {
   try {
+    const completedSteps: string[] = []
+    if (currentStep.value >= 0) completedSteps.push('step1')
+    if (currentStep.value >= 1) completedSteps.push('step2')
+    if (currentStep.value >= 2) completedSteps.push('step3')
+
     await put(`/api/onboarding/${userStore.user?.id}`, {
       userId: userStore.user?.id,
-      userRole: 'Retailer',
-      step1Completed: currentStep.value >= 0,
-      step2Completed: currentStep.value >= 1,
-      step3Completed: currentStep.value >= 2
+      role: 'Retailer',
+      completedSteps,
+      currentStep: currentStep.value,
+      onboardingData: JSON.stringify(form.value)
     })
   } catch (error) {
     console.error('Failed to save onboarding progress:', error)
@@ -282,7 +287,7 @@ const completeOnboarding = async () => {
     await saveStepProgress()
 
     // Mark onboarding as complete
-    await post(`/api/onboarding/${userStore.user?.id}/complete`)
+    await post(`/api/onboarding/${userStore.user?.id}/complete?role=Retailer`)
 
     // TODO: Save store profile and products to backend
     // For now, just redirect
