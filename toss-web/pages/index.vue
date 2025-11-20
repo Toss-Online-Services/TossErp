@@ -107,7 +107,7 @@
 
           <!-- Subheading -->
           <p class="mx-auto mb-4 max-w-3xl text-xl leading-relaxed text-slate-600 dark:text-slate-300 sm:text-2xl font-medium">
-            Complete ERP solution powered by <span class="font-semibold text-slate-900 dark:text-white">ERPNext modules</span>, enhanced with <span class="font-semibold text-blue-600 dark:text-blue-400">AI Copilot</span> and a <span class="font-semibold text-purple-600 dark:text-purple-400">collaborative network</span>
+            Integrated ERP platform with <span class="font-semibold text-blue-600 dark:text-blue-400">14 core modules</span>, enhanced with <span class="font-semibold text-purple-600 dark:text-purple-400">AI Copilot</span> and a <span class="font-semibold text-pink-600 dark:text-pink-400">collaborative network</span>
           </p>
           <p class="mx-auto mb-12 max-w-2xl text-lg text-slate-500 dark:text-slate-400">
             Connect shops, suppliers, drivers, and financial partners in one powerful platform
@@ -139,7 +139,7 @@
               <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
               </svg>
-              <span>ERPNext Powered</span>
+              <span>14 Integrated Modules</span>
             </div>
             <div class="flex items-center gap-2">
               <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
@@ -202,10 +202,10 @@
     <section id="features" class="px-4 py-20 sm:px-6 lg:px-8 bg-white dark:bg-slate-950">
       <div class="mx-auto max-w-7xl">
         <div class="mb-16 text-center">
-          <Badge class="mb-4 px-3 py-1 text-xs font-semibold uppercase tracking-wider" variant="outline">ERPNext-Powered</Badge>
+          <Badge class="mb-4 px-3 py-1 text-xs font-semibold uppercase tracking-wider" variant="outline">Integrated Modules</Badge>
           <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">Complete Business Management</h2>
           <p class="mx-auto max-w-2xl text-lg text-slate-600 dark:text-slate-300">
-            Full-featured ERP solution with all the modules you need, enhanced by AI Copilot and collaborative network features
+            Full-featured ERP solution with 14 integrated modules, enhanced by AI Copilot and collaborative network features
           </p>
         </div>
 
@@ -214,9 +214,9 @@
             <div class="flex justify-center items-center mb-6 w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg shadow-blue-500/20 transition-transform group-hover:scale-110 group-hover:rotate-3">
               <CurrencyDollarIcon class="w-7 h-7 text-white" />
             </div>
-            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">Accounts</h3>
+            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">Account Management</h3>
             <p class="leading-relaxed text-slate-600 dark:text-slate-300">
-              Complete financial management with accounting, invoicing, payments, and financial reporting.
+              Complete financial management with accounting, invoicing, payments, and comprehensive financial reporting.
             </p>
           </Card>
 
@@ -224,7 +224,7 @@
             <div class="flex justify-center items-center mb-6 w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg shadow-green-500/20 transition-transform group-hover:scale-110 group-hover:rotate-3">
               <UsersIcon class="w-7 h-7 text-white" />
             </div>
-            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">CRM</h3>
+            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">Customer Relationship Management</h3>
             <p class="leading-relaxed text-slate-600 dark:text-slate-300">
               Manage customer relationships, track leads, opportunities, and build lasting customer connections.
             </p>
@@ -232,31 +232,31 @@
 
           <Card class="p-8 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all hover:shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 group">
             <div class="flex justify-center items-center mb-6 w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg shadow-purple-500/20 transition-transform group-hover:scale-110 group-hover:rotate-3">
-              <ShoppingCartIcon class="w-7 h-7 text-white" />
+              <ArchiveBoxIcon class="w-7 h-7 text-white" />
             </div>
-            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">Buying</h3>
+            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">Inventory Management</h3>
             <p class="leading-relaxed text-slate-600 dark:text-slate-300">
-              Streamline procurement with purchase orders, supplier management, and automated workflows.
+              Advanced inventory tracking with real-time stock levels, warehouses, and automated reordering.
             </p>
           </Card>
 
           <Card class="p-8 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all hover:shadow-xl hover:shadow-yellow-500/10 hover:-translate-y-1 group">
             <div class="flex justify-center items-center mb-6 w-14 h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl shadow-lg shadow-yellow-500/20 transition-transform group-hover:scale-110 group-hover:rotate-3">
-              <ChartBarIcon class="w-7 h-7 text-white" />
+              <ShoppingCartIcon class="w-7 h-7 text-white" />
             </div>
-            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">Selling</h3>
+            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">POS & Store Solutions</h3>
             <p class="leading-relaxed text-slate-600 dark:text-slate-300">
-              Complete sales management with quotations, orders, invoices, and customer portal integration.
+              Complete point-of-sale system with store management, transactions, and real-time sales tracking.
             </p>
           </Card>
 
           <Card class="p-8 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all hover:shadow-xl hover:shadow-pink-500/10 hover:-translate-y-1 group">
             <div class="flex justify-center items-center mb-6 w-14 h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl shadow-lg shadow-pink-500/20 transition-transform group-hover:scale-110 group-hover:rotate-3">
-              <ArchiveBoxIcon class="w-7 h-7 text-white" />
+              <ChartBarIcon class="w-7 h-7 text-white" />
             </div>
-            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">Stock</h3>
+            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">Sales & Marketing</h3>
             <p class="leading-relaxed text-slate-600 dark:text-slate-300">
-              Advanced inventory management with stock tracking, warehouses, batch/serial numbers, and automated reordering.
+              Complete sales management with marketing tools, customer engagement, and sales analytics.
             </p>
           </Card>
 
@@ -277,55 +277,55 @@
     <section id="modules" class="px-4 py-20 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
       <div class="mx-auto max-w-7xl">
         <div class="mb-16 text-center">
-          <Badge class="mb-4 px-3 py-1 text-xs font-semibold uppercase tracking-wider" variant="outline">ERPNext Modules</Badge>
+          <Badge class="mb-4 px-3 py-1 text-xs font-semibold uppercase tracking-wider" variant="outline">14 Integrated Modules</Badge>
           <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">Complete ERP Solution</h2>
           <p class="mx-auto max-w-2xl text-lg text-slate-600 dark:text-slate-300">
-            TOSS includes all standard ERPNext modules plus collaborative network features
+            TOSS integrates 14 core modules seamlessly connected to provide complete business management
           </p>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Accounts</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">Supply & Chain Integration</div>
           </Card>
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-green-300 dark:hover:border-green-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">CRM</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors leading-tight">Inventory Management</div>
           </Card>
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-purple-300 dark:hover:border-purple-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Buying</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-yellow-300 dark:hover:border-yellow-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">Selling</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-tight">Cross Commerce Solutions</div>
           </Card>
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-pink-300 dark:hover:border-pink-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">Stock</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors leading-tight">Customer Relationship Management</div>
+          </Card>
+          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-yellow-300 dark:hover:border-yellow-700 transition-all cursor-pointer group">
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors leading-tight">Audits & Operations</div>
           </Card>
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Projects</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">Vendor Relationship Management</div>
           </Card>
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-orange-300 dark:hover:border-orange-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">Manufacturing</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors leading-tight">Invoice Management</div>
           </Card>
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-teal-300 dark:hover:border-teal-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">Assets</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors leading-tight">Business Intelligence</div>
           </Card>
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-red-300 dark:hover:border-red-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">Quality</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors leading-tight">Account Management</div>
           </Card>
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-cyan-300 dark:hover:border-cyan-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">Support</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors leading-tight">Merchandising Management</div>
           </Card>
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-violet-300 dark:hover:border-violet-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">Portal</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors leading-tight">Planning & Assortment</div>
           </Card>
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Utilities</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-tight">POS & Store Solutions</div>
           </Card>
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-rose-300 dark:hover:border-rose-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Regional</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors leading-tight">Sales & Marketing</div>
           </Card>
           <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-sky-300 dark:hover:border-sky-700 transition-all cursor-pointer group">
-            <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">Communication</div>
+            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-tight">Warehouse Management</div>
           </Card>
         </div>
 
@@ -445,14 +445,14 @@
               <li><NuxtLink to="#modules" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Modules</NuxtLink></li>
             </ul>
           </div>
-          <div>
-            <h4 class="mb-4 text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider">ERP Modules</h4>
-            <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-              <li><a href="#modules" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">All Modules</a></li>
-              <li><a href="#features" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Key Features</a></li>
-              <li><a href="#cta" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Get Started</a></li>
-            </ul>
-          </div>
+            <div>
+              <h4 class="mb-4 text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider">Modules</h4>
+              <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+                <li><a href="#modules" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">All Modules</a></li>
+                <li><a href="#features" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Key Features</a></li>
+                <li><a href="#cta" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Get Started</a></li>
+              </ul>
+            </div>
           <div>
             <h4 class="mb-4 text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider">Support</h4>
             <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
