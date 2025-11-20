@@ -1,29 +1,76 @@
 <template>
   <div class="min-h-screen bg-background">
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-slate-950/80 shadow-sm">
+    <nav class="nav-animate fixed top-0 w-full z-50 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-slate-950/80 shadow-sm">
       <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
-          <div class="flex items-center space-x-2">
-            <div class="flex justify-center items-center w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg shadow-lg">
+          <!-- Logo -->
+          <NuxtLink to="/" class="flex items-center space-x-2 group no-underline">
+            <div class="flex justify-center items-center w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg shadow-lg group-hover:shadow-xl transition-all duration-300">
               <span class="text-xl font-bold text-white">T</span>
             </div>
             <span class="text-xl font-bold text-slate-900 dark:text-white">TOSS</span>
-          </div>
+          </NuxtLink>
+
+          <!-- Desktop Navigation -->
           <div class="hidden items-center space-x-8 md:flex">
-            <a href="#features" class="text-sm font-medium transition-colors text-muted-foreground hover:text-foreground">Features</a>
-            <a href="#modules" class="text-sm font-medium transition-colors text-muted-foreground hover:text-foreground">Modules</a>
-            <a href="#stats" class="text-sm font-medium transition-colors text-muted-foreground hover:text-foreground">Stats</a>
-            <Button variant="outline" as-child>
-              <NuxtLink to="/auth/login">Login</NuxtLink>
-            </Button>
-            <Button as-child>
-              <NuxtLink to="/auth/login">Get Started</NuxtLink>
+            <NavigationMenu>
+              <NavigationMenuList class="flex items-center space-x-1">
+                <NavigationMenuItem>
+                  <NavigationMenuLink as-child>
+                    <NuxtLink to="#features" class="nav-link group relative px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-md transition-all duration-300 no-underline">
+                      <span class="relative z-10">Features</span>
+                      <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-300 ease-out group-hover:w-full"></span>
+                    </NuxtLink>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink as-child>
+                    <NuxtLink to="#modules" class="nav-link group relative px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-md transition-all duration-300 no-underline">
+                      <span class="relative z-10">Modules</span>
+                      <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-600 dark:bg-purple-400 transition-all duration-300 ease-out group-hover:w-full"></span>
+                    </NuxtLink>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink as-child>
+                    <NuxtLink to="#stats" class="nav-link group relative px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-md transition-all duration-300 no-underline">
+                      <span class="relative z-10">Stats</span>
+                      <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-pink-600 dark:bg-pink-400 transition-all duration-300 ease-out group-hover:w-full"></span>
+                    </NuxtLink>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink as-child>
+                    <NuxtLink to="#cta" class="nav-link group relative px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-md transition-all duration-300 no-underline">
+                      <span class="relative z-10">Pricing</span>
+                      <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 dark:bg-green-400 transition-all duration-300 ease-out group-hover:w-full"></span>
+                    </NuxtLink>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
+
+          <!-- CTA Buttons -->
+          <div class="hidden items-center space-x-4 md:flex">
+            <NuxtLink to="/auth/login" class="sign-in-button btn-animate group relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-sm font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-all duration-300 no-underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+              SIGN IN
+            </NuxtLink>
+            <Button size="default" class="btn-animate group relative text-sm font-semibold bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 overflow-hidden" as-child>
+              <NuxtLink to="/auth/login" class="relative z-10 flex items-center gap-2 no-underline">
+                <span>Get Started</span>
+                <svg class="w-4 h-4 transition-transform duration-300 ease-out group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                </svg>
+              </NuxtLink>
             </Button>
           </div>
+
+          <!-- Mobile Menu Button -->
           <div class="flex items-center space-x-2 md:hidden">
-            <Button variant="outline" size="sm" as-child>
-              <NuxtLink to="/auth/login">Login</NuxtLink>
+            <Button variant="ghost" size="sm" class="text-sm font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all duration-300" as-child>
+              <NuxtLink to="/auth/login" class="no-underline">Sign In</NuxtLink>
             </Button>
           </div>
         </div>
@@ -69,15 +116,15 @@
           <!-- CTA Buttons -->
           <div class="flex flex-col gap-4 justify-center items-center sm:flex-row mb-16">
             <Button size="lg" class="px-10 py-7 h-auto text-lg font-semibold shadow-xl shadow-blue-500/25 hover:shadow-2xl hover:shadow-blue-500/40 hover:scale-105 transition-all duration-300" as-child>
-              <NuxtLink to="/auth/login" class="flex items-center gap-2">
+              <NuxtLink to="/auth/login" class="flex items-center gap-2 no-underline">
                 <span>Login to TOSS Platform</span>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                 </svg>
               </NuxtLink>
             </Button>
             <Button size="lg" variant="outline" class="px-10 py-7 h-auto text-lg font-semibold border-2 border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all duration-300" as-child>
-              <NuxtLink to="#features" class="flex items-center gap-2">
+              <NuxtLink to="#features" class="flex items-center gap-2 no-underline">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
@@ -287,7 +334,7 @@
             Plus collaborative network features: <span class="text-blue-600 dark:text-blue-400 font-semibold">Group Buying</span>, <span class="text-purple-600 dark:text-purple-400 font-semibold">Delivery Coordination</span>, <span class="text-green-600 dark:text-green-400 font-semibold">Financial Services Integration</span>
           </p>
           <Button size="lg" class="shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30" as-child>
-            <NuxtLink to="/auth/login">Access All Modules</NuxtLink>
+            <NuxtLink to="/auth/login" class="no-underline">Access All Modules</NuxtLink>
           </Button>
         </div>
       </div>
@@ -366,10 +413,10 @@
         </p>
         <div class="flex flex-col gap-4 justify-center sm:flex-row">
           <Button size="lg" variant="secondary" class="px-8 py-6 h-auto text-base font-semibold shadow-xl hover:shadow-2xl transition-all" as-child>
-            <NuxtLink to="/auth/login">Login to TOSS Platform</NuxtLink>
-          </Button>
-          <Button size="lg" variant="outline" class="px-8 py-6 h-auto text-base font-semibold text-white bg-white/10 border-2 border-white/30 hover:bg-white/20 backdrop-blur-sm" as-child>
-            <NuxtLink to="#modules">View All Modules</NuxtLink>
+              <NuxtLink to="/auth/login" class="no-underline">Login to TOSS Platform</NuxtLink>
+            </Button>
+            <Button size="lg" variant="outline" class="px-8 py-6 h-auto text-base font-semibold text-white bg-white/10 border-2 border-white/30 hover:bg-white/20 backdrop-blur-sm" as-child>
+              <NuxtLink to="#modules" class="no-underline">View All Modules</NuxtLink>
           </Button>
         </div>
       </div>
@@ -393,25 +440,25 @@
           <div>
             <h4 class="mb-4 text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider">Platform</h4>
             <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-              <li><NuxtLink to="/auth/login" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400">Login</NuxtLink></li>
-              <li><NuxtLink to="/auth/register" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400">Register</NuxtLink></li>
-              <li><NuxtLink to="#modules" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400">Modules</NuxtLink></li>
+              <li><NuxtLink to="/auth/login" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Login</NuxtLink></li>
+              <li><NuxtLink to="/auth/register" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Register</NuxtLink></li>
+              <li><NuxtLink to="#modules" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Modules</NuxtLink></li>
             </ul>
           </div>
           <div>
             <h4 class="mb-4 text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider">ERP Modules</h4>
             <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-              <li><a href="#modules" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400">All Modules</a></li>
-              <li><a href="#features" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400">Key Features</a></li>
-              <li><a href="#cta" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400">Get Started</a></li>
+              <li><a href="#modules" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">All Modules</a></li>
+              <li><a href="#features" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Key Features</a></li>
+              <li><a href="#cta" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Get Started</a></li>
             </ul>
           </div>
           <div>
             <h4 class="mb-4 text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider">Support</h4>
             <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-              <li><a href="#" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400">Documentation</a></li>
-              <li><a href="#" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400">Help Center</a></li>
-              <li><a href="#" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400">Contact</a></li>
+              <li><a href="#" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Documentation</a></li>
+              <li><a href="#" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Help Center</a></li>
+              <li><a href="#" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Contact</a></li>
             </ul>
           </div>
         </div>
@@ -435,6 +482,12 @@ import {
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from '@/components/ui/navigation-menu'
 
 definePageMeta({
   layout: 'landing'
@@ -447,3 +500,86 @@ useHead({
   ]
 })
 </script>
+
+<style scoped>
+/* Smooth navigation link animations - no default underlines */
+.nav-link,
+a,
+NuxtLink {
+  text-decoration: none !important;
+}
+
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Sign In button underline animation */
+.sign-in-button {
+  position: relative;
+  overflow: visible;
+}
+
+.sign-in-button::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.sign-in-button:hover::after {
+  width: 75%;
+}
+
+/* Smooth fade-in animation for navigation */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-animate {
+  animation: fadeInDown 0.5s ease-out;
+}
+
+/* Smooth scale animation for buttons */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.btn-animate {
+  animation: scaleIn 0.3s ease-out;
+}
+</style>
