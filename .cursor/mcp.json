@@ -134,6 +134,14 @@
 			"env": {
 				"GOOGLE_APPLICATION_CREDENTIALS": "YOUR_GOOGLE_APPLICATION_CREDENTIALS_PATH_HERE"
 			}
+		},
+		"shadcn": {
+			"command": "npx",
+			"args": ["shadcn@latest", "mcp"],
+			"env": {
+				"REGISTRY_TOKEN": "${env:REGISTRY_TOKEN}",
+				"API_KEY": "${env:SHADCN_API_KEY}"
+			}
 		}
 	}
 }

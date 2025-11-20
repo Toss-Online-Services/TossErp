@@ -3,11 +3,11 @@
     <!-- Search Section -->
     <div class="flex-1 max-w-lg">
       <div class="relative">
-        <MagnifyingGlassIcon class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input 
+        <MagnifyingGlassIcon class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+        <Input 
           type="text" 
           placeholder="Search..." 
-          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+          class="w-full pl-10"
         />
       </div>
     </div>
@@ -15,10 +15,10 @@
     <!-- Actions -->
     <div class="flex items-center space-x-2 sm:space-x-4 ml-4">
       <!-- Notifications -->
-      <button class="relative p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+      <Button variant="ghost" size="icon" class="relative">
         <BellIcon class="w-5 h-5" />
-        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-      </button>
+        <span class="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full"></span>
+      </Button>
 
       <!-- Theme Switcher -->
       <ThemeSwitcher />
@@ -35,4 +35,7 @@
 import { MagnifyingGlassIcon, BellIcon } from '@heroicons/vue/24/outline'
 import ThemeSwitcher from '~/components/common/ThemeSwitcher.vue'
 import UserMenu from '~/components/common/UserMenu.vue'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 </script>
