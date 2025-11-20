@@ -52,10 +52,11 @@ export default defineNuxtConfig({
     
     // Device Detection
     '@nuxtjs/device',
-    
+
     // UI Components
     'nuxt-swiper',
-    
+    'shadcn-nuxt',
+
     // Security & Monitoring
     'nuxt-security',
     '@sentry/nuxt/module'
@@ -254,6 +255,10 @@ export default defineNuxtConfig({
     authToken: process.env.SENTRY_AUTH_TOKEN,
     // Additional tuning could be added here (e.g. deploy, release) once backend release pipeline is in place.
   },
+  shadcn: {
+    prefix: '',
+    componentDir: './components/ui'
+  },
   tailwindcss: {
     cssPath: '~/assets/css/main.css'
   },
@@ -268,7 +273,8 @@ export default defineNuxtConfig({
     dirs: [
       '~/components',
       '~/components/icons',
-      '~/components/charts'
+      '~/components/charts',
+      '~/components/ui'
     ]
   },
   imports: {
