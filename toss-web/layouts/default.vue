@@ -6,10 +6,10 @@
       <div class="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200">
         <div class="flex items-center justify-between px-4 h-16">
           <!-- Mobile Menu Button -->
-          <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100">
+          <Button @click="mobileMenuOpen = !mobileMenuOpen" variant="ghost" size="icon">
             <Bars3Icon v-if="!mobileMenuOpen" class="w-6 h-6" />
             <XMarkIcon v-else class="w-6 h-6" />
-          </button>
+          </Button>
           
           <!-- Mobile Logo -->
           <div class="flex items-center">
@@ -21,10 +21,10 @@
           
           <!-- Mobile Actions -->
           <div class="flex items-center space-x-2">
-            <button class="relative p-2 text-gray-400 hover:text-gray-600 rounded-lg">
+            <Button variant="ghost" size="icon" class="relative">
               <BellIcon class="w-5 h-5" />
-              <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
+              <span class="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full"></span>
+            </Button>
             <MobileUserMenu />
           </div>
         </div>
@@ -72,6 +72,7 @@ import MobileSidebar from '~/components/layout/MobileSidebar.vue'
 import MobileBottomNav from '~/components/layout/MobileBottomNav.vue'
 import MobileUserMenu from '~/components/layout/MobileUserMenu.vue'
 import GlobalAiAssistant from '~/components/ai/GlobalAiAssistant.vue'
+import { Button } from '@/components/ui/button'
 
 // Mobile menu state
 const mobileMenuOpen = ref(false)

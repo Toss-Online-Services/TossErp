@@ -55,14 +55,29 @@ export default {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
   			},
+  			sidebar: {
+  				DEFAULT: 'hsl(var(--sidebar-background))',
+  				foreground: 'hsl(var(--sidebar-foreground))',
+  				accent: 'hsl(var(--sidebar-accent))',
+  				border: 'hsl(var(--sidebar-border))',
+  				primary: 'hsl(var(--sidebar-primary))',
+  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+  				ring: 'hsl(var(--sidebar-ring))'
+  			},
+  			support: {
+  				info: 'hsl(var(--support-info))',
+  				warning: 'hsl(var(--support-warning))',
+  				success: 'hsl(var(--support-success))'
+  			},
   			toss: {
-  				primary: '#1d4ed8',
-  				secondary: '#f59e0b',
-  				accent: '#10b981',
-  				danger: '#ef4444',
-  				warning: '#f59e0b',
-  				success: '#10b981',
-  				info: '#3b82f6'
+  				primary: 'var(--toss-primary)',
+  				secondary: 'var(--toss-secondary)',
+  				accent: 'var(--toss-accent)',
+  				danger: 'var(--toss-danger)',
+  				warning: 'var(--toss-warning)',
+  				success: 'var(--toss-success)',
+  				info: 'var(--toss-info)'
   			},
   			brand: {
   				'50': '#eff6ff',
@@ -100,6 +115,7 @@ export default {
   		},
   		fontFamily: {
   			sans: [
+  				'Inter var',
   				'Inter',
   				'system-ui',
   				'-apple-system',
@@ -117,6 +133,14 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
+  		},
+  		boxShadow: {
+  			soft: '0 20px 60px -25px hsl(var(--shadow-soft) / 0.55)',
+  			strong: '0 40px 140px -60px hsl(var(--shadow-strong) / 0.65)'
+  		},
+  		backgroundImage: {
+  			'toss-grid': 'radial-gradient(circle, rgba(37,99,235,0.12) 1px, transparent 1px)',
+  			'toss-radial': 'radial-gradient(circle at top, rgba(59,130,246,0.18), transparent 55%)'
   		},
   		animation: {
   			'fade-in': 'fadeIn 0.3s ease-in-out',
@@ -157,12 +181,12 @@ export default {
   					height: '0'
   				},
   				to: {
-  					height: 'var(--radix-accordion-content-height)'
+  					height: 'var(--reka-accordion-content-height)'
   				}
   			},
   			'accordion-up': {
   				from: {
-  					height: 'var(--radix-accordion-content-height)'
+  					height: 'var(--reka-accordion-content-height)'
   				},
   				to: {
   					height: '0'

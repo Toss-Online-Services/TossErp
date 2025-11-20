@@ -187,26 +187,7 @@ Actions:
 
 ---
 
-## Primary Interaction: MCP Server vs. CLI
 
-Taskmaster offers two primary ways to interact:
-
-1.  **MCP Server (Recommended for Integrated Tools)**:
-    - For AI agents and integrated development environments (like VS Code), interacting via the **MCP server is the preferred method**.
-    - The MCP server exposes Taskmaster functionality through a set of tools (e.g., `get_tasks`, `add_subtask`).
-    - This method offers better performance, structured data exchange, and richer error handling compared to CLI parsing.
-    - Refer to @`mcp.instructions.md` for details on the MCP architecture and available tools.
-    - A comprehensive list and description of MCP tools and their corresponding CLI commands can be found in @`taskmaster.instructions.md`.
-    - **Restart the MCP server** if core logic in `scripts/modules` or MCP tool/direct function definitions change.
-    - **Note**: MCP tools fully support tagged task lists with complete tag management capabilities.
-
-2.  **`task-master` CLI (For Users & Fallback)**:
-    - The global `task-master` command provides a user-friendly interface for direct terminal interaction.
-    - It can also serve as a fallback if the MCP server is inaccessible or a specific function isn't exposed via MCP.
-    - Install globally with `npm install -g task-master-ai` or use locally via `npx task-master-ai ...`.
-    - The CLI commands often mirror the MCP tools (e.g., `task-master list` corresponds to `get_tasks`).
-    - Refer to @`taskmaster.instructions.md` for a detailed command reference.
-    - **Tagged Task Lists**: CLI fully supports the new tagged system with seamless migration.
 
 ## How the Tag System Works (For Your Reference)
 

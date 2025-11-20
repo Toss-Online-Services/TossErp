@@ -9,13 +9,13 @@
           <p class="mt-1 text-sm text-slate-600 dark:text-slate-400 sm:text-base">Customer orders for later fulfillment</p>
         </div>
         <div class="flex flex-wrap gap-2 sm:gap-3">
-          <button 
+          <Button 
             @click="showOrderQueue = true"
-            class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 rounded-lg bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+            class="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
           >
             📋 Order Queue
-            <span v-if="pendingOrders.length > 0" class="px-2 py-0.5 bg-white/20 rounded-full text-xs">{{ pendingOrders.length }}</span>
-          </button>
+            <Badge v-if="pendingOrders.length > 0" variant="secondary" class="ml-2 bg-white/20 text-white">{{ pendingOrders.length }}</Badge>
+          </Button>
         </div>
       </div>
 
@@ -96,24 +96,27 @@
           <div class="p-4 border shadow-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl border-slate-200/50 dark:border-slate-700/50 sm:p-6">
             <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Quick Actions</h3>
             <div class="space-y-3">
-              <button 
+              <Button 
                 @click="holdOrder"
-                class="w-full py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                variant="default"
+                class="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700"
               >
                 ⏸️ Hold Order
-              </button>
-              <button 
+              </Button>
+              <Button 
                 @click="voidOrder"
-                class="w-full py-2.5 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                variant="destructive"
+                class="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700"
               >
                 ❌ Void Order
-              </button>
-              <button 
+              </Button>
+              <Button 
                 @click="showCustomerModal = true"
-                class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                variant="default"
+                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
                 👤 Add Customer
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -155,6 +158,8 @@ import OrderQueue from '~/components/sales/OrderQueue.vue'
 import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
 import { useSalesAPI } from '~/composables/useSalesAPI'
 import { getErrorNotification, logError } from '~/utils/errorHandler'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 // Page metadata
 useHead({
