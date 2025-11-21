@@ -162,28 +162,18 @@ const getStatusClass = (status: string) => {
 onMounted(() => {
   loadOrder()
 })
-<template>
-  <div>
-    <MaterialButton to="/supplier/orders" color="success" variant="text" class="mb-6">
-      ← Back to Orders
-    </MaterialButton>
-    <div v-if="isLoading" class="text-center py-12">
-      <div class="inline-block w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
-      <p class="mt-2 text-gray-600">Loading order...</p>
-    </div>
-    <div v-else-if="order" class="space-y-6">
-      <!-- Order Header -->
-      <MaterialCard variant="elevated">
-        ...existing code...
-      </MaterialCard>
-      <!-- Actions -->
-      <MaterialCard v-if="order.status === 'Submitted'" variant="elevated" class="mt-6">
-        ...existing code...
-      </MaterialCard>
-      <MaterialCard v-else-if="order.status === 'Accepted'" variant="elevated" class="mt-6">
-        ...existing code...
-      </MaterialCard>
-    </div>
-  </div>
-</template>
+
+// eslint-disable-next-line @typescript-eslint/no-undef, no-undef
+const getStatusColor = (status: string) => {
+  const colors: Record<string, string> = {
+    'Draft': 'default',
+    'Submitted': 'warning',
+    'Accepted': 'primary',
+    'Shipped': 'purple',
+    'Delivered': 'success',
+    'Rejected': 'danger'
+  }
+  return colors[status] || 'default'
+}
+</script>
 

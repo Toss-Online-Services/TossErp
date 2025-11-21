@@ -32,18 +32,6 @@
       class="bg-white dark:bg-gray-800 rounded-lg shadow"
       empty-message="No orders found."
     />
-  <script setup lang="ts">
-  // eslint-disable-next-line @typescript-eslint/no-undef, no-undef
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      'Draft': 'default',
-      'Submitted': 'warning',
-      'Accepted': 'primary',
-      'Shipped': 'purple',
-      'Delivered': 'success'
-    }
-    return colors[status] || 'default'
-  }
   </div>
 </template>
 
@@ -96,6 +84,18 @@ const formatCurrency = (amount: number) => {
 
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString('en-ZA')
+}
+
+// eslint-disable-next-line @typescript-eslint/no-undef, no-undef
+const getStatusColor = (status: string) => {
+  const colors: Record<string, string> = {
+    'Draft': 'default',
+    'Submitted': 'warning',
+    'Accepted': 'primary',
+    'Shipped': 'purple',
+    'Delivered': 'success'
+  }
+  return colors[status] || 'default'
 }
 
 const getStatusClass = (status: string) => {

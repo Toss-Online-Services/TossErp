@@ -46,7 +46,7 @@
 import { computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { definePageMeta, useHead, useNuxtApp } from 'nuxt/app'
+// definePageMeta, useHead, and useNuxtApp are auto-imported in Nuxt 4
 import type { $Fetch } from 'ofetch'
 import type { QuotationMeta, QuotationRecord } from '../../../../types/sales'
 import { useToast } from '../../../../composables/useToast'
