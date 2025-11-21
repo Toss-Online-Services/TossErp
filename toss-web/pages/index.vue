@@ -1,41 +1,41 @@
 <template>
-  <div class="min-h-screen bg-white dark:bg-slate-950">
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-lg">
+  <div class="min-h-screen bg-gradient-to-b from-white via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <!-- Navigation - Material Design -->
+    <nav class="fixed top-0 w-full z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-md border-b border-slate-200/50 dark:border-slate-700/50">
       <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-20">
+        <div class="flex items-center justify-between h-16">
           <!-- Logo with animation -->
-          <div class="flex items-center space-x-3 group cursor-pointer">
-            <div class="relative flex items-center justify-center w-12 h-12 rounded-xl shadow-xl bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-2xl">
+          <div class="flex items-center space-x-3 cursor-pointer group">
+            <div class="relative flex items-center justify-center w-12 h-12 transition-all duration-300 shadow-xl rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-2xl">
               <span class="text-2xl font-black text-white">T</span>
-              <div class="absolute inset-0 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+              <div class="absolute inset-0 transition-opacity duration-300 opacity-0 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 group-hover:opacity-20"></div>
             </div>
             <div class="flex flex-col">
-              <span class="text-2xl font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">TOSS</span>
+              <span class="text-2xl font-black text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text">TOSS</span>
               <span class="text-[10px] font-semibold text-orange-600 dark:text-orange-400 -mt-1 tracking-wider">ONLINE SERVICES</span>
             </div>
           </div>
 
           <!-- Desktop Menu -->
           <div class="items-center hidden space-x-1 md:flex">
-            <a href="#how-it-works" class="relative px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all duration-300 rounded-lg hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
+            <a href="#how-it-works" class="relative px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-lg text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
               <span class="relative z-10">How it works</span>
               <div class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full group-hover:left-0"></div>
             </a>
-            <a href="#for-shops" class="relative px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all duration-300 rounded-lg hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
+            <a href="#for-shops" class="relative px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-lg text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
               <span class="relative z-10">For shops</span>
               <div class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full group-hover:left-0"></div>
             </a>
-            <a href="#for-suppliers" class="relative px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all duration-300 rounded-lg hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
+            <a href="#for-suppliers" class="relative px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-lg text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
               <span class="relative z-10">For suppliers & drivers</span>
               <div class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full group-hover:left-0"></div>
             </a>
-            <a href="#faq" class="relative px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all duration-300 rounded-lg hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
+            <a href="#faq" class="relative px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-lg text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
               <span class="relative z-10">FAQ</span>
               <div class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full group-hover:left-0"></div>
             </a>
             <div class="w-px h-6 mx-2 bg-slate-300 dark:bg-slate-700"></div>
-            <a href="/auth/register" class="relative px-4 py-2 text-sm font-bold text-orange-600 dark:text-orange-400 transition-all duration-300 rounded-lg hover:text-orange-700 dark:hover:text-orange-300 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
+            <a href="/auth/register" class="relative px-4 py-2 text-sm font-bold text-orange-600 transition-all duration-300 rounded-lg dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
               <span class="relative z-10">Register</span>
               <div class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-orange-600 transition-all duration-300 group-hover:w-full group-hover:left-0"></div>
             </a>
@@ -50,7 +50,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                 </svg>
               </span>
-              <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+              <div class="absolute inset-0 transition-opacity duration-300 bg-white opacity-0 group-hover:opacity-20"></div>
             </a>
           </div>
         </div>
@@ -62,8 +62,8 @@
       <div class="absolute inset-0 bg-gradient-to-br from-slate-50 to-orange-50/30 dark:from-slate-950 dark:to-slate-900 -z-10"></div>
       
       <!-- Animated background shapes -->
-      <div class="absolute top-20 left-10 w-72 h-72 bg-orange-200/20 dark:bg-orange-500/10 rounded-full blur-3xl animate-float"></div>
-      <div class="absolute bottom-20 right-10 w-96 h-96 bg-orange-300/20 dark:bg-orange-400/10 rounded-full blur-3xl animate-float-delayed"></div>
+      <div class="absolute rounded-full top-20 left-10 w-72 h-72 bg-orange-200/20 dark:bg-orange-500/10 blur-3xl animate-float"></div>
+      <div class="absolute rounded-full bottom-20 right-10 w-96 h-96 bg-orange-300/20 dark:bg-orange-400/10 blur-3xl animate-float-delayed"></div>
       
       <div class="mx-auto max-w-7xl">
         <div class="text-center">
@@ -88,7 +88,7 @@
           </p>
 
           <div class="flex flex-col items-center justify-center gap-4 mb-16 sm:flex-row animate-fade-in-up animation-delay-400">
-            <a href="/auth/register" class="inline-flex items-center gap-2 px-8 py-4 text-lg font-semibold text-white transition-all duration-300 rounded-md shadow-xl bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 hover:shadow-2xl hover:scale-105 group">
+            <a href="/auth/register" class="inline-flex items-center gap-2 px-8 py-4 text-lg font-semibold text-white transition-all duration-300 bg-orange-500 rounded-md shadow-xl hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 hover:shadow-2xl hover:scale-105 group">
               <span>Join TOSS</span>
               <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
@@ -188,7 +188,7 @@
     <section id="for-shops" class="px-4 py-20 bg-white sm:px-6 lg:px-8 dark:bg-slate-950">
       <div class="mx-auto max-w-7xl">
         <div class="mb-16 text-center">
-          <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30">
+          <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-orange-700 uppercase bg-orange-100 rounded-full dark:text-orange-300 dark:bg-orange-900/30">
             For shops
           </div>
           <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">
@@ -200,8 +200,8 @@
         </div>
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <div class="p-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 group">
-            <div class="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-orange-100 dark:bg-orange-900/30 transition-all duration-300 group-hover:scale-110 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
+          <div class="p-6 transition-all duration-300 bg-white border rounded-lg border-slate-200 dark:border-slate-800 dark:bg-slate-900 hover:shadow-lg hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 group">
+            <div class="flex items-center justify-center w-12 h-12 mb-4 transition-all duration-300 bg-orange-100 rounded-lg dark:bg-orange-900/30 group-hover:scale-110 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
               <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
               </svg>
@@ -210,8 +210,8 @@
             <p class="text-sm text-slate-600 dark:text-slate-400">Ring up sales, track totals and download receipts – no fancy hardware needed</p>
           </div>
 
-          <div class="p-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 group">
-            <div class="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-orange-100 dark:bg-orange-900/30 transition-all duration-300 group-hover:scale-110 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
+          <div class="p-6 transition-all duration-300 bg-white border rounded-lg border-slate-200 dark:border-slate-800 dark:bg-slate-900 hover:shadow-lg hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 group">
+            <div class="flex items-center justify-center w-12 h-12 mb-4 transition-all duration-300 bg-orange-100 rounded-lg dark:bg-orange-900/30 group-hover:scale-110 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
               <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
               </svg>
@@ -220,8 +220,8 @@
             <p class="text-sm text-slate-600 dark:text-slate-400">Know what's low, what's finished, and what to buy next</p>
           </div>
 
-          <div class="p-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 group">
-            <div class="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-orange-100 dark:bg-orange-900/30 transition-all duration-300 group-hover:scale-110 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
+          <div class="p-6 transition-all duration-300 bg-white border rounded-lg border-slate-200 dark:border-slate-800 dark:bg-slate-900 hover:shadow-lg hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 group">
+            <div class="flex items-center justify-center w-12 h-12 mb-4 transition-all duration-300 bg-orange-100 rounded-lg dark:bg-orange-900/30 group-hover:scale-110 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
               <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
               </svg>
@@ -230,8 +230,8 @@
             <p class="text-sm text-slate-600 dark:text-slate-400">Send digital orders instead of long WhatsApp lists and phone calls</p>
           </div>
 
-          <div class="p-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 group">
-            <div class="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-orange-100 dark:bg-orange-900/30 transition-all duration-300 group-hover:scale-110 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
+          <div class="p-6 transition-all duration-300 bg-white border rounded-lg border-slate-200 dark:border-slate-800 dark:bg-slate-900 hover:shadow-lg hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 group">
+            <div class="flex items-center justify-center w-12 h-12 mb-4 transition-all duration-300 bg-orange-100 rounded-lg dark:bg-orange-900/30 group-hover:scale-110 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
               <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
               </svg>
@@ -247,7 +247,7 @@
     <section id="for-suppliers" class="px-4 py-20 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/40">
       <div class="mx-auto max-w-7xl">
         <div class="mb-16 text-center">
-          <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30">
+          <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-orange-700 uppercase bg-orange-100 rounded-full dark:text-orange-300 dark:bg-orange-900/30">
             For suppliers & drivers
           </div>
           <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">
@@ -297,9 +297,9 @@
 
     <!-- How TOSS Works Timeline -->
     <section id="how-it-works" class="px-4 py-20 bg-white sm:px-6 lg:px-8 dark:bg-slate-950">
-      <div class="mx-auto max-w-4xl">
+      <div class="max-w-4xl mx-auto">
         <div class="mb-16 text-center">
-          <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30">
+          <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-orange-700 uppercase bg-orange-100 rounded-full dark:text-orange-300 dark:bg-orange-900/30">
             How it works
           </div>
           <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">
@@ -309,35 +309,35 @@
 
         <ol class="relative pl-12 space-y-12 border-l-2 border-orange-200 dark:border-orange-900">
           <li class="ml-16">
-            <div class="absolute w-12 h-12 -left-6 flex items-center justify-center rounded-full bg-orange-500 text-white font-bold text-lg transition-all duration-300 hover:scale-125 hover:shadow-lg origin-center">1</div>
+            <div class="absolute flex items-center justify-center w-12 h-12 text-lg font-bold text-white transition-all duration-300 origin-center bg-orange-500 rounded-full -left-6 hover:scale-125 hover:shadow-lg">1</div>
             <div class="ml-4 transition-all duration-500 hover:translate-x-2">
               <h3 class="mb-3 text-lg font-bold text-slate-800 dark:text-slate-200">Shop signs up and sets up products</h3>
               <p class="text-sm text-slate-600 dark:text-slate-400">Quick setup on your phone. Add your products with simple names and prices.</p>
             </div>
           </li>
           <li class="ml-16">
-            <div class="absolute w-12 h-12 -left-6 flex items-center justify-center rounded-full bg-orange-500 text-white font-bold text-lg transition-all duration-300 hover:scale-125 hover:shadow-lg origin-center">2</div>
+            <div class="absolute flex items-center justify-center w-12 h-12 text-lg font-bold text-white transition-all duration-300 origin-center bg-orange-500 rounded-full -left-6 hover:scale-125 hover:shadow-lg">2</div>
             <div class="ml-4 transition-all duration-500 hover:translate-x-2">
               <h3 class="mb-3 text-lg font-bold text-slate-800 dark:text-slate-200">Use TOSS POS to sell</h3>
               <p class="text-sm text-slate-600 dark:text-slate-400">Sales and stock update automatically. No more notebooks.</p>
             </div>
           </li>
           <li class="ml-16">
-            <div class="absolute w-12 h-12 -left-6 flex items-center justify-center rounded-full bg-orange-500 text-white font-bold text-lg transition-all duration-300 hover:scale-125 hover:shadow-lg origin-center">3</div>
+            <div class="absolute flex items-center justify-center w-12 h-12 text-lg font-bold text-white transition-all duration-300 origin-center bg-orange-500 rounded-full -left-6 hover:scale-125 hover:shadow-lg">3</div>
             <div class="ml-4 transition-all duration-500 hover:translate-x-2">
               <h3 class="mb-3 text-lg font-bold text-slate-800 dark:text-slate-200">TOSS suggests what to order</h3>
               <p class="text-sm text-slate-600 dark:text-slate-400">When stock is low, the platform tells you what to buy and helps you order.</p>
             </div>
           </li>
           <li class="ml-16">
-            <div class="absolute w-12 h-12 -left-6 flex items-center justify-center rounded-full bg-orange-500 text-white font-bold text-lg transition-all duration-300 hover:scale-125 hover:shadow-lg origin-center">4</div>
+            <div class="absolute flex items-center justify-center w-12 h-12 text-lg font-bold text-white transition-all duration-300 origin-center bg-orange-500 rounded-full -left-6 hover:scale-125 hover:shadow-lg">4</div>
             <div class="ml-4 transition-all duration-500 hover:translate-x-2">
               <h3 class="mb-3 text-lg font-bold text-slate-800 dark:text-slate-200">Shops join a group order</h3>
               <p class="text-sm text-slate-600 dark:text-slate-400">Buy together with other shops to get wholesale prices. TOSS sends it to suppliers.</p>
             </div>
           </li>
           <li class="ml-16">
-            <div class="absolute w-12 h-12 -left-6 flex items-center justify-center rounded-full bg-orange-500 text-white font-bold text-lg transition-all duration-300 hover:scale-125 hover:shadow-lg origin-center">5</div>
+            <div class="absolute flex items-center justify-center w-12 h-12 text-lg font-bold text-white transition-all duration-300 origin-center bg-orange-500 rounded-full -left-6 hover:scale-125 hover:shadow-lg">5</div>
             <div class="ml-4 transition-all duration-500 hover:translate-x-2">
               <h3 class="mb-3 text-lg font-bold text-slate-800 dark:text-slate-200">Driver delivers stock to your shop</h3>
               <p class="text-sm text-slate-600 dark:text-slate-400">Local driver picks up from wholesaler and delivers straight to your door. No more taxi trips.</p>
@@ -423,7 +423,7 @@
 
     <!-- Get Started Section -->
     <section id="get-started" class="relative px-4 py-20 overflow-hidden bg-white sm:px-6 lg:px-8 dark:bg-slate-950">
-      <div class="mx-auto max-w-3xl">
+      <div class="max-w-3xl mx-auto">
         <div class="mb-12 text-center">
           <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">
             Start using TOSS today
@@ -434,7 +434,7 @@
         </div>
 
         <div class="flex flex-col items-center justify-center gap-6">
-          <a href="/auth/register" class="inline-flex items-center gap-2 px-12 py-5 text-xl font-semibold text-white transition-all duration-300 rounded-md shadow-xl bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 hover:shadow-2xl hover:scale-105">
+          <a href="/auth/register" class="inline-flex items-center gap-2 px-12 py-5 text-xl font-semibold text-white transition-all duration-300 bg-orange-500 rounded-md shadow-xl hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 hover:shadow-2xl hover:scale-105">
             <span>Create your account</span>
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
@@ -474,9 +474,9 @@
 
     <!-- FAQ Section -->
     <section id="faq" class="px-4 py-20 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/40">
-      <div class="mx-auto max-w-4xl">
+      <div class="max-w-4xl mx-auto">
           <div class="mb-16 text-center">
-          <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30">
+          <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-orange-700 uppercase bg-orange-100 rounded-full dark:text-orange-300 dark:bg-orange-900/30">
             Questions
           </div>
           <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">
@@ -485,30 +485,30 @@
         </div>
 
         <div class="space-y-6">
-          <div class="p-6 bg-white border rounded-lg dark:bg-slate-900 dark:border-slate-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer">
+          <div class="p-6 transition-all duration-300 bg-white border rounded-lg cursor-pointer dark:bg-slate-900 dark:border-slate-800 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700">
             <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">How much does TOSS cost?</h3>
             <p class="text-slate-600 dark:text-slate-400">TOSS is free to get started with core features. We offer affordable premium plans with advanced features that save you more money than they cost.</p>
-          </div>          <div class="p-6 bg-white border rounded-lg dark:bg-slate-900 dark:border-slate-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer">
+          </div>          <div class="p-6 transition-all duration-300 bg-white border rounded-lg cursor-pointer dark:bg-slate-900 dark:border-slate-800 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700">
             <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Do I need WiFi or can I use normal data?</h3>
             <p class="text-slate-600 dark:text-slate-400">TOSS works with normal mobile data and uses very little. It also works completely offline – you can ring up sales even without any connection, and everything syncs later when you have data.</p>
           </div>
 
-          <div class="p-6 bg-white border rounded-lg dark:bg-slate-900 dark:border-slate-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer">
+          <div class="p-6 transition-all duration-300 bg-white border rounded-lg cursor-pointer dark:bg-slate-900 dark:border-slate-800 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700">
             <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Can I use it on my phone?</h3>
             <p class="text-slate-600 dark:text-slate-400">Yes! TOSS is made for phones. It works on Android phones (even older ones). You don't need a computer or special equipment.</p>
           </div>
 
-          <div class="p-6 bg-white border rounded-lg dark:bg-slate-900 dark:border-slate-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer">
+          <div class="p-6 transition-all duration-300 bg-white border rounded-lg cursor-pointer dark:bg-slate-900 dark:border-slate-800 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700">
             <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">What if I'm not good with technology?</h3>
             <p class="text-slate-600 dark:text-slate-400">TOSS is designed to be as simple as WhatsApp. If you can send a message, you can use TOSS. We also provide training and support to help you get started.</p>
           </div>
 
-          <div class="p-6 bg-white border rounded-lg dark:bg-slate-900 dark:border-slate-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer">
+          <div class="p-6 transition-all duration-300 bg-white border rounded-lg cursor-pointer dark:bg-slate-900 dark:border-slate-800 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700">
             <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Will my sales and customer data be safe?</h3>
             <p class="text-slate-600 dark:text-slate-400">Yes, very safe. Your data is encrypted and stored securely. Only you can see your business information. We don't share it with anyone without your permission.</p>
           </div>
 
-          <div class="p-6 bg-white border rounded-lg dark:bg-slate-900 dark:border-slate-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer">
+          <div class="p-6 transition-all duration-300 bg-white border rounded-lg cursor-pointer dark:bg-slate-900 dark:border-slate-800 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700">
             <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">How does the group buying work?</h3>
             <p class="text-slate-600 dark:text-slate-400">TOSS connects shops in the same area who want to buy the same products. When you join a group order, you combine your order with other shops to get better wholesale prices – like buying in bulk together.</p>
           </div>
