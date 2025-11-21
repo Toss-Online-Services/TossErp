@@ -1,7 +1,3 @@
-<script setup lang="ts">
-// Material Components will be auto-imported by Nuxt
-</script>
-
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
     <!-- Page Header with Glass Morphism -->

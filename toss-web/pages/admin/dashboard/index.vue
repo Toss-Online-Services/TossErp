@@ -48,18 +48,6 @@
           </div>
         </div>
       </MaterialCard>
-    <script setup lang="ts">
-    // eslint-disable-next-line @typescript-eslint/no-undef, no-undef
-    const getStatusColor = (status: string) => {
-      const colors: Record<string, string> = {
-        'Draft': 'default',
-        'Submitted': 'warning',
-        'Accepted': 'primary',
-        'Shipped': 'purple',
-        'Delivered': 'success'
-      }
-      return colors[status] || 'default'
-    }
     </div>
   </div>
 </template>
@@ -126,6 +114,18 @@ const formatCurrency = (amount: number) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(amount)
+}
+
+// eslint-disable-next-line @typescript-eslint/no-undef, no-undef
+const getStatusColor = (status: string) => {
+  const colors: Record<string, string> = {
+    'Draft': 'default',
+    'Submitted': 'warning',
+    'Accepted': 'primary',
+    'Shipped': 'purple',
+    'Delivered': 'success'
+  }
+  return colors[status] || 'default'
 }
 
 onMounted(() => {

@@ -158,8 +158,7 @@ import OrderQueue from '~/components/sales/OrderQueue.vue'
 import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
 import { useSalesAPI } from '~/composables/useSalesAPI'
 import { getErrorNotification, logError } from '~/utils/errorHandler'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+// Button and Badge are auto-imported in Nuxt 4 with shadcn-vue
 
 // Page metadata
 useHead({

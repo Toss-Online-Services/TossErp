@@ -132,279 +132,104 @@
         </div>
 
         <!-- Cart and Checkout -->
-        <div class="space-y-4">
-          <!-- Current Sale -->
-          <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 overflow-hidden flex flex-col max-h-[calc(100vh-12rem)]">
-            <div class="flex-shrink-0 px-4 py-4 bg-gradient-to-r from-blue-600 to-purple-600 sm:py-5">
-              <div class="flex items-center justify-between">
-                <h3 class="text-lg font-bold text-white">Current Sale</h3>
-                <button 
-                  v-if="cartItems.length > 0"
-                  @click="clearCart"
-                  class="px-3 py-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-sm font-medium text-white transition-colors"
-                >
-                  Clear All
-                </button>
-              </div>
+        <MaterialCard>
+          <template #body>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold">Current Sale</h3>
+              <MaterialButton color="danger" size="sm" @click="clearCart" :disabled="cartItems.length === 0">Clear All</MaterialButton>
             </div>
-            <div class="flex-1 p-4 overflow-y-auto sm:p-6">
-            
             <div v-if="cartItems.length === 0" class="py-8 text-center">
               <ShoppingCartIcon class="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <p class="text-gray-500">No items in cart</p>
               <p class="text-sm text-gray-400">Scan or click products to add</p>
             </div>
-
             <div v-else class="mb-4 space-y-3">
-              <div 
-                v-for="item in cartItems" 
-                :key="item.id"
-                class="p-3 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
-              >
-                <!-- Main Item Row -->
-                <div class="flex items-center justify-between mb-2">
-                  <div class="flex-1">
-                    <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ item.name }}</h4>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">R{{ item.price.toFixed(2) }} each</p>
-                  </div>
+              <MaterialDataTable :items="cartItems" :columns="cartColumns">
+                <template #cell-quantity="{ item }">
                   <div class="flex items-center space-x-2">
-                    <button 
-                      @click="updateQuantity(item.id, item.quantity - 1)"
-                      class="flex items-center justify-center w-6 h-6 text-gray-600 bg-gray-200 rounded-full dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
-                    >
-                      <MinusIcon class="w-3 h-3" />
-                    </button>
-                    <span class="w-8 text-sm font-medium text-center text-gray-900 dark:text-gray-100">{{ item.quantity }}</span>
-                    <button 
-                      @click="updateQuantity(item.id, item.quantity + 1)"
-                      class="flex items-center justify-center w-6 h-6 text-gray-600 bg-gray-200 rounded-full dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
-                    >
-                      <PlusIcon class="w-3 h-3" />
-                    </button>
-                    <button 
-                      @click="removeFromCart(item.id)"
-                      class="ml-2 text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
-                    >
-                      <TrashIcon class="w-4 h-4" />
-                    </button>
+                    <MaterialButton size="xs" @click="updateQuantity(item.id, item.quantity - 1)" :disabled="item.quantity <= 1">-</MaterialButton>
+                    <span class="w-8 text-sm font-medium text-center">{{ item.quantity }}</span>
+                    <MaterialButton size="xs" @click="updateQuantity(item.id, item.quantity + 1)" :disabled="item.quantity >= item.stock">+</MaterialButton>
                   </div>
-                </div>
-
-                <!-- Discount Controls -->
-                <div class="flex items-center pt-2 mb-2 space-x-2 border-t border-gray-200 dark:border-gray-700">
-                  <button
-                    @click="toggleDiscountMode(item.id)"
-                    class="flex items-center px-2 py-1 space-x-1 text-xs text-orange-700 bg-orange-100 rounded dark:bg-orange-900/30 dark:text-orange-400 hover:bg-orange-200 dark:hover:bg-orange-900/50"
-                  >
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>Discount</span>
-                  </button>
-
-                  <!-- Percentage Discount -->
+                </template>
+                <template #cell-actions="{ item }">
+                  <MaterialButton color="danger" size="xs" @click="removeFromCart(item.id)"><TrashIcon class="w-4 h-4" /></MaterialButton>
+                </template>
+                <template #cell-discount="{ item }">
+                  <MaterialButton color="warning" size="xs" @click="toggleDiscountMode(item.id)">Discount</MaterialButton>
                   <div v-if="item.showDiscount === 'percent'" class="flex items-center flex-1 space-x-1">
-                    <input
-                      v-model.number="item.discountPercent"
-                      @input="handleDiscountChange(item.id, 'percent', $event.target.value)"
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.01"
-                      placeholder="0"
-                      class="w-16 px-2 py-1 text-xs text-gray-900 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                    <span class="text-xs text-gray-600 dark:text-gray-400">%</span>
+                    <MaterialInput v-model.number="item.discountPercent" type="number" min="0" max="100" step="0.01" placeholder="0" size="xs" />
+                    <span class="text-xs">%</span>
                   </div>
-
-                  <!-- Fixed Amount Discount -->
                   <div v-if="item.showDiscount === 'amount'" class="flex items-center flex-1 space-x-1">
-                    <span class="text-xs text-gray-600 dark:text-gray-400">R</span>
-                    <input
-                      v-model.number="item.discountAmount"
-                      @input="handleDiscountChange(item.id, 'amount', $event.target.value)"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder="0.00"
-                      class="w-20 px-2 py-1 text-xs text-gray-900 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
-                    />
+                    <span class="text-xs">R</span>
+                    <MaterialInput v-model.number="item.discountAmount" type="number" min="0" step="0.01" placeholder="0.00" size="xs" />
                   </div>
-
-                  <!-- Clear Discount -->
-                  <button
-                    v-if="item.showDiscount"
-                    @click="clearDiscount(item.id)"
-                    class="text-xs text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                <!-- Line Total with Breakdown -->
-                <div class="flex items-center justify-between pt-2 text-xs border-t border-gray-200 dark:border-gray-700">
-                  <span class="text-gray-600 dark:text-gray-400">Line Total:</span>
+                  <MaterialButton v-if="item.showDiscount" color="danger" size="xs" @click="clearDiscount(item.id)">✕</MaterialButton>
+                </template>
+                <template #cell-lineTotal="{ item }">
                   <div class="text-right">
-                    <div v-if="item.discountPercent > 0 || item.discountAmount > 0" class="text-orange-600 line-through dark:text-orange-400 text-xxs">
+                    <div v-if="item.discountPercent > 0 || item.discountAmount > 0" class="text-orange-600 line-through text-xxs">
                       R{{ (item.price * item.quantity).toFixed(2) }}
                     </div>
-                    <div class="font-semibold text-gray-900 dark:text-gray-100">
+                    <div class="font-semibold">
                       R{{ calculateItemLineTotal(item).toFixed(2) }}
                     </div>
                   </div>
-                </div>
-                </div>
-              </div>
+                </template>
+              </MaterialDataTable>
             </div>
-
-            <!-- Cart Total & VAT Summary -->
-            <div v-if="cartItems.length > 0" class="pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
-              <!-- VAT Summary -->
-              <div class="p-4 mb-6 space-y-2 border border-blue-200 rounded-lg bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
-                <h4 class="mb-3 text-xs font-semibold tracking-wider text-blue-900 uppercase dark:text-blue-100">Cart Summary</h4>
-                
-                <!-- Subtotal -->
-                <div class="flex items-center justify-between text-sm">
-                  <span class="text-gray-700 dark:text-gray-300">Subtotal</span>
-                  <span class="font-medium text-gray-900 dark:text-gray-100">R{{ formatCurrency(cartTotals.subtotal) }}</span>
-                </div>
-
-                <!-- Discount Total -->
-                <div v-if="cartTotals.discountTotal > 0" class="flex items-center justify-between text-sm">
-                  <span class="text-orange-700 dark:text-orange-400">Discounts</span>
-                  <span class="font-medium text-orange-700 dark:text-orange-400">-R{{ formatCurrency(cartTotals.discountTotal) }}</span>
-                </div>
-
-                <!-- Tax Total -->
-                <div v-if="cartTotals.taxTotal > 0" class="flex items-center justify-between text-sm">
-                  <span class="text-gray-700 dark:text-gray-300">VAT (15%)</span>
-                  <span class="font-medium text-gray-900 dark:text-gray-100">R{{ formatCurrency(cartTotals.taxTotal) }}</span>
-                </div>
-
-                <!-- Grand Total -->
-                <div class="flex items-center justify-between pt-3 mt-3 border-t-2 border-blue-300 dark:border-blue-700">
-                  <span class="text-sm font-bold text-blue-900 dark:text-blue-100">Total</span>
-                  <span class="text-lg font-bold text-blue-600 dark:text-blue-400">R{{ formatCurrency(cartTotal) }}</span>
-                </div>
-
-                <!-- Item Count -->
-                <div class="pt-1 text-xs text-center text-gray-500 dark:text-gray-400">
-                  {{ cartItems.length }} {{ cartItems.length === 1 ? 'item' : 'items' }}
-                </div>
-              </div>
-              
-              <!-- Customer Selection (Searchable) -->
-              <div class="mb-4">
-                <label class="block mb-2 text-sm font-medium text-gray-700">Customer</label>
-                <div class="relative">
-                  <input
-                    v-model="customerSearchQuery"
-                    @focus="showCustomerDropdown = true"
-                    @blur="handleCustomerBlur"
-                    type="text"
-                    placeholder="Walk-in Customer"
-                    class="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                  <div 
-                    v-if="showCustomerDropdown" 
-                    class="absolute z-10 w-full mt-1 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg max-h-48"
-                  >
-                    <div 
-                      @mousedown.prevent="selectCustomer(null)"
-                      class="px-3 py-2 text-gray-900 cursor-pointer hover:bg-blue-50"
-                    >
-                      Walk-in Customer
-                    </div>
-                    <div 
-                      v-for="customer in filteredCustomers" 
-                      :key="customer.id"
-                      @mousedown.prevent="selectCustomer(customer)"
-                      class="px-3 py-2 text-gray-900 cursor-pointer hover:bg-blue-50"
-                    >
-                      {{ customer.name }} <span class="text-xs text-gray-500">{{ customer.phone }}</span>
-                    </div>
+            <MaterialCard class="mb-6">
+              <template #body>
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between text-sm">
+                    <span>Subtotal</span>
+                    <span class="font-medium">R{{ formatCurrency(cartTotals.subtotal) }}</span>
+                  </div>
+                  <div v-if="cartTotals.discountTotal > 0" class="flex items-center justify-between text-sm">
+                    <span class="text-warning">Discounts</span>
+                    <span class="font-medium text-warning">-R{{ formatCurrency(cartTotals.discountTotal) }}</span>
+                  </div>
+                  <div v-if="cartTotals.taxTotal > 0" class="flex items-center justify-between text-sm">
+                    <span>VAT (15%)</span>
+                    <span class="font-medium">R{{ formatCurrency(cartTotals.taxTotal) }}</span>
+                  </div>
+                  <div class="flex items-center justify-between pt-3 mt-3 border-t">
+                    <span class="text-sm font-bold">Total</span>
+                    <span class="text-lg font-bold text-blue-600">R{{ formatCurrency(cartTotal) }}</span>
+                  </div>
+                  <div class="pt-1 text-xs text-center">
+                    {{ cartItems.length }} {{ cartItems.length === 1 ? 'item' : 'items' }}
                   </div>
                 </div>
+              </template>
+            </MaterialCard>
+            <MaterialInput v-model="customerSearchQuery" label="Customer" placeholder="Walk-in Customer" class="mb-4" @focus="showCustomerDropdown = true" @blur="handleCustomerBlur" />
+            <MaterialCard v-if="showCustomerDropdown" class="mb-4">
+              <template #body>
+                <MaterialButton block @click="selectCustomer(null)">Walk-in Customer</MaterialButton>
+                <MaterialButton v-for="customer in filteredCustomers" :key="customer.id" block @click="selectCustomer(customer)">{{ customer.name }} <span class="text-xs text-gray-500">{{ customer.phone }}</span></MaterialButton>
+              </template>
+            </MaterialCard>
+            <div class="mb-6">
+              <label class="block mb-3 text-sm font-medium">Payment Method</label>
+              <div class="grid grid-cols-2 gap-2">
+                <MaterialButton v-for="method in paymentMethods" :key="method.id" block :color="selectedPaymentMethod === method.id ? 'primary' : 'default'" @click="selectedPaymentMethod = method.id">{{ method.name }}</MaterialButton>
               </div>
-
-              <!-- Payment Methods -->
-              <div class="mb-6">
-                <label class="block mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">Payment Method</label>
-                <div class="grid grid-cols-2 gap-2">
-                  <button 
-                    v-for="method in paymentMethods" 
-                    :key="method.id"
-                    @click="selectedPaymentMethod = method.id"
-                    :class="[
-                      'p-3 rounded-lg text-sm font-medium transition-colors',
-                      selectedPaymentMethod === method.id
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
-                    ]"
-                  >
-                    {{ method.name }}
-                  </button>
-                </div>
-              </div>
-
-              <!-- Checkout Buttons -->
-              <div class="mb-6 space-y-3">
-                <button 
-                  @click="showCreateOrderModal = true"
-                  :disabled="cartItems.length === 0"
-                  class="w-full py-3 font-bold text-white transition-all duration-200 shadow-lg rounded-xl hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                >
-                  📝 Create Order (Queue) - R{{ formatCurrency(cartTotal) }}
-                </button>
-                <button 
-                  @click="processPayment"
-                  :disabled="cartItems.length === 0"
-                  class="w-full py-3 font-bold text-white transition-all duration-200 shadow-lg rounded-xl hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                >
-                  💰 Process Payment - R{{ formatCurrency(cartTotal) }}
-                </button>
-              </div>
-
-              <!-- Quick Actions (Collapsible with HeadlessUI) -->
-              <Disclosure v-slot="{ open }" :default-open="true">
-                <DisclosureButton class="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-left text-blue-900 transition-colors rounded-lg bg-blue-50 dark:bg-blue-900/20 dark:text-blue-100 hover:bg-blue-100 dark:hover:bg-blue-900/30 focus:outline-none focus-visible:ring focus-visible:ring-blue-500 focus-visible:ring-opacity-75">
-                  <span class="text-xs font-bold tracking-wider uppercase">Quick Actions</span>
-                  <ChevronUpIcon
-                    :class="open ? 'rotate-180 transform' : ''"
-                    class="w-5 h-5 text-blue-500 transition-transform duration-200"
-                  />
-                </DisclosureButton>
-                <DisclosurePanel class="pt-3 pb-2 space-y-2">
-                  <button 
-                    @click="showHoldSaleModal = true"
-                    :disabled="cartItems.length === 0"
-                    class="w-full py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    <span>⏸️</span>
-                    <span>Hold Sale</span>
-                  </button>
-                  <button 
-                    @click="showVoidSaleModal = true"
-                    :disabled="cartItems.length === 0"
-                    class="w-full py-2.5 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    <span>❌</span>
-                    <span>Void Sale</span>
-                  </button>
-                  <button 
-                    v-if="heldSales.length > 0"
-                    @click="showHeldSalesModal = true"
-                    class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
-                  >
-                    <span>📋</span>
-                    <span>Held Sales ({{ heldSales.length }})</span>
-                  </button>
-                </DisclosurePanel>
-              </Disclosure>
             </div>
+            <div class="mb-6 space-y-3">
+              <MaterialButton block color="primary" size="lg" @click="showCreateOrderModal = true" :disabled="cartItems.length === 0">📝 Create Order (Queue) - R{{ formatCurrency(cartTotal) }}</MaterialButton>
+              <MaterialButton block color="success" size="lg" @click="processPayment" :disabled="cartItems.length === 0">💰 Process Payment - R{{ formatCurrency(cartTotal) }}</MaterialButton>
             </div>
-          </div>
-        </div>
+            <MaterialCard class="mb-4">
+              <template #body>
+                <MaterialButton block color="warning" size="md" @click="showHoldSaleModal = true" :disabled="cartItems.length === 0">⏸️ Hold Sale</MaterialButton>
+                <MaterialButton block color="danger" size="md" @click="showVoidSaleModal = true" :disabled="cartItems.length === 0">❌ Void Sale</MaterialButton>
+                <MaterialButton v-if="heldSales.length > 0" block color="secondary" size="md" @click="showHeldSalesModal = true">📋 Held Sales ({{ heldSales.length }})</MaterialButton>
+              </template>
+            </MaterialCard>
+          </template>
+        </MaterialCard>
       </div>
     </div>
 
@@ -433,40 +258,26 @@
         </div>
       </div>
     </div>
-    </div>
 
     <!-- Comprehensive Sales Report Modal -->
-    <div v-if="showReports" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-      <div class="bg-white rounded-xl p-6 max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-2xl font-semibold text-gray-900">Daily Sales Report</h3>
-          <button @click="showReports = false" class="text-gray-500 hover:text-gray-700">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
+    <MaterialModal v-if="showSuccessModal" @close="closeSuccessModal" size="md">
+      <template #header>
+        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full">
+          <CheckIcon class="w-8 h-8 text-green-600" />
         </div>
-
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-1 gap-4 mb-6 md:grid-cols-3">
-          <div class="p-4 rounded-lg bg-green-50">
-            <p class="text-sm text-gray-600">Today's Sales</p>
-            <p class="text-2xl font-bold text-gray-900">R{{ formatCurrency(todaySales) }}</p>
-            <p class="mt-1 text-xs text-green-600">{{ todayTransactions }} transactions</p>
-          </div>
-          <div class="p-4 rounded-lg bg-blue-50">
-            <p class="text-sm text-gray-600">Average Sale</p>
-            <p class="text-2xl font-bold text-gray-900">R{{ formatCurrency(averageSale) }}</p>
-            <p class="mt-1 text-xs text-blue-600">Per transaction</p>
-          </div>
-          <div class="p-4 rounded-lg bg-purple-50">
-            <p class="text-sm text-gray-600">Cash Float</p>
-            <p class="text-2xl font-bold text-gray-900">R{{ formatCurrency(cashFloat) }}</p>
-            <p class="mt-1 text-xs text-purple-600">In drawer</p>
+      </template>
+      <template #body>
+        <div class="text-center">
+          <h3 class="mb-2 text-xl font-semibold">Payment Successful!</h3>
+          <p class="mb-6">Transaction completed successfully</p>
+          <div class="flex space-x-3">
+            <MaterialButton color="primary" @click="printReceipt">Print Receipt</MaterialButton>
+            <MaterialButton color="secondary" @click="emailReceipt">Email Receipt</MaterialButton>
+            <MaterialButton color="default" @click="closeSuccessModal">Close</MaterialButton>
           </div>
         </div>
-
-        <!-- Payment Methods Breakdown -->
+      </template>
+    </MaterialModal>
         <div class="mb-6">
           <h4 class="mb-3 text-lg font-semibold text-gray-900">Payment Methods</h4>
           <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -837,13 +648,11 @@
         </div>
       </div>
     </div>
-
     <!-- Barcode Scanner Component -->
     <BarcodeScanner 
       v-model="showBarcodeScanner" 
       @barcode-scanned="handleBarcodeScanned"
     />
-
     <!-- Settings Modal -->
     <div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
       <div class="w-full max-w-lg p-6 bg-white rounded-xl">
@@ -855,7 +664,6 @@
             </svg>
           </button>
         </div>
-
         <!-- Hardware Status Section -->
         <div class="mb-6">
           <h4 class="mb-4 text-lg font-semibold text-gray-900">Hardware Status</h4>
@@ -877,7 +685,6 @@
                 </span>
               </div>
             </div>
-
             <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50">
               <div class="flex items-center gap-3">
                 <div class="flex items-center justify-center w-10 h-10 bg-purple-100 rounded-lg">
@@ -895,7 +702,6 @@
                 </span>
               </div>
             </div>
-
             <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50">
               <div class="flex items-center gap-3">
                 <div class="flex items-center justify-center w-10 h-10 bg-orange-100 rounded-lg">
@@ -913,7 +719,6 @@
                 </span>
               </div>
             </div>
-
             <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50">
               <div class="flex items-center gap-3">
                 <div class="flex items-center justify-center w-10 h-10 bg-green-100 rounded-lg">
