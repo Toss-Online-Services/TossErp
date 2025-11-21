@@ -5,140 +5,70 @@
     <!-- Filters -->
     <div class="mb-6 space-y-4 sm:flex sm:space-y-0 sm:space-x-4">
       <div class="flex-1">
-        <input
+        <MaterialInput
           v-model="searchQuery"
           type="text"
+          label="Search users"
           placeholder="Search users..."
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
+          variant="outlined"
+          class="w-full"
         />
       </div>
-      <select
+      <MaterialSelect
         v-model="selectedRole"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-      >
-        <option value="">All Roles</option>
-        <option value="Administrator">Administrator</option>
-        <option value="StoreOwner">Retailer</option>
-        <option value="Vendor">Vendor</option>
-        <option value="Supplier">Supplier</option>
-        <option value="Driver">Driver</option>
-      </select>
+        label="Role"
+        :options="[
+          { value: '', label: 'All Roles' },
+          { value: 'Administrator', label: 'Administrator' },
+          { value: 'StoreOwner', label: 'Retailer' },
+          { value: 'Vendor', label: 'Vendor' },
+          { value: 'Supplier', label: 'Supplier' },
+          { value: 'Driver', label: 'Driver' }
+        ]"
+        class="w-48"
+      />
     </div>
 
     <!-- Users Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-      <div v-if="isLoading" class="p-8 text-center">
-        <div class="inline-block w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-        <p class="mt-2 text-gray-600">Loading users...</p>
-      </div>
+    <MaterialDataTable
+      :loading="isLoading"
+      :rows="filteredUsers"
+      :columns="[
+        { key: 'name', label: 'Name', render: (row) => row.name },
+        { key: 'email', label: 'Email', render: (row) => row.email },
+        { key: 'roles', label: 'Roles', render: (row) => h('div', { class: 'flex flex-wrap gap-1' }, row.roles.map(role => h(UiBadge, { color: 'primary', class: 'text-xs font-semibold' }, () => role))) },
+        { key: 'isActive', label: 'Status', render: (row) => h(UiBadge, { color: row.isActive ? 'success' : 'danger', class: 'text-xs font-semibold' }, () => row.isActive ? 'Active' : 'Inactive') },
+        { key: 'actions', label: 'Actions', align: 'right', render: (row) => h('div', { class: 'space-x-2' }, [
+          row.isActive
+            ? h(MaterialButton, { color: 'danger', size: 'sm', onClick: () => deactivateUser(row) }, () => 'Deactivate')
+            : h(MaterialButton, { color: 'success', size: 'sm', onClick: () => activateUser(row) }, () => 'Activate'),
+          h(MaterialButton, { color: 'primary', size: 'sm', onClick: () => showRoleModal(row) }, () => 'Edit Roles')
+        ]) }
+      ]"
+      class="bg-white dark:bg-gray-800 rounded-lg shadow"
+    />
 
-      <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead class="bg-gray-50 dark:bg-gray-700">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Name</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Email</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Roles</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="user in filteredUsers" :key="user.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-              {{ user.name }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-              {{ user.email }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex flex-wrap gap-1">
-                <span
-                  v-for="role in user.roles"
-                  :key="role"
-                  class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                >
-                  {{ role }}
-                </span>
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span
-                :class="[
-                  'px-2 py-1 text-xs font-semibold rounded-full',
-                  user.isActive
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                ]"
-              >
-                {{ user.isActive ? 'Active' : 'Inactive' }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-              <button
-                v-if="user.isActive"
-                @click="deactivateUser(user)"
-                class="text-red-600 hover:text-red-900 dark:text-red-400"
-              >
-                Deactivate
-              </button>
-              <button
-                v-else
-                @click="activateUser(user)"
-                class="text-green-600 hover:text-green-900 dark:text-green-400"
-              >
-                Activate
-              </button>
-              <button
-                @click="showRoleModal(user)"
-                class="text-blue-600 hover:text-blue-900 dark:text-blue-400"
-              >
-                Edit Roles
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Role Edit Modal -->
-    <div v-if="showRoleEditModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
-        <h3 class="text-lg font-semibold mb-4">Edit Roles for {{ userToEdit?.name }}</h3>
+    <MaterialModal v-model="showRoleEditModal" :title="`Edit Roles for ${userToEdit?.name}`">
+      <template #body>
         <div class="space-y-2 mb-6">
-          <label
-            v-for="role in availableRoles"
-            :key="role"
-            class="flex items-center"
-          >
-            <input
-              v-model="selectedRoles"
-              type="checkbox"
-              :value="role"
-              class="mr-2"
-            />
-            <span class="text-sm text-gray-700 dark:text-gray-300">{{ role }}</span>
+          <label v-for="role in availableRoles" :key="role" class="flex items-center">
+            <UiSwitch v-model="selectedRoles" :value="role" />
+            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{ role }}</span>
           </label>
         </div>
-        <div class="flex justify-end space-x-4">
-          <button
-            @click="showRoleEditModal = false"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-          >
-            Cancel
-          </button>
-          <button
-            @click="updateUserRoles"
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-          >
-            Update Roles
-          </button>
+      </template>
+      <template #footer>
+        <div class="flex justify-end space-x-2">
+          <MaterialButton variant="text" @click="showRoleEditModal = false">Cancel</MaterialButton>
+          <MaterialButton color="primary" @click="updateUserRoles">Update Roles</MaterialButton>
         </div>
-      </div>
-    </div>
+      </template>
+    </MaterialModal>
   </div>
 </template>
 
 <script setup lang="ts">
+// eslint-disable-next-line @typescript-eslint/no-undef, no-undef
 definePageMeta({
   layout: 'admin',
   middleware: 'auth',

@@ -1,64 +1,82 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Inventory</h1>
+  <div class="p-6 space-y-6">
+    <!-- Page Header -->
+    <div>
+      <h1 class="text-3xl font-bold text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text">
+        Inventory
+      </h1>
+      <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+        Monitor your stock levels and receive low stock alerts
+      </p>
+    </div>
 
     <!-- Low Stock Alert -->
-    <div v-if="lowStockItems.length > 0" class="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-      <div class="flex items-center">
-        <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <p class="font-semibold text-yellow-800 dark:text-yellow-200">
-          {{ lowStockItems.length }} product(s) are running low on stock
-        </p>
+    <MaterialCard
+      v-if="lowStockItems.length > 0"
+      variant="elevated"
+      class="overflow-hidden"
+    >
+      <div class="relative p-6 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20">
+        <div class="flex items-start gap-4">
+          <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-900/50">
+            <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-yellow-900 dark:text-yellow-200">
+              Low Stock Alert
+            </h3>
+            <p class="mt-1 text-sm text-yellow-800 dark:text-yellow-300">
+              {{ lowStockItems.length }} product(s) are running low on stock and need attention
+            </p>
+          </div>
+          <UiBadge variant="warning" class="text-sm px-3 py-1">
+            {{ lowStockItems.length }}
+          </UiBadge>
+        </div>
       </div>
-    </div>
+    </MaterialCard>
 
     <!-- Stock Levels Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-      <div v-if="isLoading" class="p-8 text-center">
-        <div class="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        <p class="mt-2 text-gray-600">Loading inventory...</p>
+    <MaterialCard variant="elevated">
+      <div v-if="isLoading" class="flex flex-col items-center justify-center p-12">
+        <div class="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="mt-4 text-sm font-medium text-slate-600 dark:text-slate-400">Loading inventory...</p>
       </div>
 
-      <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead class="bg-gray-50 dark:bg-gray-700">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">SKU</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Current Stock</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Reorder Point</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="product in products" :key="product.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-              {{ product.name }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-              {{ product.sku }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-              {{ product.availableStock || 0 }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-              {{ product.minimumStockLevel || 10 }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span
-                :class="[
-                  'px-2 py-1 text-xs font-semibold rounded-full',
-                  getStockStatusClass(product.availableStock, product.minimumStockLevel)
-                ]"
-              >
-                {{ getStockStatus(product.availableStock, product.minimumStockLevel) }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <div v-else class="overflow-x-auto">
+        <MaterialDataTable
+          :columns="columns"
+          :data="products"
+          :sortable="true"
+        >
+          <template #cell-product="{ row }">
+            <div class="min-w-[200px]">
+              <div class="text-sm font-semibold text-slate-900 dark:text-white">{{ row.name }}</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400">SKU: {{ row.sku }}</div>
+            </div>
+          </template>
+          <template #cell-currentStock="{ row }">
+            <span class="text-sm font-semibold text-slate-900 dark:text-white">
+              {{ row.availableStock || 0 }}
+            </span>
+          </template>
+          <template #cell-reorderPoint="{ row }">
+            <span class="text-sm text-slate-600 dark:text-slate-400">
+              {{ row.minimumStockLevel || 10 }}
+            </span>
+          </template>
+          <template #cell-status="{ row }">
+            <UiBadge
+              :variant="getStockStatusVariant(row.availableStock, row.minimumStockLevel)"
+            >
+              {{ getStockStatus(row.availableStock, row.minimumStockLevel) }}
+            </UiBadge>
+          </template>
+        </MaterialDataTable>
+      </div>
+    </MaterialCard>
   </div>
 </template>
 
@@ -77,6 +95,13 @@ const products = ref<any[]>([])
 const lowStockItems = ref<any[]>([])
 const isLoading = ref(true)
 
+const columns = [
+  { key: 'product', label: 'Product', sortable: true },
+  { key: 'currentStock', label: 'Current Stock', sortable: true },
+  { key: 'reorderPoint', label: 'Reorder Point', sortable: true },
+  { key: 'status', label: 'Status', sortable: true }
+]
+
 const loadInventory = async () => {
   isLoading.value = true
   try {
@@ -93,6 +118,12 @@ const getStockStatus = (stock: number, reorderPoint: number) => {
   if (stock === 0) return 'Out of Stock'
   if (stock <= reorderPoint) return 'Low Stock'
   return 'In Stock'
+}
+
+const getStockStatusVariant = (stock: number, reorderPoint: number) => {
+  if (stock === 0) return 'destructive'
+  if (stock <= reorderPoint) return 'warning'
+  return 'success'
 }
 
 const getStockStatusClass = (stock: number, reorderPoint: number) => {

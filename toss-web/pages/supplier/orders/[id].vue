@@ -1,104 +1,64 @@
 <template>
-  <div class="p-6">
-    <div class="mb-6">
-      <NuxtLink
-        to="/supplier/orders"
-        class="text-green-600 hover:text-green-800 dark:text-green-400"
-      >
-        ← Back to Orders
-      </NuxtLink>
-    </div>
-
+  <div>
+    <NuxtLink to="/supplier/orders" class="inline-flex items-center text-green-600 hover:text-green-800 dark:text-green-400 mb-6">
+      <span class="mr-2">&#8592;</span> Back to Orders
+    </NuxtLink>
     <div v-if="isLoading" class="text-center py-12">
       <div class="inline-block w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
       <p class="mt-2 text-gray-600">Loading order...</p>
     </div>
-
     <div v-else-if="order" class="space-y-6">
       <!-- Order Header -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <MaterialCard variant="elevated">
         <div class="flex justify-between items-start mb-4">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ order.poNumber }}</h1>
-            <p class="text-gray-600 dark:text-gray-400">From: {{ order.shopName || 'Unknown Retailer' }}</p>
-            <p class="text-gray-600 dark:text-gray-400">Date: {{ formatDate(order.orderDate) }}</p>
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent mb-2">{{ order.poNumber }}</h1>
+            <p class="text-sm text-slate-600 dark:text-slate-400">From: {{ order.shopName || 'Unknown Retailer' }}</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Date: {{ formatDate(order.orderDate) }}</p>
           </div>
-          <span
-            :class="[
-              'px-4 py-2 text-sm font-semibold rounded-full',
-              getStatusClass(order.status)
-            ]"
-          >
-            {{ order.status }}
-          </span>
+          <UiBadge :color="getStatusColor(order.status)" class="px-4 py-2 text-sm font-semibold">{{ order.status }}</UiBadge>
         </div>
-
         <!-- Order Items -->
         <div class="mt-6">
           <h2 class="text-lg font-semibold mb-4">Items</h2>
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">SKU</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Quantity</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Unit Price</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr v-for="item in order.items" :key="item.id">
-                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ item.productName }}</td>
-                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{{ item.productSKU }}</td>
-                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{{ item.quantity }}</td>
-                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">R{{ formatCurrency(item.unitPrice) }}</td>
-                <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">R{{ formatCurrency(item.lineTotal) }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <MaterialDataTable
+            :rows="order.items"
+            :columns="[
+              { key: 'productName', label: 'Product' },
+              { key: 'productSKU', label: 'SKU' },
+              { key: 'quantity', label: 'Quantity' },
+              { key: 'unitPrice', label: 'Unit Price', render: (row) => `R${formatCurrency(row.unitPrice)}` },
+              { key: 'lineTotal', label: 'Total', render: (row) => `R${formatCurrency(row.lineTotal)}` }
+            ]"
+          />
         </div>
-
         <div class="mt-6 pt-6 border-t flex justify-between items-center">
           <div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Subtotal</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Subtotal</p>
             <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">R{{ formatCurrency(order.totalAmount) }}</p>
           </div>
         </div>
-      </div>
-
+      </MaterialCard>
       <!-- Actions -->
-      <div v-if="order.status === 'Submitted'" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <MaterialCard v-if="order.status === 'Submitted'" variant="elevated" class="mt-6">
         <h2 class="text-lg font-semibold mb-4">Actions</h2>
-        <div class="flex space-x-4">
-          <button
-            @click="handleApprove"
-            :disabled="isProcessing"
-            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-          >
+        <div class="flex gap-4">
+          <MaterialButton @click="handleApprove" :disabled="isProcessing" color="success">
             Accept Order
-          </button>
-          <button
-            @click="handleReject"
-            :disabled="isProcessing"
-            class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
-          >
+          </MaterialButton>
+          <MaterialButton @click="handleReject" :disabled="isProcessing" color="danger">
             Reject Order
-          </button>
+          </MaterialButton>
         </div>
-      </div>
-
-      <div v-else-if="order.status === 'Accepted'" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      </MaterialCard>
+      <MaterialCard v-else-if="order.status === 'Accepted'" variant="elevated" class="mt-6">
         <h2 class="text-lg font-semibold mb-4">Update Status</h2>
-        <div class="flex space-x-4">
-          <button
-            @click="updateStatus('Shipped')"
-            :disabled="isProcessing"
-            class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
-          >
+        <div class="flex gap-4">
+          <MaterialButton @click="() => updateStatus('Shipped')" :disabled="isProcessing" color="primary">
             Mark as Shipped
-          </button>
+          </MaterialButton>
         </div>
-      </div>
+      </MaterialCard>
     </div>
   </div>
 </template>
@@ -202,5 +162,28 @@ const getStatusClass = (status: string) => {
 onMounted(() => {
   loadOrder()
 })
-</script>
+<template>
+  <div>
+    <MaterialButton to="/supplier/orders" color="success" variant="text" class="mb-6">
+      ← Back to Orders
+    </MaterialButton>
+    <div v-if="isLoading" class="text-center py-12">
+      <div class="inline-block w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+      <p class="mt-2 text-gray-600">Loading order...</p>
+    </div>
+    <div v-else-if="order" class="space-y-6">
+      <!-- Order Header -->
+      <MaterialCard variant="elevated">
+        ...existing code...
+      </MaterialCard>
+      <!-- Actions -->
+      <MaterialCard v-if="order.status === 'Submitted'" variant="elevated" class="mt-6">
+        ...existing code...
+      </MaterialCard>
+      <MaterialCard v-else-if="order.status === 'Accepted'" variant="elevated" class="mt-6">
+        ...existing code...
+      </MaterialCard>
+    </div>
+  </div>
+</template>
 

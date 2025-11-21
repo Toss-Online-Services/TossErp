@@ -1,12 +1,9 @@
 <template>
   <div class="p-6">
     <div class="mb-6">
-      <NuxtLink
-        to="/driver/deliveries"
-        class="text-purple-600 hover:text-purple-800 dark:text-purple-400"
-      >
-        ← Back to Deliveries
-      </NuxtLink>
+      <MaterialButton to="/driver/deliveries" color="primary" variant="text" class="mb-6" as="NuxtLink">
+        &#8592; Back to Deliveries
+      </MaterialButton>
     </div>
 
     <div v-if="isLoading" class="text-center py-12">
@@ -16,7 +13,7 @@
 
     <div v-else-if="delivery" class="space-y-6">
       <!-- Delivery Header -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <MaterialCard variant="elevated" class="mb-6">
         <div class="flex justify-between items-start mb-4">
           <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ delivery.poNumber }}</h1>
@@ -28,18 +25,11 @@
               Date: {{ formatDate(delivery.orderDate) }}
             </p>
           </div>
-          <span
-            :class="[
-              'px-4 py-2 text-sm font-semibold rounded-full',
-              getStatusClass(delivery.status)
-            ]"
-          >
-            {{ delivery.status }}
-          </span>
+          <UiBadge :color="getStatusColor(delivery.status)" class="px-4 py-2 text-sm font-semibold">{{ delivery.status }}</UiBadge>
         </div>
 
         <!-- Contact Information -->
-        <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <MaterialCard variant="outlined" class="mt-6">
           <h3 class="font-semibold mb-2">Contact Information</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400">
             Supplier: {{ delivery.supplierPhone || 'N/A' }}<br>
@@ -48,7 +38,7 @@
         </div>
 
         <!-- Delivery Items -->
-        <div class="mt-6">
+        <MaterialCard variant="outlined" class="mt-6">
           <h2 class="text-lg font-semibold mb-4">Items to Deliver</h2>
           <div class="space-y-2">
             <div
@@ -77,17 +67,13 @@
       </div>
 
       <!-- Status Actions -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <MaterialCard variant="elevated" class="mt-6">
         <h2 class="text-lg font-semibold mb-4">Update Status</h2>
         
         <div v-if="delivery.status === 'Accepted'" class="space-y-4">
-          <button
-            @click="markPickedUp"
-            :disabled="isProcessing"
-            class="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
-          >
+          <MaterialButton @click="markPickedUp" :disabled="isProcessing" color="primary" class="w-full">
             Mark as Picked Up
-          </button>
+          </MaterialButton>
         </div>
 
         <div v-else-if="delivery.status === 'PickedUp'" class="space-y-4">
@@ -95,102 +81,102 @@
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Delivery Notes (optional)
             </label>
-            <textarea
+            <MaterialTextarea
               v-model="deliveryNotes"
               rows="3"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 mb-4"
               placeholder="Any notes about the delivery..."
+              class="mb-4"
             />
           </div>
-          <div class="flex items-center mb-4">
-            <input
-              v-model="deliveryConfirmed"
-              type="checkbox"
-              class="mr-2"
-            />
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Delivery confirmed by recipient
-            </label>
-          </div>
-          <button
-            @click="markDelivered"
-            :disabled="isProcessing"
-            class="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-          >
-            Mark as Delivered
-          </button>
-        </div>
+          <template>
+            <div class="min-h-screen bg-gray-100 dark:bg-gray-900 py-8 px-4">
+              <MaterialButton to="/driver/deliveries" color="primary" variant="text" class="mb-6" as="NuxtLink">
+                &#8592; Back to Deliveries
+              </MaterialButton>
 
-        <div v-else-if="delivery.status === 'Delivered'" class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-          <p class="text-green-800 dark:text-green-200 font-semibold">✓ Delivery completed</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
+              <div>
+                <MaterialCard variant="elevated" class="mb-6">
+                  <h1 class="text-2xl font-bold mb-2">Delivery #{{ deliveryId }}</h1>
+                  <div class="flex items-center mb-2">
+                    <span class="font-medium mr-2">Status:</span>
+                    <UiBadge :color="getStatusColor(delivery.status)" class="px-4 py-2 text-sm font-semibold">{{ delivery.status }}</UiBadge>
+                  </div>
+                  <div class="mb-2">
+                    <span class="font-medium mr-2">Assigned Driver:</span>
+                    {{ delivery.driverName || 'N/A' }}
+                  </div>
+                  <div class="mb-2">
+                    <span class="font-medium mr-2">Pickup Location:</span>
+                    {{ delivery.pickupLocation }}
+                  </div>
+                  <div class="mb-2">
+                    <span class="font-medium mr-2">Dropoff Location:</span>
+                    {{ delivery.dropoffLocation }}
+                  </div>
+                  <div class="mb-2">
+                    <span class="font-medium mr-2">Scheduled Time:</span>
+                    {{ delivery.scheduledTime }}
+                  </div>
+                </MaterialCard>
 
-<script setup lang="ts">
-definePageMeta({
-  layout: 'driver',
-  middleware: 'auth',
-  meta: {
-    roles: ['Driver']
-  }
-})
+                <MaterialCard variant="outlined" class="mt-6">
+                  <h2 class="text-lg font-semibold mb-4">Delivery Details</h2>
+                  <div class="mb-2">
+                    <span class="font-medium mr-2">Product:</span>
+                    {{ delivery.productName }}
+                  </div>
+                  <div class="mb-2">
+                    <span class="font-medium mr-2">Quantity:</span>
+                    {{ delivery.quantity }}
+                  </div>
+                  <div class="mb-2">
+                    <span class="font-medium mr-2">Notes:</span>
+                    {{ delivery.notes || 'None' }}
+                  </div>
+                </MaterialCard>
 
-const route = useRoute()
-const router = useRouter()
-const deliveriesAPI = useDeliveriesAPI()
-
-const deliveryId = computed(() => Number(route.params.id))
-const delivery = ref<any>(null)
-const isLoading = ref(true)
-const isProcessing = ref(false)
-const deliveryNotes = ref('')
-const deliveryConfirmed = ref(true)
-
-const loadDelivery = async () => {
-  isLoading.value = true
-  try {
-    delivery.value = await deliveriesAPI.getDeliveryById(deliveryId.value)
-  } catch (error) {
-    console.error('Failed to load delivery:', error)
-    router.push('/driver/deliveries')
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const markPickedUp = async () => {
-  if (!confirm('Mark this delivery as picked up?')) return
-
-  isProcessing.value = true
-  try {
-    await deliveriesAPI.markPickedUp(deliveryId.value)
-    await loadDelivery()
-  } catch (error) {
-    console.error('Failed to mark as picked up:', error)
-    alert('Failed to update status. Please try again.')
-  } finally {
-    isProcessing.value = false
-  }
-}
-
-const markDelivered = async () => {
-  if (!confirm('Mark this delivery as completed?')) return
-
-  isProcessing.value = true
-  try {
-    await deliveriesAPI.markDelivered(
-      deliveryId.value,
-      deliveryNotes.value || undefined,
-      deliveryConfirmed.value
-    )
-    await loadDelivery()
-  } catch (error) {
-    console.error('Failed to mark as delivered:', error)
-    alert('Failed to update status. Please try again.')
-  } finally {
+                <MaterialCard variant="elevated" class="mt-6">
+                  <h2 class="text-lg font-semibold mb-4">Update Status</h2>
+                  <div v-if="delivery.status === 'Accepted'" class="space-y-4">
+                    <MaterialButton @click="markPickedUp" :disabled="isProcessing" color="primary" class="w-full">
+                      Mark as Picked Up
+                    </MaterialButton>
+                  </div>
+                  <div v-else-if="delivery.status === 'PickedUp'" class="space-y-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Delivery Notes (optional)
+                      </label>
+                      <MaterialTextarea
+                        v-model="deliveryNotes"
+                        rows="3"
+                        placeholder="Any notes about the delivery..."
+                        class="mb-4"
+                      />
+                    </div>
+                    <div class="flex items-center mb-4">
+                      <input
+                        v-model="deliveryConfirmed"
+                        type="checkbox"
+                        class="mr-2"
+                      />
+                      <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Delivery confirmed by recipient
+                      </label>
+                    </div>
+                    <MaterialButton @click="markDelivered" :disabled="isProcessing" color="success" class="w-full">
+                      Mark as Delivered
+                    </MaterialButton>
+                  </div>
+                  <div v-else-if="delivery.status === 'Delivered'" class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <p class="text-green-800 dark:text-green-200 font-semibold">
+                      &#10003; Delivery completed
+                    </p>
+                  </div>
+                </MaterialCard>
+              </div>
+            </div>
+          </template>
     isProcessing.value = false
   }
 }
