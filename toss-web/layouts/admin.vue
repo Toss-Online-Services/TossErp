@@ -1,65 +1,57 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex">
-            <div class="flex-shrink-0 flex items-center">
-              <NuxtLink to="/admin" class="text-xl font-bold text-red-600 dark:text-red-400">
-                TOSS Admin
-              </NuxtLink>
-            </div>
-            <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <NuxtLink
-                to="/admin/dashboard"
-                class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 dark:text-gray-100"
-                active-class="border-b-2 border-red-500"
-              >
-                Dashboard
-              </NuxtLink>
-              <NuxtLink
-                to="/admin/users"
-                class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                active-class="border-b-2 border-red-500"
-              >
-                Users
-              </NuxtLink>
-              <NuxtLink
-                to="/admin/orders"
-                class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                active-class="border-b-2 border-red-500"
-              >
-                Orders
-              </NuxtLink>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <span class="text-sm text-gray-700 dark:text-gray-300 mr-4">
-              {{ userStore.fullName }}
-            </span>
-            <button
-              @click="handleLogout"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
-            >
-              Logout
-            </button>
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <MaterialSidebar v-model="sidebarOpen" role="admin" :user-info="userInfo" />
+    <MaterialTopNav
+      :sidebar-open="sidebarOpen"
+      @toggle-sidebar="sidebarOpen = !sidebarOpen"
+      :notification-count="notificationCount"
+      :user-info="userInfo"
+      @search="handleSearch"
+    />
+
+    <!-- Main Content -->
+    <main class="lg:pl-72 pt-16">
+      <div class="p-6">
+        <slot />
+      </div>
+
+      <!-- Footer -->
+      <footer class="border-t border-slate-200 dark:border-slate-700 py-6 px-6 mt-12">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+          <p class="text-sm text-slate-600 dark:text-slate-400">
+            &copy; {{ new Date().getFullYear() }} TOSS. All rights reserved.
+          </p>
+          <div class="flex gap-6">
+            <NuxtLink to="/help" class="text-sm text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+              Help
+            </NuxtLink>
+            <NuxtLink to="/privacy" class="text-sm text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+              Privacy
+            </NuxtLink>
+            <NuxtLink to="/terms" class="text-sm text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+              Terms
+            </NuxtLink>
           </div>
         </div>
-      </div>
-    </nav>
-    <main>
-      <slot />
+      </footer>
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
 const userStore = useUserStore()
-const { logout } = useAuth()
+const sidebarOpen = ref(false)
+const notificationCount = ref(8)
 
-const handleLogout = async () => {
-  await logout()
-  await navigateTo('/auth/login')
+const userInfo = computed(() => ({
+  name: userStore.fullName || 'Admin',
+  email: userStore.email || 'admin@toss.co.za',
+  avatar: userStore.avatar,
+  role: 'Administrator'
+}))
+
+const handleSearch = (query: string) => {
+  console.log('Search:', query)
 }
 </script>
 

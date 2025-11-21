@@ -1,21 +1,28 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 px-4 py-8">
-    <div class="max-w-2xl w-full">
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 px-4 py-8">
+    <!-- Decorative background elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute top-20 left-10 w-72 h-72 bg-orange-200/20 dark:bg-orange-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 right-10 w-96 h-96 bg-orange-300/20 dark:bg-orange-400/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="max-w-2xl w-full relative z-10">
       <!-- Logo and Title -->
       <div class="text-center mb-8">
-        <div class="flex justify-center mb-4">
-          <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-            <span class="text-4xl font-bold text-white">T</span>
+        <NuxtLink to="/" class="inline-flex justify-center mb-6 group">
+          <div class="relative flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 rounded-2xl shadow-xl transition-transform group-hover:scale-110 group-hover:rotate-3">
+            <span class="text-4xl font-black text-white">T</span>
+            <div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
           </div>
-        </div>
-        <h1 class="text-4xl font-bold text-slate-900 dark:text-white">Join TOSS</h1>
+        </NuxtLink>
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">Join TOSS</h1>
         <p class="mt-2 text-slate-600 dark:text-slate-400">
           Start saving with group buying & shared logistics
         </p>
       </div>
 
       <!-- Registration Form -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-8">
+      <MaterialCard variant="elevated" class="p-8">
         <form @submit.prevent="handleRegister" class="space-y-6">
           <!-- Progress Indicator -->
           <div class="mb-8">
@@ -41,63 +48,53 @@
               Tell us about your shop
             </h3>
 
-            <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Shop Name *
-              </label>
-              <input
-                v-model="form.shopName"
-                type="text"
-                required
-                placeholder="e.g., Thabo's Spaza Shop"
-                class="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white transition-all"
-              />
-            </div>
+            <MaterialInput
+              v-model="form.shopName"
+              label="Shop Name *"
+              placeholder="e.g., Thabo's Spaza Shop"
+              required
+              variant="outlined"
+            />
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Area/Township *
                 </label>
-                <select
-                  v-model="form.area"
-                  required
-                  class="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-                >
-                  <option value="">Select area</option>
-                  <option value="soweto">Soweto</option>
-                  <option value="alexandra">Alexandra</option>
-                  <option value="katlehong">Katlehong</option>
-                  <option value="tembisa">Tembisa</option>
-                  <option value="diepsloot">Diepsloot</option>
-                  <option value="other">Other</option>
-                </select>
+                <UiSelect v-model="form.area" required>
+                  <UiSelectTrigger class="w-full">
+                    <UiSelectValue placeholder="Select area" />
+                  </UiSelectTrigger>
+                  <UiSelectContent>
+                    <UiSelectItem value="soweto">Soweto</UiSelectItem>
+                    <UiSelectItem value="alexandra">Alexandra</UiSelectItem>
+                    <UiSelectItem value="katlehong">Katlehong</UiSelectItem>
+                    <UiSelectItem value="tembisa">Tembisa</UiSelectItem>
+                    <UiSelectItem value="diepsloot">Diepsloot</UiSelectItem>
+                    <UiSelectItem value="other">Other</UiSelectItem>
+                  </UiSelectContent>
+                </UiSelect>
               </div>
 
-              <div>
-                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Zone/Section
-                </label>
-                <input
-                  v-model="form.zone"
-                  type="text"
-                  placeholder="e.g., Diepkloof Extension 1"
-                  class="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-                />
-              </div>
+              <MaterialInput
+                v-model="form.zone"
+                label="Zone/Section"
+                placeholder="e.g., Diepkloof Extension 1"
+                variant="outlined"
+              />
             </div>
 
             <div>
               <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Physical Address *
               </label>
-              <textarea
+              <UiTextarea
                 v-model="form.address"
                 required
                 rows="2"
                 placeholder="Enter your shop's physical address"
-                class="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-              ></textarea>
+                class="w-full"
+              />
             </div>
           </div>
 
@@ -108,60 +105,44 @@
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  First Name *
-                </label>
-                <input
-                  v-model="form.firstName"
-                  type="text"
-                  required
-                  placeholder="First name"
-                  class="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-                />
-              </div>
+              <MaterialInput
+                v-model="form.firstName"
+                label="First Name *"
+                placeholder="First name"
+                required
+                variant="outlined"
+              />
 
-              <div>
-                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Last Name *
-                </label>
-                <input
-                  v-model="form.lastName"
-                  type="text"
-                  required
-                  placeholder="Last name"
-                  class="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-                />
-              </div>
+              <MaterialInput
+                v-model="form.lastName"
+                label="Last Name *"
+                placeholder="Last name"
+                required
+                variant="outlined"
+              />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Phone Number *
-              </label>
-              <input
+              <MaterialInput
                 v-model="form.phone"
+                label="Phone Number *"
                 type="tel"
-                required
                 placeholder="+27 XX XXX XXXX"
-                class="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+                required
+                variant="outlined"
               />
               <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 For WhatsApp alerts & group buying invites
               </p>
             </div>
 
-            <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Email Address
-              </label>
-              <input
-                v-model="form.email"
-                type="email"
-                placeholder="your@email.com"
-                class="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-              />
-            </div>
+            <MaterialInput
+              v-model="form.email"
+              label="Email Address"
+              type="email"
+              placeholder="your@email.com"
+              variant="outlined"
+            />
           </div>
 
           <!-- Step 3: Account Security -->
@@ -170,31 +151,23 @@
               Secure your account
             </h3>
 
-            <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Password *
-              </label>
-              <input
-                v-model="form.password"
-                type="password"
-                required
-                placeholder="Create a strong password"
-                class="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-              />
-            </div>
+            <MaterialInput
+              v-model="form.password"
+              label="Password *"
+              type="password"
+              placeholder="Create a strong password"
+              required
+              variant="outlined"
+            />
 
-            <div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Confirm Password *
-              </label>
-              <input
-                v-model="form.confirmPassword"
-                type="password"
-                required
-                placeholder="Re-enter password"
-                class="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-              />
-            </div>
+            <MaterialInput
+              v-model="form.confirmPassword"
+              label="Confirm Password *"
+              type="password"
+              placeholder="Re-enter password"
+              required
+              variant="outlined"
+            />
 
             <!-- Preferences -->
             <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
@@ -202,14 +175,10 @@
                 Communication Preferences
               </h4>
               
-              <label class="flex items-start space-x-3 cursor-pointer">
-                <input
-                  v-model="form.whatsappAlerts"
-                  type="checkbox"
-                  class="w-4 h-4 mt-1 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
-                />
+              <label class="flex items-start space-x-3 cursor-pointer group">
+                <UiSwitch v-model="form.whatsappAlerts" class="mt-1" />
                 <div>
-                  <span class="text-sm font-medium text-slate-900 dark:text-white">
+                  <span class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                     Enable WhatsApp Alerts
                   </span>
                   <p class="text-xs text-slate-500 dark:text-slate-400">
@@ -218,15 +187,10 @@
                 </div>
               </label>
 
-              <label class="flex items-start space-x-3 cursor-pointer mt-3">
-                <input
-                  v-model="form.termsAccepted"
-                  type="checkbox"
-                  required
-                  class="w-4 h-4 mt-1 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
-                />
+              <label class="flex items-start space-x-3 cursor-pointer group mt-3">
+                <UiSwitch v-model="form.termsAccepted" class="mt-1" />
                 <div>
-                  <span class="text-sm font-medium text-slate-900 dark:text-white">
+                  <span class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                     I agree to the Terms & Conditions *
                   </span>
                   <p class="text-xs text-slate-500 dark:text-slate-400">
@@ -239,43 +203,51 @@
 
           <!-- Navigation Buttons -->
           <div class="flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-700">
-            <button
+            <MaterialButton
               v-if="currentStep > 1"
               type="button"
               @click="currentStep--"
-              class="px-6 py-3 border-2 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+              variant="outlined"
+              size="lg"
             >
               ← Back
-            </button>
+            </MaterialButton>
             <div v-else></div>
 
-            <button
+            <MaterialButton
               v-if="currentStep < 3"
               type="button"
               @click="currentStep++"
-              class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all"
+              color="primary"
+              size="lg"
             >
               Continue →
-            </button>
+            </MaterialButton>
 
-            <button
+            <MaterialButton
               v-else
               type="submit"
               :disabled="loading"
-              class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              :loading="loading"
+              color="success"
+              size="lg"
             >
-              <CheckCircleIcon v-if="!loading" class="w-5 h-5 mr-2" />
-              <div v-else class="w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              {{ loading ? 'Creating Account...' : 'Complete Registration' }}
-            </button>
+              <template v-if="!loading">
+                <CheckCircleIcon class="w-5 h-5 mr-2" />
+                Complete Registration
+              </template>
+              <template v-else>
+                Creating Account...
+              </template>
+            </MaterialButton>
           </div>
         </form>
-      </div>
+      </MaterialCard>
 
       <!-- Sign In Link -->
       <p class="text-center text-sm text-slate-600 dark:text-slate-400 mt-6">
         Already have an account?
-        <NuxtLink to="/auth/login" class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
+        <NuxtLink to="/auth/login" class="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 font-semibold">
           Sign in
         </NuxtLink>
       </p>

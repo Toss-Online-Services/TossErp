@@ -1,3 +1,7 @@
+<script setup lang="ts">
+// Material Components will be auto-imported by Nuxt
+</script>
+
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
     <!-- Page Header with Glass Morphism -->
@@ -17,13 +21,14 @@
             </p>
           </div>
           <div class="flex items-center space-x-3">
-            <button
+            <MaterialButton
               @click="refreshData"
-              class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 hover:shadow-md transition-all duration-200"
+              variant="outlined"
+              size="md"
             >
               <ArrowPathIcon class="w-4 h-4 mr-2" :class="{ 'animate-spin': loading }" />
               Refresh
-            </button>
+            </MaterialButton>
           </div>
         </div>
       </div>
@@ -45,45 +50,39 @@
       <div v-else class="space-y-6">
         <!-- Key Metrics - Material Design Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatsCard
+          <MaterialStatsCard
             label="Total Revenue"
             :value="metrics.totalRevenue"
             :icon="CurrencyDollarIcon"
             :change="metrics.revenueChange"
-            change-label="vs last month"
             gradient="green"
-            :show-sparkline="true"
             :sparkline-data="revenueSparkline"
             prefix="R"
           />
 
-          <StatsCard
+          <MaterialStatsCard
             label="Total Orders"
             :value="metrics.totalOrders"
             :icon="ShoppingCartIcon"
             :change="metrics.ordersChange"
-            change-label="vs last month"
             gradient="blue"
-            :show-sparkline="true"
             :sparkline-data="ordersSparkline"
           />
 
-          <StatsCard
+          <MaterialStatsCard
             label="Group Buy Savings"
             :value="metrics.groupBuySavings"
             :icon="UserGroupIcon"
             :change="15.3"
-            change-label="this month"
             gradient="purple"
             prefix="R"
           />
 
-          <StatsCard
+          <MaterialStatsCard
             label="Delivery Costs"
             :value="metrics.totalDeliveryCost"
             :icon="TruckIcon"
             :change="-12.5"
-            change-label="saved vs solo"
             gradient="orange"
             prefix="R"
           />
@@ -92,7 +91,7 @@
         <!-- Charts Section -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <!-- Revenue Trend -->
-          <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-shadow duration-300">
+          <MaterialCard variant="elevated" class="lg:col-span-2" hover>
             <div class="flex items-center justify-between mb-6">
               <div>
                 <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Daily Sales</h3>
@@ -113,10 +112,10 @@
               color="#10B981"
               :height="280"
             />
-          </div>
+          </MaterialCard>
 
           <!-- Quick Stats -->
-          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-shadow duration-300">
+          <MaterialCard variant="elevated" hover>
             <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6">Quick Stats</h3>
             <div class="space-y-4">
               <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-900/10 rounded-xl border border-blue-200/50 dark:border-blue-800/50">
@@ -149,16 +148,18 @@
                 </div>
               </div>
             </div>
-          </div>
+          </MaterialCard>
         </div>
 
         <!-- Sales by Category & Stock Levels -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <!-- Sales by Category -->
-          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-shadow duration-300">
+          <MaterialCard variant="elevated" hover>
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Sales by Category</h3>
-              <button class="text-sm text-blue-600 dark:text-blue-400 hover:underline">View All</button>
+              <MaterialButton variant="text" color="primary" size="sm">
+                View All
+              </MaterialButton>
             </div>
             <BarChart
               :labels="categoryLabels"
@@ -167,10 +168,10 @@
               color="#3B82F6"
               :height="280"
             />
-          </div>
+          </MaterialCard>
 
           <!-- Low Stock Alerts -->
-          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-shadow duration-300">
+          <MaterialCard variant="elevated" hover>
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Low Stock Items</h3>
               <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
@@ -192,20 +193,22 @@
                     <p class="text-sm text-slate-600 dark:text-slate-400">{{ item.quantity }} units left</p>
                   </div>
                 </div>
-                <button class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Reorder</button>
+                <MaterialButton variant="text" color="primary" size="sm">
+                  Reorder
+                </MaterialButton>
               </div>
             </div>
             <NuxtLink
               to="/stock/items"
-              class="block mt-4 text-center text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              class="block mt-4 text-center text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
             >
               View all items →
             </NuxtLink>
-          </div>
+          </MaterialCard>
         </div>
 
         <!-- AI Insights Card -->
-        <div class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl p-8 text-white relative overflow-hidden">
+        <MaterialCard gradient="purple" class="p-8 text-white relative overflow-hidden">
           <!-- Decorative elements -->
           <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
           <div class="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full -ml-24 -mb-24"></div>
@@ -243,7 +246,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </MaterialCard>
       </div>
     </div>
   </div>
@@ -263,12 +266,8 @@ import {
   ExclamationTriangleIcon,
   SparklesIcon
 } from '@heroicons/vue/24/outline'
-// Manual imports for chart components
-import StatsCard from '~/components/charts/StatsCard.vue'
-import LineChart from '~/components/charts/LineChart.vue'
-import BarChart from '~/components/charts/BarChart.vue'
 
-// Meta
+// Meta - useHead is auto-imported by Nuxt
 useHead({
   title: 'Business Analytics - TOSS ERP',
   meta: [
