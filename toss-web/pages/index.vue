@@ -1,469 +1,566 @@
 <template>
-  <div class="min-h-screen bg-background">
+  <div class="min-h-screen bg-white dark:bg-slate-950">
     <!-- Navigation -->
-    <nav class="nav-animate fixed top-0 w-full z-50 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-slate-950/80 shadow-sm">
+    <nav class="fixed top-0 w-full z-50 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-lg">
       <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <!-- Logo -->
-          <NuxtLink to="/" class="flex items-center space-x-2 group no-underline">
-            <div class="flex justify-center items-center w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg shadow-lg group-hover:shadow-xl transition-all duration-300">
-              <span class="text-xl font-bold text-white">T</span>
+        <div class="flex items-center justify-between h-20">
+          <!-- Logo with animation -->
+          <div class="flex items-center space-x-3 group cursor-pointer">
+            <div class="relative flex items-center justify-center w-12 h-12 rounded-xl shadow-xl bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-2xl">
+              <span class="text-2xl font-black text-white">T</span>
+              <div class="absolute inset-0 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
             </div>
-            <span class="text-xl font-bold text-slate-900 dark:text-white">TOSS</span>
-          </NuxtLink>
-
-          <!-- Desktop Navigation -->
-          <div class="hidden items-center space-x-8 md:flex">
-            <NavigationMenu>
-              <NavigationMenuList class="flex items-center space-x-1">
-                <NavigationMenuItem>
-                  <NavigationMenuLink as-child>
-                    <NuxtLink to="#features" class="nav-link group relative px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-md transition-all duration-300 no-underline">
-                      <span class="relative z-10">Features</span>
-                      <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-300 ease-out group-hover:w-full"></span>
-                    </NuxtLink>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink as-child>
-                    <NuxtLink to="#modules" class="nav-link group relative px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-md transition-all duration-300 no-underline">
-                      <span class="relative z-10">Modules</span>
-                      <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-600 dark:bg-purple-400 transition-all duration-300 ease-out group-hover:w-full"></span>
-                    </NuxtLink>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink as-child>
-                    <NuxtLink to="#stats" class="nav-link group relative px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-md transition-all duration-300 no-underline">
-                      <span class="relative z-10">Stats</span>
-                      <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-pink-600 dark:bg-pink-400 transition-all duration-300 ease-out group-hover:w-full"></span>
-                    </NuxtLink>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink as-child>
-                    <NuxtLink to="#cta" class="nav-link group relative px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-md transition-all duration-300 no-underline">
-                      <span class="relative z-10">Pricing</span>
-                      <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 dark:bg-green-400 transition-all duration-300 ease-out group-hover:w-full"></span>
-                    </NuxtLink>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
+            <div class="flex flex-col">
+              <span class="text-2xl font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">TOSS</span>
+              <span class="text-[10px] font-semibold text-orange-600 dark:text-orange-400 -mt-1 tracking-wider">ONLINE SERVICES</span>
+            </div>
           </div>
 
-          <!-- CTA Buttons -->
-          <div class="hidden items-center space-x-4 md:flex">
-            <NuxtLink to="/auth/login" class="sign-in-button btn-animate group relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-sm font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-all duration-300 no-underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
-              SIGN IN
-            </NuxtLink>
-            <Button size="default" class="btn-animate group relative text-sm font-semibold bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 overflow-hidden" as-child>
-              <NuxtLink to="/auth/login" class="relative z-10 flex items-center gap-2 no-underline">
-                <span>Get Started</span>
-                <svg class="w-4 h-4 transition-transform duration-300 ease-out group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <!-- Desktop Menu -->
+          <div class="items-center hidden space-x-1 md:flex">
+            <a href="#how-it-works" class="relative px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all duration-300 rounded-lg hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
+              <span class="relative z-10">How it works</span>
+              <div class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full group-hover:left-0"></div>
+            </a>
+            <a href="#for-shops" class="relative px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all duration-300 rounded-lg hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
+              <span class="relative z-10">For shops</span>
+              <div class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full group-hover:left-0"></div>
+            </a>
+            <a href="#for-suppliers" class="relative px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all duration-300 rounded-lg hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
+              <span class="relative z-10">For suppliers & drivers</span>
+              <div class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full group-hover:left-0"></div>
+            </a>
+            <a href="#faq" class="relative px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all duration-300 rounded-lg hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
+              <span class="relative z-10">FAQ</span>
+              <div class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full group-hover:left-0"></div>
+            </a>
+            <div class="w-px h-6 mx-2 bg-slate-300 dark:bg-slate-700"></div>
+            <a href="/auth/register" class="relative px-4 py-2 text-sm font-bold text-orange-600 dark:text-orange-400 transition-all duration-300 rounded-lg hover:text-orange-700 dark:hover:text-orange-300 hover:bg-orange-50 dark:hover:bg-orange-950/30 group">
+              <span class="relative z-10">Register</span>
+              <div class="absolute bottom-0 left-1/2 w-0 h-0.5 bg-orange-600 transition-all duration-300 group-hover:w-full group-hover:left-0"></div>
+            </a>
+          </div>
+
+          <!-- CTA Button -->
+          <div class="flex items-center space-x-4">
+            <a href="/auth/login" class="relative px-6 py-2.5 text-sm font-bold text-white overflow-hidden transition-all duration-300 rounded-lg shadow-lg bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 dark:from-orange-600 dark:to-orange-700 dark:hover:from-orange-700 dark:hover:to-orange-800 hover:shadow-xl hover:scale-105 group">
+              <span class="relative z-10 flex items-center gap-2">
+                Sign in
+                <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                 </svg>
-              </NuxtLink>
-            </Button>
-          </div>
-
-          <!-- Mobile Menu Button -->
-          <div class="flex items-center space-x-2 md:hidden">
-            <Button variant="ghost" size="sm" class="text-sm font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all duration-300" as-child>
-              <NuxtLink to="/auth/login" class="no-underline">Sign In</NuxtLink>
-            </Button>
+              </span>
+              <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+            </a>
           </div>
         </div>
       </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative overflow-hidden px-4 pt-32 pb-24 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-blue-50/50 to-purple-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-      <!-- Animated Background Elements -->
-      <div class="absolute inset-0 overflow-hidden -z-10">
-        <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
-        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.08),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.04),transparent_50%)]"></div>
-      </div>
+    <section class="relative px-4 pt-32 pb-24 overflow-hidden sm:px-6 lg:px-8">
+      <div class="absolute inset-0 bg-gradient-to-br from-slate-50 to-orange-50/30 dark:from-slate-950 dark:to-slate-900 -z-10"></div>
+      
+      <!-- Animated background shapes -->
+      <div class="absolute top-20 left-10 w-72 h-72 bg-orange-200/20 dark:bg-orange-500/10 rounded-full blur-3xl animate-float"></div>
+      <div class="absolute bottom-20 right-10 w-96 h-96 bg-orange-300/20 dark:bg-orange-400/10 rounded-full blur-3xl animate-float-delayed"></div>
       
       <div class="mx-auto max-w-7xl">
         <div class="text-center">
-          <!-- Badge -->
-          <div class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-sm font-semibold text-blue-700 dark:text-blue-300 bg-blue-100/80 dark:bg-blue-900/30 rounded-full border border-blue-200 dark:border-blue-800 backdrop-blur-sm shadow-sm">
-            <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+          <div class="inline-flex items-center gap-2 px-4 py-2 mb-8 text-sm font-semibold border rounded-full text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-900/80 border-slate-200 dark:border-slate-700 backdrop-blur-sm animate-fade-in-down">
+            <span class="relative flex w-2 h-2">
+              <span class="absolute inline-flex w-full h-full bg-orange-400 rounded-full opacity-75 animate-ping"></span>
+              <span class="relative inline-flex w-2 h-2 bg-orange-500 rounded-full"></span>
             </span>
-            Collaborative Service-as-Software ERP Platform
+            Built for South African small businesses
           </div>
 
-          <!-- Main Heading -->
-          <h1 class="mb-6 text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-6xl md:text-7xl lg:text-8xl">
-            <span class="block">Empower Your Business</span>
-            <span class="block mt-3 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              with TOSS ERP
-            </span>
+          <h1 class="mb-6 text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-6xl md:text-7xl animate-fade-in-up animation-delay-100">
+            <span class="block">Run your hustle like</span>
+            <span class="block mt-2 text-orange-500 animate-gradient">a big enterprise</span>
           </h1>
 
-          <!-- Subheading -->
-          <p class="mx-auto mb-4 max-w-3xl text-xl leading-relaxed text-slate-600 dark:text-slate-300 sm:text-2xl font-medium">
-            Integrated ERP platform with <span class="font-semibold text-blue-600 dark:text-blue-400">14 core modules</span>, enhanced with <span class="font-semibold text-purple-600 dark:text-purple-400">AI Copilot</span> and a <span class="font-semibold text-pink-600 dark:text-pink-400">collaborative network</span>
+          <p class="max-w-3xl mx-auto mb-4 text-xl font-medium leading-relaxed text-slate-600 dark:text-slate-300 animate-fade-in-up animation-delay-200">
+            One simple platform to track your sales and stock, get smart advice, and buy together with other shops to save money
           </p>
-          <p class="mx-auto mb-12 max-w-2xl text-lg text-slate-500 dark:text-slate-400">
-            Connect shops, suppliers, drivers, and financial partners in one powerful platform
+          <p class="max-w-2xl mx-auto mb-12 text-lg text-slate-500 dark:text-slate-400 animate-fade-in-up animation-delay-300">
+            Works offline. In your language. Made for township and rural businesses like yours.
           </p>
 
-          <!-- CTA Buttons -->
-          <div class="flex flex-col gap-4 justify-center items-center sm:flex-row mb-16">
-            <Button size="lg" class="px-10 py-7 h-auto text-lg font-semibold shadow-xl shadow-blue-500/25 hover:shadow-2xl hover:shadow-blue-500/40 hover:scale-105 transition-all duration-300" as-child>
-              <NuxtLink to="/auth/login" class="flex items-center gap-2 no-underline">
-                <span>Login to TOSS Platform</span>
-                <svg class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                </svg>
-              </NuxtLink>
-            </Button>
-            <Button size="lg" variant="outline" class="px-10 py-7 h-auto text-lg font-semibold border-2 border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all duration-300" as-child>
-              <NuxtLink to="#features" class="flex items-center gap-2 no-underline">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span>Explore Features</span>
-              </NuxtLink>
-            </Button>
+          <div class="flex flex-col items-center justify-center gap-4 mb-16 sm:flex-row animate-fade-in-up animation-delay-400">
+            <a href="/auth/register" class="inline-flex items-center gap-2 px-8 py-4 text-lg font-semibold text-white transition-all duration-300 rounded-md shadow-xl bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 hover:shadow-2xl hover:scale-105 group">
+              <span>Join TOSS</span>
+              <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+            </a>
+            <a href="#how-it-works" class="inline-flex items-center gap-2 px-8 py-4 text-lg font-semibold transition-all duration-300 border-2 rounded-md text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-900 group">
+              <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span>See how it works</span>
+            </a>
           </div>
 
-          <!-- Trust Indicators -->
-          <div class="flex flex-wrap justify-center items-center gap-8 mb-16 text-sm text-slate-500 dark:text-slate-400">
+          <div class="flex flex-wrap items-center justify-center gap-8 text-sm text-slate-500 dark:text-slate-400 animate-fade-in-up animation-delay-500">
             <div class="flex items-center gap-2">
               <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
               </svg>
-              <span>14 Integrated Modules</span>
+              <span>Works offline</span>
             </div>
             <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
               </svg>
-              <span>AI Copilot Included</span>
+              <span>Save money by buying together</span>
             </div>
             <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
               </svg>
-              <span>Collaborative Network</span>
+              <span>Stock delivered to your door</span>
             </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <!-- Hero Stats -->
-        <div class="grid grid-cols-2 gap-6 mx-auto max-w-5xl sm:grid-cols-4">
-          <Card class="group p-8 text-center border-2 border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/20 hover:border-blue-300 dark:hover:border-blue-700 hover:-translate-y-2">
-            <div class="flex justify-center mb-4">
-              <div class="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform duration-300">
-                <UsersIcon class="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <div class="mb-2 text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent dark:from-blue-400 dark:to-blue-500">500+</div>
-            <div class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Active Users</div>
-          </Card>
-          <Card class="group p-8 text-center border-2 border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/20 hover:border-purple-300 dark:hover:border-purple-700 hover:-translate-y-2">
-            <div class="flex justify-center mb-4">
-              <div class="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform duration-300">
-                <CurrencyDollarIcon class="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <div class="mb-2 text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent dark:from-purple-400 dark:to-purple-500">10K+</div>
-            <div class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Transactions</div>
-          </Card>
-          <Card class="group p-8 text-center border-2 border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md transition-all duration-300 hover:shadow-2xl hover:shadow-pink-500/20 hover:border-pink-300 dark:hover:border-pink-700 hover:-translate-y-2">
-            <div class="flex justify-center mb-4">
-              <div class="p-3 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl shadow-lg shadow-pink-500/30 group-hover:scale-110 transition-transform duration-300">
-                <ArchiveBoxIcon class="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <div class="mb-2 text-4xl font-extrabold bg-gradient-to-r from-pink-600 to-pink-700 bg-clip-text text-transparent dark:from-pink-400 dark:to-pink-500">50+</div>
-            <div class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Businesses</div>
-          </Card>
-          <Card class="group p-8 text-center border-2 border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md transition-all duration-300 hover:shadow-2xl hover:shadow-green-500/20 hover:border-green-300 dark:hover:border-green-700 hover:-translate-y-2">
-            <div class="flex justify-center mb-4">
-              <div class="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg shadow-green-500/30 group-hover:scale-110 transition-transform duration-300">
-                <ArrowTrendingUpIcon class="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <div class="mb-2 text-4xl font-extrabold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent dark:from-green-400 dark:to-green-500">99.9%</div>
-            <div class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Uptime</div>
-          </Card>
+    <!-- Problem/Solution Section -->
+    <section class="px-4 py-20 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/40">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-16 text-center">
+          <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">The everyday struggle</h2>
+          <p class="max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-300">
+            Running a small shop is hard work. Here's what you deal with every day:
+          </p>
+        </div>
+
+        <div class="grid gap-8 mb-16 md:grid-cols-2">
+          <div class="p-8 bg-white border rounded-lg shadow-sm dark:bg-slate-900 dark:border-slate-800">
+            <h3 class="mb-6 text-xl font-bold text-red-600 dark:text-red-400">😓 The Problems</h3>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-red-500">✗</span>
+                <span class="text-slate-700 dark:text-slate-300">You get to month-end with empty shelves and no cash</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-red-500">✗</span>
+                <span class="text-slate-700 dark:text-slate-300">You pay retail prices at the wholesaler because you buy alone</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-red-500">✗</span>
+                <span class="text-slate-700 dark:text-slate-300">You sell on credit but don't have proper records</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-red-500">✗</span>
+                <span class="text-slate-700 dark:text-slate-300">You close the shop to go buy stock and lose sales time</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="p-8 bg-white border rounded-lg shadow-sm dark:bg-slate-900 dark:border-slate-800">
+            <h3 class="mb-6 text-xl font-bold text-green-600 dark:text-green-400">✓ How TOSS Helps</h3>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-green-500">✓</span>
+                <span class="text-slate-700 dark:text-slate-300">See what's selling and what's running out – in one view</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-green-500">✓</span>
+                <span class="text-slate-700 dark:text-slate-300">Join group orders so you can buy like a big shop</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-green-500">✓</span>
+                <span class="text-slate-700 dark:text-slate-300">Keep simple records of every sale and payment</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-green-500">✓</span>
+                <span class="text-slate-700 dark:text-slate-300">Use local drivers to bring stock from the wholesaler to your door</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="px-4 py-20 sm:px-6 lg:px-8 bg-white dark:bg-slate-950">
+    <!-- For Shops Section -->
+    <section id="for-shops" class="px-4 py-20 bg-white sm:px-6 lg:px-8 dark:bg-slate-950">
       <div class="mx-auto max-w-7xl">
         <div class="mb-16 text-center">
-          <Badge class="mb-4 px-3 py-1 text-xs font-semibold uppercase tracking-wider" variant="outline">Integrated Modules</Badge>
-          <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">Complete Business Management</h2>
-          <p class="mx-auto max-w-2xl text-lg text-slate-600 dark:text-slate-300">
-            Full-featured ERP solution with 14 integrated modules, enhanced by AI Copilot and collaborative network features
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card class="p-8 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 group">
-            <div class="flex justify-center items-center mb-6 w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg shadow-blue-500/20 transition-transform group-hover:scale-110 group-hover:rotate-3">
-              <CurrencyDollarIcon class="w-7 h-7 text-white" />
-            </div>
-            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">Account Management</h3>
-            <p class="leading-relaxed text-slate-600 dark:text-slate-300">
-              Complete financial management with accounting, invoicing, payments, and comprehensive financial reporting.
-            </p>
-          </Card>
-
-          <Card class="p-8 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all hover:shadow-xl hover:shadow-green-500/10 hover:-translate-y-1 group">
-            <div class="flex justify-center items-center mb-6 w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg shadow-green-500/20 transition-transform group-hover:scale-110 group-hover:rotate-3">
-              <UsersIcon class="w-7 h-7 text-white" />
-            </div>
-            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">Customer Relationship Management</h3>
-            <p class="leading-relaxed text-slate-600 dark:text-slate-300">
-              Manage customer relationships, track leads, opportunities, and build lasting customer connections.
-            </p>
-          </Card>
-
-          <Card class="p-8 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all hover:shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 group">
-            <div class="flex justify-center items-center mb-6 w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg shadow-purple-500/20 transition-transform group-hover:scale-110 group-hover:rotate-3">
-              <ArchiveBoxIcon class="w-7 h-7 text-white" />
-            </div>
-            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">Inventory Management</h3>
-            <p class="leading-relaxed text-slate-600 dark:text-slate-300">
-              Advanced inventory tracking with real-time stock levels, warehouses, and automated reordering.
-            </p>
-          </Card>
-
-          <Card class="p-8 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all hover:shadow-xl hover:shadow-yellow-500/10 hover:-translate-y-1 group">
-            <div class="flex justify-center items-center mb-6 w-14 h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl shadow-lg shadow-yellow-500/20 transition-transform group-hover:scale-110 group-hover:rotate-3">
-              <ShoppingCartIcon class="w-7 h-7 text-white" />
-            </div>
-            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">POS & Store Solutions</h3>
-            <p class="leading-relaxed text-slate-600 dark:text-slate-300">
-              Complete point-of-sale system with store management, transactions, and real-time sales tracking.
-            </p>
-          </Card>
-
-          <Card class="p-8 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all hover:shadow-xl hover:shadow-pink-500/10 hover:-translate-y-1 group">
-            <div class="flex justify-center items-center mb-6 w-14 h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl shadow-lg shadow-pink-500/20 transition-transform group-hover:scale-110 group-hover:rotate-3">
-              <ChartBarIcon class="w-7 h-7 text-white" />
-            </div>
-            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">Sales & Marketing</h3>
-            <p class="leading-relaxed text-slate-600 dark:text-slate-300">
-              Complete sales management with marketing tools, customer engagement, and sales analytics.
-            </p>
-          </Card>
-
-          <Card class="p-8 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 group">
-            <div class="flex justify-center items-center mb-6 w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20 transition-transform group-hover:scale-110 group-hover:rotate-3">
-              <ArrowTrendingUpIcon class="w-7 h-7 text-white" />
-            </div>
-            <h3 class="mb-3 text-xl font-bold text-slate-900 dark:text-white">AI Copilot</h3>
-            <p class="leading-relaxed text-slate-600 dark:text-slate-300">
-              Service-as-Software AI assistant that automates tasks, provides insights, and helps you make better decisions.
-            </p>
-          </Card>
-        </div>
-      </div>
-    </section>
-
-    <!-- Modules Section -->
-    <section id="modules" class="px-4 py-20 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/50">
-      <div class="mx-auto max-w-7xl">
-        <div class="mb-16 text-center">
-          <Badge class="mb-4 px-3 py-1 text-xs font-semibold uppercase tracking-wider" variant="outline">14 Integrated Modules</Badge>
-          <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">Complete ERP Solution</h2>
-          <p class="mx-auto max-w-2xl text-lg text-slate-600 dark:text-slate-300">
-            TOSS integrates 14 core modules seamlessly connected to provide complete business management
-          </p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">Supply & Chain Integration</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-green-300 dark:hover:border-green-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors leading-tight">Inventory Management</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-purple-300 dark:hover:border-purple-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors leading-tight">Cross Commerce Solutions</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-pink-300 dark:hover:border-pink-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors leading-tight">Customer Relationship Management</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-yellow-300 dark:hover:border-yellow-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors leading-tight">Audits & Operations</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">Vendor Relationship Management</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-orange-300 dark:hover:border-orange-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors leading-tight">Invoice Management</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-teal-300 dark:hover:border-teal-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors leading-tight">Business Intelligence</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-red-300 dark:hover:border-red-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors leading-tight">Account Management</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-cyan-300 dark:hover:border-cyan-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors leading-tight">Merchandising Management</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-violet-300 dark:hover:border-violet-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors leading-tight">Planning & Assortment</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-tight">POS & Store Solutions</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-rose-300 dark:hover:border-rose-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors leading-tight">Sales & Marketing</div>
-          </Card>
-          <Card class="p-4 text-center border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md hover:border-sky-300 dark:hover:border-sky-700 transition-all cursor-pointer group">
-            <div class="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-tight">Warehouse Management</div>
-          </Card>
-        </div>
-
-        <div class="mt-12 text-center">
-          <p class="text-base font-medium text-slate-700 dark:text-slate-300 mb-6">
-            Plus collaborative network features: <span class="text-blue-600 dark:text-blue-400 font-semibold">Group Buying</span>, <span class="text-purple-600 dark:text-purple-400 font-semibold">Delivery Coordination</span>, <span class="text-green-600 dark:text-green-400 font-semibold">Financial Services Integration</span>
-          </p>
-          <Button size="lg" class="shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30" as-child>
-            <NuxtLink to="/auth/login" class="no-underline">Access All Modules</NuxtLink>
-          </Button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section id="stats" class="px-4 py-20 sm:px-6 lg:px-8 bg-white dark:bg-slate-950">
-      <div class="mx-auto max-w-7xl">
-        <div class="mb-16 text-center">
-          <Badge class="mb-4 px-3 py-1 text-xs font-semibold uppercase tracking-wider" variant="outline">Performance</Badge>
-          <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">Trusted by Growing Businesses</h2>
-          <p class="mx-auto max-w-2xl text-lg text-slate-600 dark:text-slate-300">
-            See how TOSS is helping businesses thrive
+          <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30">
+            For shops
+          </div>
+          <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">
+            For small businesses and local shops
+          </h2>
+          <p class="max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-300">
+            Perfect for township and rural businesses like yours
           </p>
         </div>
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card class="p-8 text-center border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white to-green-50/50 dark:from-slate-900 dark:to-green-950/20 hover:shadow-xl transition-all">
-            <div class="flex justify-center items-center mb-4">
-              <div class="p-4 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg shadow-green-500/20">
-                <CurrencyDollarIcon class="w-8 h-8 text-white" />
-              </div>
+          <div class="p-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 group">
+            <div class="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-orange-100 dark:bg-orange-900/30 transition-all duration-300 group-hover:scale-110 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
+              <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+              </svg>
             </div>
-            <div class="mb-2 text-4xl font-bold text-slate-900 dark:text-white">R 2.5M+</div>
-            <div class="mb-1 text-sm font-semibold text-slate-600 dark:text-slate-400">Total Sales Processed</div>
-            <div class="text-xs font-medium text-green-600 dark:text-green-400">+45% this month</div>
-          </Card>
+            <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Simple POS on your phone</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Ring up sales, track totals and download receipts – no fancy hardware needed</p>
+          </div>
 
-          <Card class="p-8 text-center border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white to-blue-50/50 dark:from-slate-900 dark:to-blue-950/20 hover:shadow-xl transition-all">
-            <div class="flex justify-center items-center mb-4">
-              <div class="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg shadow-blue-500/20">
-                <ArchiveBoxIcon class="w-8 h-8 text-white" />
-              </div>
+          <div class="p-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 group">
+            <div class="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-orange-100 dark:bg-orange-900/30 transition-all duration-300 group-hover:scale-110 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
+              <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+              </svg>
             </div>
-            <div class="mb-2 text-4xl font-bold text-slate-900 dark:text-white">15K+</div>
-            <div class="mb-1 text-sm font-semibold text-slate-600 dark:text-slate-400">Stock Items Managed</div>
-            <div class="text-xs font-medium text-blue-600 dark:text-blue-400">Real-time tracking</div>
-          </Card>
+            <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">See your stock in one place</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Know what's low, what's finished, and what to buy next</p>
+          </div>
 
-          <Card class="p-8 text-center border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white to-purple-50/50 dark:from-slate-900 dark:to-purple-950/20 hover:shadow-xl transition-all">
-            <div class="flex justify-center items-center mb-4">
-              <div class="p-4 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg shadow-purple-500/20">
-                <ShoppingCartIcon class="w-8 h-8 text-white" />
-              </div>
+          <div class="p-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 group">
+            <div class="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-orange-100 dark:bg-orange-900/30 transition-all duration-300 group-hover:scale-110 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
+              <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
             </div>
-            <div class="mb-2 text-4xl font-bold text-slate-900 dark:text-white">8K+</div>
-            <div class="mb-1 text-sm font-semibold text-slate-600 dark:text-slate-400">Orders Completed</div>
-            <div class="text-xs font-medium text-purple-600 dark:text-purple-400">99.2% success rate</div>
-          </Card>
+            <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Order from suppliers in a few taps</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Send digital orders instead of long WhatsApp lists and phone calls</p>
+          </div>
 
-          <Card class="p-8 text-center border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white to-yellow-50/50 dark:from-slate-900 dark:to-yellow-950/20 hover:shadow-xl transition-all">
-            <div class="flex justify-center items-center mb-4">
-              <div class="p-4 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl shadow-lg shadow-yellow-500/20">
-                <UsersIcon class="w-8 h-8 text-white" />
-              </div>
+          <div class="p-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 group">
+            <div class="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-orange-100 dark:bg-orange-900/30 transition-all duration-300 group-hover:scale-110 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50">
+              <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
             </div>
-            <div class="mb-2 text-4xl font-bold text-slate-900 dark:text-white">500+</div>
-            <div class="mb-1 text-sm font-semibold text-slate-600 dark:text-slate-400">Active Users</div>
-            <div class="text-xs font-medium text-yellow-600 dark:text-yellow-400">Growing daily</div>
-          </Card>
+            <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Save by buying together</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Join group orders with other shops to unlock better prices</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- CTA Section -->
-    <section id="cta" class="overflow-hidden relative px-4 py-20 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600">
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_70%)] -z-10"></div>
-      <div class="absolute inset-0 opacity-20 -z-10" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;0.05&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
-      
-      <div class="relative mx-auto max-w-4xl text-center">
-        <h2 class="mb-6 text-3xl font-bold text-white sm:text-4xl md:text-5xl">
-          Ready to Transform Your Business?
-        </h2>
-        <p class="mx-auto mb-10 max-w-2xl text-lg text-white/90 sm:text-xl">
-          Join hundreds of businesses already using TOSS to streamline their operations and grow faster.
-        </p>
-        <div class="flex flex-col gap-4 justify-center sm:flex-row">
-          <Button size="lg" variant="secondary" class="px-8 py-6 h-auto text-base font-semibold shadow-xl hover:shadow-2xl transition-all" as-child>
-              <NuxtLink to="/auth/login" class="no-underline">Login to TOSS Platform</NuxtLink>
-            </Button>
-            <Button size="lg" variant="outline" class="px-8 py-6 h-auto text-base font-semibold text-white bg-white/10 border-2 border-white/30 hover:bg-white/20 backdrop-blur-sm" as-child>
-              <NuxtLink to="#modules" class="no-underline">View All Modules</NuxtLink>
-          </Button>
+    <!-- For Suppliers & Drivers Section -->
+    <section id="for-suppliers" class="px-4 py-20 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/40">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-16 text-center">
+          <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30">
+            For suppliers & drivers
+          </div>
+          <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">
+            For suppliers and local drivers
+          </h2>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-2">
+          <div class="p-8 bg-white border rounded-lg shadow-sm dark:bg-slate-900 dark:border-slate-800">
+            <h3 class="mb-6 text-2xl font-bold text-slate-900 dark:text-white">Suppliers</h3>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-orange-500">✓</span>
+                <span class="text-slate-700 dark:text-slate-300">Receive clear digital orders from multiple township shops</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-orange-500">✓</span>
+                <span class="text-slate-700 dark:text-slate-300">See demand by area and plan deliveries better</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-orange-500">✓</span>
+                <span class="text-slate-700 dark:text-slate-300">Grow your reach without adding more salespeople</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="p-8 bg-white border rounded-lg shadow-sm dark:bg-slate-900 dark:border-slate-800">
+            <h3 class="mb-6 text-2xl font-bold text-slate-900 dark:text-white">Drivers (bakkie owners, etc.)</h3>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-orange-500">✓</span>
+                <span class="text-slate-700 dark:text-slate-300">Get paid delivery jobs from local shops and suppliers</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-orange-500">✓</span>
+                <span class="text-slate-700 dark:text-slate-300">Do one trip with many drop-offs to save fuel</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 mt-0.5 text-orange-500">✓</span>
+                <span class="text-slate-700 dark:text-slate-300">Build a regular route with steady work</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How TOSS Works Timeline -->
+    <section id="how-it-works" class="px-4 py-20 bg-white sm:px-6 lg:px-8 dark:bg-slate-950">
+      <div class="mx-auto max-w-4xl">
+        <div class="mb-16 text-center">
+          <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30">
+            How it works
+          </div>
+          <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">
+            Simple steps to save money and grow
+          </h2>
+        </div>
+
+        <ol class="relative pl-12 space-y-12 border-l-2 border-orange-200 dark:border-orange-900">
+          <li class="ml-16">
+            <div class="absolute w-12 h-12 -left-6 flex items-center justify-center rounded-full bg-orange-500 text-white font-bold text-lg transition-all duration-300 hover:scale-125 hover:shadow-lg origin-center">1</div>
+            <div class="ml-4 transition-all duration-500 hover:translate-x-2">
+              <h3 class="mb-3 text-lg font-bold text-slate-800 dark:text-slate-200">Shop signs up and sets up products</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Quick setup on your phone. Add your products with simple names and prices.</p>
+            </div>
+          </li>
+          <li class="ml-16">
+            <div class="absolute w-12 h-12 -left-6 flex items-center justify-center rounded-full bg-orange-500 text-white font-bold text-lg transition-all duration-300 hover:scale-125 hover:shadow-lg origin-center">2</div>
+            <div class="ml-4 transition-all duration-500 hover:translate-x-2">
+              <h3 class="mb-3 text-lg font-bold text-slate-800 dark:text-slate-200">Use TOSS POS to sell</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Sales and stock update automatically. No more notebooks.</p>
+            </div>
+          </li>
+          <li class="ml-16">
+            <div class="absolute w-12 h-12 -left-6 flex items-center justify-center rounded-full bg-orange-500 text-white font-bold text-lg transition-all duration-300 hover:scale-125 hover:shadow-lg origin-center">3</div>
+            <div class="ml-4 transition-all duration-500 hover:translate-x-2">
+              <h3 class="mb-3 text-lg font-bold text-slate-800 dark:text-slate-200">TOSS suggests what to order</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400">When stock is low, the platform tells you what to buy and helps you order.</p>
+            </div>
+          </li>
+          <li class="ml-16">
+            <div class="absolute w-12 h-12 -left-6 flex items-center justify-center rounded-full bg-orange-500 text-white font-bold text-lg transition-all duration-300 hover:scale-125 hover:shadow-lg origin-center">4</div>
+            <div class="ml-4 transition-all duration-500 hover:translate-x-2">
+              <h3 class="mb-3 text-lg font-bold text-slate-800 dark:text-slate-200">Shops join a group order</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Buy together with other shops to get wholesale prices. TOSS sends it to suppliers.</p>
+            </div>
+          </li>
+          <li class="ml-16">
+            <div class="absolute w-12 h-12 -left-6 flex items-center justify-center rounded-full bg-orange-500 text-white font-bold text-lg transition-all duration-300 hover:scale-125 hover:shadow-lg origin-center">5</div>
+            <div class="ml-4 transition-all duration-500 hover:translate-x-2">
+              <h3 class="mb-3 text-lg font-bold text-slate-800 dark:text-slate-200">Driver delivers stock to your shop</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Local driver picks up from wholesaler and delivers straight to your door. No more taxi trips.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Why TOSS Section -->
+    <section class="px-4 py-20 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/40">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-12 text-center">
+          <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">Built for South African small businesses</h2>
+          <p class="max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-300">
+            We understand your challenges because we built this for you
+          </p>
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="flex items-start gap-4">
+            <svg class="flex-shrink-0 w-6 h-6 mt-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h4 class="mb-1 font-semibold text-slate-900 dark:text-white">Works on low data</h4>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Uses very little data. Works offline and syncs when you have connection.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <svg class="flex-shrink-0 w-6 h-6 mt-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h4 class="mb-1 font-semibold text-slate-900 dark:text-white">Shows prices in Rand (R)</h4>
+              <p class="text-sm text-slate-600 dark:text-slate-400">All pricing in South African Rand with proper cash rounding.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <svg class="flex-shrink-0 w-6 h-6 mt-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h4 class="mb-1 font-semibold text-slate-900 dark:text-white">Simple language</h4>
+              <p class="text-sm text-slate-600 dark:text-slate-400">No complicated business words. Plain English (and local languages coming soon).</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <svg class="flex-shrink-0 w-6 h-6 mt-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h4 class="mb-1 font-semibold text-slate-900 dark:text-white">For all small businesses</h4>
+              <p class="text-sm text-slate-600 dark:text-slate-400">From retail shops to food vendors, salons to mechanics, and everything in between.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <svg class="flex-shrink-0 w-6 h-6 mt-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h4 class="mb-1 font-semibold text-slate-900 dark:text-white">Easy to use</h4>
+              <p class="text-sm text-slate-600 dark:text-slate-400">You don't need to be good with technology. If you can use WhatsApp, you can use TOSS.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <svg class="flex-shrink-0 w-6 h-6 mt-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h4 class="mb-1 font-semibold text-slate-900 dark:text-white">Your data is safe</h4>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Your sales and customer info stays private and secure.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Get Started Section -->
+    <section id="get-started" class="relative px-4 py-20 overflow-hidden bg-white sm:px-6 lg:px-8 dark:bg-slate-950">
+      <div class="mx-auto max-w-3xl">
+        <div class="mb-12 text-center">
+          <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">
+            Start using TOSS today
+          </h2>
+          <p class="text-lg text-slate-600 dark:text-slate-300">
+            Join thousands of South African businesses already growing with TOSS
+          </p>
+        </div>
+
+        <div class="flex flex-col items-center justify-center gap-6">
+          <a href="/auth/register" class="inline-flex items-center gap-2 px-12 py-5 text-xl font-semibold text-white transition-all duration-300 rounded-md shadow-xl bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 hover:shadow-2xl hover:scale-105">
+            <span>Create your account</span>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+          </a>
+          
+          <p class="text-sm text-slate-500 dark:text-slate-400">
+            Already have an account? 
+            <a href="/auth/login" class="font-semibold text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300">
+              Sign in here
+            </a>
+          </p>
+
+          <div class="flex flex-wrap items-center justify-center gap-6 mt-6 text-sm text-slate-600 dark:text-slate-400">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              <span>Free to get started</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              <span>No credit card required</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              <span>Ready in 5 minutes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="px-4 py-20 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-900/40">
+      <div class="mx-auto max-w-4xl">
+          <div class="mb-16 text-center">
+          <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30">
+            Questions
+          </div>
+          <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl md:text-5xl">
+            Common questions
+          </h2>
+        </div>
+
+        <div class="space-y-6">
+          <div class="p-6 bg-white border rounded-lg dark:bg-slate-900 dark:border-slate-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer">
+            <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">How much does TOSS cost?</h3>
+            <p class="text-slate-600 dark:text-slate-400">TOSS is free to get started with core features. We offer affordable premium plans with advanced features that save you more money than they cost.</p>
+          </div>          <div class="p-6 bg-white border rounded-lg dark:bg-slate-900 dark:border-slate-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer">
+            <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Do I need WiFi or can I use normal data?</h3>
+            <p class="text-slate-600 dark:text-slate-400">TOSS works with normal mobile data and uses very little. It also works completely offline – you can ring up sales even without any connection, and everything syncs later when you have data.</p>
+          </div>
+
+          <div class="p-6 bg-white border rounded-lg dark:bg-slate-900 dark:border-slate-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer">
+            <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Can I use it on my phone?</h3>
+            <p class="text-slate-600 dark:text-slate-400">Yes! TOSS is made for phones. It works on Android phones (even older ones). You don't need a computer or special equipment.</p>
+          </div>
+
+          <div class="p-6 bg-white border rounded-lg dark:bg-slate-900 dark:border-slate-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer">
+            <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">What if I'm not good with technology?</h3>
+            <p class="text-slate-600 dark:text-slate-400">TOSS is designed to be as simple as WhatsApp. If you can send a message, you can use TOSS. We also provide training and support to help you get started.</p>
+          </div>
+
+          <div class="p-6 bg-white border rounded-lg dark:bg-slate-900 dark:border-slate-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer">
+            <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">Will my sales and customer data be safe?</h3>
+            <p class="text-slate-600 dark:text-slate-400">Yes, very safe. Your data is encrypted and stored securely. Only you can see your business information. We don't share it with anyone without your permission.</p>
+          </div>
+
+          <div class="p-6 bg-white border rounded-lg dark:bg-slate-900 dark:border-slate-800 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer">
+            <h3 class="mb-2 text-lg font-bold text-slate-900 dark:text-white">How does the group buying work?</h3>
+            <p class="text-slate-600 dark:text-slate-400">TOSS connects shops in the same area who want to buy the same products. When you join a group order, you combine your order with other shops to get better wholesale prices – like buying in bulk together.</p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="px-4 py-12 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 sm:px-6 lg:px-8">
+    <footer class="px-4 py-12 bg-white border-t border-slate-200 dark:border-slate-800 dark:bg-slate-950 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-7xl">
         <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
             <div class="flex items-center mb-4 space-x-2">
-              <div class="flex justify-center items-center w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg shadow-lg">
+              <div class="flex items-center justify-center w-10 h-10 rounded-lg shadow-lg bg-gradient-to-br from-slate-900 to-slate-700 dark:from-slate-700 dark:to-slate-900">
                 <span class="text-xl font-bold text-white">T</span>
               </div>
               <span class="text-xl font-bold text-slate-900 dark:text-white">TOSS</span>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Township Operations Support System - Empowering businesses to thrive with collaborative ERP solutions.
+            <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+              Helping South African small businesses grow together
             </p>
           </div>
+          
           <div>
-            <h4 class="mb-4 text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider">Platform</h4>
+            <h4 class="mb-4 text-sm font-semibold tracking-wider uppercase text-slate-900 dark:text-white">Quick Links</h4>
             <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-              <li><NuxtLink to="/auth/login" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Login</NuxtLink></li>
-              <li><NuxtLink to="/auth/register" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Register</NuxtLink></li>
-              <li><NuxtLink to="#modules" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Modules</NuxtLink></li>
+              <li><a href="#how-it-works" class="transition-colors hover:text-orange-500 dark:hover:text-orange-400">How it works</a></li>
+              <li><a href="#for-shops" class="transition-colors hover:text-orange-500 dark:hover:text-orange-400">For shops</a></li>
+              <li><a href="#for-suppliers" class="transition-colors hover:text-orange-500 dark:hover:text-orange-400">For suppliers & drivers</a></li>
+              <li><a href="#faq" class="transition-colors hover:text-orange-500 dark:hover:text-orange-400">FAQ</a></li>
             </ul>
           </div>
-            <div>
-              <h4 class="mb-4 text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider">Modules</h4>
-              <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-                <li><a href="#modules" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">All Modules</a></li>
-                <li><a href="#features" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Key Features</a></li>
-                <li><a href="#cta" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Get Started</a></li>
-              </ul>
-            </div>
+
           <div>
-            <h4 class="mb-4 text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider">Support</h4>
+            <h4 class="mb-4 text-sm font-semibold tracking-wider uppercase text-slate-900 dark:text-white">Legal</h4>
             <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-              <li><a href="#" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Documentation</a></li>
-              <li><a href="#" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Help Center</a></li>
-              <li><a href="#" class="transition-colors hover:text-blue-600 dark:hover:text-blue-400 no-underline">Contact</a></li>
+              <li><a href="#" class="transition-colors hover:text-orange-500 dark:hover:text-orange-400">Privacy Policy</a></li>
+              <li><a href="#" class="transition-colors hover:text-orange-500 dark:hover:text-orange-400">Terms of Service</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="mb-4 text-sm font-semibold tracking-wider uppercase text-slate-900 dark:text-white">Contact</h4>
+            <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+              <li>Email: hello@toss.co.za</li>
+              <li>WhatsApp: Coming soon</li>
             </ul>
           </div>
         </div>
+        
         <div class="pt-8 mt-12 text-sm text-center border-t border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400">
-          <p>&copy; {{ new Date().getFullYear() }} TOSS. All rights reserved.</p>
+          <p>&copy; {{ new Date().getFullYear() }} TOSS Online Services (Pty) Ltd – South Africa. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -471,91 +568,56 @@
 </template>
 
 <script setup lang="ts">
-import { 
-  CurrencyDollarIcon, 
-  UsersIcon, 
-  ArrowTrendingUpIcon,
-  ArchiveBoxIcon,
-  ShoppingCartIcon,
-  ChartBarIcon
-} from '@heroicons/vue/24/outline'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from '@/components/ui/navigation-menu'
-
 definePageMeta({
   layout: 'landing'
 })
 
 useHead({
-  title: 'TOSS - Township Operations Support System',
+  title: 'TOSS - Run your hustle like a big enterprise',
   meta: [
-    { name: 'description', content: 'Powerful ERP solution designed for township businesses. Manage inventory, sales, purchasing, and group buying all in one place.' }
+    { name: 'description', content: 'One simple platform to track sales and stock, get smart advice, and buy together with other shops. Made for South African small businesses.' }
   ]
 })
 </script>
 
 <style scoped>
-/* Smooth navigation link animations - no default underlines */
-.nav-link,
-a,
-NuxtLink {
-  text-decoration: none !important;
+a {
+  text-decoration: none;
 }
 
-.nav-link {
-  position: relative;
+/* Floating animations for background shapes */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
 }
 
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: currentColor;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+@keyframes float-delayed {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-30px) rotate(-5deg);
+  }
 }
 
-.nav-link:hover::after {
-  width: 100%;
+.animate-float {
+  animation: float 8s ease-in-out infinite;
 }
 
-/* Sign In button underline animation */
-.sign-in-button {
-  position: relative;
-  overflow: visible;
+.animate-float-delayed {
+  animation: float-delayed 10s ease-in-out infinite;
+  animation-delay: 1s;
 }
 
-.sign-in-button::after {
-  content: '';
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2px;
-  background: currentColor;
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1;
-}
-
-.sign-in-button:hover::after {
-  width: 75%;
-}
-
-/* Smooth fade-in animation for navigation */
-@keyframes fadeInDown {
+/* Fade in animations */
+@keyframes fade-in-down {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
@@ -563,23 +625,77 @@ NuxtLink {
   }
 }
 
-.nav-animate {
-  animation: fadeInDown 0.5s ease-out;
-}
-
-/* Smooth scale animation for buttons */
-@keyframes scaleIn {
+@keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
-.btn-animate {
-  animation: scaleIn 0.3s ease-out;
+.animate-fade-in-down {
+  animation: fade-in-down 0.6s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out;
+}
+
+/* Animation delays */
+.animation-delay-100 {
+  animation-delay: 0.1s;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.animation-delay-300 {
+  animation-delay: 0.3s;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.animation-delay-500 {
+  animation-delay: 0.5s;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+/* Gradient animation for hero text */
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background: linear-gradient(90deg, #f97316, #fb923c, #f97316);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient 3s ease infinite;
+}
+
+/* Smooth transitions */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>

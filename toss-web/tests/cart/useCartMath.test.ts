@@ -25,7 +25,7 @@ describe('useCartMath', () => {
       }
       expect(cartMath.calculateLineSubtotal(line)).toBe(0)
     })
-
+  
     it('returns zero for negative quantity', () => {
       const line: CartLine = {
         productId: 1,
