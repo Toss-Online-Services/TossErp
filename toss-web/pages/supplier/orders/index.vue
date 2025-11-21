@@ -1,28 +1,27 @@
 <template>
   <div class="p-6">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Incoming Purchase Orders</h1>
+    <MaterialCard variant="elevated" class="mb-6">
+      <h1 class="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent mb-2">Incoming Purchase Orders</h1>
+      <p class="text-sm text-slate-600 dark:text-slate-400">Manage and track all incoming orders from retailers</p>
+    </MaterialCard>
 
     <!-- Status Filter -->
-    <div class="mb-6">
-      <div class="flex space-x-2">
-        <button
+    <MaterialCard variant="outlined" class="mb-6">
+      <div class="flex flex-wrap gap-2">
+        <UiBadge
           v-for="status in statuses"
           :key="status.value"
+          :color="selectedStatus === status.value ? 'success' : 'default'"
           @click="selectedStatus = status.value"
-          :class="[
-            'px-4 py-2 rounded-lg text-sm font-medium',
-            selectedStatus === status.value
-              ? 'bg-green-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          ]"
+          class="cursor-pointer px-4 py-2 text-sm font-medium"
         >
           {{ status.label }}
-        </button>
+        </UiBadge>
       </div>
-    </div>
+    </MaterialCard>
 
     <!-- Orders Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+    <MaterialCard variant="elevated">
       <div v-if="isLoading" class="p-8 text-center">
         <div class="inline-block w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
         <p class="mt-2 text-gray-600">Loading orders...</p>
@@ -32,53 +31,19 @@
         No purchase orders found.
       </div>
 
-      <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead class="bg-gray-50 dark:bg-gray-700">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">PO Number</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Retailer</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Date</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="order in filteredOrders" :key="order.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-              {{ order.poNumber }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-              {{ order.shopName || 'Unknown' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-              {{ formatDate(order.orderDate) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span
-                :class="[
-                  'px-2 py-1 text-xs font-semibold rounded-full',
-                  getStatusClass(order.status)
-                ]"
-              >
-                {{ order.status }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-              R{{ formatCurrency(order.totalAmount) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <NuxtLink
-                :to="`/supplier/orders/${order.id}`"
-                class="text-green-600 hover:text-green-900 dark:text-green-400"
-              >
-                View
-              </NuxtLink>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <MaterialDataTable
+        v-else
+        :rows="filteredOrders"
+        :columns="[
+          { key: 'poNumber', label: 'PO Number', class: 'font-medium' },
+          { key: 'shopName', label: 'Retailer', class: '' },
+          { key: 'orderDate', label: 'Date', class: '', render: (row) => formatDate(row.orderDate) },
+          { key: 'status', label: 'Status', class: '', render: (row) => h(UiBadge, { color: getStatusColor(row.status) }, () => row.status) },
+          { key: 'totalAmount', label: 'Total', class: 'font-medium', render: (row) => `R${formatCurrency(row.totalAmount)}` },
+          { key: 'actions', label: '', class: 'text-right', render: (row) => h(NuxtLink, { to: `/supplier/orders/${row.id}`, class: 'text-green-600 hover:text-green-900 dark:text-green-400' }, () => 'View') }
+        ]"
+      />
+    </MaterialCard>
   </div>
 </template>
 

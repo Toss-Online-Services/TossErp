@@ -5,84 +5,45 @@
     <!-- Status Filter -->
     <div class="mb-6">
       <div class="flex space-x-2">
-        <button
+        <MaterialButton
           v-for="status in statuses"
           :key="status.value"
+          :color="selectedStatus === status.value ? 'primary' : 'default'"
           @click="selectedStatus = status.value"
-          :class="[
-            'px-4 py-2 rounded-lg text-sm font-medium',
-            selectedStatus === status.value
-              ? 'bg-red-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          ]"
         >
           {{ status.label }}
-        </button>
+        </MaterialButton>
       </div>
     </div>
 
     <!-- Orders Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-      <div v-if="isLoading" class="p-8 text-center">
-        <div class="inline-block w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-        <p class="mt-2 text-gray-600">Loading orders...</p>
-      </div>
-
-      <div v-else-if="filteredOrders.length === 0" class="p-8 text-center text-gray-500">
-        No orders found.
-      </div>
-
-      <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead class="bg-gray-50 dark:bg-gray-700">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">PO Number</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Retailer</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Supplier</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Date</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="order in filteredOrders" :key="order.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-              {{ order.poNumber }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-              {{ order.shopName || 'Unknown' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-              {{ order.supplierName || 'Unknown' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-              {{ formatDate(order.orderDate) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span
-                :class="[
-                  'px-2 py-1 text-xs font-semibold rounded-full',
-                  getStatusClass(order.status)
-                ]"
-              >
-                {{ order.status }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-              R{{ formatCurrency(order.totalAmount) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <NuxtLink
-                :to="`/admin/orders/${order.id}`"
-                class="text-red-600 hover:text-red-900 dark:text-red-400"
-              >
-                View
-              </NuxtLink>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <MaterialDataTable
+      :loading="isLoading"
+      :rows="filteredOrders"
+      :columns="[
+        { key: 'poNumber', label: 'PO Number', render: (row) => row.poNumber },
+        { key: 'shopName', label: 'Retailer', render: (row) => row.shopName || 'Unknown' },
+        { key: 'supplierName', label: 'Supplier', render: (row) => row.supplierName || 'Unknown' },
+        { key: 'orderDate', label: 'Date', render: (row) => formatDate(row.orderDate) },
+        { key: 'status', label: 'Status', render: (row) => h(UiBadge, { color: getStatusColor(row.status), class: 'text-xs font-semibold' }, () => row.status) },
+        { key: 'totalAmount', label: 'Total', render: (row) => `R${formatCurrency(row.totalAmount)}` },
+        { key: 'actions', label: 'Actions', align: 'right', render: (row) => h(NuxtLink, { to: `/admin/orders/${row.id}`, class: 'text-primary' }, () => 'View') }
+      ]"
+      class="bg-white dark:bg-gray-800 rounded-lg shadow"
+      empty-message="No orders found."
+    />
+  <script setup lang="ts">
+  // eslint-disable-next-line @typescript-eslint/no-undef, no-undef
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      'Draft': 'default',
+      'Submitted': 'warning',
+      'Accepted': 'primary',
+      'Shipped': 'purple',
+      'Delivered': 'success'
+    }
+    return colors[status] || 'default'
+  }
   </div>
 </template>
 

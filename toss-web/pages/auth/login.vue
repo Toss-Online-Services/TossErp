@@ -42,17 +42,15 @@
             variant="outlined"
           />
 
-          <div class="flex items-center justify-between">
-            <label class="flex items-center cursor-pointer group">
-              <UiSwitch v-model="form.remember" />
-              <span class="ml-3 text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                Remember me
-              </span>
-            </label>
-            <NuxtLink to="/auth/forgot-password" class="text-sm text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 font-medium">
-              Forgot password?
-            </NuxtLink>
-          </div>
+                <label class="flex items-center cursor-pointer group">
+                  <UiSwitch v-model="form.remember" />
+                  <span class="ml-3 text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                    Remember me
+                  </span>
+                </label>
+                <NuxtLink to="/auth/forgot-password" class="text-sm text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 font-medium">
+                  Forgot password?
+                </NuxtLink>
 
           <MaterialButton
             type="submit"

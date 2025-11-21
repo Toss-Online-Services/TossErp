@@ -1,127 +1,161 @@
 <template>
-  <div class="p-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Products</h1>
-      <NuxtLink
-        to="/retailer/products/new"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-      >
-        + Add Product
+  <div class="p-6 space-y-6">
+    <!-- Page Header -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text">
+          Products
+        </h1>
+        <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          Manage your product catalog
+        </p>
+      </div>
+      <NuxtLink to="/retailer/products/new">
+        <MaterialButton color="primary" size="lg">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Add Product
+        </MaterialButton>
       </NuxtLink>
     </div>
 
     <!-- Search and Filters -->
-    <div class="mb-6 space-y-4 sm:flex sm:space-y-0 sm:space-x-4">
-      <div class="flex-1">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search products..."
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <select
-        v-model="selectedCategory"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="">All Categories</option>
-        <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-          {{ cat.name }}
-        </option>
-      </select>
-    </div>
-
-    <!-- Products Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-      <div v-if="isLoading" class="p-8 text-center">
-        <div class="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        <p class="mt-2 text-gray-600">Loading products...</p>
-      </div>
-
-      <div v-else-if="filteredProducts.length === 0" class="p-8 text-center text-gray-500">
-        No products found. <NuxtLink to="/retailer/products/new" class="text-blue-600 hover:underline">Add your first product</NuxtLink>
-      </div>
-
-      <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead class="bg-gray-50 dark:bg-gray-700">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">SKU</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Price</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stock</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="product in filteredProducts" :key="product.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ product.name }}</div>
-              <div v-if="product.description" class="text-sm text-gray-500 dark:text-gray-400">{{ product.description }}</div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ product.sku }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-              {{ product.categoryName || 'Uncategorized' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-              R{{ formatCurrency(product.basePrice) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span
-                :class="[
-                  'px-2 py-1 text-xs font-semibold rounded-full',
-                  product.availableStock > 10
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    : product.availableStock > 0
-                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                ]"
-              >
-                {{ product.availableStock }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <NuxtLink
-                :to="`/retailer/products/${product.id}`"
-                class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-4"
-              >
-                Edit
-              </NuxtLink>
-              <button
-                @click="confirmDelete(product)"
-                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
-        <h3 class="text-lg font-semibold mb-4">Delete Product</h3>
-        <p class="text-gray-600 dark:text-gray-400 mb-6">
-          Are you sure you want to delete "{{ productToDelete?.name }}"? This action cannot be undone.
-        </p>
-        <div class="flex justify-end space-x-4">
-          <button
-            @click="showDeleteModal = false"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+    <MaterialCard variant="elevated" class="p-6">
+      <div class="flex flex-col gap-4 sm:flex-row">
+        <div class="flex-1">
+          <MaterialInput
+            v-model="searchQuery"
+            type="search"
+            placeholder="Search products by name or SKU..."
+            variant="outlined"
           >
-            Cancel
-          </button>
-          <button
-            @click="handleDelete"
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-          >
-            Delete
-          </button>
+            <template #leftIcon>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </template>
+          </MaterialInput>
+        </div>
+        <div class="sm:w-64">
+          <UiSelect v-model="selectedCategory">
+            <UiSelectTrigger>
+              <UiSelectValue placeholder="All Categories" />
+            </UiSelectTrigger>
+            <UiSelectContent>
+              <UiSelectItem value="">All Categories</UiSelectItem>
+              <UiSelectItem v-for="cat in categories" :key="cat.id" :value="String(cat.id)">
+                {{ cat.name }}
+              </UiSelectItem>
+            </UiSelectContent>
+          </UiSelect>
         </div>
       </div>
-    </div>
+    </MaterialCard>
+
+    <!-- Products Table -->
+    <MaterialCard variant="elevated">
+      <div v-if="isLoading" class="flex flex-col items-center justify-center p-12">
+        <div class="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="mt-4 text-sm font-medium text-slate-600 dark:text-slate-400">Loading products...</p>
+      </div>
+
+      <div v-else-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center p-12 text-center">
+        <div class="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-slate-100 dark:bg-slate-800">
+          <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+          </svg>
+        </div>
+        <h3 class="mb-2 text-lg font-semibold text-slate-900 dark:text-white">No products found</h3>
+        <p class="mb-4 text-sm text-slate-600 dark:text-slate-400">
+          Get started by adding your first product
+        </p>
+        <NuxtLink to="/retailer/products/new">
+          <MaterialButton color="primary">
+            Add Product
+          </MaterialButton>
+        </NuxtLink>
+      </div>
+
+      <div v-else class="overflow-x-auto">
+        <MaterialDataTable
+          :columns="columns"
+          :data="filteredProducts"
+          :sortable="true"
+        >
+          <template #cell-name="{ row }">
+            <div class="min-w-[200px]">
+              <div class="text-sm font-semibold text-slate-900 dark:text-white">{{ row.name }}</div>
+              <div v-if="row.description" class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{{ row.description }}</div>
+            </div>
+          </template>
+          <template #cell-stock="{ row }">
+            <UiBadge
+              :variant="row.availableStock > 10 ? 'success' : row.availableStock > 0 ? 'warning' : 'destructive'"
+            >
+              {{ row.availableStock }} units
+            </UiBadge>
+          </template>
+          <template #cell-price="{ row }">
+            <span class="font-semibold text-slate-900 dark:text-white">
+              R{{ formatCurrency(row.basePrice) }}
+            </span>
+          </template>
+          <template #cell-actions="{ row }">
+            <div class="flex items-center justify-end gap-2">
+              <NuxtLink :to="`/retailer/products/${row.id}`">
+                <MaterialButton variant="text" size="sm" color="primary">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit
+                </MaterialButton>
+              </NuxtLink>
+              <MaterialButton @click="confirmDelete(row)" variant="text" size="sm" color="error">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Delete
+              </MaterialButton>
+            </div>
+          </template>
+        </MaterialDataTable>
+      </div>
+    </MaterialCard>
+
+    <!-- Delete Confirmation Modal -->
+    <MaterialModal
+      :show="showDeleteModal"
+      @close="showDeleteModal = false"
+      title="Delete Product"
+      max-width="md"
+    >
+      <template #default>
+        <div class="flex items-start gap-4">
+          <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30">
+            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Delete "{{ productToDelete?.name }}"?</h3>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              This action cannot be undone. The product will be permanently removed from your catalog.
+            </p>
+          </div>
+        </div>
+      </template>
+      <template #footer>
+        <div class="flex justify-end gap-3">
+          <MaterialButton @click="showDeleteModal = false" variant="outlined">
+            Cancel
+          </MaterialButton>
+          <MaterialButton @click="handleDelete" color="error">
+            Delete Product
+          </MaterialButton>
+        </div>
+      </template>
+    </MaterialModal>
   </div>
 </template>
 
@@ -155,6 +189,15 @@ const loadProducts = async () => {
     isLoading.value = false
   }
 }
+
+const columns = [
+  { key: 'name', label: 'Product', sortable: true },
+  { key: 'sku', label: 'SKU', sortable: true },
+  { key: 'categoryName', label: 'Category', sortable: true },
+  { key: 'price', label: 'Price', sortable: true },
+  { key: 'stock', label: 'Stock', sortable: true },
+  { key: 'actions', label: '', sortable: false }
+]
 
 const filteredProducts = computed(() => {
   let filtered = products.value

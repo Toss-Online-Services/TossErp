@@ -1,25 +1,24 @@
 <template>
   <div class="p-6">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">My Deliveries</h1>
+    <MaterialCard variant="elevated" class="mb-6">
+      <h1 class="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent mb-2">My Deliveries</h1>
+      <p class="text-sm text-slate-600 dark:text-slate-400">View and manage your assigned deliveries</p>
+    </MaterialCard>
 
     <!-- Status Filter -->
-    <div class="mb-6">
-      <div class="flex space-x-2">
-        <button
+    <MaterialCard variant="outlined" class="mb-6">
+      <div class="flex flex-wrap gap-2">
+        <UiBadge
           v-for="status in statuses"
           :key="status.value"
+          :color="selectedStatus === status.value ? 'primary' : 'default'"
           @click="selectedStatus = status.value"
-          :class="[
-            'px-4 py-2 rounded-lg text-sm font-medium',
-            selectedStatus === status.value
-              ? 'bg-purple-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          ]"
+          class="cursor-pointer px-4 py-2 text-sm font-medium"
         >
           {{ status.label }}
-        </button>
+        </UiBadge>
       </div>
-    </div>
+    </MaterialCard>
 
     <!-- Deliveries List -->
     <div class="space-y-4">
@@ -32,29 +31,23 @@
         No deliveries found.
       </div>
 
-      <div
+      <MaterialCard
         v-for="delivery in filteredDeliveries"
         :key="delivery.id"
-        class="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
+        variant="elevated"
+        class="p-6"
       >
         <div class="flex justify-between items-start mb-4">
           <div>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ delivery.poNumber }}</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400">
-              From: {{ delivery.supplierName || 'Supplier' }} → To: {{ delivery.shopName || 'Retailer' }}
+              From: {{ delivery.supplierName || 'Supplier' }} &#8594; To: {{ delivery.shopName || 'Retailer' }}
             </p>
             <p class="text-sm text-gray-600 dark:text-gray-400">
               Date: {{ formatDate(delivery.orderDate) }}
             </p>
           </div>
-          <span
-            :class="[
-              'px-3 py-1 text-xs font-semibold rounded-full',
-              getStatusClass(delivery.status)
-            ]"
-          >
-            {{ delivery.status }}
-          </span>
+          <UiBadge :color="getStatusColor(delivery.status)" class="px-3 py-1 text-xs font-semibold">{{ delivery.status }}</UiBadge>
         </div>
 
         <div class="mb-4">
@@ -73,14 +66,16 @@
           <div>
             <p class="text-sm text-gray-600 dark:text-gray-400">Total: <span class="font-semibold text-gray-900 dark:text-gray-100">R{{ formatCurrency(delivery.totalAmount) }}</span></p>
           </div>
-          <NuxtLink
+          <MaterialButton
             :to="`/driver/deliveries/${delivery.id}`"
-            class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            color="primary"
+            class="px-4"
+            as="NuxtLink"
           >
             View Details
-          </NuxtLink>
+          </MaterialButton>
         </div>
-      </div>
+      </MaterialCard>
     </div>
   </div>
 </template>
