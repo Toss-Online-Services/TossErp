@@ -37,11 +37,11 @@ const buttonClasses = computed(() => {
   // Color and variant combinations
   const colorVariants = {
     primary: {
-      filled: 'bg-orange-500 text-white hover:bg-orange-600 shadow-lg hover:shadow-xl focus:ring-orange-500',
-      outlined: 'border-2 border-orange-500 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/30 focus:ring-orange-500',
-      text: 'text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/30',
-      elevated: 'bg-orange-500 text-white hover:bg-orange-600 shadow-xl hover:shadow-2xl focus:ring-orange-500',
-      tonal: 'bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:hover:bg-orange-900/50'
+      filled: 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl focus:ring-primary',
+      outlined: 'border-2 border-primary text-primary hover:bg-primary/5 focus:ring-primary',
+      text: 'text-primary hover:bg-primary/5',
+      elevated: 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl hover:shadow-2xl focus:ring-primary',
+      tonal: 'bg-primary/10 text-primary hover:bg-primary/20'
     },
     secondary: {
       filled: 'bg-slate-500 text-white hover:bg-slate-600 shadow-lg hover:shadow-xl focus:ring-slate-500',

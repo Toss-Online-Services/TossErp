@@ -2,7 +2,7 @@
 import type { HTMLAttributes } from "vue"
 import { PanelLeft } from "lucide-vue-next"
 import { cn } from "@/lib/utils"
-import { Button } from '@/components/ui/button'
+// Button is auto-imported in Nuxt 4
 import { useSidebar } from "./utils"
 
 const props = defineProps<{

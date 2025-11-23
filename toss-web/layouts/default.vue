@@ -72,7 +72,7 @@ import MobileSidebar from '~/components/layout/MobileSidebar.vue'
 import MobileBottomNav from '~/components/layout/MobileBottomNav.vue'
 import MobileUserMenu from '~/components/layout/MobileUserMenu.vue'
 import GlobalAiAssistant from '~/components/ai/GlobalAiAssistant.vue'
-import { Button } from '@/components/ui/button'
+// Button is auto-imported in Nuxt 4 with shadcn-vue
 
 // Mobile menu state
 const mobileMenuOpen = ref(false)

@@ -1,18 +1,18 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 px-4 py-8">
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-primary/5 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 px-4 py-8">
     <!-- Decorative background elements -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute top-20 left-10 w-72 h-72 bg-orange-200/20 dark:bg-orange-500/10 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-20 right-10 w-96 h-96 bg-orange-300/20 dark:bg-orange-400/10 rounded-full blur-3xl"></div>
+      <div class="absolute top-20 left-10 w-72 h-72 bg-primary/20 dark:bg-primary/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 right-10 w-96 h-96 bg-primary/20 dark:bg-primary/10 rounded-full blur-3xl"></div>
     </div>
 
     <div class="max-w-2xl w-full relative z-10">
       <!-- Logo and Title -->
       <div class="text-center mb-8">
         <NuxtLink to="/" class="inline-flex justify-center mb-6 group">
-          <div class="relative flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 rounded-2xl shadow-xl transition-transform group-hover:scale-110 group-hover:rotate-3">
+          <div class="relative flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-primary/90 dark:from-primary dark:to-primary/90 rounded-2xl shadow-xl transition-transform group-hover:scale-110 group-hover:rotate-3">
             <span class="text-4xl font-black text-white">T</span>
-            <div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-primary/80 to-primary rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
           </div>
         </NuxtLink>
         <h1 class="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">Join TOSS</h1>
@@ -178,7 +178,7 @@
               <label class="flex items-start space-x-3 cursor-pointer group">
                 <UiSwitch v-model="form.whatsappAlerts" class="mt-1" />
                 <div>
-                  <span class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                  <span class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary transition-colors">
                     Enable WhatsApp Alerts
                   </span>
                   <p class="text-xs text-slate-500 dark:text-slate-400">
@@ -190,7 +190,7 @@
               <label class="flex items-start space-x-3 cursor-pointer group mt-3">
                 <UiSwitch v-model="form.termsAccepted" class="mt-1" />
                 <div>
-                  <span class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                  <span class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary transition-colors">
                     I agree to the Terms & Conditions *
                   </span>
                   <p class="text-xs text-slate-500 dark:text-slate-400">
@@ -247,7 +247,7 @@
       <!-- Sign In Link -->
       <p class="text-center text-sm text-slate-600 dark:text-slate-400 mt-6">
         Already have an account?
-        <NuxtLink to="/auth/login" class="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 font-semibold">
+        <NuxtLink to="/auth/login" class="text-primary hover:text-primary dark:text-primary dark:hover:text-primary font-semibold">
           Sign in
         </NuxtLink>
       </p>
