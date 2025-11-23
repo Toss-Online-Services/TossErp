@@ -287,7 +287,7 @@ export default defineNuxtConfig({
     baseURL: '/',
     buildAssetsDir: '/_nuxt/',
     // Performance optimizations
-    keepalive: false, // Disable keepalive for faster initial load
+    keepalive: true, // Enable keepalive for better navigation performance
     head: {
       title: 'TOSS ERP III - Township One-Stop Solution',
       meta: [
@@ -296,7 +296,9 @@ export default defineNuxtConfig({
         { name: 'description', content: 'TOSS ERP III - AI-powered collaborative business platform for South African SMMEs' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }
       ]
     }
   },
@@ -312,7 +314,7 @@ export default defineNuxtConfig({
       }
     }
   },
-  ssr: false,  // Disable SSR temporarily to fix router issues
+  ssr: true,  // Enable SSR for better initial load performance
   vite: {
     server: {
       watch: {
@@ -331,32 +333,65 @@ export default defineNuxtConfig({
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            'chart': ['chart.js', 'chartjs-adapter-date-fns'],
-            'export': ['xlsx', 'jspdf', 'jspdf-autotable', 'html2canvas'],
-            'vendor': ['vue', 'vue-router', 'pinia'],
-            'sentry': ['@sentry/nuxt', '@sentry/vue', '@sentry/browser', '@sentry/core'],
-            'i18n': ['@nuxtjs/i18n', 'vue-i18n'],
-            'forms': ['@formkit/vue', '@vee-validate/nuxt']
+          manualChunks: (id) => {
+            // Vendor chunks
+            if (id.includes('node_modules')) {
+              if (id.includes('chart.js') || id.includes('chartjs-adapter')) {
+                return 'chart'
+              }
+              if (id.includes('xlsx') || id.includes('jspdf') || id.includes('html2canvas')) {
+                return 'export'
+              }
+              if (id.includes('vue') || id.includes('vue-router') || id.includes('pinia')) {
+                return 'vendor'
+              }
+              if (id.includes('@sentry')) {
+                return 'sentry'
+              }
+              if (id.includes('i18n') || id.includes('vue-i18n')) {
+                return 'i18n'
+              }
+              if (id.includes('formkit') || id.includes('vee-validate')) {
+                return 'forms'
+              }
+              // Large libraries get their own chunk
+              if (id.includes('lucide-vue') || id.includes('@heroicons')) {
+                return 'icons'
+              }
+              // Everything else goes to vendor
+              return 'vendor'
+            }
           }
         }
       },
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 500, // Reduced from 1000 to catch large chunks earlier
       // Optimize chunking for faster loads
-      minify: 'terser',
+      minify: process.env.NODE_ENV === 'production' ? 'terser' : false,
       terserOptions: {
         compress: {
-          drop_console: false // Keep console in dev
+          drop_console: process.env.NODE_ENV === 'production', // Remove console in production
+          drop_debugger: true
         }
       }
     },
     optimizeDeps: {
-      include: ['chart.js', 'xlsx', 'jspdf', 'vue', 'vue-router', 'pinia'],
+      include: [
+        'chart.js', 
+        'chartjs-adapter-date-fns',
+        'xlsx', 
+        'jspdf', 
+        'vue', 
+        'vue-router', 
+        'pinia',
+        '@vueuse/core',
+        'date-fns'
+      ],
       exclude: ['@sentry/nuxt', '@sentry/vue', '@sentry/browser', '@sentry/core'], // Exclude Sentry from pre-bundling in dev
       force: false,
       // Pre-bundle common dependencies for faster startup
       esbuildOptions: {
-        target: 'esnext'
+        target: 'esnext',
+        treeShaking: true
       }
     }
   },

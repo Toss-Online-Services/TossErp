@@ -84,17 +84,16 @@ export const useProductsAPI = () => {
     },
 
     /**
-     * Get all products
+     * Get all products with optimized pagination
+     * Reduced page size for better performance
      */
-  async getProducts(shopId?: number) {
+  async getProducts(shopId?: number, pageNumber: number = 1, pageSize: number = 50) {
       const params = { 
         ShopId: shopId,
-        PageNumber: 1,
-        PageSize: 1000,
+        PageNumber: pageNumber,
+        PageSize: pageSize, // Reduced from 1000 to 50 for better performance
         IsActive: true
       }
-      console.log('🔍 useProductsAPI.getProducts() - Fetching with params:', params)
-      console.log('🔍 useProductsAPI.getProducts() - Request URL:', `${baseURL}/Inventory/products`)
       
       try {
         const response: any = await $fetch(`${baseURL}/Inventory/products`, {
@@ -103,7 +102,6 @@ export const useProductsAPI = () => {
         })
         // Backend may return Items (PascalCase) or items (camelCase) or value
         const items = response?.items || response?.Items || response?.value || response?.Value || []
-        console.log('✅ useProductsAPI.getProducts() - Items count:', Array.isArray(items) ? items.length : 0)
         // Normalize to array
         return Array.isArray(items) ? items : []
       } catch (error) {
