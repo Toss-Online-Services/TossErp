@@ -43,7 +43,11 @@
           />
 
                 <label class="flex items-center cursor-pointer group">
-                  <UiSwitch v-model="form.remember" />
+                  <input
+                    v-model="form.remember"
+                    type="checkbox"
+                    class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
                   <span class="ml-3 text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                     Remember me
                   </span>

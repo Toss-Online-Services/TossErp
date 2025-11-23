@@ -18,7 +18,13 @@ export const useAuth = () => {
   const error = ref<string | null>(null)
   const refreshTimer = ref<NodeJS.Timeout | null>(null)
 
-  const apiBaseUrl = useRuntimeConfig().public.apiBase
+  const config = useRuntimeConfig()
+  
+  // Use relative URL in development to leverage Nuxt dev proxy (avoids CORS/certificate issues)
+  // Use absolute URL in production
+  const getApiUrl = (endpoint: string) => {
+    return process.dev ? endpoint : `${config.public.apiBase}${endpoint}`
+  }
 
   /**
    * Check if token is expired
@@ -92,7 +98,7 @@ export const useAuth = () => {
     }
 
     try {
-      const response = await $fetch<RefreshTokenResponse>(`${apiBaseUrl}/api/auth/refresh`, {
+      const response = await $fetch<RefreshTokenResponse>(getApiUrl('/api/auth/refresh'), {
         method: 'POST',
         body: { refreshToken: refreshToken.value },
       })
@@ -137,7 +143,7 @@ export const useAuth = () => {
     error.value = null
 
     try {
-      const response = await $fetch<AuthResponse>(`${apiBaseUrl}/api/auth/login`, {
+      const response = await $fetch<AuthResponse>(getApiUrl('/api/auth/login'), {
         method: 'POST',
         body: credentials,
       })
@@ -199,7 +205,7 @@ export const useAuth = () => {
     // Notify server about logout (optional)
     if (refreshToken.value) {
       try {
-        await $fetch(`${apiBaseUrl}/api/auth/logout`, {
+        await $fetch(getApiUrl('/api/auth/logout'), {
           method: 'POST',
           body: { refreshToken: refreshToken.value },
         })
@@ -290,7 +296,7 @@ export const useAuth = () => {
     if (!token.value) return false
 
     try {
-      await $fetch(`${apiBaseUrl}/api/auth/verify`, {
+      await $fetch(getApiUrl('/api/auth/verify'), {
         headers: getAuthHeader(),
       })
       return true

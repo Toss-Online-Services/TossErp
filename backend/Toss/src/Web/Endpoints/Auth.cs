@@ -36,13 +36,33 @@ public class Auth : EndpointGroupBase
  private static async Task<IResult> Login(HttpContext httpContext)
  {
  var request = httpContext.Request;
- var client = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>().CreateClient();                                                              
+ var clientFactory = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>();
+ var client = clientFactory.CreateClient();
+ client.Timeout = TimeSpan.FromSeconds(30); // Set timeout to prevent hanging
  var configuration = httpContext.RequestServices.GetRequiredService<IConfiguration>();
- var backendUrl = "/api/Users/login";
+ 
+ // Construct absolute URI using current request's base URL
+ var baseUrl = $"{request.Scheme}://{request.Host}";
+ var backendUrl = new Uri(new Uri(baseUrl), "/api/Users/login");
+ 
  request.EnableBuffering();
  var body = await new System.IO.StreamReader(request.Body).ReadToEndAsync();    
  request.Body.Position =0;
- var response = await client.PostAsync(backendUrl, new StringContent(body, System.Text.Encoding.UTF8, "application/json"));                                     
+ 
+ HttpResponseMessage response;
+ try
+ {
+     response = await client.PostAsync(backendUrl, new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
+ }
+ catch (TaskCanceledException)
+ {
+     return Results.Problem("Request timeout - the identity service did not respond in time", statusCode: 504);
+ }
+ catch (HttpRequestException ex)
+ {
+     return Results.Problem($"Failed to connect to identity service: {ex.Message}", statusCode: 502);
+ }
+ 
  var respContent = await response.Content.ReadAsStringAsync();
 
  // Transform backend response to frontend AuthResponse
@@ -69,12 +89,32 @@ public class Auth : EndpointGroupBase
  private static async Task<IResult> Refresh(HttpContext httpContext)
  {
  var request = httpContext.Request;
- var client = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>().CreateClient();
- var backendUrl = "/api/Users/refresh";
+ var clientFactory = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>();
+ var client = clientFactory.CreateClient();
+ client.Timeout = TimeSpan.FromSeconds(30); // Set timeout to prevent hanging
+ 
+ // Construct absolute URI using current request's base URL
+ var baseUrl = $"{request.Scheme}://{request.Host}";
+ var backendUrl = new Uri(new Uri(baseUrl), "/api/Users/refresh");
+ 
  request.EnableBuffering();
  var body = await new System.IO.StreamReader(request.Body).ReadToEndAsync();
  request.Body.Position =0;
- var response = await client.PostAsync(backendUrl, new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
+ 
+ HttpResponseMessage response;
+ try
+ {
+     response = await client.PostAsync(backendUrl, new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
+ }
+ catch (TaskCanceledException)
+ {
+     return Results.Problem("Request timeout - the identity service did not respond in time", statusCode: 504);
+ }
+ catch (HttpRequestException ex)
+ {
+     return Results.Problem($"Failed to connect to identity service: {ex.Message}", statusCode: 502);
+ }
+ 
  var respContent = await response.Content.ReadAsStringAsync();
 
  // Transform backend response to frontend RefreshTokenResponse
