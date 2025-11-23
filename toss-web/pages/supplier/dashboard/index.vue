@@ -1,85 +1,39 @@
-<template>
-  <div class="p-6">
-    <MaterialCard variant="elevated" class="mb-6">
-      <h1 class="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent mb-2">Supplier Dashboard</h1>
-      <p class="text-sm text-slate-600 dark:text-slate-400">Overview of your orders and quick actions</p>
-    </MaterialCard>
-
-    <div v-if="isLoading" class="text-center py-12">
-      <div class="inline-block w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
-      <p class="mt-2 text-gray-600">Loading dashboard...</p>
-    </div>
-
-    <div v-else class="space-y-6">
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <MaterialStatsCard
-          title="Pending Orders"
-          :value="stats.pendingOrders"
-          icon="clock"
-          color="warning"
-        />
-        <MaterialStatsCard
-          title="Accepted Orders"
-          :value="stats.acceptedOrders"
-          icon="check-circle"
-          color="info"
-        />
-        <MaterialStatsCard
-          title="Shipped Orders"
-          :value="stats.shippedOrders"
-          icon="truck"
-          color="primary"
-        />
-      </div>
-
-      <!-- Quick Actions -->
-      <MaterialCard variant="elevated" class="mt-6">
-        <h2 class="text-lg font-semibold mb-4">Quick Actions</h2>
-        <MaterialButton
-          to="/supplier/orders"
-          color="success"
-          class="w-full"
-        >
-          <template #icon>
-            <Icon name="heroicons:clipboard-document-list" class="w-5 h-5 mr-2" />
-          </template>
-          View All Orders
-        </MaterialButton>
-      </MaterialCard>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useApi } from '~/composables/useApi'
+import { FileText, Package, TrendingUp, CheckCircle, XCircle, Clock } from 'lucide-vue-next'
+
 definePageMeta({
-  layout: 'supplier',
+  layout: 'dashboard',
   middleware: 'auth',
   meta: {
     roles: ['Supplier']
   }
 })
 
-const purchaseOrdersAPI = usePurchaseOrdersAPI()
-const supplierId = ref(1) // TODO: Get from session
+const { get } = useApi()
 const isLoading = ref(true)
 const stats = ref({
+  totalOrders: 0,
   pendingOrders: 0,
   acceptedOrders: 0,
-  shippedOrders: 0
+  rejectedOrders: 0,
+  totalProducts: 0
 })
 
 const loadStats = async () => {
   isLoading.value = true
   try {
-    // TODO: Filter by supplierId when backend supports it
-    const allOrders = await purchaseOrdersAPI.getPurchaseOrders({})
-    
-    stats.value.pendingOrders = allOrders.filter((o: any) => o.status === 'Submitted').length
-    stats.value.acceptedOrders = allOrders.filter((o: any) => o.status === 'Accepted').length
-    stats.value.shippedOrders = allOrders.filter((o: any) => o.status === 'Shipped').length
+    // TODO: Replace with actual API calls
+    stats.value = {
+      totalOrders: 0,
+      pendingOrders: 0,
+      acceptedOrders: 0,
+      rejectedOrders: 0,
+      totalProducts: 0
+    }
   } catch (error) {
-    console.error('Failed to load dashboard stats:', error)
+    console.error('Error loading stats:', error)
   } finally {
     isLoading.value = false
   }
@@ -90,3 +44,145 @@ onMounted(() => {
 })
 </script>
 
+<template>
+  <div class="space-y-6">
+    <!-- Page Header -->
+    <div>
+      <h1 class="text-2xl font-bold text-foreground">Supplier Dashboard</h1>
+      <p class="text-sm text-muted-foreground mt-1">Manage orders and products</p>
+    </div>
+
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      <p class="ml-3 text-sm text-muted-foreground">Loading dashboard...</p>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div v-else class="space-y-6">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <!-- Total Orders -->
+        <div class="toss-card p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-muted-foreground">Total Orders</p>
+              <p class="text-2xl font-bold text-foreground mt-2">{{ stats.totalOrders }}</p>
+            </div>
+            <div class="p-3 bg-primary/10 rounded-lg">
+              <FileText class="w-6 h-6 text-primary" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending Orders -->
+        <div class="toss-card p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-muted-foreground">Pending</p>
+              <p class="text-2xl font-bold text-foreground mt-2">{{ stats.pendingOrders }}</p>
+            </div>
+            <div class="p-3 bg-primary/10 rounded-lg">
+              <Clock class="w-6 h-6 text-primary" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Accepted Orders -->
+        <div class="toss-card p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-muted-foreground">Accepted</p>
+              <p class="text-2xl font-bold text-foreground mt-2">{{ stats.acceptedOrders }}</p>
+            </div>
+            <div class="p-3 bg-primary/10 rounded-lg">
+              <CheckCircle class="w-6 h-6 text-primary" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Rejected Orders -->
+        <div class="toss-card p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-muted-foreground">Rejected</p>
+              <p class="text-2xl font-bold text-foreground mt-2">{{ stats.rejectedOrders }}</p>
+            </div>
+            <div class="p-3 bg-primary/10 rounded-lg">
+              <XCircle class="w-6 h-6 text-primary" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Products -->
+        <div class="toss-card p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-muted-foreground">Products</p>
+              <p class="text-2xl font-bold text-foreground mt-2">{{ stats.totalProducts }}</p>
+            </div>
+            <div class="p-3 bg-primary/10 rounded-lg">
+              <Package class="w-6 h-6 text-primary" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="toss-card p-6">
+        <h2 class="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <NuxtLink
+            to="/supplier/orders"
+            class="p-4 bg-primary/5 hover:bg-primary/10 rounded-lg text-center transition-colors"
+          >
+            <FileText class="w-8 h-8 mx-auto mb-2 text-primary" />
+            <p class="text-sm font-medium text-foreground">View Orders</p>
+          </NuxtLink>
+          <NuxtLink
+            to="/supplier/products"
+            class="p-4 bg-primary/5 hover:bg-primary/10 rounded-lg text-center transition-colors"
+          >
+            <Package class="w-8 h-8 mx-auto mb-2 text-primary" />
+            <p class="text-sm font-medium text-foreground">Products</p>
+          </NuxtLink>
+          <NuxtLink
+            to="/sales/reports/analytics"
+            class="p-4 bg-primary/5 hover:bg-primary/10 rounded-lg text-center transition-colors"
+          >
+            <TrendingUp class="w-8 h-8 mx-auto mb-2 text-primary" />
+            <p class="text-sm font-medium text-foreground">Analytics</p>
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="toss-card p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-foreground">Recent Orders</h2>
+          <NuxtLink
+            to="/supplier/orders"
+            class="text-sm text-primary hover:text-primary/80 font-medium"
+          >
+            View all
+          </NuxtLink>
+        </div>
+        <div class="space-y-4">
+          <div
+            v-for="i in 5"
+            :key="i"
+            class="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+          >
+            <div>
+              <p class="text-sm font-medium text-foreground">Order #{{ 1000 + i }}</p>
+              <p class="text-xs text-muted-foreground">From Shop {{ i }}</p>
+            </div>
+            <span class="px-3 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full">
+              Pending
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

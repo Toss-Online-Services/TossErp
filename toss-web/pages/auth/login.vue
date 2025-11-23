@@ -1,18 +1,18 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 px-4 py-12">
+  <div class="min-h-screen flex items-center justify-center bg-background px-4 py-12">
     <!-- Decorative background elements -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute top-20 left-10 w-72 h-72 bg-orange-200/20 dark:bg-orange-500/10 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-20 right-10 w-96 h-96 bg-orange-300/20 dark:bg-orange-400/10 rounded-full blur-3xl"></div>
+      <div class="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
     </div>
 
     <div class="max-w-md w-full space-y-8 relative z-10">
       <!-- Logo and Title -->
       <div class="text-center">
         <NuxtLink to="/" class="inline-flex justify-center mb-6 group">
-          <div class="relative flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 rounded-2xl shadow-xl transition-transform group-hover:scale-110 group-hover:rotate-3">
+          <div class="relative flex items-center justify-center w-16 h-16 bg-primary text-primary-foreground rounded-2xl shadow-xl transition-transform group-hover:scale-110 group-hover:rotate-3">
             <span class="text-3xl font-black text-white">T</span>
-            <div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-orange-500 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
+            <div class="absolute inset-0 bg-primary/20 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
           </div>
         </NuxtLink>
         <h2 class="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
@@ -48,7 +48,7 @@
                     Remember me
                   </span>
                 </label>
-                <NuxtLink to="/auth/forgot-password" class="text-sm text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 font-medium">
+                <NuxtLink to="/auth/forgot-password" class="text-sm text-primary hover:text-primary/80 font-medium">
                   Forgot password?
                 </NuxtLink>
 
@@ -83,7 +83,7 @@
       <!-- Sign Up Link -->
       <p class="text-center text-sm text-slate-600 dark:text-slate-400">
         Don't have an account?
-        <NuxtLink to="/auth/register" class="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 font-semibold">
+        <NuxtLink to="/auth/register" class="text-primary hover:text-primary/80 font-semibold">
           Sign up for free
         </NuxtLink>
       </p>

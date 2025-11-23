@@ -47,9 +47,9 @@ const inputClasses = computed(() => {
   }
   
   const variants = {
-    outlined: 'border-2 border-slate-300 rounded-lg bg-white dark:bg-slate-800 dark:border-slate-600 focus:border-orange-500 dark:focus:border-orange-500 focus:ring-orange-500',
-    filled: 'border-0 border-b-2 border-slate-300 rounded-t-lg bg-slate-100 dark:bg-slate-800 dark:border-slate-600 focus:border-orange-500 dark:focus:border-orange-500 focus:ring-orange-500',
-    standard: 'border-0 border-b-2 border-slate-300 bg-transparent dark:border-slate-600 focus:border-orange-500 dark:focus:border-orange-500 px-0'
+    outlined: 'border-2 border-slate-300 rounded-lg bg-white dark:bg-slate-800 dark:border-slate-600 focus:border-primary dark:focus:border-primary focus:ring-primary',
+    filled: 'border-0 border-b-2 border-slate-300 rounded-t-lg bg-slate-100 dark:bg-slate-800 dark:border-slate-600 focus:border-primary dark:focus:border-primary focus:ring-primary',
+    standard: 'border-0 border-b-2 border-slate-300 bg-transparent dark:border-slate-600 focus:border-primary dark:focus:border-primary px-0'
   }
   
   const errorClass = props.error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
