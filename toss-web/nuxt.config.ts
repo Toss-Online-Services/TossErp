@@ -277,7 +277,8 @@ export default defineNuxtConfig({
       '~/components',
       '~/components/icons',
       '~/components/charts',
-      '~/components/ui'
+      '~/components/ui',
+      '~/components/material'
     ]
   },
   imports: {
