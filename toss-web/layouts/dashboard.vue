@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useAuth } from '~/composables/useAuth'
+import GlobalAiAssistant from '~/components/ai/GlobalAiAssistant.vue'
 
 interface Props {
   role?: 'admin' | 'retailer' | 'supplier' | 'driver'
@@ -37,58 +38,62 @@ const handleSearch = (query: string) => {
 </script>
 
 <template>
-  <div class="flex h-screen bg-background overflow-hidden">
-    <!-- Sidebar -->
-    <MaterialSidebar
-      v-model:open="sidebarOpen"
-      :role="role"
-      :user-info="userInfo"
-    />
-
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col overflow-hidden lg:pl-64">
-      <!-- Top Navigation -->
-      <MaterialTopNav
-        :title="pageTitle"
-        :subtitle="pageSubtitle"
-        :notification-count="notificationCount"
-        @toggle-sidebar="sidebarOpen = !sidebarOpen"
-        @search="handleSearch"
+  <div class="min-h-screen bg-background text-foreground">
+    <div class="flex h-screen overflow-hidden">
+      <!-- Sidebar -->
+      <MaterialSidebar
+        v-model:open="sidebarOpen"
+        :role="role"
+        :user-info="userInfo"
       />
 
-      <!-- Page Content -->
-      <main class="flex-1 overflow-y-auto p-4 lg:p-6">
-        <slot />
-      </main>
+      <!-- Main Content Area -->
+      <div class="flex-1 flex flex-col overflow-hidden lg:pl-64">
+        <!-- Top Navigation -->
+        <MaterialTopNav
+          :title="pageTitle"
+          :subtitle="pageSubtitle"
+          :notification-count="notificationCount"
+          @toggle-sidebar="sidebarOpen = !sidebarOpen"
+          @search="handleSearch"
+        />
 
-      <!-- Footer -->
-      <footer class="border-t border-border bg-card py-4 px-4 lg:px-6">
-        <div class="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0">
-          <div class="text-sm text-muted-foreground">
-            <p>&copy; {{ new Date().getFullYear() }} TOSS Online Services. Built for South African SMMEs.</p>
+        <!-- Page Content -->
+        <main class="flex-1 overflow-y-auto p-4 lg:p-6 bg-background">
+          <slot />
+        </main>
+
+        <!-- Footer -->
+        <footer class="border-t border-border bg-card py-4 px-4 lg:px-6">
+          <div class="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0">
+            <div class="text-sm text-muted-foreground">
+              <p>&copy; {{ new Date().getFullYear() }} TOSS Online Services. Built for South African SMMEs.</p>
+            </div>
+            <div class="flex items-center space-x-6 text-sm">
+              <NuxtLink
+                to="/help"
+                class="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Help Center
+              </NuxtLink>
+              <NuxtLink
+                to="/privacy"
+                class="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Privacy
+              </NuxtLink>
+              <NuxtLink
+                to="/terms"
+                class="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Terms
+              </NuxtLink>
+            </div>
           </div>
-          <div class="flex items-center space-x-6 text-sm">
-            <NuxtLink
-              to="/help"
-              class="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Help Center
-            </NuxtLink>
-            <NuxtLink
-              to="/privacy"
-              class="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Privacy
-            </NuxtLink>
-            <NuxtLink
-              to="/terms"
-              class="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Terms
-            </NuxtLink>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
+
+    <GlobalAiAssistant />
   </div>
 </template>
