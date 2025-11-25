@@ -1,26 +1,42 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-// Components are auto-imported in Nuxt - no need to import
-import { Users, Building2, TrendingUp, DollarSign, ShoppingCart, Package, Warehouse } from 'lucide-vue-next'
+import Card from '@/components/ui/Card.vue'
+import CardHeader from '@/components/ui/CardHeader.vue'
+import CardTitle from '@/components/ui/CardTitle.vue'
+import CardContent from '@/components/ui/CardContent.vue'
+import { Users, Building2, TrendingUp, DollarSign } from 'lucide-vue-next'
 import { Line } from 'vue-chartjs'
-import type { ChartData, ChartOptions } from 'chart.js'
-import 'chart.js/auto'
-import Card from '~/components/ui/Card.vue'
-import CardHeader from '~/components/ui/CardHeader.vue'
-import CardTitle from '~/components/ui/CardTitle.vue'
-import CardContent from '~/components/ui/CardContent.vue'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+  type ChartData,
+  type ChartOptions
+} from 'chart.js'
 
-// TOSS ERP Dashboard
-useHead({
-  title: 'Dashboard - TOSS ERP'
-})
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+)
 
 const revenueData = computed<ChartData<'line'>>(() => ({
   labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
   datasets: [
     {
       label: 'Revenue',
-      data: [18500, 19800, 19200, 22500, 21000, 23456],
+      data: [185000, 198000, 192000, 225000, 210000, 234567],
       borderColor: 'rgb(66, 184, 131)',
       backgroundColor: 'rgba(66, 184, 131, 0.1)',
       tension: 0.4,
@@ -40,7 +56,7 @@ const revenueOptions = computed<ChartOptions<'line'>>(() => ({
       callbacks: {
         label: (context) => {
           const value = context.parsed.y
-          return `Revenue: R ${(value).toLocaleString()}`
+          return `Revenue: $${(value / 1000).toFixed(0)}k`
         }
       }
     }
@@ -49,7 +65,7 @@ const revenueOptions = computed<ChartOptions<'line'>>(() => ({
     y: {
       beginAtZero: true,
       ticks: {
-        callback: (value) => `R ${Number(value).toLocaleString()}`
+        callback: (value) => `$${(Number(value) / 1000).toFixed(0)}k`
       }
     }
   }
@@ -60,50 +76,50 @@ const revenueOptions = computed<ChartOptions<'line'>>(() => ({
   <div class="space-y-6">
     <div>
       <h1 class="text-xl font-bold tracking-tight">Dashboard</h1>
-      <p class="text-muted-foreground">Welcome to your TOSS ERP dashboard</p>
+      <p class="text-muted-foreground">Welcome to your new CRM dashboard</p>
     </div>
 
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader class="flex flex-row items-center justify-between pb-2">
-          <CardTitle class="text-sm font-medium">Today's Sales</CardTitle>
-          <ShoppingCart class="h-4 w-4 text-muted-foreground" />
+          <CardTitle class="text-sm font-medium">Total Contacts</CardTitle>
+          <Users class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div class="text-2xl font-bold">R 12,450</div>
-          <p class="text-xs text-muted-foreground">+12% from yesterday</p>
+          <div class="text-2xl font-bold">1,234</div>
+          <p class="text-xs text-muted-foreground">+12% from last month</p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader class="flex flex-row items-center justify-between pb-2">
-          <CardTitle class="text-sm font-medium">Stock Value</CardTitle>
-          <Warehouse class="h-4 w-4 text-muted-foreground" />
+          <CardTitle class="text-sm font-medium">Companies</CardTitle>
+          <Building2 class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div class="text-2xl font-bold">R 45,230</div>
-          <p class="text-xs text-muted-foreground">+5% from last month</p>
+          <div class="text-2xl font-bold">456</div>
+          <p class="text-xs text-muted-foreground">+8% from last month</p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader class="flex flex-row items-center justify-between pb-2">
-          <CardTitle class="text-sm font-medium">Pending Orders</CardTitle>
-          <Package class="h-4 w-4 text-muted-foreground" />
+          <CardTitle class="text-sm font-medium">Active Deals</CardTitle>
+          <TrendingUp class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div class="text-2xl font-bold">8</div>
-          <p class="text-xs text-muted-foreground">-2 from last week</p>
+          <div class="text-2xl font-bold">89</div>
+          <p class="text-xs text-muted-foreground">+23% from last month</p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader class="flex flex-row items-center justify-between pb-2">
-          <CardTitle class="text-sm font-medium">Total Revenue</CardTitle>
+          <CardTitle class="text-sm font-medium">Revenue</CardTitle>
           <DollarSign class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div class="text-2xl font-bold">R 234,567</div>
+          <div class="text-2xl font-bold">$234,567</div>
           <p class="text-xs text-muted-foreground">+18% from last month</p>
         </CardContent>
       </Card>
@@ -114,16 +130,9 @@ const revenueOptions = computed<ChartOptions<'line'>>(() => ({
         <CardTitle>Revenue Trend</CardTitle>
       </CardHeader>
       <CardContent>
-        <ClientOnly>
-          <div class="h-[300px]">
-            <Line :data="revenueData" :options="revenueOptions" />
-          </div>
-          <template #fallback>
-            <div class="h-[300px] flex items-center justify-center">
-              <p class="text-muted-foreground">Loading chart...</p>
-            </div>
-          </template>
-        </ClientOnly>
+        <div class="h-[300px]">
+          <Line :data="revenueData" :options="revenueOptions" />
+        </div>
       </CardContent>
     </Card>
 
@@ -137,24 +146,24 @@ const revenueOptions = computed<ChartOptions<'line'>>(() => ({
             <div class="flex items-start gap-3">
               <div class="w-2 h-2 bg-primary rounded-full mt-2"></div>
               <div class="flex-1">
-                <p class="text-sm font-medium">New sale completed</p>
-                <p class="text-xs text-muted-foreground">R 1,250 POS transaction</p>
+                <p class="text-sm font-medium">New contact added</p>
+                <p class="text-xs text-muted-foreground">John Doe from Acme Corp</p>
                 <p class="text-xs text-muted-foreground">2 hours ago</p>
               </div>
             </div>
             <div class="flex items-start gap-3">
               <div class="w-2 h-2 bg-primary rounded-full mt-2"></div>
               <div class="flex-1">
-                <p class="text-sm font-medium">Stock received</p>
-                <p class="text-xs text-muted-foreground">Purchase order #PO-1234 delivered</p>
+                <p class="text-sm font-medium">Deal closed</p>
+                <p class="text-xs text-muted-foreground">$45,000 deal with Tech Solutions</p>
                 <p class="text-xs text-muted-foreground">5 hours ago</p>
               </div>
             </div>
             <div class="flex items-start gap-3">
               <div class="w-2 h-2 bg-primary rounded-full mt-2"></div>
               <div class="flex-1">
-                <p class="text-sm font-medium">Low stock alert</p>
-                <p class="text-xs text-muted-foreground">Cooking oil running low</p>
+                <p class="text-sm font-medium">Task completed</p>
+                <p class="text-xs text-muted-foreground">Follow-up call with Jane Smith</p>
                 <p class="text-xs text-muted-foreground">1 day ago</p>
               </div>
             </div>
@@ -171,21 +180,21 @@ const revenueOptions = computed<ChartOptions<'line'>>(() => ({
             <div class="flex items-center gap-3">
               <input type="checkbox" class="w-4 h-4 rounded border-input" />
               <div class="flex-1">
-                <p class="text-sm font-medium">Review purchase orders</p>
+                <p class="text-sm font-medium">Call with prospect</p>
                 <p class="text-xs text-muted-foreground">Today at 2:00 PM</p>
               </div>
             </div>
             <div class="flex items-center gap-3">
               <input type="checkbox" class="w-4 h-4 rounded border-input" />
               <div class="flex-1">
-                <p class="text-sm font-medium">Stock take</p>
+                <p class="text-sm font-medium">Send proposal</p>
                 <p class="text-xs text-muted-foreground">Tomorrow at 10:00 AM</p>
               </div>
             </div>
             <div class="flex items-center gap-3">
               <input type="checkbox" class="w-4 h-4 rounded border-input" />
               <div class="flex-1">
-                <p class="text-sm font-medium">Supplier meeting</p>
+                <p class="text-sm font-medium">Review contracts</p>
                 <p class="text-xs text-muted-foreground">Friday at 3:00 PM</p>
               </div>
             </div>

@@ -14,6 +14,12 @@ import {
 } from 'lucide-vue-next'
 import { Line } from 'vue-chartjs'
 import type { ChartData, ChartOptions } from 'chart.js'
+import 'chart.js/auto'
+import Card from '~/components/ui/Card.vue'
+import CardHeader from '~/components/ui/CardHeader.vue'
+import CardTitle from '~/components/ui/CardTitle.vue'
+import CardContent from '~/components/ui/CardContent.vue'
+import Badge from '~/app/components/ui/badge/Badge.vue'
 
 useHead({
   title: 'Sales Dashboard - TOSS ERP'

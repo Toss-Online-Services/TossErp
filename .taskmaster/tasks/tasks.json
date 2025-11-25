@@ -1,0 +1,169 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Repository scan and architecture inventory",
+      "description": "Scan current codebase to identify existing services, projects, tech stack, and gaps relative to PRD.",
+      "details": "- Use glob/grep equivalents to list solutions (*.sln), projects (*.csproj), and key folders (Services, Stock, Sales, Finance, Web, Mobile).\n- Identify presence of .NET 8, Clean Architecture layers, Docker/K8s manifests, CI configs.\n- Detect any Nuxt/Flutter apps and shared libraries.\n- Output a concise inventory and align planned tasks with what exists to avoid duplication.",
+      "testStrategy": "- Verify tool output lists all solutions/projects.\n- Manually spot-check key paths.\n- Ensure inventory includes versions (e.g., TargetFramework net8.0) and notes missing components.",
+      "priority": "high",
+      "dependencies": [],
+      "status": "pending",
+      "subtasks": [
+        { "id": 1.1, "title": "Scan for solution (*.sln) and project (*.csproj) files across the repo." },
+        { "id": 1.2, "title": "Extract .NET TargetFramework(s) and infer Clean Architecture layers." },
+        { "id": 1.3, "title": "Discover containerization (Docker/K8s) and CI pipeline artifacts." },
+        { "id": 1.4, "title": "Identify Nuxt/Flutter apps and shared libraries for reuse." },
+        { "id": 1.5, "title": "Compile inventory.md with gaps vs PRD and prioritized next steps." }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Bootstrap event-sourced PostgreSQL and messaging foundation",
+      "description": "Set up PostgreSQL (with event store schema), RabbitMQ, and Redis with local Docker Compose for dev.",
+      "details": "- Add/update docker-compose.yml with services: postgres, rabbitmq, redis using PRD env variables.\n- Provision event store tables and RLS scaffolding for multitenancy (tenants table, RLS policy example from PRD).\n- Create db/migrations (e.g., FluentMigrator or EF Core Migrations) for common schemas.\n- Add connection strings across services via user-secrets or appsettings.Development.json.",
+      "testStrategy": "- docker compose up -d starts all containers.\n- Health checks return Healthy.\n- Apply migrations successfully and verify tables exist.\n- Publish/consume a test message on RabbitMQ.",
+      "priority": "high",
+      "dependencies": [1],
+      "status": "pending",
+      "subtasks": [
+        { "id": 2.1, "title": "Create/update docker-compose.yml for postgres, rabbitmq, redis." },
+        { "id": 2.2, "title": "Design and apply event store schema and initial migrations." },
+        { "id": 2.3, "title": "Set up PostgreSQL RLS policies and tenants table." },
+        { "id": 2.4, "title": "Configure service connection strings and health checks." }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "API Gateway skeleton (Envoy/Ocelot)",
+      "description": "Introduce API Gateway config to route to microservices and prepare for auth.",
+      "details": "- If not present, create Gateway project or Envoy config with routes for Stock, Sales, Finance.\n- Ocelot option: .NET 8 minimal host with ocelot.json routes, QoS, caching.\n- Envoy option: envoy.yaml with clusters and listeners.\n- Add Docker service for gateway.",
+      "testStrategy": "- Run gateway + one downstream service.\n- Curl /stock/health proxies correctly.\n- Validate CORS preflight from localhost web/mobile emulators.",
+      "priority": "high",
+      "dependencies": [2],
+      "status": "pending",
+      "subtasks": [
+        { "id": 3.1, "title": "Scaffold Gateway project or Envoy config." },
+        { "id": 3.2, "title": "Define routing rules for Stock, Sales, Finance services." },
+        { "id": 3.3, "title": "Integrate Docker service and configure CORS for FE/BE clients." }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Identity and multitenancy foundation",
+      "description": "Implement basic authentication/authorization (MFA-ready), tenant resolution, and RLS propagation.",
+      "details": "- Add Identity provider integration: prefer ASP.NET Identity + JWT with external IdP-ready (e.g., Azure AD B2C compatible) but local dev JWT.\n- Middleware to resolve tenant from domain/header and set app.current_tenant_id for PostgreSQL sessions.\n- Implement Role-based access control and policy-based authorization.\n- Add audit logging middleware (correlation IDs).",
+      "testStrategy": "- Unit test tenant resolution and RLS queries.\n- Integration test: user with JWT hits service, RLS limits data.\n- Verify audit entries written with correlation ID.",
+      "priority": "high",
+      "dependencies": [2,3],
+      "status": "pending",
+      "subtasks": [
+        { "id": 4.1, "title": "Integrate ASP.NET Identity provider and JWT authentication." },
+        { "id": 4.2, "title": "Set up local dev JWT and external IdP readiness." },
+        { "id": 4.3, "title": "Implement tenant resolution middleware." },
+        { "id": 4.4, "title": "Propagate tenant context to PostgreSQL (RLS)." },
+        { "id": 4.5, "title": "Add audit logging and role/policy-based authorization." }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Stock Service (Clean Architecture) MVP",
+      "description": "Create Stock microservice with CQRS, event sourcing, inventory domain, and REST endpoints.",
+      "details": "- Projects: Stock.API, Stock.Application, Stock.Domain, Stock.Infrastructure, Stock.Processor per PRD.\n- Domain aggregates: Item, Warehouse/Store, StockLevel, events: StockReceived, StockAdjusted, StockTransferred.\n- Commands/queries via MediatR. Outbox pattern for event publishing to RabbitMQ.\n- API endpoints: CRUD items, receive stock, adjust, transfer, low-stock alerts, list.\n- Persistence: EF Core 8 to PostgreSQL; event store tables with streams per aggregate.\n- Health checks, Serilog, OpenTelemetry.",
+      "testStrategy": "- Unit tests for domain invariants.\n- Integration tests for commands -> events -> projections.\n- API tests covering endpoints and RLS.\n- Contract tests for events schema.",
+      "priority": "high",
+      "dependencies": [2,4],
+      "status": "pending",
+      "subtasks": [
+        { "id": 5.1, "title": "Scaffold Stock.API, Stock.Application, Stock.Domain, Stock.Infrastructure, Stock.Processor projects." },
+        { "id": 5.2, "title": "Implement domain aggregates (Item, Warehouse, StockLevel) and events." },
+        { "id": 5.3, "title": "Set up CQRS (MediatR) commands and queries." },
+        { "id": 5.4, "title": "Build REST API endpoints for CRUD, receive, adjust, transfer, alerts." },
+        { "id": 5.5, "title": "Implement outbox pattern and event publishing to RabbitMQ." },
+        { "id": 5.6, "title": "Add health checks, Serilog, and OpenTelemetry instrumentation." }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Offline-first sync and local cache libraries",
+      "description": "Foundation libraries for offline-first capability for Flutter and Nuxt clients.",
+      "details": "- Web (Nuxt 4): IndexedDB via Dexie, Service Worker with Workbox, queue offline mutations; background sync to API when online.\n- Mobile (Flutter): hive or isar for local store; graphql_offline pattern or custom REST queue; connectivity listener and conflict resolution (last-write-wins + vector clock for critical entities).\n- Shared sync protocol: envelope {op,id,entity,version,ts,payload,tenantId}; endpoint /sync/batch per service.",
+      "testStrategy": "- Simulate offline by disabling network; enqueue ops and verify replay.\n- Conflict tests with concurrent updates.\n- Performance tests: sync <10s for daily data.",
+      "priority": "medium",
+      "dependencies": [5],
+      "status": "pending",
+      "subtasks": [
+        { "id": 6.1, "title": "Implement IndexedDB/Dexie cache and Service Worker for Nuxt." },
+        { "id": 6.2, "title": "Set up Hive/Isar cache and offline queue for Flutter." },
+        { "id": 6.3, "title": "Design shared sync protocol and /sync/batch endpoint." },
+        { "id": 6.4, "title": "Implement conflict resolution, retry/backoff, and tombstone logic." }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "POS core and payment abstractions",
+      "description": "Implement POS endpoints and client UI skeleton with offline support and barcode scanning.",
+      "details": "- Backend (Sales Service skeleton): Orders, line items, payments, discounts; events SaleCompleted, PaymentCaptured.\n- Payment providers abstraction (cash, card, mobile money, bank transfer) with strategy pattern.\n- Barcode scanning: on mobile use camera; on web support keyboard-wedge scanners.\n- Receipt generation: PDF/thermal (ESC/POS) renderer service.\n- Integrate with Stock Service to decrement stock on SaleCompleted.",
+      "testStrategy": "- API integration tests for sale flow and stock deduction.\n- Unit tests for pricing/discount rules.\n- Device tests: barcode scanning on Flutter; web barcode input handling.\n- Receipt snapshot tests.",
+      "priority": "high",
+      "dependencies": [5,6],
+      "status": "pending",
+      "subtasks": [
+        { "id": 7.1, "title": "Scaffold Sales Service skeleton (orders, line items, payments, discounts)." },
+        { "id": 7.2, "title": "Implement payment provider abstraction (cash, card, mobile money, bank transfer)." },
+        { "id": 7.3, "title": "Integrate barcode scanning (mobile camera, web keyboard-wedge)." },
+        { "id": 7.4, "title": "Build receipt generation (PDF/thermal renderer)." },
+        { "id": 7.5, "title": "Integrate with Stock Service for stock deduction and offline queue." }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Dashboard KPIs and analytics projections",
+      "description": "Implement read models and APIs to serve KPI dashboard: revenue, expenses, margins, cash flow, stock alerts, top products.",
+      "details": "- Create analytics projections consuming events from Stock and Sales to maintain KPI tables (e.g., daily aggregates).\n- API endpoints /dashboard/overview and parameterized date ranges.\n- Compute Business Health Score via rules + placeholder ML hook.\n- Caching with Redis for hot queries; pagination and filtering.",
+      "testStrategy": "- Event-driven integration tests for projections.\n- API tests verifying aggregate correctness.\n- Performance tests: queries <200ms for 95th percentile.",
+      "priority": "medium",
+      "dependencies": [5,7],
+      "status": "pending",
+      "subtasks": [
+        { "id": 8.1, "title": "Implement analytics projections for revenue, expenses, margins, stock alerts." },
+        { "id": 8.2, "title": "Build API endpoints for dashboard overview and date ranges." },
+        { "id": 8.3, "title": "Add caching (Redis), pagination, and filtering for hot queries." },
+        { "id": 8.4, "title": "Compute Business Health Score and expose chart-ready data." }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "AI assistant foundation with LangChain",
+      "description": "Create AI service skeleton providing NLQ over KPIs and inventory with multilingual support hooks.",
+      "details": "- Service AI.Assistant with endpoints /chat and /tools.\n- Tools: SQL/semantic query over analytics DB, low-stock query, profit computation; use LangChain .NET (or Python sidecar if preferred) with guardrails and human-in-the-loop flags.\n- Prompt templates for locale (EN, Zulu, Xhosa, Afrikaans); TTS/STT integration interfaces (pluggable).\n- RBAC-enforced tenant-aware context.",
+      "testStrategy": "- Unit tests for tool routing and safety filters.\n- Integration tests: NL queries map to correct SQL with row restrictions.\n- E2E: Ask 'Show me low stock items' returns expected list.",
+      "priority": "medium",
+      "dependencies": [8],
+      "status": "pending",
+      "subtasks": [
+        { "id": 9.1, "title": "Scaffold AI.Assistant service with /chat and /tools endpoints." },
+        { "id": 9.2, "title": "Implement NLQ tool routing and safety filters." },
+        { "id": 9.3, "title": "Create prompt templates for supported locales (EN, Zulu, Xhosa, Afrikaans)." },
+        { "id": 9.4, "title": "Integrate RBAC and tenant-aware context." },
+        { "id": 9.5, "title": "Add event hooks for recommendations and human-in-the-loop flags." }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Security, observability, and CI/CD hardening",
+      "description": "Implement POPIA controls, audit logging, OpenTelemetry, structured logging, and GitHub Actions for build/test/deploy.",
+      "details": "- Encrypt data at rest (PG encryption at rest assumption) and in transit (TLS dev/prod); secrets via environment/user-secrets.\n- Add audit logs for all sensitive actions; ensure PII minimization and data subject rights endpoints (export/delete).\n- Add Serilog JSON logging with correlation IDs; OpenTelemetry tracing/metrics.\n- Provide GitHub Actions as per PRD to build/test services and Docker images; add K8s manifests for one service (Stock) as template.\n- Add health checks and readiness/liveness probes; alert stubs.",
+      "testStrategy": "- Verify traces visible in local collector (or logs).\n- CI pipeline runs tests and builds images on PRs.\n- Security tests for authZ, RLS, and audit log presence.\n- Compliance checklist for POPIA stored.",
+      "priority": "medium",
+      "dependencies": [3,4,5],
+      "status": "pending",
+      "subtasks": [
+        { "id": 10.1, "title": "Implement POPIA controls and audit logging for sensitive actions." },
+        { "id": 10.2, "title": "Add Serilog JSON logging and OpenTelemetry tracing/metrics." },
+        { "id": 10.3, "title": "Set up GitHub Actions CI/CD pipeline for build, test, deploy." },
+        { "id": 10.4, "title": "Add health checks, readiness/liveness probes, and compliance checklist." }
+      ]
+    }
+  ]
+}
