@@ -40,7 +40,7 @@ const toggleUserMenu = () => {
 </script>
 
 <template>
-  <nav class="sticky top-0 z-40 bg-card border-b border-border shadow-sm">
+  <nav class="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-material mt-2 mx-3 border-radius-lg">
     <div class="px-4 lg:px-6">
       <div class="flex items-center justify-between h-16">
         <!-- Left Section -->
@@ -124,7 +124,7 @@ const toggleUserMenu = () => {
               class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent transition-colors"
               aria-label="User menu"
             >
-              <div class="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+              <div class="w-8 h-8 rounded-full bg-[#e91e63] text-white flex items-center justify-center shadow-material-button">
                 <User :size="18" />
               </div>
               <ChevronDown :size="16" class="hidden sm:block" />

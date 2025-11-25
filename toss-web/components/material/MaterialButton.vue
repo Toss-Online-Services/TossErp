@@ -34,49 +34,49 @@ const buttonClasses = computed(() => {
     xl: props.icon ? 'p-4' : 'px-10 py-4 text-xl'
   }
   
-  // Color and variant combinations
+  // Color and variant combinations - Material Dashboard Pro
   const colorVariants = {
     primary: {
-      filled: 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl focus:ring-primary',
-      outlined: 'border-2 border-primary text-primary hover:bg-primary/5 focus:ring-primary',
-      text: 'text-primary hover:bg-primary/5',
-      elevated: 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl hover:shadow-2xl focus:ring-primary',
-      tonal: 'bg-primary/10 text-primary hover:bg-primary/20'
+      filled: 'bg-[#e91e63] text-white hover:bg-[#e91e63] shadow-material-button hover:shadow-material-button-hover focus:ring-[#e91e63]',
+      outlined: 'border-2 border-[#e91e63] text-[#e91e63] hover:bg-[#e91e63]/5 focus:ring-[#e91e63]',
+      text: 'text-[#e91e63] hover:bg-[#e91e63]/5',
+      elevated: 'bg-[#e91e63] text-white hover:bg-[#e91e63] shadow-material-primary hover:shadow-material-button-hover focus:ring-[#e91e63]',
+      tonal: 'bg-[#e91e63]/10 text-[#e91e63] hover:bg-[#e91e63]/20'
     },
     secondary: {
-      filled: 'bg-slate-500 text-white hover:bg-slate-600 shadow-lg hover:shadow-xl focus:ring-slate-500',
-      outlined: 'border-2 border-slate-500 text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-900/30 focus:ring-slate-500',
-      text: 'text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-900/30',
-      elevated: 'bg-slate-500 text-white hover:bg-slate-600 shadow-xl hover:shadow-2xl focus:ring-slate-500',
-      tonal: 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+      filled: 'bg-[#737373] text-white hover:bg-[#737373] shadow-material hover:shadow-material-lg focus:ring-[#737373]',
+      outlined: 'border-2 border-[#737373] text-[#737373] hover:bg-[#737373]/5 focus:ring-[#737373]',
+      text: 'text-[#737373] hover:bg-[#737373]/5',
+      elevated: 'bg-[#737373] text-white hover:bg-[#737373] shadow-material-lg hover:shadow-material-lg focus:ring-[#737373]',
+      tonal: 'bg-[#737373]/10 text-[#737373] hover:bg-[#737373]/20'
     },
     success: {
-      filled: 'bg-green-500 text-white hover:bg-green-600 shadow-lg hover:shadow-xl focus:ring-green-500',
-      outlined: 'border-2 border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30 focus:ring-green-500',
-      text: 'text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30',
-      elevated: 'bg-green-500 text-white hover:bg-green-600 shadow-xl hover:shadow-2xl focus:ring-green-500',
-      tonal: 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50'
+      filled: 'bg-[#4CAF50] text-white hover:bg-[#4CAF50] shadow-material-success hover:shadow-material-lg focus:ring-[#4CAF50]',
+      outlined: 'border-2 border-[#4CAF50] text-[#4CAF50] hover:bg-[#4CAF50]/5 focus:ring-[#4CAF50]',
+      text: 'text-[#4CAF50] hover:bg-[#4CAF50]/5',
+      elevated: 'bg-[#4CAF50] text-white hover:bg-[#4CAF50] shadow-material-success hover:shadow-material-lg focus:ring-[#4CAF50]',
+      tonal: 'bg-[#4CAF50]/10 text-[#4CAF50] hover:bg-[#4CAF50]/20'
     },
     warning: {
-      filled: 'bg-yellow-500 text-white hover:bg-yellow-600 shadow-lg hover:shadow-xl focus:ring-yellow-500',
-      outlined: 'border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-950/30 focus:ring-yellow-500',
-      text: 'text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-950/30',
-      elevated: 'bg-yellow-500 text-white hover:bg-yellow-600 shadow-xl hover:shadow-2xl focus:ring-yellow-500',
-      tonal: 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:hover:bg-yellow-900/50'
+      filled: 'bg-[#fb8c00] text-white hover:bg-[#fb8c00] shadow-material-warning hover:shadow-material-lg focus:ring-[#fb8c00]',
+      outlined: 'border-2 border-[#fb8c00] text-[#fb8c00] hover:bg-[#fb8c00]/5 focus:ring-[#fb8c00]',
+      text: 'text-[#fb8c00] hover:bg-[#fb8c00]/5',
+      elevated: 'bg-[#fb8c00] text-white hover:bg-[#fb8c00] shadow-material-warning hover:shadow-material-lg focus:ring-[#fb8c00]',
+      tonal: 'bg-[#fb8c00]/10 text-[#fb8c00] hover:bg-[#fb8c00]/20'
     },
     error: {
-      filled: 'bg-red-500 text-white hover:bg-red-600 shadow-lg hover:shadow-xl focus:ring-red-500',
-      outlined: 'border-2 border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 focus:ring-red-500',
-      text: 'text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30',
-      elevated: 'bg-red-500 text-white hover:bg-red-600 shadow-xl hover:shadow-2xl focus:ring-red-500',
-      tonal: 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50'
+      filled: 'bg-[#F44335] text-white hover:bg-[#F44335] shadow-material-danger hover:shadow-material-lg focus:ring-[#F44335]',
+      outlined: 'border-2 border-[#F44335] text-[#F44335] hover:bg-[#F44335]/5 focus:ring-[#F44335]',
+      text: 'text-[#F44335] hover:bg-[#F44335]/5',
+      elevated: 'bg-[#F44335] text-white hover:bg-[#F44335] shadow-material-danger hover:shadow-material-lg focus:ring-[#F44335]',
+      tonal: 'bg-[#F44335]/10 text-[#F44335] hover:bg-[#F44335]/20'
     },
     info: {
-      filled: 'bg-blue-500 text-white hover:bg-blue-600 shadow-lg hover:shadow-xl focus:ring-blue-500',
-      outlined: 'border-2 border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 focus:ring-blue-500',
-      text: 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30',
-      elevated: 'bg-blue-500 text-white hover:bg-blue-600 shadow-xl hover:shadow-2xl focus:ring-blue-500',
-      tonal: 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50'
+      filled: 'bg-[#1A73E8] text-white hover:bg-[#1A73E8] shadow-material-info hover:shadow-material-lg focus:ring-[#1A73E8]',
+      outlined: 'border-2 border-[#1A73E8] text-[#1A73E8] hover:bg-[#1A73E8]/5 focus:ring-[#1A73E8]',
+      text: 'text-[#1A73E8] hover:bg-[#1A73E8]/5',
+      elevated: 'bg-[#1A73E8] text-white hover:bg-[#1A73E8] shadow-material-info hover:shadow-material-lg focus:ring-[#1A73E8]',
+      tonal: 'bg-[#1A73E8]/10 text-[#1A73E8] hover:bg-[#1A73E8]/20'
     }
   }
   

@@ -48,7 +48,7 @@ const handleSearch = (query: string) => {
       />
 
       <!-- Main Content Area -->
-      <div class="flex-1 flex flex-col overflow-hidden lg:pl-64">
+      <div class="flex-1 flex flex-col overflow-hidden lg:ml-[272px]">
         <!-- Top Navigation -->
         <MaterialTopNav
           :title="pageTitle"
@@ -59,7 +59,7 @@ const handleSearch = (query: string) => {
         />
 
         <!-- Page Content -->
-        <main class="flex-1 overflow-y-auto p-4 lg:p-6 bg-background">
+        <main class="flex-1 overflow-y-auto p-4 lg:p-6 bg-gray-50">
           <slot />
         </main>
 

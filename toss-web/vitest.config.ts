@@ -12,7 +12,10 @@ export default defineConfig({
       // Exclude Playwright E2E tests from unit runs
       '**/*.e2e.*',
       'tests/e2e/**',
-      'tests/**/e2e/**'
+      'tests/**/e2e/**',
+      // Exclude node_modules test files (like Tailwind typography tests)
+      '**/node_modules/**',
+      '**/.pnpm/**'
     ],
     coverage: {
       provider: 'v8',

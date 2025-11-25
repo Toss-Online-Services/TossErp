@@ -4,6 +4,37 @@
 
 @layer base {
   :root {
+    /* Material Dashboard Pro - CSS Variables */
+    --bs-primary: #e91e63;
+    --bs-secondary: #737373;
+    --bs-success: #4CAF50;
+    --bs-info: #1A73E8;
+    --bs-warning: #fb8c00;
+    --bs-danger: #F44335;
+    --bs-light: #e5e5e5;
+    --bs-dark: #262626;
+    --bs-white: #fff;
+    --bs-gray-100: #f5f5f5;
+    --bs-gray-200: #e5e5e5;
+    --bs-gray-300: #d4d4d4;
+    --bs-gray-400: #a3a3a3;
+    --bs-gray-500: #737373;
+    --bs-gray-600: #525252;
+    --bs-gray-700: #404040;
+    --bs-gray-800: #262626;
+    --bs-gray-900: #171717;
+    --bs-body-color: #737373;
+    --bs-body-bg: #fff;
+    --bs-heading-color: #262626;
+    --bs-border-color: #d4d4d4;
+    --bs-border-radius: 0.375rem;
+    --bs-border-radius-lg: 0.5rem;
+    --bs-border-radius-xl: 0.75rem;
+    --bs-border-radius-xxl: 2rem;
+    --bs-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --bs-box-shadow-sm: 0 0.3125rem 0.625rem 0 rgba(0, 0, 0, 0.12);
+    --bs-box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
     /* Material Dashboard - Black & White Theme */
     --background: 0 0% 100%;
     --foreground: 222 47% 11%;
@@ -15,7 +46,7 @@
     --input: 214 32% 91%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
-    --primary: 222 47% 11%;
+    --primary: 333 78% 52%;
     --primary-foreground: 0 0% 100%;
     --secondary: 214 32% 92%;
     --secondary-foreground: 222 47% 11%;
@@ -386,7 +417,141 @@
   }
 }
 
+/* Material Dashboard Pro Utility Classes */
+@layer components {
+  /* Material Dashboard Pro Gradients */
+  .bg-gradient-primary {
+    background-image: linear-gradient(195deg, #EC407A 0%, #D81B60 100%);
+  }
 
+  .bg-gradient-secondary {
+    background-image: linear-gradient(195deg, #747b8a 0%, #495361 100%);
+  }
+
+  .bg-gradient-success {
+    background-image: linear-gradient(195deg, #66BB6A 0%, #43A047 100%);
+  }
+
+  .bg-gradient-info {
+    background-image: linear-gradient(195deg, #49a3f1 0%, #1A73E8 100%);
+  }
+
+  .bg-gradient-warning {
+    background-image: linear-gradient(195deg, #FFA726 0%, #FB8C00 100%);
+  }
+
+  .bg-gradient-danger {
+    background-image: linear-gradient(195deg, #EF5350 0%, #E53935 100%);
+  }
+
+  .bg-gradient-dark {
+    background-image: linear-gradient(195deg, #42424a 0%, #191919 100%);
+  }
+
+  /* Material Dashboard Pro Button Styles */
+  .btn-material-primary {
+    background-color: var(--bs-primary);
+    color: #fff;
+    box-shadow: 0 2px 2px 0 rgba(233, 30, 99, 0.1), 0 3px 1px -2px rgba(233, 30, 99, 0.18), 0 1px 5px 0 rgba(233, 30, 99, 0.15);
+    border: 0;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-material-primary:hover {
+    background-color: var(--bs-primary);
+    box-shadow: 0 8px 14px -8px rgba(233, 30, 99, 0.3), 0 3px 18px 0 rgba(233, 30, 99, 0.1), 0 7px 8px -4px rgba(233, 30, 99, 0.18);
+    transform: translateY(-1px);
+  }
+
+  .btn-material-primary:active {
+    box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.09), 0 2px 3px -1px rgba(0, 0, 0, 0.07);
+    transform: none;
+    opacity: 0.85;
+  }
+
+  /* Material Dashboard Pro Icon Shapes */
+  .icon-shape {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: var(--bs-border-radius-lg);
+  }
+
+  .icon-shape-sm {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.875rem;
+  }
+
+  .icon-shape-md {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1rem;
+  }
+
+  .icon-shape-lg {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.25rem;
+  }
+
+  /* Material Dashboard Pro Card Styles */
+  .card-material {
+    background-color: var(--bs-white);
+    border: 0;
+    border-radius: var(--bs-border-radius-lg);
+    box-shadow: var(--bs-box-shadow);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .card-material:hover {
+    box-shadow: var(--bs-box-shadow-lg);
+  }
+
+  /* Material Dashboard Pro Border Radius */
+  .border-radius-lg {
+    border-radius: var(--bs-border-radius-lg);
+  }
+
+  .border-radius-xl {
+    border-radius: var(--bs-border-radius-xl);
+  }
+
+  .border-radius-xxl {
+    border-radius: var(--bs-border-radius-xxl);
+  }
+
+  /* Material Dashboard Pro Shadows */
+  .shadow-material {
+    box-shadow: var(--bs-box-shadow);
+  }
+
+  .shadow-material-lg {
+    box-shadow: var(--bs-box-shadow-lg);
+  }
+
+  .shadow-material-primary {
+    box-shadow: 0 4px 20px 0 rgba(233, 30, 99, 0.14), 0 7px 10px -5px rgba(233, 30, 99, 0.4);
+  }
+
+  .shadow-material-success {
+    box-shadow: 0 4px 20px 0 rgba(76, 175, 80, 0.14), 0 7px 10px -5px rgba(76, 175, 80, 0.4);
+  }
+
+  .shadow-material-info {
+    box-shadow: 0 4px 20px 0 rgba(26, 115, 232, 0.14), 0 7px 10px -5px rgba(26, 115, 232, 0.4);
+  }
+
+  .shadow-material-warning {
+    box-shadow: 0 4px 20px 0 rgba(251, 140, 0, 0.14), 0 7px 10px -5px rgba(251, 140, 0, 0.4);
+  }
+
+  .shadow-material-danger {
+    box-shadow: 0 4px 20px 0 rgba(244, 67, 53, 0.14), 0 7px 10px -5px rgba(244, 67, 53, 0.4);
+  }
+}
 
 @layer base {
   * {
@@ -394,5 +559,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
   }
 }

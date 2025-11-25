@@ -2,6 +2,7 @@
 
 // Build modules array conditionally for better dev performance
 const isDev = process.env.NODE_ENV === 'development'
+const devApiTarget = process.env.TOSS_API_URL || 'http://localhost:5000'
 const modules = [
   // Core & Styling
   '@nuxtjs/tailwindcss',
@@ -277,7 +278,6 @@ export default defineNuxtConfig({
       '~/components',
       '~/components/icons',
       '~/components/charts',
-      '~/components/ui',
       '~/components/material'
     ]
   },
@@ -308,7 +308,7 @@ export default defineNuxtConfig({
     apiSecret: '',
     // Public keys (exposed to client-side)
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://localhost:5001',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || (isDev ? devApiTarget : 'https://localhost:5001'),
       apiTimeout: 30000,
       sentry: {
         dsn: process.env.NUXT_PUBLIC_SENTRY_DSN || ''
@@ -402,7 +402,7 @@ export default defineNuxtConfig({
     },
     devProxy: {
       '/api': {
-        target: 'http://localhost:5000',  // Use HTTP for better compatibility in dev
+        target: devApiTarget,  // Use HTTP for better compatibility in dev
         changeOrigin: true,
         ws: true,
         secure: false  // Allow self-signed certificates in development

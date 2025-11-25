@@ -135,6 +135,29 @@ export const useAuth = () => {
     }
   }
 
+  const persistAuthState = (payload: {
+    user: User
+    token: string
+    refreshToken: string
+    expiresIn: number
+    rememberMe?: boolean
+  }) => {
+    user.value = { ...payload.user, lastLogin: new Date() }
+    refreshToken.value = payload.refreshToken
+    setToken(payload.token, payload.expiresIn)
+
+    if (process.client) {
+      localStorage.setItem('auth-user', JSON.stringify(user.value))
+      localStorage.setItem('auth-refresh-token', payload.refreshToken)
+
+      if (payload.rememberMe) {
+        localStorage.setItem('auth-remember-me', 'true')
+      } else {
+        localStorage.removeItem('auth-remember-me')
+      }
+    }
+  }
+
   /**
    * Login user with email and password
    */
@@ -148,23 +171,14 @@ export const useAuth = () => {
         body: credentials,
       })
 
-      // Store authentication data
-      user.value = { ...response.user, lastLogin: new Date() }
-      refreshToken.value = response.refreshToken
-      setToken(response.token, response.expiresIn)
+      persistAuthState({
+        user: response.user,
+        token: response.token,
+        refreshToken: response.refreshToken,
+        expiresIn: response.expiresIn,
+        rememberMe: credentials.rememberMe,
+      })
 
-      // Store persistent data in localStorage
-      if (process.client) {
-        localStorage.setItem('auth-user', JSON.stringify(user.value))
-        localStorage.setItem('auth-refresh-token', response.refreshToken)
-        
-        // Store remember me preference
-        if (credentials.rememberMe) {
-          localStorage.setItem('auth-remember-me', 'true')
-        }
-      }
-
-      // Log successful login
       if (process.client) {
         const { logLogin } = useAudit()
         await logLogin(true)
@@ -173,13 +187,56 @@ export const useAuth = () => {
       return true
     } catch (e: any) {
       error.value = e.message || 'Login failed'
-      
-      // Log failed login
+
       if (process.client) {
         const { logLogin } = useAudit()
-  await logLogin(false, error.value || undefined)
+        await logLogin(false, error.value || undefined)
       }
-      
+
+      return false
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  /**
+   * Instant demo login for development/testing
+   */
+  const demoLogin = async (): Promise<boolean> => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      persistAuthState({
+        user: {
+          id: 0,
+          name: 'Demo User',
+          email: 'demo@toss.co.za',
+          roles: ['Administrator', 'Owner'],
+          permissions: [
+            'dashboard:view',
+            'inventory:*',
+            'sales:*',
+            'purchasing:*',
+            'logistics:*',
+            'crm:*',
+            'reports:view',
+            'admin'
+          ]
+        },
+        token: `dev-token-demo-${Date.now()}`,
+        refreshToken: `dev-refresh-demo-${Date.now()}`,
+        expiresIn: 60 * 60 * 4
+      })
+
+      if (process.client) {
+        const { logLogin } = useAudit()
+        await logLogin(true)
+      }
+
+      return true
+    } catch (e: any) {
+      error.value = e.message || 'Demo login failed'
       return false
     } finally {
       isLoading.value = false
@@ -294,6 +351,7 @@ export const useAuth = () => {
    */
   const checkSession = async (): Promise<boolean> => {
     if (!token.value) return false
+    if (token.value.startsWith('dev-token-')) return true
 
     try {
       await $fetch(getApiUrl('/api/auth/verify'), {
@@ -353,6 +411,7 @@ export const useAuth = () => {
     isLoading: readonly(isLoading),
     error: readonly(error),
     login,
+    demoLogin,
     logout,
     restoreAuth,
     forceRefresh,

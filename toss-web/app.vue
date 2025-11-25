@@ -34,7 +34,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import ToastContainer from '~/components/ui/ToastContainer.vue'
+import ToastContainer from '~/components/notifications/ToastContainer.vue'
 
 // Offline detection
 const isOnline = ref(true)

@@ -501,7 +501,7 @@ const totalPages = computed(() => Math.ceil(totalItems.value / pageSize.value))
 
 // Use server-side pagination - items are already paginated from API
 const paginatedItems = computed(() => {
-  return items.value // Items are already paginated from server
+  return items.value || [] // Items are already paginated from server, default to empty array
 })
 
 const visiblePages = computed(() => {
