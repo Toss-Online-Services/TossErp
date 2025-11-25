@@ -117,26 +117,38 @@ const form = ref({
 })
 
 const loading = ref(false)
-const { login } = useAuth()
+const auth = useAuth()
+
+const roleRedirects: Record<string, string> = {
+  administrator: '/admin/dashboard',
+  admin: '/admin/dashboard',
+  owner: '/admin/dashboard',
+  retailer: '/retailer/dashboard',
+  supplier: '/supplier/dashboard',
+  driver: '/driver/deliveries'
+}
+
+const getRedirectPath = () => {
+  const roles = auth.user.value?.roles?.map(role => role.toLowerCase()) ?? []
+  for (const role of roles) {
+    if (roleRedirects[role]) {
+      return roleRedirects[role]
+    }
+  }
+  return '/dashboard'
+}
 
 const handleLogin = async () => {
   loading.value = true
   try {
-    const success = await login({
+    const success = await auth.login({
       email: form.value.email,
       password: form.value.password,
       rememberMe: form.value.remember
     })
     
     if (success) {
-      // Check user role and redirect accordingly
-      const { user } = useAuth()
-      if (user.value?.roles && user.value.roles.length > 0) {
-        const primaryRole = user.value.roles[0].toLowerCase()
-        navigateTo(`/${primaryRole}/dashboard`)
-      } else {
-        navigateTo('/retailer/dashboard')
-      }
+      await navigateTo(getRedirectPath())
     } else {
       alert('Login failed. Please check your credentials and try again.')
     }
@@ -151,30 +163,19 @@ const handleLogin = async () => {
 const handleDemoLogin = async () => {
   loading.value = true
   try {
-    // Auto-login with demo credentials
-    const success = await login({
-      email: 'demo@toss.co.za',
-      password: 'demo123',
-      rememberMe: false
-    })
+    const success = await auth.demoLogin()
     
     if (success) {
-      const { user } = useAuth()
-      if (user.value?.roles && user.value.roles.length > 0) {
-        const primaryRole = user.value.roles[0].toLowerCase()
-        navigateTo(`/${primaryRole}/dashboard`)
-      } else {
-        navigateTo('/retailer/dashboard')
-      }
+      await navigateTo(getRedirectPath())
     } else {
       // If login fails, just navigate anyway (for development)
       console.log('Demo mode - bypassing auth')
-      navigateTo('/retailer/dashboard')
+      await navigateTo('/dashboard')
     }
   } catch (error) {
     // If login fails, just navigate anyway (for development)
     console.log('Demo mode - bypassing auth')
-    navigateTo('/retailer/dashboard')
+    await navigateTo('/dashboard')
   } finally {
     loading.value = false
   }

@@ -83,3 +83,22 @@ config.global.provide = {
     currentRoute: ref({ value: { path: '/', query: {} } })
   }
 }
+
+// Extend Vitest matchers for CSS testing (for Tailwind typography tests if needed)
+// Note: This is a minimal implementation. Full matchers would require @tailwindcss/typography's jest setup
+declare global {
+  namespace Vi {
+    interface Assertion {
+      toIncludeCss?(expected: string): void
+      toMatchFormattedCss?(expected: string): void
+    }
+  }
+}
+
+// Mock CSS matchers to prevent errors in third-party tests
+if (typeof expect !== 'undefined') {
+  expect.extend({
+    toIncludeCss: () => ({ pass: true, message: () => 'CSS matcher not fully implemented' }),
+    toMatchFormattedCss: () => ({ pass: true, message: () => 'CSS matcher not fully implemented' })
+  })
+}

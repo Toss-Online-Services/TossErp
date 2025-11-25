@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from 'uuid'
 import type { AuditLog, AuditAction, AuditSeverity } from '~/types/audit'
+import type { AuthUser } from '~/types/auth'
 
 export const useAudit = () => {
-  const { user } = useAuth()
+  const user = useState<AuthUser | null>('auth-user')
   const config = useRuntimeConfig()
   
   // Use relative URL in development to leverage Nuxt dev proxy (avoids CORS/certificate issues)
@@ -31,7 +32,7 @@ export const useAudit = () => {
         userId: user.value?.id?.toString(),
         userEmail: user.value?.email,
         ipAddress: await getClientIP(),
-        userAgent: navigator.userAgent,
+        userAgent: process.client ? navigator.userAgent : 'server',
         resource: details?.resource,
         resourceId: details?.resourceId,
         details: details?.metadata,

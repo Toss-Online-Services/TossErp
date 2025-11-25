@@ -79,6 +79,14 @@ export default {
   				success: 'var(--toss-success)',
   				info: 'var(--toss-info)'
   			},
+  			material: {
+  				primary: '#e91e63',
+  				secondary: '#737373',
+  				success: '#4CAF50',
+  				info: '#1A73E8',
+  				warning: '#fb8c00',
+  				danger: '#F44335'
+  			},
   			brand: {
   				'50': '#eff6ff',
   				'100': '#dbeafe',
@@ -132,15 +140,36 @@ export default {
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
+  			sm: 'calc(var(--radius) - 4px)',
+  			'material-sm': '0.375rem',
+  			'material-lg': '0.5rem',
+  			'material-xl': '0.75rem',
+  			'material-xxl': '2rem'
   		},
   		boxShadow: {
   			soft: '0 20px 60px -25px hsl(var(--shadow-soft) / 0.55)',
-  			strong: '0 40px 140px -60px hsl(var(--shadow-strong) / 0.65)'
+  			strong: '0 40px 140px -60px hsl(var(--shadow-strong) / 0.65)',
+  			'material': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+  			'material-sm': '0 0.3125rem 0.625rem 0 rgba(0, 0, 0, 0.12)',
+  			'material-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+  			'material-primary': '0 4px 20px 0 rgba(233, 30, 99, 0.14), 0 7px 10px -5px rgba(233, 30, 99, 0.4)',
+  			'material-success': '0 4px 20px 0 rgba(76, 175, 80, 0.14), 0 7px 10px -5px rgba(76, 175, 80, 0.4)',
+  			'material-info': '0 4px 20px 0 rgba(26, 115, 232, 0.14), 0 7px 10px -5px rgba(26, 115, 232, 0.4)',
+  			'material-warning': '0 4px 20px 0 rgba(251, 140, 0, 0.14), 0 7px 10px -5px rgba(251, 140, 0, 0.4)',
+  			'material-danger': '0 4px 20px 0 rgba(244, 67, 53, 0.14), 0 7px 10px -5px rgba(244, 67, 53, 0.4)',
+  			'material-button': '0 2px 2px 0 rgba(233, 30, 99, 0.1), 0 3px 1px -2px rgba(233, 30, 99, 0.18), 0 1px 5px 0 rgba(233, 30, 99, 0.15)',
+  			'material-button-hover': '0 8px 14px -8px rgba(233, 30, 99, 0.3), 0 3px 18px 0 rgba(233, 30, 99, 0.1), 0 7px 8px -4px rgba(233, 30, 99, 0.18)'
   		},
   		backgroundImage: {
   			'toss-grid': 'radial-gradient(circle, rgba(37,99,235,0.12) 1px, transparent 1px)',
-  			'toss-radial': 'radial-gradient(circle at top, rgba(59,130,246,0.18), transparent 55%)'
+  			'toss-radial': 'radial-gradient(circle at top, rgba(59,130,246,0.18), transparent 55%)',
+  			'gradient-primary': 'linear-gradient(195deg, #EC407A 0%, #D81B60 100%)',
+  			'gradient-secondary': 'linear-gradient(195deg, #747b8a 0%, #495361 100%)',
+  			'gradient-success': 'linear-gradient(195deg, #66BB6A 0%, #43A047 100%)',
+  			'gradient-info': 'linear-gradient(195deg, #49a3f1 0%, #1A73E8 100%)',
+  			'gradient-warning': 'linear-gradient(195deg, #FFA726 0%, #FB8C00 100%)',
+  			'gradient-danger': 'linear-gradient(195deg, #EF5350 0%, #E53935 100%)',
+  			'gradient-dark': 'linear-gradient(195deg, #42424a 0%, #191919 100%)'
   		},
   		animation: {
   			'fade-in': 'fadeIn 0.3s ease-in-out',
