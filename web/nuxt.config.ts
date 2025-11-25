@@ -18,6 +18,19 @@ export default defineNuxtConfig({
       autoprefixer: {}
     }
   },
+
+  components: {
+    dirs: [
+      {
+        path: '~/components',
+        extensions: ['.vue']
+      },
+      {
+        path: '~/app/components',
+        extensions: ['.vue']
+      }
+    ]
+  },
   
   // Explicitly configure pages directory
   pages: true

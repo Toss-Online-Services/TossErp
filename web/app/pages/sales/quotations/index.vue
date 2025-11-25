@@ -15,6 +15,24 @@ import {
   type ColumnDef,
   type SortingState
 } from '@tanstack/vue-table'
+import Card from '~/components/ui/Card.vue'
+import CardHeader from '~/components/ui/CardHeader.vue'
+import CardTitle from '~/components/ui/CardTitle.vue'
+import CardContent from '~/components/ui/CardContent.vue'
+import Input from '~/app/components/ui/input/Input.vue'
+import Select from '~/app/components/ui/select/Select.vue'
+import SelectTrigger from '~/app/components/ui/select/SelectTrigger.vue'
+import SelectValue from '~/app/components/ui/select/SelectValue.vue'
+import SelectContent from '~/app/components/ui/select/SelectContent.vue'
+import SelectItem from '~/app/components/ui/select/SelectItem.vue'
+import Table from '~/app/components/ui/table/Table.vue'
+import TableHeader from '~/app/components/ui/table/TableHeader.vue'
+import TableRow from '~/app/components/ui/table/TableRow.vue'
+import TableHead from '~/app/components/ui/table/TableHead.vue'
+import TableBody from '~/app/components/ui/table/TableBody.vue'
+import TableCell from '~/app/components/ui/table/TableCell.vue'
+import Badge from '~/app/components/ui/badge/Badge.vue'
+import Button from '~/components/ui/Button.vue'
 
 useHead({
   title: 'Quotations - Sales - TOSS ERP'

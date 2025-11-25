@@ -21,6 +21,45 @@ TOSS is a comprehensive cloud-native **ERP III + collaborative network + AI co-p
 - **POPIA-Compliant**: South African data protection compliance
 - **Agentic AI**: Human-in-the-loop AI assistance
 
+## Module-Based SaaS 2.0 + ERP-III Model Overview
+
+TOSS is built as a modular ERP-III platform delivered as Service-as-Software (SaaS 2.0). Each module operates at three layers:
+
+1. **Individual Business Use**: Core features for micro-enterprises (spazas, salons, mechanics, etc.)
+2. **Service-as-Software Automations**: The platform acts as a virtual operations manager, automating workflows, surfacing risks, and orchestrating collaborative actions.
+3. **Ecosystem/ERP-III Impact**: Modules enable collaborative supply chain, pooled buying, shared logistics, and community-scale data for negotiation and funding.
+
+### Module Set and Layered Behaviours
+
+| Module         | Individual Business Use | Service-as-Software Automations | Ecosystem/ERP-III Impact |
+|---------------|------------------------|----------------------------------|-------------------------|
+| Accounting    | Records income/expenses, cashflow, profit views | Detects worrying patterns, sends alerts | Shared books for group finance, network risk modeling |
+| Procurement   | PO creation, supplier tracking | Suggests reorders, builds group orders | Aggregated demand, volume discounts, structured supply chain |
+| Sales         | Quotes, orders, invoices, links to stock/accounting | Upsell/cross-sell suggestions, margin alerts | Sector insights, joint offerings, coordinated bundles |
+| CRM           | Customer profiles, credit tracking | Identifies high-value/risk customers, suggests actions | Community demand view, shared loyalty programs |
+| Stock         | Real-time stock, stock-in/out, alerts | Predicts stockouts, suggests markdowns/safety stock | Area demand patterns, supply program planning |
+| Manufacturing | Recipes, production batches, auto-consume ingredients | Unit cost calc, waste/product cost alerts | Joint procurement, standardised offerings for contracts |
+| Projects      | Jobs/tasks/timelines/budgets, profitability | Overdue/budget risk alerts, quote/due date suggestions | Cooperative contracting, revenue/cost sharing |
+| Assets        | Equipment registry, maintenance logs | Service reminders, risk flags | Joint maintenance, asset finance design |
+| POS           | Fast sales, payment, receipts, offline queue | Pushes data to modules, learns patterns, suggests staffing/promos | Real-time data feed, triggers group buying |
+| Quality       | Checklists, incident logs | Reminders, incident pattern analysis | Collective supplier/process decisions, compliance tracking |
+| Support       | Helpdesk tickets for platform/supplier/driver | Routing, prioritization | Transparent network log, performance reviews, dispute resolution |
+| HR & Payroll  | Employee records, attendance, wage summaries | Labour cost vs sales, staffing suggestions | Training interventions, social partner support |
+| No-Code Builder| Custom forms/fields/workflows | Suggests reusable patterns/templates | Rapid adaptation for sectors/donors, local partner enablement |
+
+### Outcome-Oriented Automation & Collaborative Logic
+
+TOSS is not just a record-keeping ERP. The platform “does the work”:
+- Auto-suggests orders, coordinates group buying, designs delivery routes
+- Surfaces business and quality risks proactively
+- Enables collaborative sharing economy: pooled buying, shared logistics, co-delivery, community-scale analytics
+
+Modules are designed to work across the network, supporting real-time collaboration between shops, suppliers, drivers, and partners. Data flows and automations support group finance, joint projects, and community-scale negotiation.
+
+All modules support offline operation, mobile-first UX, and local language options. The No-Code Builder enables rapid adaptation for local needs and donor requirements.
+
+This architecture ensures TOSS acts as both the nervous system of each business and the circulatory system of the township economic network.
+
 ## Target Users
 
 ### Primary Users
