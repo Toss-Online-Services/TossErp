@@ -1,0 +1,293 @@
+{
+  "metadata": {
+    "projectName": "TOSS ERP III Core Platform",
+    "version": "0.1.0",
+    "generatedAt": "2025-11-26T15:45:00Z",
+    "sourceFile": ".taskmaster/docs/prd-platform-erp-iii-core.md",
+    "totalTasks": 25
+  },
+  "tags": {
+    "master": {
+      "name": "master",
+      "description": "Main development tasks for TOSS ERP III Core Platform",
+      "createdAt": "2025-11-26T15:45:00Z",
+      "tasks": [
+        {
+          "id": 1,
+          "title": "Project Setup & Infrastructure Foundation",
+          "description": "Set up the core project structure, development environment, and foundational infrastructure for the TOSS ERP III platform",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [],
+          "details": "Initialize the project with .NET 8/9 backend (Clean Architecture) and Nuxt 4 frontend. Set up PostgreSQL database, Entity Framework Core, multi-tenancy infrastructure, and basic CI/CD pipeline. Configure development tools, linting, and testing frameworks. Establish project structure following Clean Architecture principles with Domain, Application, Infrastructure, and API layers.",
+          "testStrategy": "Verify project builds successfully, database connection works, and basic health check endpoint responds. Run initial test suite to confirm testing infrastructure.",
+          "subtasks": []
+        },
+        {
+          "id": 2,
+          "title": "Authentication & Authorization System",
+          "description": "Implement secure authentication (email/phone + OTP and password) and role-based access control (Owner, Manager, Cashier, Staff)",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [1],
+          "details": "Implement JWT-based authentication with support for email/phone login. Add OTP (One-Time Password) functionality for phone verification. Create role-based authorization system with roles: Owner, Manager, Cashier, Staff. Implement permission system for module access. Use ASP.NET Core Identity or custom JWT implementation. Ensure encrypted storage of passwords and secure token handling.",
+          "testStrategy": "Test login flows (email, phone, OTP), role-based access restrictions, token expiration, and password reset functionality. Verify unauthorized access is blocked.",
+          "subtasks": []
+        },
+        {
+          "id": 3,
+          "title": "Multi-Tenancy & Business Management",
+          "description": "Implement multi-business support allowing one user to manage multiple shops/workshops with proper data isolation",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [1, 2],
+          "details": "Design and implement multi-tenant architecture with row-level security. Create Tenant/Business entity with proper isolation. Implement tenant context middleware to ensure data separation. Support user association with multiple businesses. Create business switching functionality in UI. Ensure all queries are tenant-scoped automatically.",
+          "testStrategy": "Verify data isolation between tenants, test business switching, and ensure users can only access their associated businesses. Test tenant context in all database operations.",
+          "subtasks": []
+        },
+        {
+          "id": 4,
+          "title": "Operations Dashboard (Today View)",
+          "description": "Create the main operations dashboard showing today's sales, cash in/out, low stock alerts, pending orders, and tasks",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [2, 3],
+          "details": "Build the home dashboard with real-time metrics: total sales today, cash flow summary, low stock items list, pending purchase orders, and active tasks. Use traffic light indicators (red/amber/green) for status. Implement responsive design for mobile-first experience. Create API endpoints for dashboard data aggregation. Use Nuxt 4 with TailwindCSS and shadcn-style components.",
+          "testStrategy": "Verify dashboard loads correctly, displays accurate metrics, updates in real-time, and works on mobile devices. Test with different user roles.",
+          "subtasks": []
+        },
+        {
+          "id": 5,
+          "title": "Task & Workflow Orchestration System",
+          "description": "Implement task management system with to-do style tasks that can be linked to records (invoices, POs, job cards)",
+          "status": "pending",
+          "priority": "medium",
+          "dependencies": [3, 4],
+          "details": "Create Task entity with statuses: To Do, In Progress, Done. Implement task linking to various record types (polymorphic relationship). Build task creation workflow from business events (e.g., 'receive stock', 'follow up customer'). Create task list UI with filtering and status management. Add task assignment and due dates.",
+          "testStrategy": "Test task creation, status transitions, linking to records, filtering, and task completion workflows. Verify tasks appear in dashboard.",
+          "subtasks": []
+        },
+        {
+          "id": 6,
+          "title": "Notifications & Activity Timeline",
+          "description": "Implement in-app notifications for business events and basic activity timeline showing daily business activities",
+          "status": "pending",
+          "priority": "medium",
+          "dependencies": [3, 4],
+          "details": "Create notification system for events: stock in, payment received, delivery dispatched, etc. Implement activity timeline showing 'Today you did X sales, Y purchases, Z payments'. Use SignalR or similar for real-time notifications. Build notification center UI. Store activity logs for audit trail.",
+          "testStrategy": "Test notification delivery for various events, verify timeline accuracy, and ensure notifications are role-appropriate. Test real-time updates.",
+          "subtasks": []
+        },
+        {
+          "id": 7,
+          "title": "Stock Module - Items Catalog & Locations",
+          "description": "Create items catalog with barcode support, units, pricing, categories, and stock location management",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [3],
+          "details": "Implement Item entity with fields: name, barcode, unit of measure, cost price, selling price, category. Create StockLocation entity (shop, storeroom, truck). Implement item search by barcode or name. Build item management UI with CRUD operations. Support item categories and grouping. Implement barcode scanning capability.",
+          "testStrategy": "Test item creation, barcode lookup, price management, category filtering, and location assignment. Verify barcode scanning works on mobile.",
+          "subtasks": []
+        },
+        {
+          "id": 8,
+          "title": "Stock Module - Stock Movements & Valuation",
+          "description": "Implement stock movement tracking (purchases, sales, adjustments, transfers) and weighted average stock valuation",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [7],
+          "details": "Create StockMovement entity tracking all stock changes. Implement weighted average cost calculation for stock valuation. Build stock adjustment functionality. Create stock transfer between locations. Ensure atomic stock updates with proper locking. Implement stock ledger for audit trail. Link stock movements to source documents (purchases, sales, etc.).",
+          "testStrategy": "Test stock movements update quantities correctly, verify weighted average calculations, test concurrent stock updates, and validate stock ledger accuracy.",
+          "subtasks": []
+        },
+        {
+          "id": 9,
+          "title": "Stock Alerts & Monitoring",
+          "description": "Implement stock alerts for min/max levels and identify fast/slow moving items",
+          "status": "pending",
+          "priority": "medium",
+          "dependencies": [7, 8],
+          "details": "Create stock alert system based on min/max thresholds per item. Implement fast/slow moving item analysis based on sales velocity. Build alert notification system. Create stock alert dashboard widget. Allow configurable thresholds per item. Generate alerts for 'Stock running low on [Item]'.",
+          "testStrategy": "Test alert generation when stock falls below minimum, verify fast/slow moving calculations, and ensure alerts appear in dashboard.",
+          "subtasks": []
+        },
+        {
+          "id": 10,
+          "title": "Point of Sale (POS) - Core Interface",
+          "description": "Build offline-first POS interface with product search, cart, discounts, and multiple payment types",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [7, 8],
+          "details": "Create POS UI with product search (barcode/name), shopping cart, discount application, and payment type selection (cash, card, on account). Implement offline-first architecture with local caching using IndexedDB or similar. Build sync mechanism for offline transactions. Ensure fast, touch-friendly interface optimized for tablets. Implement receipt printing capability.",
+          "testStrategy": "Test POS in offline mode, verify transactions sync when online, test all payment types, and ensure stock updates correctly. Test on mobile devices.",
+          "subtasks": []
+        },
+        {
+          "id": 11,
+          "title": "POS - Daily Till Summary & Z-Report",
+          "description": "Implement daily till summary and Z-report generation for end-of-day reconciliation",
+          "status": "pending",
+          "priority": "medium",
+          "dependencies": [10],
+          "details": "Create daily till/session management. Implement Z-report generation showing sales summary, payment breakdown, and transaction counts. Build till opening/closing workflow. Create reconciliation interface. Link POS transactions to accounting automatically.",
+          "testStrategy": "Test till opening/closing, verify Z-report accuracy, test reconciliation process, and ensure accounting integration works.",
+          "subtasks": []
+        },
+        {
+          "id": 12,
+          "title": "Customer Management (Basic CRM)",
+          "description": "Implement customer profiles with basic fields, tags (VIP, regular, on account), and interaction logging",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [3],
+          "details": "Create Customer entity with contact info, credit status, outstanding amounts, and tags. Implement customer tagging system (VIP, regular, 'on account'). Build interaction log for calls, WhatsApps, visits (manual capture at MVP). Create customer management UI with search and filtering. Link customers to sales and accounting.",
+          "testStrategy": "Test customer CRUD operations, tag management, interaction logging, and customer search. Verify credit status tracking.",
+          "subtasks": []
+        },
+        {
+          "id": 13,
+          "title": "Sales Module - Quotations & Sales Orders",
+          "description": "Implement sales workflow: Quotations → Sales Orders → Delivery Notes → Invoices",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [7, 12],
+          "details": "Create Quotation, SalesOrder, DeliveryNote, and SalesInvoice entities. Implement workflow state machine for document progression. Build quotation creation with item selection and pricing. Implement conversion: Quotation → Sales Order → Delivery Note → Invoice. Add status tracking and validation rules. Create sales document management UI.",
+          "testStrategy": "Test complete sales workflow, verify status transitions, test document conversion, and ensure validation rules are enforced.",
+          "subtasks": []
+        },
+        {
+          "id": 14,
+          "title": "Accounting - Cashbook & Bank Accounts",
+          "description": "Implement cashbook functionality for recording cash sales, expenses, bank transfers, and managing bank/petty cash accounts",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [3],
+          "details": "Create Account entity (Bank, Petty Cash). Implement cashbook entry system for recording transactions. Build account management UI. Support multiple accounts per business. Link cashbook entries to sales and purchases. Implement account balance tracking.",
+          "testStrategy": "Test cashbook entry creation, account management, balance calculations, and transaction linking. Verify multi-account support.",
+          "subtasks": []
+        },
+        {
+          "id": 15,
+          "title": "Accounting - Invoices & Payments",
+          "description": "Implement invoice creation, payment recording, and payment status tracking (cash, card, EFT, on account)",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [13, 14],
+          "details": "Create Invoice and Payment entities. Implement payment recording against invoices. Support multiple payment types: cash, card, EFT, 'on account'. Build invoice management UI with payment tracking. Implement payment status: Unpaid/Paid/Partially Paid. Link to cashbook automatically.",
+          "testStrategy": "Test invoice creation, payment recording, payment status updates, and cashbook integration. Verify partial payments work correctly.",
+          "subtasks": []
+        },
+        {
+          "id": 16,
+          "title": "Accounting - Basic Financial Reports",
+          "description": "Implement basic financial reports: Profit & Loss, Cashflow summary, Debtors, and Creditors reports",
+          "status": "pending",
+          "priority": "medium",
+          "dependencies": [14, 15],
+          "details": "Create report generation system for P&L, cashflow, debtors (who owes you), and creditors (who you owe). Use plain language in reports ('customers who still owe you' instead of 'accounts receivable'). Build report UI with date range selection. Implement report export (PDF/CSV).",
+          "testStrategy": "Test report accuracy, verify calculations, test date range filtering, and ensure reports use plain language. Test export functionality.",
+          "subtasks": []
+        },
+        {
+          "id": 17,
+          "title": "Accounting - VAT Support & Localization",
+          "description": "Implement basic VAT calculation and ZAR currency support for South African market",
+          "status": "pending",
+          "priority": "medium",
+          "dependencies": [15],
+          "details": "Implement VAT calculation at basic level (15% standard rate). Add VAT fields to invoices and transactions. Support ZAR as base currency. Create VAT report. Ensure proper VAT handling in all financial transactions.",
+          "testStrategy": "Test VAT calculations on invoices, verify VAT reports, and ensure ZAR formatting is correct throughout the system.",
+          "subtasks": []
+        },
+        {
+          "id": 18,
+          "title": "Procurement - Supplier Management",
+          "description": "Implement supplier list with contact info, payment terms, and pricing history tracking",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [3],
+          "details": "Create Supplier entity with name, contact, payment terms. Build supplier management UI. Implement pricing history tracking. Create supplier performance metrics (on-time delivery, quality). Link suppliers to purchase orders.",
+          "testStrategy": "Test supplier CRUD operations, payment terms management, pricing history, and supplier search functionality.",
+          "subtasks": []
+        },
+        {
+          "id": 19,
+          "title": "Procurement - Purchase Workflow",
+          "description": "Implement procurement workflow: Purchase Requests → Purchase Orders → Goods Receipt → Supplier Invoices",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [7, 18],
+          "details": "Create PurchaseRequest, PurchaseOrder, GoodsReceipt, and PurchaseInvoice entities. Implement workflow: Material Request → PO → Receipt → Invoice. Build purchase order creation with item selection. Implement goods receipt with quantity validation. Link supplier invoices to accounting. Track expected deliveries and overdue orders.",
+          "testStrategy": "Test complete procurement workflow, verify stock updates on receipt, test three-way matching (PO-Receipt-Invoice), and ensure overdue tracking works.",
+          "subtasks": []
+        },
+        {
+          "id": 20,
+          "title": "Projects Module - Job Cards & Project Tracking",
+          "description": "Implement project/job card system for tracking jobs (repairs, installations) with tasks, materials, and labour",
+          "status": "pending",
+          "priority": "medium",
+          "dependencies": [7, 12],
+          "details": "Create Project/JobCard entity with customer, description, due date. Implement project tasks, materials (from stock), labour tracking, and notes. Add project status: New, In Progress, On Hold, Completed, Closed. Link projects to invoices and receipts. Build project management UI.",
+          "testStrategy": "Test project creation, task management, material consumption from stock, status transitions, and invoice linking.",
+          "subtasks": []
+        },
+        {
+          "id": 21,
+          "title": "User Management & Role Configuration",
+          "description": "Implement user management system with role assignment and permission configuration",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [2, 3],
+          "details": "Create user management UI for adding/editing users. Implement role assignment interface. Build permission configuration system. Support user invitation workflow. Create user profile management. Implement user deactivation.",
+          "testStrategy": "Test user creation, role assignment, permission enforcement, user invitation, and user deactivation workflows.",
+          "subtasks": []
+        },
+        {
+          "id": 22,
+          "title": "Audit Trail & Activity Logging",
+          "description": "Implement comprehensive audit trail tracking who did what and when for all transactions",
+          "status": "pending",
+          "priority": "medium",
+          "dependencies": [2, 3],
+          "details": "Create audit log entity tracking user, action, timestamp, and entity changes. Implement audit logging middleware. Log all create, update, delete operations. Build audit trail viewer UI. Ensure audit logs are immutable and secure.",
+          "testStrategy": "Test audit logging for all operations, verify log immutability, test audit trail viewer, and ensure proper user attribution.",
+          "subtasks": []
+        },
+        {
+          "id": 23,
+          "title": "Import/Export Functionality (CSV)",
+          "description": "Implement basic CSV import/export for items, customers, and suppliers",
+          "status": "pending",
+          "priority": "low",
+          "dependencies": [7, 12, 18],
+          "details": "Create CSV import/export functionality for items, customers, and suppliers. Implement data validation during import. Build import UI with preview and error handling. Support bulk operations. Create export templates.",
+          "testStrategy": "Test CSV import with valid and invalid data, verify export accuracy, test bulk operations, and ensure error handling works correctly.",
+          "subtasks": []
+        },
+        {
+          "id": 24,
+          "title": "Mobile-First UI Components & Navigation",
+          "description": "Build mobile-first UI components and global navigation system (Home, Sales, Stock, Money, People, Jobs, Settings)",
+          "status": "pending",
+          "priority": "high",
+          "dependencies": [2],
+          "details": "Create reusable mobile-first UI components using Nuxt 4, TailwindCSS, and shadcn-style components. Implement global navigation with modules: Home, Sales, Stock, Money, People, Jobs, Settings. Build responsive layouts. Ensure touch-friendly interfaces. Implement guided flows and wizards for complex actions.",
+          "testStrategy": "Test navigation on mobile devices, verify responsive design, test touch interactions, and ensure components work across different screen sizes.",
+          "subtasks": []
+        },
+        {
+          "id": 25,
+          "title": "API Layer & Integration Preparation",
+          "description": "Design and implement API layer with versioning, preparing for future integrations (banks, payment gateways, messaging APIs)",
+          "status": "pending",
+          "priority": "medium",
+          "dependencies": [1],
+          "details": "Implement RESTful API with proper versioning. Create API documentation (Swagger/OpenAPI). Design extensible integration points for banks, payment gateways, and messaging (WhatsApp/SMS). Implement API authentication and rate limiting. Create webhook support for partner integrations.",
+          "testStrategy": "Test API endpoints, verify authentication, test rate limiting, validate API documentation, and ensure integration points are properly designed.",
+          "subtasks": []
+        }
+      ]
+    }
+  }
+}

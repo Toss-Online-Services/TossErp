@@ -24,7 +24,6 @@ Before you start **any new functionality, module, feature, or major refactor** y
    …may you start designing and writing code.
 5. When you are done, you must write a detailed report of what you did, what you found, and what you did.
 
-6. Also when unclear about the context of the project, you must use the the functional spec `docs/functional-spec.md` to help you understand the context of the project.
 
 > This rule applies to **all external links and topics** (ERP modules, UI patterns, architecture patterns, etc.), not just the examples listed below.
 
@@ -175,8 +174,11 @@ Before designing or implementing any module:
    - Data models (doctype/fields)  
    - Core workflows (e.g. Sales Order → Delivery Note → Sales Invoice)  
    - Business rules and invariants  
+4. Alway refer to the functional spec `docs/functional-spec.md` when unclear about the context of the project, help you understand the context of the project.
 
 **Goal:** understand the **functional behaviour** and adapt it to TOSS’s township/rural context (simplified, localised, offline-aware).
+
+
 
 ---
 
