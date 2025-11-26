@@ -45,11 +45,15 @@ node_modules/
 .github/instructions/nx.instructions.md
 
 # Task files (commented out - uncomment if needed)
-# tasks.json
-# tasks/
 
 
 # Data folders
 playwright-report/
 **/playwright-reportata/
 **/test-results/
+
+# Editor directories and files
+
+# Task files
+# tasks.json
+# tasks/ 
