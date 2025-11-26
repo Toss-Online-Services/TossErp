@@ -18,7 +18,13 @@ export const useAuth = () => {
   const error = ref<string | null>(null)
   const refreshTimer = ref<NodeJS.Timeout | null>(null)
 
-  const apiBaseUrl = useRuntimeConfig().public.apiBase
+  const config = useRuntimeConfig()
+  
+  // Use relative URL in development to leverage Nuxt dev proxy (avoids CORS/certificate issues)
+  // Use absolute URL in production
+  const getApiUrl = (endpoint: string) => {
+    return process.dev ? endpoint : `${config.public.apiBase}${endpoint}`
+  }
 
   /**
    * Check if token is expired
@@ -92,7 +98,7 @@ export const useAuth = () => {
     }
 
     try {
-      const response = await $fetch<RefreshTokenResponse>(`${apiBaseUrl}/api/auth/refresh`, {
+      const response = await $fetch<RefreshTokenResponse>(getApiUrl('/api/auth/refresh'), {
         method: 'POST',
         body: { refreshToken: refreshToken.value },
       })
@@ -129,6 +135,29 @@ export const useAuth = () => {
     }
   }
 
+  const persistAuthState = (payload: {
+    user: User
+    token: string
+    refreshToken: string
+    expiresIn: number
+    rememberMe?: boolean
+  }) => {
+    user.value = { ...payload.user, lastLogin: new Date() }
+    refreshToken.value = payload.refreshToken
+    setToken(payload.token, payload.expiresIn)
+
+    if (process.client) {
+      localStorage.setItem('auth-user', JSON.stringify(user.value))
+      localStorage.setItem('auth-refresh-token', payload.refreshToken)
+
+      if (payload.rememberMe) {
+        localStorage.setItem('auth-remember-me', 'true')
+      } else {
+        localStorage.removeItem('auth-remember-me')
+      }
+    }
+  }
+
   /**
    * Login user with email and password
    */
@@ -137,28 +166,19 @@ export const useAuth = () => {
     error.value = null
 
     try {
-      const response = await $fetch<AuthResponse>(`${apiBaseUrl}/api/auth/login`, {
+      const response = await $fetch<AuthResponse>(getApiUrl('/api/auth/login'), {
         method: 'POST',
         body: credentials,
       })
 
-      // Store authentication data
-      user.value = { ...response.user, lastLogin: new Date() }
-      refreshToken.value = response.refreshToken
-      setToken(response.token, response.expiresIn)
+      persistAuthState({
+        user: response.user,
+        token: response.token,
+        refreshToken: response.refreshToken,
+        expiresIn: response.expiresIn,
+        rememberMe: credentials.rememberMe,
+      })
 
-      // Store persistent data in localStorage
-      if (process.client) {
-        localStorage.setItem('auth-user', JSON.stringify(user.value))
-        localStorage.setItem('auth-refresh-token', response.refreshToken)
-        
-        // Store remember me preference
-        if (credentials.rememberMe) {
-          localStorage.setItem('auth-remember-me', 'true')
-        }
-      }
-
-      // Log successful login
       if (process.client) {
         const { logLogin } = useAudit()
         await logLogin(true)
@@ -167,13 +187,56 @@ export const useAuth = () => {
       return true
     } catch (e: any) {
       error.value = e.message || 'Login failed'
-      
-      // Log failed login
+
       if (process.client) {
         const { logLogin } = useAudit()
-  await logLogin(false, error.value || undefined)
+        await logLogin(false, error.value || undefined)
       }
-      
+
+      return false
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  /**
+   * Instant demo login for development/testing
+   */
+  const demoLogin = async (): Promise<boolean> => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      persistAuthState({
+        user: {
+          id: 0,
+          name: 'Demo User',
+          email: 'demo@toss.co.za',
+          roles: ['Administrator', 'Owner'],
+          permissions: [
+            'dashboard:view',
+            'inventory:*',
+            'sales:*',
+            'purchasing:*',
+            'logistics:*',
+            'crm:*',
+            'reports:view',
+            'admin'
+          ]
+        },
+        token: `dev-token-demo-${Date.now()}`,
+        refreshToken: `dev-refresh-demo-${Date.now()}`,
+        expiresIn: 60 * 60 * 4
+      })
+
+      if (process.client) {
+        const { logLogin } = useAudit()
+        await logLogin(true)
+      }
+
+      return true
+    } catch (e: any) {
+      error.value = e.message || 'Demo login failed'
       return false
     } finally {
       isLoading.value = false
@@ -199,7 +262,7 @@ export const useAuth = () => {
     // Notify server about logout (optional)
     if (refreshToken.value) {
       try {
-        await $fetch(`${apiBaseUrl}/api/auth/logout`, {
+        await $fetch(getApiUrl('/api/auth/logout'), {
           method: 'POST',
           body: { refreshToken: refreshToken.value },
         })
@@ -229,7 +292,7 @@ export const useAuth = () => {
       console.info('Logout reason:', reason)
     }
 
-    await navigateTo('/login')
+    await navigateTo('/auth/login')
   }
 
   /**
@@ -288,9 +351,10 @@ export const useAuth = () => {
    */
   const checkSession = async (): Promise<boolean> => {
     if (!token.value) return false
+    if (token.value.startsWith('dev-token-')) return true
 
     try {
-      await $fetch(`${apiBaseUrl}/api/auth/verify`, {
+      await $fetch(getApiUrl('/api/auth/verify'), {
         headers: getAuthHeader(),
       })
       return true
@@ -347,6 +411,7 @@ export const useAuth = () => {
     isLoading: readonly(isLoading),
     error: readonly(error),
     login,
+    demoLogin,
     logout,
     restoreAuth,
     forceRefresh,

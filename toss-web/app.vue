@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!-- Demo Mode Banner deploy-->
-    <DemoModeBanner />
     
       <!-- Offline Indicator - Improved -->
       <div v-if="!isOnline" class="fixed right-0 left-0 top-12 z-40 bg-orange-500 border-b-2 border-orange-600 shadow-lg">
@@ -36,7 +34,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import ToastContainer from '~/components/ui/ToastContainer.vue'
+import ToastContainer from '~/components/notifications/ToastContainer.vue'
 
 // Offline detection
 const isOnline = ref(true)

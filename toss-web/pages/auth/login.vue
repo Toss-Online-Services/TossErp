@@ -1,90 +1,94 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 px-4">
-    <div class="max-w-md w-full space-y-8">
+  <div class="min-h-screen flex items-center justify-center bg-background px-4 py-12">
+    <!-- Decorative background elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="max-w-md w-full space-y-8 relative z-10">
       <!-- Logo and Title -->
       <div class="text-center">
-        <div class="flex justify-center mb-4">
-          <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <span class="text-3xl font-bold text-white">T</span>
+        <NuxtLink to="/" class="inline-flex justify-center mb-6 group">
+          <div class="relative flex items-center justify-center w-16 h-16 bg-primary text-primary-foreground rounded-2xl shadow-xl transition-transform group-hover:scale-110 group-hover:rotate-3">
+            <span class="text-3xl font-black text-white">T</span>
+            <div class="absolute inset-0 bg-primary/20 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
           </div>
-        </div>
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white">TOSS ERP</h2>
-        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Township Operations Support System</p>
+        </NuxtLink>
+        <h2 class="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+          Welcome to TOSS
+        </h2>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Sign in to your account to continue</p>
       </div>
 
       <!-- Login Form -->
-      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-8">
+      <MaterialCard variant="elevated" class="p-8">
         <form @submit.prevent="handleLogin" class="space-y-6">
-          <div>
-            <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Email or Phone
-            </label>
-            <input
-              id="email"
-              v-model="form.email"
-              type="text"
-              required
-              class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-              placeholder="Enter your email or phone"
-            />
-          </div>
+          <MaterialInput
+            v-model="form.email"
+            label="Email or Phone"
+            type="text"
+            placeholder="Enter your email or phone"
+            required
+            variant="outlined"
+          />
 
-          <div>
-            <label for="password" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Password
-            </label>
-            <input
-              id="password"
-              v-model="form.password"
-              type="password"
-              required
-              class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-              placeholder="Enter your password"
-            />
-          </div>
+          <MaterialInput
+            v-model="form.password"
+            label="Password"
+            type="password"
+            placeholder="Enter your password"
+            required
+            variant="outlined"
+          />
 
-          <div class="flex items-center justify-between">
-            <label class="flex items-center">
-              <input
-                v-model="form.remember"
-                type="checkbox"
-                class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
-              />
-              <span class="ml-2 text-sm text-slate-600 dark:text-slate-400">Remember me</span>
-            </label>
-            <a href="#" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-              Forgot password?
-            </a>
-          </div>
+                <label class="flex items-center cursor-pointer group">
+                  <input
+                    v-model="form.remember"
+                    type="checkbox"
+                    class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <span class="ml-3 text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                    Remember me
+                  </span>
+                </label>
+                <NuxtLink to="/auth/forgot-password" class="text-sm text-primary hover:text-primary/80 font-medium">
+                  Forgot password?
+                </NuxtLink>
 
-          <button
+          <MaterialButton
             type="submit"
             :disabled="loading"
-            class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            :loading="loading"
+            color="primary"
+            size="lg"
+            full-width
           >
             {{ loading ? 'Signing in...' : 'Sign in' }}
-          </button>
+          </MaterialButton>
         </form>
 
         <!-- Demo Mode -->
         <div class="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-          <button
+          <MaterialButton
             @click="handleDemoLogin"
-            class="w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+            color="success"
+            size="lg"
+            full-width
           >
             🚀 Try Demo Mode
-          </button>
+          </MaterialButton>
           <p class="mt-2 text-xs text-center text-slate-500 dark:text-slate-400">
             Skip login and explore the system
           </p>
         </div>
-      </div>
+      </MaterialCard>
 
       <!-- Sign Up Link -->
       <p class="text-center text-sm text-slate-600 dark:text-slate-400">
         Don't have an account?
-        <NuxtLink to="/register" class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
-          Sign up
+        <NuxtLink to="/auth/register" class="text-primary hover:text-primary/80 font-semibold">
+          Sign up for free
         </NuxtLink>
       </p>
     </div>
@@ -113,13 +117,41 @@ const form = ref({
 })
 
 const loading = ref(false)
-const { login } = useAuth()
+const auth = useAuth()
+
+const roleRedirects: Record<string, string> = {
+  administrator: '/admin/dashboard',
+  admin: '/admin/dashboard',
+  owner: '/admin/dashboard',
+  retailer: '/retailer/dashboard',
+  supplier: '/supplier/dashboard',
+  driver: '/driver/deliveries'
+}
+
+const getRedirectPath = () => {
+  const roles = auth.user.value?.roles?.map(role => role.toLowerCase()) ?? []
+  for (const role of roles) {
+    if (roleRedirects[role]) {
+      return roleRedirects[role]
+    }
+  }
+  return '/dashboard'
+}
 
 const handleLogin = async () => {
   loading.value = true
   try {
-    await login(form.value.email, form.value.password, form.value.remember)
-    navigateTo('/')
+    const success = await auth.login({
+      email: form.value.email,
+      password: form.value.password,
+      rememberMe: form.value.remember
+    })
+    
+    if (success) {
+      await navigateTo(getRedirectPath())
+    } else {
+      alert('Login failed. Please check your credentials and try again.')
+    }
   } catch (error) {
     console.error('Login failed:', error)
     alert('Login failed. Please try again or use Demo Mode.')
@@ -131,13 +163,19 @@ const handleLogin = async () => {
 const handleDemoLogin = async () => {
   loading.value = true
   try {
-    // Auto-login with demo credentials
-    await login('demo@toss.co.za', 'demo123', false)
-    navigateTo('/')
+    const success = await auth.demoLogin()
+    
+    if (success) {
+      await navigateTo(getRedirectPath())
+    } else {
+      // If login fails, just navigate anyway (for development)
+      console.log('Demo mode - bypassing auth')
+      await navigateTo('/dashboard')
+    }
   } catch (error) {
     // If login fails, just navigate anyway (for development)
     console.log('Demo mode - bypassing auth')
-    navigateTo('/')
+    await navigateTo('/dashboard')
   } finally {
     loading.value = false
   }

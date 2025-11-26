@@ -2,6 +2,7 @@ import type { UseFetchOptions } from 'nuxt/app'
 
 /**
  * Base API composable for making authenticated requests to TOSS backend
+ * Includes caching and request deduplication for better performance
  * 
  * Usage:
  * const { get, post, put, delete: del } = useApi()
@@ -11,6 +12,7 @@ export const useApi = () => {
   const config = useRuntimeConfig()
   const apiBase = config.public.apiBase
   const token = useCookie('auth-token')
+  const cache = useApiCache()
 
   /**
    * Create $fetch instance with default configuration
@@ -37,7 +39,7 @@ export const useApi = () => {
         if (response.status === 401) {
           // Unauthorized - redirect to login
           if (process.client) {
-            navigateTo('/login')
+            navigateTo('/auth/login')
           }
         }
         console.error('API Error:', response._data)
@@ -48,13 +50,60 @@ export const useApi = () => {
   const api = createFetchInstance()
 
   /**
-   * GET request
+   * GET request with caching and deduplication
    */
-  const get = async <T>(endpoint: string, params?: Record<string, any>): Promise<T> => {
-    return await api<T>(endpoint, {
+  const get = async <T>(
+    endpoint: string, 
+    params?: Record<string, any>,
+    options?: { 
+      cache?: boolean
+      ttl?: number // Time to live in milliseconds
+      skipCache?: boolean
+    }
+  ): Promise<T> => {
+    const useCache = options?.cache !== false
+    const skipCache = options?.skipCache === true
+
+    // Check for pending request (deduplication)
+    if (useCache && !skipCache) {
+      const pending = cache.getPendingRequest<T>(endpoint, params)
+      if (pending) {
+        return pending
+      }
+    }
+
+    // Check cache first
+    if (useCache && !skipCache) {
+      const cached = cache.get<T>(endpoint, params)
+      if (cached !== null) {
+        return cached
+      }
+    }
+
+    // Make the request
+    const requestPromise = api<T>(endpoint, {
       method: 'GET',
       query: params
-    })
+    }) as Promise<T>
+
+    // Register pending request for deduplication
+    if (useCache && !skipCache) {
+      cache.setPendingRequest(endpoint, params, requestPromise)
+    }
+
+    try {
+      const data = await requestPromise
+      
+      // Cache successful responses
+      if (useCache && !skipCache) {
+        cache.set(endpoint, data, params, options?.ttl)
+      }
+      
+      return data
+    } catch (error) {
+      // Don't cache errors
+      throw error
+    }
   }
 
   /**
@@ -86,12 +135,28 @@ export const useApi = () => {
     })
   }
 
+  /**
+   * Invalidate cache for specific endpoint
+   */
+  const invalidateCache = (endpoint?: string, params?: Record<string, any>) => {
+    cache.invalidate(endpoint, params)
+  }
+
+  /**
+   * Clear all cache
+   */
+  const clearCache = () => {
+    cache.clear()
+  }
+
   return {
     api,
     get,
     post,
     put,
     delete: del,
-    apiBase
+    apiBase,
+    invalidateCache,
+    clearCache
   }
 }

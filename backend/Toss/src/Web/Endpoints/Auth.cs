@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using System.Security.Claims;
-// using Microsoft.AspNetCore.Authentication.JwtBearer; // TODO: Add JWT authentication
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Configuration;
 
 namespace Toss.Web.Endpoints;
 
@@ -35,44 +36,85 @@ public class Auth : EndpointGroupBase
  private static async Task<IResult> Login(HttpContext httpContext)
  {
  var request = httpContext.Request;
- var client = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>().CreateClient();
- var backendUrl = "/api/Users/login";
+ var clientFactory = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>();
+ var client = clientFactory.CreateClient();
+ client.Timeout = TimeSpan.FromSeconds(30); // Set timeout to prevent hanging
+ var configuration = httpContext.RequestServices.GetRequiredService<IConfiguration>();
+ 
+ // Construct absolute URI using current request's base URL
+ var baseUrl = $"{request.Scheme}://{request.Host}";
+ var backendUrl = new Uri(new Uri(baseUrl), "/api/Users/login");
+ 
  request.EnableBuffering();
- var body = await new System.IO.StreamReader(request.Body).ReadToEndAsync();
+ var body = await new System.IO.StreamReader(request.Body).ReadToEndAsync();    
  request.Body.Position =0;
- var response = await client.PostAsync(backendUrl, new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
+ 
+ HttpResponseMessage response;
+ try
+ {
+     response = await client.PostAsync(backendUrl, new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
+ }
+ catch (TaskCanceledException)
+ {
+     return Results.Problem("Request timeout - the identity service did not respond in time", statusCode: 504);
+ }
+ catch (HttpRequestException ex)
+ {
+     return Results.Problem($"Failed to connect to identity service: {ex.Message}", statusCode: 502);
+ }
+ 
  var respContent = await response.Content.ReadAsStringAsync();
 
  // Transform backend response to frontend AuthResponse
  if (response.IsSuccessStatusCode)
  {
- var backendObj = System.Text.Json.JsonDocument.Parse(respContent).RootElement;
- var authResponse = new System.Dynamic.ExpandoObject() as IDictionary<string, object?>;
- authResponse["token"] = backendObj.GetProperty("accessToken").GetString();
- authResponse["refreshToken"] = backendObj.GetProperty("refreshToken").GetString();
- authResponse["expiresIn"] = backendObj.GetProperty("expiresIn").GetInt64();
+ var backendObj = System.Text.Json.JsonDocument.Parse(respContent).RootElement; 
+ var authResponse = new System.Dynamic.ExpandoObject() as IDictionary<string, object?>;                                                                         
+ authResponse["token"] = backendObj.GetProperty("accessToken").GetString();     
+ authResponse["refreshToken"] = backendObj.GetProperty("refreshToken").GetString();                                                                             
+ authResponse["expiresIn"] = backendObj.GetProperty("expiresIn").GetInt64();    
  // Decode JWT to get user info
  var token = backendObj.GetProperty("accessToken").GetString();
  if (!string.IsNullOrEmpty(token))
  {
- var user = DecodeUserFromJwt(token);
+ var user = DecodeUserFromJwt(token, configuration);
  authResponse["user"] = user;
  }
  return Results.Json(authResponse);
  }
- return Results.Json(System.Text.Json.JsonDocument.Parse(respContent), statusCode: (int)response.StatusCode);
+ return Results.Json(System.Text.Json.JsonDocument.Parse(respContent), statusCode: (int)response.StatusCode);                                                   
  }
 
  // Proxy refresh to Identity endpoint and transform response
  private static async Task<IResult> Refresh(HttpContext httpContext)
  {
  var request = httpContext.Request;
- var client = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>().CreateClient();
- var backendUrl = "/api/Users/refresh";
+ var clientFactory = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>();
+ var client = clientFactory.CreateClient();
+ client.Timeout = TimeSpan.FromSeconds(30); // Set timeout to prevent hanging
+ 
+ // Construct absolute URI using current request's base URL
+ var baseUrl = $"{request.Scheme}://{request.Host}";
+ var backendUrl = new Uri(new Uri(baseUrl), "/api/Users/refresh");
+ 
  request.EnableBuffering();
  var body = await new System.IO.StreamReader(request.Body).ReadToEndAsync();
  request.Body.Position =0;
- var response = await client.PostAsync(backendUrl, new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
+ 
+ HttpResponseMessage response;
+ try
+ {
+     response = await client.PostAsync(backendUrl, new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
+ }
+ catch (TaskCanceledException)
+ {
+     return Results.Problem("Request timeout - the identity service did not respond in time", statusCode: 504);
+ }
+ catch (HttpRequestException ex)
+ {
+     return Results.Problem($"Failed to connect to identity service: {ex.Message}", statusCode: 502);
+ }
+ 
  var respContent = await response.Content.ReadAsStringAsync();
 
  // Transform backend response to frontend RefreshTokenResponse
@@ -87,19 +129,73 @@ public class Auth : EndpointGroupBase
  return Results.Json(System.Text.Json.JsonDocument.Parse(respContent), statusCode: (int)response.StatusCode);
  }
 
- // Decode JWT to AuthUser (simplified - TODO: Add proper JWT decoding library)
- private static object DecodeUserFromJwt(string token)
+ // Decode JWT to AuthUser using System.IdentityModel.Tokens.Jwt
+ private static object DecodeUserFromJwt(string token, IConfiguration configuration)
  {
- // TODO: Install System.IdentityModel.Tokens.Jwt package and implement proper JWT decoding
- var user = new Dictionary<string, object?>();
- user["id"] = "demo-user";
- user["name"] = "Demo User";
- user["email"] = "demo@toss.co.za";
- user["roles"] = new[] { "User" };
- user["permissions"] = Array.Empty<string>();
- user["avatar"] = null;
- user["lastLogin"] = DateTime.UtcNow;
- return user;
+     try
+     {
+         var handler = new JwtSecurityTokenHandler();
+         var jwtSettings = configuration.GetSection("JwtSettings");
+         var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not configured");
+         
+         var validationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+         {
+             ValidateIssuer = true,
+             ValidateAudience = true,
+             ValidateLifetime = false, // Don't validate expiry for decoding
+             ValidateIssuerSigningKey = true,
+             ValidIssuer = jwtSettings["Issuer"] ?? "TossErp",
+             ValidAudience = jwtSettings["Audience"] ?? "TossErp",
+             IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+                 System.Text.Encoding.UTF8.GetBytes(secretKey))
+         };
+         
+         var principal = handler.ValidateToken(token, validationParameters, out var validatedToken);
+         var jwtToken = validatedToken as JwtSecurityToken;
+         
+         if (jwtToken == null)
+         {
+             throw new InvalidOperationException("Invalid JWT token");
+         }
+         
+         var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+         var userName = principal.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty;
+         var email = principal.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
+         var phone = principal.FindFirst("phone")?.Value;
+         var firstName = principal.FindFirst("firstName")?.Value;
+         var lastName = principal.FindFirst("lastName")?.Value;
+         var roles = principal.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+         
+         var user = new Dictionary<string, object?>();
+         user["id"] = userId;
+         user["name"] = !string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName) 
+             ? $"{firstName} {lastName}" 
+             : userName;
+         user["email"] = email;
+         user["phone"] = phone;
+         user["firstName"] = firstName;
+         user["lastName"] = lastName;
+         user["roles"] = roles;
+         user["permissions"] = Array.Empty<string>();
+         user["avatar"] = null;
+         user["lastLogin"] = DateTime.UtcNow;
+         
+         return user;
+     }
+     catch (Exception ex)
+     {
+         // Log error and return minimal user info
+         Console.WriteLine($"Error decoding JWT: {ex.Message}");
+         var user = new Dictionary<string, object?>();
+         user["id"] = "unknown";
+         user["name"] = "Unknown User";
+         user["email"] = "";
+         user["roles"] = Array.Empty<string>();
+         user["permissions"] = Array.Empty<string>();
+         user["avatar"] = null;
+         user["lastLogin"] = DateTime.UtcNow;
+         return user;
+     }
  }
 
  // Simple in-memory store for invalidated refresh tokens (for demo; use persistent store in production)

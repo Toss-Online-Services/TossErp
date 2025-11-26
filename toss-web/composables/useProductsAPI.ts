@@ -84,17 +84,16 @@ export const useProductsAPI = () => {
     },
 
     /**
-     * Get all products
+     * Get all products with optimized pagination
+     * Reduced page size for better performance
      */
-  async getProducts(shopId?: number) {
+  async getProducts(shopId?: number, pageNumber: number = 1, pageSize: number = 50) {
       const params = { 
         ShopId: shopId,
-        PageNumber: 1,
-        PageSize: 1000,
+        PageNumber: pageNumber,
+        PageSize: pageSize, // Reduced from 1000 to 50 for better performance
         IsActive: true
       }
-      console.log('🔍 useProductsAPI.getProducts() - Fetching with params:', params)
-      console.log('🔍 useProductsAPI.getProducts() - Request URL:', `${baseURL}/Inventory/products`)
       
       try {
         const response: any = await $fetch(`${baseURL}/Inventory/products`, {
@@ -103,7 +102,6 @@ export const useProductsAPI = () => {
         })
         // Backend may return Items (PascalCase) or items (camelCase) or value
         const items = response?.items || response?.Items || response?.value || response?.Value || []
-        console.log('✅ useProductsAPI.getProducts() - Items count:', Array.isArray(items) ? items.length : 0)
         // Normalize to array
         return Array.isArray(items) ? items : []
       } catch (error) {
@@ -138,9 +136,97 @@ export const useProductsAPI = () => {
         console.log('✅ useProductsAPI.getCategories() - Categories count:', categories.length)
         return categories
       } catch (error) {
-        console.error('❌ useProductsAPI.getCategories() - Error:', error)
+        console.error('❌ useProductsAPI.getCategories() - Error:', error)      
         throw error
       }
+    },
+
+    /**
+     * Create a new product
+     */
+    async createProduct(productData: {
+      sku: string
+      barcode?: string
+      name: string
+      description?: string
+      categoryId?: number
+      basePrice: number
+      costPrice?: number
+      unit?: string
+      minimumStockLevel?: number
+      reorderQuantity?: number
+      isTaxable?: boolean
+    }) {
+      return await $fetch<{ id: number }>(`${baseURL}/Inventory/products`, {
+        method: 'POST',
+        body: {
+          sku: productData.sku,
+          barcode: productData.barcode,
+          name: productData.name,
+          description: productData.description,
+          categoryId: productData.categoryId,
+          basePrice: productData.basePrice,
+          costPrice: productData.costPrice,
+          unit: productData.unit,
+          minimumStockLevel: productData.minimumStockLevel ?? 10,
+          reorderQuantity: productData.reorderQuantity,
+          isTaxable: productData.isTaxable ?? true
+        }
+      })
+    },
+
+    /**
+     * Update an existing product
+     */
+    async updateProduct(id: number, productData: {
+      sku: string
+      barcode?: string
+      name: string
+      description?: string
+      categoryId?: number
+      basePrice: number
+      costPrice?: number
+      unit?: string
+      minimumStockLevel?: number
+      reorderQuantity?: number
+      isTaxable?: boolean
+      isActive?: boolean
+    }) {
+      return await $fetch<{ message: string }>(`${baseURL}/Inventory/products/${id}`, {
+        method: 'PUT',
+        body: {
+          sku: productData.sku,
+          barcode: productData.barcode,
+          name: productData.name,
+          description: productData.description,
+          categoryId: productData.categoryId,
+          basePrice: productData.basePrice,
+          costPrice: productData.costPrice,
+          unit: productData.unit,
+          minimumStockLevel: productData.minimumStockLevel ?? 10,
+          reorderQuantity: productData.reorderQuantity,
+          isTaxable: productData.isTaxable ?? true,
+          isActive: productData.isActive ?? true
+        }
+      })
+    },
+
+    /**
+     * Delete (soft delete) a product
+     */
+    async deleteProduct(id: number) {
+      return await $fetch<{ message: string }>(`${baseURL}/Inventory/products/${id}`, {
+        method: 'DELETE'
+      })
+    },
+
+    /**
+     * Get product by ID
+     */
+    async getProductById(id: number) {
+      return await $fetch<any>(`${baseURL}/Inventory/products/${id}`, {
+        method: 'GET'
+      })
     }
   }
 }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Toss.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,16 +17,31 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     // Microsoft's recommended approach: Apply migrations first, then seed
-    using (var scope = app.Services.CreateScope())
+    // Note: This is wrapped in try-catch to allow builds to succeed even when database is not available (e.g., during NSwag generation)
+    try
     {
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
-        // Apply all pending migrations
-        await context.Database.MigrateAsync();
-        
-        // Then seed the database
-        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-        await initialiser.SeedAsync();
+        using (var scope = app.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            
+            // Check if database is available before attempting migration
+            if (await context.Database.CanConnectAsync())
+            {
+                // Apply all pending migrations
+                await context.Database.MigrateAsync();
+                
+                // Then seed the database
+                var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+                await initialiser.SeedAsync();
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log but don't fail - allows build to succeed when database is not available
+        // This is especially important for NSwag code generation during build
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning(ex, "Database migration/seeding skipped - database may not be available. This is normal during build/NSwag generation.");
     }
 }
 else

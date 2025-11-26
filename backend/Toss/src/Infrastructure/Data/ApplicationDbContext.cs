@@ -16,6 +16,7 @@ using Toss.Domain.Entities.Shipping;
 using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities.Vendors;
 using Toss.Domain.Entities.Tax;
+using Toss.Domain.Entities.Onboarding;
 using Toss.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -270,6 +271,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// Access Control List records for entity-level security.
     /// </summary>
     public DbSet<AclRecord> AclRecords => Set<AclRecord>();
+
+    // Onboarding entities
+    /// <summary>
+    /// Tracks onboarding completion status for different user roles (Retailer, Supplier, Driver).
+    /// </summary>
+    public DbSet<OnboardingStatus> OnboardingStatuses => Set<OnboardingStatus>();
 
     // Store entities
     /// <summary>

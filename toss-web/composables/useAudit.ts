@@ -1,9 +1,16 @@
 import { v4 as uuidv4 } from 'uuid'
 import type { AuditLog, AuditAction, AuditSeverity } from '~/types/audit'
+import type { AuthUser } from '~/types/auth'
 
 export const useAudit = () => {
-  const { user } = useAuth()
+  const user = useState<AuthUser | null>('auth-user')
   const config = useRuntimeConfig()
+  
+  // Use relative URL in development to leverage Nuxt dev proxy (avoids CORS/certificate issues)
+  // Use absolute URL in production
+  const getApiUrl = (endpoint: string) => {
+    return process.dev ? endpoint : `${config.public.apiBase}${endpoint}`
+  }
 
   const logAuditEvent = async (
     action: AuditAction,
@@ -25,7 +32,7 @@ export const useAudit = () => {
         userId: user.value?.id?.toString(),
         userEmail: user.value?.email,
         ipAddress: await getClientIP(),
-        userAgent: navigator.userAgent,
+        userAgent: process.client ? navigator.userAgent : 'server',
         resource: details?.resource,
         resourceId: details?.resourceId,
         details: details?.metadata,
@@ -33,8 +40,8 @@ export const useAudit = () => {
         errorMessage: details?.errorMessage,
       }
 
-      // Send to backend
-      await $fetch('/api/audit/log', {
+      // Send to backend - use proxy in dev, direct URL in production
+      await $fetch(getApiUrl('/api/Audit/log'), {
         method: 'POST',
         body: auditLog,
       })

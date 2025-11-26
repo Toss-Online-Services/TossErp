@@ -1,139 +1,16 @@
 {
-	"mcpServers": {
-		"task-master-ai": {
-			"command": "npx",
-			"args": ["-y", "--package=task-master-ai", "task-master-ai"],
-			"env": {
-				"ANTHROPIC_API_KEY": "YOUR_ANTHROPIC_API_KEY_HERE",
-				"PERPLEXITY_API_KEY": "YOUR_PERPLEXITY_API_KEY_HERE",
-				"OPENAI_API_KEY": "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",
-				"GOOGLE_API_KEY": "YOUR_GOOGLE_KEY_HERE",
-				"XAI_API_KEY": "YOUR_XAI_KEY_HERE",
-				"OPENROUTER_API_KEY": "YOUR_OPENROUTER_KEY_HERE",
-				"MISTRAL_API_KEY": "YOUR_MISTRAL_KEY_HERE",
-				"AZURE_OPENAI_API_KEY": "YOUR_AZURE_KEY_HERE",
-				"OLLAMA_API_KEY": "YOUR_OLLAMA_API_KEY_HERE"
-			}
-		},
-		"filesystem": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-filesystem", "mcp-server-filesystem"],
-			"env": {}
-		},
-		"git": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-git", "mcp-server-git"],
-			"env": {}
-		},
-		"brave-search": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-brave-search", "mcp-server-brave-search"],
-			"env": {
-				"BRAVE_API_KEY": "YOUR_BRAVE_API_KEY_HERE"
-			}
-		},
-		"web-search": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-web-search", "mcp-server-web-search"],
-			"env": {}
-		},
-		"sqlite": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-sqlite", "mcp-server-sqlite"],
-			"env": {}
-		},
-		"postgres": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-postgres", "mcp-server-postgres"],
-			"env": {
-				"POSTGRES_CONNECTION_STRING": "YOUR_POSTGRES_CONNECTION_STRING_HERE"
-			}
-		},
-		"docker": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-docker", "mcp-server-docker"],
-			"env": {}
-		},
-		"kubernetes": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-kubernetes", "mcp-server-kubernetes"],
-			"env": {}
-		},
-		"http": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-http", "mcp-server-http"],
-			"env": {}
-		},
-		"puppeteer": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-puppeteer", "mcp-server-puppeteer"],
-			"env": {}
-		},
-		"redis": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-redis", "mcp-server-redis"],
-			"env": {
-				"REDIS_URL": "YOUR_REDIS_URL_HERE"
-			}
-		},
-		"rabbitmq": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-rabbitmq", "mcp-server-rabbitmq"],
-			"env": {
-				"RABBITMQ_URL": "YOUR_RABBITMQ_URL_HERE"
-			}
-		},
-		"elasticsearch": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-elasticsearch", "mcp-server-elasticsearch"],
-			"env": {
-				"ELASTICSEARCH_URL": "YOUR_ELASTICSEARCH_URL_HERE"
-			}
-		},
-		"prometheus": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-prometheus", "mcp-server-prometheus"],
-			"env": {
-				"PROMETHEUS_URL": "YOUR_PROMETHEUS_URL_HERE"
-			}
-		},
-		"grafana": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-grafana", "mcp-server-grafana"],
-			"env": {
-				"GRAFANA_URL": "YOUR_GRAFANA_URL_HERE"
-			}
-		},
-		"terraform": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-terraform", "mcp-server-terraform"],
-			"env": {}
-		},
-		"aws": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-aws", "mcp-server-aws"],
-			"env": {
-				"AWS_ACCESS_KEY_ID": "YOUR_AWS_ACCESS_KEY_ID_HERE",
-				"AWS_SECRET_ACCESS_KEY": "YOUR_AWS_SECRET_ACCESS_KEY_HERE",
-				"AWS_REGION": "YOUR_AWS_REGION_HERE"
-			}
-		},
-		"azure": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-azure", "mcp-server-azure"],
-			"env": {
-				"AZURE_CLIENT_ID": "YOUR_AZURE_CLIENT_ID_HERE",
-				"AZURE_CLIENT_SECRET": "YOUR_AZURE_CLIENT_SECRET_HERE",
-				"AZURE_TENANT_ID": "YOUR_AZURE_TENANT_ID_HERE",
-				"AZURE_SUBSCRIPTION_ID": "YOUR_AZURE_SUBSCRIPTION_ID_HERE"
-			}
-		},
-		"gcp": {
-			"command": "npx",
-			"args": ["-y", "--package=@modelcontextprotocol/server-gcp", "mcp-server-gcp"],
-			"env": {
-				"GOOGLE_APPLICATION_CREDENTIALS": "YOUR_GOOGLE_APPLICATION_CREDENTIALS_PATH_HERE"
-			}
-		}
-	}
+  "mcpServers": {
+    "nuxt": {
+      "type": "http",
+      "url": "https://nuxt.com/mcp"
+    },
+    "playwright": {
+      "type": "command",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@executeautomation/playwright-mcp-server"
+      ]
+    }
+  }
 }

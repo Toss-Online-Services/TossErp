@@ -26,14 +26,47 @@ export const useSalesAPI = () => {
       productId: number
       quantity: number
       unitPrice: number
+      discountPercent?: number
+      discountAmount?: number
+      taxRate?: number
     }>
-    paymentType: 'Cash' | 'Card' | 'MobileMoney' | 'BankTransfer' | 'PayLink'
+    paymentType: 'Cash' | 'Card' | 'MobileMoney' | 'BankTransfer' | 'PayLink'   
     totalAmount: number
   }) => {
+    // Map frontend format to backend format
+    const mappedItems = saleData.items.map(item => {
+      // Calculate discount amount from percent if needed
+      let discountAmount = item.discountAmount || 0
+      if (item.discountPercent && !item.discountAmount) {
+        const lineSubtotal = item.unitPrice * item.quantity
+        discountAmount = (lineSubtotal * item.discountPercent) / 100
+      }
+
+      return {
+        productId: item.productId,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        discountAmount: discountAmount
+      }
+    })
+
+    // Map payment type to enum value
+    const paymentMethodMap: Record<string, string> = {
+      'Cash': 'Cash',
+      'Card': 'Card',
+      'MobileMoney': 'MobileMoney',
+      'BankTransfer': 'BankTransfer',
+      'PayLink': 'PayLink'
+    }
+
     return await $fetch<{ id: number }>(`${baseURL}/Sales`, {
       method: 'POST',
       body: {
-        ...saleData
+        shopId: saleData.shopId,
+        customerId: saleData.customerId,
+        paymentMethod: paymentMethodMap[saleData.paymentType] || 'Cash',
+        items: mappedItems,
+        saleType: 0 // 0 = POS (from SaleType enum)
       }
     })
   }

@@ -402,6 +402,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useStock, type ItemDto, type CreateItemRequest, type UpdateItemRequest } from '~/composables/useStock'
+import { useDebounce } from '~/composables/useDebounce'
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -447,17 +448,22 @@ const stockFilter = ref('')
 const currentPage = ref(1)
 const pageSize = ref(20)
 
+// Debounce search term to avoid excessive API calls
+const debouncedSearchTerm = useDebounce(searchTerm, 500)
+
 // Modals
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const showDetailsModal = ref(false)
 const selectedItem = ref<ItemDto | null>(null)
 
-// Computed
+// Computed - For server-side pagination, filtering should be done on server
+// Client-side filtering is only for the current page
 const filteredItems = computed(() => {
   let result = items.value
 
-  // Search filter
+  // Client-side filtering for current page only (for better UX)
+  // Note: For full filtering, consider implementing server-side filtering
   if (searchTerm.value) {
     const search = searchTerm.value.toLowerCase()
     result = result.filter(item => 
@@ -491,12 +497,11 @@ const filteredItems = computed(() => {
   return result
 })
 
-const totalPages = computed(() => Math.ceil(filteredItems.value.length / pageSize.value))
+const totalPages = computed(() => Math.ceil(totalItems.value / pageSize.value))
 
+// Use server-side pagination - items are already paginated from API
 const paginatedItems = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  return filteredItems.value.slice(start, end)
+  return items.value || [] // Items are already paginated from server, default to empty array
 })
 
 const visiblePages = computed(() => {
@@ -549,9 +554,10 @@ const refreshData = async () => {
 
 const loadItems = async () => {
   try {
+    // Use server-side pagination instead of loading all items
     const response = await getItems({ 
-      page: 1, 
-      pageSize: 1000  // Load all items for client-side filtering
+      page: currentPage.value, 
+      pageSize: pageSize.value  // Use pagination instead of loading 1000 items
     })
     items.value = response.items
     totalItems.value = response.totalCount
@@ -647,9 +653,15 @@ const exportData = () => {
   window.URL.revokeObjectURL(url)
 }
 
-// Watch for filter changes and reset page
-watch([searchTerm, selectedCategory, stockFilter], () => {
+// Watch for filter changes and reload data
+watch([debouncedSearchTerm, selectedCategory, stockFilter], () => {
   currentPage.value = 1
+  loadItems() // Reload items when filters change
+})
+
+// Watch for page changes
+watch(currentPage, () => {
+  loadItems() // Reload items when page changes
 })
 
 // Lifecycle

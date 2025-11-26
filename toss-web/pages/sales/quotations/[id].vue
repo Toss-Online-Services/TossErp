@@ -250,14 +250,22 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter, useNuxtApp } from '#app'
+import type { QuotationRecord } from '../../../types/sales'
+import { generateQuotationPdf } from '../../../utils/pdf/quotation'
+
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
+const toast = useToast()
+const nuxtApp = useNuxtApp()
 
 // State
 const loading = ref(true)
 const error = ref('')
-const quotation = ref(null)
+const quotation = ref<QuotationRecord | null>(null)
 
 // Fetch quotation on mount
 onMounted(async () => {
@@ -267,87 +275,17 @@ onMounted(async () => {
 const fetchQuotation = async () => {
   try {
     loading.value = true
-    const id = route.params.id
+    error.value = ''
+    const id = route.params.id as string
     
-    // Mock API call - Replace with actual API
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    // Mock data
-    quotation.value = {
-      id: parseInt(id),
-      quotationNo: 'QTN-2025-001',
-      quotationDate: '2025-01-10',
-      validUntil: '2025-01-31',
-      status: 'sent',
-      customerName: 'Mama Dlamini Spaza',
-      customer: {
-        businessName: 'Mama Dlamini Spaza Shop',
-        address: '45 Main Road, Soweto, Johannesburg 1800',
-        phone: '082 123 4567',
-        email: 'mama@example.com'
-      },
-      priceList: 'standard',
-      items: [
-        {
-          id: 1,
-          productName: 'White Bread',
-          description: 'Albany White Bread 700g',
-          quantity: 50,
-          rate: 15.99,
-          discountPercent: 5,
-          amount: 759.53
-        },
-        {
-          id: 2,
-          productName: 'Milk 2L',
-          description: 'Full Cream Milk 2L',
-          quantity: 30,
-          rate: 32.99,
-          discountPercent: 0,
-          amount: 989.70
-        },
-        {
-          id: 3,
-          productName: 'Sugar 2.5kg',
-          description: 'White Sugar 2.5kg',
-          quantity: 20,
-          rate: 42.99,
-          discountPercent: 10,
-          amount: 773.82
-        }
-      ],
-      subtotal: 2562.95,
-      discountAmount: 39.90,
-      taxableAmount: 2523.05,
-      taxAmount: 378.46,
-      grandTotal: 2901.51,
-      termsAndConditions: 'Payment due within 30 days\nDelivery within 5 business days\nPrices valid for 21 days',
-      notes: 'First order - special bulk discount applied',
-      createdAt: '2025-01-10T09:30:00',
-      activities: [
-        {
-          id: 1,
-          type: 'created',
-          title: 'Quotation Created',
-          description: 'Quotation was created as draft',
-          user: 'John Doe',
-          timestamp: '2025-01-10T09:30:00'
-        },
-        {
-          id: 2,
-          type: 'sent',
-          title: 'Quotation Sent',
-          description: 'Quotation was sent to customer via email',
-          user: 'John Doe',
-          timestamp: '2025-01-10T10:15:00'
-        }
-      ]
-    }
+    const response = await nuxtApp.$fetch<{ data: QuotationRecord }>(`/api/sales/quotations/${id}`)
+    quotation.value = response.data
     
     loading.value = false
-  } catch (err) {
-    error.value = t('sales.quotations.errorLoading')
+  } catch (err: any) {
+    error.value = err.message || t('sales.quotations.errorLoading')
     loading.value = false
+    console.error('Error loading quotation:', err)
   }
 }
 
@@ -369,7 +307,8 @@ const getActivityIcon = (type: string) => {
     'sent': 'mdi:email-send',
     'accepted': 'mdi:check-circle',
     'rejected': 'mdi:close-circle',
-    'converted': 'mdi:swap-horizontal'
+    'converted': 'mdi:swap-horizontal',
+    'updated': 'mdi:pencil'
   }
   return icons[type] || 'mdi:circle'
 }
@@ -403,26 +342,39 @@ const formatNumber = (num: number): string => {
 }
 
 const editQuotation = () => {
-  router.push(`/sales/quotations/${quotation.value.id}/edit`)
+  router.push(`/sales/quotations/${quotation.value?.id}/edit`)
 }
 
-const downloadPDF = () => {
-  // Generate and download PDF
-  console.log('Downloading PDF for quotation:', quotation.value.id)
-  alert(t('sales.quotations.pdfGenerating'))
-  // Implement PDF generation using jsPDF
+const downloadPDF = async () => {
+  if (!quotation.value) return
+  
+  try {
+    await generateQuotationPdf(quotation.value)
+    toast.add({
+      title: t('sales.quotations.pdfGenerated'),
+      color: 'green'
+    })
+  } catch (err) {
+    console.error('Error generating PDF:', err)
+    toast.add({
+      title: t('sales.quotations.errorGeneratingPdf'),
+      color: 'red'
+    })
+  }
 }
 
 const sendEmail = async () => {
+  if (!quotation.value) return
+  
   try {
-    // Send email via API
-    console.log('Sending email for quotation:', quotation.value.id)
-    
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await nuxtApp.$fetch(`/api/sales/quotations/${quotation.value.id}/status`, {
+      method: 'PATCH',
+      body: { status: 'sent' }
+    })
     
     quotation.value.status = 'sent'
     quotation.value.activities.push({
-      id: quotation.value.activities.length + 1,
+      id: String(quotation.value.activities.length + 1),
       type: 'sent',
       title: 'Quotation Sent',
       description: 'Quotation was sent to customer via email',
@@ -430,27 +382,45 @@ const sendEmail = async () => {
       timestamp: new Date().toISOString()
     })
     
-    alert(t('sales.quotations.emailSent'))
+    toast.add({
+      title: t('sales.quotations.emailSent'),
+      color: 'green'
+    })
   } catch (err) {
-    alert(t('sales.quotations.errorSending'))
+    console.error('Error sending email:', err)
+    toast.add({
+      title: t('sales.quotations.errorSending'),
+      color: 'red'
+    })
   }
 }
 
 const convertToOrder = async () => {
+  if (!quotation.value) return
+  
   if (!confirm(t('sales.quotations.confirmConvertToOrder'))) {
     return
   }
   
   try {
-    // Convert to order via API
-    console.log('Converting quotation to order:', quotation.value.id)
+    const response = await nuxtApp.$fetch<{ data: { orderId: string } }>(
+      `/api/sales/quotations/${quotation.value.id}/convert`,
+      { method: 'POST' }
+    )
     
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    toast.add({
+      title: t('sales.quotations.convertedToOrder'),
+      color: 'green'
+    })
     
-    // Navigate to new order
-    router.push('/sales/orders/123')
+    // Navigate to the new order
+    router.push(`/sales/orders/${response.data.orderId}`)
   } catch (err) {
-    alert(t('sales.quotations.errorConverting'))
+    console.error('Error converting to order:', err)
+    toast.add({
+      title: t('sales.quotations.errorConverting'),
+      color: 'red'
+    })
   }
 }
 
@@ -462,7 +432,7 @@ definePageMeta({
 
 // SEO
 useHead({
-  title: computed(() => quotation.value ? quotation.value.quotationNo : t('sales.quotations.title'))
+  title: computed(() => quotation.value ? quotation.value.quotationNumber : t('sales.quotations.title'))
 })
 </script>
 

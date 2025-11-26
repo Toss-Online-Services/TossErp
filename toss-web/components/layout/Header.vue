@@ -1,24 +1,24 @@
 <template>
-  <header class="h-16 flex items-center justify-between px-4 sm:px-6 bg-white border-b border-gray-200 shadow-sm">
+  <header class="flex justify-between items-center px-4 h-16 bg-white border-b border-gray-200 shadow-sm sm:px-6">
     <!-- Search Section -->
     <div class="flex-1 max-w-lg">
       <div class="relative">
-        <MagnifyingGlassIcon class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input 
+        <MagnifyingGlassIcon class="absolute left-3 top-1/2 z-10 w-4 h-4 transform -translate-y-1/2 text-muted-foreground" />
+        <Input 
           type="text" 
           placeholder="Search..." 
-          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+          class="pl-10 w-full"
         />
       </div>
     </div>
 
     <!-- Actions -->
-    <div class="flex items-center space-x-2 sm:space-x-4 ml-4">
+    <div class="flex items-center ml-4 space-x-2 sm:space-x-4">
       <!-- Notifications -->
-      <button class="relative p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+      <Button variant="ghost" size="icon" class="relative">
         <BellIcon class="w-5 h-5" />
-        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-      </button>
+        <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-destructive"></span>
+      </Button>
 
       <!-- Theme Switcher -->
       <ThemeSwitcher />
@@ -35,4 +35,5 @@
 import { MagnifyingGlassIcon, BellIcon } from '@heroicons/vue/24/outline'
 import ThemeSwitcher from '~/components/common/ThemeSwitcher.vue'
 import UserMenu from '~/components/common/UserMenu.vue'
+// Input, Button, and Badge are auto-imported in Nuxt 4 with shadcn-vue
 </script>

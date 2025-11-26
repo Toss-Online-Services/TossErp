@@ -1,4 +1,50 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+// Build modules array conditionally for better dev performance
+const isDev = process.env.NODE_ENV === 'development'
+const devApiTarget = process.env.TOSS_API_URL || 'http://localhost:5000'
+const modules = [
+  // Core & Styling
+  '@nuxtjs/tailwindcss',
+  '@nuxtjs/color-mode',
+  '@nuxt/fonts',
+  '@nuxt/icon',
+  '@nuxt/image',
+  
+  // State Management
+  '@pinia/nuxt',
+  '@vueuse/nuxt',
+  
+  // PWA & Performance (skip heavy modules in dev)
+  ...(isDev ? [] : ['@vite-pwa/nuxt']),
+  '@nuxtjs/web-vitals',
+  ...(isDev ? [] : ['@nuxtjs/partytown']),
+  
+  // Internationalization
+  '@nuxtjs/i18n',
+  
+  // Forms & Validation
+  '@formkit/nuxt',
+  '@vee-validate/nuxt',
+  
+  // SEO & Analytics (skip in dev for faster startup)
+  ...(isDev ? [] : ['@nuxtjs/sitemap', '@nuxtjs/robots', 'nuxt-schema-org', 'nuxt-gtag']),
+  
+  // Content & Utilities
+  '@nuxt/content',
+  'nuxt-lodash',
+  
+  // Device Detection
+  '@nuxtjs/device',
+
+  // UI Components
+  'nuxt-swiper',
+  'shadcn-nuxt',
+
+  // Security & Monitoring (skip heavy Sentry in dev)
+  ...(isDev ? [] : ['nuxt-security', '@sentry/nuxt/module'])
+]
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2025-08-24',
@@ -9,56 +55,14 @@ export default defineNuxtConfig({
     typeCheck: false
   },
   devServer: {
-    port: 3001
+    port: 3001,
+    host: '0.0.0.0'  // Listen on all interfaces to avoid connection issues
   },
   experimental: {
     payloadExtraction: true,
     componentIslands: true
   },
-  modules: [
-    // Core & Styling
-    '@nuxtjs/tailwindcss',
-    '@nuxtjs/color-mode',
-    '@nuxt/fonts',
-    '@nuxt/icon',
-    '@nuxt/image',
-    
-    // State Management
-    '@pinia/nuxt',
-    '@vueuse/nuxt',
-    
-    // PWA & Performance
-    '@vite-pwa/nuxt',
-    '@nuxtjs/web-vitals',
-    '@nuxtjs/partytown',
-    
-    // Internationalization
-    '@nuxtjs/i18n',
-    
-    // Forms & Validation
-    '@formkit/nuxt',
-    '@vee-validate/nuxt',
-    
-    // SEO & Analytics
-    '@nuxtjs/sitemap',
-    '@nuxtjs/robots',
-    'nuxt-schema-org',
-    'nuxt-gtag',
-    
-    // Content & Utilities
-    '@nuxt/content',
-    'nuxt-lodash',
-    
-    // Device Detection
-    '@nuxtjs/device',
-    
-    // UI Components
-    'nuxt-swiper',
-    
-    // Security & Monitoring
-    'nuxt-security',
-    '@sentry/nuxt/module'
-  ],
+  modules,
   
   // Module Configurations
   
@@ -251,7 +255,13 @@ export default defineNuxtConfig({
     org: process.env.SENTRY_ORG || 'your-org-slug',
     project: process.env.SENTRY_PROJECT || 'your-project-slug',
     authToken: process.env.SENTRY_AUTH_TOKEN,
+    // Disable Sentry in development for better performance
+    disabled: process.env.NODE_ENV === 'development',
     // Additional tuning could be added here (e.g. deploy, release) once backend release pipeline is in place.
+  },
+  shadcn: {
+    prefix: '',
+    componentDir: './components/ui'
   },
   tailwindcss: {
     cssPath: '~/assets/css/main.css'
@@ -267,13 +277,18 @@ export default defineNuxtConfig({
     dirs: [
       '~/components',
       '~/components/icons',
-      '~/components/charts'
+      '~/components/charts',
+      '~/components/material'
     ]
   },
   imports: {
     autoImport: true
   },
   app: {
+    baseURL: '/',
+    buildAssetsDir: '/_nuxt/',
+    // Performance optimizations
+    keepalive: true, // Enable keepalive for better navigation performance
     head: {
       title: 'TOSS ERP III - Township One-Stop Solution',
       meta: [
@@ -282,7 +297,9 @@ export default defineNuxtConfig({
         { name: 'description', content: 'TOSS ERP III - AI-powered collaborative business platform for South African SMMEs' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }
       ]
     }
   },
@@ -291,36 +308,92 @@ export default defineNuxtConfig({
     apiSecret: '',
     // Public keys (exposed to client-side)
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://localhost:5001',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || (isDev ? devApiTarget : 'https://localhost:5001'),
       apiTimeout: 30000,
       sentry: {
         dsn: process.env.NUXT_PUBLIC_SENTRY_DSN || ''
       }
     }
   },
-  ssr: false,  // Disable SSR temporarily to fix router issues
+  ssr: true,  // Enable SSR for better initial load performance
   vite: {
     server: {
       watch: {
         usePolling: false,
         useFsEvents: true
+      },
+      fs: {
+        strict: false,
+        allow: ['..']
+      },
+      // Improve dev server performance
+      hmr: {
+        overlay: false // Disable error overlay for faster reloads
       }
     },
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            'chart': ['chart.js', 'chartjs-adapter-date-fns'],
-            'export': ['xlsx', 'jspdf', 'jspdf-autotable', 'html2canvas'],
-            'vendor': ['vue', 'vue-router', 'pinia']
+          manualChunks: (id) => {
+            // Vendor chunks
+            if (id.includes('node_modules')) {
+              if (id.includes('chart.js') || id.includes('chartjs-adapter')) {
+                return 'chart'
+              }
+              if (id.includes('xlsx') || id.includes('jspdf') || id.includes('html2canvas')) {
+                return 'export'
+              }
+              if (id.includes('vue') || id.includes('vue-router') || id.includes('pinia')) {
+                return 'vendor'
+              }
+              if (id.includes('@sentry')) {
+                return 'sentry'
+              }
+              if (id.includes('i18n') || id.includes('vue-i18n')) {
+                return 'i18n'
+              }
+              if (id.includes('formkit') || id.includes('vee-validate')) {
+                return 'forms'
+              }
+              // Large libraries get their own chunk
+              if (id.includes('lucide-vue') || id.includes('@heroicons')) {
+                return 'icons'
+              }
+              // Everything else goes to vendor
+              return 'vendor'
+            }
           }
         }
       },
-      chunkSizeWarningLimit: 1000
+      chunkSizeWarningLimit: 500, // Reduced from 1000 to catch large chunks earlier
+      // Optimize chunking for faster loads
+      minify: process.env.NODE_ENV === 'production' ? 'terser' : false,
+      terserOptions: {
+        compress: {
+          drop_console: process.env.NODE_ENV === 'production', // Remove console in production
+          drop_debugger: true
+        }
+      }
     },
     optimizeDeps: {
-      include: ['chart.js', 'xlsx', 'jspdf'],
-      force: false
+      include: [
+        'chart.js', 
+        'chartjs-adapter-date-fns',
+        'xlsx', 
+        'jspdf', 
+        'vue', 
+        'vue-router', 
+        'pinia',
+        '@vueuse/core',
+        'date-fns'
+      ],
+      exclude: ['@sentry/nuxt', '@sentry/vue', '@sentry/browser', '@sentry/core'], // Exclude Sentry from pre-bundling in dev
+      force: false,
+      // Pre-bundle common dependencies for faster startup
+      esbuildOptions: {
+        target: 'esnext',
+        treeShaking: true
+      }
     }
   },
   nitro: {
@@ -329,7 +402,7 @@ export default defineNuxtConfig({
     },
     devProxy: {
       '/api': {
-        target: 'https://localhost:5001',
+        target: devApiTarget,  // Use HTTP for better compatibility in dev
         changeOrigin: true,
         ws: true,
         secure: false  // Allow self-signed certificates in development

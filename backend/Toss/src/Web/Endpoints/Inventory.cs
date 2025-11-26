@@ -1,5 +1,7 @@
 using Toss.Application.Inventory.Commands.AdjustStock;
 using Toss.Application.Inventory.Commands.CreateProduct;
+using Toss.Application.Inventory.Commands.UpdateProduct;
+using Toss.Application.Inventory.Commands.DeleteProduct;
 using Toss.Application.Inventory.Queries.GetCategories;
 using Toss.Application.Inventory.Queries.GetLowStockAlerts;
 using Toss.Application.Inventory.Queries.GetProductByBarcode;
@@ -18,6 +20,8 @@ public class Inventory : EndpointGroupBase
     public override void Map(RouteGroupBuilder group)
     {
         group.MapPost("products", CreateProduct);
+        group.MapPut("products/{id}", UpdateProduct);
+        group.MapDelete("products/{id}", DeleteProduct);
         group.MapGet("products", GetProducts);
         group.MapGet("products/{id}", GetProductById);
         group.MapGet("products/by-sku", GetProductBySku);
@@ -44,10 +48,24 @@ public class Inventory : EndpointGroupBase
         return Results.Ok(result);
     }
 
-    public async Task<IResult> CreateProduct(ISender sender, CreateProductCommand command)
+    public async Task<IResult> CreateProduct(ISender sender, CreateProductCommand command)                                                                      
     {
         var id = await sender.Send(command);
-        return Results.Created($"/api/inventory/products/{id}", new { id });
+        return Results.Created($"/api/inventory/products/{id}", new { id });    
+    }
+
+    public async Task<IResult> UpdateProduct(ISender sender, int id, UpdateProductCommand command)
+    {
+        var result = await sender.Send(command with { Id = id });
+        return result ? Results.Ok(new { message = "Product updated successfully" })
+                     : Results.NotFound(new { message = "Product not found" });
+    }
+
+    public async Task<IResult> DeleteProduct(ISender sender, int id)
+    {
+        var result = await sender.Send(new DeleteProductCommand { Id = id });
+        return result ? Results.Ok(new { message = "Product deleted successfully" })
+                     : Results.NotFound(new { message = "Product not found" });
     }
 
     public async Task<IResult> GetProducts(
