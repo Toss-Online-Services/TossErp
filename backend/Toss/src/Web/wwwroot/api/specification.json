@@ -172,6 +172,43 @@
           "Auth"
         ],
         "operationId": "PostApiAuthLogin",
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Auth/otp/verify": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "PostApiAuthOtpVerify",
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpVerifyRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
         "responses": {
           "200": {
             "description": ""
@@ -185,6 +222,18 @@
           "Auth"
         ],
         "operationId": "PostApiAuthRefresh",
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
         "responses": {
           "200": {
             "description": ""
@@ -198,6 +247,18 @@
           "Auth"
         ],
         "operationId": "PostApiAuthLogout",
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
         "responses": {
           "200": {
             "description": ""
@@ -3966,7 +4027,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/LoginRequest2"
               }
             }
           },
@@ -3998,7 +4059,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RefreshRequest"
+                "$ref": "#/components/schemas/RefreshRequest2"
               }
             }
           },
@@ -4828,6 +4889,73 @@
           "ErrorMessage": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "Password"
+        ],
+        "properties": {
+          "Identifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "Email": {
+            "type": "string",
+            "nullable": true
+          },
+          "PhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "Password": {
+            "type": "string",
+            "minLength": 1
+          },
+          "TwoFactorCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "TwoFactorProvider": {
+            "type": "string",
+            "nullable": true
+          },
+          "ForceOtp": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OtpVerifyRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "SessionId",
+          "Code"
+        ],
+        "properties": {
+          "SessionId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "Code": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "RefreshToken"
+        ],
+        "properties": {
+          "RefreshToken": {
+            "type": "string",
+            "minLength": 1
           }
         }
       },
@@ -6984,7 +7112,7 @@
           }
         }
       },
-      "LoginRequest": {
+      "LoginRequest2": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -7004,7 +7132,7 @@
           }
         }
       },
-      "RefreshRequest": {
+      "RefreshRequest2": {
         "type": "object",
         "additionalProperties": false,
         "properties": {

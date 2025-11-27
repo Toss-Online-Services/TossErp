@@ -1,13 +1,10 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Toss.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.Extensions.Configuration;
+using Toss.Application.Common.Interfaces.Authentication;
+using Toss.Infrastructure.Identity;
 
 namespace Toss.Web.Endpoints;
 
@@ -15,229 +12,221 @@ public class Auth : EndpointGroupBase
 {
  public override void Map(RouteGroupBuilder groupBuilder)
  {
- // POST /api/auth/login (alias for /api/Users/login)
- groupBuilder.MapPost("login", (Delegate)Login)
- .AllowAnonymous();
+        groupBuilder.MapPost("login", Login)
+            .AllowAnonymous()
+            .RequireRateLimiting("AuthLimiter");
 
- // POST /api/auth/refresh (alias for /api/Users/refresh)
- groupBuilder.MapPost("refresh", (Delegate)Refresh)
- .AllowAnonymous();
+        groupBuilder.MapPost("otp/verify", VerifyOtp)
+            .AllowAnonymous()
+            .RequireRateLimiting("AuthLimiter");
 
- // POST /api/auth/logout
- groupBuilder.MapPost("logout", (Delegate)Logout)
+        groupBuilder.MapPost("refresh", Refresh)
+            .AllowAnonymous()
+            .RequireRateLimiting("AuthLimiter");
+
+        groupBuilder.MapPost("logout", Logout)
  .RequireAuthorization();
 
- // GET /api/auth/verify
  groupBuilder.MapGet("verify", (Delegate)Verify)
  .RequireAuthorization();
  }
 
- // Proxy login to Identity endpoint and transform response
- private static async Task<IResult> Login(HttpContext httpContext)
- {
- var request = httpContext.Request;
- var clientFactory = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>();
- var client = clientFactory.CreateClient();
- client.Timeout = TimeSpan.FromSeconds(30); // Set timeout to prevent hanging
- var configuration = httpContext.RequestServices.GetRequiredService<IConfiguration>();
- 
- // Construct absolute URI using current request's base URL
- var baseUrl = $"{request.Scheme}://{request.Host}";
- var backendUrl = new Uri(new Uri(baseUrl), "/api/Users/login");
- 
- request.EnableBuffering();
- var body = await new System.IO.StreamReader(request.Body).ReadToEndAsync();    
- request.Body.Position =0;
- 
- HttpResponseMessage response;
- try
- {
-     response = await client.PostAsync(backendUrl, new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
- }
- catch (TaskCanceledException)
- {
-     return Results.Problem("Request timeout - the identity service did not respond in time", statusCode: 504);
- }
- catch (HttpRequestException ex)
- {
-     return Results.Problem($"Failed to connect to identity service: {ex.Message}", statusCode: 502);
- }
- 
- var respContent = await response.Content.ReadAsStringAsync();
+    private static async Task<IResult> Login(
+        LoginRequest request,
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        ITokenService tokenService,
+        ITwoFactorSessionStore sessionStore,
+        IOtpSender otpSender,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.Password))
+        {
+            return Results.BadRequest(new { message = "Password is required." });
+        }
 
- // Transform backend response to frontend AuthResponse
- if (response.IsSuccessStatusCode)
- {
- var backendObj = System.Text.Json.JsonDocument.Parse(respContent).RootElement; 
- var authResponse = new System.Dynamic.ExpandoObject() as IDictionary<string, object?>;                                                                         
- authResponse["token"] = backendObj.GetProperty("accessToken").GetString();     
- authResponse["refreshToken"] = backendObj.GetProperty("refreshToken").GetString();                                                                             
- authResponse["expiresIn"] = backendObj.GetProperty("expiresIn").GetInt64();    
- // Decode JWT to get user info
- var token = backendObj.GetProperty("accessToken").GetString();
- if (!string.IsNullOrEmpty(token))
- {
- var user = DecodeUserFromJwt(token, configuration);
- authResponse["user"] = user;
- }
- return Results.Json(authResponse);
- }
- return Results.Json(System.Text.Json.JsonDocument.Parse(respContent), statusCode: (int)response.StatusCode);                                                   
- }
+        var user = await FindUserAsync(request, userManager, cancellationToken);
+        if (user is null)
+        {
+            await Task.Delay(Random.Shared.Next(100, 250), cancellationToken);
+            return Results.Unauthorized();
+        }
 
- // Proxy refresh to Identity endpoint and transform response
- private static async Task<IResult> Refresh(HttpContext httpContext)
- {
- var request = httpContext.Request;
- var clientFactory = httpContext.RequestServices.GetRequiredService<IHttpClientFactory>();
- var client = clientFactory.CreateClient();
- client.Timeout = TimeSpan.FromSeconds(30); // Set timeout to prevent hanging
- 
- // Construct absolute URI using current request's base URL
- var baseUrl = $"{request.Scheme}://{request.Host}";
- var backendUrl = new Uri(new Uri(baseUrl), "/api/Users/refresh");
- 
- request.EnableBuffering();
- var body = await new System.IO.StreamReader(request.Body).ReadToEndAsync();
- request.Body.Position =0;
- 
- HttpResponseMessage response;
- try
- {
-     response = await client.PostAsync(backendUrl, new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
- }
- catch (TaskCanceledException)
- {
-     return Results.Problem("Request timeout - the identity service did not respond in time", statusCode: 504);
- }
- catch (HttpRequestException ex)
- {
-     return Results.Problem($"Failed to connect to identity service: {ex.Message}", statusCode: 502);
- }
- 
- var respContent = await response.Content.ReadAsStringAsync();
+        var signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
 
- // Transform backend response to frontend RefreshTokenResponse
- if (response.IsSuccessStatusCode)
- {
- var backendObj = System.Text.Json.JsonDocument.Parse(respContent).RootElement;
- var refreshResponse = new System.Dynamic.ExpandoObject() as IDictionary<string, object?>;
- refreshResponse["token"] = backendObj.GetProperty("accessToken").GetString();
- refreshResponse["expiresIn"] = backendObj.GetProperty("expiresIn").GetInt64();
- return Results.Json(refreshResponse);
- }
- return Results.Json(System.Text.Json.JsonDocument.Parse(respContent), statusCode: (int)response.StatusCode);
- }
+        if (signInResult.IsLockedOut)
+        {
+            return Results.Problem("Account is locked. Please try again later.", statusCode: StatusCodes.Status423Locked);
+        }
 
- // Decode JWT to AuthUser using System.IdentityModel.Tokens.Jwt
- private static object DecodeUserFromJwt(string token, IConfiguration configuration)
- {
-     try
-     {
-         var handler = new JwtSecurityTokenHandler();
-         var jwtSettings = configuration.GetSection("JwtSettings");
-         var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not configured");
-         
-         var validationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-         {
-             ValidateIssuer = true,
-             ValidateAudience = true,
-             ValidateLifetime = false, // Don't validate expiry for decoding
-             ValidateIssuerSigningKey = true,
-             ValidIssuer = jwtSettings["Issuer"] ?? "TossErp",
-             ValidAudience = jwtSettings["Audience"] ?? "TossErp",
-             IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                 System.Text.Encoding.UTF8.GetBytes(secretKey))
-         };
-         
-         var principal = handler.ValidateToken(token, validationParameters, out var validatedToken);
-         var jwtToken = validatedToken as JwtSecurityToken;
-         
-         if (jwtToken == null)
-         {
-             throw new InvalidOperationException("Invalid JWT token");
-         }
-         
-         var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-         var userName = principal.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty;
-         var email = principal.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
-         var phone = principal.FindFirst("phone")?.Value;
-         var firstName = principal.FindFirst("firstName")?.Value;
-         var lastName = principal.FindFirst("lastName")?.Value;
-         var roles = principal.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
-         
-         var user = new Dictionary<string, object?>();
-         user["id"] = userId;
-         user["name"] = !string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName) 
-             ? $"{firstName} {lastName}" 
-             : userName;
-         user["email"] = email;
-         user["phone"] = phone;
-         user["firstName"] = firstName;
-         user["lastName"] = lastName;
-         user["roles"] = roles;
-         user["permissions"] = Array.Empty<string>();
-         user["avatar"] = null;
-         user["lastLogin"] = DateTime.UtcNow;
-         
-         return user;
-     }
-     catch (Exception ex)
-     {
-         // Log error and return minimal user info
-         Console.WriteLine($"Error decoding JWT: {ex.Message}");
-         var user = new Dictionary<string, object?>();
-         user["id"] = "unknown";
-         user["name"] = "Unknown User";
-         user["email"] = "";
-         user["roles"] = Array.Empty<string>();
-         user["permissions"] = Array.Empty<string>();
-         user["avatar"] = null;
-         user["lastLogin"] = DateTime.UtcNow;
-         return user;
-     }
- }
+        if (!signInResult.Succeeded && !signInResult.RequiresTwoFactor)
+        {
+            return Results.Unauthorized();
+        }
 
- // Simple in-memory store for invalidated refresh tokens (for demo; use persistent store in production)
- private static readonly HashSet<string> InvalidatedRefreshTokens = new();
+        var provider = DetermineProvider(request, user);
 
- private static async Task<IResult> Logout(HttpContext httpContext)
- {
- // Read refresh token from body
- httpContext.Request.EnableBuffering();
- var body = await new System.IO.StreamReader(httpContext.Request.Body).ReadToEndAsync();
- httpContext.Request.Body.Position =0;
- var refreshToken = ExtractRefreshTokenFromBody(body);
- if (!string.IsNullOrEmpty(refreshToken))
- {
- InvalidatedRefreshTokens.Add(refreshToken);
- return Results.Ok(new { message = "Logged out", refreshToken });
- }
- return Results.BadRequest(new { message = "No refresh token provided" });
- }
+        if (signInResult.RequiresTwoFactor || request.ForceOtp || !string.IsNullOrWhiteSpace(request.TwoFactorCode))
+        {
+            if (!string.IsNullOrWhiteSpace(request.TwoFactorCode))
+            {
+                var isValid = await userManager.VerifyTwoFactorTokenAsync(user, provider, request.TwoFactorCode);
+                if (!isValid)
+                {
+                    return Results.Unauthorized();
+                }
 
- private static string? ExtractRefreshTokenFromBody(string body)
- {
- // Expecting JSON: { "refreshToken": "..." }
- try
- {
- var json = System.Text.Json.JsonDocument.Parse(body);
- if (json.RootElement.TryGetProperty("refreshToken", out var tokenProp))
- {
- return tokenProp.GetString();
- }
- }
- catch { }
+                var tokens = await tokenService.CreateAsync(user.Id, cancellationToken);
+                return Results.Json(tokens);
+            }
+
+            if (provider == TokenOptions.DefaultPhoneProvider && !string.IsNullOrWhiteSpace(user.PhoneNumber))
+            {
+                var code = await userManager.GenerateTwoFactorTokenAsync(user, provider);
+                await otpSender.SendAsync(user.PhoneNumber!, code, cancellationToken);
+            }
+
+            var sessionId = sessionStore.CreateSession(user.Id, provider);
+            var response = new OtpChallengeResponse(
+                sessionId,
+                provider,
+                provider == TokenOptions.DefaultPhoneProvider ? "OTP sent via SMS." : "Enter your authenticator app code.");
+
+            return Results.Json(response, statusCode: StatusCodes.Status202Accepted);
+        }
+
+        var authTokens = await tokenService.CreateAsync(user.Id, cancellationToken);
+        return Results.Json(authTokens);
+    }
+
+    private static async Task<IResult> VerifyOtp(
+        OtpVerifyRequest request,
+        ITwoFactorSessionStore sessionStore,
+        UserManager<ApplicationUser> userManager,
+        ITokenService tokenService,
+        CancellationToken cancellationToken)
+    {
+        if (!sessionStore.TryGetSession(request.SessionId, out var session) || session.ExpiresAt < DateTimeOffset.UtcNow)
+        {
+            return Results.Unauthorized();
+        }
+
+        var user = await userManager.FindByIdAsync(session.UserId);
+        if (user is null)
+        {
+            sessionStore.RemoveSession(request.SessionId);
+            return Results.Unauthorized();
+        }
+
+        var isValid = await userManager.VerifyTwoFactorTokenAsync(user, session.Provider, request.Code);
+        if (!isValid)
+        {
+            return Results.Unauthorized();
+        }
+
+        sessionStore.RemoveSession(request.SessionId);
+
+        var tokens = await tokenService.CreateAsync(user.Id, cancellationToken);
+        return Results.Json(tokens);
+    }
+
+    private static async Task<IResult> Refresh(
+        RefreshRequest request,
+        ITokenService tokenService,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.RefreshToken))
+        {
+            return Results.BadRequest(new { message = "Refresh token is required." });
+        }
+
+        var tokens = await tokenService.RefreshAsync(request.RefreshToken, cancellationToken);
+        return tokens is null ? Results.Unauthorized() : Results.Json(tokens);
+    }
+
+    private static async Task<IResult> Logout(
+        RefreshRequest request,
+        ITokenService tokenService,
+        CancellationToken cancellationToken)
+    {
+        if (!string.IsNullOrWhiteSpace(request.RefreshToken))
+        {
+            await tokenService.RevokeAsync(request.RefreshToken, cancellationToken);
+        }
+
+        return Results.Ok(new { message = "Logged out" });
+    }
+
+    private static IResult Verify(ClaimsPrincipal user)
+    {
+        return user.Identity is { IsAuthenticated: true }
+            ? Results.Ok(new { message = "Token is valid" })
+            : Results.Unauthorized();
+    }
+
+    private static async Task<ApplicationUser?> FindUserAsync(
+        LoginRequest request,
+        UserManager<ApplicationUser> userManager,
+        CancellationToken cancellationToken)
+    {
+        var identifier = request.Identifier ?? request.Email ?? request.PhoneNumber;
+        if (string.IsNullOrWhiteSpace(identifier))
+        {
  return null;
  }
 
- // Verify: Validate JWT
- private static IResult Verify(ClaimsPrincipal user)
- {
- if (user.Identity != null && user.Identity.IsAuthenticated)
- {
- return Results.Ok(new { message = "Token is valid" });
- }
- return Results.Unauthorized();
- }
+        if (identifier.Contains('@', StringComparison.Ordinal))
+        {
+            return await userManager.FindByEmailAsync(identifier);
+        }
+
+        var normalized = NormalizePhone(identifier);
+        return await userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == normalized, cancellationToken);
+    }
+
+    private static string DetermineProvider(LoginRequest request, ApplicationUser user)
+    {
+        if (!string.IsNullOrWhiteSpace(request.TwoFactorProvider))
+        {
+            return request.TwoFactorProvider;
+        }
+
+        return !string.IsNullOrWhiteSpace(user.PhoneNumber) && user.PhoneNumberConfirmed
+            ? TokenOptions.DefaultPhoneProvider
+            : TokenOptions.DefaultAuthenticatorProvider;
+    }
+
+    private static string NormalizePhone(string phone)
+    {
+        return phone.Replace(" ", string.Empty, StringComparison.Ordinal)
+            .Replace("-", string.Empty, StringComparison.Ordinal)
+            .Replace("(", string.Empty, StringComparison.Ordinal)
+            .Replace(")", string.Empty, StringComparison.Ordinal);
+    }
+
+    private sealed record LoginRequest
+    {
+        public string? Identifier { get; init; }
+
+        public string? Email { get; init; }
+
+        public string? PhoneNumber { get; init; }
+
+        [Required]
+        public string Password { get; init; } = string.Empty;
+
+        public string? TwoFactorCode { get; init; }
+
+        public string? TwoFactorProvider { get; init; }
+
+        public bool ForceOtp { get; init; }
+    }
+
+    private sealed record OtpVerifyRequest(
+        [property: Required] string SessionId,
+        [property: Required] string Code);
+
+    private sealed record OtpChallengeResponse(string SessionId, string Provider, string Message);
+
+    private sealed record RefreshRequest([property: Required] string RefreshToken);
 }

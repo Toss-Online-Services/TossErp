@@ -10,6 +10,8 @@ using Toss.Domain.Entities.Logistics;
 using Toss.Domain.Entities.Sales;
 using Toss.Domain.Entities.Orders;
 using Toss.Domain.Entities.Payments;
+using Toss.Domain.Entities.Directory;
+using Toss.Domain.Entities.Tax;
 using Toss.Domain.Enums;
 using Toss.Domain.ValueObjects;
 using Toss.Infrastructure.Identity;
@@ -60,6 +62,9 @@ public class ApplicationDbContextInitialiser
 
             // Seed roles and users first
             await SeedRolesAndUsersAsync();
+
+            // Seed core reference data (currency, VAT)
+            await SeedReferenceDataAsync();
 
             // Seed domain data
             await SeedStoresAsync();
@@ -153,6 +158,68 @@ public class ApplicationDbContextInitialiser
         }
         
         _logger.LogInformation("✅ Created {Count} store owner users.", usersCreated);
+    }
+
+    private async Task SeedReferenceDataAsync()
+    {
+        var now = DateTime.UtcNow;
+        var saveRequired = false;
+
+        if (!await _context.Set<Currency>().AnyAsync(c => c.CurrencyCode == "ZAR"))
+        {
+            _context.Set<Currency>().Add(new Currency
+            {
+                Name = "South African Rand",
+                CurrencyCode = "ZAR",
+                DisplayLocale = "en-ZA",
+                CustomFormatting = "R #,##0.00",
+                Rate = 1m,
+                Published = true,
+                DisplayOrder = 1,
+                CreatedOnUtc = now,
+                UpdatedOnUtc = now
+            });
+
+            saveRequired = true;
+            _logger.LogInformation("✅ Seeded default currency ZAR.");
+        }
+
+        var taxCategory = await _context.Set<TaxCategory>().FirstOrDefaultAsync(c => c.Name == "Standard VAT");
+        if (taxCategory is null)
+        {
+            taxCategory = new TaxCategory
+            {
+                Name = "Standard VAT",
+                DisplayOrder = 1
+            };
+
+            _context.Set<TaxCategory>().Add(taxCategory);
+            saveRequired = true;
+            _logger.LogInformation("✅ Seeded Standard VAT tax category.");
+        }
+
+        if (saveRequired)
+        {
+            await _context.SaveChangesAsync();
+        }
+
+        if (!await _context.Set<TaxRate>().AnyAsync(t => t.Name == "VAT 15%"))
+        {
+            if (taxCategory is null)
+            {
+                taxCategory = await _context.Set<TaxCategory>().FirstAsync(c => c.Name == "Standard VAT");
+            }
+
+            _context.Set<TaxRate>().Add(new TaxRate
+            {
+                Name = "VAT 15%",
+                TaxCategoryId = taxCategory!.Id,
+                Percentage = 15m
+            });
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("✅ Seeded VAT 15% tax rate.");
+        }
     }
 
     private async Task SeedStoresAsync()

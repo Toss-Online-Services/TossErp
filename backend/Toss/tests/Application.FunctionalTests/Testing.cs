@@ -142,6 +142,14 @@ public partial class Testing
         return await context.Set<TEntity>().CountAsync();
     }
 
+    public static HttpClient CreateClient() => _factory.CreateClient();
+
+    public static T GetRequiredService<T>() where T : notnull
+    {
+        using var scope = _scopeFactory.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<T>();
+    }
+
     [OneTimeTearDown]
     public async Task RunAfterAnyTests()
     {

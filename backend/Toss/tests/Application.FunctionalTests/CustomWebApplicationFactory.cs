@@ -1,5 +1,6 @@
 ﻿using System.Data.Common;
 using Toss.Application.Common.Interfaces;
+using Toss.Application.Common.Interfaces.Authentication;
 using Toss.Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -41,6 +42,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                     mock.SetupGet(x => x.Id).Returns(GetUserId());
                     return mock.Object;
                 });
+
+            services.RemoveAll<IOtpSender>();
+            services.AddSingleton<TestOtpSender>();
+            services.AddSingleton<IOtpSender>(sp => sp.GetRequiredService<TestOtpSender>());
         });
     }
 }

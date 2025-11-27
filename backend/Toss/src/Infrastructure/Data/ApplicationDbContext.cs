@@ -42,6 +42,22 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
+    /// <summary>
+    /// Applies global EF Core conventions for this context.
+    /// Currently enforces decimal precision suitable for money fields across the schema.
+    /// </summary>
+    /// <param name="configurationBuilder">The convention builder.</param>
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder
+            .Properties<decimal>()
+            .HavePrecision(18, 2);
+
+        configurationBuilder
+            .Properties<decimal?>()
+            .HavePrecision(18, 2);
+    }
+
     // Core entities
     /// <summary>
     /// Stores/Shops in the system. Each store represents a physical or virtual shop location.
@@ -362,6 +378,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// Individual items included in each shipment.
     /// </summary>
     public DbSet<ShipmentItem> ShipmentItems => Set<ShipmentItem>();
+
+    /// <summary>
+    /// Refresh tokens issued for sliding JWT sessions.
+    /// </summary>
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     /// <summary>
     /// Configures the model using Fluent API by applying all entity configurations from the assembly.

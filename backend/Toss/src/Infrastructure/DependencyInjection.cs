@@ -3,6 +3,8 @@ using Toss.Domain.Constants;
 using Toss.Infrastructure.Data;
 using Toss.Infrastructure.Data.Interceptors;
 using Toss.Infrastructure.Identity;
+using Toss.Infrastructure.Services.Authentication;
+using Toss.Application.Common.Interfaces.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +44,8 @@ public static class DependencyInjection
 
         // Register infrastructure services (AI, User Management)
         RegisterInfrastructureServices(builder.Services);
+
+        builder.Services.AddMemoryCache();
 
         // Configure authorization policies
         ConfigureAuthorization(builder.Services);
@@ -147,6 +151,10 @@ public static class DependencyInjection
         
         services.AddScoped<Toss.Application.Common.Interfaces.IArtificialIntelligenceService, 
             Toss.Infrastructure.Services.ArtificialIntelligence.ArtificialIntelligenceService>();
+
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IOtpSender, SmsOtpSender>();
+        services.AddSingleton<ITwoFactorSessionStore, TwoFactorSessionStore>();
     }
 
     /// <summary>
