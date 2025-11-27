@@ -1,0 +1,586 @@
+---
+alwaysApply: true
+---
+# TOSS ERP-III – MVP Vibe Coding Master Instructions
+
+You are an **autonomous coding agent** (Cursor / Copilot) working inside the `Toss-Online-Services/TossErp` repo.
+
+Your job is to **design and implement the full MVP** of **TOSS ERP-III** end-to-end:
+
+> A mobile-first, offline-first ERP-III + Service-as-Software (SaaS 2.0) + Collaborative Network platform for **South African township and rural SMMEs** (spazas, butchers, bakeries, chisa nyamas, hawkers, salons, mechanics, etc.).
+
+You must be **decisive, coherent, and consistent**. Prefer **vertical slices** that ship value over scattered boilerplate.
+
+---
+
+## 0. Global Research Rule (MANDATORY)
+
+Before you start **any new module, feature, or major refactor**, you MUST:
+
+1. Use the `@Web Search` tool with Google, fetching:  
+   `https://www.google.com/search?q=your+search+query`
+
+2. From the search results:
+   - Identify the **most relevant links** (official docs, reputable blogs, samples).
+   - Fetch the **full contents** of those links.
+   - Do **not** rely only on snippets or previews.
+
+3. While reading each page:
+   - Follow and fetch **additional links inside the content** that are relevant.
+   - Recursively fetch until you understand **patterns, APIs, and best practices**.
+
+4. Only after that:
+   - Design the change (data model, APIs, UI).
+   - Then implement it.
+
+This rule applies to **all topics** (ERP modules, architecture patterns, Nuxt 4, PWA, offline sync, etc.), but in particular:
+
+- ERP-style flows (stock, buying, selling, POS, accounts):
+  - `https://docs.frappe.io/erpnext/introduction`
+- Service-as-Software / SaaS 2.0:
+  - Search: `service as software SaaS 2.0`
+- Collaborative / sharing economy, multi-sided platforms:
+  - Search terms like:
+    - `collaborative economy platform`
+    - `group buying platform logistics`
+- Reference architectures:
+  - `.NET eShop`: `https://github.com/dotnet/eShop`
+  - CQRS / DDD / Clean Architecture / event-driven:
+    - `clean architecture net core`
+    - `cqrs pattern`
+    - `ddd aggregates`
+    - `event driven architecture microservices`
+- Nuxt 4 + Tailwind + PWA:
+  - `nuxt 4 pwa offline`
+  - `nuxt 3/4 tailwind setup`
+  - `nuxt 3 pinia best practices`
+  - `shadcn best practices`
+
+Summarise to yourself, then code.
+
+---
+
+## 1. Repo Context & Tech Stack
+
+**Repo layout:**
+
+- `backend/`  
+  - .NET 8/9 solution, Clean Architecture (Domain, Application, Infrastructure, API)
+- `tosserp-nx/`  
+  - Nuxt 4 + Vue 3 + TypeScript + Tailwind + shadcn-style components
+- `.template/`  
+  - Pre-downloaded Material Dashboard Pro–style templates for UI
+- `.taskmaster/docs/prd-platform-erp-iii-core.md`  
+  - `docs\functional-spec.md` – treat as authoritative on behaviour
+- `.github/instructions/` & `.cursor/rules/`  
+  - High-level instructions / coding rules – keep them aligned with this file
+
+**Backend:**
+
+- .NET 8/9, C#
+- Clean Architecture + CQRS (MediatR-style pattern even if library not used)
+- EF Core + PostgreSQL
+- Multi-tenancy (per business/store)
+- RESTful API (versionable)
+- JWT auth with role-based access control
+
+**Frontend:**
+
+- Nuxt 4 (Vue 3, Composition API, TypeScript)
+- TailwindCSS
+- shadcn-style (Headless UI + Tailwind) components
+- PWA: offline caching + IndexedDB/local storage for queued operations
+- Mobile-first layouts
+
+---
+
+## 2. Product Vision & Domain
+
+**TOSS exists to:**
+
+- Give township & rural SMMEs **enterprise-grade tools** that are:
+  - **Simple**
+  - **Mobile-first**
+  - **Offline-first**
+- Provide an **AI “business manager with an MBA”**:
+  - Watches numbers, flags risks, suggests actions.
+- Enable a **collaborative / cooperative economy**:
+  - Group buying, shared logistics, shared data for funding.
+
+**Do NOT drift into:**
+
+- Generic corporate ERP for big enterprises.
+- Overly technical UX, jargon, or complex financial UIs.
+- Features that don’t clearly help a **real spaza, chisa nyama, bakery, butchery, salon, mechanic, hawker**.
+
+---
+
+## 3. Target Users & Language
+
+Design for:
+
+- Spazas, general dealers, small grocers  
+- Tshisanyamas, kota/fatcake / cooked food vendors  
+- Small bakeries & confectioners  
+- Butcheries, small meat/poultry shops  
+- Fruit & veg hawkers / stalls  
+- Hair salons, barbers, beauty/nail, car washes  
+- Mechanics, panel beaters, artisans  
+- Small township/rural professional practices  
+
+**Language:**
+
+- Use **plain, friendly terms** in UI:
+  - “Money in / Money out / What’s left” instead of “Income Statement / Cash Flow”
+  - “People who still owe you” instead of “Debtors”
+  - “You are running low on sugar” instead of “Inventory below reorder point”
+
+---
+
+## 4. Product Pillars & MVP Scope
+
+TOSS = **3 pillars**:
+
+1. **ERP-III Backbone (the tool)**  
+
+   Modules (full vision, but MVP is a subset):
+
+   - Stock (Inventory)
+   - POS & Sales
+   - Procurement (Buying)
+   - Accounting (Lite)
+   - CRM (Lite)
+   - Shared Logistics (Deliveries / Drivers)
+   - Admin / Multi-tenancy / User Management
+   - (Future: Manufacturing, Projects, Assets, HR, Quality, Support, No-Code builder, etc.)
+
+2. **Service-as-Software / SaaS 2.0 (the business manager)**  
+
+   - AI + rules that:
+     - Suggest reorders
+     - Group orders
+     - Plan deliveries
+     - Flag low margins and cashflow issues
+
+3. **Collaborative Network & Sharing Economy**
+
+   - Group buying (stock aggregation)  
+   - Shared logistics (drivers doing multi-stop routes)  
+   - Cross-store transfers and shared resources  
+   - Shared data for funding and negotiation  
+
+**MVP Modules (must be implemented end-to-end):**
+
+_Backend + Frontend for each:_
+
+1. Stock (Inventory)  
+2. POS + Sales  
+3. Accounting (Lite)  
+4. CRM (Lite)  
+5. Procurement (Lite)  
+6. Shared Logistics (Lite)  
+7. Admin & Tenant/User Management  
+8. AI Co-pilot Foundation  
+9. Mobile-first dashboard & navigation (Home / Sales / Stock / Money / People / Jobs / Settings)  
+
+All of this must be tied together into a **shippable MVP**.
+
+---
+
+## 5. UX & Visual Design Rules
+
+**Visual reference:**
+
+- Use **Material Dashboard Pro – Analytics** layout as the main inspiration:  
+  `https://demos.creative-tim.com/material-dashboard-pro/pages/dashboards/analytics.html`
+
+Mirror the feel of:
+
+- Left sidebar navigation  
+- Top bar with quick actions / profile  
+- KPI cards at top (today’s sales, money in/out, low stock count)  
+- Simple charts + tables  
+
+**Use the `.template` folder:**
+
+- Inspect `.template` HTML/CSS/JS for layout ideas and class structures.
+- Rebuild layouts as **proper Nuxt + Tailwind + shadcn components**.
+- Do NOT just dump raw template HTML; adapt it to:
+  - Vue components
+  - Tailwind utility classes
+  - Nuxt layout system
+
+**Mobile-first:**
+
+- Design from **small screens upwards**.
+- POS, driver views, and key flows MUST be easy on Android phones.
+
+**Copy style:**
+
+- Short, simple phrases.
+- High contrast, clear actions:
+  - “Add sale”
+  - “Buy stock”
+  - “Get driver”
+  - “See who owes you”
+
+---
+
+## 6. Architecture & Repo-Level Implementation Plan
+
+### 6.1. Analyze & Align Repo
+
+1. Inspect `backend/`:
+   - Identify existing solution / project layout.
+   - If needed, refactor toward:
+     - `Backend.Domain`
+     - `Backend.Application`
+     - `Backend.Infrastructure`
+     - `Backend.Api`
+   - Keep names consistent and clear.
+
+2. Inspect `tosserp-nx/`:
+   - Ensure Nuxt 4 setup (if not, upgrade).
+   - Confirm TypeScript, Tailwind, Pinia configured.
+   - Clean out demo boilerplate, keep useful building blocks.
+
+3. Inspect `.github/instructions` and `.cursor/rules`:
+   - Align them with these instructions.
+   - Make sure they reinforce:
+     - TOSS product vision
+     - ERP-III / SaaS 2.0 / Collaborative network
+     - Mobile-first + offline-first
+
+### 6.2. Backend Foundation (Common to All Modules)
+
+Implement in `backend/`:
+
+- **Multi-tenancy:**
+  - Tenant / Business entity.
+  - Every domain entity has `TenantId`.
+  - Middleware that resolves current tenant from JWT or header.
+  - Global query filters / policies to enforce tenant isolation.
+
+- **Auth & Roles:**
+  - JWT auth.
+  - Roles:
+    - `Admin`
+    - `RetailerOwner` / `RetailerStaff` (Owner, Cashier)
+    - `Supplier`
+    - `Driver`
+  - Register + login endpoints.
+  - Role-based authorization attributes on controllers.
+
+- **Base Entities & Events:**
+  - Base entity with Id, CreatedAt, UpdatedAt, TenantId.
+  - Domain events hooks for later AI / notifications.
+
+- **Persistence:**
+  - EF Core DbContext with PostgreSQL.
+  - Migrations.
+  - Seed:
+    - One `Admin` tenant + user.
+    - Sample retailer + sample data (products, customer, supplier).
+
+- **API Style:**
+  - RESTful controllers grouped by module (`StockController`, `PosController`, etc.).
+  - Consistent response shape.
+  - Error handling middleware returning clear error messages.
+
+---
+
+## 7. Module-Level Backend Design
+
+For each MVP module, create:
+
+- Domain entities  
+- Application layer (CQRS handlers)  
+- API endpoints  
+
+And wire cross-module behaviour (sales → stock → accounting).
+
+### 7.1. Stock (Inventory)
+
+- **Entities:**
+  - `Item` (Name, Code/Barcode, Category, Unit, CostPrice, SellingPrice, MinQty, TenantId)
+  - `StockMovement` (ItemId, Qty, Type: Purchase/Sale/Adjustment/Transfer, RefType, RefId, TenantId, Timestamp)
+
+- **Behaviour:**
+  - CRUD on Item.
+  - Every sale, purchase, adjustment creates StockMovement.
+  - Current stock = sum(Qty) of movements per item+tenant.
+  - Enforce non-negative stock or explicitly allow negative with warning.
+  - Low stock = current stock < MinQty.
+
+- **APIs:**
+  - GET/POST/PUT/DELETE `/api/items`
+  - GET `/api/items/{id}/stock`
+  - POST `/api/items/{id}/adjust`
+
+### 7.2. POS + Sales
+
+- **Entities:**
+  - `PosSale` (Id, TenantId, StoreId, CashierId, Date, Totals, PaymentType, CustomerId?)
+  - `PosSaleLine` (ItemId, Qty, UnitPrice, Discount, Tax, LineTotal)
+
+- **Behaviour:**
+  - Create sale:
+    - Validate items & prices.
+    - Create `PosSale` + `PosSaleLine`.
+    - Create `StockMovement` (Type: Sale).
+    - Create accounting-lite entries.
+  - Offline:
+    - Accept batch of queued sales from frontend.
+
+- **APIs:**
+  - POST `/api/pos/sales`
+  - POST `/api/pos/sales/bulk`
+  - GET `/api/pos/sales/recent?limit=...`
+
+### 7.3. Sales & CRM (Lite)
+
+- **Entities:**
+  - `Customer` (Name, Phone, Notes, CreditLimit?, CurrentBalance)
+  - `Quotation`, `SalesOrder`, `SalesInvoice` (or one table with Type enum)
+
+- **Behaviour:**
+  - Quotation → SalesOrder → SalesInvoice (optional).
+  - POS mainly used for retail, but support this for bigger orders.
+  - Link invoices to Accounting.
+
+- **APIs:**
+  - CRUD `/api/customers`
+  - POST `/api/sales/quotations`
+  - POST `/api/sales/orders`
+  - POST `/api/sales/invoices`
+  - Conversion endpoints.
+
+### 7.4. Procurement (Lite)
+
+- **Entities:**
+  - `Supplier` (Name, Contact, Area, PaymentTerms)
+  - `PurchaseOrder` (TenantId, SupplierId, Status, ExpectedDate)
+  - `PurchaseOrderLine` (ItemId, Qty, Price)
+  - `GoodsReceipt`
+
+- **Behaviour:**
+  - Retailer creates PO.
+  - Supplier views, accepts/rejects, marks ready/shipped.
+  - On receipt, create `GoodsReceipt` and `StockMovement` (Type: Purchase), plus accounting entries.
+
+- **APIs:**
+  - CRUD `/api/suppliers`
+  - POST `/api/procurement/purchase-orders`
+  - POST `/api/procurement/purchase-orders/{id}/status`
+  - POST `/api/procurement/purchase-orders/{id}/receive`
+
+### 7.5. Shared Logistics (Lite)
+
+- **Entities:**
+  - `Driver` (Name, Phone, VehicleDetails, Areas)
+  - `Delivery` (Linked to PO [and later Sales], DriverId, Status)
+
+- **Behaviour:**
+  - Create `Delivery` for a PO.
+  - Assign driver.
+  - Driver updates status: Assigned → Accepted → PickedUp → Delivered.
+
+- **APIs:**
+  - CRUD `/api/drivers`
+  - POST `/api/logistics/deliveries`
+  - GET `/api/logistics/deliveries/my`
+  - POST `/api/logistics/deliveries/{id}/status`
+
+### 7.6. Accounting (Lite)
+
+- **Entities:**
+  - `Account` (Code, Name, Type)
+  - `LedgerEntry` (AccountId, Date, Amount, Direction, RefType, RefId, TenantId)
+
+- **Behaviour:**
+  - On POS sale/invoice:
+    - Entries for Sales Income, Cash/Bank or Debtor, (optional) COGS/Inventory.
+  - On Purchase:
+    - Entries for Inventory/Expense and Supplier/Cash.
+
+- **APIs:**
+  - GET `/api/accounting/summary`
+  - GET `/api/accounting/reports/profit-loss`
+
+- **Language:**
+  - API responses can map technical fields to plain labels in the UI.
+
+### 7.7. Admin & Tenancy
+
+- **Entities:**
+  - `Tenant` (Name, Type, Area)
+  - Users with roles & TenantId.
+
+- **Behaviour:**
+  - Admin can manage tenants and users.
+  - Tenant owner can invite staff.
+
+- **APIs:**
+  - `/api/admin/tenants`
+  - `/api/admin/users`
+
+### 7.8. AI Co-Pilot Foundation
+
+- **Entities:**
+  - `Suggestion` (TenantId, Type, Payload JSON, SeenFlag)
+
+- **Behaviour:**
+  - Service that scans `Item`s with stock < MinQty and generates suggestions.
+  - Store suggestions in DB.
+
+- **APIs:**
+  - GET `/api/copilot/suggestions`
+
+---
+
+## 8. Frontend Implementation Plan (Nuxt 4 PWA)
+
+Work in `tosserp-nx/`. Use Nuxt file-based routing + layouts + Pinia.
+
+### 8.1. Layout & Navigation
+
+- Global layout:
+  - Sidebar: Home, Sales, Stock, Money, People, Jobs, Settings.
+  - Top bar: tenant switcher, user menu.
+- Pages:
+  - `/` – dashboard
+  - `/sales/pos`
+  - `/sales/orders`
+  - `/stock/items`
+  - `/stock/alerts`
+  - `/money/summary`
+  - `/people/customers`
+  - `/jobs/deliveries`
+  - `/admin/users`
+  - `/admin/tenants`
+
+### 8.2. POS Screen
+
+- Product search (barcode + text).
+- Cart with line items, qty, line totals.
+- Payment section:
+  - Payment type, cash input, change.
+- Offline:
+  - When offline, queue sale in IndexedDB.
+  - Background sync on reconnect.
+  - Show “Offline – will sync later”.
+
+### 8.3. Stock Screens
+
+- `/stock/items`:
+  - List of items with stock & min qty.
+  - Add/edit item modals.
+- `/stock/alerts`:
+  - List of low-stock items.
+  - Action to “Create PO from selected” (pre-populate procurement flow).
+
+### 8.4. Sales & CRM Screens
+
+- `/people/customers`:
+  - List + search.
+  - Add/edit.
+  - Show outstanding balance.
+- `/sales/orders`:
+  - List of orders/quotations.
+  - Simple “Create order” wizard.
+
+### 8.5. Procurement Screens
+
+- Retailer:
+  - `/procurement/purchase-orders` list.
+  - New PO wizard.
+- Supplier:
+  - `/supplier/purchase-orders` list.
+  - Accept/Reject/Mark Ready/Mark Shipped.
+
+### 8.6. Shared Logistics Screens
+
+- Driver:
+  - `/driver/deliveries`:
+    - List with big status buttons.
+- Admin:
+  - `/jobs/deliveries`:
+    - Monitor all deliveries.
+
+### 8.7. Money & Copilot
+
+- `/money/summary`:
+  - Cards for today/this week/this month sales.
+  - Simple chart if feasible.
+- Dashboard Copilot widget:
+  - Show low-stock suggestions in friendly language.
+  - Link to procurement.
+
+### 8.8. Onboarding Wizards
+
+- Retailer, Supplier, Driver first-login flows:
+  - Multi-step, minimal, skippable.
+
+---
+
+## 9. Testing & Quality
+
+### Backend
+
+- Unit tests:
+  - Stock movement totals.
+  - POS totals & change.
+  - Low stock detection.
+  - Accounting-lite posting logic.
+
+- Integration tests (real PostgreSQL test instance or container):
+  - End-to-end POS sale.
+  - PO → GoodsReceipt → stock update.
+
+### Frontend
+
+- Component tests (Vitest):
+  - POS totals calculation.
+  - Form validation.
+
+- E2E tests (Playwright/Cypress):
+  - Retailer logs in → completes sale → dashboard updates.
+  - Retailer creates PO → Supplier accepts → Driver delivers.
+
+---
+
+## 10. Behaviour for the Coding Agent
+
+For each change you make:
+
+1. Re-read these rules and any PRD under `docs\functional-spec.md`.
+2. Restate to yourself what you are implementing and **who** it helps.
+3. Use `@Web Search` as per the Global Research Rule.
+4. Design data model, API, and UI.
+5. Implement vertical slice:
+   - Backend domain + app + infra + API.
+   - Frontend UI + API integration.
+   - Tests.
+6. Keep:
+   - Tenant isolation.
+   - Mobile-first UX.
+   - Simple, friendly language.
+
+If a decision doesn’t clearly support:
+
+- Running the shop better  
+- Buying smarter / cheaper  
+- Delivering / sharing better  
+- Preparing data for funding  
+
+…then choose a simpler option or leave it for later.
+
+If you follow these instructions, you will **vibe code** a functional, end-to-end **TOSS ERP-III MVP** that:
+
+- Works for real township/rural businesses.
+- Is architecturally clean and extensible.
+- Is ready for AI Copilot and collaborative economy features.
+
+
+Run run task-master list --with-subtasks, and execute each task one my one when you are done with each task (when it is fully working and you have tested it end to end) mark it as done (task-master set-status --id=2.1 --status=done) and task-master next to Show the next task to work on, if you need to do any additional work feel free to create additional tasks and sub tasks, breaking them into low complex (analyze-complexity) keep this looping until the product is done, follow the rules and keep on working even if it takes longer, i need to launch and deploy this soon.
+

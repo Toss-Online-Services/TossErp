@@ -1,7 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search, Menu, User, CreditCard, LogOut, ChevronDown } from 'lucide-vue-next'
+import {
+  Search,
+  Menu,
+  User,
+  CreditCard,
+  LogOut,
+  ChevronDown,
+  Sparkles,
+  Package,
+  ShoppingBasket,
+  Wifi,
+  WifiOff
+} from 'lucide-vue-next'
+import { useNetworkStatus } from '@/composables/useNetworkStatus'
 
 defineProps<{
   onToggleSidebar: () => void
@@ -11,9 +24,52 @@ const router = useRouter()
 const searchQuery = ref('')
 const accountDropdownOpen = ref(false)
 
+const quickActions = [
+  {
+    label: 'New Sale',
+    icon: CreditCard,
+    to: '/sales/pos',
+    variant: 'primary'
+  },
+  {
+    label: 'Receive Stock',
+    icon: Package,
+    to: '/stock/receipts',
+    variant: 'outline'
+  },
+  {
+    label: 'Ask Copilot',
+    icon: Sparkles,
+    to: '/copilot',
+    variant: 'ghost'
+  }
+]
+
+const { isOnline, lastChangedAt } = useNetworkStatus()
+const networkStatusLabel = computed(() =>
+  isOnline.value ? 'Online' : 'Offline – queued actions will sync when back'
+)
+
+const lastChangedText = computed(() => {
+  if (!lastChangedAt.value) {
+    return ''
+  }
+  return `Updated ${lastChangedAt.value.toLocaleTimeString()}`
+})
+
 const handleSearch = (e: Event) => {
   e.preventDefault()
-  console.log('Search:', searchQuery.value)
+  if (!searchQuery.value.trim()) {
+    return
+  }
+  router.push({
+    path: '/search',
+    query: { q: searchQuery.value }
+  })
+}
+
+const triggerAction = (action: (typeof quickActions)[number]) => {
+  router.push(action.to)
 }
 
 const toggleAccountDropdown = () => {
@@ -30,16 +86,16 @@ const navigateToBilling = () => {
 }
 
 const handleLogout = () => {
-  console.log('Logout clicked')
+  // TODO: wire up auth service
   closeAccountDropdown()
 }
 </script>
 
 <template>
   <nav class="bg-card border-b sticky top-0 z-40">
-    <div class="px-4 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <div class="flex items-center gap-4">
+    <div class="px-4 lg:px-8 space-y-3">
+      <div class="flex items-center justify-between h-16 flex-wrap gap-3">
+        <div class="flex items-center gap-3">
           <button
             @click="onToggleSidebar"
             class="lg:hidden p-2 hover:bg-accent rounded-md"
@@ -50,18 +106,29 @@ const handleLogout = () => {
 
           <form @submit="handleSearch" class="hidden md:block">
             <div class="relative">
-              <Search :size="18" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Search
+                :size="18"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
               <input
                 v-model="searchQuery"
                 type="search"
-                placeholder="Search..."
+                placeholder="Search products, customers or invoices"
                 class="pl-10 pr-4 py-2 bg-background border rounded-md focus:outline-none focus:ring-2 focus:ring-primary w-64 lg:w-96"
               />
             </div>
           </form>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3">
+          <div
+            class="flex items-center gap-2 px-3 py-1 border rounded-full text-xs font-medium"
+            :class="isOnline ? 'text-emerald-600 border-emerald-200' : 'text-amber-600 border-amber-200'"
+          >
+            <component :is="isOnline ? Wifi : WifiOff" :size="14" />
+            <span>{{ networkStatusLabel }}</span>
+          </div>
+
           <button
             @click="onToggleSidebar"
             class="hidden lg:block p-2 hover:bg-accent rounded-md"
@@ -127,14 +194,40 @@ const handleLogout = () => {
         </div>
       </div>
 
+      <div class="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+        <span v-if="lastChangedText">{{ lastChangedText }}</span>
+        <span class="hidden md:inline">TOSS ERP III • Helping township businesses stay on track</span>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button
+          v-for="action in quickActions"
+          :key="action.label"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+          :class="{
+            'bg-primary text-primary-foreground hover:bg-primary/90': action.variant === 'primary',
+            'border border-input hover:bg-accent': action.variant === 'outline',
+            'hover:bg-accent text-muted-foreground': action.variant === 'ghost'
+          }"
+          @click="triggerAction(action)"
+        >
+          <component :is="action.icon" :size="16" />
+          <span>{{ action.label }}</span>
+        </button>
+      </div>
+
       <div class="md:hidden pb-3">
         <form @submit="handleSearch">
           <div class="relative">
-            <Search :size="18" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Search
+              :size="18"
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
             <input
               v-model="searchQuery"
               type="search"
-              placeholder="Search..."
+              placeholder="Search products, customers or invoices"
               class="w-full pl-10 pr-4 py-2 bg-background border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>

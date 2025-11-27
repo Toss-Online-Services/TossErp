@@ -29,7 +29,9 @@
           "description": "Implement secure authentication (email/phone + OTP and password) and role-based access control (Owner, Manager, Cashier, Staff)",
           "status": "pending",
           "priority": "high",
-          "dependencies": [1],
+          "dependencies": [
+            1
+          ],
           "details": "Implement JWT-based authentication with support for email/phone login. Add OTP (One-Time Password) functionality for phone verification. Create role-based authorization system with roles: Owner, Manager, Cashier, Staff. Implement permission system for module access. Use ASP.NET Core Identity or custom JWT implementation. Ensure encrypted storage of passwords and secure token handling.",
           "testStrategy": "Test login flows (email, phone, OTP), role-based access restrictions, token expiration, and password reset functionality. Verify unauthorized access is blocked.",
           "subtasks": []
@@ -40,7 +42,10 @@
           "description": "Implement multi-business support allowing one user to manage multiple shops/workshops with proper data isolation",
           "status": "pending",
           "priority": "high",
-          "dependencies": [1, 2],
+          "dependencies": [
+            1,
+            2
+          ],
           "details": "Design and implement multi-tenant architecture with row-level security. Create Tenant/Business entity with proper isolation. Implement tenant context middleware to ensure data separation. Support user association with multiple businesses. Create business switching functionality in UI. Ensure all queries are tenant-scoped automatically.",
           "testStrategy": "Verify data isolation between tenants, test business switching, and ensure users can only access their associated businesses. Test tenant context in all database operations.",
           "subtasks": []
@@ -51,7 +56,10 @@
           "description": "Create the main operations dashboard showing today's sales, cash in/out, low stock alerts, pending orders, and tasks",
           "status": "pending",
           "priority": "high",
-          "dependencies": [2, 3],
+          "dependencies": [
+            2,
+            3
+          ],
           "details": "Build the home dashboard with real-time metrics: total sales today, cash flow summary, low stock items list, pending purchase orders, and active tasks. Use traffic light indicators (red/amber/green) for status. Implement responsive design for mobile-first experience. Create API endpoints for dashboard data aggregation. Use Nuxt 4 with TailwindCSS and shadcn-style components.",
           "testStrategy": "Verify dashboard loads correctly, displays accurate metrics, updates in real-time, and works on mobile devices. Test with different user roles.",
           "subtasks": []
@@ -62,7 +70,10 @@
           "description": "Implement task management system with to-do style tasks that can be linked to records (invoices, POs, job cards)",
           "status": "pending",
           "priority": "medium",
-          "dependencies": [3, 4],
+          "dependencies": [
+            3,
+            4
+          ],
           "details": "Create Task entity with statuses: To Do, In Progress, Done. Implement task linking to various record types (polymorphic relationship). Build task creation workflow from business events (e.g., 'receive stock', 'follow up customer'). Create task list UI with filtering and status management. Add task assignment and due dates.",
           "testStrategy": "Test task creation, status transitions, linking to records, filtering, and task completion workflows. Verify tasks appear in dashboard.",
           "subtasks": []
@@ -73,7 +84,10 @@
           "description": "Implement in-app notifications for business events and basic activity timeline showing daily business activities",
           "status": "pending",
           "priority": "medium",
-          "dependencies": [3, 4],
+          "dependencies": [
+            3,
+            4
+          ],
           "details": "Create notification system for events: stock in, payment received, delivery dispatched, etc. Implement activity timeline showing 'Today you did X sales, Y purchases, Z payments'. Use SignalR or similar for real-time notifications. Build notification center UI. Store activity logs for audit trail.",
           "testStrategy": "Test notification delivery for various events, verify timeline accuracy, and ensure notifications are role-appropriate. Test real-time updates.",
           "subtasks": []
@@ -84,7 +98,9 @@
           "description": "Create items catalog with barcode support, units, pricing, categories, and stock location management",
           "status": "pending",
           "priority": "high",
-          "dependencies": [3],
+          "dependencies": [
+            3
+          ],
           "details": "Implement Item entity with fields: name, barcode, unit of measure, cost price, selling price, category. Create StockLocation entity (shop, storeroom, truck). Implement item search by barcode or name. Build item management UI with CRUD operations. Support item categories and grouping. Implement barcode scanning capability.",
           "testStrategy": "Test item creation, barcode lookup, price management, category filtering, and location assignment. Verify barcode scanning works on mobile.",
           "subtasks": []
@@ -95,7 +111,9 @@
           "description": "Implement stock movement tracking (purchases, sales, adjustments, transfers) and weighted average stock valuation",
           "status": "pending",
           "priority": "high",
-          "dependencies": [7],
+          "dependencies": [
+            7
+          ],
           "details": "Create StockMovement entity tracking all stock changes. Implement weighted average cost calculation for stock valuation. Build stock adjustment functionality. Create stock transfer between locations. Ensure atomic stock updates with proper locking. Implement stock ledger for audit trail. Link stock movements to source documents (purchases, sales, etc.).",
           "testStrategy": "Test stock movements update quantities correctly, verify weighted average calculations, test concurrent stock updates, and validate stock ledger accuracy.",
           "subtasks": []
@@ -106,7 +124,10 @@
           "description": "Implement stock alerts for min/max levels and identify fast/slow moving items",
           "status": "pending",
           "priority": "medium",
-          "dependencies": [7, 8],
+          "dependencies": [
+            7,
+            8
+          ],
           "details": "Create stock alert system based on min/max thresholds per item. Implement fast/slow moving item analysis based on sales velocity. Build alert notification system. Create stock alert dashboard widget. Allow configurable thresholds per item. Generate alerts for 'Stock running low on [Item]'.",
           "testStrategy": "Test alert generation when stock falls below minimum, verify fast/slow moving calculations, and ensure alerts appear in dashboard.",
           "subtasks": []
@@ -117,7 +138,10 @@
           "description": "Build offline-first POS interface with product search, cart, discounts, and multiple payment types",
           "status": "pending",
           "priority": "high",
-          "dependencies": [7, 8],
+          "dependencies": [
+            7,
+            8
+          ],
           "details": "Create POS UI with product search (barcode/name), shopping cart, discount application, and payment type selection (cash, card, on account). Implement offline-first architecture with local caching using IndexedDB or similar. Build sync mechanism for offline transactions. Ensure fast, touch-friendly interface optimized for tablets. Implement receipt printing capability.",
           "testStrategy": "Test POS in offline mode, verify transactions sync when online, test all payment types, and ensure stock updates correctly. Test on mobile devices.",
           "subtasks": []
@@ -128,7 +152,9 @@
           "description": "Implement daily till summary and Z-report generation for end-of-day reconciliation",
           "status": "pending",
           "priority": "medium",
-          "dependencies": [10],
+          "dependencies": [
+            10
+          ],
           "details": "Create daily till/session management. Implement Z-report generation showing sales summary, payment breakdown, and transaction counts. Build till opening/closing workflow. Create reconciliation interface. Link POS transactions to accounting automatically.",
           "testStrategy": "Test till opening/closing, verify Z-report accuracy, test reconciliation process, and ensure accounting integration works.",
           "subtasks": []
@@ -139,7 +165,9 @@
           "description": "Implement customer profiles with basic fields, tags (VIP, regular, on account), and interaction logging",
           "status": "pending",
           "priority": "high",
-          "dependencies": [3],
+          "dependencies": [
+            3
+          ],
           "details": "Create Customer entity with contact info, credit status, outstanding amounts, and tags. Implement customer tagging system (VIP, regular, 'on account'). Build interaction log for calls, WhatsApps, visits (manual capture at MVP). Create customer management UI with search and filtering. Link customers to sales and accounting.",
           "testStrategy": "Test customer CRUD operations, tag management, interaction logging, and customer search. Verify credit status tracking.",
           "subtasks": []
@@ -150,7 +178,10 @@
           "description": "Implement sales workflow: Quotations → Sales Orders → Delivery Notes → Invoices",
           "status": "pending",
           "priority": "high",
-          "dependencies": [7, 12],
+          "dependencies": [
+            7,
+            12
+          ],
           "details": "Create Quotation, SalesOrder, DeliveryNote, and SalesInvoice entities. Implement workflow state machine for document progression. Build quotation creation with item selection and pricing. Implement conversion: Quotation → Sales Order → Delivery Note → Invoice. Add status tracking and validation rules. Create sales document management UI.",
           "testStrategy": "Test complete sales workflow, verify status transitions, test document conversion, and ensure validation rules are enforced.",
           "subtasks": []
@@ -161,7 +192,9 @@
           "description": "Implement cashbook functionality for recording cash sales, expenses, bank transfers, and managing bank/petty cash accounts",
           "status": "pending",
           "priority": "high",
-          "dependencies": [3],
+          "dependencies": [
+            3
+          ],
           "details": "Create Account entity (Bank, Petty Cash). Implement cashbook entry system for recording transactions. Build account management UI. Support multiple accounts per business. Link cashbook entries to sales and purchases. Implement account balance tracking.",
           "testStrategy": "Test cashbook entry creation, account management, balance calculations, and transaction linking. Verify multi-account support.",
           "subtasks": []
@@ -172,7 +205,10 @@
           "description": "Implement invoice creation, payment recording, and payment status tracking (cash, card, EFT, on account)",
           "status": "pending",
           "priority": "high",
-          "dependencies": [13, 14],
+          "dependencies": [
+            13,
+            14
+          ],
           "details": "Create Invoice and Payment entities. Implement payment recording against invoices. Support multiple payment types: cash, card, EFT, 'on account'. Build invoice management UI with payment tracking. Implement payment status: Unpaid/Paid/Partially Paid. Link to cashbook automatically.",
           "testStrategy": "Test invoice creation, payment recording, payment status updates, and cashbook integration. Verify partial payments work correctly.",
           "subtasks": []
@@ -183,7 +219,10 @@
           "description": "Implement basic financial reports: Profit & Loss, Cashflow summary, Debtors, and Creditors reports",
           "status": "pending",
           "priority": "medium",
-          "dependencies": [14, 15],
+          "dependencies": [
+            14,
+            15
+          ],
           "details": "Create report generation system for P&L, cashflow, debtors (who owes you), and creditors (who you owe). Use plain language in reports ('customers who still owe you' instead of 'accounts receivable'). Build report UI with date range selection. Implement report export (PDF/CSV).",
           "testStrategy": "Test report accuracy, verify calculations, test date range filtering, and ensure reports use plain language. Test export functionality.",
           "subtasks": []
@@ -194,7 +233,9 @@
           "description": "Implement basic VAT calculation and ZAR currency support for South African market",
           "status": "pending",
           "priority": "medium",
-          "dependencies": [15],
+          "dependencies": [
+            15
+          ],
           "details": "Implement VAT calculation at basic level (15% standard rate). Add VAT fields to invoices and transactions. Support ZAR as base currency. Create VAT report. Ensure proper VAT handling in all financial transactions.",
           "testStrategy": "Test VAT calculations on invoices, verify VAT reports, and ensure ZAR formatting is correct throughout the system.",
           "subtasks": []
@@ -205,7 +246,9 @@
           "description": "Implement supplier list with contact info, payment terms, and pricing history tracking",
           "status": "pending",
           "priority": "high",
-          "dependencies": [3],
+          "dependencies": [
+            3
+          ],
           "details": "Create Supplier entity with name, contact, payment terms. Build supplier management UI. Implement pricing history tracking. Create supplier performance metrics (on-time delivery, quality). Link suppliers to purchase orders.",
           "testStrategy": "Test supplier CRUD operations, payment terms management, pricing history, and supplier search functionality.",
           "subtasks": []
@@ -216,7 +259,10 @@
           "description": "Implement procurement workflow: Purchase Requests → Purchase Orders → Goods Receipt → Supplier Invoices",
           "status": "pending",
           "priority": "high",
-          "dependencies": [7, 18],
+          "dependencies": [
+            7,
+            18
+          ],
           "details": "Create PurchaseRequest, PurchaseOrder, GoodsReceipt, and PurchaseInvoice entities. Implement workflow: Material Request → PO → Receipt → Invoice. Build purchase order creation with item selection. Implement goods receipt with quantity validation. Link supplier invoices to accounting. Track expected deliveries and overdue orders.",
           "testStrategy": "Test complete procurement workflow, verify stock updates on receipt, test three-way matching (PO-Receipt-Invoice), and ensure overdue tracking works.",
           "subtasks": []
@@ -227,7 +273,10 @@
           "description": "Implement project/job card system for tracking jobs (repairs, installations) with tasks, materials, and labour",
           "status": "pending",
           "priority": "medium",
-          "dependencies": [7, 12],
+          "dependencies": [
+            7,
+            12
+          ],
           "details": "Create Project/JobCard entity with customer, description, due date. Implement project tasks, materials (from stock), labour tracking, and notes. Add project status: New, In Progress, On Hold, Completed, Closed. Link projects to invoices and receipts. Build project management UI.",
           "testStrategy": "Test project creation, task management, material consumption from stock, status transitions, and invoice linking.",
           "subtasks": []
@@ -238,7 +287,10 @@
           "description": "Implement user management system with role assignment and permission configuration",
           "status": "pending",
           "priority": "high",
-          "dependencies": [2, 3],
+          "dependencies": [
+            2,
+            3
+          ],
           "details": "Create user management UI for adding/editing users. Implement role assignment interface. Build permission configuration system. Support user invitation workflow. Create user profile management. Implement user deactivation.",
           "testStrategy": "Test user creation, role assignment, permission enforcement, user invitation, and user deactivation workflows.",
           "subtasks": []
@@ -249,7 +301,10 @@
           "description": "Implement comprehensive audit trail tracking who did what and when for all transactions",
           "status": "pending",
           "priority": "medium",
-          "dependencies": [2, 3],
+          "dependencies": [
+            2,
+            3
+          ],
           "details": "Create audit log entity tracking user, action, timestamp, and entity changes. Implement audit logging middleware. Log all create, update, delete operations. Build audit trail viewer UI. Ensure audit logs are immutable and secure.",
           "testStrategy": "Test audit logging for all operations, verify log immutability, test audit trail viewer, and ensure proper user attribution.",
           "subtasks": []
@@ -260,7 +315,11 @@
           "description": "Implement basic CSV import/export for items, customers, and suppliers",
           "status": "pending",
           "priority": "low",
-          "dependencies": [7, 12, 18],
+          "dependencies": [
+            7,
+            12,
+            18
+          ],
           "details": "Create CSV import/export functionality for items, customers, and suppliers. Implement data validation during import. Build import UI with preview and error handling. Support bulk operations. Create export templates.",
           "testStrategy": "Test CSV import with valid and invalid data, verify export accuracy, test bulk operations, and ensure error handling works correctly.",
           "subtasks": []
@@ -271,7 +330,9 @@
           "description": "Build mobile-first UI components and global navigation system (Home, Sales, Stock, Money, People, Jobs, Settings)",
           "status": "pending",
           "priority": "high",
-          "dependencies": [2],
+          "dependencies": [
+            2
+          ],
           "details": "Create reusable mobile-first UI components using Nuxt 4, TailwindCSS, and shadcn-style components. Implement global navigation with modules: Home, Sales, Stock, Money, People, Jobs, Settings. Build responsive layouts. Ensure touch-friendly interfaces. Implement guided flows and wizards for complex actions.",
           "testStrategy": "Test navigation on mobile devices, verify responsive design, test touch interactions, and ensure components work across different screen sizes.",
           "subtasks": []
@@ -282,12 +343,1632 @@
           "description": "Design and implement API layer with versioning, preparing for future integrations (banks, payment gateways, messaging APIs)",
           "status": "pending",
           "priority": "medium",
-          "dependencies": [1],
+          "dependencies": [
+            1
+          ],
           "details": "Implement RESTful API with proper versioning. Create API documentation (Swagger/OpenAPI). Design extensible integration points for banks, payment gateways, and messaging (WhatsApp/SMS). Implement API authentication and rate limiting. Create webhook support for partner integrations.",
           "testStrategy": "Test API endpoints, verify authentication, test rate limiting, validate API documentation, and ensure integration points are properly designed.",
           "subtasks": []
         }
       ]
+    }
+  },
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Repository scan and tech stack identification",
+        "description": "Analyze existing codebase to determine frameworks, languages, architecture and conventions to align tasks with current implementation.",
+        "details": "- Use repo search to find solution/projects: look for `*.sln`, `*.csproj`, or `package.json`.\n- Identify backend stack (likely .NET) and any frontend (Blazor/React/Angular).\n- Note ORM (EF Core), auth middleware, DB provider, and build scripts.\n- Produce a brief internal summary to guide subsequent tasks.\n- Pseudo:\n  - find_files([\"*.sln\",\"*.csproj\",\"appsettings*.json\",\"package.json\"]).\n  - parse csproj for TargetFramework and package refs.\n- Recommended: .NET 8 LTS, EF Core 8, ASP.NET Core minimal APIs or MVC depending on repo.\n- Keep changes minimal and aligned with current patterns.",
+        "testStrategy": "No code changes. Validate by listing files and summarizing findings. Ensure conclusions match actual files and dependencies.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scan repository for solution, project, and config files",
+            "description": "Enumerate all *.sln, *.csproj, appsettings*.json, and package.json files to identify solution structure and relevant configs.",
+            "dependencies": [],
+            "details": "Use filesystem search to list solution and project files as well as configuration files. Focus on folders like src/, server/, or root. Capture relative paths for later parsing.",
+            "status": "pending",
+            "testStrategy": "Verify the list includes all matching files and paths are correct."
+          },
+          {
+            "id": 2,
+            "title": "Parse .csproj files for target frameworks and dependencies",
+            "description": "Inspect each discovered .csproj to extract TargetFramework, package references, and output type to determine tech stack.",
+            "dependencies": [
+              1
+            ],
+            "details": "Open each .csproj and read <TargetFramework>, <TargetFrameworks>, <PackageReference> items (EntityFrameworkCore, ASP.NET, Identity), nullable and implicit usings. Note class library vs web SDK usage.",
+            "status": "pending",
+            "testStrategy": "Spot-check parsed data against raw .csproj content to ensure accuracy."
+          },
+          {
+            "id": 3,
+            "title": "Identify runtime configuration and environment setup",
+            "description": "Analyze appsettings*.json and launchSettings.json (if present) for database providers, connection strings, and environment conventions.",
+            "dependencies": [
+              1
+            ],
+            "details": "Read appsettings.json, appsettings.Development.json, and Properties/launchSettings.json in web projects. Look for ConnectionStrings, Logging, AllowedHosts, EF Core provider packages, and any Docker or profiles.",
+            "status": "pending",
+            "testStrategy": "Confirm findings by matching keys and values in the configuration files."
+          },
+          {
+            "id": 4,
+            "title": "Detect frontend and tooling stack (if any)",
+            "description": "Check for package.json, SPA frameworks, or Blazor projects to understand frontend setup and build scripts.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Search for package.json, vite, webpack, angular.json, or Blazor WebAssembly/Server projects. Review package scripts, frameworks (React, Angular, Vue), and integration pattern with backend.",
+            "status": "pending",
+            "testStrategy": "Validate by opening discovered files and confirming framework indicators and scripts."
+          },
+          {
+            "id": 5,
+            "title": "Produce concise internal summary of architecture and conventions",
+            "description": "Synthesize findings into a short summary covering frameworks, versions, ORM, auth, DB provider, and solution layout.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Document target .NET version(s), ASP.NET style (MVC/minimal), presence of EF Core and provider, auth approach (Identity/JWT), any frontend stack, and build/run commands. Keep aligned with repo conventions for subsequent tasks.",
+            "status": "pending",
+            "testStrategy": "Cross-check the summary against extracted data to ensure consistency and completeness."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Environment and solution setup",
+        "description": "Confirm .NET SDK, restore packages, configure local settings and connection strings per repo conventions.",
+        "details": "- If .NET: Require .NET SDK 8.0.4xx.\n- Create `appsettings.Development.json` with local `ConnectionStrings:Default` if missing.\n- Configure EF Core tooling `dotnet-ef` if EF is used.\n- Align with any existing Docker/launchSettings.\n- Pseudo:\n  - dotnet --info\n  - dotnet restore <solution.sln>\n  - verify appsettings.* files and secrets.json if used.\n- Choose SQL Server Express/LocalDB or SQLite per current code.",
+        "testStrategy": "Build solution without errors; run a trivial start to ensure settings load. Connection string should succeed or be stubbed using SQLite in-memory for tests.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scan repository for solution, projects, and runtime config files",
+            "description": "List solution and project files alongside app configuration to establish the build and run layout.",
+            "dependencies": [],
+            "details": "Use glob to enumerate: *.sln, **/*.csproj, **/appsettings*.json, **/launchSettings.json, **/Program.cs, **/Startup.cs, **/Dockerfile, **/docker-compose*.yml. Capture absolute paths and note which project(s) appear to be the main web/API entry points.",
+            "status": "pending",
+            "testStrategy": "Confirm at least one .sln and one .csproj are found and entry point files (Program/Startup) exist for the web/API project."
+          },
+          {
+            "id": 2,
+            "title": "Parse csproj files for TargetFramework and key PackageReference items",
+            "description": "Read each csproj to determine .NET target versions and key dependencies used by the solution.",
+            "dependencies": [
+              1
+            ],
+            "details": "Open each .csproj and extract TargetFramework/TargetFrameworks and key PackageReference nodes (Microsoft.AspNetCore.*, Microsoft.EntityFrameworkCore.*, provider packages like SqlServer/Sqlite/Npgsql). Summarize the highest required SDK (expect .NET 8.x) and whether EF Core is present.",
+            "status": "pending",
+            "testStrategy": "Cross-check extracted frameworks and packages across all projects to ensure consistency (e.g., all target net8.0 or compatible multi-targets)."
+          },
+          {
+            "id": 3,
+            "title": "Identify database provider and connection string conventions",
+            "description": "Determine DB provider and the exact connection string key used by the application.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Search Program.cs/Startup.cs for UseSqlServer/UseSqlite/UseNpgsql and the DbContext registration. Inspect appsettings.json and environment variants for ConnectionStrings entries (Default or another key). Note any user secrets or environment variable overrides referenced in configuration.",
+            "status": "pending",
+            "testStrategy": "Verify a single primary provider is identified and the connection string key matches what DbContext registration expects."
+          },
+          {
+            "id": 4,
+            "title": ".NET SDK verification and solution restore",
+            "description": "Validate the local .NET SDK version and restore NuGet packages for the solution.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Run: dotnet --info and ensure an SDK matching the highest TargetFramework (preferably 8.0.4xx) is available. Restore with: dotnet restore <solution.sln>. If EF Core is used, ensure dotnet-ef is available (either as a local tool via dotnet tool install --local dotnet-ef or globally).",
+            "status": "pending",
+            "testStrategy": "Restore completes without errors; if EF is present, dotnet ef --version returns successfully."
+          },
+          {
+            "id": 5,
+            "title": "Create or align appsettings.Development.json for local database",
+            "description": "Ensure environment-specific settings and connection strings are configured for local development.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "If missing, add appsettings.Development.json under the web/API project using the detected connection string key and preferred local provider (SQL Server Express/LocalDB or SQLite). Align with launchSettings.json and any Docker compose env vars. Avoid committing secrets; prefer localdb or SQLite for ease if acceptable.",
+            "status": "pending",
+            "testStrategy": "Run the application locally to confirm configuration loads and the DbContext initializes successfully; if DB not available, verify fallback (e.g., SQLite or in-memory) enables startup."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Domain model baseline for Core modules",
+        "description": "Define or review domain entities for Operations, Accounting (simple), Procurement, Sales, CRM, Stock, Projects, POS.",
+        "details": "- If EF Core: add/verify entities: Business, User, Role, Customer, Supplier, Item, StockLocation, InventoryTransaction, SalesOrder, Invoice, Payment, PurchaseOrder, GoodsReceipt, Project, Task, POSShift.\n- Use minimal attributes and relationships supporting MVP.\n- EF Core 8 annotations; configure schemas and indexes (e.g., unique barcode, customer phone).\n- Prefer value objects for Money (ZAR), VatRate.\n- Pseudo (C#):\n  - class Item { Guid Id; string Sku; string Barcode; decimal Price; decimal Cost; int ReorderLevel; }\n  - class InventoryTransaction { Guid Id; Guid ItemId; decimal Qty; decimal UnitCost; InventoryTxnType Type; DateTime At; }\n- Keep simple: weighted average valuation.",
+        "testStrategy": "Add unit tests to validate model invariants and EF model building compiles/migrates. Verify key indexes exist. Run a migration add/diff without unwanted changes.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Inventory and search the repo for EF Core and domain models",
+            "description": "Enumerate solution/projects and grep for DbContext, entity classes, and EF Core usage to understand current state.",
+            "dependencies": [],
+            "details": "From project root, list *.sln and *.csproj; search recursively for patterns: Microsoft.EntityFrameworkCore, DbContext, OnModelCreating, IEntityTypeConfiguration, [Index], [Key], ValueConverter, Money, Vat; note folders like Domain, Entities, Models.",
+            "status": "pending",
+            "testStrategy": "Confirm outputs include paths to DbContext(s) and entity/config files."
+          },
+          {
+            "id": 2,
+            "title": "Read DbContext and entity/config files to capture conventions",
+            "description": "Open identified DbContext and model/configuration files to document schemas, naming, key strategy, and value object approach.",
+            "dependencies": [
+              1
+            ],
+            "details": "Inspect default schema, table naming, Guid vs int keys, owned types, ValueConverter usage, annotations vs Fluent API, index patterns, concurrency tokens, and soft-delete patterns if present.",
+            "status": "pending",
+            "testStrategy": "Verify findings list concrete files and extracted conventions used in this codebase."
+          },
+          {
+            "id": 3,
+            "title": "Gap analysis against required core entities",
+            "description": "Compare existing models to the MVP list and identify missing or misaligned entities/props/relationships.",
+            "dependencies": [
+              2
+            ],
+            "details": "Cross-check for Business, User, Role, Customer, Supplier, Item, StockLocation, InventoryTransaction, SalesOrder, Invoice, Payment, PurchaseOrder, GoodsReceipt, Project, Task, POSShift; note needs: Money(ZAR), VatRate value objects, unique indexes (barcode, customer phone), weighted average valuation fields.",
+            "status": "pending",
+            "testStrategy": "Produce a checklist mapping present/missing items with file references to verify."
+          },
+          {
+            "id": 4,
+            "title": "Draft EF Core 8-aligned model plan and configurations",
+            "description": "Define concrete entity properties, relationships, indexes, and value objects consistent with repo conventions.",
+            "dependencies": [
+              3
+            ],
+            "details": "For each missing/misaligned entity, specify properties and keys, relationships (e.g., Item→InventoryTransaction, SalesOrder→Invoice→Payment), indexes (unique barcode, phone; composite item+business+location), schema names, and whether to use annotations or IEntityTypeConfiguration; outline Money and VatRate with conversions/owned types.",
+            "status": "pending",
+            "testStrategy": "Peer-review the plan for compile-ability and alignment with captured conventions."
+          },
+          {
+            "id": 5,
+            "title": "Sequence implementation and migration/test hooks",
+            "description": "Prepare a step-by-step implementation order with migration and tests for model invariants and indexes.",
+            "dependencies": [
+              4
+            ],
+            "details": "Order: add value objects, create/update entities, update DbContext and configurations, add indexes, add initial/next migration and review diff; plan unit tests for value objects and EF model-building (ensuring indexes exist) and smoke test Add-Migration/Update-Database.",
+            "status": "pending",
+            "testStrategy": "Run EF design-time build/migration generation and ensure no destructive diffs; verify indexes via model inspection tests."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Database initialization and migrations",
+        "description": "Set up database migrations for initial schema covering MVP modules.",
+        "details": "- Use EF Core Migrations (8.x). Create InitialCreate migration covering core tables.\n- Configure DbContext with schema separation or consistent naming.\n- Seed minimal reference data (roles, VAT 15%, ZAR currency).\n- Pseudo:\n  - dotnet ef migrations add InitialCreate\n  - dotnet ef database update\n- Ensure nullable reference types enabled; use decimal(18,2) for money.",
+        "testStrategy": "Apply migration to local DB; verify tables created. Seed data present. Round-trip a few entities using integration test with SQLite in-memory provider.",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scan repository for EF Core usage, DbContexts, and migrations",
+            "description": "Explore the codebase to identify existing DbContext(s), EF Core package references, and any prior migrations or design-time factories.",
+            "dependencies": [],
+            "details": "Use file search to locate patterns like \"class * : DbContext\", OnModelCreating overrides, and Migration classes. Inspect .csproj files for Microsoft.EntityFrameworkCore package versions and providers (e.g., SQL Server). Note current schema/naming conventions and any Money/VAT value objects to align with.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 2,
+            "title": "Define or update DbContext with consistent schema and money precision",
+            "description": "Create or refine a DbContext that includes MVP module DbSets and applies consistent schema/table naming with decimal(18,2) for monetary fields and nullable reference types enabled.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add DbSet properties for core entities already defined in Task 3. In OnModelCreating, configure table names/schemas, key indexes, and decimal precision (HasColumnType(\"decimal(18,2)\")) for money fields. Ensure nullable reference types are enabled in the project and provider configuration is set in the startup.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 3,
+            "title": "Generate InitialCreate migration and apply to local database",
+            "description": "Create the first EF Core migration that covers the MVP schema and run it against the local database.",
+            "dependencies": [
+              2
+            ],
+            "details": "Run `dotnet ef migrations add InitialCreate` from the startup project. Review the migration and model snapshot to confirm schemas and money precision. Apply with `dotnet ef database update`. Resolve any build or tooling issues uncovered.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 4,
+            "title": "Seed minimal reference data (roles, VAT 15%, ZAR currency)",
+            "description": "Implement data seeding via EF (HasData or a dedicated seed migration) for required reference rows.",
+            "dependencies": [
+              3
+            ],
+            "details": "Add seeding for default roles, a 15% VAT rate, and ZAR currency (code and symbol). Ensure idempotent behavior and correct scoping if multi-tenant. If using HasData, update the migration to include the seed inserts; otherwise create a follow-up migration for seed data.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 5,
+            "title": "Add integration test validating migrations and seed data",
+            "description": "Create a lightweight integration test using SQLite in-memory (or local provider) to run migrations and verify seeded data and a round-trip on a money field.",
+            "dependencies": [
+              4
+            ],
+            "details": "Add or use an existing test project. Configure DbContextOptions with SQLite in-memory and call Database.Migrate(). Assert that seeded roles, VAT(15%), and ZAR currency exist. Insert and read back an entity with a decimal(18,2) field to verify precision and mapping.",
+            "status": "pending",
+            "testStrategy": null
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Authentication with password + OTP",
+        "description": "Implement secure auth with email/phone + password and optional OTP (SA context).",
+        "details": "- Use ASP.NET Core Identity or existing auth; enable phone/email login.\n- Add TOTP via `AspNetCore.Totp` or SMS OTP abstraction; for MVP, use Time-based OTP app or mock SMS provider interface.\n- Enforce strong hashing (PBKDF2/Argon2 if supported) with Identity v8 default.\n- JWT access tokens for SPA/mobile with refresh tokens (sliding, 14 days).\n- Pseudo:\n  - POST /api/auth/login {phone|email, password}\n  - if requireOtp -> POST /api/auth/otp/verify\n- Rate limit login via `AspNetCoreRateLimit` or built-in limiter.",
+        "testStrategy": "Unit test password + OTP flow; integration tests for token issuance/refresh. Verify lockout on repeated failures. Ensure roles/claims populated.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Enable email or phone number login in `backend/Toss/src/Web/Endpoints/Auth.cs`",
+            "description": "Modify the login proxy to accept either email or phone with password and forward a normalized request to Identity.",
+            "dependencies": [],
+            "details": "Update the `Login` handler to parse JSON and accept `{ email | phone, password }`. If `phone` is provided, resolve the user via `UserManager<ApplicationUser>` by `PhoneNumber`, then forward to `/api/Users/login` with `Email` populated from the found user (and `Password`). Keep current timeout/error handling. Validate inputs and return consistent error responses if user not found or phone unverified. Preserve existing behavior for email logins.",
+            "status": "pending",
+            "testStrategy": "Unit test transformation logic: phone→email lookup, validation errors, and passthrough for email. Integration test hitting `/api/auth/login` for both inputs and verifying the proxied Identity response."
+          },
+          {
+            "id": 2,
+            "title": "Add OTP verification endpoint and wire to Identity two-factor login",
+            "description": "Implement `/api/auth/otp/verify` that handles TOTP or recovery code verification using Identity’s login contract.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add a new POST `otp/verify` in `Auth` group to accept `{ email|phone, password, twoFactorCode | twoFactorRecoveryCode }`. Normalize to `{ Email, Password, TwoFactorCode | TwoFactorRecoveryCode }` and forward to `/api/Users/login`. Document response mapping to tokens on success and errors on invalid codes. Reuse `UserManager` phone→email resolution. Surface existing `/api/Users/manage/2fa` endpoint for enabling/disabling 2FA; expose guidance in API docs if needed.",
+            "status": "pending",
+            "testStrategy": "Unit tests for payload normalization and branch cases (TOTP vs recovery). Integration tests: successful OTP after password step, failures lockout increments, and recovery code acceptance."
+          },
+          {
+            "id": 3,
+            "title": "Confirm and configure JWT + refresh (sliding 14 days)",
+            "description": "Ensure token validation and lifetimes align with requirements, and configure sliding refresh token window.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Review `backend/Toss/src/Infrastructure/DependencyInjection.cs` AddAuthentication/AddJwtBearer and `JwtSettings` usage. Set access token lifetime as per product needs, and configure refresh to slide up to 14 days (Identity BearerToken options or custom refresh storage if required). Validate `IdentityService` claim mapping aligns with roles/claims. Update `appsettings.*` with `JwtSettings` (Issuer, Audience, SecretKey, Expiration). Keep existing claim generation and ensure SPA/mobile compatibility.",
+            "status": "pending",
+            "testStrategy": "Integration tests: obtain access + refresh tokens, refresh multiple times verifying expiry extends but never exceeds 14 days, and claims/roles are present in access tokens."
+          },
+          {
+            "id": 4,
+            "title": "Add rate limiting for login and OTP endpoints",
+            "description": "Protect `/api/auth/login` and `/api/auth/otp/verify` with rate limiting to mitigate brute-force attempts.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Introduce .NET built-in `RateLimiter` in `Program.cs` (e.g., fixed or sliding window limiting per-IP and per-username key). Apply policies to the two auth routes via endpoint metadata. Tune limits (e.g., 5-10 attempts/minute) and include Retry-After headers. Ensure limiter executes before forwarding the request body.",
+            "status": "pending",
+            "testStrategy": "Integration tests simulating repeated attempts to verify 429 responses after threshold and correct reset behavior; ensure legitimate spaced requests are allowed."
+          },
+          {
+            "id": 5,
+            "title": "End-to-end tests for password + OTP + refresh",
+            "description": "Add tests that cover email and phone logins, OTP verification, token issuance, refresh flow, and lockout behavior.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Create unit tests for normalization utilities and edge cases. Add integration tests covering: email login, phone login, OTP-required then verify flow, invalid OTP handling and lockout increment, access token includes roles/claims, refresh token sliding behavior, and rate-limited responses. Use test doubles or seeded users with 2FA enabled/disabled.",
+            "status": "pending",
+            "testStrategy": "Run test suite against in-memory/SQLite database. Validate HTTP status codes, response bodies, and JWT claims; assert lockout counters and rate limiting headers where applicable."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Multi-business tenancy model",
+        "description": "Allow one user to manage multiple businesses with isolation.",
+        "details": "- Add `Business` entity and `UserBusiness` join with role.\n- Scope queries by `BusinessId` via middleware or DbContext filter (HasQueryFilter).\n- Store `X-Business-Id` header or resolve from subdomain later; MVP allow header or user default.\n- Pseudo:\n  - services.AddScoped<BusinessContext>() reads current business from claims/header.\n  - Apply EF filters: modelBuilder.Entity<Item>().HasQueryFilter(x => x.BusinessId == _ctx.Id)\n- Ensure audit logging includes BusinessId.",
+        "testStrategy": "Integration tests verifying user cannot access other business data. Verify EF filters applied. Authorization tests for roles per business.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Explore repository to identify DbContexts, entities, middleware, and audit patterns",
+            "description": "Scan the codebase to learn tenancy and auditing conventions to align implementation.",
+            "dependencies": [],
+            "details": "Use ripgrep to search for keywords: BusinessId, Tenant, HasQueryFilter, DbContext, Audit/ Auditable/ Interceptor, Middleware. Read the main DbContext, base entity classes (e.g., with CreatedBy/UpdatedAt), any existing request pipeline middleware, and DI setup to mirror naming and structure. Note EF configuration style (Fluent vs attributes) and folder structure for entities/configurations.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 2,
+            "title": "Add Business and UserBusiness entities following existing domain conventions",
+            "description": "Introduce core multi-business entities and EF mapping aligned with current project style.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create Business {Id, Name, IsActive, audit fields} and UserBusiness {UserId, BusinessId, Role} with navigation properties. Add a Role enum (Owner, Admin, Member). Configure EF (keys, relationships, unique index on (UserId,BusinessId), cascade behavior) using the repo’s standard (Fluent/attributes). Place files in the correct folders and namepaces. Generate initial migration stub if applicable.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 3,
+            "title": "Implement scoped BusinessContext resolver and request pipeline integration",
+            "description": "Expose current BusinessId via a scoped service resolved from X-Business-Id header or default claim, validating membership.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Define IBusinessContext {Guid? BusinessId, string? BusinessRole} and BusinessContext implementation. Add middleware or an action filter that: reads X-Business-Id, falls back to user default, validates against UserBusiness, sets BusinessId/Role, and short-circuits with 400/403 on invalid values. Register in DI; add helper to access via HttpContext if the project uses that pattern.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 4,
+            "title": "Apply global EF query filters and add BusinessId to tenant-scoped entities",
+            "description": "Scope data by BusinessId on all multi-tenant entities and ensure schema includes BusinessId fields.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Add BusinessId to tenant entities (e.g., Item, Inventory, Orders) based on repo domain. In DbContext.OnModelCreating, apply HasQueryFilter(e => e.BusinessId == _ctx.BusinessId) using an injectable context pattern. Exclude non-tenant/system tables. Update repositories and controllers to rely on filters. Create/extend EF migrations for new columns, indexes, and FKs to Business.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 5,
+            "title": "Extend audit logging to include BusinessId and enforce per-business authorization",
+            "description": "Capture BusinessId in audit trail and add authorization policies based on UserBusiness role per request.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Update audit interceptors/logs to persist BusinessId for create/update/delete. Add authorization policies/handlers that check required role against BusinessContext (e.g., Owner/Admin for destructive actions). Ensure endpoints use these policies. Seed a default Business and UserBusiness link for development and docs on using X-Business-Id.",
+            "status": "pending",
+            "testStrategy": null
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Role-based access control",
+        "description": "Implement Owner, Manager, Cashier, Staff roles and enforce per endpoint.",
+        "details": "- Use ASP.NET Core Authorization with policy-based roles. Seed roles.\n- Map actions to roles (e.g., POS: Cashier+, Accounting: Manager+).\n- Add attribute policies on controllers/handlers.\n- Pseudo: [Authorize(Policy=\"CanManageStock\")] on stock endpoints.\n- Admin UI to assign roles per Business (simple page/API).",
+        "testStrategy": "Authorization unit tests for policies; integration tests ensuring forbidden for unauthorized roles. Verify role assignment persists in UserBusiness.",
+        "priority": "high",
+        "dependencies": [
+          5,
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Audit codebase for existing Identity, authorization, and per‑business role linkage",
+            "description": "Search the solution for Identity setup, authorization policies, role/claim usage, and any User–Business linking model to align RBAC with current patterns.",
+            "dependencies": [],
+            "details": "Use repo search to find `AddAuthorization`, `AddIdentity`, `[Authorize]`, `Policy`, `Role`, `Claims`, `BusinessId`, and entities like `UserBusiness`. Identify where Program/Startup config lives, current middleware order, any existing policies, and how controllers or minimal APIs apply authorization. Note naming conventions to reuse for policy names and constants.",
+            "status": "pending",
+            "testStrategy": "None (discovery). Capture findings in engineering notes for subsequent subtasks."
+          },
+          {
+            "id": 2,
+            "title": "Introduce canonical role constants and idempotent role seeding",
+            "description": "Add Owner, Manager, Cashier, and Staff as canonical roles and ensure they are created on startup or via migration seeding.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a shared `AppRoles` constants class. Implement seeding using `RoleManager` or EF model seed to create roles if missing. Ensure re-runs are safe. If multi-tenant per Business, keep global role names and model per-business assignment separately (e.g., `UserBusiness` table) without duplicating global roles.",
+            "status": "pending",
+            "testStrategy": "Unit test the seeder to verify all roles exist after run and that a second run performs no changes."
+          },
+          {
+            "id": 3,
+            "title": "Define authorization policies and handlers for business actions",
+            "description": "Map business actions to role ladders and register them via ASP.NET Core Authorization; add custom handlers if per‑business checks are required.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "In service configuration, add policies like `CanUsePOS` (Cashier+), `CanManageAccounting` (Manager+), `CanManageStock` (Manager+/Owner), `CanManagePeople` (Manager+/Owner). Implement `IAuthorizationRequirement`/`AuthorizationHandler` that resolves current Business context (e.g., route `businessId` or claim) and verifies the user’s role within that business using the linking table. Centralize policy names and role ladders in one place.",
+            "status": "pending",
+            "testStrategy": "Unit tests for each handler with mocked user claims, business context, and repository/service reading user-business roles to assert Success/Fail across roles."
+          },
+          {
+            "id": 4,
+            "title": "Annotate endpoints with [Authorize(Policy=...)] and preserve public routes",
+            "description": "Apply the new policies to relevant controllers/actions (POS, Accounting, Stock, People, etc.) while keeping login/health endpoints open.",
+            "dependencies": [
+              3
+            ],
+            "details": "Add `[Authorize(Policy=\"CanUsePOS\")]`, `[Authorize(Policy=\"CanManageAccounting\")]`, `[Authorize(Policy=\"CanManageStock\")]`, etc., on controllers or actions. For minimal APIs, use `RequireAuthorization(\"Policy\")`. Verify `[AllowAnonymous]` remains on auth and health endpoints. Keep attribute style consistent with existing patterns discovered in subtask 1.",
+            "status": "pending",
+            "testStrategy": "Integration tests: call protected endpoints using JWTs for different roles and assert 200 for allowed roles and 403 for disallowed roles; verify anonymous access still works for public endpoints."
+          },
+          {
+            "id": 5,
+            "title": "Add Admin UI/API to assign user roles per Business",
+            "description": "Build minimal endpoints and a simple admin page to manage a user’s role within a specific business and persist it via the linking entity.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Add API routes to list business users, fetch available roles, and assign/remove roles for a user within a business (operating on `UserBusiness` or equivalent). Implement a simple admin UI (per frontend stack) to select user and role, submit changes, and show current assignments. Ensure policy handlers rely on this persisted mapping. Add validation and basic audit fields (who/when).",
+            "status": "pending",
+            "testStrategy": "Integration tests for role assignment APIs; UI test or manual checklist to confirm assignments persist and immediately affect authorization decisions on protected endpoints."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Operations ‘Today View’ API",
+        "description": "Provide aggregated metrics: sales today, cash in/out, low stock, pending orders, tasks, alerts.",
+        "details": "- Create `/api/operations/today` that composes from Sales, Accounting, Stock.\n- Efficient queries with EF Core projections, compiled queries.\n- Define DTO: {salesTotal, cashIn, cashOut, lowStock[], pendingOrders[], tasks[]}.\n- Add caching for 30–60s via `IMemoryCache`.\n- Pseudo: var salesTotal = await _sales.Query(DateOnly.Today);",
+        "testStrategy": "Integration tests with seeded data validating correct aggregation. Performance test to ensure under 200ms with typical dataset.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          4,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Repository scan for API structure, EF Core, and caching patterns",
+            "description": "Explore controllers, services, DbContexts, and IMemoryCache usage to align the Today View API with current conventions.",
+            "dependencies": [],
+            "details": "List C# files and search for ControllerBase, ApiController, Route attributes, IMemoryCache, DbContext, and domain modules (Sales, Stock, Accounting). Read representative files to capture routing, DI, DTO placement, and naming patterns used throughout the project.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 2,
+            "title": "Identify data sources for Today View metrics",
+            "description": "Locate entities/services and queries that provide salesTotal, cashIn, cashOut, lowStock[], pendingOrders[], tasks[], and alerts.",
+            "dependencies": [
+              1
+            ],
+            "details": "Trace logic for sales totals (orders/invoices), accounting/cashbook entries, inventory with min thresholds, order statuses for pending, and tasks/alerts storage. Note projection helpers, existing repositories/services, and candidates for compiled queries to ensure efficient aggregation.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 3,
+            "title": "Define TodayView DTOs and aggregation contract",
+            "description": "Create TodayViewResponse DTO and nested item DTOs following repository conventions; define IOperationsTodayService interface.",
+            "dependencies": [
+              2
+            ],
+            "details": "DTO fields: salesTotal, cashIn, cashOut, lowStock[], pendingOrders[], tasks[]. Include LowStockItemDto, PendingOrderItemDto, TaskItemDto (and AlertItemDto if needed). Ensure correct numeric types, nullability, and serialization attributes. Place in proper DTO folder and add mapping profile if AutoMapper is in use.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 4,
+            "title": "Implement aggregation service with EF projections and caching",
+            "description": "Create OperationsTodayService that composes metrics from Sales, Accounting, and Stock using efficient EF Core queries and IMemoryCache (30–60s).",
+            "dependencies": [
+              3
+            ],
+            "details": "Use AsNoTracking projections, DateOnly.Today filters, and optional EF.CompileQuery for hot paths. Key cache by tenant/business and date. Support CancellationToken and follow existing DI registration. Add targeted unit tests for service-level aggregation and cache semantics if in-memory testing exists.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 5,
+            "title": "Expose GET /api/operations/today endpoint and integration tests",
+            "description": "Add controller action returning TodayViewResponse; ensure auth policies, validation, and performance under typical dataset.",
+            "dependencies": [
+              4
+            ],
+            "details": "Create or extend OperationsController with route /api/operations/today, inject aggregation service, and return DTO. Add integration tests with seeded data validating totals and list contents; include cache-hit behavior and a simple performance check targeting <200ms typical response time.",
+            "status": "pending",
+            "testStrategy": "Integration tests verifying aggregation correctness, authorization, and <200ms response; service-level tests for caching behavior"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Task & workflow API",
+        "description": "CRUD for simple tasks linked to records with statuses To Do/In Progress/Done.",
+        "details": "- Entities: TaskItem {Id, BusinessId, Title, Status, Due, LinkedType, LinkedId, AssigneeId}.\n- Endpoints: list/filter, create, update status, link/unlink.\n- WebSocket or SignalR optional later; MVP via polling.\n- Pseudo: POST /api/tasks {title, linkedType, linkedId} -> 201.",
+        "testStrategy": "Unit tests for status transitions; integration tests for CRUD and filtering by business and assignee.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add TaskItem entity, Status enum, and EF Core mapping",
+            "description": "Create the TaskItem model and status enum, integrate with DbContext, and add initial migration for persistence.",
+            "dependencies": [],
+            "details": "- Define Status enum with values: ToDo, InProgress, Done\n- Create TaskItem { Id, BusinessId, Title, Status, Due, LinkedType, LinkedId, AssigneeId, CreatedAt, UpdatedAt }\n- Configure EF Core (table name, required fields, max lengths, enum conversion if used, default Status=ToDo)\n- Add indexes: (BusinessId), (BusinessId, Status), (BusinessId, AssigneeId), (BusinessId, LinkedType, LinkedId)\n- Register DbSet<TaskItem> in DbContext and configure in OnModelCreating\n- Generate and apply migration (name: TaskItems_Init)\n- Align naming, nullability, and conventions to existing codebase",
+            "status": "pending",
+            "testStrategy": "Use EF InMemory or SQLite to validate model mapping and CRUD; assert default Status=ToDo; verify enum conversion; smoke test migration creation compiles."
+          },
+          {
+            "id": 2,
+            "title": "Implement task service/repository with validation and filters",
+            "description": "Create service/repository encapsulating CRUD, filtering, and business rules for status transitions and linking.",
+            "dependencies": [
+              1
+            ],
+            "details": "- Interface ITaskService (or repository) with methods: ListAsync(filter), GetAsync(id, businessId), CreateAsync(dto), UpdateAsync(id, businessId, dto), UpdateStatusAsync(id, businessId, newStatus), LinkAsync(id, businessId, linkedType, linkedId), UnlinkAsync(id, businessId), DeleteAsync(id, businessId)\n- Filters: BusinessId (required), Status?, AssigneeId?, LinkedType/LinkedId?, DueBefore/After?, Search in Title\n- Enforce status transitions: ToDo -> InProgress -> Done; block invalid back-transitions unless explicitly allowed\n- Validate create: Title required; BusinessId required; linked fields optional; Due optional\n- Ensure methods scope all queries by BusinessId and handle not found vs. forbidden correctly\n- Map domain exceptions to meaningful error codes (to be translated at API layer)",
+            "status": "pending",
+            "testStrategy": "Unit test service with InMemory EF: create/list with filters; valid/invalid status transitions; link/unlink idempotency; ensure BusinessId scoping prevents cross-tenant access."
+          },
+          {
+            "id": 3,
+            "title": "Add TasksController: GET list/filter and POST create",
+            "description": "Expose initial API endpoints to list and create tasks following existing controller and DTO patterns.",
+            "dependencies": [
+              2
+            ],
+            "details": "- Controller route: /api/tasks with [ApiController] and attribute routing\n- GET /api/tasks: query params businessId (or derive from context), status, assigneeId, linkedType, linkedId, dueBefore, dueAfter, search, page, pageSize; return paged results consistent with existing patterns\n- POST /api/tasks: body { title, linkedType?, linkedId?, due?, assigneeId? }; set BusinessId from context; return 201 with Location header (/api/tasks/{id}) and response body\n- Map DTOs to entity via service; validate ModelState and return standard problem details on errors",
+            "status": "pending",
+            "testStrategy": "Integration tests: create a task (201 + Location), then list with filters (status, assignee, linked) and pagination; assert results scoped by BusinessId."
+          },
+          {
+            "id": 4,
+            "title": "Add endpoints: update status, update fields, link/unlink, and delete",
+            "description": "Complete the controller with endpoints for status changes, general updates, linking, unlinking, and delete.",
+            "dependencies": [
+              3
+            ],
+            "details": "- PATCH /api/tasks/{id}/status { status }: validate transition via service; return 200/204\n- PATCH /api/tasks/{id} to update title, due, assigneeId; validate\n- POST /api/tasks/{id}/link { linkedType, linkedId }: validate and set link\n- DELETE /api/tasks/{id}/link: clear link\n- DELETE /api/tasks/{id}: soft/hard delete per repo conventions\n- Ensure BusinessId scoping/authorization and consistent error responses (404 vs 400)\n- Add request/response DTOs and FluentValidation/attributes per project standards",
+            "status": "pending",
+            "testStrategy": "Integration tests: invalid transition returns 400; valid transitions succeed; link/unlink works; delete hides from list; verify 404 for cross-business IDs."
+          },
+          {
+            "id": 5,
+            "title": "Wire DI/authorization, add docs, and test coverage",
+            "description": "Register services in DI, enforce business scoping/authorization, document endpoints, and add unit/integration tests.",
+            "dependencies": [
+              4
+            ],
+            "details": "- Register ITaskService in DI container\n- Extract BusinessId from HttpContext/claims or tenant provider used in project; ensure all controller actions pass BusinessId to service\n- Add authorization attributes/policies if required by project\n- Add Swagger annotations or XML comments for all endpoints and schemas\n- Write unit tests for DTO validation (if using FluentValidation)\n- Ensure logging for key actions; add basic README/API doc for Task endpoints",
+            "status": "pending",
+            "testStrategy": "Integration tests covering end-to-end flow: create -> list -> update status -> link/unlink -> delete; unit tests for validators and authorization guards where applicable."
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Notifications & comments API",
+        "description": "In-app notifications and comment threads on transactions.",
+        "details": "- Entities: Notification, Comment {LinkedType, LinkedId, Body, CreatedBy}.\n- SignalR hub for live updates if stack includes it; otherwise fetch on interval.\n- Create `POST /api/comments` and `GET /api/comments?linkedType&linkedId`.\n- Persist notification preferences per user.\n- Pseudo: create on key events (payment received, stock low).",
+        "testStrategy": "Integration tests posting and retrieving comments; verify notifications created on domain events. Security tests to prevent cross-business access.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          6,
+          7,
+          8,
+          9
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scan repository for existing API, EF Core, and SignalR patterns",
+            "description": "Explore the codebase to find controllers, entity base classes, DbContext, DTO mapping, and any SignalR hubs or domain event patterns to align with.",
+            "dependencies": [],
+            "details": "Use glob/grep to list .cs files and search for Notification/Comment, base entities (e.g., Auditable, CreatedBy), typical controller routing attributes, services, and DI patterns. Note conventions for authorization, tenant scoping, and pagination to follow in new endpoints.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 2,
+            "title": "Add Comment and Notification entities with EF configuration and migrations",
+            "description": "Define persistence models and configure DbContext following existing conventions.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create Comment {Id, LinkedType, LinkedId, Body, CreatedBy, CreatedAt} and Notification {Id, UserId, Type, LinkedType, LinkedId, Payload, IsRead, CreatedAt}. Add DbSet<> to DbContext, fluent configurations (indexes on LinkedType+LinkedId, UserId+IsRead+CreatedAt), value constraints, and relationships if applicable. Generate and review EF migration.",
+            "status": "pending",
+            "testStrategy": "Build migration; verify ModelSnapshot updates and indexes created. Run a local migrate to ensure schema applies cleanly."
+          },
+          {
+            "id": 3,
+            "title": "Implement Comments API endpoints with authorization and validation",
+            "description": "Create POST /api/comments and GET /api/comments?linkedType&linkedId matching existing API patterns.",
+            "dependencies": [
+              2
+            ],
+            "details": "Add CommentsController with DTOs and validation attributes, map to Comment entity, enforce tenant/business scoping, set CreatedBy from the authenticated user, order by CreatedAt desc with pagination, and return shapes consistent with existing APIs. Handle 400/401/403/404 using the project’s ProblemDetails pattern.",
+            "status": "pending",
+            "testStrategy": "Integration tests: can create and fetch thread; unauthorized users blocked; cross-tenant access denied; invalid input returns 400."
+          },
+          {
+            "id": 4,
+            "title": "Implement notifications domain service and delivery (SignalR or polling)",
+            "description": "Create notification creation service, delivery mechanism, and API for listing/marking read.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "If SignalR exists, add NotificationsHub broadcasting on new notifications; otherwise expose GET /api/notifications (filters: unread, since, paging) and POST /api/notifications/mark-read. Wire domain events to create Notification entries on comment created and other triggers.",
+            "status": "pending",
+            "testStrategy": "Integration tests: creating a comment produces a notification; unread count updates; SignalR hub (if present) receives broadcasts or polling returns new items."
+          },
+          {
+            "id": 5,
+            "title": "Persist per-user notification preferences and wire key event producers",
+            "description": "Store preferences and respect them when creating notifications for payment received and stock low events.",
+            "dependencies": [
+              4
+            ],
+            "details": "Add UserNotificationPreference storage (entity or existing settings), CRUD APIs or internal service to update/read preferences. Hook into payment and inventory services/events to conditionally enqueue notifications based on preferences. Ensure secure access control and multi-tenant boundaries.",
+            "status": "pending",
+            "testStrategy": "Unit/integration tests: updating preferences affects downstream notifications; simulate payment/stock events and confirm notifications are created or suppressed per user settings."
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Accounting: Cashbook & bank",
+        "description": "Implement cashbook entries, petty cash and bank accounts.",
+        "details": "- Entities: Account {type: Cash, Bank}, CashbookEntry {type: Sale, Expense, Transfer}, PaymentMethod.\n- Endpoints: record cash in/out, transfer, list by date.\n- Ledger light: do not implement full double entry; maintain balances per account and link to invoices.\n- Pseudo: POST /api/cashbook {accountId, amount, direction, ref}",
+        "testStrategy": "Unit tests for balance updates and validation; integration tests for listing and filtering; concurrency test for balance correctness.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          4,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Analyze repository and locate accounting/data layers and API conventions",
+            "description": "Explore the codebase to identify EF Core usage, DbContext location, API routing patterns, and existing accounting-related entities to align with project standards.",
+            "dependencies": [],
+            "details": "Use file globs to scan solution structure, search for DbContext, entities, and controllers. Identify namespaces, folders (e.g., Domain, Infrastructure, Api), and patterns for configuration (IEntityTypeConfiguration), DI registration, validation, and routing. Note naming conventions, decimal precision, and schema usage to ensure new code integrates smoothly.",
+            "status": "pending",
+            "testStrategy": "Document findings in task notes; validate by pointing to exact files and lines that define DbContext and typical controller patterns."
+          },
+          {
+            "id": 2,
+            "title": "Introduce accounting entities: Account, CashbookEntry, and PaymentMethod enum",
+            "description": "Add EF Core entity classes and enums for cash and bank accounts, cashbook entries, and payment methods consistent with existing model patterns.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create Account {Id, BusinessId, Name, Type(Cash/Bank), OpeningBalance, CurrentBalance, IsActive, CreatedAt}. Create CashbookEntry {Id, BusinessId, AccountId, Amount, Direction(In/Out), Type(Sale/Expense/Transfer), PaymentMethod, Ref, InvoiceId?, OccurredAt, Notes}. Configure relationships and decimal precision. Reuse common base entity conventions if present (e.g., auditable base). Place in correct project/folder and namespace.",
+            "status": "pending",
+            "testStrategy": "Add a minimal compile-time model building test; ensure entity configuration compiles with the existing DbContext."
+          },
+          {
+            "id": 3,
+            "title": "Configure DbContext mappings and add initial migration for accounting tables",
+            "description": "Register DbSet properties, add fluent configurations, and create a migration to persist the new tables with indexes and constraints.",
+            "dependencies": [
+              2
+            ],
+            "details": "Update the main DbContext with DbSet<Account> and DbSet<CashbookEntry>. Add IEntityTypeConfiguration classes if the project uses them. Configure indexes (e.g., unique (BusinessId, Name) on Account; index (BusinessId, OccurredAt) on CashbookEntry). Ensure decimal precision for money fields matches existing settings. Generate and apply an EF Core migration per repository workflow.",
+            "status": "pending",
+            "testStrategy": "Run migrations in a test environment; verify generated columns, indexes, and relationships match expectations."
+          },
+          {
+            "id": 4,
+            "title": "Implement service layer for cash in/out, transfer, listing, and balance maintenance",
+            "description": "Create an accounting service that validates input, updates balances transactionally, records entries, handles transfers, and supports listing by date and account.",
+            "dependencies": [
+              3
+            ],
+            "details": "Add IAccountingService with methods: RecordEntryAsync(accountId, amount, direction, type, method, ref, invoiceId?), TransferAsync(fromAccountId, toAccountId, amount, ref), ListEntriesAsync(from, to, accountId?). Ensure validations (positive amount, active accounts, sufficient funds for out), enforce optional idempotency via unique external Ref, update Account.CurrentBalance atomically, and link entries to invoices when provided.",
+            "status": "pending",
+            "testStrategy": "Unit tests for balance math, validation errors, and transfer atomicity; concurrency test simulating parallel writes to ensure balances remain correct."
+          },
+          {
+            "id": 5,
+            "title": "Expose REST endpoints for cashbook operations and integrate with invoices",
+            "description": "Add controller endpoints to record entries and transfers and to list entries by date; connect invoice payment flow to cashbook entries if present.",
+            "dependencies": [
+              4
+            ],
+            "details": "Create CashbookController with endpoints: POST /api/cashbook (accountId, amount, direction, type, method, ref, invoiceId?), POST /api/cashbook/transfer (fromAccountId, toAccountId, amount, ref), GET /api/cashbook?from&to&accountId. Map to service, apply validation attributes, and follow existing routing/versioning. Add authorization consistent with current scheme. Seed default petty cash and a primary bank account per Business if seeding is used. Provide query to fetch entries linked to a given invoice.",
+            "status": "pending",
+            "testStrategy": "Integration tests using test server to verify endpoint behavior, filters, authorization, and invoice linkage end-to-end."
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Accounting: Invoices & receipts",
+        "description": "Simple invoices and receipts, link to payments and cashbook.",
+        "details": "- Entities: Invoice {CustomerId, Lines, Total, Vat}, Receipt {InvoiceId?, Amount}.\n- Endpoints: create invoice, mark paid (cash/card/EFT/on account), issue receipt.\n- Generate simple PDF later; MVP return JSON.\n- Pseudo: POST /api/invoices -> returns invoiceNo; POST /api/invoices/{id}/pay.",
+        "testStrategy": "Integration tests creating invoice, partial/full payments, outstanding balances. Validate VAT calculations at 15%.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          6,
+          7,
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scan repository to identify accounting/cashbook code and API conventions",
+            "description": "Explore the codebase to find any existing accounting, cashbook, and general web API patterns to align with.",
+            "dependencies": [],
+            "details": "Use file globs and text search to locate relevant code: search for keywords like Invoice, Receipt, Cashbook, Accounting, Payment, Controller, Service, Repository, DbContext, DTO. Note tech stack (likely .NET), DI and routing setup, persistence (e.g., EF Core), validation, and response shapes to inform implementation.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 2,
+            "title": "Review key files to capture entity, persistence, and API style",
+            "description": "Open and examine controllers, entities, DbContext, and shared utilities to understand naming, validation, error handling, and money/VAT handling conventions.",
+            "dependencies": [
+              1
+            ],
+            "details": "Read representative controllers for routing and response patterns; inspect DbContext and entity mappings; check mapping/validation libraries (e.g., AutoMapper/FluentValidation); confirm timestamp/ID conventions and how cashbook linkages are modeled so invoices/receipts integrate cleanly.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 3,
+            "title": "Design Invoice/Receipt entities and DTOs that fit repository patterns",
+            "description": "Define domain models and request/response DTOs for invoices, lines, and receipts, including VAT and balance rules, aligned to conventions discovered.",
+            "dependencies": [
+              2
+            ],
+            "details": "Specify structures: Invoice {Id/Number, CustomerId, Lines[], Subtotal, Vat (15%), Total, Balance, Status, CreatedAt}; InvoiceLine {Description/ProductId, Qty, UnitPrice, VatRate}; Receipt/Payment {Id, InvoiceId?, Amount, Method, Reference, PostedAt}. Define CreateInvoice and PayInvoice payloads/responses, status states (draft/issued/partial/paid), and number generation strategy.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 4,
+            "title": "Implement POST /api/invoices and POST /api/invoices/{id}/pay with cashbook linkage",
+            "description": "Create endpoints and services to create invoices and record payments, updating balances and creating corresponding cashbook entries.",
+            "dependencies": [
+              3
+            ],
+            "details": "Follow DI, validation, and transaction patterns; compute totals and VAT at 15%; support cash/card/EFT/on account; validate amounts and prevent overpayment; transition invoice status appropriately; persist via ORM; return JSON including invoiceNo, totals, and remaining balance; ensure cashbook entries reflect payment method and link back to invoice/receipt.",
+            "status": "pending",
+            "testStrategy": "Integration tests: create invoice with multiple lines and verify subtotal, VAT 15%, total; perform partial and full payments across methods; assert updated balances, status transitions, receipt records, and corresponding cashbook entries; verify errors on overpayment."
+          },
+          {
+            "id": 5,
+            "title": "Expose read endpoints and document API; add PDF generation stub",
+            "description": "Provide retrieval endpoints and minimal documentation, and include a non-blocking placeholder for future PDF generation.",
+            "dependencies": [
+              4
+            ],
+            "details": "Implement GET /api/invoices/{id} and GET /api/invoices/{id}/receipts returning DTOs; update Swagger/README with example requests/responses; introduce a PDF generation stub in a service that currently returns JSON or a placeholder but keeps a clear seam for later implementation.",
+            "status": "pending",
+            "testStrategy": "Integration tests to fetch invoice and receipt details and validate response shapes and linkages; optionally snapshot example responses for contract stability."
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Accounting: Reports API",
+        "description": "Provide P&L (simple), cashflow summary, debtors/creditors lists.",
+        "details": "- Server-side queries projecting from invoices, cashbook, suppliers.\n- DTOs optimized for mobile dashboard.\n- Pseudo: GET /api/reports/pnl?from&to; GET /api/reports/debtors.",
+        "testStrategy": "Snapshot tests on seeded datasets to ensure consistent totals; verify date filtering and business scoping.",
+        "priority": "medium",
+        "dependencies": [
+          11,
+          12
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add Accounting Reports DTOs and query contracts in Application layer",
+            "description": "Create DTOs and MediatR query records for P&L, cashflow summary, and debtors/creditors aligned with existing Application patterns.",
+            "dependencies": [],
+            "details": "Under `backend/Toss/src/Application/Accounting/Reports/Queries/`, add folders `GetProfitAndLoss`, `GetCashflowSummary`, `GetDebtors`, and `GetCreditors`. In each, define DTOs (lean, mobile-friendly) and `IRequest<T>` query records with parameters: `ShopId`, `StartDate`, `EndDate`, plus optional paging for lists. Mirror structure used in `Application/Dashboard/Queries` files.",
+            "status": "pending",
+            "testStrategy": "Unit test DTO serialization shapes and validation for required parameters."
+          },
+          {
+            "id": 2,
+            "title": "Implement EF Core handlers for P&L, cashflow, debtors, and creditors",
+            "description": "Write `IRequestHandler<>` implementations projecting from `Sales`, `Payments`, `PurchaseOrders` (and related entities) via `IApplicationDbContext`.",
+            "dependencies": [
+              1
+            ],
+            "details": "In each query folder, implement handlers computing totals using efficient LINQ projections. P&L: revenue from `Sales` minus COGS/expenses (approx with `PurchaseOrders` where applicable). Cashflow: reuse logic similar to `Dashboard.GetCashFlowSummary` or refine per date window. Debtors: per-customer outstanding = sum(sales totals) − sum(payments by `CustomerId` and/or `SaleId`). Creditors: per-vendor outstanding = sum(PO totals) − sum(payments with `PurchaseOrderId`). Ensure filters by `ShopId`, date range, and exclude voided/cancelled statuses. Favor server-side aggregates and avoid loading collections.",
+            "status": "pending",
+            "testStrategy": "Snapshot tests against seeded in-memory DB verifying computed totals and date filtering boundaries."
+          },
+          {
+            "id": 3,
+            "title": "Expose minimal API endpoints via Reports endpoint group",
+            "description": "Create `Reports` endpoint group in Web layer mapping HTTP routes to the new queries using `ISender` and `[AsParameters]`.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Add `backend/Toss/src/Web/Endpoints/Reports.cs` inheriting `EndpointGroupBase`. Map routes: `GET /api/Reports/pnl`, `GET /api/Reports/cashflow`, `GET /api/Reports/debtors`, `GET /api/Reports/creditors`. Each method binds query params (`shopId`, `startDate`, `endDate`, paging for lists) to the corresponding query record and calls `sender.Send(query)`. Follow patterns in `Dashboard.cs` for mapping and responses.",
+            "status": "pending",
+            "testStrategy": "Functional smoke tests hitting the endpoints to ensure 200 OK and expected JSON contract."
+          },
+          {
+            "id": 4,
+            "title": "Add functional tests with seeded datasets for reports",
+            "description": "Introduce functional tests to validate totals, date filtering, and scoping for new reports endpoints.",
+            "dependencies": [
+              3
+            ],
+            "details": "Under `backend/Toss/tests/Application.FunctionalTests`, add a `Reports` folder with tests using `CustomWebApplicationFactory`. Seed sales, payments, and purchase orders across date windows and shops. Test cases: P&L totals over range, cashflow in/out/net, top debtors, top creditors, pagination/sorting, and shop scoping. Validate boundary conditions (inclusive start/exclusive end as per conventions).",
+            "status": "pending",
+            "testStrategy": "End-to-end tests via HTTP client; snapshot or strict value assertions for deterministic seeded data."
+          },
+          {
+            "id": 5,
+            "title": "Optimize, document, and wire configuration for Reports API",
+            "description": "Apply performance tweaks, add OpenAPI descriptions, and ensure DI scans pick up new handlers.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Convert heavy aggregates to compiled queries where beneficial; verify indexes on commonly filtered columns (`ShopId`, dates, status). Add XML/annotation summaries and route docs so `wwwroot/api/specification.json` captures parameters/responses. Confirm no extra DI registration is needed (Application assembly MediatR scanning); otherwise update `Application/DependencyInjection.cs`. Add simple in-memory caching (30–60s) for list endpoints if needed for mobile dashboards.",
+            "status": "pending",
+            "testStrategy": "Micro-bench assertions (if present) and verification that OpenAPI spec includes new endpoints/params; manual validation of cache behavior in tests if caching enabled."
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Procurement: Suppliers & POs",
+        "description": "Supplier management and PR→PO→Goods Receipt flow.",
+        "details": "- Entities: Supplier, PurchaseRequest, PurchaseOrder, GoodsReceipt, SupplierInvoice.\n- Endpoints: create supplier, create PR, approve to PO, receive goods.\n- On receipt, create InventoryTransaction (Purchase) and update weighted average cost.\n- Link SupplierInvoice to Accounting creditors report.\n- Pseudo: POST /api/procurement/po, POST /api/procurement/grn.",
+        "testStrategy": "Integration tests for PR→PO→GRN→SupplierInvoice. Verify stock increments and cost updates. Ensure idempotent receipt handling.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          6,
+          7,
+          4,
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define procurement domain models and EF mappings (Supplier, PR, PO, GRN, SupplierInvoice)",
+            "description": "Introduce core procurement entities with relationships, value objects, and initial EF Core configurations.",
+            "dependencies": [],
+            "details": "Add entities: Supplier, PurchaseRequest (+lines), PurchaseOrder (+lines), GoodsReceipt (+lines), SupplierInvoice (+lines). Include relationships to Item and StockLocation where applicable. Configure EF Core entities with keys, required fields, indexes (e.g., Supplier unique code), and status enums. Extend DbContext and add migrations. Include base auditing fields and soft-delete if used elsewhere. Prepare InventoryTransaction type Purchase for later use.",
+            "status": "pending",
+            "testStrategy": "Unit tests for entity invariants and EF model building; run migration add/diff to verify schema."
+          },
+          {
+            "id": 2,
+            "title": "Implement API endpoints for Supplier and Purchase Request creation with validation",
+            "description": "Expose endpoints to create suppliers and purchase requests following existing API conventions.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add controllers/handlers: POST /api/procurement/suppliers and POST /api/procurement/pr. Define DTOs and validation (e.g., supplier code/name required, PR lines require ItemId, quantity > 0). Map DTOs to entities using existing mapper pattern. Return created IDs and summaries. Enforce tenant/business scoping and authorization consistent with existing controllers.",
+            "status": "pending",
+            "testStrategy": "Integration tests: create supplier and PR, validate persisted entities and input validation errors."
+          },
+          {
+            "id": 3,
+            "title": "Approve PR to PO flow with status transitions and numbering",
+            "description": "Convert approved PRs into POs with proper validation, numbering, and audit trail.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Add service method to approve PR: validates supplier presence, item availability, and business rules; generates PO number; creates PurchaseOrder with lines from PR; updates PR status (Approved/Converted). Expose endpoint: POST /api/procurement/po (from PR id). Ensure idempotency on repeated approvals (no duplicate POs) using a token or PR status check. Persist audit entries and timestamps.",
+            "status": "pending",
+            "testStrategy": "Integration tests: create PR then approve to PO; verify PO created once, PR status updated, numbering format correct."
+          },
+          {
+            "id": 4,
+            "title": "Goods Receipt (GRN) endpoint creating InventoryTransaction and weighted average cost update",
+            "description": "Receive goods for a PO, create GRN, increase stock, and update weighted average cost safely.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Add endpoint POST /api/procurement/grn to receive items against a PO (full/partial). Create GoodsReceipt and lines; for each line, create InventoryTransaction of type Purchase. Implement WeightedAverageCostService: newAvg = (prevQty*prevCost + recvQty*recvCost) / (prevQty+recvQty). Use decimal math, handle zero-qty edge cases, and row-version concurrency. Enforce idempotency via a receiptKey or GRN number to prevent duplicate postings. Update PO receipt status and remaining quantities.",
+            "status": "pending",
+            "testStrategy": "Integration tests: PO -> GRN flow updates on-hand quantities and weighted average cost; idempotent re-post returns no double increment."
+          },
+          {
+            "id": 5,
+            "title": "Create SupplierInvoice and link to Accounting creditors report",
+            "description": "Record supplier invoice for received goods and integrate with Accounts Payable reporting.",
+            "dependencies": [
+              1,
+              4
+            ],
+            "details": "Add SupplierInvoice creation (from GRN/PO) with lines, VAT, totals, due date, and Supplier linkage. Post accounting entry to creditors/AP ledger consistent with existing accounting module patterns so it appears in the creditors report. Expose endpoint to create invoice and query by supplier. Ensure references between SupplierInvoice, PO/GRN, and ledger are consistent. Handle partial invoicing if supported; otherwise validate full match.",
+            "status": "pending",
+            "testStrategy": "End-to-end test: PR→PO→GRN→SupplierInvoice; verify AP ledger/creditors report includes invoice, balances correct, and cross-links resolve."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Sales: Quotes → Orders → Delivery → Invoices",
+        "description": "Non-POS sales workflow integrated with stock and accounting.",
+        "details": "- Entities: Quote, SalesOrder, DeliveryNote, Invoice (reuse), Customer.\n- Reserve stock on order (optional MVP skip; decrement on delivery/invoice).\n- Endpoints for each step and state transitions.\n- Pseudo: POST /api/sales/orders; POST /api/sales/delivery; link to invoice creation.",
+        "testStrategy": "E2E tests from quote to invoice; verify stock decremented on delivery/invoice; permissions enforced.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          6,
+          7,
+          12,
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Extend SalesDocumentType and numbering for Quote, SalesOrder, DeliveryNote",
+            "description": "Add missing non-POS document types and ensure document numbering covers them.",
+            "dependencies": [],
+            "details": "Update backend/Toss/src/Domain/Enums/SalesDocumentType.cs to include Quote, SalesOrder, DeliveryNote. In backend/Toss/src/Application/Sales/Commands/CreateSalesDocument/CreateSalesDocumentCommand.cs extend GenerateDocumentNumber to map prefixes: QTE (Quote), SO (SalesOrder), DN (DeliveryNote). Keep idempotency check (one doc per sale/type). Validate minimal rules: Quote/SalesOrder/DeliveryNote allow null DueDate; Invoice retains current rules. No DB migration needed (enum expansion only).",
+            "status": "pending",
+            "testStrategy": "Unit test GenerateDocumentNumber mappings and idempotent creation per type."
+          },
+          {
+            "id": 2,
+            "title": "Add POST endpoints for creating Quotes, Orders, and Delivery Notes",
+            "description": "Expose convenience routes that delegate to CreateSalesDocument for each new type.",
+            "dependencies": [
+              1
+            ],
+            "details": "In backend/Toss/src/Web/Endpoints/Sales.cs: add MapPost(\"quotes\", ...) to call CreateSalesDocument with DocumentType=Quote; MapPost(\"orders\", ...) with DocumentType=SalesOrder; MapPost(\"deliveries\", ...) with DocumentType=DeliveryNote. Accept same payload as CreateSalesDocument (requires existing SaleId). Document in method summaries and keep consistent route naming. Follow existing minimal API pattern and naming conventions.",
+            "status": "pending",
+            "testStrategy": "Integration tests: POST each new route returns 201 with id and creates correct SalesDocumentType."
+          },
+          {
+            "id": 3,
+            "title": "Decrement stock on DeliveryNote (or Invoice if no DeliveryNote) for non-POS sales",
+            "description": "Implement stock adjustment when a Delivery Note is created; fall back to Invoice if no delivery was created.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "In CreateSalesDocumentCommand handler, after persisting: if type=DeliveryNote, reduce stock for sale items using StockLevels and create StockMovements with ReferenceType=\"SalesDocument\" and ReferenceId=document.Id. If type=Invoice and no DeliveryNote exists for sale, perform same reduction. Ensure idempotency by checking for existing StockMovements for this sale/document. Skip POS sales (SaleType.POS) to avoid double-decrement (POS path already adjusts). Log actions similarly to SaleCompletedStockUpdateEventHandler.",
+            "status": "pending",
+            "testStrategy": "Integration test: create pre-order sale, create DeliveryNote → assert StockLevels decrease and StockMovements created; create Invoice after DeliveryNote → assert no additional decrement; create Invoice without DeliveryNote → assert single decrement."
+          },
+          {
+            "id": 4,
+            "title": "Add GET endpoints and invoice link for non-POS flow",
+            "description": "Provide filtered listing routes and a simple invoice creation link from order/delivery context.",
+            "dependencies": [
+              2
+            ],
+            "details": "In Sales.cs, add MapGet(\"quotes\", ...) and MapGet(\"orders\", ...) and MapGet(\"deliveries\", ...) that call GetSalesDocuments with Type filter set accordingly. Add a convenience MapPost(\"orders/{saleId}/invoice\", ...) that calls CreateSalesDocument (or existing CreateInvoice) for the given saleId to create an invoice. Keep naming consistent with existing endpoints and reuse DTOs.",
+            "status": "pending",
+            "testStrategy": "Integration tests: GET routes return only matching document types; POST invoice link returns 201 and creates an Invoice document."
+          },
+          {
+            "id": 5,
+            "title": "End-to-end flow test: Quote → Order → Delivery → Invoice with stock/accounting",
+            "description": "Validate the complete non-POS workflow over HTTP and database side-effects.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Test script: 1) Create a non-POS sale (SaleType=PreOrder) with items. 2) POST /api/sales/quotes. 3) POST /api/sales/orders. 4) POST /api/sales/deliveries → assert stock decremented and movements recorded. 5) POST /api/sales/invoices (or /orders/{saleId}/invoice) → ensure no double decrement. Verify GetSalesDocuments filters work. Optionally verify UpdateInvoiceStatus(\"paid\") updates IsPaid and sale status. Ensure permissions/auth consistent with existing endpoints.",
+            "status": "pending",
+            "testStrategy": "E2E tests through minimal API using in-memory/test DB; verify HTTP 201/200 responses, document types, stock levels, and StockMovements. Validate VAT totals align with existing calc."
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "CRM: Customers and interactions",
+        "description": "Basic customer profiles with tags and manual interaction log.",
+        "details": "- Entities: Customer {Name, Phone, Tags, CreditLimit}, Interaction {Type, Note, When}.\n- Endpoints: CRUD customers, add interaction, list interactions.\n- Index phone unique per business.\n- Pseudo: POST /api/crm/customers; POST /api/crm/interactions.",
+        "testStrategy": "CRUD tests, unique phone constraint test, filtering by tag and date range.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scan repository to identify existing API, EF Core, and module conventions",
+            "description": "Explore files and search for Customer/CRM patterns to understand current architecture.",
+            "dependencies": [],
+            "details": "List project files and search for patterns like DbContext, controllers, routing attributes, BusinessId/tenant scoping, soft-delete, DTO/mapping, and validation. Read representative files (DbContext, existing modules/entities, base controllers, DI setup) to mirror naming, namespaces, and EF configuration style for CRM.",
+            "status": "pending",
+            "testStrategy": null
+          },
+          {
+            "id": 2,
+            "title": "Add Customer and Interaction domain models with EF Core configurations",
+            "description": "Define entities and relationships consistent with repository patterns, including unique phone per business.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create entities: Customer {Id, BusinessId, Name, Phone, Tags (string or normalized per repo), CreditLimit, CreatedAt}; Interaction {Id, BusinessId, CustomerId (FK), Type, Note, When, CreatedAt}. Configure EF Core with unique index on (BusinessId, Phone), required fields, FK constraints, and sensible max lengths. Update DbContext with DbSet entries and entity type configurations.",
+            "status": "pending",
+            "testStrategy": "Model configuration tests or snapshot verification; basic validation tests for required fields"
+          },
+          {
+            "id": 3,
+            "title": "Implement customer application services and DTOs (CRUD + tag filtering)",
+            "description": "Provide DTOs and service methods to manage customers with validation and mapping.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create Create/Update/Read DTOs aligned with repository mapping patterns. Implement service methods: Create, GetById, List (with optional tag filter), Update, Delete. Enforce unique phone per business in service layer and rely on DB unique index for final guarantee. Handle soft-delete and tenant scoping via BusinessId if used elsewhere.",
+            "status": "pending",
+            "testStrategy": "Unit tests for service behavior: create, update, delete, list with tag filter, and duplicate phone rejection"
+          },
+          {
+            "id": 4,
+            "title": "Expose REST endpoints for customers and interactions",
+            "description": "Add controllers/endpoints to serve customers CRUD and interaction logging/listing.",
+            "dependencies": [
+              3
+            ],
+            "details": "Create CustomersController: POST /api/crm/customers, GET /api/crm/customers/{id}, GET /api/crm/customers?tag=, PUT /api/crm/customers/{id}, DELETE /api/crm/customers/{id}. Create Interactions endpoints: POST /api/crm/interactions (add) and GET /api/crm/customers/{id}/interactions (list with date/type filters). Apply authorization, model validation, and business scoping per base controller conventions.",
+            "status": "pending",
+            "testStrategy": "Integration tests for endpoints with seeded data validating payloads, status codes, and error handling"
+          },
+          {
+            "id": 5,
+            "title": "Create and validate EF migration with unique indexes",
+            "description": "Generate and verify database migration for Customers and Interactions including unique phone per business.",
+            "dependencies": [
+              2,
+              4
+            ],
+            "details": "Add EF migration creating tables, PKs, FKs, unique index on (BusinessId, Phone), and supporting indexes (BusinessId, When, tag/bridge if normalized). Apply migration locally. Validate duplicate phone per business fails while same phone across different businesses succeeds. Document rollback/Down migration path.",
+            "status": "pending",
+            "testStrategy": "Migration application tests and constraint violation test; smoke integration test passes after migration"
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "title": "Inventory: Items, locations, movements",
+        "description": "Item catalog, stock locations, and movement handling with alerts.",
+        "details": "- Entities: Item, StockLocation, InventoryTransaction, ReorderLevel.\n- Endpoints: CRUD items, locations; POST movement (adjustment, transfer); stock-on-hand by location.\n- Alerts: scheduled job querying low stock (min level).\n- Weighted average valuation calculation maintained on purchase/adjustment.\n- Pseudo: GET /api/stock/soh?itemId&locationId.",
+        "testStrategy": "Unit tests for valuation math; integration for movements and transfers; verify low-stock alerts produced.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          4,
+          6,
+          7,
+          14
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Inventory domain model and persistence layer implementation (Item, StockLocation, InventoryTransaction, ReorderLevel)",
+            "description": "Introduce core inventory entities, EF Core configurations, and DbContext updates with initial migration.",
+            "dependencies": [],
+            "details": "Create entities with fields: Item {Id, Sku, Name, Unit, IsActive, AverageCost, CurrentQty?}, StockLocation {Id, Code, Name, IsActive}, InventoryTransaction {Id, ItemId, FromLocationId?, ToLocationId?, Quantity, UnitCost, Type (Purchase, Adjustment, TransferOut, TransferIn, Consume, Produce), Timestamp, Reference}, ReorderLevel {Id, ItemId, LocationId, MinLevel}. Add EF Core configurations, relationships, and indexes; extend DbContext with DbSets and OnModelCreating. Generate migration and update database per repo conventions discovered. Ensure soft-delete/auditing alignment if used.",
+            "status": "pending",
+            "testStrategy": "Compile build; run migration in dev; verify tables/columns; add minimal unit tests for entity configuration if pattern exists."
+          },
+          {
+            "id": 2,
+            "title": "REST API: CRUD endpoints for Items and StockLocations with DTOs/validation",
+            "description": "Expose create/read/update/archive endpoints for Item and StockLocation following existing API patterns and DTO mapping.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add ItemsController and StockLocationsController (or extend existing). Implement endpoints: GET list/detail with filters, POST create, PUT/PATCH update, DELETE/archive if applicable. Use DTOs, validators, and mapping helpers per repo conventions. Enforce unique constraints (e.g., SKU, Location Code) with proper error responses. Secure endpoints with existing auth/tenant filters. Add repository/service layer or MediatR handlers if used in the codebase.",
+            "status": "pending",
+            "testStrategy": "Integration tests: create, update, list, and conflict handling (duplicate SKU/Code). Verify authorization and validation errors."
+          },
+          {
+            "id": 3,
+            "title": "Inventory movements service and endpoint (adjustment, purchase in, transfer) with weighted average valuation",
+            "description": "Implement movement posting API and domain service that records transactions and updates stock/valuation using weighted average cost.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create InventoryService with methods: PostAdjustment(itemId, locationId, qty, unitCost?), PostPurchase(itemId, locationId, qty, unitCost), Transfer(itemId, fromLocationId, toLocationId, qty). Persist InventoryTransaction rows (two rows for transfer: out/in). Maintain Item.AverageCost using weighted average on purchase/positive adjustments; prevent negative stock per business rule. Ensure concurrency handling (transactions/row version). Add MovementsController with POST /api/inventory/movements and specific routes. Return resulting SOH and average cost.",
+            "status": "pending",
+            "testStrategy": "Unit tests for weighted average math across sequences; integration tests posting purchases, adjustments, and transfers verifying quantities per location and average cost updates."
+          },
+          {
+            "id": 4,
+            "title": "Stock-on-hand query endpoint and projections",
+            "description": "Provide efficient SOH by item and location with optional filters and aggregation.",
+            "dependencies": [
+              3
+            ],
+            "details": "Implement query: GET /api/stock/soh?itemId&locationId. Create read model or SQL aggregation to compute per (ItemId, LocationId) balances from InventoryTransaction or from maintained quantities if denormalized. Optimize with indexes and consider a view/stored projection if pattern exists. Include total across all locations when locationId is absent. Ensure authorization/tenant scoping.",
+            "status": "pending",
+            "testStrategy": "Integration tests: after posting movements, call SOH endpoint to verify balances for specific location and totals. Performance sanity (query uses index/aggregation)."
+          },
+          {
+            "id": 5,
+            "title": "Low-stock alert scheduler and notifications",
+            "description": "Add scheduled job to check ReorderLevel and emit low-stock alerts, integrating with existing notification mechanism if present.",
+            "dependencies": [
+              4
+            ],
+            "details": "Implement a background job (IHostedService/Quartz/Hangfire per repo) that periodically queries items with SOH < MinLevel per location using the SOH projection. Create alert records or dispatch domain events to existing Notification system. Make schedule configurable via app settings. Ensure idempotency and avoid duplicate alerts within a time window. Add admin endpoint to trigger manual run if pattern exists.",
+            "status": "pending",
+            "testStrategy": "Integration test: seed ReorderLevel and stock below threshold, run job (or invoke handler) and assert alert creation. Verify no duplicates on repeated runs within window; security checks for multi-tenant scoping."
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Manufacturing: BOM and production orders",
+        "description": "Simple production management for small producers.",
+        "details": "- Entities: BillOfMaterials {ProductId, Components[]}, ProductionOrder {PlannedQty, Consumed[], Produced[]}.\n- On complete: decrement raw materials, increment finished goods via InventoryTransaction types (Consume/Produce).\n- Costing: roll-up material cost + simple overhead percentage.\n- Endpoints: CRUD BOM, create/complete production order.\n- Pseudo: POST /api/mfg/orders/{id}/complete.",
+        "testStrategy": "Integration tests consuming materials and increasing finished stock; verify cost roll-up and negative stock prevention.",
+        "priority": "medium",
+        "dependencies": [
+          17,
+          14
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Locate existing inventory, product, and transaction code to align manufacturing module",
+            "description": "Scan the repository to identify domain models, services, DbContext mappings, and controllers related to inventory, costing, and routing patterns.",
+            "dependencies": [],
+            "details": "Search for symbols such as InventoryTransaction, InventoryService, Product, Stock, Cost, and typical controller patterns under the API layer. Note namespaces, folder layout (e.g., Domain/Application/Infrastructure/API), and whether CQRS/MediatR, DTOs, and AutoMapper are used. This ensures BOM and Production Order integrate with current conventions and stock movement flows.",
+            "status": "pending",
+            "testStrategy": "Document discovered files and patterns; no code tests required."
+          },
+          {
+            "id": 2,
+            "title": "Design and add BillOfMaterials domain + persistence following repo conventions",
+            "description": "Introduce BillOfMaterials with components and EF mappings consistent with existing entity patterns, including validations.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create BillOfMaterials aggregate with ProductId and Components (ComponentProductId, Quantity, UoM, optional ScrapPct). Add EF Core configuration, DbSet, and repository/handler plumbing matching the project style. Provide DTOs and mappers if the repo uses them. Ensure uniqueness per ProductId or support revisions per conventions. Add CRUD service/handlers scaffolding for BOMs.",
+            "status": "pending",
+            "testStrategy": "Unit tests: persist/retrieve BOM with multiple components; validate non‑zero quantities and referential integrity to existing Product records."
+          },
+          {
+            "id": 3,
+            "title": "Add ProductionOrder entity, status workflow, and costing roll‑up service",
+            "description": "Create ProductionOrder with statuses and integrate a costing service that rolls up BOM material costs plus overhead percentage.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Define ProductionOrder {ProductId, PlannedQty, Status, Consumed[], Produced[], Timestamps}. Add enum for ProductionOrderStatus (Planned, InProgress, Completed, Cancelled) consistent with repo style. Implement IManufacturingCostingService to compute planned cost from BOM using current item costs (e.g., weighted average) plus configurable overhead. Wire EF mappings, DbSet, DTOs, and DI registrations to match patterns.",
+            "status": "pending",
+            "testStrategy": "Unit tests: costing roll‑up uses BOM quantities and current costs; overhead application verified; status transitions enforce valid flows."
+          },
+          {
+            "id": 4,
+            "title": "Implement APIs: BOM CRUD, create Production Order, and complete endpoint",
+            "description": "Expose REST endpoints aligned with existing controller/CQRS patterns, including POST /api/mfg/orders and POST /api/mfg/orders/{id}/complete.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Add controllers/handlers for BOM CRUD and ProductionOrder creation. Implement complete action to: validate BOM presence, compute actuals, create InventoryTransactions (Consume for raw components, Produce for finished item), update finished goods quantity/cost, and persist as an atomic transaction. Follow existing validation, auth, and error handling conventions.",
+            "status": "pending",
+            "testStrategy": "Integration tests: create BOM, create order, complete order; assert raw stock decremented, finished stock incremented, and finished cost updated. Verify route shapes and response contracts."
+          },
+          {
+            "id": 5,
+            "title": "Enforce business rules: negative stock prevention, idempotency, and data validation",
+            "description": "Add guards and transactional behavior consistent with inventory module to prevent negative stock and duplicate completions.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Before completion, check component availability (or config allowing negatives). Ensure idempotent completion by tracking CompletedAt/Status and rejecting repeats. Validate UoM consistency, positive quantities, and non‑empty component lists. Ensure all inventory updates occur within a unit‑of‑work/transaction using existing infrastructure. Return precise error codes/messages aligned with project standards.",
+            "status": "pending",
+            "testStrategy": "Integration tests: attempt completion with insufficient stock (expect failure), repeat completion (no duplicate transactions), mixed error case rolls back all changes; confirm consistent error responses."
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "title": "Projects/Jobs module",
+        "description": "Job cards with tasks, materials, labour and billing links.",
+        "details": "- Entities: Project {CustomerId, Status}, ProjectTask, ProjectMaterial {ItemId, Qty}, LabourEntry {Hours, Rate}.\n- Endpoints: create job, add materials (deduct stock), add labour, link invoice.\n- Status flow: New → In Progress → On Hold → Completed → Closed.\n- Pseudo: POST /api/projects; POST /api/projects/{id}/materials.",
+        "testStrategy": "E2E tests creating project, consuming stock, invoicing. Ensure status transitions and permission checks.",
+        "priority": "medium",
+        "dependencies": [
+          16,
+          17,
+          12
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scan TossErp repository for EF Core DbContext, controller patterns, and inventory/billing modules",
+            "description": "Enumerate solution and project files; locate DbContext, entities, controllers, and inventory/billing modules to align Projects/Jobs implementation.",
+            "dependencies": [],
+            "details": "List `*.sln`, `*.csproj`, and `appsettings*.json`. Search for `DbContext`, `OnModelCreating`, and `Controller` classes. Search for `Inventory`, `Stock`, `Invoice`, and `Billing` services or repositories. Open representative files to capture routing attributes, DTO/mapping, validation filters, transactions, and response conventions to follow.",
+            "status": "pending",
+            "testStrategy": "No code changes. Validate by listing files and summarizing conventions found."
+          },
+          {
+            "id": 2,
+            "title": "Define EF Core entities and configurations for Project, ProjectTask, ProjectMaterial, LabourEntry",
+            "description": "Create entities and configurations consistent with repository patterns, including status enum, relationships, and indexes; update DbContext and add a migration.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add `Project { Id, CustomerId, Status }` with a `ProjectStatus` enum. Add `ProjectTask` with `ProjectId`. Add `ProjectMaterial { Id, ProjectId, ItemId, Qty }`. Add `LabourEntry { Id, ProjectId, Hours, Rate }`. Configure relationships via Fluent API/config classes (FKs, cascade behavior, required fields, indexes). Update DbContext to include DbSets and model configuration. Generate a migration per repo naming standards.",
+            "status": "pending",
+            "testStrategy": "Build passes; migration generation produces expected tables, FKs, and indexes without errors."
+          },
+          {
+            "id": 3,
+            "title": "Implement ProjectsController for creation, retrieval, and status transitions",
+            "description": "Add controller endpoints: `POST /api/projects` to create jobs, `GET /api/projects/{id}` to retrieve, and `PATCH /api/projects/{id}/status` to enforce the status flow with authorization and validation.",
+            "dependencies": [
+              2
+            ],
+            "details": "Follow existing controller base class and routing patterns (`[Route(\"api/projects\")]`). Use DTOs and mapping strategy (AutoMapper or manual) consistent with repo. Implement status machine: New → In Progress → On Hold → Completed → Closed with guards and permission checks. Return consistent response types and error handling per conventions.",
+            "status": "pending",
+            "testStrategy": "Unit tests for valid/invalid status transitions and auth rules; manual API smoke tests for create/get/patch."
+          },
+          {
+            "id": 4,
+            "title": "Add materials and labour endpoints with transactional stock/time handling",
+            "description": "Implement `POST /api/projects/{id}/materials` to add materials and deduct stock atomically, and `POST /api/projects/{id}/labour` to record time entries with validation.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Integrate with existing inventory/stock service or repository; validate item existence and available quantity; handle concurrency and wrap updates in a transaction; persist `ProjectMaterial` and `LabourEntry`; return updated summaries. Apply existing validation/authorization filters and audit logging if standard.",
+            "status": "pending",
+            "testStrategy": "Integration tests: create project, add materials (assert stock decreased; test insufficient stock), add labour (assert persisted). Verify transactional behavior and error responses."
+          },
+          {
+            "id": 5,
+            "title": "Link project to invoice and extend aggregated retrieval",
+            "description": "Provide `POST /api/projects/{id}/invoice` to associate an existing invoice and extend retrieval to include tasks, materials, labour, and billing references.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Validate invoice existence and permissions using existing billing/invoice service. Enforce status-based rules for linking (e.g., restrict when Closed). Extend GET projection to include related collections and invoice link via eager loading or projection DTOs. Update Swagger/OpenAPI docs if present.",
+            "status": "pending",
+            "testStrategy": "E2E test: create project, add materials and labour, link invoice, retrieve aggregated view; verify permissions and status rules are enforced."
+          }
+        ]
+      },
+      {
+        "id": 20,
+        "title": "Assets register",
+        "description": "Track assets, locations, condition, and maintenance history.",
+        "details": "- Entities: Asset {Name, Value, Location, Condition}, MaintenanceLog.\n- Endpoints: CRUD assets, add maintenance entry.\n- Optional depreciation later; not in MVP computations.\n- Pseudo: POST /api/assets; POST /api/assets/{id}/maintenance.",
+        "testStrategy": "CRUD tests and retrieval by location/condition filters.",
+        "priority": "low",
+        "dependencies": [
+          3,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "POS API (online-first)",
+        "description": "Backend endpoints to support POS checkout with payments and receipts.",
+        "details": "- Endpoints: scan item, add to cart, calculate totals/discounts, commit sale -> reduce stock, record cashbook, print/send receipt.\n- Support payment types: cash, card, on account.\n- Prepare for offline by exposing minimal JSON contracts and idempotency keys.\n- Pseudo: POST /api/pos/checkout {lines[], payments[]} with idempotency header.",
+        "testStrategy": "Integration tests for checkout: stock decrement, cashbook entry, receipt record. Idempotency test by retrying same request.",
+        "priority": "high",
+        "dependencies": [
+          12,
+          11,
+          17,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "Offline-first POS client (PWA)",
+        "description": "Web PWA for POS with local cache and sync.",
+        "details": "- If repo has frontend, align (Blazor WASM/React). Otherwise propose React 18 + Vite + Workbox 7.\n- Use IndexedDB via `idb` library for cart and item cache.\n- Installable PWA with manifest and service worker caching critical APIs.\n- Sync queue with idempotency keys when online.\n- Pseudo: navigator.serviceWorker, background sync if available.",
+        "testStrategy": "Lighthouse PWA audit, offline tests for item lookup and queued sale; e2e test with Playwright simulating offline/online.",
+        "priority": "medium",
+        "dependencies": [
+          21,
+          17,
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Quality module",
+        "description": "Checklists, incidents, and follow-up actions.",
+        "details": "- Entities: QualityChecklist, ChecklistItem, Incident {Type, Severity}, ActionItem (assignee, due).\n- Endpoints: create checklist, record run, log incident, assign actions.\n- Pseudo: POST /api/quality/incidents; POST /api/quality/checks/run.",
+        "testStrategy": "Integration tests ensuring records created and permissions enforced; list by severity and date.",
+        "priority": "low",
+        "dependencies": [
+          3,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Support (tickets) module",
+        "description": "Simple service desk for issues and requests.",
+        "details": "- Entities: Ticket {Type, Status, LinkedType, LinkedId}, TicketNote.\n- Endpoints: CRUD tickets, add note, status transitions.\n- Optional notifications on status change.\n- Pseudo: POST /api/support/tickets; PATCH /api/support/tickets/{id}/status.",
+        "testStrategy": "Unit tests for status rules; integration tests for linked entity access and notes timeline.",
+        "priority": "low",
+        "dependencies": [
+          3,
+          6,
+          7,
+          10
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "HR & Payroll basics",
+        "description": "Employees, attendance, and payroll summary export.",
+        "details": "- Entities: Employee {RateType, Rate}, Attendance {ClockIn/Out or Days}, PayrollRun {Gross, Deductions, Net}.\n- Wizards to compute simple payroll summary (no SARS integration).\n- Endpoints: CRUD employees, record attendance, generate payroll summary for period.\n- Pseudo: POST /api/hr/payroll/run?from&to.",
+        "testStrategy": "Integration tests for payroll calculation correctness across hourly/daily rates; permissions enforcement.",
+        "priority": "low",
+        "dependencies": [
+          3,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Audit trail and activity timeline",
+        "description": "Record who did what and show simple business activity feed.",
+        "details": "- Implement domain events or EF SaveChanges interceptor to log events per entity change with actor and timestamp.\n- Build `/api/activity/today` and per-entity timeline.\n- Store compact JSON diff for readability where feasible.\n- Pseudo: override SaveChanges -> write AuditEntry.",
+        "testStrategy": "Tests asserting audit records created for creates/updates/deletes; timeline aggregates by date. Verify business scoping.",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Import/export CSV",
+        "description": "CSV import/export for items, customers, suppliers.",
+        "details": "- File upload endpoints parsing CSV with `CsvHelper`.\n- Validate and upsert records; provide download templates.\n- Export endpoints with proper CSV headers and encoding.\n- Pseudo: POST /api/import/items (multipart/form-data).",
+        "testStrategy": "Parsing tests with sample CSVs incl. error cases. Round-trip export→import without data loss. Permission tests.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          6,
+          7,
+          17,
+          16,
+          14
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Basic collaboration surfaces",
+        "description": "Feedback on sales/tickets and simple offers from suppliers (ERP-III).",
+        "details": "- Extend comments with type: feedback/offer.\n- Add endpoints for customers/suppliers to submit via simple public forms (tokenized links) for MVP.\n- Rate-limit and captcha (hCaptcha/Turnstile) if public endpoints added.\n- Pseudo: POST /api/collab/feedback {salesId, rating, note}.",
+        "testStrategy": "Integration tests for feedback submissions; verify tokens restrict to intended records; abuse prevention tests for rate limit.",
+        "priority": "low",
+        "dependencies": [
+          10,
+          15,
+          24,
+          16,
+          14
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "API versioning and documentation",
+        "description": "Introduce API versioning and generate OpenAPI/Swagger.",
+        "details": "- Use `AspNetCore.Mvc.Versioning` and Swashbuckle.\n- Document security schemes (JWT) and response models.\n- Group endpoints by module.\n- Pseudo: options.ReportApiVersions(); SwaggerGen with XML comments.",
+        "testStrategy": "Swagger UI loads; OpenAPI JSON validates; ensure versioned routes respond. Security tested in Swagger with auth.",
+        "priority": "medium",
+        "dependencies": [
+          5,
+          7,
+          8,
+          11,
+          15,
+          17,
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "Performance and caching baseline",
+        "description": "Ensure common actions feel instant on mid-range Android.",
+        "details": "- Add response caching where safe.\n- Use compiled queries for hot paths.\n- Add database indexes (phone, barcode, item business/location composite).\n- Add simple metrics via `OpenTelemetry` and minimal logging.\n- Pseudo: Identify N+1 queries and fix with `AsSplitQuery`/`Include` only where necessary.",
+        "testStrategy": "Benchmark tests for critical endpoints (POS checkout, Today View). Verify indexes exist in DB. Check latency under targets.",
+        "priority": "medium",
+        "dependencies": [
+          8,
+          11,
+          15,
+          17,
+          21,
+          29
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 31,
+        "title": "Security hardening",
+        "description": "Encrypt in transit, secure headers, input validation, and secrets handling.",
+        "details": "- Enforce HTTPS, HSTS, and secure cookies.\n- Add `NetEscapades.AspNetCore.SecurityHeaders` for sane defaults.\n- Validate inputs with FluentValidation; model binding limits and request size limits.\n- Secrets via user-secrets or environment variables; never commit secrets.\n- Pseudo: services.AddAuthentication().AddJwtBearer(...); app.UseSecurityHeaders();",
+        "testStrategy": "Security tests for common headers present, JWT validation, rate limit protection on auth endpoints, and basic fuzz tests on inputs.",
+        "priority": "high",
+        "dependencies": [
+          5,
+          7,
+          29
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 32,
+        "title": "Mobile-first UI shell and navigation",
+        "description": "Implement mobile-first navigation: Home, Sales, Stock, Money, People, Jobs, Settings.",
+        "details": "- Follow repo’s frontend tech (e.g., Blazor/React). Use component library suited for mobile (MudBlazor/Fluent UI or MUI if React).\n- Provide quick actions per module.\n- Traffic-light indicators in dashboard. Use skeleton loaders for speed perception.\n- Pseudo: define routes and layout; bottom nav for mobile.",
+        "testStrategy": "Manual and automated UI tests for navigation via Playwright; check responsive breakpoints and accessibility basics.",
+        "priority": "medium",
+        "dependencies": [
+          8,
+          29,
+          30,
+          31,
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 33,
+        "title": "Localisation and VAT settings",
+        "description": "Configure ZAR as base currency and basic VAT (15%).",
+        "details": "- Settings per business: currency=ZAR, vatRate=15%.\n- Ensure money formatting and VAT calculations across modules use these settings.\n- Pseudo: BusinessSettings { Currency=\"ZAR\", VatRate=0.15 } injected into calculators.",
+        "testStrategy": "Unit tests for VAT included/excluded pricing; verify reports and invoices reflect ZAR and VAT totals.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          11,
+          12,
+          15,
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 34,
+        "title": "Deployment and availability baseline",
+        "description": "Set up minimal deployment pipeline and reliability targets.",
+        "details": "- If repo includes CI, extend; else add GitHub Actions/ADO to build, test, publish.\n- Containerize API with .NET 8 ASP.NET base image; config via env vars.\n- DB backup/restore scripts.\n- Health checks endpoint `/health` and liveness/readiness.\n- Pseudo: Dockerfile, docker-compose for API + SQL Server/SQLite.",
+        "testStrategy": "Pipeline green build; container runs locally; health checks pass; simulate restart without data loss.",
+        "priority": "medium",
+        "dependencies": [
+          29,
+          30,
+          31,
+          4,
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 35,
+        "title": "Analytics and success metrics instrumentation",
+        "description": "Track product metrics aligned with goals (activation, usage, stock-outs).",
+        "details": "- Add events: login, POS sale, stock alert resolved, module usage.\n- Use privacy-friendly analytics (self-hosted or server-side logs); expose admin reports.\n- Pseudo: emit `BusinessEvent {Type, At, BusinessId, UserId, Data}`; aggregate weekly.\n- Include basic dashboard cards for pilot tracking.",
+        "testStrategy": "Verify events emitted on key actions; dashboard aggregates match expected counts on seeded data; ensure opt-out settings respected.",
+        "priority": "low",
+        "dependencies": [
+          8,
+          17,
+          21,
+          13,
+          29,
+          30
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-11-26T21:35:20.540Z",
+      "updated": "2025-11-26T21:35:20.540Z",
+      "description": "Tasks for master context"
     }
   }
 }
