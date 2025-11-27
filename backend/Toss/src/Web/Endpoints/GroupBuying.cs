@@ -6,6 +6,7 @@ using Toss.Application.GroupBuying.Queries.GetActivePools;
 using Toss.Application.GroupBuying.Queries.GetMyParticipations;
 using Toss.Application.GroupBuying.Queries.GetNearbyPoolOpportunities;
 using Toss.Application.GroupBuying.Queries.GetPoolById;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -13,6 +14,7 @@ public class GroupBuying : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
+        group.RequireAuthorization(Policies.RequireStaffOrAbove);
         group.MapPost("pools", CreatePool);
         group.MapGet("pools/active", GetActivePools);
         group.MapGet("pools/{id}", GetPoolById);

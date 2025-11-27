@@ -1,3 +1,6 @@
+using Toss.Application.Common.Models;
+using Toss.Application.Common.Models.Businesses;
+
 namespace Toss.Application.Common.Interfaces;
 
 /// <summary>
@@ -107,6 +110,22 @@ public interface IUserManagementService
     /// <param name="cancellationToken">Cancellation token for the async operation.</param>
     /// <returns>True if user was deactivated successfully, false otherwise.</returns>
     Task<bool> DeactivateUserAsync(string userId, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<BusinessMemberDto>> GetBusinessMembersAsync(
+        int businessId,
+        CancellationToken cancellationToken = default);
+
+    Task<Result> UpsertBusinessMemberAsync(
+        int businessId,
+        string userId,
+        string role,
+        bool isDefault,
+        CancellationToken cancellationToken = default);
+
+    Task<Result> RemoveBusinessMemberAsync(
+        int businessId,
+        string userId,
+        CancellationToken cancellationToken = default);
 }
 
 

@@ -12,6 +12,7 @@ using Toss.Application.Inventory.Queries.GetStockLevels;
 using Toss.Application.Inventory.Queries.GetStockMovementHistory;
 using Toss.Application.Inventory.Queries.SearchProducts;
 using Toss.Application.Inventory.Queries.GetLowStockItems;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -19,6 +20,7 @@ public class Inventory : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
+        group.RequireAuthorization(Policies.RequireOwnerOrManager);
         group.MapPost("products", CreateProduct);
         group.MapPut("products/{id}", UpdateProduct);
         group.MapDelete("products/{id}", DeleteProduct);

@@ -17,6 +17,7 @@ using Toss.Application.Sales.Queries.GetQueueOrders;
 using Toss.Application.Sales.Commands.CreateSalesDocument;
 using Toss.Domain.Enums;
 using Toss.Application.Sales.Queries.GetSalesDocuments;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -24,6 +25,7 @@ public class Sales : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
+        group.RequireAuthorization(Policies.RequirePosAccess);
         group.MapPost(string.Empty, CreateSale)
             .WithName("CreateSale");
 

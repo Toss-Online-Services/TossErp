@@ -4,6 +4,7 @@ using Toss.Application.Dashboard.Queries.GetSalesTrends;
 using Toss.Application.Dashboard.Queries.GetTopProducts;
 using Toss.Application.Dashboard.Queries.GetOrderStatusDistribution;
 using Toss.Application.Dashboard.Queries.GetCategorySales;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -11,6 +12,7 @@ public class Dashboard : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
+        group.RequireAuthorization(Policies.RequireStaffOrAbove);
         group.MapGet("summary", GetDashboardSummary);
         group.MapGet("sales-trends", GetSalesTrends);
         group.MapGet("top-products", GetTopProducts);

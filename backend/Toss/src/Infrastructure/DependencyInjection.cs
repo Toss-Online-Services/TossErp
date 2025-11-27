@@ -1,5 +1,6 @@
 ﻿using Toss.Application.Common.Interfaces;
 using Toss.Domain.Constants;
+using Toss.Infrastructure.Authorization;
 using Toss.Infrastructure.Data;
 using Toss.Infrastructure.Data.Interceptors;
 using Toss.Infrastructure.Identity;
@@ -8,6 +9,7 @@ using Toss.Application.Common.Interfaces.Authentication;
 using Toss.Application.Common.Interfaces.Tenancy;
 using Toss.Infrastructure.Services.Tenancy;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -158,6 +160,7 @@ public static class DependencyInjection
         services.AddScoped<IOtpSender, SmsOtpSender>();
         services.AddSingleton<ITwoFactorSessionStore, TwoFactorSessionStore>();
         services.AddScoped<IBusinessContext, BusinessContext>();
+        services.AddSingleton<IAuthorizationHandler, BusinessRoleAuthorizationHandler>();
     }
 
     /// <summary>
@@ -170,7 +173,7 @@ public static class DependencyInjection
             options.AddPolicy(Policies.CanPurge, policy =>
                 policy.RequireRole(Roles.Administrator));
             
-            // Role-based policies
+            // Global Identity role policies
             options.AddPolicy("RequireAdmin", policy =>
                 policy.RequireRole(Roles.Administrator));
             
@@ -183,7 +186,6 @@ public static class DependencyInjection
             options.AddPolicy("RequireDriver", policy =>
                 policy.RequireRole(Roles.Driver));
             
-            // Combined role policies
             options.AddPolicy("RequireRetailerOrAdmin", policy =>
                 policy.RequireRole(Roles.Retailer, Roles.Administrator));
             
@@ -192,6 +194,25 @@ public static class DependencyInjection
             
             options.AddPolicy("RequireDriverOrAdmin", policy =>
                 policy.RequireRole(Roles.Driver, Roles.Administrator));
+
+            // Per-business role policies
+            options.AddPolicy(Policies.RequireOwnerOrManager, policy =>
+                policy.Requirements.Add(new BusinessRoleRequirement(new[]
+                {
+                    BusinessRoles.Owner,
+                    BusinessRoles.Manager
+                })));
+
+            options.AddPolicy(Policies.RequirePosAccess, policy =>
+                policy.Requirements.Add(new BusinessRoleRequirement(new[]
+                {
+                    BusinessRoles.Owner,
+                    BusinessRoles.Manager,
+                    BusinessRoles.Cashier
+                })));
+
+            options.AddPolicy(Policies.RequireStaffOrAbove, policy =>
+                policy.Requirements.Add(new BusinessRoleRequirement(BusinessRoles.All)));
         });
     }
 }

@@ -848,17 +848,18 @@
           "5",
           "6"
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
             "title": "Audit codebase for existing Identity, authorization, and per‑business role linkage",
             "description": "Search the solution for Identity setup, authorization policies, role/claim usage, and any User–Business linking model to align RBAC with current patterns.",
             "dependencies": [],
-            "details": "Use repo search to find `AddAuthorization`, `AddIdentity`, `[Authorize]`, `Policy`, `Role`, `Claims`, `BusinessId`, and entities like `UserBusiness`. Identify where Program/Startup config lives, current middleware order, any existing policies, and how controllers or minimal APIs apply authorization. Note naming conventions to reuse for policy names and constants.",
-            "status": "pending",
+            "details": "Use repo search to find `AddAuthorization`, `AddIdentity`, `[Authorize]`, `Policy`, `Role`, `Claims`, `BusinessId`, and entities like `UserBusiness`. Identify where Program/Startup config lives, current middleware order, any existing policies, and how controllers or minimal APIs apply authorization. Note naming conventions to reuse for policy names and constants.\n<info added on 2025-11-27T10:52:31.568Z>\nImplementation plan (codebase‑specific):\n\n- Define canonical per‑business roles\n  - Update backend\\Toss\\src\\Domain\\Constants\\BusinessRoles.cs: use Owner, Manager, Cashier, Staff only. Remove Admin/Member constants; we’ll migrate existing values during seeding.\n\n- Align global roles and remove ad‑hoc names\n  - Keep backend\\Toss\\src\\Domain\\Constants\\Roles.cs as Administrator, Retailer, Supplier, Driver.\n  - Replace hardcoded \"StoreOwner\"/\"Vendor\" usage with Roles.Retailer/Roles.Supplier where global Identity roles are required. Do not create Identity roles for per‑business positions.\n\n- Idempotent Identity role seeding\n  - In backend\\Toss\\src\\Infrastructure\\Data\\ApplicationDbContextInitialiser.cs:SeedRolesAndUsersAsync\n    - Replace roles array with:\n      var roles = new[] { Roles.Administrator, Roles.Retailer, Roles.Supplier, Roles.Driver };\n    - Keep the existing RoleExists/Create flow (already idempotent). Remove seeding of \"StoreOwner\" and \"Vendor\".\n    - Optional: if a Customer identity role is needed by endpoints, add Roles.Customer to Roles.cs and include it in the array.\n\n- Migrate existing per‑business role data\n  - In ApplicationDbContextInitialiser.SeedRolesAndUsersAsync (after ensuring DB connectivity and before adding demo data):\n    - Load any UserBusiness with Role == \"Admin\" or \"Member\" and update to BusinessRoles.Manager / BusinessRoles.Staff respectively. SaveChanges if any updates.\n    - Ensure new store owner memberships continue to set Role = BusinessRoles.Owner (see backend\\Toss\\src\\Infrastructure\\Data\\ApplicationDbContextInitialiser.cs: membership creation block).\n\n- Keep middleware/DI consistent\n  - No changes to backend\\Toss\\src\\Infrastructure\\Services\\Tenancy\\BusinessContextMiddleware.cs; it already sets IBusinessContext.CurrentBusinessRole from UserBusiness.Role. New BusinessRoles.* strings will flow through unchanged.\n  - Leave backend\\Toss\\src\\Infrastructure\\DependencyInjection.cs policy registration as‑is for now; per‑business policies will be centralized/added in the next subtask.\n\n- Follow‑ups (will be handled in later subtasks)\n  - Add centralized per‑business authorization policies/requirements keyed off IBusinessContext.CurrentBusinessRole.\n  - Annotate minimal API endpoints in backend\\Toss\\src\\Web\\Endpoints\\*.cs with .RequireAuthorization(...) using the new policies.\n</info added on 2025-11-27T10:52:31.568Z>",
+            "status": "done",
             "testStrategy": "None (discovery). Capture findings in engineering notes for subsequent subtasks.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T10:53:32.098Z"
           },
           {
             "id": 2,
@@ -911,7 +912,8 @@
             "testStrategy": "Integration tests for role assignment APIs; UI test or manual checklist to confirm assignments persist and immediately affect authorization decisions on protected endpoints.",
             "parentId": "undefined"
           }
-        ]
+        ],
+        "updatedAt": "2025-11-27T10:53:32.098Z"
       },
       {
         "id": "8",
@@ -2097,7 +2099,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-27T10:38:44.684Z",
+      "lastModified": "2025-11-27T10:53:32.103Z",
       "taskCount": 35,
       "completedCount": 6,
       "tags": [

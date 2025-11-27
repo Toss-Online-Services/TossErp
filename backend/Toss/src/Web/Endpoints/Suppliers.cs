@@ -4,6 +4,7 @@ using Toss.Application.Vendors.Commands.UpdateVendorPricing;
 using Toss.Application.Vendors.Queries.GetVendorById;
 using Toss.Application.Vendors.Queries.GetVendorProducts;
 using Toss.Application.Vendors.Queries.GetVendors;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -15,6 +16,7 @@ public class Suppliers : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
+        group.RequireAuthorization(Policies.RequireOwnerOrManager);
         // GET /api/suppliers - List suppliers (alias for vendors)
         group.MapGet(string.Empty, GetSuppliers)
             .WithName("GetSuppliers")

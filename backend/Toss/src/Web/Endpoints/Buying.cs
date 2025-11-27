@@ -7,6 +7,7 @@ using Toss.Application.Buying.Queries.GetPurchaseOrders;
 using Toss.Application.Buying.Queries.GetVendorInvoices;
 using Toss.Application.Buying.Commands.CreateVendorInvoice;
 using Toss.Application.Buying.Commands.UpdateVendorInvoiceStatus;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -14,6 +15,7 @@ public class Buying : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
+        group.RequireAuthorization(Policies.RequireOwnerOrManager);
         group.MapGet("purchase-orders", GetPurchaseOrders);
         group.MapPost("purchase-orders", CreatePurchaseOrder);
         group.MapGet("purchase-orders/{id}", GetPurchaseOrderById);

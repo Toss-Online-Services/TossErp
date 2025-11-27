@@ -2,6 +2,7 @@ using Toss.Application.CustomerOrders.Commands.CreateCustomerOrder;
 using Toss.Application.CustomerOrders.Commands.UpdateCustomerOrderStatus;
 using Toss.Application.CustomerOrders.Commands.CancelCustomerOrder;
 using Toss.Application.CustomerOrders.Queries.GetCustomerOrders;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -9,6 +10,7 @@ public class CustomerOrders : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
+        group.RequireAuthorization(Policies.RequireStaffOrAbove);
         group.MapPost(string.Empty, CreateOrder)
             .WithName("CreateCustomerOrder")
             .WithSummary("Create a new customer order");

@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Toss.Application.Common.Interfaces;
+using Toss.Application.Common.Models;
+using Toss.Application.Common.Models.Businesses;
+using Toss.Domain.Constants;
+using Toss.Domain.Entities.Businesses;
+using Toss.Infrastructure.Data;
 
 namespace Toss.Infrastructure.Identity.Services;
 
@@ -8,11 +13,16 @@ public class UserManagementService : IUserManagementService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly ApplicationDbContext _context;
 
-    public UserManagementService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+    public UserManagementService(
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole> roleManager,
+        ApplicationDbContext context)
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _context = context;
     }
 
     public async Task<List<UserListItemDto>> GetUsersAsync(int skip, int take, string? searchTerm, string? role = null, CancellationToken cancellationToken = default)                         
@@ -134,6 +144,115 @@ public class UserManagementService : IUserManagementService
         var result = await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);
         
         return result.Succeeded;
+    }
+
+    public async Task<IReadOnlyList<BusinessMemberDto>> GetBusinessMembersAsync(
+        int businessId,
+        CancellationToken cancellationToken = default)
+    {
+        var query =
+            from membership in _context.UserBusinesses.AsNoTracking()
+            join user in _context.Users.AsNoTracking()
+                on membership.UserId equals user.Id
+            where membership.BusinessId == businessId
+            orderby user.Email
+            select new BusinessMemberDto(
+                membership.BusinessId,
+                membership.UserId,
+                user.Email ?? string.Empty,
+                user.FirstName,
+                user.LastName,
+                membership.Role,
+                membership.IsDefault);
+
+        return await query.ToListAsync(cancellationToken);
+    }
+
+    public async Task<Result> UpsertBusinessMemberAsync(
+        int businessId,
+        string userId,
+        string role,
+        bool isDefault,
+        CancellationToken cancellationToken = default)
+    {
+        if (!BusinessRoles.All.Contains(role, StringComparer.OrdinalIgnoreCase))
+        {
+            return Result.Failure(new[] { $"Role '{role}' is not allowed." });
+        }
+
+        var normalizedRole = BusinessRoles.All
+            .First(r => string.Equals(r, role, StringComparison.OrdinalIgnoreCase));
+
+        if (!await _context.Businesses.AnyAsync(b => b.Id == businessId, cancellationToken))
+        {
+            return Result.Failure(new[] { "Business not found." });
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            return Result.Failure(new[] { "User not found." });
+        }
+
+        var membership = await _context.UserBusinesses
+            .FirstOrDefaultAsync(
+                ub => ub.BusinessId == businessId && ub.UserId == userId,
+                cancellationToken);
+
+        if (membership is null)
+        {
+            membership = new UserBusiness
+            {
+                BusinessId = businessId,
+                UserId = userId,
+                Role = normalizedRole,
+                IsDefault = isDefault
+            };
+
+            _context.UserBusinesses.Add(membership);
+        }
+        else
+        {
+            membership.Role = normalizedRole;
+            membership.IsDefault = isDefault;
+        }
+
+        if (isDefault)
+        {
+            var others = await _context.UserBusinesses
+                .Where(ub => ub.BusinessId == businessId && ub.UserId != userId && ub.IsDefault)
+                .ToListAsync(cancellationToken);
+
+            foreach (var other in others)
+            {
+                other.IsDefault = false;
+            }
+        }
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+
+    public async Task<Result> RemoveBusinessMemberAsync(
+        int businessId,
+        string userId,
+        CancellationToken cancellationToken = default)
+    {
+        var membership = await _context.UserBusinesses
+            .FirstOrDefaultAsync(
+                ub => ub.BusinessId == businessId && ub.UserId == userId,
+                cancellationToken);
+
+        if (membership is null)
+        {
+            return Result.Success();
+        }
+
+        _context.UserBusinesses.Remove(membership);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
     }
 }
 

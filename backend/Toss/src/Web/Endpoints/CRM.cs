@@ -2,6 +2,7 @@ using Toss.Application.CRM.Commands.CreateCustomer;
 using Toss.Application.CRM.Queries.GetCustomerProfile;
 using Toss.Application.CRM.Queries.GetCustomers;
 using Toss.Application.CRM.Queries.SearchCustomers;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -9,6 +10,7 @@ public class CRM : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
+        group.RequireAuthorization(Policies.RequireStaffOrAbove);
         group.MapPost("customers", CreateCustomer);
         group.MapGet("customers", GetCustomers);
         group.MapGet("customers/search", SearchCustomers);

@@ -3,6 +3,7 @@ using Toss.Application.ArtificialIntelligence.Commands.UpdateAISettings;
 using Toss.Application.ArtificialIntelligence.Queries.AskAI;
 using Toss.Application.ArtificialIntelligence.Queries.GetAISettings;
 using Toss.Application.ArtificialIntelligence.Queries.GetAISuggestions;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -10,6 +11,7 @@ public class AICopilot : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
+        group.RequireAuthorization(Policies.RequireOwnerOrManager);
         group.MapPost("ask", AskAI);
         group.MapGet("suggestions", GetAISuggestions);
         group.MapPost("meta-tags", GenerateMetaTags);

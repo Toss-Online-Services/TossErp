@@ -4,6 +4,7 @@ using Toss.Application.ShoppingCart.Commands.AddToCart;
 using Toss.Application.ShoppingCart.Commands.UpdateCartItem;
 using Toss.Application.ShoppingCart.Commands.Checkout;
 using Toss.Application.ShoppingCart.Queries.GetCart;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -11,7 +12,7 @@ public class ShoppingCart : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
-
+        group.RequireAuthorization(Policies.RequirePosAccess);
         group.MapPost(AddToCart, "add")
             .Produces<AddToCartResult>()
             .ProducesValidationProblem()

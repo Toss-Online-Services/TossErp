@@ -1,5 +1,6 @@
 using Toss.Application.Settings.Commands.UpdateShopSettings;
 using Toss.Application.Settings.Queries.GetShopSettings;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -7,6 +8,7 @@ public class Settings : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
+        group.RequireAuthorization(Policies.RequireOwnerOrManager);
         group.MapGet("shop/{shopId}", GetShopSettings);
         group.MapPut("shop/{shopId}", UpdateShopSettings);
     }

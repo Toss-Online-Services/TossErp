@@ -7,6 +7,7 @@ using Toss.Application.Payments.Commands.RecordPayment;
 using Toss.Application.Payments.Queries.GetPaymentById;
 using Toss.Application.Payments.Queries.GetPayments;
 using Toss.Application.Payments.Queries.GetPaymentStatus;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -14,6 +15,7 @@ public class Payments : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
+        group.RequireAuthorization(Policies.RequireOwnerOrManager);
         group.MapPost("pay-links", GeneratePayLink);
         group.MapPost("record", RecordPayment);
         group.MapGet(string.Empty, GetPayments);

@@ -3,6 +3,7 @@ using Toss.Application.Stores.Commands.UpdateStore;
 using Toss.Application.Stores.Commands.DeleteStore;
 using Toss.Application.Stores.Queries.GetStores;
 using Toss.Application.Stores.Queries.GetStoreById;
+using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
 
@@ -10,6 +11,7 @@ public class Stores : EndpointGroupBase
 {
     public override void Map(RouteGroupBuilder group)
     {
+        group.RequireAuthorization(Policies.RequireOwnerOrManager);
         group.MapGet(string.Empty, GetStores)
             .WithName("GetStores");
 
