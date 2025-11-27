@@ -49,6 +49,13 @@ public class StoreConfiguration : IEntityTypeConfiguration<Store>
 
         builder.HasIndex(s => s.OwnerId);
         builder.HasIndex(s => s.AreaGroup);
+
+        builder.HasOne(s => s.Business)
+            .WithMany(b => b.Stores)
+            .HasForeignKey(s => s.BusinessId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(s => s.BusinessId);
     }
 }
 

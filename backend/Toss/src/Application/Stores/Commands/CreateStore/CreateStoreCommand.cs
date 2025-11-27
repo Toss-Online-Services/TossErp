@@ -10,6 +10,7 @@ public record CreateStoreCommand : IRequest<int>
     public string Name { get; init; } = string.Empty;
     public string? Description { get; init; }
     public string OwnerId { get; init; } = string.Empty;
+    public int BusinessId { get; init; }
     public string? Url { get; init; }
     public bool SslEnabled { get; init; }
     public string? Hosts { get; init; }
@@ -61,6 +62,7 @@ public class CreateStoreCommandHandler : IRequestHandler<CreateStoreCommand, int
             Name = request.Name,
             Description = request.Description,
             OwnerId = request.OwnerId,
+            BusinessId = request.BusinessId,
             Url = !string.IsNullOrWhiteSpace(request.Url) ? request.Url : string.Empty,
             Ssl_enabled = request.SslEnabled,
             Hosts = request.Hosts ?? string.Empty,

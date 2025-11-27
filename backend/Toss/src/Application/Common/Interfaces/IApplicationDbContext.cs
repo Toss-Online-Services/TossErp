@@ -15,6 +15,7 @@ using Toss.Domain.Entities.Shipping;
 using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities.Vendors;
 using Toss.Domain.Entities.Tax;
+using Toss.Domain.Entities.Businesses;
 
 namespace Toss.Application.Common.Interfaces;
 
@@ -59,6 +60,10 @@ public interface IApplicationDbContext
 
     // Store entities (Shop is already defined above as core entity)
     DbSet<StoreMapping> StoreMappings { get; }
+
+    // Business entities
+    DbSet<Business> Businesses { get; }
+    DbSet<UserBusiness> UserBusinesses { get; }
 
     // Catalog entities
     DbSet<ProductAttribute> ProductAttributes { get; }

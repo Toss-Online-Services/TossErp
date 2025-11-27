@@ -9,6 +9,8 @@ public record StoreDetailDto
     public string Name { get; init; } = string.Empty;
     public string? Description { get; init; }
     public string OwnerId { get; init; } = string.Empty;
+    public int BusinessId { get; init; }
+    public string BusinessName { get; init; } = string.Empty;
     public string Url { get; init; } = string.Empty;
     public bool SslEnabled { get; init; }
     public string Hosts { get; init; } = string.Empty;
@@ -68,6 +70,7 @@ public class GetStoreByIdQueryHandler : IRequestHandler<GetStoreByIdQuery, Store
     {
         var store = await _context.Stores
             .Include(s => s.Address)
+            .Include(s => s.Business)
             .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
         if (store == null)
@@ -93,6 +96,8 @@ public class GetStoreByIdQueryHandler : IRequestHandler<GetStoreByIdQuery, Store
             Name = store.Name,
             Description = store.Description,
             OwnerId = store.OwnerId,
+            BusinessId = store.BusinessId,
+            BusinessName = store.Business?.Name ?? string.Empty,
             Url = store.Url,
             SslEnabled = store.Ssl_enabled,
             Hosts = store.Hosts,

@@ -30,11 +30,13 @@ public class VoidSaleTests : BaseTestFixture
         var userId = await RunAsDefaultUserAsync();
 
         // Create shop
+        var business = await CreateBusinessAsync();
         var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
-            Email = "test@shop.com"
+            Email = "test@shop.com",
+            BusinessId = business.Id
         };
         await AddAsync(shop);
 
@@ -103,11 +105,13 @@ public class VoidSaleTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
+        var business = await CreateBusinessAsync();
         var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
-            Email = "test@shop.com"
+            Email = "test@shop.com",
+            BusinessId = business.Id
         };
         await AddAsync(shop);
 

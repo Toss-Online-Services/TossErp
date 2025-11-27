@@ -26,11 +26,13 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         var userId = await RunAsDefaultUserAsync();
 
         // Create shops
+        var business = await CreateBusinessAsync();
         var shop1 = new Store
         {
             Name = "Shop 1",
             OwnerId = userId,
-            Email = "shop1@test.com"
+            Email = "shop1@test.com",
+            BusinessId = business.Id
         };
         await AddAsync(shop1);
 
@@ -38,7 +40,8 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         {
             Name = "Shop 2",
             OwnerId = userId,
-            Email = "shop2@test.com"
+            Email = "shop2@test.com",
+            BusinessId = business.Id
         };
         await AddAsync(shop2);
 
@@ -81,11 +84,13 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
+        var business = await CreateBusinessAsync();
         var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
-            Email = "test@shop.com"
+            Email = "test@shop.com",
+            BusinessId = business.Id
         };
         await AddAsync(shop);
 
@@ -111,11 +116,13 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
+        var business = await CreateBusinessAsync();
         var shop1 = new Store
         {
             Name = "Shop 1",
             OwnerId = userId,
-            Email = "shop1@test.com"
+            Email = "shop1@test.com",
+            BusinessId = business.Id
         };
         await AddAsync(shop1);
 
@@ -123,7 +130,8 @@ public class CreateSharedDeliveryRunTests : BaseTestFixture
         {
             Name = "Shop 2",
             OwnerId = userId,
-            Email = "shop2@test.com"
+            Email = "shop2@test.com",
+            BusinessId = business.Id
         };
         await AddAsync(shop2);
 

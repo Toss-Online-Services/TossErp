@@ -15,6 +15,8 @@ using Toss.Domain.Entities.Tax;
 using Toss.Domain.Enums;
 using Toss.Domain.ValueObjects;
 using Toss.Infrastructure.Identity;
+using Toss.Domain.Entities.Businesses;
+using Toss.Domain.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -274,7 +276,10 @@ public class ApplicationDbContextInitialiser
 
         var stores = storeFaker.Generate(storesToCreate);
         var faker = new Faker();
-        
+        var defaultBusinessAssigned = new HashSet<string>();
+        var userBusinesses = new List<UserBusiness>();
+        var businesses = new List<Business>();
+
         // Create addresses and locations for stores  
         foreach (var store in stores)
         {
@@ -297,8 +302,41 @@ public class ApplicationDbContextInitialiser
                 Country = "ZA",
                 Coordinates = new Location(latitude, longitude, townshipArea, zone) // NEW instance
             };
+
+            var business = new Business
+            {
+                Name = store.Name,
+                Code = $"BIZ-{Guid.NewGuid():N}",
+                Description = store.Description,
+                Currency = store.Currency,
+                Timezone = store.Timezone,
+                IsActive = true
+            };
+
+            store.Business = business;
+            businesses.Add(business);
+
+            if (!string.IsNullOrWhiteSpace(store.OwnerId))
+            {
+                var membership = new UserBusiness
+                {
+                    Business = business,
+                    UserId = store.OwnerId,
+                    Role = BusinessRoles.Owner,
+                    IsDefault = !defaultBusinessAssigned.Contains(store.OwnerId)
+                };
+
+                if (membership.IsDefault)
+                {
+                    defaultBusinessAssigned.Add(store.OwnerId);
+                }
+
+                userBusinesses.Add(membership);
+            }
         }
 
+        _context.Businesses.AddRange(businesses);
+        _context.UserBusinesses.AddRange(userBusinesses);
         _context.Stores.AddRange(stores);
         await _context.SaveChangesAsync();
         _logger.LogInformation("✅ Seeded {Count} stores (Total: {Total}).", stores.Count, existingCount + stores.Count);

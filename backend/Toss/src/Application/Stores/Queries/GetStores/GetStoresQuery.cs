@@ -12,6 +12,7 @@ public record StoreListDto
     public string? AreaGroup { get; init; }
     public string? CompanyName { get; init; }
     public int DisplayOrder { get; init; }
+    public int BusinessId { get; init; }
     public int CustomerCount { get; init; }
     public int ProductCount { get; init; }
 }
@@ -71,6 +72,7 @@ public class GetStoresQueryHandler : IRequestHandler<GetStoresQuery, List<StoreL
                 AreaGroup = s.AreaGroup,
                 CompanyName = s.CompanyName,
                 DisplayOrder = s.DisplayOrder,
+                BusinessId = s.BusinessId,
                 CustomerCount = _context.Customers.Count(c => c.ShopId == s.Id),
                 ProductCount = _context.StockLevels.Count(sl => sl.ShopId == s.Id)
             })

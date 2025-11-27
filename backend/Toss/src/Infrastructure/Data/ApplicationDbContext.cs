@@ -18,6 +18,7 @@ using Toss.Domain.Entities.Vendors;
 using Toss.Domain.Entities.Tax;
 using Toss.Domain.Entities.Onboarding;
 using Toss.Infrastructure.Identity;
+using Toss.Domain.Entities.Businesses;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -383,6 +384,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// Refresh tokens issued for sliding JWT sessions.
     /// </summary>
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
+    /// <summary>
+    /// Business (tenant) aggregate root.
+    /// </summary>
+    public DbSet<Business> Businesses => Set<Business>();
+
+    /// <summary>
+    /// Mapping between users and businesses with per-business roles.
+    /// </summary>
+    public DbSet<UserBusiness> UserBusinesses => Set<UserBusiness>();
 
     /// <summary>
     /// Configures the model using Fluent API by applying all entity configurations from the assembly.

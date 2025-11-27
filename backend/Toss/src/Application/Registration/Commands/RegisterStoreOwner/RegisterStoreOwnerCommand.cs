@@ -3,6 +3,8 @@ using Toss.Application.Common.Exceptions;
 using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities;
 using Toss.Domain.ValueObjects;
+using Toss.Domain.Entities.Businesses;
+using Toss.Domain.Constants;
 
 namespace Toss.Application.Registration.Commands.RegisterStoreOwner;
 
@@ -56,6 +58,7 @@ public record StoreDto
     public string Area { get; init; } = string.Empty;
     public string? Zone { get; init; }
     public string Address { get; init; } = string.Empty;
+    public int BusinessId { get; init; }
 }
 
 public class RegisterStoreOwnerCommandHandler : IRequestHandler<RegisterStoreOwnerCommand, RegisterStoreOwnerResult>
@@ -108,12 +111,25 @@ public class RegisterStoreOwnerCommandHandler : IRequestHandler<RegisterStoreOwn
         // Assign Store Owner role
         await _identityService.AddToRoleAsync(userId!, "StoreOwner");
 
+        // Create business (tenant)
+        var business = new Business
+        {
+            Name = request.ShopName,
+            Code = GenerateBusinessCode(request.ShopName),
+            Description = $"{request.ShopName} in {request.Area}",
+            Currency = "ZAR",
+            Timezone = "Africa/Johannesburg",
+            IsActive = true
+        };
+        _context.Businesses.Add(business);
+
         // Create store
         var store = new Store
         {
             Name = request.ShopName,
             Description = $"{request.ShopName} in {request.Area}",
             OwnerId = userId!,
+            Business = business,
             Url = string.Empty,
             Ssl_enabled = false,
             Hosts = string.Empty,
@@ -156,6 +172,16 @@ public class RegisterStoreOwnerCommandHandler : IRequestHandler<RegisterStoreOwn
         store.AddressId = address.Id;
         
         _context.Stores.Add(store);
+
+        var membership = new UserBusiness
+        {
+            Business = business,
+            UserId = userId!,
+            Role = BusinessRoles.Owner,
+            IsDefault = true
+        };
+        _context.UserBusinesses.Add(membership);
+
         await _context.SaveChangesAsync(cancellationToken);
 
         // Generate token
@@ -182,9 +208,26 @@ public class RegisterStoreOwnerCommandHandler : IRequestHandler<RegisterStoreOwn
                 Name = request.ShopName,
                 Area = request.Area,
                 Zone = request.Zone,
-                Address = request.Address
+                Address = request.Address,
+                BusinessId = business.Id
             }
         };
+    }
+
+    private static string GenerateBusinessCode(string name)
+    {
+        var safeName = new string((name ?? string.Empty)
+            .Where(char.IsLetterOrDigit)
+            .ToArray())
+            .ToUpperInvariant();
+
+        if (string.IsNullOrWhiteSpace(safeName))
+        {
+            safeName = "BIZ";
+        }
+
+        var baseCode = $"{safeName}-{Guid.NewGuid():N}".ToUpperInvariant();
+        return baseCode.Length <= 32 ? baseCode : baseCode[..32];
     }
 }
 

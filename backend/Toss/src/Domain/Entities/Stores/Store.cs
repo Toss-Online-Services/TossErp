@@ -1,3 +1,5 @@
+using Toss.Domain.Entities.Businesses;
+
 namespace Toss.Domain.Entities.Stores;
 
 /// <summary>
@@ -22,6 +24,12 @@ public class Store : BaseAuditableEntity
         Hosts = string.Empty;
         DisplayOrder = 0;
     }
+
+    /// <summary>
+    /// Gets or sets the business/tenant identifier.
+    /// </summary>
+    public int BusinessId { get; set; }
+    public Business Business { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the shop/store name

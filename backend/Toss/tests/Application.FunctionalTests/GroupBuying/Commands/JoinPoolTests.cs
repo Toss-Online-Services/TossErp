@@ -32,20 +32,24 @@ public class JoinPoolTests : BaseTestFixture
         var userId = await RunAsDefaultUserAsync();
 
         // Create initiator shop
+        var initiatorBusiness = await CreateBusinessAsync();
         var initiatorShop = new Store
         {
             Name = "Initiator Shop",
             OwnerId = userId,
-            Email = "initiator@shop.com"
+            Email = "initiator@shop.com",
+            BusinessId = initiatorBusiness.Id
         };
         await AddAsync(initiatorShop);
 
         // Create joining shop
+        var joiningBusiness = await CreateBusinessAsync();
         var joiningShop = new Store
         {
             Name = "Joining Shop",
             OwnerId = userId,
-            Email = "joining@shop.com"
+            Email = "joining@shop.com",
+            BusinessId = joiningBusiness.Id
         };
         await AddAsync(joiningShop);
 
@@ -103,19 +107,23 @@ public class JoinPoolTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
+        var initiatorBusiness = await CreateBusinessAsync();
         var initiatorShop = new Store
         {
             Name = "Initiator Shop",
             OwnerId = userId,
-            Email = "initiator@shop.com"
+            Email = "initiator@shop.com",
+            BusinessId = initiatorBusiness.Id
         };
         await AddAsync(initiatorShop);
 
+        var joiningBusiness = await CreateBusinessAsync();
         var joiningShop = new Store
         {
             Name = "Joining Shop",
             OwnerId = userId,
-            Email = "joining@shop.com"
+            Email = "joining@shop.com",
+            BusinessId = joiningBusiness.Id
         };
         await AddAsync(joiningShop);
 
@@ -166,11 +174,13 @@ public class JoinPoolTests : BaseTestFixture
     {
         var userId = await RunAsDefaultUserAsync();
 
+        var business = await CreateBusinessAsync();
         var shop = new Store
         {
             Name = "Test Shop",
             OwnerId = userId,
-            Email = "test@shop.com"
+            Email = "test@shop.com",
+            BusinessId = business.Id
         };
         await AddAsync(shop);
 

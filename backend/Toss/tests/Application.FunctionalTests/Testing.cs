@@ -1,6 +1,7 @@
 ﻿using Toss.Domain.Constants;
 using Toss.Infrastructure.Data;
 using Toss.Infrastructure.Identity;
+using Toss.Domain.Entities.Businesses;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -140,6 +141,21 @@ public partial class Testing
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         return await context.Set<TEntity>().CountAsync();
+    }
+
+    public static async Task<Business> CreateBusinessAsync(string? name = null)
+    {
+        var business = new Business
+        {
+            Name = name ?? $"Test Business {Guid.NewGuid():N}",
+            Code = $"BIZ-{Guid.NewGuid():N}",
+            Currency = "ZAR",
+            Timezone = "Africa/Johannesburg",
+            IsActive = true
+        };
+
+        await AddAsync(business);
+        return business;
     }
 
     public static HttpClient CreateClient() => _factory.CreateClient();
