@@ -6733,6 +6733,10 @@
           "OwnerId": {
             "type": "string"
           },
+          "BusinessId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "Url": {
             "type": "string",
             "nullable": true

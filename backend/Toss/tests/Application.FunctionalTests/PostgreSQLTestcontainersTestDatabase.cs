@@ -1,5 +1,6 @@
 ﻿using System.Data.Common;
 using Toss.Infrastructure.Data;
+using Toss.Infrastructure.Services.Tenancy;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -44,7 +45,7 @@ public class PostgreSQLTestcontainersTestDatabase : ITestDatabase
             .ConfigureWarnings(warnings => warnings.Log(RelationalEventId.PendingModelChangesWarning))
             .Options;
 
-        var context = new ApplicationDbContext(options);
+        var context = new ApplicationDbContext(options, new NullBusinessContext());
 
         await context.Database.EnsureDeletedAsync();
         await context.Database.EnsureCreatedAsync();

@@ -6,7 +6,7 @@ namespace Toss.Domain.Entities.Vendors;
 /// <summary>
 /// Represents a vendor/supplier (unified entity for ERP and marketplace)
 /// </summary>
-public class Vendor : BaseAuditableEntity, IMetaTagsSupported, ILocalizedEntity
+public class Vendor : BaseAuditableEntity, IMetaTagsSupported, ILocalizedEntity, IBusinessScopedEntity
 {
     public Vendor()
     {
@@ -28,6 +28,12 @@ public class Vendor : BaseAuditableEntity, IMetaTagsSupported, ILocalizedEntity
     /// Gets or sets the description
     /// </summary>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the owning business identifier.
+    /// </summary>
+    public int BusinessId { get; set; }
+    public Business Business { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the email

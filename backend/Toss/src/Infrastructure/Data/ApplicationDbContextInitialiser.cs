@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Toss.Domain.Constants;
 using Toss.Domain.Entities;
 using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities.Catalog;
@@ -457,6 +456,7 @@ public class ApplicationDbContextInitialiser
             product.CostPrice = product.BasePrice * 0.7m; // 30% markup
             product.Unit = priceRange.unit;
             product.Description = new Faker().Commerce.ProductDescription();
+            product.BusinessId = new Faker().PickRandom(stores).BusinessId;
             products.Add(product);
         }
 
@@ -498,6 +498,13 @@ public class ApplicationDbContextInitialiser
             return;
         }
 
+        var stores = await _context.Stores.ToListAsync();
+        if (!stores.Any())
+        {
+            _logger.LogWarning("⚠️  No stores found. Skipping vendor seeding.");
+            return;
+        }
+
         var vendorFaker = new Faker<Vendor>()
             .RuleFor(v => v.Name, f => f.Company.CompanyName())
             .RuleFor(v => v.Description, f => f.Company.CatchPhrase())
@@ -525,6 +532,8 @@ public class ApplicationDbContextInitialiser
                 PostalCode = new Faker().Address.ZipCode(),
                 Country = "ZA"
             };
+
+            vendor.BusinessId = new Faker().PickRandom(stores).BusinessId;
         }
 
         _context.Set<Vendor>().AddRange(vendors);
@@ -590,6 +599,13 @@ public class ApplicationDbContextInitialiser
             return;
         }
 
+        var stores = await _context.Stores.ToListAsync();
+        if (!stores.Any())
+        {
+            _logger.LogWarning("⚠️  No stores found. Skipping driver seeding.");
+            return;
+        }
+
         var driverFaker = new Faker<Driver>()
             .RuleFor(d => d.FirstName, f => f.Name.FirstName())
             .RuleFor(d => d.LastName, f => f.Name.LastName())
@@ -602,6 +618,11 @@ public class ApplicationDbContextInitialiser
             .RuleFor(d => d.IsAvailable, f => f.Random.Bool(0.8f));
 
         var drivers = driverFaker.Generate(8);
+
+        foreach (var driver in drivers)
+        {
+            driver.BusinessId = new Faker().PickRandom(stores).BusinessId;
+        }
 
         _context.Set<Driver>().AddRange(drivers);
         await _context.SaveChangesAsync();

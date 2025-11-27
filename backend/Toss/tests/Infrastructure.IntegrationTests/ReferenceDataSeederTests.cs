@@ -8,6 +8,7 @@ using Toss.Domain.Entities.Directory;
 using Toss.Domain.Entities.Tax;
 using Toss.Infrastructure.Data;
 using Toss.Infrastructure.Identity;
+using Toss.Infrastructure.Services.Tenancy;
 
 namespace Toss.Infrastructure.IntegrationTests;
 
@@ -21,7 +22,7 @@ public class ReferenceDataSeederTests
             .UseInMemoryDatabase($"ReferenceData-{Guid.NewGuid()}")
             .Options;
 
-        await using var context = new ApplicationDbContext(options);
+        await using var context = new ApplicationDbContext(options, new NullBusinessContext());
 
         var initializer = new ApplicationDbContextInitialiser(
             NullLogger<ApplicationDbContextInitialiser>.Instance,

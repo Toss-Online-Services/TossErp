@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
+using Toss.Infrastructure.Services.Tenancy;
 
 namespace Toss.Infrastructure.Data;
 
@@ -19,6 +19,6 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
         
         optionsBuilder.UseNpgsql(connectionString);
 
-        return new ApplicationDbContext(optionsBuilder.Options);
+        return new ApplicationDbContext(optionsBuilder.Options, new NullBusinessContext());
     }
 }

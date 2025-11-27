@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Toss.Domain.Entities.Businesses;
+using Toss.Infrastructure.Identity;
 
 namespace Toss.Infrastructure.Data.Configurations;
 
@@ -24,7 +25,7 @@ public class UserBusinessConfiguration : IEntityTypeConfiguration<UserBusiness>
             .HasForeignKey(ub => ub.BusinessId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(ub => ub.User)
+        builder.HasOne<ApplicationUser>()
             .WithMany(u => u.Businesses)
             .HasForeignKey(ub => ub.UserId)
             .OnDelete(DeleteBehavior.Cascade);

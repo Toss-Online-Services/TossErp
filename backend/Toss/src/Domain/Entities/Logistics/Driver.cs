@@ -1,6 +1,6 @@
 namespace Toss.Domain.Entities.Logistics;
 
-public class Driver : BaseAuditableEntity
+public class Driver : BaseAuditableEntity, IBusinessScopedEntity
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
@@ -18,6 +18,9 @@ public class Driver : BaseAuditableEntity
     
     public bool IsActive { get; set; } = true;
     public bool IsAvailable { get; set; } = true;
+
+    public int BusinessId { get; set; }
+    public Business Business { get; set; } = null!;
     
     // Relationships
     public ICollection<SharedDeliveryRun> DeliveryRuns { get; private set; } = new List<SharedDeliveryRun>();

@@ -9,6 +9,7 @@ global using Toss.Domain.Entities.Payments;
 global using Toss.Domain.Entities.Sales;
 global using Toss.Domain.Entities.Stores;
 global using Toss.Domain.Entities.Vendors;
+global using Toss.Domain.Entities.Businesses;
 global using Toss.Domain.Enums;
 global using Toss.Domain.Events;
 global using Toss.Domain.ValueObjects;

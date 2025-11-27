@@ -33,8 +33,13 @@ public class DriverConfiguration : IEntityTypeConfiguration<Driver>
             phoneBuilder.Property(p => p.Number).HasMaxLength(20).IsRequired();
         });
 
-        builder.HasIndex(d => d.Email);
-        builder.HasIndex(d => new { d.IsActive, d.IsAvailable });
+        builder.HasOne(d => d.Business)
+            .WithMany()
+            .HasForeignKey(d => d.BusinessId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(d => new { d.BusinessId, d.Email });
+        builder.HasIndex(d => new { d.BusinessId, d.IsActive, d.IsAvailable });
     }
 }
 

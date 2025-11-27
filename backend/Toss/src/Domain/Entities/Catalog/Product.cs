@@ -6,7 +6,7 @@ namespace Toss.Domain.Entities.Catalog;
 /// <summary>
 /// Represents a product (merged from Inventory and Catalog)
 /// </summary>
-public class Product : BaseAuditableEntity, IMetaTagsSupported, ILocalizedEntity
+public class Product : BaseAuditableEntity, IMetaTagsSupported, ILocalizedEntity, IBusinessScopedEntity
 {
     public Product()
     {
@@ -41,6 +41,12 @@ public class Product : BaseAuditableEntity, IMetaTagsSupported, ILocalizedEntity
     /// Gets or sets the product description
     /// </summary>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the business owner of this product definition.
+    /// </summary>
+    public int BusinessId { get; set; }
+    public Business Business { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the category ID

@@ -42,18 +42,24 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasPrecision(18, 2);
 
         // Relationships
+        builder.HasOne(p => p.Business)
+            .WithMany()
+            .HasForeignKey(p => p.BusinessId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasOne(p => p.Category)
             .WithMany(c => c.Products)
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.SetNull); // Allow products without category
 
         // Indexes for performance
-        builder.HasIndex(p => p.SKU)
-            .IsUnique(); // SKU must be unique across products
+        builder.HasIndex(p => new { p.BusinessId, p.SKU })
+            .IsUnique();
 
         builder.HasIndex(p => p.Barcode); // For barcode scanning
         builder.HasIndex(p => p.CategoryId); // For category filtering
         builder.HasIndex(p => p.Name); // For product search
+        builder.HasIndex(p => p.BusinessId);
     }
 }
 

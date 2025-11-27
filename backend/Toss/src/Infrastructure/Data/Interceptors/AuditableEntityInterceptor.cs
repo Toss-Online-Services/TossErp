@@ -1,4 +1,5 @@
 ﻿using Toss.Application.Common.Interfaces;
+using Toss.Application.Common.Interfaces.Tenancy;
 using Toss.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -14,13 +15,16 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
 {
     private readonly IUser _user;
     private readonly TimeProvider _dateTime;
+    private readonly IBusinessContext _businessContext;
 
     public AuditableEntityInterceptor(
         IUser user,
-        TimeProvider dateTime)
+        TimeProvider dateTime,
+        IBusinessContext businessContext)
     {
         _user = user;
         _dateTime = dateTime;
+        _businessContext = businessContext;
     }
 
     /// <summary>
@@ -60,6 +64,12 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                 {
                     entry.Entity.CreatedBy = _user.Id;
                     entry.Entity.Created = utcNow;
+
+                    if (_businessContext.CurrentBusinessId is int businessId &&
+                        entry.Entity is IBusinessScopedEntity scopedEntity)
+                    {
+                        scopedEntity.BusinessId = businessId;
+                    }
                 } 
                 entry.Entity.LastModifiedBy = _user.Id;
                 entry.Entity.LastModified = utcNow;

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Toss.Infrastructure.Data;
+using Toss.Infrastructure.Services.Tenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,7 +96,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseRateLimiter();
 
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<BusinessContextMiddleware>();
 
 app.Map("/", () => Results.Redirect("/api"));
 

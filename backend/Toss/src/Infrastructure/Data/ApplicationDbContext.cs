@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Toss.Application.Common.Interfaces;
+using Toss.Application.Common.Interfaces.Tenancy;
 using Toss.Domain.Entities;
 using Toss.Domain.Entities.ArtificialIntelligence;
 using Toss.Domain.Entities.Orders;
@@ -41,7 +42,14 @@ namespace Toss.Infrastructure.Data;
 /// </remarks>
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+    private readonly IBusinessContext _businessContext;
+
+    public ApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options,
+        IBusinessContext businessContext) : base(options)
+    {
+        _businessContext = businessContext;
+    }
 
     /// <summary>
     /// Applies global EF Core conventions for this context.
@@ -405,5 +413,86 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         
         // Apply all IEntityTypeConfiguration implementations from this assembly
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        ApplyBusinessFilters(builder);
+    }
+
+    private void ApplyBusinessFilters(ModelBuilder builder)
+    {
+        if (_businessContext is null)
+        {
+            return;
+        }
+
+        builder.Entity<Store>()
+            .HasQueryFilter(store => !_businessContext.HasBusiness || store.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Product>()
+            .HasQueryFilter(product => !_businessContext.HasBusiness || product.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Vendor>()
+            .HasQueryFilter(vendor => !_businessContext.HasBusiness || vendor.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Driver>()
+            .HasQueryFilter(driver => !_businessContext.HasBusiness || driver.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Customer>()
+            .HasQueryFilter(customer => !_businessContext.HasBusiness || customer.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<StockLevel>()
+            .HasQueryFilter(level => !_businessContext.HasBusiness || level.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<StockMovement>()
+            .HasQueryFilter(movement => !_businessContext.HasBusiness || movement.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<StockAlert>()
+            .HasQueryFilter(alert => !_businessContext.HasBusiness || alert.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Sale>()
+            .HasQueryFilter(sale => !_businessContext.HasBusiness || sale.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<SaleItem>()
+            .HasQueryFilter(item => !_businessContext.HasBusiness || item.Sale.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<SalesDocument>()
+            .HasQueryFilter(document =>
+                !_businessContext.HasBusiness ||
+                ((document.Shop != null ? document.Shop.BusinessId : document.Sale.Shop.BusinessId) == _businessContext.CurrentBusinessId));
+
+        builder.Entity<ShoppingCartItem>()
+            .HasQueryFilter(item => !_businessContext.HasBusiness || item.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Payment>()
+            .HasQueryFilter(payment => !_businessContext.HasBusiness || payment.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<PayLink>()
+            .HasQueryFilter(link => !_businessContext.HasBusiness || link.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<PurchaseOrder>()
+            .HasQueryFilter(order => !_businessContext.HasBusiness || order.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<PurchaseDocument>()
+            .HasQueryFilter(doc =>
+                !_businessContext.HasBusiness ||
+                ((doc.Shop != null ? doc.Shop.BusinessId : doc.PurchaseOrder.Shop!.BusinessId) == _businessContext.CurrentBusinessId));
+
+        builder.Entity<PurchaseReceipt>()
+            .HasQueryFilter(receipt =>
+                !_businessContext.HasBusiness ||
+                receipt.PurchaseOrder.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<DeliveryStop>()
+            .HasQueryFilter(stop => !_businessContext.HasBusiness || stop.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<AISettings>()
+            .HasQueryFilter(settings => !_businessContext.HasBusiness || settings.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<AIConversation>()
+            .HasQueryFilter(conversation => !_businessContext.HasBusiness || conversation.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<PoolParticipation>()
+            .HasQueryFilter(participation => !_businessContext.HasBusiness || participation.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<GroupBuyPool>()
+            .HasQueryFilter(pool => !_businessContext.HasBusiness || pool.InitiatorShop!.BusinessId == _businessContext.CurrentBusinessId);
     }
 }

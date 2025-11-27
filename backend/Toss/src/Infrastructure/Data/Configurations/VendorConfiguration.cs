@@ -53,6 +53,11 @@ public class VendorConfiguration : IEntityTypeConfiguration<Vendor>
             .HasForeignKey(x => x.AddressId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        builder.HasOne(x => x.Business)
+            .WithMany()
+            .HasForeignKey(x => x.BusinessId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasMany(x => x.VendorNotes)
             .WithOne(x => x.Vendor)
             .HasForeignKey(x => x.VendorId)
@@ -63,10 +68,11 @@ public class VendorConfiguration : IEntityTypeConfiguration<Vendor>
             .HasForeignKey(x => x.VendorId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(x => x.Name);
+        builder.HasIndex(x => new { x.BusinessId, x.Name });
         builder.HasIndex(x => x.Email);
         builder.HasIndex(x => x.Deleted);
         builder.HasIndex(x => x.DisplayOrder);
+        builder.HasIndex(x => x.BusinessId);
     }
 }
 
