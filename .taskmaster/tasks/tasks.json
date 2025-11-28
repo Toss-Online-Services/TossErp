@@ -356,7 +356,7 @@
   "master": {
     "tasks": [
       {
-        "id": 1,
+        "id": "1",
         "title": "Repository scan and tech stack identification",
         "description": "Analyze existing codebase to determine frameworks, languages, architecture and conventions to align tasks with current implementation.",
         "details": "- Use repo search to find solution/projects: look for `*.sln`, `*.csproj`, or `package.json`.\n- Identify backend stack (likely .NET) and any frontend (Blazor/React/Angular).\n- Note ORM (EF Core), auth middleware, DB provider, and build scripts.\n- Produce a brief internal summary to guide subsequent tasks.\n- Pseudo:\n  - find_files([\"*.sln\",\"*.csproj\",\"appsettings*.json\",\"package.json\"]).\n  - parse csproj for TargetFramework and package refs.\n- Recommended: .NET 8 LTS, EF Core 8, ASP.NET Core minimal APIs or MVC depending on repo.\n- Keep changes minimal and aligned with current patterns.",
@@ -435,7 +435,7 @@
         "updatedAt": "2025-11-27T06:30:21.340Z"
       },
       {
-        "id": 2,
+        "id": "2",
         "title": "Environment and solution setup",
         "description": "Confirm .NET SDK, restore packages, configure local settings and connection strings per repo conventions.",
         "details": "- If .NET: Require .NET SDK 8.0.4xx.\n- Create `appsettings.Development.json` with local `ConnectionStrings:Default` if missing.\n- Configure EF Core tooling `dotnet-ef` if EF is used.\n- Align with any existing Docker/launchSettings.\n- Pseudo:\n  - dotnet --info\n  - dotnet restore <solution.sln>\n  - verify appsettings.* files and secrets.json if used.\n- Choose SQL Server Express/LocalDB or SQLite per current code.",
@@ -516,7 +516,7 @@
         "updatedAt": "2025-11-27T07:26:38.337Z"
       },
       {
-        "id": 3,
+        "id": "3",
         "title": "Domain model baseline for Core modules",
         "description": "Define or review domain entities for Operations, Accounting (simple), Procurement, Sales, CRM, Stock, Projects, POS.",
         "details": "- If EF Core: add/verify entities: Business, User, Role, Customer, Supplier, Item, StockLocation, InventoryTransaction, SalesOrder, Invoice, Payment, PurchaseOrder, GoodsReceipt, Project, Task, POSShift.\n- Use minimal attributes and relationships supporting MVP.\n- EF Core 8 annotations; configure schemas and indexes (e.g., unique barcode, customer phone).\n- Prefer value objects for Money (ZAR), VatRate.\n- Pseudo (C#):\n  - class Item { Guid Id; string Sku; string Barcode; decimal Price; decimal Cost; int ReorderLevel; }\n  - class InventoryTransaction { Guid Id; Guid ItemId; decimal Qty; decimal UnitCost; InventoryTxnType Type; DateTime At; }\n- Keep simple: weighted average valuation.",
@@ -594,7 +594,7 @@
         "updatedAt": "2025-11-27T08:03:21.495Z"
       },
       {
-        "id": 4,
+        "id": "4",
         "title": "Database initialization and migrations",
         "description": "Set up database migrations for initial schema covering MVP modules.",
         "details": "- Use EF Core Migrations (8.x). Create InitialCreate migration covering core tables.\n- Configure DbContext with schema separation or consistent naming.\n- Seed minimal reference data (roles, VAT 15%, ZAR currency).\n- Pseudo:\n  - dotnet ef migrations add InitialCreate\n  - dotnet ef database update\n- Ensure nullable reference types enabled; use decimal(18,2) for money.",
@@ -672,7 +672,7 @@
         "updatedAt": "2025-11-27T08:35:14.054Z"
       },
       {
-        "id": 5,
+        "id": "5",
         "title": "Authentication with password + OTP",
         "description": "Implement secure auth with email/phone + password and optional OTP (SA context).",
         "details": "- Use ASP.NET Core Identity or existing auth; enable phone/email login.\n- Add TOTP via `AspNetCore.Totp` or SMS OTP abstraction; for MVP, use Time-based OTP app or mock SMS provider interface.\n- Enforce strong hashing (PBKDF2/Argon2 if supported) with Identity v8 default.\n- JWT access tokens for SPA/mobile with refresh tokens (sliding, 14 days).\n- Pseudo:\n  - POST /api/auth/login {phone|email, password}\n  - if requireOtp -> POST /api/auth/otp/verify\n- Rate limit login via `AspNetCoreRateLimit` or built-in limiter.",
@@ -756,7 +756,7 @@
         "updatedAt": "2025-11-27T09:22:26.716Z"
       },
       {
-        "id": 6,
+        "id": "6",
         "title": "Multi-business tenancy model",
         "description": "Allow one user to manage multiple businesses with isolation.",
         "details": "- Add `Business` entity and `UserBusiness` join with role.\n- Scope queries by `BusinessId` via middleware or DbContext filter (HasQueryFilter).\n- Store `X-Business-Id` header or resolve from subdomain later; MVP allow header or user default.\n- Pseudo:\n  - services.AddScoped<BusinessContext>() reads current business from claims/header.\n  - Apply EF filters: modelBuilder.Entity<Item>().HasQueryFilter(x => x.BusinessId == _ctx.Id)\n- Ensure audit logging includes BusinessId.",
@@ -838,7 +838,7 @@
         "updatedAt": "2025-11-27T10:38:44.678Z"
       },
       {
-        "id": 7,
+        "id": "7",
         "title": "Role-based access control",
         "description": "Implement Owner, Manager, Cashier, Staff roles and enforce per endpoint.",
         "details": "- Use ASP.NET Core Authorization with policy-based roles. Seed roles.\n- Map actions to roles (e.g., POS: Cashier+, Accounting: Manager+).\n- Add attribute policies on controllers/handlers.\n- Pseudo: [Authorize(Policy=\"CanManageStock\")] on stock endpoints.\n- Admin UI to assign roles per Business (simple page/API).",
@@ -920,7 +920,7 @@
         "updatedAt": "2025-11-27T12:17:13.357Z"
       },
       {
-        "id": 8,
+        "id": "8",
         "title": "Operations ‘Today View’ API",
         "description": "Provide aggregated metrics: sales today, cash in/out, low stock, pending orders, tasks, alerts.",
         "details": "- Create `/api/operations/today` that composes from Sales, Accounting, Stock.\n- Efficient queries with EF Core projections, compiled queries.\n- Define DTO: {salesTotal, cashIn, cashOut, lowStock[], pendingOrders[], tasks[]}.\n- Add caching for 30–60s via `IMemoryCache`.\n- Pseudo: var salesTotal = await _sales.Query(DateOnly.Today);",
@@ -1001,7 +1001,7 @@
         "updatedAt": "2025-11-27T13:01:23.723Z"
       },
       {
-        "id": 9,
+        "id": "9",
         "title": "Task & workflow API",
         "description": "CRUD for simple tasks linked to records with statuses To Do/In Progress/Done.",
         "details": "- Entities: TaskItem {Id, BusinessId, Title, Status, Due, LinkedType, LinkedId, AssigneeId}.\n- Endpoints: list/filter, create, update status, link/unlink.\n- WebSocket or SignalR optional later; MVP via polling.\n- Pseudo: POST /api/tasks {title, linkedType, linkedId} -> 201.",
@@ -1075,7 +1075,7 @@
         ]
       },
       {
-        "id": 10,
+        "id": "10",
         "title": "Notifications & comments API",
         "description": "In-app notifications and comment threads on transactions.",
         "details": "- Entities: Notification, Comment {LinkedType, LinkedId, Body, CreatedBy}.\n- SignalR hub for live updates if stack includes it; otherwise fetch on interval.\n- Create `POST /api/comments` and `GET /api/comments?linkedType&linkedId`.\n- Persist notification preferences per user.\n- Pseudo: create on key events (payment received, stock low).",
@@ -1152,7 +1152,7 @@
         ]
       },
       {
-        "id": 11,
+        "id": "11",
         "title": "Accounting: Cashbook & bank",
         "description": "Implement cashbook entries, petty cash and bank accounts.",
         "details": "- Entities: Account {type: Cash, Bank}, CashbookEntry {type: Sale, Expense, Transfer}, PaymentMethod.\n- Endpoints: record cash in/out, transfer, list by date.\n- Ledger light: do not implement full double entry; maintain balances per account and link to invoices.\n- Pseudo: POST /api/cashbook {accountId, amount, direction, ref}",
@@ -1233,7 +1233,7 @@
         "updatedAt": "2025-11-27T20:18:19.936Z"
       },
       {
-        "id": 12,
+        "id": "12",
         "title": "Accounting: Invoices & receipts",
         "description": "Simple invoices and receipts, link to payments and cashbook.",
         "details": "- Entities: Invoice {CustomerId, Lines, Total, Vat}, Receipt {InvoiceId?, Amount}.\n- Endpoints: create invoice, mark paid (cash/card/EFT/on account), issue receipt.\n- Generate simple PDF later; MVP return JSON.\n- Pseudo: POST /api/invoices -> returns invoiceNo; POST /api/invoices/{id}/pay.",
@@ -1314,7 +1314,7 @@
         "updatedAt": "2025-11-27T20:36:07.817Z"
       },
       {
-        "id": 13,
+        "id": "13",
         "title": "Accounting: Reports API",
         "description": "Provide P&L (simple), cashflow summary, debtors/creditors lists.",
         "details": "- Server-side queries projecting from invoices, cashbook, suppliers.\n- DTOs optimized for mobile dashboard.\n- Pseudo: GET /api/reports/pnl?from&to; GET /api/reports/debtors.",
@@ -1391,7 +1391,7 @@
         ]
       },
       {
-        "id": 14,
+        "id": "14",
         "title": "Procurement: Suppliers & POs",
         "description": "Supplier management and PR→PO→Goods Receipt flow.",
         "details": "- Entities: Supplier, PurchaseRequest, PurchaseOrder, GoodsReceipt, SupplierInvoice.\n- Endpoints: create supplier, create PR, approve to PO, receive goods.\n- On receipt, create InventoryTransaction (Purchase) and update weighted average cost.\n- Link SupplierInvoice to Accounting creditors report.\n- Pseudo: POST /api/procurement/po, POST /api/procurement/grn.",
@@ -1476,7 +1476,7 @@
         "updatedAt": "2025-11-28T07:17:18.027Z"
       },
       {
-        "id": 15,
+        "id": "15",
         "title": "Sales: Quotes → Orders → Delivery → Invoices",
         "description": "Non-POS sales workflow integrated with stock and accounting.",
         "details": "- Entities: Quote, SalesOrder, DeliveryNote, Invoice (reuse), Customer.\n- Reserve stock on order (optional MVP skip; decrement on delivery/invoice).\n- Endpoints for each step and state transitions.\n- Pseudo: POST /api/sales/orders; POST /api/sales/delivery; link to invoice creation.",
@@ -1562,7 +1562,7 @@
         "updatedAt": "2025-11-28T09:33:33.673Z"
       },
       {
-        "id": 16,
+        "id": "16",
         "title": "CRM: Customers and interactions",
         "description": "Basic customer profiles with tags and manual interaction log.",
         "details": "- Entities: Customer {Name, Phone, Tags, CreditLimit}, Interaction {Type, Note, When}.\n- Endpoints: CRUD customers, add interaction, list interactions.\n- Index phone unique per business.\n- Pseudo: POST /api/crm/customers; POST /api/crm/interactions.",
@@ -1643,7 +1643,7 @@
         "updatedAt": "2025-11-28T11:41:36.509Z"
       },
       {
-        "id": 17,
+        "id": "17",
         "title": "Inventory: Items, locations, movements",
         "description": "Item catalog, stock locations, and movement handling with alerts.",
         "details": "- Entities: Item, StockLocation, InventoryTransaction, ReorderLevel.\n- Endpoints: CRUD items, locations; POST movement (adjustment, transfer); stock-on-hand by location.\n- Alerts: scheduled job querying low stock (min level).\n- Weighted average valuation calculation maintained on purchase/adjustment.\n- Pseudo: GET /api/stock/soh?itemId&locationId.",
@@ -1721,7 +1721,7 @@
         "updatedAt": "2025-11-28T11:45:50.325Z"
       },
       {
-        "id": 18,
+        "id": "18",
         "title": "Manufacturing: BOM and production orders",
         "description": "Simple production management for small producers.",
         "details": "- Entities: BillOfMaterials {ProductId, Components[]}, ProductionOrder {PlannedQty, Consumed[], Produced[]}.\n- On complete: decrement raw materials, increment finished goods via InventoryTransaction types (Consume/Produce).\n- Costing: roll-up material cost + simple overhead percentage.\n- Endpoints: CRUD BOM, create/complete production order.\n- Pseudo: POST /api/mfg/orders/{id}/complete.",
@@ -1731,7 +1731,7 @@
           "17",
           "14"
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -1739,9 +1739,10 @@
             "description": "Scan the repository to identify domain models, services, DbContext mappings, and controllers related to inventory, costing, and routing patterns.",
             "dependencies": [],
             "details": "Search for symbols such as InventoryTransaction, InventoryService, Product, Stock, Cost, and typical controller patterns under the API layer. Note namespaces, folder layout (e.g., Domain/Application/Infrastructure/API), and whether CQRS/MediatR, DTOs, and AutoMapper are used. This ensures BOM and Production Order integrate with current conventions and stock movement flows.",
-            "status": "pending",
+            "status": "in-progress",
             "testStrategy": "Document discovered files and patterns; no code tests required.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-28T12:29:46.376Z"
           },
           {
             "id": 2,
@@ -1794,10 +1795,11 @@
             "testStrategy": "Integration tests: attempt completion with insufficient stock (expect failure), repeat completion (no duplicate transactions), mixed error case rolls back all changes; confirm consistent error responses.",
             "parentId": "undefined"
           }
-        ]
+        ],
+        "updatedAt": "2025-11-28T12:29:46.376Z"
       },
       {
-        "id": 19,
+        "id": "19",
         "title": "Projects/Jobs module",
         "description": "Job cards with tasks, materials, labour and billing links.",
         "details": "- Entities: Project {CustomerId, Status}, ProjectTask, ProjectMaterial {ItemId, Qty}, LabourEntry {Hours, Rate}.\n- Endpoints: create job, add materials (deduct stock), add labour, link invoice.\n- Status flow: New → In Progress → On Hold → Completed → Closed.\n- Pseudo: POST /api/projects; POST /api/projects/{id}/materials.",
@@ -1873,7 +1875,7 @@
         ]
       },
       {
-        "id": 20,
+        "id": "20",
         "title": "Assets register",
         "description": "Track assets, locations, condition, and maintenance history.",
         "details": "- Entities: Asset {Name, Value, Location, Condition}, MaintenanceLog.\n- Endpoints: CRUD assets, add maintenance entry.\n- Optional depreciation later; not in MVP computations.\n- Pseudo: POST /api/assets; POST /api/assets/{id}/maintenance.",
@@ -1888,7 +1890,7 @@
         "subtasks": []
       },
       {
-        "id": 21,
+        "id": "21",
         "title": "POS API (online-first)",
         "description": "Backend endpoints to support POS checkout with payments and receipts.",
         "details": "- Endpoints: scan item, add to cart, calculate totals/discounts, commit sale -> reduce stock, record cashbook, print/send receipt.\n- Support payment types: cash, card, on account.\n- Prepare for offline by exposing minimal JSON contracts and idempotency keys.\n- Pseudo: POST /api/pos/checkout {lines[], payments[]} with idempotency header.",
@@ -1901,11 +1903,12 @@
           "6",
           "7"
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2025-11-28T12:27:30.661Z"
       },
       {
-        "id": 22,
+        "id": "22",
         "title": "Offline-first POS client (PWA)",
         "description": "Web PWA for POS with local cache and sync.",
         "details": "- If repo has frontend, align (Blazor WASM/React). Otherwise propose React 18 + Vite + Workbox 7.\n- Use IndexedDB via `idb` library for cart and item cache.\n- Installable PWA with manifest and service worker caching critical APIs.\n- Sync queue with idempotency keys when online.\n- Pseudo: navigator.serviceWorker, background sync if available.",
@@ -1920,7 +1923,7 @@
         "subtasks": []
       },
       {
-        "id": 23,
+        "id": "23",
         "title": "Quality module",
         "description": "Checklists, incidents, and follow-up actions.",
         "details": "- Entities: QualityChecklist, ChecklistItem, Incident {Type, Severity}, ActionItem (assignee, due).\n- Endpoints: create checklist, record run, log incident, assign actions.\n- Pseudo: POST /api/quality/incidents; POST /api/quality/checks/run.",
@@ -1935,7 +1938,7 @@
         "subtasks": []
       },
       {
-        "id": 24,
+        "id": "24",
         "title": "Support (tickets) module",
         "description": "Simple service desk for issues and requests.",
         "details": "- Entities: Ticket {Type, Status, LinkedType, LinkedId}, TicketNote.\n- Endpoints: CRUD tickets, add note, status transitions.\n- Optional notifications on status change.\n- Pseudo: POST /api/support/tickets; PATCH /api/support/tickets/{id}/status.",
@@ -1951,7 +1954,7 @@
         "subtasks": []
       },
       {
-        "id": 25,
+        "id": "25",
         "title": "HR & Payroll basics",
         "description": "Employees, attendance, and payroll summary export.",
         "details": "- Entities: Employee {RateType, Rate}, Attendance {ClockIn/Out or Days}, PayrollRun {Gross, Deductions, Net}.\n- Wizards to compute simple payroll summary (no SARS integration).\n- Endpoints: CRUD employees, record attendance, generate payroll summary for period.\n- Pseudo: POST /api/hr/payroll/run?from&to.",
@@ -1966,7 +1969,7 @@
         "subtasks": []
       },
       {
-        "id": 26,
+        "id": "26",
         "title": "Audit trail and activity timeline",
         "description": "Record who did what and show simple business activity feed.",
         "details": "- Implement domain events or EF SaveChanges interceptor to log events per entity change with actor and timestamp.\n- Build `/api/activity/today` and per-entity timeline.\n- Store compact JSON diff for readability where feasible.\n- Pseudo: override SaveChanges -> write AuditEntry.",
@@ -1982,7 +1985,7 @@
         "subtasks": []
       },
       {
-        "id": 27,
+        "id": "27",
         "title": "Import/export CSV",
         "description": "CSV import/export for items, customers, suppliers.",
         "details": "- File upload endpoints parsing CSV with `CsvHelper`.\n- Validate and upsert records; provide download templates.\n- Export endpoints with proper CSV headers and encoding.\n- Pseudo: POST /api/import/items (multipart/form-data).",
@@ -2000,7 +2003,7 @@
         "subtasks": []
       },
       {
-        "id": 28,
+        "id": "28",
         "title": "Basic collaboration surfaces",
         "description": "Feedback on sales/tickets and simple offers from suppliers (ERP-III).",
         "details": "- Extend comments with type: feedback/offer.\n- Add endpoints for customers/suppliers to submit via simple public forms (tokenized links) for MVP.\n- Rate-limit and captcha (hCaptcha/Turnstile) if public endpoints added.\n- Pseudo: POST /api/collab/feedback {salesId, rating, note}.",
@@ -2017,7 +2020,7 @@
         "subtasks": []
       },
       {
-        "id": 29,
+        "id": "29",
         "title": "API versioning and documentation",
         "description": "Introduce API versioning and generate OpenAPI/Swagger.",
         "details": "- Use `AspNetCore.Mvc.Versioning` and Swashbuckle.\n- Document security schemes (JWT) and response models.\n- Group endpoints by module.\n- Pseudo: options.ReportApiVersions(); SwaggerGen with XML comments.",
@@ -2036,7 +2039,7 @@
         "subtasks": []
       },
       {
-        "id": 30,
+        "id": "30",
         "title": "Performance and caching baseline",
         "description": "Ensure common actions feel instant on mid-range Android.",
         "details": "- Add response caching where safe.\n- Use compiled queries for hot paths.\n- Add database indexes (phone, barcode, item business/location composite).\n- Add simple metrics via `OpenTelemetry` and minimal logging.\n- Pseudo: Identify N+1 queries and fix with `AsSplitQuery`/`Include` only where necessary.",
@@ -2054,7 +2057,7 @@
         "subtasks": []
       },
       {
-        "id": 31,
+        "id": "31",
         "title": "Security hardening",
         "description": "Encrypt in transit, secure headers, input validation, and secrets handling.",
         "details": "- Enforce HTTPS, HSTS, and secure cookies.\n- Add `NetEscapades.AspNetCore.SecurityHeaders` for sane defaults.\n- Validate inputs with FluentValidation; model binding limits and request size limits.\n- Secrets via user-secrets or environment variables; never commit secrets.\n- Pseudo: services.AddAuthentication().AddJwtBearer(...); app.UseSecurityHeaders();",
@@ -2069,7 +2072,7 @@
         "subtasks": []
       },
       {
-        "id": 32,
+        "id": "32",
         "title": "Mobile-first UI shell and navigation",
         "description": "Implement mobile-first navigation: Home, Sales, Stock, Money, People, Jobs, Settings.",
         "details": "- Follow repo’s frontend tech (e.g., Blazor/React). Use component library suited for mobile (MudBlazor/Fluent UI or MUI if React).\n- Provide quick actions per module.\n- Traffic-light indicators in dashboard. Use skeleton loaders for speed perception.\n- Pseudo: define routes and layout; bottom nav for mobile.",
@@ -2086,7 +2089,7 @@
         "subtasks": []
       },
       {
-        "id": 33,
+        "id": "33",
         "title": "Localisation and VAT settings",
         "description": "Configure ZAR as base currency and basic VAT (15%).",
         "details": "- Settings per business: currency=ZAR, vatRate=15%.\n- Ensure money formatting and VAT calculations across modules use these settings.\n- Pseudo: BusinessSettings { Currency=\"ZAR\", VatRate=0.15 } injected into calculators.",
@@ -2103,7 +2106,7 @@
         "subtasks": []
       },
       {
-        "id": 34,
+        "id": "34",
         "title": "Deployment and availability baseline",
         "description": "Set up minimal deployment pipeline and reliability targets.",
         "details": "- If repo includes CI, extend; else add GitHub Actions/ADO to build, test, publish.\n- Containerize API with .NET 8 ASP.NET base image; config via env vars.\n- DB backup/restore scripts.\n- Health checks endpoint `/health` and liveness/readiness.\n- Pseudo: Dockerfile, docker-compose for API + SQL Server/SQLite.",
@@ -2120,7 +2123,7 @@
         "subtasks": []
       },
       {
-        "id": 35,
+        "id": "35",
         "title": "Analytics and success metrics instrumentation",
         "description": "Track product metrics aligned with goals (activation, usage, stock-outs).",
         "details": "- Add events: login, POS sale, stock alert resolved, module usage.\n- Use privacy-friendly analytics (self-hosted or server-side logs); expose admin reports.\n- Pseudo: emit `BusinessEvent {Type, At, BusinessId, UserId, Data}`; aggregate weekly.\n- Include basic dashboard cards for pilot tracking.",
@@ -2140,14 +2143,12 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-28T11:45:50.328Z",
+      "lastModified": "2025-11-28T12:29:46.384Z",
       "taskCount": 35,
-      "completedCount": 14,
+      "completedCount": 15,
       "tags": [
         "master"
-      ],
-      "created": "2025-11-28T11:46:51.454Z",
-      "description": "Tasks for master context"
+      ]
     }
   }
 }

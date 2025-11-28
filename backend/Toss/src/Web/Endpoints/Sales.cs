@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Toss.Application.Sales.Commands.CreateSale;
 using Toss.Application.Sales.Commands.GenerateReceipt;
+using Toss.Application.Sales.Commands.PosCheckout;
 using Toss.Application.Sales.Commands.VoidSale;
 using Toss.Application.Sales.Commands.UpdateSaleStatus;
 using Toss.Application.Sales.Commands.ProcessRefund;
@@ -32,6 +33,9 @@ public class Sales : EndpointGroupBase
         group.RequireAuthorization(Policies.RequirePosAccess);
         group.MapPost(string.Empty, CreateSale)
             .WithName("CreateSale");
+
+        group.MapPost("pos/checkout", PosCheckout)
+            .WithName("PosCheckout");
 
         group.MapGet(string.Empty, GetSales)
             .WithName("GetSales");
@@ -125,6 +129,12 @@ public class Sales : EndpointGroupBase
     {
         var id = await sender.Send(command);
         return Results.Created($"/api/sales/{id}", new { id });
+    }
+
+    public async Task<IResult> PosCheckout(ISender sender, PosCheckoutCommand command)
+    {
+        var result = await sender.Send(command);
+        return Results.Ok(result);
     }
 
     public async Task<IResult> GetSales(
