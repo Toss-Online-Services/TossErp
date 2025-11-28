@@ -1,4 +1,5 @@
 using Toss.Application.Common.Interfaces;
+using Toss.Application.Common.Interfaces.Tenancy;
 using Toss.Application.Common.Mappings;
 using Toss.Application.Common.Models;
 using Toss.Domain.Entities.CRM;
@@ -14,11 +15,15 @@ public record CustomerDto
     public string? PhoneNumber { get; init; }
     public decimal TotalPurchases { get; init; }
     public DateTimeOffset? LastPurchaseDate { get; init; }
+    public int? StoreId { get; init; }
+    public string StoreName { get; init; } = string.Empty;
+    public string? Tags { get; init; }
+    public decimal CreditLimit { get; init; }
 }
 
 public record GetCustomersQuery : IRequest<PaginatedList<CustomerDto>>
 {
-    public int ShopId { get; init; }
+    public int? StoreId { get; init; }
     public string? SearchTerm { get; init; }
     public int PageNumber { get; init; } = 1;
     public int PageSize { get; init; } = 10;
@@ -27,17 +32,32 @@ public record GetCustomersQuery : IRequest<PaginatedList<CustomerDto>>
 public class GetCustomersQueryHandler : IRequestHandler<GetCustomersQuery, PaginatedList<CustomerDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IBusinessContext _businessContext;
 
-    public GetCustomersQueryHandler(IApplicationDbContext context)
+    public GetCustomersQueryHandler(
+        IApplicationDbContext context,
+        IBusinessContext businessContext)
     {
         _context = context;
+        _businessContext = businessContext;
     }
 
     public async Task<PaginatedList<CustomerDto>> Handle(GetCustomersQuery request, CancellationToken cancellationToken)
     {
+        if (!_businessContext.HasBusiness)
+        {
+            return new PaginatedList<CustomerDto>(new List<CustomerDto>(), 0, request.PageNumber, request.PageSize);
+        }
+
+        var businessId = _businessContext.CurrentBusinessId!.Value;
+
         var query = _context.Customers
-            .Where(c => c.ShopId == request.ShopId)
-            .AsQueryable();
+            .Where(c => c.BusinessId == businessId);
+
+        if (request.StoreId.HasValue)
+        {
+            query = query.Where(c => c.StoreId == request.StoreId);
+        }
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
@@ -45,7 +65,7 @@ public class GetCustomersQueryHandler : IRequestHandler<GetCustomersQuery, Pagin
                 c.FirstName.Contains(request.SearchTerm) ||
                 c.LastName.Contains(request.SearchTerm) ||
                 (c.Email != null && c.Email.Contains(request.SearchTerm)) ||
-                (c.PhoneNumber != null && c.PhoneNumber.Contains(request.SearchTerm)));
+                (c.Phone != null && c.Phone.Number.Contains(request.SearchTerm)));
         }
 
         var customers = await query
@@ -56,11 +76,15 @@ public class GetCustomersQueryHandler : IRequestHandler<GetCustomersQuery, Pagin
                 FirstName = c.FirstName,
                 LastName = c.LastName,
                 Email = c.Email ?? string.Empty,
-                PhoneNumber = c.PhoneNumber,
+                PhoneNumber = c.Phone != null ? c.Phone.Number : null,
                 TotalPurchases = c.TotalPurchases,
-                LastPurchaseDate = c.LastPurchaseDate
+                LastPurchaseDate = c.LastPurchaseDate,
+                StoreId = c.StoreId,
+                StoreName = c.Store != null ? c.Store.Name : string.Empty,
+                Tags = c.Tags,
+                CreditLimit = c.CreditLimit
             })
-            .PaginatedListAsync(request.PageNumber, request.PageSize);
+            .PaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);
 
         return customers;
     }

@@ -24,8 +24,14 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(c => c.Email)
             .HasMaxLength(256);
 
+        builder.Property(c => c.Tags)
+            .HasMaxLength(512);
+
         // Monetary tracking
         builder.Property(c => c.TotalPurchaseAmount)
+            .HasPrecision(18, 2);
+
+        builder.Property(c => c.CreditLimit)
             .HasPrecision(18, 2);
 
         builder.Property(c => c.Notes)
@@ -34,14 +40,21 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         // Optional phone number as owned entity (value object pattern)
         builder.OwnsOne(c => c.Phone, phoneBuilder =>
         {
-            phoneBuilder.Property(p => p.Number).HasMaxLength(20);
+            phoneBuilder.Property(p => p.Number)
+                .HasColumnName("PhoneNumber")
+                .HasMaxLength(20);
         });
 
         // Relationships
-        builder.HasOne(c => c.Shop)
+        builder.HasOne(c => c.Business)
             .WithMany()
-            .HasForeignKey(c => c.ShopId)
-            .OnDelete(DeleteBehavior.Cascade); // Delete customers if shop is deleted
+            .HasForeignKey(c => c.BusinessId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(c => c.Store)
+            .WithMany()
+            .HasForeignKey(c => c.StoreId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasOne(c => c.Address)
             .WithMany()
@@ -64,7 +77,10 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             .OnDelete(DeleteBehavior.Cascade);
 
         // Indexes for lookups and filtering
-        builder.HasIndex(c => new { c.ShopId, c.Email }); // Composite for shop customer lookup
+        builder.Property<string>("PhoneNumber");
+
+        builder.HasIndex(c => new { c.BusinessId, c.Email });
+        builder.HasIndex(new[] { "BusinessId", "PhoneNumber" }).IsUnique();
         builder.HasIndex(c => c.LastPurchaseDate); // For RFM analysis
     }
 }

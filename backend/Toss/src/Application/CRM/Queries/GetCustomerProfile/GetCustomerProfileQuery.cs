@@ -1,4 +1,6 @@
+using Toss.Application.Common.Exceptions;
 using Toss.Application.Common.Interfaces;
+using Toss.Application.Common.Interfaces.Tenancy;
 using Toss.Domain.Entities.CRM;
 
 namespace Toss.Application.CRM.Queries.GetCustomerProfile;
@@ -10,8 +12,8 @@ public record CustomerProfileDto
     public string LastName { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
     public string? PhoneNumber { get; init; }
-    public int ShopId { get; init; }
-    public string ShopName { get; init; } = string.Empty;
+    public int? StoreId { get; init; }
+    public string StoreName { get; init; } = string.Empty;
     public decimal TotalPurchases { get; init; }
     public DateTimeOffset? LastPurchaseDate { get; init; }
     public int PurchaseCount { get; init; }
@@ -34,18 +36,29 @@ public record GetCustomerProfileQuery : IRequest<CustomerProfileDto>
 public class GetCustomerProfileQueryHandler : IRequestHandler<GetCustomerProfileQuery, CustomerProfileDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IBusinessContext _businessContext;
 
-    public GetCustomerProfileQueryHandler(IApplicationDbContext context)
+    public GetCustomerProfileQueryHandler(
+        IApplicationDbContext context,
+        IBusinessContext businessContext)
     {
         _context = context;
+        _businessContext = businessContext;
     }
 
     public async Task<CustomerProfileDto> Handle(GetCustomerProfileQuery request, CancellationToken cancellationToken)
     {
+        if (!_businessContext.HasBusiness)
+        {
+            throw new ForbiddenAccessException("No active business context available.");
+        }
+
+        var businessId = _businessContext.CurrentBusinessId!.Value;
+
         var customer = await _context.Customers
-            .Include(c => c.Shop)
+            .Include(c => c.Store)
             .Include(c => c.Purchases.OrderByDescending(p => p.PurchaseDate).Take(10))
-            .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(c => c.Id == request.Id && c.BusinessId == businessId, cancellationToken);
 
         if (customer == null)
             throw new NotFoundException(nameof(Customer), request.Id.ToString());
@@ -56,9 +69,9 @@ public class GetCustomerProfileQueryHandler : IRequestHandler<GetCustomerProfile
             FirstName = customer.FirstName,
             LastName = customer.LastName,
             Email = customer.Email ?? string.Empty,
-            PhoneNumber = customer.PhoneNumber,
-            ShopId = customer.ShopId,
-            ShopName = customer.Shop.Name,
+            PhoneNumber = customer.Phone?.Number,
+            StoreId = customer.StoreId,
+            StoreName = customer.Store?.Name ?? string.Empty,
             TotalPurchases = customer.TotalPurchases,
             LastPurchaseDate = customer.LastPurchaseDate,
             PurchaseCount = customer.Purchases.Count,

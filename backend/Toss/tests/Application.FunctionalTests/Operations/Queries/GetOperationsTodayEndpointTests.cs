@@ -57,7 +57,9 @@ public class GetOperationsTodayEndpointTests : BaseTestFixture
 
         var customer = new Customer
         {
-            ShopId = store.Id,
+            BusinessId = business.Id,
+            StoreId = store.Id,
+            Store = store,
             FirstName = "Thabo",
             LastName = "Ndlovu",
             Email = "thabo@example.com",

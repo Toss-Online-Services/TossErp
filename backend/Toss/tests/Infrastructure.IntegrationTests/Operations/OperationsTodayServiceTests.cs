@@ -67,8 +67,9 @@ public class OperationsTodayServiceTests
 
         var customer = new Customer
         {
-            Shop = store,
-            ShopId = store.Id,
+            BusinessId = businessId,
+            Store = store,
+            StoreId = store.Id,
             FirstName = "Lerato",
             LastName = "M",
             Email = "lerato@example.com",

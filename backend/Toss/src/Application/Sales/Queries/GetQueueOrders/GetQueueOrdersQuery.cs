@@ -65,7 +65,10 @@ public class GetQueueOrdersQueryHandler : IRequestHandler<GetQueueOrdersQuery, L
                 ShopId = s.ShopId,
                 CustomerId = s.CustomerId,
                 CustomerName = s.CustomerName ?? (s.Customer != null ? s.Customer.FirstName + " " + s.Customer.LastName : "Walk-in"),
-                CustomerPhone = s.CustomerPhone ?? (s.Customer != null ? s.Customer.PhoneNumber : null),
+                CustomerPhone = s.CustomerPhone ??
+                    (s.Customer != null && s.Customer.Phone != null
+                        ? s.Customer.Phone.Number
+                        : null),
                 SaleDate = s.SaleDate,
                 Status = s.Status,
                 SaleType = s.SaleType,

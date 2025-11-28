@@ -82,7 +82,7 @@ public class TokenService : ITokenService
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    private async Task<RefreshToken> CreateRefreshTokenAsync(ApplicationUser user, CancellationToken cancellationToken)
+    private Task<RefreshToken> CreateRefreshTokenAsync(ApplicationUser user, CancellationToken cancellationToken)
     {
         var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
@@ -96,7 +96,7 @@ public class TokenService : ITokenService
         };
 
         _context.RefreshTokens.Add(refreshToken);
-        return refreshToken;
+        return Task.FromResult(refreshToken);
     }
 
     private async Task<IReadOnlyDictionary<string, object?>> BuildUserProfileAsync(ApplicationUser user, CancellationToken cancellationToken)

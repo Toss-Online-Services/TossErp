@@ -468,7 +468,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             .HasQueryFilter(driver => !_businessContext.HasBusiness || driver.BusinessId == _businessContext.CurrentBusinessId);
 
         builder.Entity<Customer>()
-            .HasQueryFilter(customer => !_businessContext.HasBusiness || customer.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+            .HasQueryFilter(customer => !_businessContext.HasBusiness || customer.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<CustomerInteraction>()
+            .HasQueryFilter(interaction => !_businessContext.HasBusiness || interaction.BusinessId == _businessContext.CurrentBusinessId);
 
         builder.Entity<StockLevel>()
             .HasQueryFilter(level => !_businessContext.HasBusiness || level.Shop!.BusinessId == _businessContext.CurrentBusinessId);
@@ -481,6 +484,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<Sale>()
             .HasQueryFilter(sale => !_businessContext.HasBusiness || sale.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<CustomerPurchase>()
+            .HasQueryFilter(purchase => !_businessContext.HasBusiness || purchase.Customer.BusinessId == _businessContext.CurrentBusinessId);
 
         builder.Entity<SaleItem>()
             .HasQueryFilter(item => !_businessContext.HasBusiness || item.Sale.Shop!.BusinessId == _businessContext.CurrentBusinessId);

@@ -226,7 +226,7 @@ public sealed class OperationsTodayService : IOperationsTodayService
                 order => order.CustomerId,
                 customer => customer.Id,
                 (order, customer) => new { order, customer })
-            .Where(joined => storeIds.Contains(joined.customer.ShopId))
+            .Where(joined => joined.customer.StoreId.HasValue && storeIds.Contains(joined.customer.StoreId.Value))
             .OrderByDescending(joined => joined.order.Created)
             .Take(5)
             .Select(joined => new TodayCustomerOrderDto(

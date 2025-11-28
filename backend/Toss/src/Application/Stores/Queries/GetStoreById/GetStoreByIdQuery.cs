@@ -78,7 +78,7 @@ public class GetStoreByIdQueryHandler : IRequestHandler<GetStoreByIdQuery, Store
 
         // Get stats
         var customerCount = await _context.Customers
-            .CountAsync(c => c.ShopId == request.Id, cancellationToken);
+            .CountAsync(c => c.StoreId == request.Id, cancellationToken);
         
         var productCount = await _context.StockLevels
             .CountAsync(sl => sl.ShopId == request.Id, cancellationToken);

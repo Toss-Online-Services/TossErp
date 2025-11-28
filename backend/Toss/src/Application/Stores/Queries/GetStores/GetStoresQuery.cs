@@ -73,7 +73,7 @@ public class GetStoresQueryHandler : IRequestHandler<GetStoresQuery, List<StoreL
                 CompanyName = s.CompanyName,
                 DisplayOrder = s.DisplayOrder,
                 BusinessId = s.BusinessId,
-                CustomerCount = _context.Customers.Count(c => c.ShopId == s.Id),
+                CustomerCount = _context.Customers.Count(c => c.StoreId == s.Id),
                 ProductCount = _context.StockLevels.Count(sl => sl.ShopId == s.Id)
             })
             .ToListAsync(cancellationToken);

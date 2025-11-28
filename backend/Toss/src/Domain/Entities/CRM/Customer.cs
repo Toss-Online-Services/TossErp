@@ -1,25 +1,34 @@
+using Toss.Domain.Common;
+using Toss.Domain.Entities;
+using Toss.Domain.Entities.Businesses;
+using Toss.Domain.Entities.Sales;
+using Toss.Domain.Entities.Stores;
+using Toss.Domain.ValueObjects;
+
 namespace Toss.Domain.Entities.CRM;
 
-public class Customer : BaseAuditableEntity
+public class Customer : BaseAuditableEntity, IBusinessScopedEntity
 {
-    public int ShopId { get; set; }
-    public Store Shop { get; set; } = null!;
+    public int BusinessId { get; set; }
+    public Business Business { get; set; } = null!;
+
+    public int? StoreId { get; set; }
+    public Store? Store { get; set; }
     
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public string FullName => $"{FirstName} {LastName}";
+    public string FullName => $"{FirstName} {LastName}".Trim();
     
     public PhoneNumber? Phone { get; set; }
     public string? Email { get; set; }
-    
-    // Alias for handlers expecting string PhoneNumber
-    public string? PhoneNumber => Phone?.ToString();
     
     public int? AddressId { get; set; }
     public Address? Address { get; set; }
     
     public bool IsActive { get; set; } = true;
     public bool AllowsMarketing { get; set; }
+    public decimal CreditLimit { get; set; }
+    public string? Tags { get; set; }
     
     // Customer insights
     public decimal TotalPurchaseAmount { get; set; }

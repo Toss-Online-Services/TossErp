@@ -610,19 +610,27 @@ public class ApplicationDbContextInitialiser
         }
 
         var customerFaker = new Faker<Customer>()
-            .RuleFor(c => c.ShopId, f => f.PickRandom(stores).Id)
+            .RuleFor(c => c.StoreId, f => f.PickRandom(stores).Id)
             .RuleFor(c => c.FirstName, f => f.Name.FirstName())
             .RuleFor(c => c.LastName, f => f.Name.LastName())
             .RuleFor(c => c.Phone, f => new PhoneNumber($"+27{f.Random.Int(6, 8)}{f.Random.Int(10000000, 99999999)}"))
             .RuleFor(c => c.Email, (f, c) => f.Internet.Email(c.FirstName, c.LastName))
             .RuleFor(c => c.IsActive, true)
             .RuleFor(c => c.AllowsMarketing, f => f.Random.Bool(0.6f))
+            .RuleFor(c => c.Tags, f => string.Join(',', f.Random.ListItems(new[] { "VIP", "Cash", "Account", "Wholesale" }, f.Random.Int(0, 2))))
+            .RuleFor(c => c.CreditLimit, f => f.Random.Decimal(0, 2000))
             .RuleFor(c => c.TotalPurchaseAmount, f => f.Random.Decimal(0, 5000))
             .RuleFor(c => c.TotalPurchaseCount, f => f.Random.Int(0, 50))
             .RuleFor(c => c.FirstPurchaseDate, f => DateTimeOffset.UtcNow.AddDays(-f.Random.Int(30, 365)))
             .RuleFor(c => c.LastPurchaseDate, f => DateTimeOffset.UtcNow.AddDays(-f.Random.Int(0, 30)));
 
         var customers = customerFaker.Generate(100);
+
+        foreach (var customer in customers)
+        {
+            var store = stores.First(s => s.Id == customer.StoreId);
+            customer.BusinessId = store.BusinessId;
+        }
 
         // Create addresses for some customers
         foreach (var customer in customers.Where(c => new Faker().Random.Bool(0.7f)))

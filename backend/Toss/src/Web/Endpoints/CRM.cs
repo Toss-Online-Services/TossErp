@@ -29,12 +29,12 @@ public class CRM : EndpointGroupBase
         return Results.Ok(result);
     }
 
-    public async Task<IResult> SearchCustomers(ISender sender, string searchTerm, int shopId)
+    public async Task<IResult> SearchCustomers(ISender sender, string searchTerm, int? storeId)
     {
         var query = new SearchCustomersQuery
         {
             SearchTerm = searchTerm,
-            ShopId = shopId
+            StoreId = storeId
         };
         var result = await sender.Send(query);
         return Results.Ok(result);

@@ -20,7 +20,7 @@ public class TestOrders : EndpointGroupBase
             var totalOrders = await context.Orders.CountAsync();
             var nonDeletedOrders = await context.Orders.Where(o => !o.Deleted).CountAsync();
             var totalCustomers = await context.Customers.CountAsync();
-            var customersWithShop1 = await context.Customers.Where(c => c.ShopId == 1).CountAsync();
+            var customersWithShop1 = await context.Customers.Where(c => c.StoreId == 1).CountAsync();
             
             // Get first 3 orders with basic info
             var sampleOrders = await context.Orders

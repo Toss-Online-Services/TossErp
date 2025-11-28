@@ -1346,12 +1346,12 @@
         "operationId": "GetApiCRMCustomers",
         "parameters": [
           {
-            "name": "ShopId",
+            "name": "StoreId",
             "in": "query",
-            "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int32",
+              "nullable": true
             },
             "x-position": 1
           },
@@ -1414,12 +1414,12 @@
             "x-position": 1
           },
           {
-            "name": "shopId",
+            "name": "storeId",
             "in": "query",
-            "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int32",
+              "nullable": true
             },
             "x-position": 2
           }
@@ -4424,6 +4424,106 @@
       }
     },
     "/api/Sales/quotes": {
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetSalesQuotes",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Type",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/SalesDocumentType"
+                }
+              ]
+            },
+            "x-position": 2
+          },
+          {
+            "name": "CustomerId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "FromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "ToDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
+            "name": "IsPaid",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 6
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 7
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 8
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
       "post": {
         "tags": [
           "Sales"
@@ -4454,6 +4554,106 @@
       }
     },
     "/api/Sales/orders": {
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetSalesOrders",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Type",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/SalesDocumentType"
+                }
+              ]
+            },
+            "x-position": 2
+          },
+          {
+            "name": "CustomerId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "FromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "ToDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
+            "name": "IsPaid",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 6
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 7
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 8
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
       "post": {
         "tags": [
           "Sales"
@@ -4484,6 +4684,106 @@
       }
     },
     "/api/Sales/delivery-notes": {
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetDeliveryNotes",
+        "parameters": [
+          {
+            "name": "ShopId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Type",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/SalesDocumentType"
+                }
+              ]
+            },
+            "x-position": 2
+          },
+          {
+            "name": "CustomerId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "FromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "ToDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
+            "name": "IsPaid",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 6
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 7
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 8
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
       "post": {
         "tags": [
           "Sales"
@@ -4500,6 +4800,48 @@
           },
           "required": true,
           "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Sales/orders/{saleId}/invoice": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "CreateInvoiceFromOrder",
+        "parameters": [
+          {
+            "name": "saleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderInvoiceRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
         },
         "responses": {
           "200": {
@@ -6761,9 +7103,10 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "ShopId": {
+          "StoreId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "FirstName": {
             "type": "string"
@@ -6783,6 +7126,15 @@
             "type": "boolean"
           },
           "Notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "CreditLimit": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "Tags": {
             "type": "string",
             "nullable": true
           }
@@ -8229,6 +8581,21 @@
           "Quantity": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "CreateOrderInvoiceRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "DueDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
           }
         }
       },

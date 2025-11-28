@@ -20,8 +20,13 @@ public class CustomerInteractionConfiguration : IEntityTypeConfiguration<Custome
 
         builder.Property(ci => ci.InteractionBy)
             .HasMaxLength(200);
+        
+        builder.HasOne(ci => ci.Business)
+            .WithMany()
+            .HasForeignKey(ci => ci.BusinessId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(ci => ci.InteractionDate);
+        builder.HasIndex(ci => new { ci.BusinessId, ci.InteractionDate });
         builder.HasIndex(ci => new { ci.CustomerId, ci.RequiresFollowUp });
     }
 }

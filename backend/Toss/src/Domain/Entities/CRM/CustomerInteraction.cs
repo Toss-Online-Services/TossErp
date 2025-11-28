@@ -1,7 +1,13 @@
+using Toss.Domain.Common;
+using Toss.Domain.Entities.Businesses;
+
 namespace Toss.Domain.Entities.CRM;
 
-public class CustomerInteraction : BaseAuditableEntity
+public class CustomerInteraction : BaseAuditableEntity, IBusinessScopedEntity
 {
+    public int BusinessId { get; set; }
+    public Business Business { get; set; } = null!;
+    
     public int CustomerId { get; set; }
     public Customer Customer { get; set; } = null!;
     

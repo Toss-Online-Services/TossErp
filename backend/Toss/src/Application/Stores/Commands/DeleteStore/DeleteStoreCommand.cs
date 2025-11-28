@@ -28,7 +28,7 @@ public class DeleteStoreCommandHandler : IRequestHandler<DeleteStoreCommand, boo
 
         // Check if store has active data
         var hasCustomers = await _context.Customers
-            .AnyAsync(c => c.ShopId == request.Id, cancellationToken);
+            .AnyAsync(c => c.StoreId == request.Id, cancellationToken);
         
         var hasProducts = await _context.StockLevels
             .AnyAsync(sl => sl.ShopId == request.Id, cancellationToken);
