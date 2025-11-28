@@ -54,6 +54,8 @@ playwright-report/
 
 # Editor directories and files
 .cursor/mcp.json
+.cursor/mcp.json.backup-*
+*.backup-*
 
 # Task files
 # tasks.json
