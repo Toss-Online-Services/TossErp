@@ -48,6 +48,11 @@ public class PurchaseOrderItem : BaseEntity
     public int QuantityReceived { get; set; }
 
     /// <summary>
+    /// Gets or sets the quantity that has been invoiced
+    /// </summary>
+    public int QuantityInvoiced { get; set; }
+
+    /// <summary>
     /// Alias for QuantityOrdered (used by handlers)
     /// </summary>
     public int Quantity

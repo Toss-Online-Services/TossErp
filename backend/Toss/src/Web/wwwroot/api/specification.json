@@ -6,6 +6,318 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/accounting/accounts": {
+      "post": {
+        "tags": [
+          "accounting"
+        ],
+        "operationId": "PostApiAccountingAccounts",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAccountCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "accounting"
+        ],
+        "operationId": "GetApiAccountingAccounts",
+        "parameters": [
+          {
+            "name": "StoreId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Type",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/AccountType"
+                }
+              ]
+            },
+            "x-position": 2
+          },
+          {
+            "name": "IsActive",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 4
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/accounting/cashbook/in": {
+      "post": {
+        "tags": [
+          "accounting"
+        ],
+        "operationId": "PostApiAccountingCashbookIn",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordCashInCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/accounting/cashbook/out": {
+      "post": {
+        "tags": [
+          "accounting"
+        ],
+        "operationId": "PostApiAccountingCashbookOut",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordCashOutCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/accounting/cashbook/transfer": {
+      "post": {
+        "tags": [
+          "accounting"
+        ],
+        "operationId": "PostApiAccountingCashbookTransfer",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordTransferCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/accounting/cashbook/entries": {
+      "get": {
+        "tags": [
+          "accounting"
+        ],
+        "operationId": "GetApiAccountingCashbookEntries",
+        "parameters": [
+          {
+            "name": "AccountId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "FromDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "ToDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "Type",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/CashbookEntryType"
+                }
+              ]
+            },
+            "x-position": 4
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 5
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 6
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/accounting/creditors": {
+      "get": {
+        "tags": [
+          "accounting"
+        ],
+        "operationId": "GetApiAccountingCreditors",
+        "parameters": [
+          {
+            "name": "VendorId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "IncludeInvoices",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/AICopilot/ask": {
       "post": {
         "tags": [
@@ -787,6 +1099,199 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateVendorInvoiceStatusCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Buying/purchase-requests": {
+      "get": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "GetPurchaseRequests",
+        "parameters": [
+          {
+            "name": "shopId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "vendorId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/PurchaseRequestStatus"
+                }
+              ]
+            },
+            "x-position": 3
+          },
+          {
+            "name": "requiredByDateFrom",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "requiredByDateTo",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 6
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 7
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "CreatePurchaseRequest",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePurchaseRequestCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Buying/purchase-requests/{id}": {
+      "get": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "GetPurchaseRequestById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Buying/purchase-requests/{id}/convert-to-po": {
+      "post": {
+        "tags": [
+          "Buying"
+        ],
+        "operationId": "ConvertPurchaseRequestToPO",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConvertPurchaseRequestToPOCommand"
               }
             }
           },
@@ -3716,6 +4221,78 @@
         ]
       }
     },
+    "/api/Sales/invoices/{id}/pay": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "PayInvoice",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayInvoiceCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Sales/invoices/{id}/pdf": {
+      "get": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "GetInvoicePdf",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Sales/documents": {
       "post": {
         "tags": [
@@ -5400,6 +5977,175 @@
   },
   "components": {
     "schemas": {
+      "CreateAccountCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Name": {
+            "type": "string"
+          },
+          "Type": {
+            "$ref": "#/components/schemas/AccountType"
+          },
+          "StoreId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "AccountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "BankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "InitialBalance": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "AccountType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Cash",
+          "Bank"
+        ],
+        "enum": [
+          "Cash",
+          "Bank"
+        ]
+      },
+      "RecordCashInCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "AccountId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "EntryDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "SourceType": {
+            "type": "string",
+            "nullable": true
+          },
+          "SourceId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "PaymentId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "RecordCashOutCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "AccountId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "EntryDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "SourceType": {
+            "type": "string",
+            "nullable": true
+          },
+          "SourceId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "PaymentId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "RecordTransferCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "FromAccountId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ToAccountId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "EntryDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CashbookEntryType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Sale",
+          "Expense",
+          "Transfer"
+        ],
+        "enum": [
+          "Sale",
+          "Expense",
+          "Transfer"
+        ]
+      },
       "AskAIQuery": {
         "type": "object",
         "additionalProperties": false,
@@ -5738,6 +6484,13 @@
           "Notes": {
             "type": "string",
             "nullable": true
+          },
+          "QualityCheckPassed": {
+            "type": "boolean"
+          },
+          "QualityNotes": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -5763,15 +6516,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "VendorId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "ShopId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
           "InvoiceNumber": {
             "type": "string"
           },
@@ -5784,19 +6528,39 @@
             "format": "date-time",
             "nullable": true
           },
-          "Subtotal": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "TaxAmount": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "TotalAmount": {
-            "type": "number",
-            "format": "decimal"
-          },
           "Notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "Lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateVendorInvoiceLineDto"
+            }
+          }
+        }
+      },
+      "CreateVendorInvoiceLineDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "PurchaseOrderItemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "UnitPrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "TaxRate": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Description": {
             "type": "string",
             "nullable": true
           }
@@ -5812,6 +6576,94 @@
           },
           "Status": {
             "type": "string"
+          }
+        }
+      },
+      "PurchaseRequestStatus": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Draft",
+          "Submitted",
+          "Approved",
+          "ConvertedToPO",
+          "Cancelled"
+        ],
+        "enum": [
+          "Draft",
+          "Submitted",
+          "Approved",
+          "ConvertedToPO",
+          "Cancelled"
+        ]
+      },
+      "CreatePurchaseRequestCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "VendorId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "RequiredByDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "Items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreatePurchaseRequestLineDto"
+            }
+          }
+        }
+      },
+      "CreatePurchaseRequestLineDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ItemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "QuantityRequested": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Remarks": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ConvertPurchaseRequestToPOCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "PurchaseRequestId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ExpectedDeliveryDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ShippingCost": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -7159,6 +8011,31 @@
           },
           "Status": {
             "type": "string"
+          }
+        }
+      },
+      "PayInvoiceCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "InvoiceId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "AccountId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PaymentType": {
+            "$ref": "#/components/schemas/PaymentType"
+          },
+          "TransactionRef": {
+            "type": "string",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
           }
         }
       },

@@ -18,4 +18,9 @@ public class ForbiddenAccessException : Exception
     /// Initializes a new instance of <see cref="ForbiddenAccessException"/> with a default message.
     /// </summary>
     public ForbiddenAccessException() : base() { }
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="ForbiddenAccessException"/> with a custom message.
+    /// </summary>
+    public ForbiddenAccessException(string message) : base(message) { }
 }

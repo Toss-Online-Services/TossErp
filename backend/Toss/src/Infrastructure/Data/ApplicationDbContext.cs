@@ -150,6 +150,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<PurchaseDocument> PurchaseDocuments => Set<PurchaseDocument>();
     
     /// <summary>
+    /// Lines for purchase documents (supplier invoices).
+    /// </summary>
+    public DbSet<PurchaseDocumentLine> PurchaseDocumentLines => Set<PurchaseDocumentLine>();
+    
+    /// <summary>
     /// Purchase requests that can be converted to purchase orders.
     /// </summary>
     public DbSet<PurchaseRequest> PurchaseRequests => Set<PurchaseRequest>();
@@ -233,6 +238,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// Cashbook entries recording money in or out of accounts.
     /// </summary>
     public DbSet<CashbookEntry> CashbookEntries => Set<CashbookEntry>();
+    
+    /// <summary>
+    /// Accounts payable ledger entries for vendors.
+    /// </summary>
+    public DbSet<VendorLedgerEntry> VendorLedgerEntries => Set<VendorLedgerEntry>();
 
     // AI entities
     /// <summary>
@@ -500,6 +510,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 !_businessContext.HasBusiness ||
                 ((doc.Shop != null ? doc.Shop.BusinessId : doc.PurchaseOrder.Shop!.BusinessId) == _businessContext.CurrentBusinessId));
 
+        builder.Entity<PurchaseDocumentLine>()
+            .HasQueryFilter(line =>
+                !_businessContext.HasBusiness ||
+                (
+                    line.PurchaseDocument.Shop != null
+                        ? line.PurchaseDocument.Shop.BusinessId == _businessContext.CurrentBusinessId
+                        : line.PurchaseDocument.PurchaseOrder.Shop!.BusinessId == _businessContext.CurrentBusinessId
+                ));
+
         builder.Entity<PurchaseReceipt>()
             .HasQueryFilter(receipt =>
                 !_businessContext.HasBusiness ||
@@ -524,6 +543,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             .HasQueryFilter(account => !_businessContext.HasBusiness || account.BusinessId == _businessContext.CurrentBusinessId);
 
         builder.Entity<CashbookEntry>()
+            .HasQueryFilter(entry => !_businessContext.HasBusiness || entry.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<VendorLedgerEntry>()
             .HasQueryFilter(entry => !_businessContext.HasBusiness || entry.BusinessId == _businessContext.CurrentBusinessId);
     }
 }

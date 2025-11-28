@@ -1404,7 +1404,7 @@
           "4",
           "11"
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -1467,12 +1467,13 @@
               4
             ],
             "details": "Add SupplierInvoice creation (from GRN/PO) with lines, VAT, totals, due date, and Supplier linkage. Post accounting entry to creditors/AP ledger consistent with existing accounting module patterns so it appears in the creditors report. Expose endpoint to create invoice and query by supplier. Ensure references between SupplierInvoice, PO/GRN, and ledger are consistent. Handle partial invoicing if supported; otherwise validate full match.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "End-to-end test: PR→PO→GRN→SupplierInvoice; verify AP ledger/creditors report includes invoice, balances correct, and cross-links resolve.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-28T07:17:18.027Z"
           }
         ],
-        "updatedAt": "2025-11-27T21:00:54.026Z"
+        "updatedAt": "2025-11-28T07:17:18.027Z"
       },
       {
         "id": "15",
@@ -2126,9 +2127,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-27T21:00:54.035Z",
+      "lastModified": "2025-11-28T07:17:18.041Z",
       "taskCount": 35,
-      "completedCount": 10,
+      "completedCount": 11,
       "tags": [
         "master"
       ]

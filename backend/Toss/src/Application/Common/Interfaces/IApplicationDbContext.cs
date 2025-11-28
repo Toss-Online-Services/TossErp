@@ -109,6 +109,7 @@ public interface IApplicationDbContext
     DbSet<PurchaseOrderItem> PurchaseOrderItems { get; }
     DbSet<PurchaseReceipt> PurchaseReceipts { get; }
     DbSet<PurchaseDocument> PurchaseDocuments { get; }
+    DbSet<PurchaseDocumentLine> PurchaseDocumentLines { get; }
     DbSet<PurchaseRequest> PurchaseRequests { get; }
     DbSet<PurchaseRequestLine> PurchaseRequestLines { get; }
 
@@ -135,6 +136,7 @@ public interface IApplicationDbContext
     // Accounting entities
     DbSet<Account> Accounts { get; }
     DbSet<CashbookEntry> CashbookEntries { get; }
+    DbSet<VendorLedgerEntry> VendorLedgerEntries { get; }
 
     // Onboarding entities
     DbSet<OnboardingStatus> OnboardingStatuses { get; }

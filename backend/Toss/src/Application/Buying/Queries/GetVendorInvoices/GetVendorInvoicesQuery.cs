@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Toss.Application.Common.Interfaces;
 using Toss.Application.Common.Models;
+using Toss.Domain.Entities.Accounting;
 using Toss.Domain.Entities.Orders;
 using Toss.Domain.Enums;
 
@@ -22,6 +23,8 @@ public record VendorInvoiceDto
     public bool IsPaid { get; init; }
     public DateTimeOffset? PaidDate { get; init; }
     public string? Notes { get; init; }
+    public decimal Balance { get; init; }
+    public string LedgerStatus { get; init; } = string.Empty;
 }
 
 public record GetVendorInvoicesQuery : IRequest<PaginatedList<VendorInvoiceDto>>
@@ -92,26 +95,38 @@ public class GetVendorInvoicesQueryHandler : IRequestHandler<GetVendorInvoicesQu
 
         var totalCount = await query.CountAsync(cancellationToken);
 
-        var items = await query
+        var pagedDocs = query
             .OrderByDescending(d => d.DocumentDate)
             .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .Select(d => new VendorInvoiceDto
+            .Take(request.PageSize);
+
+        var items = await pagedDocs
+            .GroupJoin(_context.VendorLedgerEntries,
+                doc => doc.Id,
+                ledger => ledger.PurchaseDocumentId,
+                (doc, ledgerEntries) => new
+                {
+                    Document = doc,
+                    Ledger = ledgerEntries.FirstOrDefault()
+                })
+            .Select(x => new VendorInvoiceDto
             {
-                Id = d.Id,
-                InvoiceNumber = d.DocumentNumber,
-                PurchaseOrderId = d.PurchaseOrderId,
-                VendorId = d.VendorId,
-                Vendor = d.Vendor.Name,
-                InvoiceDate = d.DocumentDate,
-                DueDate = d.DueDate,
-                Subtotal = d.Subtotal,
-                TaxAmount = d.TaxAmount,
-                Total = d.TotalAmount,
-                Status = DetermineStatus(d),
-                IsPaid = d.IsPaid,
-                PaidDate = d.PaidDate,
-                Notes = d.Notes
+                Id = x.Document.Id,
+                InvoiceNumber = x.Document.DocumentNumber,
+                PurchaseOrderId = x.Document.PurchaseOrderId,
+                VendorId = x.Document.VendorId,
+                Vendor = x.Document.Vendor.Name,
+                InvoiceDate = x.Document.DocumentDate,
+                DueDate = x.Document.DueDate,
+                Subtotal = x.Document.Subtotal,
+                TaxAmount = x.Document.TaxAmount,
+                Total = x.Document.TotalAmount,
+                Status = DetermineStatus(x.Document),
+                IsPaid = x.Document.IsPaid,
+                PaidDate = x.Document.PaidDate,
+                Notes = x.Document.Notes,
+                Balance = x.Ledger != null ? x.Ledger.Balance : (x.Document.IsPaid ? 0 : x.Document.TotalAmount),
+                LedgerStatus = x.Ledger != null ? x.Ledger.Status.ToString().ToLowerInvariant() : (x.Document.IsPaid ? "settled" : "open")
             })
             .ToListAsync(cancellationToken);
 

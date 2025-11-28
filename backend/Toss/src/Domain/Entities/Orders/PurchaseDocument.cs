@@ -21,6 +21,7 @@ public class PurchaseDocument : BaseAuditableEntity
         IsApproved = false;
         IsMatchedToPO = false;
         IsMatchedToReceipt = false;
+        Lines = new List<PurchaseDocumentLine>();
     }
 
     /// <summary>
@@ -111,4 +112,9 @@ public class PurchaseDocument : BaseAuditableEntity
     /// Payment reference (transaction ID, check number, etc.)
     /// </summary>
     public string? PaymentReference { get; set; }
+
+    /// <summary>
+    /// Detailed invoice lines
+    /// </summary>
+    public ICollection<PurchaseDocumentLine> Lines { get; set; }
 }

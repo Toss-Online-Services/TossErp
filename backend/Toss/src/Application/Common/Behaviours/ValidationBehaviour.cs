@@ -1,6 +1,4 @@
-﻿using ValidationException = Toss.Application.Common.Exceptions.ValidationException;
-
-namespace Toss.Application.Common.Behaviours;
+﻿namespace Toss.Application.Common.Behaviours;
 
 /// <summary>
 /// MediatR pipeline behavior that validates requests using FluentValidation.

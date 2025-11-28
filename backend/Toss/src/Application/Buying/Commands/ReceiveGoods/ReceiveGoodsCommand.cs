@@ -196,7 +196,7 @@ public class ReceiveGoodsCommandHandler : IRequestHandler<ReceiveGoodsCommand, b
 
         // Update StockMovement ReferenceId now that we have the receipt ID
         var movements = await _context.StockMovements
-            .Where(sm => sm.ReferenceType == "PurchaseReceipt" && sm.ReferenceId == null && sm.Notes.Contains(receiptNumber))
+            .Where(sm => sm.ReferenceType == "PurchaseReceipt" && sm.ReferenceId == null && sm.Notes != null && sm.Notes.Contains(receiptNumber))
             .ToListAsync(cancellationToken);
 
         foreach (var movement in movements)

@@ -4,6 +4,7 @@ using Toss.Application.Accounting.Commands.RecordCashOut;
 using Toss.Application.Accounting.Commands.RecordTransfer;
 using Toss.Application.Accounting.Queries.GetAccounts;
 using Toss.Application.Accounting.Queries.GetCashbookEntries;
+using Toss.Application.Accounting.Queries.GetCreditors;
 using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
@@ -25,6 +26,9 @@ public class Accounting : EndpointGroupBase
         group.MapPost("cashbook/out", RecordCashOut);
         group.MapPost("cashbook/transfer", RecordTransfer);
         group.MapGet("cashbook/entries", GetCashbookEntries);
+        
+        // Creditors
+        group.MapGet("creditors", GetCreditors);
     }
 
     public async Task<IResult> CreateAccount(ISender sender, CreateAccountCommand command)
@@ -58,6 +62,12 @@ public class Accounting : EndpointGroupBase
     }
 
     public async Task<IResult> GetCashbookEntries(ISender sender, [AsParameters] GetCashbookEntriesQuery query)
+    {
+        var result = await sender.Send(query);
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> GetCreditors(ISender sender, [AsParameters] GetCreditorsQuery query)
     {
         var result = await sender.Send(query);
         return Results.Ok(result);
