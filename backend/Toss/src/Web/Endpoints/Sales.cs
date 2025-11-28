@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Toss.Application.Sales.Commands.CreateSale;
 using Toss.Application.Sales.Commands.GenerateReceipt;
 using Toss.Application.Sales.Commands.VoidSale;
@@ -16,6 +17,7 @@ using Toss.Application.Sales.Queries.GetHeldSales;
 using Toss.Application.Sales.Queries.GetInvoices;
 using Toss.Application.Sales.Queries.GetQueueOrders;
 using Toss.Application.Sales.Commands.CreateSalesDocument;
+using Toss.Application.Sales.Commands.CreateDeliveryNote;
 using Toss.Domain.Enums;
 using Toss.Application.Sales.Queries.GetSalesDocuments;
 using Toss.Application.Sales.Queries.GenerateInvoicePdf;
@@ -92,6 +94,18 @@ public class Sales : EndpointGroupBase
 
         group.MapGet("documents", GetSalesDocuments)
             .WithName("GetSalesDocuments");
+
+        group.MapPost("quotes", CreateQuoteDocument)
+            .WithName("CreateSalesQuote")
+            .RequireAuthorization(Policies.RequireOwnerOrManager);
+
+        group.MapPost("orders", CreateSalesOrderDocument)
+            .WithName("CreateSalesOrderDocument")
+            .RequireAuthorization(Policies.RequireOwnerOrManager);
+
+        group.MapPost("delivery-notes", CreateDeliveryNoteDocument)
+            .WithName("CreateDeliveryNoteDocument")
+            .RequireAuthorization(Policies.RequireOwnerOrManager);
     }
 
     public async Task<IResult> CreateSale(ISender sender, CreateSaleCommand command)
@@ -217,6 +231,60 @@ public class Sales : EndpointGroupBase
     {
         var result = await sender.Send(query);
         return Results.Ok(result);
+    }
+
+    public record CreateSalesWorkflowDocumentRequest
+    {
+        public int SaleId { get; init; }
+        public DateTimeOffset? DueDate { get; init; }
+        public string? Notes { get; init; }
+    }
+
+    public record CreateDeliveryNoteRequest
+    {
+        public int SaleId { get; init; }
+        public int ShopId { get; init; }
+        public string? Notes { get; init; }
+        public List<DeliveryNoteLineDto> Lines { get; init; } = new();
+    }
+
+    public async Task<IResult> CreateQuoteDocument(ISender sender, CreateSalesWorkflowDocumentRequest request)
+    {
+        var id = await sender.Send(new CreateSalesDocumentCommand
+        {
+            SaleId = request.SaleId,
+            DocumentType = SalesDocumentType.Quote,
+            DueDate = request.DueDate,
+            Notes = request.Notes
+        });
+
+        return Results.Created($"/api/sales/documents/{id}", new { id });
+    }
+
+    public async Task<IResult> CreateSalesOrderDocument(ISender sender, CreateSalesWorkflowDocumentRequest request)
+    {
+        var id = await sender.Send(new CreateSalesDocumentCommand
+        {
+            SaleId = request.SaleId,
+            DocumentType = SalesDocumentType.SalesOrder,
+            DueDate = request.DueDate,
+            Notes = request.Notes
+        });
+
+        return Results.Created($"/api/sales/documents/{id}", new { id });
+    }
+
+    public async Task<IResult> CreateDeliveryNoteDocument(ISender sender, CreateDeliveryNoteRequest request)
+    {
+        var id = await sender.Send(new CreateDeliveryNoteCommand
+        {
+            SaleId = request.SaleId,
+            ShopId = request.ShopId,
+            Notes = request.Notes,
+            Lines = request.Lines
+        });
+
+        return Results.Created($"/api/sales/delivery-notes/{id}", new { id });
     }
     
     public async Task<IResult> GetQueueOrders(ISender sender, int shopId)

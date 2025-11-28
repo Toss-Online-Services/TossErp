@@ -1489,17 +1489,18 @@
           "12",
           "11"
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
             "title": "Extend SalesDocumentType and numbering for Quote, SalesOrder, DeliveryNote",
             "description": "Add missing non-POS document types and ensure document numbering covers them.",
             "dependencies": [],
-            "details": "Update backend/Toss/src/Domain/Enums/SalesDocumentType.cs to include Quote, SalesOrder, DeliveryNote. In backend/Toss/src/Application/Sales/Commands/CreateSalesDocument/CreateSalesDocumentCommand.cs extend GenerateDocumentNumber to map prefixes: QTE (Quote), SO (SalesOrder), DN (DeliveryNote). Keep idempotency check (one doc per sale/type). Validate minimal rules: Quote/SalesOrder/DeliveryNote allow null DueDate; Invoice retains current rules. No DB migration needed (enum expansion only).",
-            "status": "pending",
+            "details": "Update backend/Toss/src/Domain/Enums/SalesDocumentType.cs to include Quote, SalesOrder, DeliveryNote. In backend/Toss/src/Application/Sales/Commands/CreateSalesDocument/CreateSalesDocumentCommand.cs extend GenerateDocumentNumber to map prefixes: QTE (Quote), SO (SalesOrder), DN (DeliveryNote). Keep idempotency check (one doc per sale/type). Validate minimal rules: Quote/SalesOrder/DeliveryNote allow null DueDate; Invoice retains current rules. No DB migration needed (enum expansion only).\n<info added on 2025-11-28T07:24:15.124Z>\nAdd non-POS create endpoints that reuse the existing CreateSalesDocument pipeline (no new persistence types in this subtask). Implement three routes that simply set the SalesDocumentType and dispatch CreateSalesDocumentCommand, keeping the “one doc per sale/type” idempotency in the handler:\n\n- Add controller(s) in backend/Toss/src/Web/Controllers/Sales (new files if none exist): QuotesController.cs (POST /api/sales/quotes), OrdersController.cs (POST /api/sales/orders), DeliveryNotesController.cs (POST /api/sales/delivery-notes). Each action maps request → CreateSalesDocumentCommand with DocumentType = Quote | SalesOrder | DeliveryNote respectively.\n- DTOs: define minimal request models in backend/Toss/src/Web/Controllers/Sales/Models (or match existing Web Models folder) with fields: SaleId (Guid, required), DueDate (nullable, allowed for these three types), Notes (optional). Do not include invoice-only fields. Map to Application command via a small mapper (backend/Toss/src/Application/Sales/Commands/CreateSalesDocument/CreateSalesDocumentMapper.cs) or inline in controller if that’s current pattern.\n- Wire to MediatR: in each action, await _mediator.Send(new CreateSalesDocumentCommand { SaleId = dto.SaleId, DocumentType = SalesDocumentType.Quote|SalesOrder|DeliveryNote, DueDate = dto.DueDate, Notes = dto.Notes }).\n- Idempotency: rely on existing check in backend/Toss/src/Application/Sales/Commands/CreateSalesDocument/CreateSalesDocumentCommand.cs; when an existing document for the same SaleId + DocumentType is found, return 200 with the existing document payload instead of creating a new one.\n- Numbering: requires 15.1 changes (backend/Toss/src/Domain/Enums/SalesDocumentType.cs and backend/Toss/src/Application/Sales/Commands/CreateSalesDocument/CreateSalesDocumentCommand.cs GenerateDocumentNumber) so these endpoints return numbers prefixed QTE/SO/DN as applicable.\n- Validation: update/Create CreateSalesDocumentCommandValidator (backend/Toss/src/Application/Sales/Commands/CreateSalesDocument/CreateSalesDocumentCommandValidator.cs) to allow null DueDate for Quote/SalesOrder/DeliveryNote; keep existing Invoice rules unchanged. Also validate SaleId exists and Sale is in a state that permits the requested document type (e.g., DeliveryNote only if there are deliverable lines; minimal MVP may skip the state check).\n- Authorization and metadata: decorate actions with [Authorize(Policy = \"Sales.Write\")] (or match existing policy attributes on sales endpoints), add [ProducesResponseType] for 201 on first create and 200 when returning an existing doc, include problem details for validation failures (400).\n- OpenAPI grouping: tag endpoints as “Sales – Documents” or separate “Quotes”, “Orders”, “Delivery Notes” to match current API grouping.\n- Tests: add integration tests under backend/Toss/tests (match existing test layout) to verify each route creates the correct document type, returns idempotently on repeat calls for same SaleId/type, and number prefixes are QTE/SO/DN.\n</info added on 2025-11-28T07:24:15.124Z>\n<info added on 2025-11-28T07:34:45.711Z>\nExtended due date behavior implemented: CreateSalesDocumentCommandHandler now only defaults Invoice DueDate to today + 30 days when not provided; Quote, SalesOrder, and DeliveryNote accept and persist client-supplied DueDate values or remain null without a default. Updated validation in backend/Toss/src/Application/Sales/Commands/CreateSalesDocument/CreateSalesDocumentCommandValidator.cs to reflect this (allow explicit DueDate on all types; enforce defaulting logic only for Invoice). Enum additions (Quote, SalesOrder, DeliveryNote) and numbering prefixes (QTE/SO/DN) confirmed in backend/Toss/src/Domain/Enums/SalesDocumentType.cs and backend/Toss/src/Application/Sales/Commands/CreateSalesDocument/CreateSalesDocumentCommand.cs. Non-POS controllers should pass through the optional DueDate from their DTOs without overriding it. Receipts remain the only document type that is automatically marked as paid; no changes to receipt flow. Build verified via: dotnet build backend/Toss/Toss.sln.\n</info added on 2025-11-28T07:34:45.711Z>",
+            "status": "done",
             "testStrategy": "Unit test GenerateDocumentNumber mappings and idempotent creation per type.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-28T07:33:50.842Z"
           },
           {
             "id": 2,
@@ -1508,10 +1509,11 @@
             "dependencies": [
               1
             ],
-            "details": "In backend/Toss/src/Web/Endpoints/Sales.cs: add MapPost(\"quotes\", ...) to call CreateSalesDocument with DocumentType=Quote; MapPost(\"orders\", ...) with DocumentType=SalesOrder; MapPost(\"deliveries\", ...) with DocumentType=DeliveryNote. Accept same payload as CreateSalesDocument (requires existing SaleId). Document in method summaries and keep consistent route naming. Follow existing minimal API pattern and naming conventions.",
-            "status": "pending",
+            "details": "In backend/Toss/src/Web/Endpoints/Sales.cs: add MapPost(\"quotes\", ...) to call CreateSalesDocument with DocumentType=Quote; MapPost(\"orders\", ...) with DocumentType=SalesOrder; MapPost(\"deliveries\", ...) with DocumentType=DeliveryNote. Accept same payload as CreateSalesDocument (requires existing SaleId). Document in method summaries and keep consistent route naming. Follow existing minimal API pattern and naming conventions.\n<info added on 2025-11-28T07:40:01.332Z>\nImplemented dedicated POST endpoints under /api/sales in backend/Toss/src/Web/Endpoints/Sales.cs: MapPost(\"quotes\", CreateQuoteDocument), MapPost(\"orders\", CreateSalesOrderDocument), and MapPost(\"del ivery-notes\", CreateDeliveryNoteDocument) with names CreateSalesQuote, CreateSalesOrderDocument, and CreateDeliveryNoteDocument. Each accepts body { saleId, dueDate?, notes? } via CreateSalesWorkflowDocumentRequest and dispatches CreateSalesDocumentCommand with DocumentType Quote/SalesOrder/DeliveryNote. Endpoints require owner/manager authorization (RequireAuthorization(Policies.RequireOwnerOrManager)) in addition to the group policy, and reuse idempotent handling in backend/Toss/src/Application/Sales/Commands/CreateSalesDocument/CreateSalesDocumentCommand.cs (returns existing doc for same saleId+type). Building the solution (dotnet build backend/Toss/Toss.sln) updates the OpenAPI spec to include POST /api/sales/quotes, /api/sales/orders, and /api/sales/delivery-notes.\n</info added on 2025-11-28T07:40:01.332Z>",
+            "status": "done",
             "testStrategy": "Integration tests: POST each new route returns 201 with id and creates correct SalesDocumentType.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-28T07:40:16.816Z"
           },
           {
             "id": 3,
@@ -1521,10 +1523,11 @@
               1,
               2
             ],
-            "details": "In CreateSalesDocumentCommand handler, after persisting: if type=DeliveryNote, reduce stock for sale items using StockLevels and create StockMovements with ReferenceType=\"SalesDocument\" and ReferenceId=document.Id. If type=Invoice and no DeliveryNote exists for sale, perform same reduction. Ensure idempotency by checking for existing StockMovements for this sale/document. Skip POS sales (SaleType.POS) to avoid double-decrement (POS path already adjusts). Log actions similarly to SaleCompletedStockUpdateEventHandler.",
-            "status": "pending",
+            "details": "In CreateSalesDocumentCommand handler, after persisting: if type=DeliveryNote, reduce stock for sale items using StockLevels and create StockMovements with ReferenceType=\"SalesDocument\" and ReferenceId=document.Id. If type=Invoice and no DeliveryNote exists for sale, perform same reduction. Ensure idempotency by checking for existing StockMovements for this sale/document. Skip POS sales (SaleType.POS) to avoid double-decrement (POS path already adjusts). Log actions similarly to SaleCompletedStockUpdateEventHandler.\n<info added on 2025-11-28T08:09:51.415Z>\nImplemented CreateDeliveryNoteCommand to persist DeliveryNote documents with numbering DN-<shop>-<yyyyMMdd>-####. After save (non-POS), decrement stock per line via StockLevels and insert StockMovements referencing the delivery note (ReferenceType=\"SalesDocument\", ReferenceId=deliveryNote.Id), including ShopId, ItemId, Quantity (issued), and MovementType=Outbound; guard with idempotency by checking for existing movements for this document. Added POST /api/sales/delivery-notes that accepts shopId and line quantities and dispatches CreateDeliveryNoteCommand; quote/order endpoints remain wrappers over CreateSalesDocument. Removed non-POS stock deductions from CreateSale so stock only moves on delivery. Updated CreateSalesDocumentCommand so Invoice creation for non-POS sales performs the same stock decrement and StockMovements when no prior DeliveryNote exists (fallback depletion). POS flow unchanged. OpenAPI refreshed by building backend/Toss/Toss.sln.\n</info added on 2025-11-28T08:09:51.415Z>",
+            "status": "done",
             "testStrategy": "Integration test: create pre-order sale, create DeliveryNote → assert StockLevels decrease and StockMovements created; create Invoice after DeliveryNote → assert no additional decrement; create Invoice without DeliveryNote → assert single decrement.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-28T08:10:18.443Z"
           },
           {
             "id": 4,
@@ -1553,7 +1556,8 @@
             "testStrategy": "E2E tests through minimal API using in-memory/test DB; verify HTTP 201/200 responses, document types, stock levels, and StockMovements. Validate VAT totals align with existing calc.",
             "parentId": "undefined"
           }
-        ]
+        ],
+        "updatedAt": "2025-11-28T08:10:18.443Z"
       },
       {
         "id": "16",
@@ -2127,7 +2131,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-28T07:17:18.041Z",
+      "lastModified": "2025-11-28T08:10:18.452Z",
       "taskCount": 35,
       "completedCount": 11,
       "tags": [

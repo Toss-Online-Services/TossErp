@@ -4423,6 +4423,96 @@
         ]
       }
     },
+    "/api/Sales/quotes": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "CreateSalesQuote",
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSalesWorkflowDocumentRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Sales/orders": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "CreateSalesOrderDocument",
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSalesWorkflowDocumentRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Sales/delivery-notes": {
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "operationId": "CreateDeliveryNoteDocument",
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDeliveryNoteRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Settings/shop/{shopId}": {
       "get": {
         "tags": [
@@ -8071,13 +8161,76 @@
         "x-enumNames": [
           "Invoice",
           "Receipt",
-          "CreditNote"
+          "CreditNote",
+          "Quote",
+          "SalesOrder",
+          "DeliveryNote"
         ],
         "enum": [
           "Invoice",
           "Receipt",
-          "CreditNote"
+          "CreditNote",
+          "Quote",
+          "SalesOrder",
+          "DeliveryNote"
         ]
+      },
+      "CreateSalesWorkflowDocumentRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SaleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "DueDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateDeliveryNoteRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SaleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ShopId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "Lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeliveryNoteLineDto"
+            }
+          }
+        }
+      },
+      "DeliveryNoteLineDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Quantity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       },
       "UpdateShopSettingsCommand": {
         "type": "object",

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Toss.Application.Common.Interfaces;
 using Toss.Domain.Entities.Sales;
+using Toss.Domain.Entities.Catalog;
 using Toss.Domain.Enums;
 
 namespace Toss.Application.Sales.Commands.CreateSalesDocument;
@@ -85,25 +86,27 @@ public class CreateSalesDocumentCommandHandler : IRequestHandler<CreateSalesDocu
             throw new Toss.Application.Common.Exceptions.NotFoundException(nameof(Sale), request.SaleId.ToString());                                            
 
         // Validation
-        if (request.DocumentType == SalesDocumentType.Invoice && !sale.CustomerId.HasValue)                                                                     
-            throw new InvalidOperationException("Sale must have a customer to create invoice");                                                                 
+        if ((request.DocumentType == SalesDocumentType.Invoice || request.DocumentType == SalesDocumentType.SalesOrder) 
+            && !sale.CustomerId.HasValue)                                                                     
+            throw new InvalidOperationException("Sale must have a customer to create an invoice or sales order."); 
 
         var number = request.DocumentNumber ?? await GenerateDocumentNumber(request.DocumentType, sale.ShopId, cancellationToken);                              
 
-        var isReceipt = request.DocumentType == SalesDocumentType.Receipt;      
-        var isInvoice = request.DocumentType == SalesDocumentType.Invoice;      
+        var isReceipt = request.DocumentType == SalesDocumentType.Receipt;
+        var isInvoice = request.DocumentType == SalesDocumentType.Invoice;
+        var isQuote = request.DocumentType == SalesDocumentType.Quote;
+        var isSalesOrder = request.DocumentType == SalesDocumentType.SalesOrder;
+        var isDeliveryNote = request.DocumentType == SalesDocumentType.DeliveryNote;
 
         var document = new SalesDocument
         {
             DocumentType = request.DocumentType,
             DocumentNumber = number,
             SaleId = sale.Id,
-            CustomerId = sale.CustomerId, // nullable OK for Receipt
+            CustomerId = sale.CustomerId,
             ShopId = sale.ShopId,
             DocumentDate = DateTimeOffset.UtcNow,
-            DueDate = isInvoice
-                ? (request.DueDate.HasValue ? request.DueDate.Value.ToUniversalTime() : DateTimeOffset.UtcNow.AddDays(30))                                      
-                : null,
+            DueDate = request.DueDate?.ToUniversalTime(),
             Subtotal = sale.Subtotal,
             TaxAmount = sale.TaxAmount,
             TotalAmount = sale.Total,
@@ -114,6 +117,17 @@ public class CreateSalesDocumentCommandHandler : IRequestHandler<CreateSalesDocu
 
         _context.SalesDocuments.Add(document);
         await _context.SaveChangesAsync(cancellationToken);
+
+        if (isInvoice && sale.SaleType != SaleType.POS)
+        {
+            var hasDeliveryNote = await _context.SalesDocuments
+                .AnyAsync(d => d.SaleId == sale.Id && d.DocumentType == SalesDocumentType.DeliveryNote, cancellationToken);
+
+            if (!hasDeliveryNote)
+            {
+                await AdjustStockForSaleAsync(sale, document, cancellationToken);
+            }
+        }
 
         return document.Id;
     }
@@ -127,6 +141,9 @@ public class CreateSalesDocumentCommandHandler : IRequestHandler<CreateSalesDocu
             SalesDocumentType.Invoice => "INV",
             SalesDocumentType.Receipt => "RCT",
             SalesDocumentType.CreditNote => "CRN",
+            SalesDocumentType.Quote => "QTE",
+            SalesDocumentType.SalesOrder => "SO",
+            SalesDocumentType.DeliveryNote => "DN",
             _ => "DOC"
         };
 
@@ -155,5 +172,41 @@ public class CreateSalesDocumentCommandHandler : IRequestHandler<CreateSalesDocu
         // Add microseconds timestamp to make the number unique in case of race conditions
         var timestamp = DateTimeOffset.UtcNow.Ticks % 1000000; // Last 6 digits of ticks (microseconds)
         return $"{prefixPattern}{nextSequence:D4}-{timestamp:D6}";
+    }
+
+    private async Task AdjustStockForSaleAsync(Sale sale, SalesDocument document, CancellationToken cancellationToken)
+    {
+        foreach (var item in sale.Items)
+        {
+            var stockLevel = await _context.StockLevels
+                .FirstOrDefaultAsync(sl => sl.ShopId == sale.ShopId && sl.ProductId == item.ProductId, cancellationToken);
+
+            if (stockLevel == null)
+            {
+                throw new ValidationException($"Stock not initialized for product {item.ProductId} in shop {sale.ShopId}.");
+            }
+
+            var before = stockLevel.CurrentStock;
+            stockLevel.CurrentStock = Math.Max(0, stockLevel.CurrentStock - item.Quantity);
+            stockLevel.LastStockDate = DateTimeOffset.UtcNow;
+
+            var stockMovement = new StockMovement
+            {
+                ShopId = sale.ShopId,
+                ProductId = item.ProductId,
+                MovementType = StockMovementType.Sale,
+                QuantityBefore = before,
+                QuantityChange = -item.Quantity,
+                QuantityAfter = stockLevel.CurrentStock,
+                ReferenceType = "SalesInvoice",
+                ReferenceId = document.Id,
+                Notes = $"Invoice {document.DocumentNumber} for sale {sale.SaleNumber}",
+                MovementDate = DateTimeOffset.UtcNow
+            };
+
+            _context.StockMovements.Add(stockMovement);
+        }
+
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }
