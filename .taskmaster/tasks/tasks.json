@@ -1738,11 +1738,11 @@
             "title": "Locate existing inventory, product, and transaction code to align manufacturing module",
             "description": "Scan the repository to identify domain models, services, DbContext mappings, and controllers related to inventory, costing, and routing patterns.",
             "dependencies": [],
-            "details": "Search for symbols such as InventoryTransaction, InventoryService, Product, Stock, Cost, and typical controller patterns under the API layer. Note namespaces, folder layout (e.g., Domain/Application/Infrastructure/API), and whether CQRS/MediatR, DTOs, and AutoMapper are used. This ensures BOM and Production Order integrate with current conventions and stock movement flows.",
-            "status": "in-progress",
+            "details": "Search for symbols such as InventoryTransaction, InventoryService, Product, Stock, Cost, and typical controller patterns under the API layer. Note namespaces, folder layout (e.g., Domain/Application/Infrastructure/API), and whether CQRS/MediatR, DTOs, and AutoMapper are used. This ensures BOM and Production Order integrate with current conventions and stock movement flows.\n<info added on 2025-11-28T15:38:04.571Z>\nImplement BOM and ProductionOrder using existing multi-tenant patterns: define entities implementing IBusinessScopedEntity and scoped by HasQueryFilter on BusinessId. Domain entities: BillOfMaterials { Id, BusinessId, ProductId (finished good), IsActive, Version, Components: ICollection<BillOfMaterialsComponent> }; BillOfMaterialsComponent { Id, BusinessId, BomId, ComponentProductId, QuantityPer, ScrapPercent }. ProductionOrder { Id, BusinessId, ProductId (finished good), PlannedQty, ShopId, Status (Draft, Released, Completed, Cancelled), StartedAt, CompletedAt, Notes, Consumed: ICollection<ProductionOrderConsumption>, Produced: ICollection<ProductionOrderProduction> }; ProductionOrderConsumption { Id, BusinessId, ProductionOrderId, ComponentProductId, Quantity, ShopId }; ProductionOrderProduction { Id, BusinessId, ProductionOrderId, ProductId, Quantity, ShopId }. EF Core: add DbSet for all above and configurations with HasQueryFilter(e => e.BusinessId == currentBusinessId), indices on (BusinessId, ProductId) and on (BusinessId, BomId), and unique active BOM per finished good (BusinessId, ProductId, IsActive). Use existing Product.CostPrice and Unit for component costing and unit consistency. Stock integration on order completion: for each component create StockMovement with MovementType=Consume and negative quantity at the specified ShopId; for finished goods create StockMovement with MovementType=Produce and positive quantity at the ShopId; if MovementType currently includes only Sale, Purchase, Adjustment, Transfer, extend enum to add Consume and Produce and update any switch/validators accordingly, otherwise map to Adjustment with a Manufacturing source tag if enum changes are not allowed. Do not set Product.CostPrice directly; allow existing weighted average valuation logic to pick up from StockMovement entries. API endpoints following existing controller conventions: CRUD for BOM, create ProductionOrder, release, and complete (POST /api/mfg/orders/{id}/complete) applying business scoping server-side (BusinessId from context, not client). Validation: prevent circular BOMs, require active BOM for ProductId when auto-populating components, ensure sufficient StockLevel at ShopId before consumption (block negative stock as per inventory rules), and enforce consistent units. Place types under Domain/Manufacturing and corresponding EF Core configurations under Infrastructure/Persistence/Configurations/Manufacturing (naming with *Configuration), register DbSets in DbContext, and wire routes under API/Controllers/Manufacturing. Add migration for new entities and for MovementType changes if enum is persisted. Integration tests: creating BOM, creating and completing ProductionOrder updates StockLevel.CurrentStock per ShopId and triggers valuation, with BusinessId query filter respected.\n</info added on 2025-11-28T15:38:04.571Z>",
+            "status": "done",
             "testStrategy": "Document discovered files and patterns; no code tests required.",
             "parentId": "undefined",
-            "updatedAt": "2025-11-28T12:29:46.376Z"
+            "updatedAt": "2025-11-28T15:38:27.035Z"
           },
           {
             "id": 2,
@@ -1751,10 +1751,11 @@
             "dependencies": [
               1
             ],
-            "details": "Create BillOfMaterials aggregate with ProductId and Components (ComponentProductId, Quantity, UoM, optional ScrapPct). Add EF Core configuration, DbSet, and repository/handler plumbing matching the project style. Provide DTOs and mappers if the repo uses them. Ensure uniqueness per ProductId or support revisions per conventions. Add CRUD service/handlers scaffolding for BOMs.",
-            "status": "pending",
+            "details": "Create BillOfMaterials aggregate with ProductId and Components (ComponentProductId, Quantity, UoM, optional ScrapPct). Add EF Core configuration, DbSet, and repository/handler plumbing matching the project style. Provide DTOs and mappers if the repo uses them. Ensure uniqueness per ProductId or support revisions per conventions. Add CRUD service/handlers scaffolding for BOMs.\n<info added on 2025-11-28T15:49:08.530Z>\nImplemented manufacturing domain and persistence per conventions: added BillOfMaterials, BillOfMaterialsComponent, ProductionOrder, ProductionOrderConsumption, and ProductionOrderProduction in backend/Toss/src/Domain/Entities/Manufacturing/*.cs with IBusinessScopedEntity and correct navigations; extended StockMovementType with Consume and Produce in backend/Toss/src/Domain/Enums/StockMovementType.cs. Added EF Core configurations in backend/Toss/src/Infrastructure/Data/Configurations/Manufacturing/*.cs: BillOfMaterialsConfiguration enforces one active BOM per business+product via filtered unique index on (BusinessId, ProductId, IsActive), sets Version/Notes lengths, and wires components; BillOfMaterialsComponentConfiguration configures precision (QuantityPer 18,4; ScrapPercent 5,2), Unit length, and relationships to Bom and ComponentProduct; ProductionOrderConfiguration maps Status as int, sets Notes length, and defines relationships to Business, Product, Shop with indexes on BusinessId, ProductId, ShopId, Status; ProductionOrderConsumptionConfiguration sets Quantity precision (18,4) and relationships to ProductionOrder, ComponentProduct, Shop; ProductionOrderProductionConfiguration wires Product and Shop with indexes. Registered DbSets in backend/Toss/src/Infrastructure/Data/ApplicationDbContext.cs and interface properties in backend/Toss/src/Application/Common/Interfaces/IApplicationDbContext.cs. Extended business-scoped global query filters in ApplicationDbContext.ApplyBusinessFilters for BillOfMaterials, BillOfMaterialsComponent, ProductionOrder, ProductionOrderConsumption, and ProductionOrderProduction. Domain and Infrastructure projects build successfully.\n</info added on 2025-11-28T15:49:08.530Z>",
+            "status": "done",
             "testStrategy": "Unit tests: persist/retrieve BOM with multiple components; validate non‑zero quantities and referential integrity to existing Product records.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-28T15:46:14.978Z"
           },
           {
             "id": 3,
@@ -1765,9 +1766,10 @@
               2
             ],
             "details": "Define ProductionOrder {ProductId, PlannedQty, Status, Consumed[], Produced[], Timestamps}. Add enum for ProductionOrderStatus (Planned, InProgress, Completed, Cancelled) consistent with repo style. Implement IManufacturingCostingService to compute planned cost from BOM using current item costs (e.g., weighted average) plus configurable overhead. Wire EF mappings, DbSet, DTOs, and DI registrations to match patterns.",
-            "status": "pending",
+            "status": "in-progress",
             "testStrategy": "Unit tests: costing roll‑up uses BOM quantities and current costs; overhead application verified; status transitions enforce valid flows.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-28T15:49:36.990Z"
           },
           {
             "id": 4,
@@ -1796,7 +1798,7 @@
             "parentId": "undefined"
           }
         ],
-        "updatedAt": "2025-11-28T12:29:46.376Z"
+        "updatedAt": "2025-11-28T15:49:36.990Z"
       },
       {
         "id": "19",
@@ -2143,7 +2145,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-28T12:29:46.384Z",
+      "lastModified": "2025-11-28T15:49:36.995Z",
       "taskCount": 35,
       "completedCount": 15,
       "tags": [

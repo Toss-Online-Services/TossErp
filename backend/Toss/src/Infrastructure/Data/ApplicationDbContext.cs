@@ -19,6 +19,7 @@ using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities.Vendors;
 using Toss.Domain.Entities.Tax;
 using Toss.Domain.Entities.Onboarding;
+using Toss.Domain.Entities.Manufacturing;
 using Toss.Infrastructure.Identity;
 using Toss.Domain.Entities.Businesses;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -341,6 +342,32 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// </summary>
     public DbSet<StoreMapping> StoreMappings => Set<StoreMapping>();
 
+    // Manufacturing entities
+    /// <summary>
+    /// Bill of Materials (BOM) definitions for finished products.
+    /// </summary>
+    public DbSet<BillOfMaterials> BillOfMaterials => Set<BillOfMaterials>();
+    
+    /// <summary>
+    /// Components within a Bill of Materials.
+    /// </summary>
+    public DbSet<BillOfMaterialsComponent> BillOfMaterialsComponents => Set<BillOfMaterialsComponent>();
+    
+    /// <summary>
+    /// Production orders for manufacturing finished goods.
+    /// </summary>
+    public DbSet<ProductionOrder> ProductionOrders => Set<ProductionOrder>();
+    
+    /// <summary>
+    /// Raw material consumption records for production orders.
+    /// </summary>
+    public DbSet<ProductionOrderConsumption> ProductionOrderConsumptions => Set<ProductionOrderConsumption>();
+    
+    /// <summary>
+    /// Finished goods production records for production orders.
+    /// </summary>
+    public DbSet<ProductionOrderProduction> ProductionOrderProductions => Set<ProductionOrderProduction>();
+
     // Catalog entities
     /// <summary>
     /// Product attributes for configurable products (size, color, etc.).
@@ -553,5 +580,20 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<VendorLedgerEntry>()
             .HasQueryFilter(entry => !_businessContext.HasBusiness || entry.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<BillOfMaterials>()
+            .HasQueryFilter(bom => !_businessContext.HasBusiness || bom.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<BillOfMaterialsComponent>()
+            .HasQueryFilter(component => !_businessContext.HasBusiness || component.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<ProductionOrder>()
+            .HasQueryFilter(order => !_businessContext.HasBusiness || order.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<ProductionOrderConsumption>()
+            .HasQueryFilter(consumption => !_businessContext.HasBusiness || consumption.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<ProductionOrderProduction>()
+            .HasQueryFilter(production => !_businessContext.HasBusiness || production.BusinessId == _businessContext.CurrentBusinessId);
     }
 }

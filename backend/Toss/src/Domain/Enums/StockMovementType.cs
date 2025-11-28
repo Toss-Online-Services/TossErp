@@ -8,6 +8,8 @@ public enum StockMovementType
     Return = 3,
     Transfer = 4,
     Damage = 5,
-    Expiry = 6
+    Expiry = 6,
+    Consume = 7,  // Manufacturing: consumption of raw materials
+    Produce = 8   // Manufacturing: production of finished goods
 }
 

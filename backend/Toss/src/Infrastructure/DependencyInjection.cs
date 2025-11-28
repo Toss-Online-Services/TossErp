@@ -163,6 +163,8 @@ public static class DependencyInjection
         services.AddScoped<IBusinessContext, BusinessContext>();
         services.AddScoped<IAuthorizationHandler, BusinessRoleAuthorizationHandler>();
         services.AddScoped<IOperationsTodayService, OperationsTodayService>();
+        services.AddScoped<Toss.Application.Common.Interfaces.Manufacturing.IManufacturingCostingService,
+            Toss.Infrastructure.Services.Manufacturing.ManufacturingCostingService>();
     }
 
     /// <summary>
