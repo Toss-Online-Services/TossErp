@@ -158,6 +158,22 @@ public partial class Testing
         return business;
     }
 
+    public static async Task AddBusinessMembershipAsync(string userId, Business business, string role = BusinessRoles.Owner, bool isDefault = true)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        context.UserBusinesses.Add(new UserBusiness
+        {
+            UserId = userId,
+            BusinessId = business.Id,
+            Role = role,
+            IsDefault = isDefault
+        });
+
+        await context.SaveChangesAsync();
+    }
+
     public static HttpClient CreateClient() => _factory.CreateClient();
 
     public static T GetRequiredService<T>() where T : notnull

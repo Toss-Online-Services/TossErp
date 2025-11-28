@@ -8,6 +8,7 @@ using Toss.Application.Sales.Commands.RetrieveHeldSale;
 using Toss.Application.Sales.Commands.DeleteHeldSale;
 using Toss.Application.Sales.Commands.CreateInvoice;
 using Toss.Application.Sales.Commands.UpdateInvoiceStatus;
+using Toss.Application.Sales.Commands.PayInvoice;
 using Toss.Application.Sales.Queries.GetDailySummary;
 using Toss.Application.Sales.Queries.GetSaleById;
 using Toss.Application.Sales.Queries.GetSales;
@@ -17,6 +18,7 @@ using Toss.Application.Sales.Queries.GetQueueOrders;
 using Toss.Application.Sales.Commands.CreateSalesDocument;
 using Toss.Domain.Enums;
 using Toss.Application.Sales.Queries.GetSalesDocuments;
+using Toss.Application.Sales.Queries.GenerateInvoicePdf;
 using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
@@ -77,6 +79,12 @@ public class Sales : EndpointGroupBase
         
         group.MapPost("invoices/{id}/status", UpdateInvoiceStatus)
             .WithName("UpdateInvoiceStatus");
+        
+        group.MapPost("invoices/{id}/pay", PayInvoice)
+            .WithName("PayInvoice");
+        
+        group.MapGet("invoices/{id}/pdf", GetInvoicePdf)
+            .WithName("GetInvoicePdf");
 
         // Unified sales documents endpoint (long-term API)
         group.MapPost("documents", CreateSalesDocument)
@@ -182,6 +190,18 @@ public class Sales : EndpointGroupBase
     {
         var result = await sender.Send(command with { InvoiceId = id });
         return result ? Results.Ok() : Results.BadRequest("Invoice status update failed");
+    }
+
+    public async Task<IResult> PayInvoice(ISender sender, int id, PayInvoiceCommand command)
+    {
+        var result = await sender.Send(command with { InvoiceId = id });
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> GetInvoicePdf(ISender sender, int id)
+    {
+        var result = await sender.Send(new GenerateInvoicePdfQuery { InvoiceId = id });
+        return Results.Ok(result);
     }
 
     public async Task<IResult> CreateSalesDocument(ISender sender, CreateSalesDocumentCommand command)

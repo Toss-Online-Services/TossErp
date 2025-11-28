@@ -6,4 +6,14 @@ public abstract class Roles
     public const string Retailer = nameof(Retailer);
     public const string Supplier = nameof(Supplier);
     public const string Driver = nameof(Driver);
+    public const string Customer = nameof(Customer);
+
+    public static readonly IReadOnlyCollection<string> All = new[]
+    {
+        Administrator,
+        Retailer,
+        Supplier,
+        Driver,
+        Customer
+    };
 }

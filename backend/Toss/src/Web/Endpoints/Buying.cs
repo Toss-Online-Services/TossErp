@@ -7,7 +7,12 @@ using Toss.Application.Buying.Queries.GetPurchaseOrders;
 using Toss.Application.Buying.Queries.GetVendorInvoices;
 using Toss.Application.Buying.Commands.CreateVendorInvoice;
 using Toss.Application.Buying.Commands.UpdateVendorInvoiceStatus;
+using Toss.Application.Procurement.Commands.CreatePurchaseRequest;
+using Toss.Application.Procurement.Commands.ConvertPurchaseRequestToPO;
+using Toss.Application.Procurement.Queries.GetPurchaseRequests;
+using Toss.Application.Procurement.Queries.GetPurchaseRequestById;
 using Toss.Domain.Constants;
+using Toss.Domain.Enums;
 
 namespace Toss.Web.Endpoints;
 
@@ -30,6 +35,16 @@ public class Buying : EndpointGroupBase
             .WithName("CreateVendorInvoice");
         group.MapPost("invoices/{id}/status", UpdateVendorInvoiceStatus)
             .WithName("UpdateVendorInvoiceStatus");
+
+        // Purchase Requests
+        group.MapGet("purchase-requests", GetPurchaseRequests)
+            .WithName("GetPurchaseRequests");
+        group.MapPost("purchase-requests", CreatePurchaseRequest)
+            .WithName("CreatePurchaseRequest");
+        group.MapGet("purchase-requests/{id}", GetPurchaseRequestById)
+            .WithName("GetPurchaseRequestById");
+        group.MapPost("purchase-requests/{id}/convert-to-po", ConvertPurchaseRequestToPO)
+            .WithName("ConvertPurchaseRequestToPO");
     }
 
     public async Task<IResult> GetPurchaseOrders(ISender sender, int? shopId, string? status, int? skip, int? take)
@@ -99,6 +114,48 @@ public class Buying : EndpointGroupBase
     {
         var ok = await sender.Send(command with { Id = id });
         return ok ? Results.Ok() : Results.BadRequest("Status update failed");
+    }
+
+    public async Task<IResult> GetPurchaseRequests(
+        ISender sender,
+        int? shopId,
+        int? vendorId,
+        PurchaseRequestStatus? status,
+        DateTime? requiredByDateFrom,
+        DateTime? requiredByDateTo,
+        int? pageNumber,
+        int? pageSize)
+    {
+        var query = new GetPurchaseRequestsQuery
+        {
+            ShopId = shopId,
+            VendorId = vendorId,
+            Status = status,
+            RequiredByDateFrom = requiredByDateFrom,
+            RequiredByDateTo = requiredByDateTo,
+            PageNumber = pageNumber ?? 1,
+            PageSize = pageSize ?? 10
+        };
+        var result = await sender.Send(query);
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> CreatePurchaseRequest(ISender sender, CreatePurchaseRequestCommand command)
+    {
+        var id = await sender.Send(command);
+        return Results.Created($"/api/buying/purchase-requests/{id}", new { id });
+    }
+
+    public async Task<IResult> GetPurchaseRequestById(ISender sender, int id)
+    {
+        var result = await sender.Send(new GetPurchaseRequestByIdQuery { Id = id });
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> ConvertPurchaseRequestToPO(ISender sender, int id, ConvertPurchaseRequestToPOCommand command)
+    {
+        var poId = await sender.Send(command with { PurchaseRequestId = id });
+        return Results.Created($"/api/buying/purchase-orders/{poId}", new { id = poId });
     }
 }
 

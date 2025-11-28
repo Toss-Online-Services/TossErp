@@ -28,7 +28,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/AICopilot/suggestions": {
@@ -63,7 +68,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/AICopilot/meta-tags": {
@@ -88,7 +98,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/AICopilot/settings/{shopId}": {
@@ -113,7 +128,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/AICopilot/settings": {
@@ -138,7 +158,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Audit/log": {
@@ -289,6 +314,115 @@
         ]
       }
     },
+    "/api/businesses/{businessId}/members": {
+      "get": {
+        "tags": [
+          "businesses"
+        ],
+        "operationId": "GetBusinessMembers",
+        "parameters": [
+          {
+            "name": "businessId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "businesses"
+        ],
+        "operationId": "UpsertBusinessMember",
+        "parameters": [
+          {
+            "name": "businessId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessMemberUpsertRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/businesses/{businessId}/members/{userId}": {
+      "delete": {
+        "tags": [
+          "businesses"
+        ],
+        "operationId": "RemoveBusinessMember",
+        "parameters": [
+          {
+            "name": "businessId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Buying/purchase-orders": {
       "get": {
         "tags": [
@@ -340,7 +474,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -363,7 +502,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Buying/purchase-orders/{id}": {
@@ -388,7 +532,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Buying/purchase-orders/{id}/approve": {
@@ -425,7 +574,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Buying/purchase-orders/{id}/status": {
@@ -462,7 +616,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Buying/purchase-orders/{id}/receive": {
@@ -499,7 +658,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Buying/invoices": {
@@ -563,7 +727,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -586,7 +755,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Buying/invoices/{id}/status": {
@@ -623,7 +797,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/CRM/customers": {
@@ -648,7 +827,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "get": {
         "tags": [
@@ -700,7 +884,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/CRM/customers/search": {
@@ -734,7 +923,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/CRM/customers/{id}": {
@@ -759,7 +953,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/CustomerOrders": {
@@ -784,7 +983,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "get": {
         "tags": [
@@ -850,7 +1054,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/CustomerOrders/{id}/status": {
@@ -887,7 +1096,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/CustomerOrders/{id}/cancel": {
@@ -924,7 +1138,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Dashboard/summary": {
@@ -949,7 +1168,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Dashboard/sales-trends": {
@@ -994,7 +1218,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Dashboard/top-products": {
@@ -1049,7 +1278,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Dashboard/cash-flow": {
@@ -1094,7 +1328,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Dashboard/order-status-distribution": {
@@ -1119,7 +1358,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Dashboard/category-sales": {
@@ -1164,7 +1408,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/GroupBuying/pools": {
@@ -1189,7 +1438,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/GroupBuying/pools/active": {
@@ -1223,7 +1477,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/GroupBuying/pools/{id}": {
@@ -1248,7 +1507,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/GroupBuying/pools/{poolId}/join": {
@@ -1285,7 +1549,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/GroupBuying/pools/{poolId}/confirm": {
@@ -1310,7 +1579,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/GroupBuying/pools/{poolId}/generate-po": {
@@ -1335,7 +1609,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/GroupBuying/participations": {
@@ -1369,7 +1648,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/GroupBuying/opportunities": {
@@ -1414,7 +1698,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Inventory/products": {
@@ -1439,7 +1728,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "get": {
         "tags": [
@@ -1510,7 +1804,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Inventory/products/{id}": {
@@ -1547,7 +1846,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -1570,7 +1874,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "get": {
         "tags": [
@@ -1593,7 +1902,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Inventory/products/by-sku": {
@@ -1627,7 +1941,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Inventory/products/by-barcode": {
@@ -1661,7 +1980,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Inventory/categories": {
@@ -1686,7 +2010,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Inventory/stock-levels": {
@@ -1720,7 +2049,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Inventory/low-stock-alerts": {
@@ -1754,7 +2088,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Inventory/stock/adjust": {
@@ -1779,7 +2118,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Inventory/stock/movements": {
@@ -1854,7 +2198,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Inventory/products/search": {
@@ -1879,7 +2228,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Inventory/low-stock-items": {
@@ -1914,7 +2268,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Logistics/delivery-runs": {
@@ -2284,6 +2643,31 @@
         ]
       }
     },
+    "/api/operations/today": {
+      "get": {
+        "tags": [
+          "operations"
+        ],
+        "operationId": "GetOperationsToday",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationsTodayDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Payments/pay-links": {
       "post": {
         "tags": [
@@ -2306,7 +2690,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Payments/record": {
@@ -2331,7 +2720,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Payments": {
@@ -2405,7 +2799,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Payments/{id}": {
@@ -2430,7 +2829,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Payments/mpesa/initiate": {
@@ -2455,7 +2859,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Payments/airtel/initiate": {
@@ -2480,7 +2889,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Payments/mtn/initiate": {
@@ -2505,7 +2919,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Payments/{provider}/status/{transactionId}": {
@@ -2538,7 +2957,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Payments/qr/generate": {
@@ -2563,7 +2987,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Registration/store-owner": {
@@ -2663,7 +3092,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "get": {
         "tags": [
@@ -2739,7 +3173,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/daily-summary": {
@@ -2774,7 +3213,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/hold": {
@@ -2799,7 +3243,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/held": {
@@ -2824,7 +3273,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/queue": {
@@ -2849,7 +3303,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/{id}": {
@@ -2874,7 +3333,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/{id}/void": {
@@ -2911,7 +3375,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/{id}/receipt": {
@@ -2936,7 +3405,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/{id}/status": {
@@ -2973,7 +3447,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/{id}/refund": {
@@ -3010,7 +3489,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/{id}/retrieve": {
@@ -3035,7 +3519,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/{id}/held": {
@@ -3060,7 +3549,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/invoices": {
@@ -3144,7 +3638,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -3167,7 +3666,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/invoices/{id}/status": {
@@ -3204,7 +3708,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sales/documents": {
@@ -3229,7 +3738,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "get": {
         "tags": [
@@ -3324,7 +3838,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Settings/shop/{shopId}": {
@@ -3349,7 +3868,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "put": {
         "tags": [
@@ -3384,7 +3908,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/ShoppingCart/add": {
@@ -3427,7 +3956,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/ShoppingCart/update": {
@@ -3470,7 +4004,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/ShoppingCart/get": {
@@ -3503,7 +4042,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/ShoppingCart/checkout": {
@@ -3546,7 +4090,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/ShoppingCart/clear": {
@@ -3588,7 +4137,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Stores": {
@@ -3641,7 +4195,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -3664,7 +4223,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Stores/{id}": {
@@ -3689,7 +4253,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "put": {
         "tags": [
@@ -3724,7 +4293,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -3747,7 +4321,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Suppliers": {
@@ -3800,7 +4379,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -3823,7 +4407,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Suppliers/{id}": {
@@ -3848,7 +4437,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Suppliers/{id}/products": {
@@ -3873,7 +4467,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -3908,7 +4507,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Suppliers/products/{productId}/pricing": {
@@ -3945,7 +4549,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/TestOrders/test-orders": {
@@ -4563,7 +5172,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "get": {
         "tags": [
@@ -4614,7 +5228,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Vendors/{id}": {
@@ -4639,7 +5258,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Vendors/{id}/products": {
@@ -4676,7 +5300,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "get": {
         "tags": [
@@ -4718,7 +5347,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Vendors/products/{productId}/pricing": {
@@ -4755,7 +5389,12 @@
           "200": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     }
   },
@@ -4956,6 +5595,21 @@
           "RefreshToken": {
             "type": "string",
             "minLength": 1
+          }
+        }
+      },
+      "BusinessMemberUpsertRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "UserId": {
+            "type": "string"
+          },
+          "Role": {
+            "type": "string"
+          },
+          "IsDefault": {
+            "type": "boolean"
           }
         }
       },
@@ -5748,6 +6402,170 @@
           "OnboardingData": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "OperationsTodayDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Date": {
+            "type": "string",
+            "format": "date"
+          },
+          "Totals": {
+            "$ref": "#/components/schemas/TodayTotalsDto"
+          },
+          "Cash": {
+            "$ref": "#/components/schemas/TodayCashDto"
+          },
+          "LowStock": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TodayLowStockItemDto"
+            }
+          },
+          "PendingPurchaseOrders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TodayPurchaseOrderDto"
+            }
+          },
+          "PendingCustomerOrders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TodayCustomerOrderDto"
+            }
+          },
+          "Alerts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TodayAlertDto"
+            }
+          }
+        }
+      },
+      "TodayTotalsDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "SalesTotal": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "Transactions": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "AverageTicket": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "TodayCashDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "CashIn": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "CashOut": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "TodayLowStockItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ProductId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ProductName": {
+            "type": "string"
+          },
+          "ProductSku": {
+            "type": "string"
+          },
+          "CurrentQuantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "MinimumQuantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ReorderQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "TodayPurchaseOrderDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "PurchaseOrderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PurchaseOrderNumber": {
+            "type": "string"
+          },
+          "SupplierName": {
+            "type": "string"
+          },
+          "Status": {
+            "type": "string"
+          },
+          "CreatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ExpectedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "TodayCustomerOrderDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "CustomerOrderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "OrderNumber": {
+            "type": "string"
+          },
+          "CustomerName": {
+            "type": "string"
+          },
+          "Status": {
+            "type": "string"
+          },
+          "CreatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TodayAlertDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "Type": {
+            "type": "string"
+          },
+          "Message": {
+            "type": "string"
           }
         }
       },

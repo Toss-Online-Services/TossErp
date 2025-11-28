@@ -2,6 +2,7 @@
 using Toss.Application.Common.Interfaces;
 using Toss.Application.Common.Interfaces.Tenancy;
 using Toss.Domain.Entities;
+using Toss.Domain.Entities.Accounting;
 using Toss.Domain.Entities.ArtificialIntelligence;
 using Toss.Domain.Entities.Orders;
 using Toss.Domain.Entities.Catalog;
@@ -147,6 +148,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// Purchase-related documents (invoices, delivery notes, etc.).
     /// </summary>
     public DbSet<PurchaseDocument> PurchaseDocuments => Set<PurchaseDocument>();
+    
+    /// <summary>
+    /// Purchase requests that can be converted to purchase orders.
+    /// </summary>
+    public DbSet<PurchaseRequest> PurchaseRequests => Set<PurchaseRequest>();
+    
+    /// <summary>
+    /// Individual line items for each purchase request.
+    /// </summary>
+    public DbSet<PurchaseRequestLine> PurchaseRequestLines => Set<PurchaseRequestLine>();
 
     // Group Buying entities
     /// <summary>
@@ -211,6 +222,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// Payment links for online and remote payment collection.
     /// </summary>
     public DbSet<PayLink> PayLinks => Set<PayLink>();
+
+    // Accounting entities
+    /// <summary>
+    /// Accounting accounts (Cash or Bank) for tracking money in/out.
+    /// </summary>
+    public DbSet<Account> Accounts => Set<Account>();
+    
+    /// <summary>
+    /// Cashbook entries recording money in or out of accounts.
+    /// </summary>
+    public DbSet<CashbookEntry> CashbookEntries => Set<CashbookEntry>();
 
     // AI entities
     /// <summary>
@@ -470,6 +492,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<PurchaseOrder>()
             .HasQueryFilter(order => !_businessContext.HasBusiness || order.Shop!.BusinessId == _businessContext.CurrentBusinessId);
 
+        builder.Entity<PurchaseRequest>()
+            .HasQueryFilter(pr => !_businessContext.HasBusiness || pr.Shop!.BusinessId == _businessContext.CurrentBusinessId);
+
         builder.Entity<PurchaseDocument>()
             .HasQueryFilter(doc =>
                 !_businessContext.HasBusiness ||
@@ -494,5 +519,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<GroupBuyPool>()
             .HasQueryFilter(pool => !_businessContext.HasBusiness || pool.InitiatorShop!.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Account>()
+            .HasQueryFilter(account => !_businessContext.HasBusiness || account.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<CashbookEntry>()
+            .HasQueryFilter(entry => !_businessContext.HasBusiness || entry.BusinessId == _businessContext.CurrentBusinessId);
     }
 }

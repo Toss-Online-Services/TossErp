@@ -94,9 +94,7 @@ public class ApplicationDbContextInitialiser
     private async Task SeedRolesAndUsersAsync()
     {
         // Create roles
-        var roles = new[] { Roles.Administrator, "StoreOwner", "Vendor", "Driver", "Customer" };
-        
-        foreach (var roleName in roles)
+        foreach (var roleName in Roles.All)
         {
             if (!await _roleManager.RoleExistsAsync(roleName))
             {
@@ -104,6 +102,9 @@ public class ApplicationDbContextInitialiser
                 _logger.LogInformation("✅ Created {Role} role.", roleName);
             }
         }
+
+        await NormalizeLegacyIdentityRolesAsync();
+        await NormalizeBusinessMemberRolesAsync();
 
         // Create default administrator
         var adminEmail = "administrator@localhost";
@@ -124,7 +125,7 @@ public class ApplicationDbContextInitialiser
         }
 
         // Check if we already have enough store owners
-        var storeOwnerCount = (await _userManager.GetUsersInRoleAsync("StoreOwner")).Count;
+        var storeOwnerCount = (await _userManager.GetUsersInRoleAsync(Roles.Retailer)).Count;
         if (storeOwnerCount >= 15)
         {
             _logger.LogInformation("✅ Store owners already seeded ({Count} existing).", storeOwnerCount);
@@ -152,13 +153,64 @@ public class ApplicationDbContextInitialiser
                 var result = await _userManager.CreateAsync(user, "StoreOwner1!");
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "StoreOwner");
+                    await _userManager.AddToRoleAsync(user, Roles.Retailer);
                     usersCreated++;
                 }
             }
         }
         
         _logger.LogInformation("✅ Created {Count} store owner users.", usersCreated);
+    }
+
+    private async Task NormalizeLegacyIdentityRolesAsync()
+    {
+        const string legacyRoleName = "StoreOwner";
+        if (!await _roleManager.RoleExistsAsync(legacyRoleName))
+        {
+            return;
+        }
+
+        var legacyUsers = await _userManager.GetUsersInRoleAsync(legacyRoleName);
+        foreach (var user in legacyUsers)
+        {
+            if (!await _userManager.IsInRoleAsync(user, Roles.Retailer))
+            {
+                await _userManager.AddToRoleAsync(user, Roles.Retailer);
+            }
+
+            await _userManager.RemoveFromRoleAsync(user, legacyRoleName);
+        }
+
+        var legacyRole = await _roleManager.FindByNameAsync(legacyRoleName);
+        if (legacyRole is not null)
+        {
+            await _roleManager.DeleteAsync(legacyRole);
+        }
+    }
+
+    private async Task NormalizeBusinessMemberRolesAsync()
+    {
+        var legacyMembers = await _context.UserBusinesses
+            .Where(ub =>
+                ub.Role == "Admin" ||
+                ub.Role == "admin" ||
+                ub.Role == "Member" ||
+                ub.Role == "member")
+            .ToListAsync();
+
+        if (!legacyMembers.Any())
+        {
+            return;
+        }
+
+        foreach (var membership in legacyMembers)
+        {
+            membership.Role = membership.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase)
+                ? BusinessRoles.Manager
+                : BusinessRoles.Staff;
+        }
+
+        await _context.SaveChangesAsync();
     }
 
     private async Task SeedReferenceDataAsync()
@@ -233,7 +285,7 @@ public class ApplicationDbContextInitialiser
             return;
         }
 
-        var users = await _userManager.GetUsersInRoleAsync("StoreOwner");
+        var users = await _userManager.GetUsersInRoleAsync(Roles.Retailer);
         if (!users.Any())
         {
             _logger.LogWarning("⚠️  No store owners found. Skipping store seeding.");

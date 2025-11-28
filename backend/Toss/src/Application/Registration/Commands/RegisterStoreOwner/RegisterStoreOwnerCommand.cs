@@ -109,7 +109,7 @@ public class RegisterStoreOwnerCommandHandler : IRequestHandler<RegisterStoreOwn
         }
 
         // Assign Store Owner role
-        await _identityService.AddToRoleAsync(userId!, "StoreOwner");
+        await _identityService.AddToRoleAsync(userId!, Roles.Retailer);
 
         // Create business (tenant)
         var business = new Business
@@ -199,7 +199,7 @@ public class RegisterStoreOwnerCommandHandler : IRequestHandler<RegisterStoreOwn
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Phone = request.Phone,
-                Role = "StoreOwner",
+                Role = Roles.Retailer,
                 WhatsappAlerts = request.WhatsappAlerts
             },
             Store = new StoreDto

@@ -1,4 +1,5 @@
 ﻿using Toss.Domain.Entities;
+using Toss.Domain.Entities.Accounting;
 using Toss.Domain.Entities.ArtificialIntelligence;
 using Toss.Domain.Entities.Orders;
 using Toss.Domain.Entities.Catalog;
@@ -108,6 +109,8 @@ public interface IApplicationDbContext
     DbSet<PurchaseOrderItem> PurchaseOrderItems { get; }
     DbSet<PurchaseReceipt> PurchaseReceipts { get; }
     DbSet<PurchaseDocument> PurchaseDocuments { get; }
+    DbSet<PurchaseRequest> PurchaseRequests { get; }
+    DbSet<PurchaseRequestLine> PurchaseRequestLines { get; }
 
     // Group Buying entities
     DbSet<GroupBuyPool> GroupBuyPools { get; }
@@ -128,6 +131,10 @@ public interface IApplicationDbContext
     // Payment entities
     DbSet<Payment> Payments { get; }
     DbSet<PayLink> PayLinks { get; }
+
+    // Accounting entities
+    DbSet<Account> Accounts { get; }
+    DbSet<CashbookEntry> CashbookEntries { get; }
 
     // Onboarding entities
     DbSet<OnboardingStatus> OnboardingStatuses { get; }

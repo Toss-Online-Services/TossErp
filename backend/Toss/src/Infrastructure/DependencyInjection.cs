@@ -8,6 +8,7 @@ using Toss.Infrastructure.Services.Authentication;
 using Toss.Application.Common.Interfaces.Authentication;
 using Toss.Application.Common.Interfaces.Tenancy;
 using Toss.Infrastructure.Services.Tenancy;
+using Toss.Infrastructure.Services.Operations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -160,7 +161,8 @@ public static class DependencyInjection
         services.AddScoped<IOtpSender, SmsOtpSender>();
         services.AddSingleton<ITwoFactorSessionStore, TwoFactorSessionStore>();
         services.AddScoped<IBusinessContext, BusinessContext>();
-        services.AddSingleton<IAuthorizationHandler, BusinessRoleAuthorizationHandler>();
+        services.AddScoped<IAuthorizationHandler, BusinessRoleAuthorizationHandler>();
+        services.AddScoped<IOperationsTodayService, OperationsTodayService>();
     }
 
     /// <summary>

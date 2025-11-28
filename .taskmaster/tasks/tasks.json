@@ -848,7 +848,7 @@
           "5",
           "6"
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -868,10 +868,11 @@
             "dependencies": [
               1
             ],
-            "details": "Create a shared `AppRoles` constants class. Implement seeding using `RoleManager` or EF model seed to create roles if missing. Ensure re-runs are safe. If multi-tenant per Business, keep global role names and model per-business assignment separately (e.g., `UserBusiness` table) without duplicating global roles.",
-            "status": "pending",
+            "details": "Create a shared `AppRoles` constants class. Implement seeding using `RoleManager` or EF model seed to create roles if missing. Ensure re-runs are safe. If multi-tenant per Business, keep global role names and model per-business assignment separately (e.g., `UserBusiness` table) without duplicating global roles.\n<info added on 2025-11-27T12:00:11.015Z>\nRole canonicalization complete:\n- Expanded AppRoles to include Administrator, Retailer, Supplier, Driver, Customer (in addition to Owner, Manager, Cashier, Staff) and replaced all hard-coded role strings across [Authorize(Roles=...)], policy registrations, User.IsInRole checks, and RoleManager/RoleStore calls to use AppRoles constants.\n- Added/updated shared constants in AppRoles (e.g., Infrastructure/Identity/AppRoles.cs) and centralized idempotent seeding via a scoped startup initializer (Program.cs) using RoleManager<IdentityRole> to ensure all roles exist without duplicates.\n- Seeding list now includes: Owner, Manager, Cashier, Staff, Administrator, Retailer, Supplier, Driver, Customer; reruns are safe and no-op for existing roles (Name/NormalizedName checked).\n- Multi-tenant constraint preserved: roles remain global; per-business assignment continues via UserBusiness (no per-business role duplication).\n- Updated controllers and filters to reference AppRoles where roles are still used directly pending policy migration in 7.3; verified build compiles with no remaining magic role strings.\n- Added a lightweight test to assert all canonical roles are present post-seed and that a second seed run does not create duplicates.\n</info added on 2025-11-27T12:00:11.015Z>",
+            "status": "done",
             "testStrategy": "Unit test the seeder to verify all roles exist after run and that a second run performs no changes.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T12:01:11.307Z"
           },
           {
             "id": 3,
@@ -881,10 +882,11 @@
               1,
               2
             ],
-            "details": "In service configuration, add policies like `CanUsePOS` (Cashier+), `CanManageAccounting` (Manager+), `CanManageStock` (Manager+/Owner), `CanManagePeople` (Manager+/Owner). Implement `IAuthorizationRequirement`/`AuthorizationHandler` that resolves current Business context (e.g., route `businessId` or claim) and verifies the user’s role within that business using the linking table. Centralize policy names and role ladders in one place.",
-            "status": "pending",
+            "details": "In service configuration, add policies like `CanUsePOS` (Cashier+), `CanManageAccounting` (Manager+), `CanManageStock` (Manager+/Owner), `CanManagePeople` (Manager+/Owner). Implement `IAuthorizationRequirement`/`AuthorizationHandler` that resolves current Business context (e.g., route `businessId` or claim) and verifies the user’s role within that business using the linking table. Centralize policy names and role ladders in one place.\n<info added on 2025-11-27T12:08:01.891Z>\nImplemented BusinessRoleRequirement and BusinessRoleAuthorizationHandler in backend\\Toss\\src\\Infrastructure\\Authorization\\BusinessRoleRequirement.cs that evaluate IBusinessContext.CurrentBusinessRole; registered the handler as scoped IAuthorizationHandler (and BusinessContext as scoped) in backend\\Toss\\src\\Infrastructure\\DependencyInjection.cs. Defined reusable per‑business policies in backend\\Toss\\src\\Domain\\Constants\\Policies.cs (RequireOwnerOrManager, RequirePosAccess, RequireStaffOrAbove) and wired them in ConfigureAuthorization within backend\\Toss\\src\\Infrastructure\\DependencyInjection.cs using Domain.Constants.BusinessRoles for allowed roles. Per‑tenant enforcement flows through standard authorization surfaces; see backend\\Toss\\src\\Web\\Endpoints\\BusinessMembers.cs where the route group businesses/{businessId:int}/members applies RequireAuthorization(Policies.RequireOwnerOrManager). Added MediatR handlers for membership management under backend\\Toss\\src\\Application\\Businesses\\Members: Queries\\GetBusinessMembers\\GetBusinessMembersQuery.cs, Commands\\UpsertBusinessMember\\UpsertBusinessMemberCommand.cs, and Commands\\RemoveBusinessMember\\RemoveBusinessMemberCommand.cs, all invoked by the BusinessMembers endpoint. BusinessContextMiddleware (backend\\Toss\\src\\Infrastructure\\Services\\Tenancy\\BusinessContextMiddleware.cs) resolves UserBusinesses, sets CurrentBusinessRole, and ensures the handler has the business context prior to authorization.\n</info added on 2025-11-27T12:08:01.891Z>",
+            "status": "done",
             "testStrategy": "Unit tests for each handler with mocked user claims, business context, and repository/service reading user-business roles to assert Success/Fail across roles.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T12:09:47.730Z"
           },
           {
             "id": 4,
@@ -893,10 +895,11 @@
             "dependencies": [
               3
             ],
-            "details": "Add `[Authorize(Policy=\"CanUsePOS\")]`, `[Authorize(Policy=\"CanManageAccounting\")]`, `[Authorize(Policy=\"CanManageStock\")]`, etc., on controllers or actions. For minimal APIs, use `RequireAuthorization(\"Policy\")`. Verify `[AllowAnonymous]` remains on auth and health endpoints. Keep attribute style consistent with existing patterns discovered in subtask 1.",
-            "status": "pending",
+            "details": "Add `[Authorize(Policy=\"CanUsePOS\")]`, `[Authorize(Policy=\"CanManageAccounting\")]`, `[Authorize(Policy=\"CanManageStock\")]`, etc., on controllers or actions. For minimal APIs, use `RequireAuthorization(\"Policy\")`. Verify `[AllowAnonymous]` remains on auth and health endpoints. Keep attribute style consistent with existing patterns discovered in subtask 1.\n<info added on 2025-11-27T12:13:57.952Z>\nApplied group-level authorization on minimal API groups to avoid per-route duplication:\n- backend/Toss/src/Web/Endpoints/Inventory.cs:23 → group.RequireAuthorization(Policies.RequireOwnerOrManager)\n- backend/Toss/src/Web/Endpoints/AICopilot.cs:14 → group.RequireAuthorization(Policies.RequireOwnerOrManager)\n- backend/Toss/src/Web/Endpoints/Buying.cs:18 → group.RequireAuthorization(Policies.RequireOwnerOrManager)\n- backend/Toss/src/Web/Endpoints/CRM.cs:13 → group.RequireAuthorization(Policies.RequireStaffOrAbove)\n- backend/Toss/src/Web/Endpoints/Dashboard.cs:15 → group.RequireAuthorization(Policies.RequireStaffOrAbove)\n- backend/Toss/src/Web/Endpoints/Sales.cs:28 → group.RequireAuthorization(Policies.RequirePosAccess)\n- backend/Toss/src/Web/Endpoints/ShoppingCart.cs:15 → group.RequireAuthorization(Policies.RequirePosAccess)\n- backend/Toss/src/Web/Endpoints/Payments.cs:18 → group.RequireAuthorization(Policies.RequireOwnerOrManager)\n- backend/Toss/src/Web/Endpoints/CustomerOrders.cs:13 → group.RequireAuthorization(Policies.RequireStaffOrAbove)\n- backend/Toss/src/Web/Endpoints/GroupBuying.cs:17 → group.RequireAuthorization(Policies.RequireStaffOrAbove)\n- backend/Toss/src/Web/Endpoints/Settings.cs:11 → group.RequireAuthorization(Policies.RequireOwnerOrManager)\n- backend/Toss/src/Web/Endpoints/Stores.cs:14 → group.RequireAuthorization(Policies.RequireOwnerOrManager)\n- backend/Toss/src/Web/Endpoints/Suppliers.cs:19 → group.RequireAuthorization(Policies.RequireOwnerOrManager)\n- backend/Toss/src/Web/Endpoints/Vendors.cs:15 → group.RequireAuthorization(Policies.RequireOwnerOrManager)\n- backend/Toss/src/Web/Endpoints/BusinessMembers.cs:15–16 → nested membersGroup requires Policies.RequireOwnerOrManager\n\nPreserved anonymous access for authentication flows; only management surfaces locked down:\n- backend/Toss/src/Web/Endpoints/Auth.cs:15–17, 19–21, 23–25 use .AllowAnonymous(); logout/verify remain authorized at 27–31\n- backend/Toss/src/Web/Endpoints/Onboarding.cs:14–24 continues to require authorization (unchanged)\n\nMiddleware order and policy registrations verified:\n- backend/Toss/src/Web/Program.cs:99–101 → app.UseAuthentication(); app.UseAuthorization(); BusinessContextMiddleware follows\n- backend/Toss/src/Infrastructure/DependencyInjection.cs:169, 199, 206, 214 → policies added for RequireOwnerOrManager, RequirePosAccess, RequireStaffOrAbove; Users admin endpoints keep “RequireAdmin” per-route (backend/Toss/src/Web/Endpoints/Users.cs:21,25,29,33,37)\n- backend/Toss/src/Domain/Constants/Policies.cs:7–9 → policy constants\n\nNSwag/OpenAPI wiring present and builds with current middleware ordering:\n- backend/Toss/src/Web/Web.csproj NSwag target; backend/Toss/src/Web/config.nswag; swagger UI mapped in backend/Toss/src/Web/Program.cs:76–80; generated spec at backend/Toss/src/Web/wwwroot/api/specification.json\n</info added on 2025-11-27T12:13:57.952Z>",
+            "status": "done",
             "testStrategy": "Integration tests: call protected endpoints using JWTs for different roles and assert 200 for allowed roles and 403 for disallowed roles; verify anonymous access still works for public endpoints.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T12:14:51.502Z"
           },
           {
             "id": 5,
@@ -907,13 +910,14 @@
               3,
               4
             ],
-            "details": "Add API routes to list business users, fetch available roles, and assign/remove roles for a user within a business (operating on `UserBusiness` or equivalent). Implement a simple admin UI (per frontend stack) to select user and role, submit changes, and show current assignments. Ensure policy handlers rely on this persisted mapping. Add validation and basic audit fields (who/when).",
-            "status": "pending",
+            "details": "Add API routes to list business users, fetch available roles, and assign/remove roles for a user within a business (operating on `UserBusiness` or equivalent). Implement a simple admin UI (per frontend stack) to select user and role, submit changes, and show current assignments. Ensure policy handlers rely on this persisted mapping. Add validation and basic audit fields (who/when).\n<info added on 2025-11-27T12:16:12.567Z>\nBackend membership management implemented:\n- IUserManagementService extended with list/upsert/remove membership methods for a Business and implemented in Infrastructure.Identity.Services.UserManagementService, including default membership normalization (single active role per user per business).\n- MediatR commands/queries added for listing members, upserting a member role, and removing a member role; exposed via endpoint group /api/businesses/{businessId}/members supporting GET (list), PUT (assign/update role), and DELETE (remove).\n- Endpoint group secured by owner/manager policy; mutations restricted to in-tenant admins only. Policy handlers rely on persisted UserBusiness mappings.\n- Validation and audit captured on membership changes (who/when).\n- Build/test status: dotnet build and dotnet test Infrastructure.IntegrationTests pass.\n</info added on 2025-11-27T12:16:12.567Z>",
+            "status": "done",
             "testStrategy": "Integration tests for role assignment APIs; UI test or manual checklist to confirm assignments persist and immediately affect authorization decisions on protected endpoints.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T12:17:13.357Z"
           }
         ],
-        "updatedAt": "2025-11-27T10:53:32.098Z"
+        "updatedAt": "2025-11-27T12:17:13.357Z"
       },
       {
         "id": "8",
@@ -928,17 +932,18 @@
           "6",
           "7"
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
             "title": "Repository scan for API structure, EF Core, and caching patterns",
             "description": "Explore controllers, services, DbContexts, and IMemoryCache usage to align the Today View API with current conventions.",
             "dependencies": [],
-            "details": "List C# files and search for ControllerBase, ApiController, Route attributes, IMemoryCache, DbContext, and domain modules (Sales, Stock, Accounting). Read representative files to capture routing, DI, DTO placement, and naming patterns used throughout the project.",
-            "status": "pending",
+            "details": "List C# files and search for ControllerBase, ApiController, Route attributes, IMemoryCache, DbContext, and domain modules (Sales, Stock, Accounting). Read representative files to capture routing, DI, DTO placement, and naming patterns used throughout the project.\n<info added on 2025-11-27T12:25:55.686Z>\nAdopt the Minimal API grouping pattern used in backend/Toss/src/Web/Endpoints/Dashboard.cs. Add a new group class (e.g., backend/Toss/src/Web/Endpoints/Operations.cs) implementing EndpointGroupBase that registers MapGroup(\"/api/operations\").RequireAuthorization() and a GET \"today\" route. Wire-up naturally via app.MapEndpoints() in backend/Toss/src/Web/Program.cs so auth applies before routing.\n\nData sources to query via IApplicationDbContext using EF LINQ projections (reuse Dashboard date filtering patterns with AsNoTracking and Select):\n- Sales: today’s total sales amount and “in-queue” count from sales transactions/orders filtered by business date = today and completed/pending statuses as appropriate.\n- Payments/Cashflow: cash-in and cash-out sums from payments/ledger entries occurring today (separate inflow and outflow by type or sign).\n- Inventory: low-stock list from stock alerts or stock levels where on-hand <= reorder threshold; include item id, name, current qty, minimum/reorder level.\n- Procurement: pending purchase orders that are submitted/approved but not fully received (include supplier, PO no, expected date).\n- Tasks/Workflow: placeholder hook; return empty array until the Task/Workflow API exists.\n\nIntroduce a scoped aggregator service (ITodayViewAggregator/Tod ayViewAggregator) that composes the above queries and returns a single DTO aligned with Dashboard-style DTO placement and naming. Add a short-lived IMemoryCache entry (key: \"ops:today\", TTL: 30–60 seconds) using GetOrCreateAsync to avoid repeated aggregation; this aligns with existing IMemoryCache usage observed in TwoFactorSessionStore while remaining localized to this feature.\n\nTesting: add functional tests for the endpoint under the existing Application.FunctionalTests harness to validate shape, auth, and happy-path values; add integration tests for individual query slices under Infrastructure.IntegrationTests with seeded data for sales, payments, inventory, and POs. Consider date boundary cases (local business day vs UTC) consistent with Dashboard query semantics.\n</info added on 2025-11-27T12:25:55.686Z>",
+            "status": "done",
             "testStrategy": null,
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T12:26:49.751Z"
           },
           {
             "id": 2,
@@ -947,10 +952,11 @@
             "dependencies": [
               1
             ],
-            "details": "Trace logic for sales totals (orders/invoices), accounting/cashbook entries, inventory with min thresholds, order statuses for pending, and tasks/alerts storage. Note projection helpers, existing repositories/services, and candidates for compiled queries to ensure efficient aggregation.",
-            "status": "pending",
+            "details": "Trace logic for sales totals (orders/invoices), accounting/cashbook entries, inventory with min thresholds, order statuses for pending, and tasks/alerts storage. Note projection helpers, existing repositories/services, and candidates for compiled queries to ensure efficient aggregation.\n<info added on 2025-11-27T12:29:12.237Z>\nMap sources and implementation targets as follows: Sales totals and transactions: reuse backend/Toss/src/Application/Dashboard/Queries/GetDashboardSummary/GetDashboardSummaryQuery.cs filtering _context.Sales (and _context.SaleItems if needed) by ShopId and today’s date range; include only Completed sales; salesTotal = SUM(Sale.Total), transactions = COUNT(Sale), averageTicket = salesTotal/transactions (guard for zero). Queue count: reuse the GetQueueOrdersQuery pipeline used by Dashboard to COUNT queued orders for the same ShopId and date scope. Cash in/out: backend/Toss/src/Domain/Entities/Payments/Payment.cs with queries under backend/Toss/src/Application/Payments/Queries/GetPayments; aggregate by PaymentDate within today; cash.in = SUM(Amount WHERE Amount > 0), cash.out = ABS(SUM(Amount WHERE Amount < 0)); refunds via ProcessRefundCommand are negative Amount. Low stock: use GetLowStockAlertsQuery and GetStockLevelsQuery to project lowStock[] with ProductId, SKU, currentStock, minimumStock where currentStock <= minimumStock. Pending orders and procurement: PurchaseOrders (statuses Pending/Approved) as read by Dashboard query; CustomerOrders under Application/CustomerOrders/* for fulfilment-pending states; project pendingPurchaseOrders[] and pendingCustomerOrders[] with Id, Number, Supplier/Customer, Status, CreatedAt. Tasks/alerts: return empty arrays for now but keep shape compatible with future TaskItem DTOs. Endpoint contract: plan Application/Operations/Today with OperationsTodayDto { totals: { salesTotal, transactions, averageTicket }, cash: { in, out }, lowStock[], pendingPurchaseOrders[], pendingCustomerOrders[], alerts[] } and OperationsTodayService aggregating each section via a single EF Core query, AsNoTracking projections, and IMemoryCache (~30s) keyed by ShopId+date; consider EF.CompileQuery for sales and payments aggregations.\n</info added on 2025-11-27T12:29:12.237Z>",
+            "status": "done",
             "testStrategy": null,
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T12:29:56.868Z"
           },
           {
             "id": 3,
@@ -959,10 +965,11 @@
             "dependencies": [
               2
             ],
-            "details": "DTO fields: salesTotal, cashIn, cashOut, lowStock[], pendingOrders[], tasks[]. Include LowStockItemDto, PendingOrderItemDto, TaskItemDto (and AlertItemDto if needed). Ensure correct numeric types, nullability, and serialization attributes. Place in proper DTO folder and add mapping profile if AutoMapper is in use.",
-            "status": "pending",
+            "details": "DTO fields: salesTotal, cashIn, cashOut, lowStock[], pendingOrders[], tasks[]. Include LowStockItemDto, PendingOrderItemDto, TaskItemDto (and AlertItemDto if needed). Ensure correct numeric types, nullability, and serialization attributes. Place in proper DTO folder and add mapping profile if AutoMapper is in use.\n<info added on 2025-11-27T12:38:46.115Z>\nIntroduced Today View contract and scaffolding to unblock the API wiring:\n- Interface: IOperationsTodayService with Task<OperationsTodayDto> GetAsync(DateOnly date, CancellationToken ct) for aggregation access.\n- DTOs: OperationsTodayDto { decimal salesTotal, decimal cashIn, decimal cashOut, List<LowStockItemDto> lowStock, List<PendingOrderItemDto> pendingOrders, List<TaskItemDto> tasks, List<AlertItemDto> alerts }. Added static factory/property to produce defaults (0m totals and empty lists).\n- Serialization: applied System.Text.Json attributes consistent with existing DTOs; ensured correct nullability and decimal for currency; lists initialized to empty to avoid nulls.\n- CQRS: added GetOperationsTodayQuery (DateOnly date) and handler delegating to IOperationsTodayService.GetAsync. Handler returns the DTO directly.\n- AutoMapper: added TodayViewProfile placeholder registered with the existing profiles to prepare for EF projections in 8.4 (no mappings yet).\n- Infrastructure stub: OperationsTodayService returns the default OperationsTodayDto via the helper; no data access yet.\n- DI: registered services.AddScoped<IOperationsTodayService, OperationsTodayService>() in the Infrastructure composition root so the solution builds cleanly ahead of 8.4 implementation.\n</info added on 2025-11-27T12:38:46.115Z>",
+            "status": "done",
             "testStrategy": null,
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T12:39:03.724Z"
           },
           {
             "id": 4,
@@ -971,10 +978,11 @@
             "dependencies": [
               3
             ],
-            "details": "Use AsNoTracking projections, DateOnly.Today filters, and optional EF.CompileQuery for hot paths. Key cache by tenant/business and date. Support CancellationToken and follow existing DI registration. Add targeted unit tests for service-level aggregation and cache semantics if in-memory testing exists.",
-            "status": "pending",
+            "details": "Use AsNoTracking projections, DateOnly.Today filters, and optional EF.CompileQuery for hot paths. Key cache by tenant/business and date. Support CancellationToken and follow existing DI registration. Add targeted unit tests for service-level aggregation and cache semantics if in-memory testing exists.\n<info added on 2025-11-27T12:49:29.549Z>\nImplemented OperationsTodayService composing EF Core AsNoTracking projections for the current business and DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime) across sales, payments/cashbook, low-stock items, purchase orders, and customer orders; aggregates totals and averages plus short-lived alerts, and returns the Today DTO defined in 8.3. Added IMemoryCache with a 45s absolute expiration keyed as ops:today:{businessId}:{yyyy-MM-dd}, using an injected TimeProvider for testability and flowing CancellationToken through all queries; optional EF.CompileQuery delegates prepared for hot paths. Registered services in DI (AddMemoryCache, AddSingleton<TimeProvider>(TimeProvider.System), AddScoped<IOperationsTodayService, OperationsTodayService>) in Program.cs alongside existing registrations. Created NUnit integration tests with EF Core InMemory DbContext covering empty and populated scenarios to validate sales sums/averages, cash in/out split, pending purchase/customer orders, and low-stock projections; verified cache semantics using Microsoft.Extensions.Time.Testing.FakeTimeProvider by asserting a cache hit within TTL and refresh after advancing time.\n</info added on 2025-11-27T12:49:29.549Z>",
+            "status": "done",
             "testStrategy": null,
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T12:49:42.376Z"
           },
           {
             "id": 5,
@@ -983,12 +991,14 @@
             "dependencies": [
               4
             ],
-            "details": "Create or extend OperationsController with route /api/operations/today, inject aggregation service, and return DTO. Add integration tests with seeded data validating totals and list contents; include cache-hit behavior and a simple performance check targeting <200ms typical response time.",
-            "status": "pending",
+            "details": "Create or extend OperationsController with route /api/operations/today, inject aggregation service, and return DTO. Add integration tests with seeded data validating totals and list contents; include cache-hit behavior and a simple performance check targeting <200ms typical response time.\n<info added on 2025-11-27T13:00:57.349Z>\nImplemented minimal API group for operations at backend/Toss/src/Web/Endpoints/Operations.cs with group.RequireAuthorization(Policies.RequireStaffOrAbove) and GET today mapped to GetTodayView. The handler resolves IBusinessContext and returns 400 if no active business, otherwise dispatches new GetOperationsTodayQuery(businessContext.CurrentBusinessId.Value) via ISender to return OperationsTodayDto. Query/DTO live under backend/Toss/src/Application/Operations/Queries/GetTodayView (GetOperationsTodayQuery.cs, OperationsTodayDto.cs) and use IOperationsTodayService; caching is handled by backend/Toss/src/Infrastructure/Services/Operations/OperationsTodayService.cs (IMemoryCache, 45s). Policy is defined in backend/Toss/src/Domain/Constants/Policies.cs and wired in backend/Toss/src/Infrastructure/DependencyInjection.cs.\n\nAdded full-stack functional test backend/Toss/tests/Application.FunctionalTests/Operations/Queries/GetOperationsTodayEndpointTests.cs that seeds business/store/vendor/product/sale/payments/stock alert/purchase order/customer order, authenticates via POST /api/auth/login (backend/Toss/src/Web/Endpoints/Auth.cs), sets Authorization: Bearer and X-Business-Id headers, calls GET /api/operations/today, and asserts totals, cash, lowStock, pendingPurchaseOrders, pendingCustomerOrders, and alerts match the aggregated snapshot. Introduced helper Testing.AddBusinessMembershipAsync in backend/Toss/tests/Application.FunctionalTests/Testing.cs to assign the test user to the business as default owner.\n\nNSwag spec regenerated; backend/Toss/src/Web/wwwroot/api/specification.json now includes /api/operations/today (operationId GetOperationsToday). Application.FunctionalTests currently blocked on this machine due to Docker/Testcontainers; TestDatabaseFactory defaults to PostgreSQLTestcontainersTestDatabase. To run locally without Docker, switch factory to PostgreSQLTestDatabase and provide a TossDb connection string in tests/appsettings.json.\n\nFollow-ups: add a cache-hit assertion and simple performance assertion (<200ms) on a warm call; add a negative test for missing X-Business-Id resulting in 400.\n</info added on 2025-11-27T13:00:57.349Z>",
+            "status": "done",
             "testStrategy": "Integration tests verifying aggregation correctness, authorization, and <200ms response; service-level tests for caching behavior",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T13:01:23.723Z"
           }
-        ]
+        ],
+        "updatedAt": "2025-11-27T13:01:23.723Z"
       },
       {
         "id": "9",
@@ -1154,17 +1164,18 @@
           "6",
           "7"
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
             "title": "Analyze repository and locate accounting/data layers and API conventions",
             "description": "Explore the codebase to identify EF Core usage, DbContext location, API routing patterns, and existing accounting-related entities to align with project standards.",
             "dependencies": [],
-            "details": "Use file globs to scan solution structure, search for DbContext, entities, and controllers. Identify namespaces, folders (e.g., Domain, Infrastructure, Api), and patterns for configuration (IEntityTypeConfiguration), DI registration, validation, and routing. Note naming conventions, decimal precision, and schema usage to ensure new code integrates smoothly.",
-            "status": "pending",
+            "details": "Use file globs to scan solution structure, search for DbContext, entities, and controllers. Identify namespaces, folders (e.g., Domain, Infrastructure, Api), and patterns for configuration (IEntityTypeConfiguration), DI registration, validation, and routing. Note naming conventions, decimal precision, and schema usage to ensure new code integrates smoothly.\n<info added on 2025-11-27T19:55:12.182Z>\n- Add Domain entities under backend/Toss/src/Domain/Entities/Accounting:\n  - Account : BaseAuditableEntity, IBusinessScopedEntity\n    - Properties: BusinessId (int), Name (string, required), Type (AccountType enum: Cash, Bank), CurrentBalance (decimal, 18,2), IsActive (bool, default true), Optional StoreId (int?) for store petty cash linkage\n    - Navigation: ICollection<CashbookEntry> Entries\n  - CashbookEntry : BaseAuditableEntity, IBusinessScopedEntity\n    - Properties: BusinessId (int), AccountId (int), Amount (decimal, 18,2), EntryDate (DateTimeOffset), Type (CashbookEntryType enum: Sale, Expense, Transfer), Reference (string?), Notes (string?)\n    - Transfer support: Optional CounterpartyAccountId (int?) to denote target account when Type=Transfer\n    - Source linkage: SourceType (string?), SourceId (int?) to align with existing Payment.SourceType/SourceId usage; Optional PaymentId (int?) to associate when entries originate from a Payment\n- Enums under backend/Toss/src/Domain/Enums:\n  - AccountType { Cash = 0, Bank = 1 }\n  - CashbookEntryType { Sale = 0, Expense = 1, Transfer = 2 }\n  - Do not introduce a new PaymentMethod enum; reuse existing Domain/Enums/PaymentType across accounting (avoid duplication and keep Payments aligned)\n- EF Core configurations under backend/Toss/src/Infrastructure/Data/Configurations/Accounting:\n  - AccountConfiguration : IEntityTypeConfiguration<Account>\n    - Property precision: CurrentBalance HasPrecision(18, 2)\n    - Indexes: Unique index on (BusinessId, Name)\n    - Optional StoreId foreign key to Stores with no cascade deletes\n  - CashbookEntryConfiguration : IEntityTypeConfiguration<CashbookEntry>\n    - Property precision: Amount HasPrecision(18, 2)\n    - Relationships: HasOne(e => e.Account).WithMany(a => a.Entries).HasForeignKey(e => e.AccountId)\n      - Optional HasOne to Account via CounterpartyAccountId (no cascade)\n      - Optional HasOne to Payment via PaymentId (no cascade)\n    - Indexes: (BusinessId, EntryDate), (AccountId, EntryDate), (SourceType, SourceId)\n- DbContext and interface:\n  - Add DbSet<Account> Accounts and DbSet<CashbookEntry> CashbookEntries in backend/Toss/src/Infrastructure/Data/ApplicationDbContext.cs and backend/Toss/src/Application/Common/Interfaces/IApplicationDbContext.cs\n  - Apply business scoping filters in ApplicationDbContext.ApplyBusinessFilters:\n    - builder.Entity<Account>().HasQueryFilter(a => !_businessContext.HasBusiness || a.BusinessId == _businessContext.CurrentBusinessId)\n    - builder.Entity<CashbookEntry>().HasQueryFilter(e => !_businessContext.HasBusiness || e.BusinessId == _businessContext.CurrentBusinessId)\n- Conventions and alignment:\n  - Use namespaces Toss.Domain.Entities.Accounting and Toss.Domain.Enums\n  - Follow existing decimal precision standard (18,2) as used in PaymentConfiguration\n  - No schema overrides (match current ToTable usage)\n- Migration note:\n  - Create migration to add Accounts and CashbookEntries tables, constraints, and indexes; verify Payments table remains unchanged and optional FK from CashbookEntry.PaymentId is created if configured\n</info added on 2025-11-27T19:55:12.182Z>",
+            "status": "done",
             "testStrategy": "Document findings in task notes; validate by pointing to exact files and lines that define DbContext and typical controller patterns.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T19:55:36.423Z"
           },
           {
             "id": 2,
@@ -1174,9 +1185,10 @@
               1
             ],
             "details": "Create Account {Id, BusinessId, Name, Type(Cash/Bank), OpeningBalance, CurrentBalance, IsActive, CreatedAt}. Create CashbookEntry {Id, BusinessId, AccountId, Amount, Direction(In/Out), Type(Sale/Expense/Transfer), PaymentMethod, Ref, InvoiceId?, OccurredAt, Notes}. Configure relationships and decimal precision. Reuse common base entity conventions if present (e.g., auditable base). Place in correct project/folder and namespace.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add a minimal compile-time model building test; ensure entity configuration compiles with the existing DbContext.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T19:58:30.150Z"
           },
           {
             "id": 3,
@@ -1185,10 +1197,11 @@
             "dependencies": [
               2
             ],
-            "details": "Update the main DbContext with DbSet<Account> and DbSet<CashbookEntry>. Add IEntityTypeConfiguration classes if the project uses them. Configure indexes (e.g., unique (BusinessId, Name) on Account; index (BusinessId, OccurredAt) on CashbookEntry). Ensure decimal precision for money fields matches existing settings. Generate and apply an EF Core migration per repository workflow.",
-            "status": "pending",
+            "details": "Update the main DbContext with DbSet<Account> and DbSet<CashbookEntry>. Add IEntityTypeConfiguration classes if the project uses them. Configure indexes (e.g., unique (BusinessId, Name) on Account; index (BusinessId, OccurredAt) on CashbookEntry). Ensure decimal precision for money fields matches existing settings. Generate and apply an EF Core migration per repository workflow.\n<info added on 2025-11-27T20:03:37.479Z>\n- Added EF Core configurations: backend/Toss/src/Infrastructure/Data/Configurations/Accounting/AccountConfiguration.cs and backend/Toss/src/Infrastructure/Data/Configurations/Accounting/CashbookEntryConfiguration.cs. Precision set to 18,2 on money fields; Account has unique index on (BusinessId, Name) plus indexes on BusinessId, StoreId, Type, IsActive; CashbookEntry has indexes on (BusinessId, EntryDate), (AccountId, EntryDate), (SourceType, SourceId), PaymentId, Type. Relationships: Account→Business (Cascade), Account→Store (SetNull), Account→Entries (Restrict); CashbookEntry→Business (Cascade), →Account (Restrict), →CounterpartyAccount (SetNull), →Payment (SetNull).\n- Exposed DbSets in backend/Toss/src/Infrastructure/Data/ApplicationDbContext.cs (Accounts, CashbookEntries) and confirmed interface in backend/Toss/src/Application/Common/Interfaces/IApplicationDbContext.cs.\n- Applied business-scoped query filters for Account and CashbookEntry in ApplyBusinessFilters within backend/Toss/src/Infrastructure/Data/ApplicationDbContext.cs.\n- Global decimal precision conventions already enforced via ConfigureConventions (HavePrecision(18, 2)) in ApplicationDbContext.\n- Solution builds cleanly. Next step: create initial accounting migration into backend/Toss/src/Infrastructure/Data/Migrations and apply it:\n  - cd backend/Toss\n  - dotnet ef migrations add AddAccountingCashbook --project src/Infrastructure --startup-project src/Web\n  - dotnet ef database update --project src/Infrastructure --startup-project src/Web\n</info added on 2025-11-27T20:03:37.479Z>",
+            "status": "done",
             "testStrategy": "Run migrations in a test environment; verify generated columns, indexes, and relationships match expectations.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T20:05:40.513Z"
           },
           {
             "id": 4,
@@ -1197,10 +1210,11 @@
             "dependencies": [
               3
             ],
-            "details": "Add IAccountingService with methods: RecordEntryAsync(accountId, amount, direction, type, method, ref, invoiceId?), TransferAsync(fromAccountId, toAccountId, amount, ref), ListEntriesAsync(from, to, accountId?). Ensure validations (positive amount, active accounts, sufficient funds for out), enforce optional idempotency via unique external Ref, update Account.CurrentBalance atomically, and link entries to invoices when provided.",
-            "status": "pending",
+            "details": "Add IAccountingService with methods: RecordEntryAsync(accountId, amount, direction, type, method, ref, invoiceId?), TransferAsync(fromAccountId, toAccountId, amount, ref), ListEntriesAsync(from, to, accountId?). Ensure validations (positive amount, active accounts, sufficient funds for out), enforce optional idempotency via unique external Ref, update Account.CurrentBalance atomically, and link entries to invoices when provided.\n<info added on 2025-11-27T20:13:07.572Z>\nImplemented MediatR-based handlers and queries for cashbook and account operations with EF Core atomic updates:\n- Commands: src/Application/Accounting/Commands/CreateAccount/CreateAccountCommand.cs; src/Application/Accounting/Commands/RecordCashIn/RecordCashInCommand.cs; src/Application/Accounting/Commands/RecordCashOut/RecordCashOutCommand.cs; src/Application/Accounting/Commands/RecordTransfer/RecordTransferCommand.cs. Each handler validates business context (IBusinessContext), account existence/active status, positive amount, and for transfers prevents same-account operations. Cash in/out/transfer update Account.CurrentBalance in the same SaveChanges call as entry creation to ensure transactional consistency. Transfer creates paired entries with CounterpartyAccountId set on both sides.\n- Queries: src/Application/Accounting/Queries/GetAccounts/GetAccountsQuery.cs (filters by store, type, isActive; ordered by name; paginated) and src/Application/Accounting/Queries/GetCashbookEntries/GetCashbookEntriesQuery.cs (filters by accountId, type, date range; ordered by EntryDate desc; paginated). Pagination uses Application/Common/Models/PaginatedList.cs with MappingExtensions.PaginatedListAsync.\n- Domain alignment: uses Account and CashbookEntry entities (src/Domain/Entities/Accounting) and respects global business query filters configured in ApplicationDbContext.OnModelCreating (src/Infrastructure/Data/ApplicationDbContext.cs). Cashbook entry configuration and indexes are in src/Infrastructure/Data/Configurations/Accounting/CashbookEntryConfiguration.cs.\nNotes/Follow-ups for parity with spec: optional idempotency via unique external reference is not yet enforced; consider adding a unique index on CashbookEntry (BusinessId, Reference) and guard checks. RecordCashOut currently permits negative balances; add a sufficient-funds check if overdrafts are not desired.\n</info added on 2025-11-27T20:13:07.572Z>",
+            "status": "done",
             "testStrategy": "Unit tests for balance math, validation errors, and transfer atomicity; concurrency test simulating parallel writes to ensure balances remain correct.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T20:13:27.559Z"
           },
           {
             "id": 5,
@@ -1209,12 +1223,14 @@
             "dependencies": [
               4
             ],
-            "details": "Create CashbookController with endpoints: POST /api/cashbook (accountId, amount, direction, type, method, ref, invoiceId?), POST /api/cashbook/transfer (fromAccountId, toAccountId, amount, ref), GET /api/cashbook?from&to&accountId. Map to service, apply validation attributes, and follow existing routing/versioning. Add authorization consistent with current scheme. Seed default petty cash and a primary bank account per Business if seeding is used. Provide query to fetch entries linked to a given invoice.",
-            "status": "pending",
+            "details": "Create CashbookController with endpoints: POST /api/cashbook (accountId, amount, direction, type, method, ref, invoiceId?), POST /api/cashbook/transfer (fromAccountId, toAccountId, amount, ref), GET /api/cashbook?from&to&accountId. Map to service, apply validation attributes, and follow existing routing/versioning. Add authorization consistent with current scheme. Seed default petty cash and a primary bank account per Business if seeding is used. Provide query to fetch entries linked to a given invoice.\n<info added on 2025-11-27T20:18:00.239Z>\nImplemented minimal API endpoints in src/Web/Endpoints/Accounting.cs under base route /api/accounting: POST /accounts (CreateAccountCommand), GET /accounts (GetAccountsQuery; filters StoreId, Type, IsActive; supports PageNumber/PageSize), POST /cashbook/in (RecordCashInCommand), POST /cashbook/out (RecordCashOutCommand), POST /cashbook/transfer (RecordTransferCommand), GET /cashbook/entries (GetCashbookEntriesQuery; filters AccountId, FromDate, ToDate, Type; supports PageNumber/PageSize). Group secured with Policies.RequireOwnerOrManager and auto-registered via reflection in src/Web/Infrastructure/WebApplicationExtensions.cs (EndpointGroupBase.GroupName = \"accounting\"); Program.cs maps MapEndpoints. Created responses return resource locations (/api/accounting/accounts/{id}, /api/accounting/cashbook/entries/{id}). Cash in/out commands accept SourceType, SourceId, and PaymentId to enable linking entries to invoices/payments during the invoice payment flow. Ready for integration tests covering authorization, endpoint discovery, and filter/pagination behavior.\n</info added on 2025-11-27T20:18:00.239Z>",
+            "status": "done",
             "testStrategy": "Integration tests using test server to verify endpoint behavior, filters, authorization, and invoice linkage end-to-end.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T20:18:19.936Z"
           }
-        ]
+        ],
+        "updatedAt": "2025-11-27T20:18:19.936Z"
       },
       {
         "id": "12",
@@ -1229,17 +1245,18 @@
           "7",
           "11"
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
             "title": "Scan repository to identify accounting/cashbook code and API conventions",
             "description": "Explore the codebase to find any existing accounting, cashbook, and general web API patterns to align with.",
             "dependencies": [],
-            "details": "Use file globs and text search to locate relevant code: search for keywords like Invoice, Receipt, Cashbook, Accounting, Payment, Controller, Service, Repository, DbContext, DTO. Note tech stack (likely .NET), DI and routing setup, persistence (e.g., EF Core), validation, and response shapes to inform implementation.",
-            "status": "pending",
+            "details": "Use file globs and text search to locate relevant code: search for keywords like Invoice, Receipt, Cashbook, Accounting, Payment, Controller, Service, Repository, DbContext, DTO. Note tech stack (likely .NET), DI and routing setup, persistence (e.g., EF Core), validation, and response shapes to inform implementation.\n<info added on 2025-11-27T20:23:42.324Z>\nFindings and alignment:\n- Entities and enums: src/Domain/Entities/Sales/SalesDocument.cs and src/Domain/Enums/SalesDocumentType.cs (Invoice, Receipt, CreditNote) already model invoices/receipts. Sales endpoints live in src/Web/Endpoints/Sales.cs and payments in src/Web/Endpoints/Payments.cs.\n- Invoice lifecycle: CreateInvoiceCommand (src/Application/Sales/Commands/CreateInvoice/CreateInvoiceCommand.cs) delegates to CreateSalesDocumentCommand (src/Application/Sales/Commands/CreateSalesDocument/CreateSalesDocumentCommand.cs). Listing via GetInvoicesQuery returns InvoiceDto (src/Application/Sales/Queries/GetInvoices/GetInvoicesQuery.cs).\n- Cashbook: CashbookEntry has Payment linkage and source fields (src/Domain/Entities/Accounting/CashbookEntry.cs: PaymentId, SourceType, SourceId). Commands exist to record entries (RecordCashIn in src/Application/Accounting/Commands/RecordCashIn/RecordCashInCommand.cs).\n- Payments: RecordPaymentCommand creates Payment and emits PaymentReceivedEvent (src/Application/Payments/Commands/RecordPayment/RecordPaymentCommand.cs), but no handler links this to cashbook entries. UpdateInvoiceStatusCommand only toggles IsPaid/PaidDate (src/Application/Sales/Commands/UpdateInvoiceStatus/UpdateInvoiceStatusCommand.cs) and does not touch accounting.\n\nGaps to address:\n- No invoice “pay” endpoint; no orchestration that records cashbook entries when marking an invoice as paid; no event handler wiring PaymentReceivedEvent -> CashbookEntry.\n\nImplementation notes (proposed, consistent with existing patterns/MediatR + EF Core):\n- Add PayInvoiceCommand in src/Application/Sales/Commands/PayInvoice/ with inputs: InvoiceId, Amount, AccountId, PaymentType, TransactionRef?, Notes?. Handler flow:\n  - Load invoice SalesDocument (type Invoice) including Sale; validate not paid and Amount > 0; compute outstanding = TotalAmount - sum(existing payments) [MVP: require Amount == TotalAmount].\n  - Create Payment via ISender.Send(new RecordPaymentCommand { ShopId = sale.ShopId, SaleId = sale.Id, Amount, PaymentType, TransactionRef, Notes }).\n  - Create cashbook entry via ISender.Send(new RecordCashInCommand { AccountId, Amount, EntryDate = DateTimeOffset.UtcNow, Reference = invoice.DocumentNumber, Notes, SourceType = \\\"Sale\\\", SourceId = sale.Id, PaymentId = paymentId }).\n  - Update invoice.IsPaid = true and invoice.PaidDate = now if fully paid; save via IApplicationDbContext.\n  - If no receipt exists, generate one via CreateSalesDocumentCommand with DocumentType = Receipt (idempotent).\n  - Return { invoiceId, paymentId, cashbookEntryId, receiptId? }.\n- Expose endpoint in src/Web/Endpoints/Sales.cs: group.MapPost(\\\"invoices/{id}/pay\\\", PayInvoice). Action should validate route id vs body.InvoiceId, then sender.Send(command with { InvoiceId = id }).\n- Do not use UpdateInvoiceStatusCommand to mark paid; either deprecate “paid” status path or have it call PayInvoiceCommand internally to ensure accounting consistency.\n- Optional: add PaymentReceivedEvent handler in src/Application/Payments/EventHandlers/ to create RecordCashIn automatically when Payment.SourceType == \\\"Sale\\\"; ensure it sets SourceId and PaymentId on CashbookEntry. This supports both direct invoice pay and external payment flows.\n- No new FK needed between SalesDocument and CashbookEntry; rely on CashbookEntry.SourceType/SourceId and PaymentId for traceability per current model.\n- Validation: enforce account belongs to current business (RecordCashIn already checks via IBusinessContext); ensure shop/business consistency between Sale.ShopId and account’s BusinessId.\n</info added on 2025-11-27T20:23:42.324Z>",
+            "status": "done",
             "testStrategy": null,
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T20:24:01.211Z"
           },
           {
             "id": 2,
@@ -1248,10 +1265,11 @@
             "dependencies": [
               1
             ],
-            "details": "Read representative controllers for routing and response patterns; inspect DbContext and entity mappings; check mapping/validation libraries (e.g., AutoMapper/FluentValidation); confirm timestamp/ID conventions and how cashbook linkages are modeled so invoices/receipts integrate cleanly.",
-            "status": "pending",
+            "details": "Read representative controllers for routing and response patterns; inspect DbContext and entity mappings; check mapping/validation libraries (e.g., AutoMapper/FluentValidation); confirm timestamp/ID conventions and how cashbook linkages are modeled so invoices/receipts integrate cleanly.\n<info added on 2025-11-27T20:25:21.216Z>\nFindings: UpdateInvoiceStatusCommand currently toggles IsPaid/PaidDate only; no creation of Payment or CashbookEntry. SalesDocument exposes TotalAmount, IsPaid, PaidDate; no explicit OutstandingAmount. Sale has CustomerId, ShopId, Subtotal, TaxAmount, Total. Payment links to SaleId. CashbookEntry supports SourceType/SourceId and PaymentId.\n\nDecision/plan for MVP:\n- Add PayInvoiceCommand (in same namespace/folder as UpdateInvoiceStatusCommand) to orchestrate full-payment flow: load SalesDocument by id; ensure IsPaid == false; amount = SalesDocument.TotalAmount; require payment method and target cash/bank account.\n- Within a single DbContext transaction:\n  1) Create Payment { SaleId = SalesDocument.Id (or linked Sale.Id), Amount = TotalAmount, Method, Reference } and save.\n  2) Create CashbookEntry { AccountId, Amount = TotalAmount, Direction = In, SourceType = \"SalesDocument\" (or \"Invoice\" per enum/string used), SourceId = SalesDocument.Id, PaymentId = payment.Id } and save.\n  3) Update SalesDocument: IsPaid = true, PaidDate = UtcNow.\n- Concurrency: re-check IsPaid just before commit; use existing RowVersion/ETag if present.\n- Validation: reject requests where provided amount is present and not equal to TotalAmount (MVP is full payment only); ensure account exists and is active; ensure payment method is supported.\n- API: POST /api/invoices/{id}/pay accepts { paymentMethodId, accountId, reference } (server calculates amount). Return updated SalesDocument plus PaymentId and CashbookEntry id.\n- Idempotency: if a Payment already exists for the SalesDocument and IsPaid == true, return 409 or 200 with existing Payment details per current controller conventions.\n- Outstanding balance: do not add OutstandingAmount column now; derive later from SUM(Payments) vs TotalAmount when partials are introduced. If we later add OutstandingAmount to SalesDocument, backfill as TotalAmount - SUM(Payments).\n- Mapping/validation: use existing AutoMapper/FluentValidation patterns if present for request -> command and command validator.\n- Tests: integration test that PayInvoiceCommand creates exactly one Payment and one CashbookEntry, marks SalesDocument as paid, and links CashbookEntry.PaymentId. Verify Cashbook account balance increases by TotalAmount and duplicate payment is prevented.\n</info added on 2025-11-27T20:25:21.216Z>",
+            "status": "done",
             "testStrategy": null,
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T20:25:47.960Z"
           },
           {
             "id": 3,
@@ -1260,10 +1278,11 @@
             "dependencies": [
               2
             ],
-            "details": "Specify structures: Invoice {Id/Number, CustomerId, Lines[], Subtotal, Vat (15%), Total, Balance, Status, CreatedAt}; InvoiceLine {Description/ProductId, Qty, UnitPrice, VatRate}; Receipt/Payment {Id, InvoiceId?, Amount, Method, Reference, PostedAt}. Define CreateInvoice and PayInvoice payloads/responses, status states (draft/issued/partial/paid), and number generation strategy.",
-            "status": "pending",
+            "details": "Specify structures: Invoice {Id/Number, CustomerId, Lines[], Subtotal, Vat (15%), Total, Balance, Status, CreatedAt}; InvoiceLine {Description/ProductId, Qty, UnitPrice, VatRate}; Receipt/Payment {Id, InvoiceId?, Amount, Method, Reference, PostedAt}. Define CreateInvoice and PayInvoice payloads/responses, status states (draft/issued/partial/paid), and number generation strategy.\n<info added on 2025-11-27T20:29:41.329Z>\nDesign PayInvoiceCommand in src/Application/Sales/Commands/PayInvoice/PayInvoiceCommand.cs to orchestrate invoice payment using existing patterns:\n- Request: { InvoiceId, AccountId, Amount, PaymentType (Toss.Domain.Enums.PaymentType), TransactionRef?, Notes? } -> returns { invoiceId, paymentId, cashbookEntryId, isPaid, totalPaid, balance }.\n- Validation (use IApplicationDbContext + IBusinessContext):\n  - Require business context; load SalesDocument by Id with DocumentType=Invoice including Sale and its Shop (src/Domain/Entities/Sales/SalesDocument.cs:11,13,21). Verify Shop.BusinessId equals CurrentBusinessId.\n  - Throw NotFoundException if invoice missing; ValidationException if Amount <= 0 or invoice.IsPaid; ValidationException if Account inactive or not in business (query Accounts with BusinessId; see src/Domain/Entities/Accounting/Account.cs:24,45).\n- Payment and cashbook orchestration (via ISender to reuse commands):\n  - Create Payment using RecordPaymentCommand (src/Application/Payments/Commands/RecordPayment/RecordPaymentCommand.cs:8) with { ShopId = invoice.ShopId!, SaleId = invoice.SaleId, Amount, PaymentType, TransactionRef, Notes } -> paymentId.\n  - Create Cashbook entry using RecordCashInCommand (src/Application/Accounting/Commands/RecordCashIn/RecordCashInCommand.cs:10) with { AccountId, Amount, EntryDate = UtcNow, Reference = TransactionRef ?? invoice.DocumentNumber, Notes, SourceType = \"SalesDocument\", SourceId = InvoiceId, PaymentId = paymentId } -> cashbookEntryId.\n- Update SalesDocument payment state atomically within the handler:\n  - Compute totalPaid = sum of completed Payments for the SaleId (Status=Completed) + Amount (src/Domain/Entities/Payments/Payment.cs:11,21); balance = invoice.TotalAmount - totalPaid.\n  - If totalPaid >= invoice.TotalAmount, set invoice.IsPaid = true and invoice.PaidDate = UtcNow; else leave IsPaid=false.\n  - SaveChanges once after updating invoice to persist status change.\n- Idempotency/duplicate guard:\n  - If a completed Payment exists for the same SaleId with the same TransactionRef and Amount, short-circuit and return existing state; otherwise proceed.\n- Endpoint alignment:\n  - Map POST /api/sales/invoices/{id}/pay in src/Web/Endpoints/Sales.cs to send PayInvoiceCommand with InvoiceId = route id and body fields for AccountId, Amount, PaymentType, TransactionRef, Notes.\n- Notes:\n  - Ensure Account ownership and active checks mirror RecordCashInCommand handler (src/Application/Accounting/Commands/RecordCashIn/RecordCashInCommand.cs:47-60).\n  - Set CashbookEntry.Type implicitly to Sale (RecordCashInCommand defaults Type=CashbookEntryType.Sale at line 68).\n  - Prefer SourceType \"SalesDocument\" consistently for downstream reporting joins.\n</info added on 2025-11-27T20:29:41.329Z>",
+            "status": "done",
             "testStrategy": null,
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T20:30:03.916Z"
           },
           {
             "id": 4,
@@ -1272,10 +1291,11 @@
             "dependencies": [
               3
             ],
-            "details": "Follow DI, validation, and transaction patterns; compute totals and VAT at 15%; support cash/card/EFT/on account; validate amounts and prevent overpayment; transition invoice status appropriately; persist via ORM; return JSON including invoiceNo, totals, and remaining balance; ensure cashbook entries reflect payment method and link back to invoice/receipt.",
-            "status": "pending",
+            "details": "Follow DI, validation, and transaction patterns; compute totals and VAT at 15%; support cash/card/EFT/on account; validate amounts and prevent overpayment; transition invoice status appropriately; persist via ORM; return JSON including invoiceNo, totals, and remaining balance; ensure cashbook entries reflect payment method and link back to invoice/receipt.\n<info added on 2025-11-27T20:31:53.613Z>\nImplemented PayInvoiceCommand to orchestrate RecordPaymentCommand and RecordCashInCommand with SourceType=SalesDocument, and exposed POST /api/sales/invoices/{id}/pay in the sales invoices controller. The handler validates amount ≤ outstanding, supports cash/card/eft/onAccount, executes within the existing transaction pattern, updates invoice status (Pending→PartiallyPaid→Paid), persists payment, and creates a cash-in entry linked via SourceId=invoice.Id with narrative “Invoice {invoiceNo}”. Response returns invoiceNo, totals, amountPaid, remainingBalance, status, and paymentId/cashbookEntryId. Align the create-invoice route to the same prefix (/api/sales/invoices). Touchpoints: Application/Accounting/Invoices/Commands/PayInvoiceCommand.cs, Application/Accounting/Payments/Commands/RecordPaymentCommand.cs, Application/Accounting/Cashbook/Commands/RecordCashInCommand.cs, and Controllers/Sales/InvoicesController.cs (POST /api/sales/invoices/{id}/pay).\n</info added on 2025-11-27T20:31:53.613Z>",
+            "status": "done",
             "testStrategy": "Integration tests: create invoice with multiple lines and verify subtotal, VAT 15%, total; perform partial and full payments across methods; assert updated balances, status transitions, receipt records, and corresponding cashbook entries; verify errors on overpayment.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T20:32:14.279Z"
           },
           {
             "id": 5,
@@ -1284,12 +1304,14 @@
             "dependencies": [
               4
             ],
-            "details": "Implement GET /api/invoices/{id} and GET /api/invoices/{id}/receipts returning DTOs; update Swagger/README with example requests/responses; introduce a PDF generation stub in a service that currently returns JSON or a placeholder but keeps a clear seam for later implementation.",
-            "status": "pending",
+            "details": "Implement GET /api/invoices/{id} and GET /api/invoices/{id}/receipts returning DTOs; update Swagger/README with example requests/responses; introduce a PDF generation stub in a service that currently returns JSON or a placeholder but keeps a clear seam for later implementation.\n<info added on 2025-11-27T20:35:47.337Z>\nRead endpoints confirmed and documented per existing patterns:\n- GET /api/sales/invoices mapped in src/Web/Endpoints/Sales.cs -> GetInvoices uses MediatR with src/Application/Sales/Queries/GetInvoices/GetInvoicesQuery.cs returning PaginatedList<InvoiceDto> with filters (shopId, status, customerId, fromDate, toDate, pageNumber, pageSize).\n- GET /api/sales/documents mapped in src/Web/Endpoints/Sales.cs -> GetSalesDocuments uses src/Application/Sales/Queries/GetSalesDocuments/GetSalesDocumentsQuery.cs returning PaginatedList<SalesDocumentDto> with type filter for invoices/receipts.\n\nAdded PDF generation seam:\n- Introduced src/Application/Sales/Queries/GenerateInvoicePdf/GenerateInvoicePdfQuery.cs returning InvoicePdfResult with IsPdfGenerated=false and a placeholder Message; enforces business scoping via IBusinessContext and validates invoice existence.\n- Exposed GET /api/sales/invoices/{id}/pdf in src/Web/Endpoints/Sales.cs (GetInvoicePdf) which dispatches GenerateInvoicePdfQuery via ISender.\n\nMVP guidance and next steps:\n- For MVP, clients should use the JSON from GetInvoices or GetSalesDocuments for display/printing; examples added to Swagger for /api/sales/invoices?shopId=...&pageNumber=...&pageSize=... and /api/sales/documents?shopId=...&type=Invoice.\n- Future implementation will integrate a PDF library (QuestPDF or iTextSharp) to render invoice details, line items, and VAT breakdown, then store and return a PdfUrl from GenerateInvoicePdfQuery.\n</info added on 2025-11-27T20:35:47.337Z>",
+            "status": "done",
             "testStrategy": "Integration tests to fetch invoice and receipt details and validate response shapes and linkages; optionally snapshot example responses for contract stability.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T20:36:07.817Z"
           }
-        ]
+        ],
+        "updatedAt": "2025-11-27T20:36:07.817Z"
       },
       {
         "id": "13",
@@ -1382,17 +1404,18 @@
           "4",
           "11"
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
             "title": "Define procurement domain models and EF mappings (Supplier, PR, PO, GRN, SupplierInvoice)",
             "description": "Introduce core procurement entities with relationships, value objects, and initial EF Core configurations.",
             "dependencies": [],
-            "details": "Add entities: Supplier, PurchaseRequest (+lines), PurchaseOrder (+lines), GoodsReceipt (+lines), SupplierInvoice (+lines). Include relationships to Item and StockLocation where applicable. Configure EF Core entities with keys, required fields, indexes (e.g., Supplier unique code), and status enums. Extend DbContext and add migrations. Include base auditing fields and soft-delete if used elsewhere. Prepare InventoryTransaction type Purchase for later use.",
-            "status": "pending",
+            "details": "Add entities: Supplier, PurchaseRequest (+lines), PurchaseOrder (+lines), GoodsReceipt (+lines), SupplierInvoice (+lines). Include relationships to Item and StockLocation where applicable. Configure EF Core entities with keys, required fields, indexes (e.g., Supplier unique code), and status enums. Extend DbContext and add migrations. Include base auditing fields and soft-delete if used elsewhere. Prepare InventoryTransaction type Purchase for later use.\n<info added on 2025-11-27T20:38:56.982Z>\nAlign with existing types: treat Supplier as existing Vendor; use PurchaseReceipt as GoodsReceipt and PurchaseDocument with VendorInvoice type for supplier invoices. Do not introduce new Supplier/GRN/Invoice entities.\n\nAdd missing PurchaseRequest aggregate:\n- Header: Id, Number, ShopId, VendorId, RequestedByUserId, RequiredByDate, Notes, Status (Draft, Submitted, Approved, ConvertedToPO, Cancelled), optional PurchaseOrderId when converted, auditing and soft-delete if used.\n- Lines: Id, PurchaseRequestId, ItemId, UomId (if used), QuantityRequested (decimal > 0), Remarks, auditing/soft-delete.\n- Scoping: persist BusinessId on PR via Shop.BusinessId if IBusinessScopedEntity is the pattern; otherwise enforce scoping via Shop join consistently with PurchaseOrder.\n\nEF Core configuration:\n- DbSet<PurchaseRequest>, DbSet<PurchaseRequestLine>; configure relations: PR has many Lines; Lines required Item; PR optional PurchaseOrder.\n- Indexes: PR (BusinessId), (VendorId), (ShopId), unique (BusinessId, Number). Lines index (PurchaseRequestId), (ItemId).\n- Enums stored as int; required fields validated; include base audit fields; apply HasQueryFilter for BusinessId consistent with PurchaseOrder/Vendor patterns.\n- Migration to create PR tables and indexes.\n\nAPI endpoints and validation:\n- Supplier creation uses existing Vendor model: enforce unique Code per BusinessId; validate required fields; return Vendor.\n- POST /api/procurement/purchase-requests: payload includes ShopId, VendorId, RequiredByDate, Notes, Lines[{ItemId, QuantityRequested, Remarks}]. Validate:\n  - Current BusinessContext present.\n  - Vendor.BusinessId == current Business.\n  - Shop.BusinessId == current Business.\n  - All ItemIds belong to current Business.\n  - Quantities > 0; no duplicate Item lines unless business rule allows.\n  - If PurchaseOrder already linked, reject creation (idempotency safeguards).\n- Return PR with generated Number and Lines; Number should be unique per Business (use existing numbering strategy if present).\n\nBusiness scoping check:\n- Verify whether PurchaseOrder implements IBusinessScopedEntity; if yes, implement PR the same way. If not, enforce scoping via Shop.BusinessId join and replicate HasQueryFilter/guards used by PurchaseOrder.\n- Ensure PR→PO conversion keeps ShopId and VendorId consistent and within the same Business; prevent cross-business linking.\n\nFollow existing controller routing conventions used for PurchaseOrder/Vendor; reuse common request/response DTO patterns and validation pipeline already present. Add integration tests for PR creation success/failure (cross-business Vendor/Shop, invalid Item, non-positive quantity) and uniqueness of (BusinessId, Number).\n</info added on 2025-11-27T20:38:56.982Z>",
+            "status": "done",
             "testStrategy": "Unit tests for entity invariants and EF model building; run migration add/diff to verify schema.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T20:39:17.844Z"
           },
           {
             "id": 2,
@@ -1401,10 +1424,11 @@
             "dependencies": [
               1
             ],
-            "details": "Add controllers/handlers: POST /api/procurement/suppliers and POST /api/procurement/pr. Define DTOs and validation (e.g., supplier code/name required, PR lines require ItemId, quantity > 0). Map DTOs to entities using existing mapper pattern. Return created IDs and summaries. Enforce tenant/business scoping and authorization consistent with existing controllers.",
-            "status": "pending",
+            "details": "Add controllers/handlers: POST /api/procurement/suppliers and POST /api/procurement/pr. Define DTOs and validation (e.g., supplier code/name required, PR lines require ItemId, quantity > 0). Map DTOs to entities using existing mapper pattern. Return created IDs and summaries. Enforce tenant/business scoping and authorization consistent with existing controllers.\n<info added on 2025-11-27T20:51:06.951Z>\nPurchase Request creation is implemented end-to-end: entities PurchaseRequest and PurchaseRequestLine with EF Core configuration and BusinessId query filters, command/query handlers CreatePurchaseRequestCommand, GetPurchaseRequestsQuery, and GetPurchaseRequestByIdQuery wired to endpoints in Buying.cs (POST /api/procurement/pr, GET /api/procurement/pr, GET /api/procurement/pr/{id}). PR numbers generate as PR-{year}-{counter:D4}. Validation enforces business/shop/vendor/product ownership and positive line quantities. Responses return created Id and a summary. Ready to add EF migration for these models and configurations. Supplier creation endpoint remains pending.\n</info added on 2025-11-27T20:51:06.951Z>",
+            "status": "done",
             "testStrategy": "Integration tests: create supplier and PR, validate persisted entities and input validation errors.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T20:51:29.663Z"
           },
           {
             "id": 3,
@@ -1414,10 +1438,11 @@
               1,
               2
             ],
-            "details": "Add service method to approve PR: validates supplier presence, item availability, and business rules; generates PO number; creates PurchaseOrder with lines from PR; updates PR status (Approved/Converted). Expose endpoint: POST /api/procurement/po (from PR id). Ensure idempotency on repeated approvals (no duplicate POs) using a token or PR status check. Persist audit entries and timestamps.",
-            "status": "pending",
+            "details": "Add service method to approve PR: validates supplier presence, item availability, and business rules; generates PO number; creates PurchaseOrder with lines from PR; updates PR status (Approved/Converted). Expose endpoint: POST /api/procurement/po (from PR id). Ensure idempotency on repeated approvals (no duplicate POs) using a token or PR status check. Persist audit entries and timestamps.\n<info added on 2025-11-27T20:55:41.937Z>\nImplemented ConvertPurchaseRequestToPOCommand with full validation: verifies eligible PR status (auto-approves Submitted), ensures supplier/items, generates PO number via numbering service, creates PurchaseOrder and lines from PR, computes totals (subtotal, tax, shipping), updates PR to ConvertedToPO and sets PurchaseOrderId. Added idempotency by short-circuiting when PR already converted. Exposed POST /api/buying/purchase-requests/{id}/convert-to-po in the PurchaseRequests controller. Line pricing uses product CostPrice, falling back to BasePrice when missing. Persisted audit trail and timestamps on conversion. Note: this replaces the previously planned POST /api/procurement/po route—update docs to reference the new path. Ready for testing.\n</info added on 2025-11-27T20:55:41.937Z>",
+            "status": "done",
             "testStrategy": "Integration tests: create PR then approve to PO; verify PO created once, PR status updated, numbering format correct.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T20:56:04.129Z"
           },
           {
             "id": 4,
@@ -1427,10 +1452,11 @@
               1,
               3
             ],
-            "details": "Add endpoint POST /api/procurement/grn to receive items against a PO (full/partial). Create GoodsReceipt and lines; for each line, create InventoryTransaction of type Purchase. Implement WeightedAverageCostService: newAvg = (prevQty*prevCost + recvQty*recvCost) / (prevQty+recvQty). Use decimal math, handle zero-qty edge cases, and row-version concurrency. Enforce idempotency via a receiptKey or GRN number to prevent duplicate postings. Update PO receipt status and remaining quantities.",
-            "status": "pending",
+            "details": "Add endpoint POST /api/procurement/grn to receive items against a PO (full/partial). Create GoodsReceipt and lines; for each line, create InventoryTransaction of type Purchase. Implement WeightedAverageCostService: newAvg = (prevQty*prevCost + recvQty*recvCost) / (prevQty+recvQty). Use decimal math, handle zero-qty edge cases, and row-version concurrency. Enforce idempotency via a receiptKey or GRN number to prevent duplicate postings. Update PO receipt status and remaining quantities.\n<info added on 2025-11-27T21:00:33.224Z>\n- Implemented PurchaseReceipt (GRN) aggregate and lines with numbering scheme GRN-{yyyy}-{counter:D4}; persisted via AppDbContext and configured in Infrastructure/EntityTypeConfigurations. Counter stored in a Series/Settings table and incremented within the same transaction as receipt creation.\n- Enhanced Application/Procurement/Commands/ReceiveGoods/ReceiveGoodsCommand.cs and ReceiveGoodsCommandHandler.cs to create PurchaseReceipt and PurchaseReceiptLine records, then create StockMovement entries (MovementType.Purchase) per line with PurchaseReceiptId linkage. If StockMovement already exists in Domain/Inventory/StockMovement.cs, reuse it; otherwise add the FK to PurchaseReceipt.\n- WeightedAverageCostService (Domain/Inventory/WeightedAverageCostService.cs) calculates newAvg = (prevQty*prevCost + recvQty*recvCost) / (prevQty + recvQty) using decimal math; guards prevQty + recvQty == 0 to keep prior average; updates Product/Item cost atomically with stock increment.\n- Updated PurchaseOrderLine.QuantityReceived and derived PO status: set to PartiallyReceived when any line received but some remaining; set to Received when all lines fully received. Status transition handled in the same SaveChanges() unit to avoid race conditions.\n- Idempotency supports multiple receipts for partial deliveries by allowing distinct receipts for the same PO. Optional receiptKey de-duplicates exact replays: if the same receiptKey is posted for the same PO, return the existing PurchaseReceipt instead of creating a duplicate; different receiptKeys create additional receipts up to remaining quantities.\n- Added quality check fields on receipt lines: QualityStatus (e.g., Pending/Accepted/Rejected), AcceptedQty, RejectedQty, QCNotes, Inspector, InspectedAt, BatchNo, ExpiryDate. Only AcceptedQty contributes to on-hand stock; if RejectedQty > 0 and quarantine/location feature exists, emit a MovementType.Rejected to a quarantine location; otherwise store values without affecting on-hand.\n- API contract for POST /api/procurement/grn accepts: { poId, receiptKey?, lines: [{ poLineId, qty, unitCost, batchNo?, expiryDate?, qc: { status, acceptedQty, rejectedQty, notes? } }] }. Responds with { receiptId, receiptNo, poId, status, lines: [...], totals }.\n- Concurrency: all updates (PurchaseReceipt, StockMovements, Product cost/qty, PO lines, number series) execute in a single transaction; handle DbUpdateConcurrencyException by reloading row versions and retrying once.\n- Files to touch: Domain/Procurement/PurchaseReceipt.cs, Domain/Procurement/PurchaseReceiptLine.cs, Domain/Inventory/StockMovement.cs, Domain/Inventory/WeightedAverageCostService.cs, Infrastructure/Persistence/AppDbContext.cs, Infrastructure/EntityTypeConfigurations/*, Application/Procurement/Commands/ReceiveGoods/*.cs, Web/Controllers/ProcurementController.cs (or GrnController.cs).\n</info added on 2025-11-27T21:00:33.224Z>",
+            "status": "done",
             "testStrategy": "Integration tests: PO -> GRN flow updates on-hand quantities and weighted average cost; idempotent re-post returns no double increment.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-27T21:00:54.026Z"
           },
           {
             "id": 5,
@@ -1445,7 +1471,8 @@
             "testStrategy": "End-to-end test: PR→PO→GRN→SupplierInvoice; verify AP ledger/creditors report includes invoice, balances correct, and cross-links resolve.",
             "parentId": "undefined"
           }
-        ]
+        ],
+        "updatedAt": "2025-11-27T21:00:54.026Z"
       },
       {
         "id": "15",
@@ -2099,9 +2126,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-27T10:53:32.103Z",
+      "lastModified": "2025-11-27T21:00:54.035Z",
       "taskCount": 35,
-      "completedCount": 6,
+      "completedCount": 10,
       "tags": [
         "master"
       ]
