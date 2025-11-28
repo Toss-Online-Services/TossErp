@@ -1,5 +1,6 @@
 using Toss.Application.Inventory.Commands.AdjustStock;
 using Toss.Application.Inventory.Commands.CreateProduct;
+using Toss.Application.Inventory.Commands.TransferStock;
 using Toss.Application.Inventory.Commands.UpdateProduct;
 using Toss.Application.Inventory.Commands.DeleteProduct;
 using Toss.Application.Inventory.Queries.GetCategories;
@@ -10,6 +11,7 @@ using Toss.Application.Inventory.Queries.GetProductBySku;
 using Toss.Application.Inventory.Queries.GetProducts;
 using Toss.Application.Inventory.Queries.GetStockLevels;
 using Toss.Application.Inventory.Queries.GetStockMovementHistory;
+using Toss.Application.Inventory.Queries.GetStockOnHand;
 using Toss.Application.Inventory.Queries.SearchProducts;
 using Toss.Application.Inventory.Queries.GetLowStockItems;
 using Toss.Domain.Constants;
@@ -32,7 +34,9 @@ public class Inventory : EndpointGroupBase
         group.MapGet("stock-levels", GetStockLevels);
         group.MapGet("low-stock-alerts", GetLowStockAlerts);
         group.MapPost("stock/adjust", AdjustStock);
+        group.MapPost("stock/transfer", TransferStock);
         group.MapGet("stock/movements", GetStockMovementHistory);
+        group.MapGet("stock/soh", GetStockOnHand);
         group.MapPost("products/search", SearchProducts);
         group.MapGet("low-stock-items", GetLowStockItems);
     }
@@ -138,6 +142,18 @@ public class Inventory : EndpointGroupBase
     public async Task<IResult> GetStockMovementHistory(
         ISender sender,
         [AsParameters] GetStockMovementHistoryQuery query)
+    {
+        var result = await sender.Send(query);
+        return Results.Ok(result);
+    }
+
+    public async Task<IResult> TransferStock(ISender sender, TransferStockCommand command)
+    {
+        var id = await sender.Send(command);
+        return Results.Ok(new { id });
+    }
+
+    public async Task<IResult> GetStockOnHand(ISender sender, [AsParameters] GetStockOnHandQuery query)
     {
         var result = await sender.Send(query);
         return Results.Ok(result);
