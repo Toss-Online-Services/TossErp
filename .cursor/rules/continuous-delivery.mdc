@@ -1,0 +1,20 @@
+---
+description: Always finish every Task Master task and record any new work as Task Master tasks
+globs: **
+alwaysApply: true
+---
+
+- **Never stop before every Task Master task and subtask is implemented, tested, and marked done**
+  - Work the queue surfaced by `task-master list/next` until no pending items remain
+  - After finishing a task (code + tests), immediately run `task-master set-status` to mark it `done`
+  - Use existing policies from [dev_workflow.mdc](mdc:.cursor/rules/taskmaster/dev_workflow.mdc) and [beast-mode.mdc](mdc:.cursor/rules/beast-mode.mdc) to stay in the loop
+
+- **Log all improvements or discoveries as new tasks before implementing them**
+  - If work is outside the current plan, run `task-master add-task` (or add-subtask) with clear descriptions/dependencies
+  - Keep complexity low by expanding tasks/subtasks with `task-master expand` when they grow
+  - No code changes without a corresponding Task Master task/subtask in progress
+
+- **Carry this loop to project completion**
+  - Continue iterating (plan → implement → test → mark done) until the product works end-to-end (backend + frontend) with tests passing
+  - If additional gaps are found during testing/review, add tasks and repeat the cycle until resolved
+  - Do not pause or return control early; always move to the next task via `task-master next` after finishing the current one
