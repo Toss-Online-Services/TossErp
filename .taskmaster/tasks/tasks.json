@@ -1731,7 +1731,7 @@
           "17",
           "14"
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -1766,10 +1766,10 @@
               2
             ],
             "details": "Define ProductionOrder {ProductId, PlannedQty, Status, Consumed[], Produced[], Timestamps}. Add enum for ProductionOrderStatus (Planned, InProgress, Completed, Cancelled) consistent with repo style. Implement IManufacturingCostingService to compute planned cost from BOM using current item costs (e.g., weighted average) plus configurable overhead. Wire EF mappings, DbSet, DTOs, and DI registrations to match patterns.",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": "Unit tests: costing roll‑up uses BOM quantities and current costs; overhead application verified; status transitions enforce valid flows.",
             "parentId": "undefined",
-            "updatedAt": "2025-11-28T15:49:36.990Z"
+            "updatedAt": "2025-11-28T15:54:47.701Z"
           },
           {
             "id": 4,
@@ -1780,9 +1780,10 @@
               3
             ],
             "details": "Add controllers/handlers for BOM CRUD and ProductionOrder creation. Implement complete action to: validate BOM presence, compute actuals, create InventoryTransactions (Consume for raw components, Produce for finished item), update finished goods quantity/cost, and persist as an atomic transaction. Follow existing validation, auth, and error handling conventions.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests: create BOM, create order, complete order; assert raw stock decremented, finished stock incremented, and finished cost updated. Verify route shapes and response contracts.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-28T16:07:05.091Z"
           },
           {
             "id": 5,
@@ -1793,12 +1794,13 @@
               4
             ],
             "details": "Before completion, check component availability (or config allowing negatives). Ensure idempotent completion by tracking CompletedAt/Status and rejecting repeats. Validate UoM consistency, positive quantities, and non‑empty component lists. Ensure all inventory updates occur within a unit‑of‑work/transaction using existing infrastructure. Return precise error codes/messages aligned with project standards.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests: attempt completion with insufficient stock (expect failure), repeat completion (no duplicate transactions), mixed error case rolls back all changes; confirm consistent error responses.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-28T16:08:38.266Z"
           }
         ],
-        "updatedAt": "2025-11-28T15:49:36.990Z"
+        "updatedAt": "2025-11-28T16:08:38.266Z"
       },
       {
         "id": "19",
@@ -2145,9 +2147,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-28T15:49:36.995Z",
+      "lastModified": "2025-11-28T16:08:38.274Z",
       "taskCount": 35,
-      "completedCount": 15,
+      "completedCount": 16,
       "tags": [
         "master"
       ]
