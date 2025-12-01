@@ -27,6 +27,7 @@ using Toss.Domain.Entities.Notifications;
 using Toss.Domain.Entities.Assets;
 using Toss.Domain.Entities.Quality;
 using Toss.Domain.Entities.HR;
+using Toss.Domain.Entities.Support;
 using Toss.Infrastructure.Identity;
 using Toss.Domain.Entities.Businesses;
 using BusinessSettings = Toss.Domain.Entities.Businesses.BusinessSettings;
@@ -483,6 +484,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// </summary>
     public DbSet<PayrollRun> PayrollRuns => Set<PayrollRun>();
 
+    // Support entities
+    /// <summary>
+    /// Support tickets.
+    /// </summary>
+    public DbSet<Ticket> Tickets => Set<Ticket>();
+    
+    /// <summary>
+    /// Notes on support tickets.
+    /// </summary>
+    public DbSet<TicketNote> TicketNotes => Set<TicketNote>();
+
     // Catalog entities
     /// <summary>
     /// Product attributes for configurable products (size, color, etc.).
@@ -780,5 +792,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<PayrollRun>()
             .HasQueryFilter(run => !_businessContext.HasBusiness || run.BusinessId == _businessContext.CurrentBusinessId);
+
+        // Support entities
+        builder.Entity<Ticket>()
+            .HasQueryFilter(ticket => !_businessContext.HasBusiness || ticket.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<TicketNote>()
+            .HasQueryFilter(note => !_businessContext.HasBusiness || note.BusinessId == _businessContext.CurrentBusinessId);
     }
 }

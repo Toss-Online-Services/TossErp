@@ -25,6 +25,7 @@ using Toss.Domain.Entities.Businesses;
 using Toss.Domain.Entities.Assets;
 using Toss.Domain.Entities.Quality;
 using Toss.Domain.Entities.HR;
+using Toss.Domain.Entities.Support;
 
 namespace Toss.Application.Common.Interfaces;
 
@@ -187,6 +188,10 @@ public interface IApplicationDbContext
     DbSet<Employee> Employees { get; }
     DbSet<Attendance> Attendances { get; }
     DbSet<PayrollRun> PayrollRuns { get; }
+
+    // Support entities
+    DbSet<Ticket> Tickets { get; }
+    DbSet<TicketNote> TicketNotes { get; }
 
     // Onboarding entities
     DbSet<OnboardingStatus> OnboardingStatuses { get; }

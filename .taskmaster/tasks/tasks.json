@@ -2045,8 +2045,71 @@
           "7",
           "10"
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scan repository to identify conventions for modules, entities, controllers, and services",
+            "description": "Analyze existing modules to mirror patterns for the Support tickets feature.",
+            "dependencies": [],
+            "details": "Use glob to list project files and grep to inspect modules like Quality, Projects, and Manufacturing. Identify naming conventions, folder structure (e.g., Domain/Entities, Infrastructure/Data, Application/Services, API/Controllers), base entity inheritance (audit/soft-delete), DTO/mapping strategy, validation, authorization filters, and status workflow patterns.",
+            "status": "done",
+            "testStrategy": "Capture findings in a short doc to guide subsequent subtasks.",
+            "updatedAt": "2025-12-01T13:44:38.479Z",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Add Ticket and TicketNote entities, enums, EF configuration, and DbContext integration",
+            "description": "Create domain models and integrate them with the ORM and database.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement Ticket {Id, Type, Status, LinkedType, LinkedId, Title, Description, CreatedAt, CreatedById, ClosedAt?} and TicketNote {Id, TicketId, Note, CreatedAt, CreatedById}. Add enums TicketType, TicketStatus, LinkedType (or reuse existing linking abstraction). Add EF configurations (keys, relationships, indexes), update DbContext with DbSet<Ticket> and DbSet<TicketNote>, and create an initial migration following existing migration patterns.",
+            "status": "in-progress",
+            "testStrategy": "Unit tests for entity defaults/constraints and verifying EF model builds; run migration to ensure schema generation.",
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T13:44:39.560Z"
+          },
+          {
+            "id": 3,
+            "title": "Implement application service with CRUD, add-note, and status transition rules",
+            "description": "Create service/repository layer enforcing business rules and permissions.",
+            "dependencies": [
+              2
+            ],
+            "details": "Add ITicketService and TicketService methods: CreateAsync, GetByIdAsync, QueryAsync (filters by status/type/linked), UpdateAsync (limited fields), AddNoteAsync, ChangeStatusAsync. Enforce allowed transitions (e.g., New→Open→InProgress→Resolved→Closed; prevent invalid/duplicate closings), validate LinkedType/LinkedId existence via shared services, and emit a domain event on status change for optional notifications.",
+            "status": "pending",
+            "testStrategy": "Unit tests covering allowed/forbidden transitions, note creation appends in order, and linked entity validation behavior (mocked).",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Expose REST API endpoints for tickets and notes with DTOs and validation",
+            "description": "Create controller endpoints consistent with existing API patterns and security.",
+            "dependencies": [
+              3
+            ],
+            "details": "Add SupportTicketsController with routes: POST /api/support/tickets, GET /api/support/tickets/{id}, GET /api/support/tickets (filters), PATCH /api/support/tickets/{id}, POST /api/support/tickets/{id}/notes, PATCH /api/support/tickets/{id}/status. Define request/response DTOs and use the existing mapper (e.g., AutoMapper/Mapster) and validation attributes/filters. Apply authorization/tenant context middleware consistent with other controllers.",
+            "status": "pending",
+            "testStrategy": "Integration tests verifying 201/200/400/404 responses, payload shapes, filtering, and that notes appear in chronological order.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Integrate optional notifications on status change with configuration toggle",
+            "description": "Publish notifications when a ticket status changes using existing infra.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Subscribe to the status-changed domain event or hook within ChangeStatusAsync to call the existing notification service (email/in-app/push). Include ticket id, previous/new status, and linked entity context in the message. Make notifications controlled by app settings/feature flag; ensure graceful no-op if the notification service is unavailable.",
+            "status": "pending",
+            "testStrategy": "Mock notification service to assert calls and payloads on valid transitions; verify no calls for invalid/no-op transitions.",
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2025-12-01T13:44:39.560Z"
       },
       {
         "id": "25",
@@ -2060,7 +2123,7 @@
           "6",
           "7"
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -2081,10 +2144,10 @@
               1
             ],
             "details": "Add IAttendanceService with methods: RecordClockAsync(employeeId, clockIn, clockOut?), RecordDaysAsync(employeeId, date, days), GetAttendanceForPeriodAsync(employeeId, from, to). Enforce rules: employee exists and active; no overlapping clock intervals; clockOut > clockIn; days >= 0.5; prevent duplicate day entries per date; normalize to UTC. Persist via repository/DbContext following existing DI patterns. Provide mapping helpers to compute hours from clock pairs and days from daily entries.",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": "Unit-test service rules: overlap detection, invalid ranges, rounding, and retrieval across period boundaries.",
             "parentId": "undefined",
-            "updatedAt": "2025-12-01T13:14:27.262Z"
+            "updatedAt": "2025-12-01T13:17:47.438Z"
           },
           {
             "id": 3,
@@ -2095,9 +2158,10 @@
               2
             ],
             "details": "Add IPayrollService with method RunAsync(from, to, employeeIds?). Aggregate attendance via IAttendanceService: hourly=total hours, daily=total days. Compute Gross = units * Rate; Deductions = 0 for MVP (placeholder strategy extension point); Net = Gross - Deductions. Upsert PayrollRun for each employee for the period (idempotent by employeeId+period). Return summary DTOs. Handle empty attendance gracefully. Follow existing transaction/unit-of-work approach to ensure atomic write of the run.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Service integration tests with seeded employees: hourly and daily; verify unit totals, gross/net math, and idempotency across repeated runs.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T13:34:43.935Z"
           },
           {
             "id": 4,
@@ -2109,9 +2173,10 @@
               3
             ],
             "details": "Controllers: EmployeesController (CRUD with paging/filter), AttendanceController (POST clock/days, GET by period), PayrollController (POST /api/hr/payroll/run?from&to, GET /api/hr/payroll/export?from&to). Use DTOs with FluentValidation/DataAnnotations, map via existing mapper (e.g., AutoMapper if present). Enforce authorization/permissions (e.g., HR role/claim). CSV export returns correct headers and encoding using existing CSV helper if present. Align routes, problem-details, and logging with repo standards.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "API integration tests: create employee, record attendance, run payroll, and download export; verify HTTP status codes, auth policies, and CSV content correctness.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T13:36:08.669Z"
           },
           {
             "id": 5,
@@ -2121,12 +2186,13 @@
               4
             ],
             "details": "Write end-to-end tests that simulate: creating employees, recording attendance (both modes), running payroll for a date range, and exporting summary. Verify totals by employee and overall. Document API usage (request/response examples) and edge cases (no attendance, repeated runs) in existing developer docs/readme section for HR. Ensure permissions and validation errors are captured in tests.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests asserting correct totals for hourly vs daily employees, idempotent runs, and export schema; smoke tests for permissions and validation messages.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T13:41:09.073Z"
           }
         ],
-        "updatedAt": "2025-12-01T13:14:27.262Z"
+        "updatedAt": "2025-12-01T13:41:09.073Z"
       },
       {
         "id": "26",
@@ -2311,9 +2377,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-01T13:14:27.266Z",
+      "lastModified": "2025-12-01T13:44:39.563Z",
       "taskCount": 35,
-      "completedCount": 31,
+      "completedCount": 32,
       "tags": [
         "master"
       ]
