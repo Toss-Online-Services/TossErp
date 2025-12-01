@@ -2,6 +2,7 @@ using Toss.Application.Common.Exceptions;
 using Toss.Application.Common.Interfaces;
 using Toss.Application.Common.Interfaces.Tenancy;
 using Toss.Domain.Entities.CRM;
+using Microsoft.EntityFrameworkCore;
 
 namespace Toss.Application.CRM.Queries.GetCustomerProfile;
 
@@ -55,6 +56,7 @@ public class GetCustomerProfileQueryHandler : IRequestHandler<GetCustomerProfile
 
         var businessId = _businessContext.CurrentBusinessId!.Value;
 
+        // Note: Using Take(10) in Include limits the collection size, reducing cartesian explosion risk
         var customer = await _context.Customers
             .Include(c => c.Store)
             .Include(c => c.Purchases.OrderByDescending(p => p.PurchaseDate).Take(10))

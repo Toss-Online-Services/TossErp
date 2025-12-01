@@ -38,5 +38,11 @@ public class SalesDocumentConfiguration : IEntityTypeConfiguration<SalesDocument
         builder.HasIndex(d => d.DocumentNumber).IsUnique();
         builder.HasIndex(d => d.DocumentDate);
         builder.HasIndex(d => new { d.SaleId, d.DocumentType }).IsUnique();
+        
+        // Composite indexes for common query patterns
+        builder.HasIndex(d => new { d.ShopId, d.DocumentDate }); // For shop document reports
+        builder.HasIndex(d => new { d.ShopId, d.DocumentType, d.DocumentDate }); // For filtered document queries
+        builder.HasIndex(d => new { d.CustomerId, d.DocumentDate }); // For customer document history
+        builder.HasIndex(d => new { d.ShopId, d.IsPaid, d.DocumentDate }); // For payment status queries
     }
 }

@@ -56,10 +56,18 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.HasIndex(p => new { p.BusinessId, p.SKU })
             .IsUnique();
 
-        builder.HasIndex(p => p.Barcode); // For barcode scanning
+        // Composite index for barcode lookup within business context
+        builder.HasIndex(p => new { p.BusinessId, p.Barcode })
+            .HasFilter("[Barcode] IS NOT NULL"); // Partial index for non-null barcodes
+
+        builder.HasIndex(p => p.Barcode); // For barcode scanning (global)
         builder.HasIndex(p => p.CategoryId); // For category filtering
         builder.HasIndex(p => p.Name); // For product search
         builder.HasIndex(p => p.BusinessId);
+        
+        // Composite index for common filtering patterns
+        builder.HasIndex(p => new { p.BusinessId, p.CategoryId, p.IsActive });
+        builder.HasIndex(p => new { p.BusinessId, p.IsActive, p.Name }); // For active product search
     }
 }
 

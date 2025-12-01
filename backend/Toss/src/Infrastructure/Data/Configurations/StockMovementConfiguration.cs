@@ -27,6 +27,10 @@ public class StockMovementConfiguration : IEntityTypeConfiguration<StockMovement
         builder.HasIndex(s => s.MovementDate);
         builder.HasIndex(s => new { s.ShopId, s.ProductId });
         builder.HasIndex(s => new { s.ReferenceType, s.ReferenceId });
+        
+        // Composite index for stock history queries (common pattern)
+        builder.HasIndex(s => new { s.ShopId, s.ProductId, s.MovementDate });
+        builder.HasIndex(s => new { s.ProductId, s.MovementDate }); // For product-level history
     }
 }
 

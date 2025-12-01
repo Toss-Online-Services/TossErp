@@ -79,9 +79,18 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         // Indexes for lookups and filtering
         builder.Property<string>("PhoneNumber");
 
-        builder.HasIndex(c => new { c.BusinessId, c.Email });
-        builder.HasIndex(new[] { "BusinessId", "PhoneNumber" }).IsUnique();
+        builder.HasIndex(c => new { c.BusinessId, c.Email })
+            .HasFilter("[Email] IS NOT NULL"); // Partial index for non-null emails
+        
+        builder.HasIndex(new[] { "BusinessId", "PhoneNumber" })
+            .IsUnique()
+            .HasFilter("[PhoneNumber] IS NOT NULL"); // Partial unique index
+        
         builder.HasIndex(c => c.LastPurchaseDate); // For RFM analysis
+        
+        // Composite indexes for common queries
+        builder.HasIndex(c => new { c.BusinessId, c.StoreId, c.IsActive });
+        builder.HasIndex(c => new { c.BusinessId, c.LastPurchaseDate }); // For customer segmentation
     }
 }
 

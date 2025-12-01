@@ -69,10 +69,14 @@ public class VendorConfiguration : IEntityTypeConfiguration<Vendor>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => new { x.BusinessId, x.Name });
+        builder.HasIndex(x => new { x.BusinessId, x.Email }); // Composite for business-scoped email lookup
         builder.HasIndex(x => x.Email);
         builder.HasIndex(x => x.Deleted);
         builder.HasIndex(x => x.DisplayOrder);
         builder.HasIndex(x => x.BusinessId);
+        
+        // Composite index for active vendor queries
+        builder.HasIndex(x => new { x.BusinessId, x.Active, x.Deleted });
     }
 }
 

@@ -1,7 +1,10 @@
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NetEscapades.AspNetCore.SecurityHeaders;
+using NetEscapades.AspNetCore.SecurityHeaders.Infrastructure;
 using Toss.Infrastructure.Data;
 using Toss.Infrastructure.Services.Tenancy;
 
@@ -30,46 +33,47 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    // Microsoft's recommended approach: Apply migrations first, then seed
-    // Note: This is wrapped in try-catch to allow builds to succeed even when database is not available (e.g., during NSwag generation)
     try
     {
-        using (var scope = app.Services.CreateScope())
+        using var scope = app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        if (await context.Database.CanConnectAsync())
         {
-            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            
-            // Check if database is available before attempting migration
-            if (await context.Database.CanConnectAsync())
-            {
-                // Apply all pending migrations
-                await context.Database.MigrateAsync();
-                
-                // Then seed the database
-                var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-                await initialiser.SeedAsync();
-            }
+            await context.Database.MigrateAsync();
+            var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+            await initialiser.SeedAsync();
         }
     }
     catch (Exception ex)
     {
-        // Log but don't fail - allows build to succeed when database is not available
-        // This is especially important for NSwag code generation during build
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
         logger.LogWarning(ex, "Database migration/seeding skipped - database may not be available. This is normal during build/NSwag generation.");
     }
 }
-else
-{
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
 
-// Only redirect to HTTPS in non-development environments
-// In development, allow HTTP to avoid CORS issues with localhost
-if (!app.Environment.IsDevelopment())
+var securitySection = app.Configuration.GetSection("Security");
+var enforceHttps = securitySection.GetValue("EnforceHttps", !app.Environment.IsDevelopment());
+var hstsDays = securitySection.GetValue("HstsDays", 60);
+var preloadHsts = securitySection.GetValue("HstsPreload", true);
+
+HeaderPolicyCollection securityHeadersPolicy = new HeaderPolicyCollection()
+    .AddDefaultSecurityHeaders();
+
+if (enforceHttps)
 {
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseHsts();
+    }
+
     app.UseHttpsRedirection();
 }
+
+app.UseSecurityHeaders(securityHeadersPolicy);
+
+// Enable response caching (must come before UseStaticFiles)
+app.UseResponseCaching();
 
 app.UseStaticFiles();
 
@@ -87,6 +91,7 @@ if (!app.Environment.IsDevelopment())
 
 // Correct middleware order for CORS (per Microsoft best practices)
 app.UseRouting();
+app.UseCookiePolicy();
 
 // Enable CORS in Development only (must come after UseRouting and before UseAuthorization)
 if (app.Environment.IsDevelopment())

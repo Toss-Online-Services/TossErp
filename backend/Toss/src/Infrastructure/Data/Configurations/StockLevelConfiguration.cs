@@ -32,6 +32,10 @@ public class StockLevelConfiguration : IEntityTypeConfiguration<StockLevel>
             .IsUnique(); // Enforce one stock level per shop/product combination
 
         builder.HasIndex(s => s.ProductId); // For product-wide stock queries
+        
+        // Composite index for low stock alerts (common query pattern)
+        builder.HasIndex(s => new { s.ShopId, s.Quantity, s.ProductId })
+            .HasFilter("[Quantity] < [ReorderPoint]"); // Partial index for low stock items
     }
 }
 

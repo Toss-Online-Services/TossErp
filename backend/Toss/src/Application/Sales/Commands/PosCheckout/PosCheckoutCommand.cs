@@ -46,6 +46,7 @@ public class PosCheckoutCommandHandler : IRequestHandler<PosCheckoutCommand, Pos
     public async Task<PosCheckoutResult> Handle(PosCheckoutCommand request, CancellationToken cancellationToken)
     {
         // Check idempotency if key provided
+        // Note: Index on PaymentReference in SaleConfiguration will optimize this query
         if (!string.IsNullOrWhiteSpace(request.IdempotencyKey))
         {
             var existingSale = await _context.Sales

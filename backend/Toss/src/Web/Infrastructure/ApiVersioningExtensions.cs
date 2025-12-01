@@ -53,31 +53,18 @@ public static class ApiVersioningExtensions
             document.DocumentName = apiVersion.GroupName;
 
             // Add JWT Bearer authentication
-            document.AddSecurity("Bearer", new OpenApiSecurityScheme
+            document.AddSecurity("Bearer", Enumerable.Empty<string>(), new OpenApiSecurityScheme
             {
                 Type = OpenApiSecuritySchemeType.Http,
                 Scheme = JwtBearerDefaults.AuthenticationScheme,
                 BearerFormat = "JWT",
-                Description = "Enter your JWT token",
+                Description = "Enter your JWT token. Format: Bearer {token}",
                 In = OpenApiSecurityApiKeyLocation.Header,
                 Name = "Authorization"
             });
 
-            // Set security requirement
-            document.SecurityRequirements.Add(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = OpenApiReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    Array.Empty<string>()
-                }
-            });
+            // Set security requirement using operation processor
+            document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
 
             // Tags are automatically added by WithTags() in WebApplicationExtensions.MapGroup()
         });

@@ -64,6 +64,12 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
         builder.HasIndex(s => s.SaleDate); // For date range queries
         builder.HasIndex(s => new { s.ShopId, s.SaleDate }); // Composite for shop sales reports
         builder.HasIndex(s => s.Status); // For filtering by status
+        
+        // Composite indexes for common query patterns
+        builder.HasIndex(s => new { s.ShopId, s.Status, s.SaleDate }); // For shop status-based queries
+        builder.HasIndex(s => new { s.CustomerId, s.SaleDate }); // For customer purchase history
+        builder.HasIndex(s => new { s.ShopId, s.SaleType, s.SaleDate }); // For POS vs regular sales
+        builder.HasIndex(s => s.PaymentReference); // For idempotency lookups in POS
     }
 }
 

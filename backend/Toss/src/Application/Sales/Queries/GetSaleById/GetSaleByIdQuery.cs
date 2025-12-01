@@ -1,5 +1,6 @@
 using Toss.Application.Common.Interfaces;
 using Toss.Domain.Entities.Sales;
+using Microsoft.EntityFrameworkCore;
 
 namespace Toss.Application.Sales.Queries.GetSaleById;
 

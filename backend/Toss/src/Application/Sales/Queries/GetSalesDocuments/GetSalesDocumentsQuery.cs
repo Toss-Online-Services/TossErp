@@ -98,6 +98,7 @@ public class GetSalesDocumentsQueryHandler : IRequestHandler<GetSalesDocumentsQu
         var totalCount = await baseQuery.CountAsync(cancellationToken);
 
         // Query with includes for data retrieval
+        // Note: Count is done separately above to avoid cartesian explosion in count
         var query = baseQuery
             .Include(d => d.Sale)
                 .ThenInclude(s => s!.Items)
