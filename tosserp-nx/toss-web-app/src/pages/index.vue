@@ -1,7 +1,8 @@
 <script setup lang="ts">
+// Redirect to dashboard
 await navigateTo('/dashboard')
 </script>
 
 <template>
-  <div class="p-8 text-sm text-muted-foreground">Loading dashboard...</div>
+  <div></div>
 </template>

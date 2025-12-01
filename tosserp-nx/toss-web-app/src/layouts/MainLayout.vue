@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
+import BottomNav from '@/components/BottomNav.vue'
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -32,9 +33,9 @@ const navigationSections = [
         icon: LayoutDashboard
       },
       {
-        name: 'Sales / POS',
-        description: 'Offline-first cart, split payments',
-        path: '/sales/pos',
+        name: 'Sales',
+        description: 'POS, orders, invoices',
+        path: '/sales',
         icon: ShoppingBag,
         signalKey: 'pos'
       },
@@ -63,30 +64,17 @@ const navigationSections = [
     label: 'Network & Services',
     items: [
       {
-        name: 'Jobs / Deliveries',
-        description: 'Driver manifests, shared logistics',
-        path: '/jobs/deliveries',
+        name: 'Jobs',
+        description: 'Deliveries, projects, tasks',
+        path: '/jobs',
         icon: Truck,
         signalKey: 'deliveries'
-      },
-      {
-        name: 'Community Deals',
-        description: 'Group buying pools & supplier promos',
-        path: '/network/deals',
-        icon: Radio,
-        signalKey: 'groupBuying'
       },
       {
         name: 'Settings',
         description: 'Tenants, roles, channels, integrations',
         path: '/settings',
         icon: Settings
-      },
-      {
-        name: 'Help & Docs',
-        description: 'Playbooks, training, WhatsApp support',
-        path: '/docs',
-        icon: HelpCircle
       }
     ]
   }
@@ -204,13 +192,16 @@ onUnmounted(() => {
     <div class="flex-1 flex flex-col overflow-hidden">
       <Navbar :on-toggle-sidebar="toggleSidebar" />
 
-      <main class="flex-1 overflow-auto">
+      <main class="flex-1 overflow-auto pb-16 lg:pb-0">
         <div class="p-4 md:p-8">
           <slot />
         </div>
       </main>
 
-      <Footer />
+      <Footer class="hidden lg:block" />
+      
+      <!-- Mobile bottom navigation -->
+      <BottomNav />
     </div>
   </div>
 </template>
