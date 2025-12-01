@@ -168,6 +168,8 @@ public static class DependencyInjection
             Toss.Infrastructure.Services.Manufacturing.ManufacturingCostingService>();
         services.AddScoped<Toss.Application.Common.Interfaces.Notifications.INotificationService,
             Toss.Infrastructure.Services.Notifications.NotificationService>();
+        services.AddScoped<Toss.Application.Common.Interfaces.Localization.IBusinessLocalizationService,
+            Toss.Infrastructure.Services.Localization.BusinessLocalizationService>();
     }
 
     /// <summary>

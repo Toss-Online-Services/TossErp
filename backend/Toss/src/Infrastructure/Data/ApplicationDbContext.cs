@@ -26,6 +26,7 @@ using Toss.Domain.Entities.Audit;
 using Toss.Domain.Entities.Notifications;
 using Toss.Infrastructure.Identity;
 using Toss.Domain.Entities.Businesses;
+using BusinessSettings = Toss.Domain.Entities.Businesses.BusinessSettings;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -514,6 +515,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// Mapping between users and businesses with per-business roles.
     /// </summary>
     public DbSet<UserBusiness> UserBusinesses => Set<UserBusiness>();
+
+    /// <summary>
+    /// Business settings for localization, currency, and VAT.
+    /// </summary>
+    public DbSet<BusinessSettings> BusinessSettings => Set<BusinessSettings>();
 
     /// <summary>
     /// Configures the model using Fluent API by applying all entity configurations from the assembly.

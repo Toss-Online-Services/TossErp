@@ -37,7 +37,7 @@ public class BusinessSettingsConfiguration : IEntityTypeConfiguration<BusinessSe
 
         // Relationships
         builder.HasOne(s => s.Business)
-            .WithOne(b => b.Settings)
+            .WithOne()
             .HasForeignKey<BusinessSettings>(s => s.BusinessId)
             .OnDelete(DeleteBehavior.Cascade);
 

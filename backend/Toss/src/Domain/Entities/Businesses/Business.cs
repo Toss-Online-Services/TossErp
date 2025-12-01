@@ -22,5 +22,10 @@ public class Business : BaseAuditableEntity
     public ICollection<UserBusiness> Members { get; set; } = new List<UserBusiness>();
 
     public ICollection<Store> Stores { get; set; } = new List<Store>();
+
+    /// <summary>
+    /// Gets or sets the business settings (localization, currency, VAT)
+    /// </summary>
+    public BusinessSettings? Settings { get; set; }
 }
 

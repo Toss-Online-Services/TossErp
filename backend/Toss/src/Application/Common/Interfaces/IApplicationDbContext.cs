@@ -70,6 +70,7 @@ public interface IApplicationDbContext
     // Business entities
     DbSet<Business> Businesses { get; }
     DbSet<UserBusiness> UserBusinesses { get; }
+    DbSet<BusinessSettings> BusinessSettings { get; }
 
     // Catalog entities
     DbSet<ProductAttribute> ProductAttributes { get; }

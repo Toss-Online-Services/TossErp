@@ -19,6 +19,7 @@
     </PackageReference>
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="CsvHelper" />
   </ItemGroup>
 
   <ItemGroup>
