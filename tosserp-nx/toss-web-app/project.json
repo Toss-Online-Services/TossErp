@@ -4,5 +4,61 @@
   "projectType": "application",
   "sourceRoot": "toss-web-app/src",
   "// targets": "to see all targets run: nx show project toss-web-app --web",
-  "targets": {}
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/toss-web-app"
+      },
+      "configurations": {
+        "production": {
+          "sourcemap": false,
+          "optimization": true
+        },
+        "development": {
+          "sourcemap": true,
+          "optimization": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "toss-web-app:build",
+        "port": 4200
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "toss-web-app:build:production"
+        },
+        "development": {
+          "buildTarget": "toss-web-app:build:development"
+        }
+      }
+    },
+    "typecheck": {
+      "executor": "@nx/vite:typecheck",
+      "options": {
+        "buildTarget": "toss-web-app:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["toss-web-app/**/*.{ts,tsx,vue,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "coverage/toss-web-app"
+      }
+    }
+  }
 }

@@ -24,9 +24,12 @@ export default defineConfig({
   },
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'pnpm exec nx run toss-web-app:serve-static',
+    command: 'pnpm exec nx run toss-web-app:serve',
     url: 'http://localhost:4200',
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
+    timeout: 180000,
+    stdout: 'pipe',
+    stderr: 'pipe',
     cwd: workspaceRoot,
   },
   projects: [

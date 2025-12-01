@@ -30,19 +30,51 @@ export default defineNuxtConfig({
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
-      name: 'TOSS ERP POS',
-      short_name: 'TOSS POS',
-      description: 'Offline-first Point of Sale for TOSS ERP',
-      theme_color: '#ffffff',
+      name: 'TOSS ERP-III',
+      short_name: 'TOSS',
+      description: 'Mobile-first ERP for township and rural SMMEs',
+      theme_color: '#e91e63',
+      background_color: '#ffffff',
       icons: [
         {
           src: '/favicon.ico',
           sizes: '64x64 32x32 24x24 16x16',
           type: 'image/x-icon'
+        },
+        {
+          src: '/pwa-192x192.png',
+          sizes: '192x192',
+          type: 'image/png',
+          purpose: 'any maskable'
+        },
+        {
+          src: '/pwa-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'any maskable'
         }
       ],
       display: 'standalone',
-      start_url: '/pos'
+      orientation: 'portrait',
+      start_url: '/',
+      scope: '/',
+      categories: ['business', 'productivity'],
+      shortcuts: [
+        {
+          name: 'POS',
+          short_name: 'POS',
+          description: 'Quick access to Point of Sale',
+          url: '/sales/pos',
+          icons: [{ src: '/favicon.ico', sizes: '96x96' }]
+        },
+        {
+          name: 'Stock',
+          short_name: 'Stock',
+          description: 'View inventory levels',
+          url: '/stock',
+          icons: [{ src: '/favicon.ico', sizes: '96x96' }]
+        }
+      ]
     },
     workbox: {
       navigateFallback: '/pos',

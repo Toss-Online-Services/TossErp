@@ -30,26 +30,87 @@ pre {
 
   @layer base {
     :root {
-      --background: 60 9% 98%;
-      --foreground: 24 10% 10%;
+      /* Material Dashboard inspired color palette */
+      --background: 0 0% 100%;
+      --foreground: 0 0% 13%;
       --card: 0 0% 100%;
-      --card-foreground: 24 10% 10%;
+      --card-foreground: 0 0% 13%;
       --popover: 0 0% 100%;
-      --popover-foreground: 24 10% 10%;
-      --primary: 142 76% 36%;
+      --popover-foreground: 0 0% 13%;
+      
+      /* Primary: Material Dashboard pink/rose (#e91e63) */
+      --primary: 340 81% 52%;
       --primary-foreground: 0 0% 100%;
-      --secondary: 60 5% 96%;
-      --secondary-foreground: 24 10% 10%;
-      --muted: 60 5% 96%;
-      --muted-foreground: 24 5% 64%;
-      --accent: 60 5% 96%;
-      --accent-foreground: 24 10% 10%;
-      --destructive: 0 84.2% 60.2%;
-      --destructive-foreground: 60 9% 98%;
-      --border: 20 6% 90%;
-      --input: 20 6% 90%;
-      --ring: 142 76% 36%;
+      
+      /* Secondary: Material Dashboard gray */
+      --secondary: 0 0% 46%;
+      --secondary-foreground: 0 0% 100%;
+      
+      /* Muted: Light gray */
+      --muted: 0 0% 96%;
+      --muted-foreground: 0 0% 45%;
+      
+      /* Accent: Subtle highlight */
+      --accent: 0 0% 96%;
+      --accent-foreground: 0 0% 13%;
+      
+      /* Semantic colors from Material Dashboard */
+      --success: 142 71% 45%;
+      --success-foreground: 0 0% 100%;
+      --info: 217 91% 60%;
+      --info-foreground: 0 0% 100%;
+      --warning: 35 100% 50%;
+      --warning-foreground: 0 0% 13%;
+      --destructive: 0 89% 60%;
+      --destructive-foreground: 0 0% 100%;
+      
+      /* UI elements */
+      --border: 0 0% 90%;
+      --input: 0 0% 90%;
+      --ring: 340 81% 52%;
       --radius: 0.5rem;
+      
+      /* Material Dashboard spacing tokens */
+      --spacing-xs: 0.25rem;
+      --spacing-sm: 0.5rem;
+      --spacing-md: 1rem;
+      --spacing-lg: 1.5rem;
+      --spacing-xl: 2rem;
+      --spacing-2xl: 3rem;
+      
+      /* Typography scale */
+      --font-size-xs: 0.75rem;
+      --font-size-sm: 0.875rem;
+      --font-size-base: 1rem;
+      --font-size-lg: 1.125rem;
+      --font-size-xl: 1.25rem;
+      --font-size-2xl: 1.5rem;
+      --font-size-3xl: 1.875rem;
+      --font-size-4xl: 2.25rem;
+      
+      --line-height-tight: 1.25;
+      --line-height-normal: 1.5;
+      --line-height-relaxed: 1.75;
+    }
+    
+    .dark {
+      --background: 0 0% 13%;
+      --foreground: 0 0% 98%;
+      --card: 0 0% 17%;
+      --card-foreground: 0 0% 98%;
+      --popover: 0 0% 17%;
+      --popover-foreground: 0 0% 98%;
+      --primary: 340 81% 52%;
+      --primary-foreground: 0 0% 100%;
+      --secondary: 0 0% 25%;
+      --secondary-foreground: 0 0% 98%;
+      --muted: 0 0% 25%;
+      --muted-foreground: 0 0% 64%;
+      --accent: 0 0% 25%;
+      --accent-foreground: 0 0% 98%;
+      --border: 0 0% 25%;
+      --input: 0 0% 25%;
+      --ring: 340 81% 52%;
     }
   }
 

@@ -2445,13 +2445,113 @@
         "status": "done",
         "subtasks": [],
         "updatedAt": "2025-12-01T14:40:14.483Z"
+      },
+      {
+        "id": "36",
+        "title": "Nuxt frontend foundation",
+        "description": "Establish the Nuxt 4 workspace baseline (Tailwind, shadcn-style components, design tokens, lint/test tooling, PWA manifest).",
+        "details": "- Install and configure TailwindCSS, postcss, and @nuxtjs/tailwind for the tosserp-nx workspace.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": [],
+        "updatedAt": "2025-12-01T15:25:30.455Z"
+      },
+      {
+        "id": "37",
+        "title": "Dashboard shell & navigation",
+        "description": "Implement the Creative Tim-inspired mobile-first dashboard shell, sidebar nav, top bar, and route scaffolding for all MVP modules.",
+        "details": "- Build Nuxt layout(s) to provide the Material Dashboard style: collapsible sidebar w/ module groups (Home, Sales, Stock, Money, People, Jobs, Support, Settings) and top bar with search/profile/actions.",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": "38",
+        "title": "POS & sales workflows UI",
+        "description": "Build mobile-first POS checkout, queue orders, quotesordersdeliveryinvoice screens wired to backend APIs.",
+        "details": "- Implement POS checkout view with product search, barcode input, cart lines, tender selection (cash/card/mobile/on account), change calculator, and offline queue indicator using existing useNetworkStatus composable.",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": "39",
+        "title": "Inventory & procurement UI",
+        "description": "Deliver stock, supplier, purchase request/order/grn experiences with low-stock alerts and stock transfer tooling.",
+        "details": "- Build inventory landing page showing stock KPIs, low-stock list, and quick actions to adjust, transfer, or create purchase request.",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": "40",
+        "title": "Money & accounting dashboards",
+        "description": "Build Money section UI (cashbook, accounts, invoices/reports) tying into new accounting APIs.",
+        "details": "- Create Money landing page summarizing cash-in/out, account balances, outstanding invoices, creditors/debtors using /api/accounting and /api/reports endpoints.",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": "41",
+        "title": "People, CRM & HR UI",
+        "description": "Deliver customer CRM, staff, attendance, and payroll interfaces referencing backend APIs.",
+        "details": "- Create People landing page summarizing customers, leads, outstanding balances, and HR alerts.",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": "42",
+        "title": "Operations, support & collab UI",
+        "description": "Ship driver logistics, support tickets, quality checklists, and collaboration link surfaces in Nuxt.",
+        "details": "- Build Jobs/Logistics screen for drivers: delivery list cards, status buttons, route grouping, and detail modals calling /api/logistics endpoints.",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": "43",
+        "title": "Analytics & Today view dashboards",
+        "description": "Visualize backend analytics, business events, and Today View metrics in Nuxt.",
+        "details": "- Build Analytics page mirroring Creative Tim sample with KPI cards, line/bar charts, and module usage tiles; consume /api/analytics/summary + /api/analytics/weekly.",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": "44",
+        "title": "Offline sync, testing & deployment",
+        "description": "Finalize Nuxt PWA offline queue, automated testing, and deployment scripts for the frontend.",
+        "details": "- Implement IndexedDB sync queue composables (usePosSync, useOfflineStore) that store queued POS/orders + retries when network restored; show toast/log state.",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-01T14:40:14.487Z",
-      "taskCount": 35,
-      "completedCount": 35,
+      "lastModified": "2025-12-01T15:25:30.462Z",
+      "taskCount": 44,
+      "completedCount": 36,
       "tags": [
         "master"
       ]
