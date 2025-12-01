@@ -1012,7 +1012,7 @@
           "6",
           "7"
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -1020,9 +1020,10 @@
             "description": "Create the TaskItem model and status enum, integrate with DbContext, and add initial migration for persistence.",
             "dependencies": [],
             "details": "- Define Status enum with values: ToDo, InProgress, Done\n- Create TaskItem { Id, BusinessId, Title, Status, Due, LinkedType, LinkedId, AssigneeId, CreatedAt, UpdatedAt }\n- Configure EF Core (table name, required fields, max lengths, enum conversion if used, default Status=ToDo)\n- Add indexes: (BusinessId), (BusinessId, Status), (BusinessId, AssigneeId), (BusinessId, LinkedType, LinkedId)\n- Register DbSet<TaskItem> in DbContext and configure in OnModelCreating\n- Generate and apply migration (name: TaskItems_Init)\n- Align naming, nullability, and conventions to existing codebase",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Use EF InMemory or SQLite to validate model mapping and CRUD; assert default Status=ToDo; verify enum conversion; smoke test migration creation compiles.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-29T11:33:08.120Z"
           },
           {
             "id": 2,
@@ -1032,9 +1033,10 @@
               1
             ],
             "details": "- Interface ITaskService (or repository) with methods: ListAsync(filter), GetAsync(id, businessId), CreateAsync(dto), UpdateAsync(id, businessId, dto), UpdateStatusAsync(id, businessId, newStatus), LinkAsync(id, businessId, linkedType, linkedId), UnlinkAsync(id, businessId), DeleteAsync(id, businessId)\n- Filters: BusinessId (required), Status?, AssigneeId?, LinkedType/LinkedId?, DueBefore/After?, Search in Title\n- Enforce status transitions: ToDo -> InProgress -> Done; block invalid back-transitions unless explicitly allowed\n- Validate create: Title required; BusinessId required; linked fields optional; Due optional\n- Ensure methods scope all queries by BusinessId and handle not found vs. forbidden correctly\n- Map domain exceptions to meaningful error codes (to be translated at API layer)",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit test service with InMemory EF: create/list with filters; valid/invalid status transitions; link/unlink idempotency; ensure BusinessId scoping prevents cross-tenant access.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-29T11:42:11.727Z"
           },
           {
             "id": 3,
@@ -1044,9 +1046,10 @@
               2
             ],
             "details": "- Controller route: /api/tasks with [ApiController] and attribute routing\n- GET /api/tasks: query params businessId (or derive from context), status, assigneeId, linkedType, linkedId, dueBefore, dueAfter, search, page, pageSize; return paged results consistent with existing patterns\n- POST /api/tasks: body { title, linkedType?, linkedId?, due?, assigneeId? }; set BusinessId from context; return 201 with Location header (/api/tasks/{id}) and response body\n- Map DTOs to entity via service; validate ModelState and return standard problem details on errors",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests: create a task (201 + Location), then list with filters (status, assignee, linked) and pagination; assert results scoped by BusinessId.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-29T11:43:56.672Z"
           },
           {
             "id": 4,
@@ -1056,9 +1059,10 @@
               3
             ],
             "details": "- PATCH /api/tasks/{id}/status { status }: validate transition via service; return 200/204\n- PATCH /api/tasks/{id} to update title, due, assigneeId; validate\n- POST /api/tasks/{id}/link { linkedType, linkedId }: validate and set link\n- DELETE /api/tasks/{id}/link: clear link\n- DELETE /api/tasks/{id}: soft/hard delete per repo conventions\n- Ensure BusinessId scoping/authorization and consistent error responses (404 vs 400)\n- Add request/response DTOs and FluentValidation/attributes per project standards",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests: invalid transition returns 400; valid transitions succeed; link/unlink works; delete hides from list; verify 404 for cross-business IDs.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-29T11:44:17.259Z"
           },
           {
             "id": 5,
@@ -1068,11 +1072,13 @@
               4
             ],
             "details": "- Register ITaskService in DI container\n- Extract BusinessId from HttpContext/claims or tenant provider used in project; ensure all controller actions pass BusinessId to service\n- Add authorization attributes/policies if required by project\n- Add Swagger annotations or XML comments for all endpoints and schemas\n- Write unit tests for DTO validation (if using FluentValidation)\n- Ensure logging for key actions; add basic README/API doc for Task endpoints",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests covering end-to-end flow: create -> list -> update status -> link/unlink -> delete; unit tests for validators and authorization guards where applicable.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-29T11:44:38.258Z"
           }
-        ]
+        ],
+        "updatedAt": "2025-11-29T11:44:38.258Z"
       },
       {
         "id": "10",
@@ -1324,7 +1330,7 @@
           "11",
           "12"
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -1332,9 +1338,10 @@
             "description": "Create DTOs and MediatR query records for P&L, cashflow summary, and debtors/creditors aligned with existing Application patterns.",
             "dependencies": [],
             "details": "Under `backend/Toss/src/Application/Accounting/Reports/Queries/`, add folders `GetProfitAndLoss`, `GetCashflowSummary`, `GetDebtors`, and `GetCreditors`. In each, define DTOs (lean, mobile-friendly) and `IRequest<T>` query records with parameters: `ShopId`, `StartDate`, `EndDate`, plus optional paging for lists. Mirror structure used in `Application/Dashboard/Queries` files.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit test DTO serialization shapes and validation for required parameters.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-29T06:52:11.550Z"
           },
           {
             "id": 2,
@@ -1344,9 +1351,10 @@
               1
             ],
             "details": "In each query folder, implement handlers computing totals using efficient LINQ projections. P&L: revenue from `Sales` minus COGS/expenses (approx with `PurchaseOrders` where applicable). Cashflow: reuse logic similar to `Dashboard.GetCashFlowSummary` or refine per date window. Debtors: per-customer outstanding = sum(sales totals) − sum(payments by `CustomerId` and/or `SaleId`). Creditors: per-vendor outstanding = sum(PO totals) − sum(payments with `PurchaseOrderId`). Ensure filters by `ShopId`, date range, and exclude voided/cancelled statuses. Favor server-side aggregates and avoid loading collections.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Snapshot tests against seeded in-memory DB verifying computed totals and date filtering boundaries.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-29T06:53:44.748Z"
           },
           {
             "id": 3,
@@ -1357,9 +1365,10 @@
               2
             ],
             "details": "Add `backend/Toss/src/Web/Endpoints/Reports.cs` inheriting `EndpointGroupBase`. Map routes: `GET /api/Reports/pnl`, `GET /api/Reports/cashflow`, `GET /api/Reports/debtors`, `GET /api/Reports/creditors`. Each method binds query params (`shopId`, `startDate`, `endDate`, paging for lists) to the corresponding query record and calls `sender.Send(query)`. Follow patterns in `Dashboard.cs` for mapping and responses.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Functional smoke tests hitting the endpoints to ensure 200 OK and expected JSON contract.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-29T06:57:41.890Z"
           },
           {
             "id": 4,
@@ -1369,9 +1378,10 @@
               3
             ],
             "details": "Under `backend/Toss/tests/Application.FunctionalTests`, add a `Reports` folder with tests using `CustomWebApplicationFactory`. Seed sales, payments, and purchase orders across date windows and shops. Test cases: P&L totals over range, cashflow in/out/net, top debtors, top creditors, pagination/sorting, and shop scoping. Validate boundary conditions (inclusive start/exclusive end as per conventions).",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "End-to-end tests via HTTP client; snapshot or strict value assertions for deterministic seeded data.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-29T06:59:06.023Z"
           },
           {
             "id": 5,
@@ -1384,11 +1394,13 @@
               4
             ],
             "details": "Convert heavy aggregates to compiled queries where beneficial; verify indexes on commonly filtered columns (`ShopId`, dates, status). Add XML/annotation summaries and route docs so `wwwroot/api/specification.json` captures parameters/responses. Confirm no extra DI registration is needed (Application assembly MediatR scanning); otherwise update `Application/DependencyInjection.cs`. Add simple in-memory caching (30–60s) for list endpoints if needed for mobile dashboards.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Micro-bench assertions (if present) and verification that OpenAPI spec includes new endpoints/params; manual validation of cache behavior in tests if caching enabled.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-11-29T07:00:46.912Z"
           }
-        ]
+        ],
+        "updatedAt": "2025-11-29T07:00:46.912Z"
       },
       {
         "id": "14",
@@ -2147,9 +2159,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-28T16:08:38.274Z",
+      "lastModified": "2025-11-29T11:44:38.263Z",
       "taskCount": 35,
-      "completedCount": 16,
+      "completedCount": 18,
       "tags": [
         "master"
       ]

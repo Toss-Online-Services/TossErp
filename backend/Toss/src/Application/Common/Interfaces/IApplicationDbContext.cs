@@ -17,6 +17,7 @@ using Toss.Domain.Entities.Stores;
 using Toss.Domain.Entities.Vendors;
 using Toss.Domain.Entities.Tax;
 using Toss.Domain.Entities.Manufacturing;
+using Toss.Domain.Entities.Tasks;
 using Toss.Domain.Entities.Businesses;
 
 namespace Toss.Application.Common.Interfaces;
@@ -145,6 +146,9 @@ public interface IApplicationDbContext
     DbSet<ProductionOrder> ProductionOrders { get; }
     DbSet<ProductionOrderConsumption> ProductionOrderConsumptions { get; }
     DbSet<ProductionOrderProduction> ProductionOrderProductions { get; }
+
+    // Task entities
+    DbSet<TaskItem> TaskItems { get; }
 
     // Onboarding entities
     DbSet<OnboardingStatus> OnboardingStatuses { get; }

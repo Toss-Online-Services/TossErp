@@ -20,6 +20,7 @@ using Toss.Domain.Entities.Vendors;
 using Toss.Domain.Entities.Tax;
 using Toss.Domain.Entities.Onboarding;
 using Toss.Domain.Entities.Manufacturing;
+using Toss.Domain.Entities.Tasks;
 using Toss.Infrastructure.Identity;
 using Toss.Domain.Entities.Businesses;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -368,6 +369,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// </summary>
     public DbSet<ProductionOrderProduction> ProductionOrderProductions => Set<ProductionOrderProduction>();
 
+    // Task entities
+    /// <summary>
+    /// Task items for workflow management and tracking.
+    /// </summary>
+    public DbSet<TaskItem> TaskItems => Set<TaskItem>();
+
     // Catalog entities
     /// <summary>
     /// Product attributes for configurable products (size, color, etc.).
@@ -595,5 +602,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<ProductionOrderProduction>()
             .HasQueryFilter(production => !_businessContext.HasBusiness || production.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<TaskItem>()
+            .HasQueryFilter(task => !_businessContext.HasBusiness || task.BusinessId == _businessContext.CurrentBusinessId);
     }
 }
