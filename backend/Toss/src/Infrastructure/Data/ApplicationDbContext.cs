@@ -26,6 +26,7 @@ using Toss.Domain.Entities.Audit;
 using Toss.Domain.Entities.Notifications;
 using Toss.Domain.Entities.Assets;
 using Toss.Domain.Entities.Quality;
+using Toss.Domain.Entities.HR;
 using Toss.Infrastructure.Identity;
 using Toss.Domain.Entities.Businesses;
 using BusinessSettings = Toss.Domain.Entities.Businesses.BusinessSettings;
@@ -466,6 +467,22 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// </summary>
     public DbSet<ActionItem> ActionItems => Set<ActionItem>();
 
+    // HR entities
+    /// <summary>
+    /// Employees in the system.
+    /// </summary>
+    public DbSet<Employee> Employees => Set<Employee>();
+    
+    /// <summary>
+    /// Attendance records for employees.
+    /// </summary>
+    public DbSet<Attendance> Attendances => Set<Attendance>();
+    
+    /// <summary>
+    /// Payroll runs for employees.
+    /// </summary>
+    public DbSet<PayrollRun> PayrollRuns => Set<PayrollRun>();
+
     // Catalog entities
     /// <summary>
     /// Product attributes for configurable products (size, color, etc.).
@@ -753,5 +770,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<ActionItem>()
             .HasQueryFilter(action => !_businessContext.HasBusiness || action.BusinessId == _businessContext.CurrentBusinessId);
+
+        // HR entities
+        builder.Entity<Employee>()
+            .HasQueryFilter(employee => !_businessContext.HasBusiness || employee.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Attendance>()
+            .HasQueryFilter(attendance => !_businessContext.HasBusiness || attendance.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<PayrollRun>()
+            .HasQueryFilter(run => !_businessContext.HasBusiness || run.BusinessId == _businessContext.CurrentBusinessId);
     }
 }

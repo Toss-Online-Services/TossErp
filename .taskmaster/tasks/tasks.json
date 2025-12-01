@@ -1964,7 +1964,7 @@
           "6",
           "7"
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -2011,10 +2011,10 @@
               3
             ],
             "details": "Create controller(s) with routes like POST /api/quality/checklists, POST /api/quality/checks/run, POST /api/quality/incidents, POST /api/quality/actions. Define request/response DTOs and validation attributes/filters. Map DTOs to domain via mappers used in the project. Apply authorization attributes and consistent error responses.",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": "Integration-style controller tests (or WebApplicationFactory if used) to assert 200/201 responses, validation errors, and auth enforcement.",
             "parentId": "undefined",
-            "updatedAt": "2025-12-01T13:00:37.263Z"
+            "updatedAt": "2025-12-01T13:03:05.543Z"
           },
           {
             "id": 5,
@@ -2024,12 +2024,13 @@
               4
             ],
             "details": "Seed test data; test creating incidents, recording checklist runs, assigning actions, and verify persistence. Add list endpoints/queries if not present to filter incidents by severity and date, including pagination/sorting per conventions. Ensure cross-business access is blocked per existing authorization patterns.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests using existing test harness and fixtures; assert data created, filters work (severity/date), and unauthorized access is rejected.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T13:07:56.018Z"
           }
         ],
-        "updatedAt": "2025-12-01T13:00:37.263Z"
+        "updatedAt": "2025-12-01T13:07:56.018Z"
       },
       {
         "id": "24",
@@ -2059,8 +2060,73 @@
           "6",
           "7"
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define HR domain entities and persistence (Employee, Attendance, PayrollRun)",
+            "description": "Introduce core HR entities with relationships and EF Core mapping to support payroll basics.",
+            "dependencies": [],
+            "details": "Add entities: Employee {Id, Name, RateType(enum: Hourly, Daily), Rate(decimal), IsActive}, Attendance {Id, EmployeeId FK, ClockIn(nullable), ClockOut(nullable), DaysWorked(nullable int), Notes}, PayrollRun {Id, EmployeeId FK, PeriodStart, PeriodEnd, Gross, Deductions, Net, GeneratedAt}. Update existing DbContext with DbSet<> and Fluent API (FKs, required fields, indexes on EmployeeId+Period). Create initial EF Core migration for these tables and apply naming/namespace conventions used elsewhere in the repo.",
+            "status": "done",
+            "testStrategy": "Validate model builds/migrates; ensure FK constraints and required fields are enforced by EF model tests.",
+            "updatedAt": "2025-12-01T13:14:26.218Z",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Implement attendance recording service with validations (clock or days)",
+            "description": "Create application service to record and query attendance supporting either clock-in/out or day-count entries.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add IAttendanceService with methods: RecordClockAsync(employeeId, clockIn, clockOut?), RecordDaysAsync(employeeId, date, days), GetAttendanceForPeriodAsync(employeeId, from, to). Enforce rules: employee exists and active; no overlapping clock intervals; clockOut > clockIn; days >= 0.5; prevent duplicate day entries per date; normalize to UTC. Persist via repository/DbContext following existing DI patterns. Provide mapping helpers to compute hours from clock pairs and days from daily entries.",
+            "status": "in-progress",
+            "testStrategy": "Unit-test service rules: overlap detection, invalid ranges, rounding, and retrieval across period boundaries.",
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T13:14:27.262Z"
+          },
+          {
+            "id": 3,
+            "title": "Build payroll calculation service for hourly/daily rates with storage",
+            "description": "Compute per-employee payroll for a period using attendance; persist PayrollRun rows.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Add IPayrollService with method RunAsync(from, to, employeeIds?). Aggregate attendance via IAttendanceService: hourly=total hours, daily=total days. Compute Gross = units * Rate; Deductions = 0 for MVP (placeholder strategy extension point); Net = Gross - Deductions. Upsert PayrollRun for each employee for the period (idempotent by employeeId+period). Return summary DTOs. Handle empty attendance gracefully. Follow existing transaction/unit-of-work approach to ensure atomic write of the run.",
+            "status": "pending",
+            "testStrategy": "Service integration tests with seeded employees: hourly and daily; verify unit totals, gross/net math, and idempotency across repeated runs.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Expose HR API endpoints (Employees CRUD, Attendance record, Payroll run/export)",
+            "description": "Add REST endpoints aligned with existing API conventions for managing employees, capturing attendance, and running/exporting payroll.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Controllers: EmployeesController (CRUD with paging/filter), AttendanceController (POST clock/days, GET by period), PayrollController (POST /api/hr/payroll/run?from&to, GET /api/hr/payroll/export?from&to). Use DTOs with FluentValidation/DataAnnotations, map via existing mapper (e.g., AutoMapper if present). Enforce authorization/permissions (e.g., HR role/claim). CSV export returns correct headers and encoding using existing CSV helper if present. Align routes, problem-details, and logging with repo standards.",
+            "status": "pending",
+            "testStrategy": "API integration tests: create employee, record attendance, run payroll, and download export; verify HTTP status codes, auth policies, and CSV content correctness.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "End-to-end tests and documentation for payroll wizard flow and export",
+            "description": "Add integration tests covering the wizard-like run sequence and concise docs for usage.",
+            "dependencies": [
+              4
+            ],
+            "details": "Write end-to-end tests that simulate: creating employees, recording attendance (both modes), running payroll for a date range, and exporting summary. Verify totals by employee and overall. Document API usage (request/response examples) and edge cases (no attendance, repeated runs) in existing developer docs/readme section for HR. Ensure permissions and validation errors are captured in tests.",
+            "status": "pending",
+            "testStrategy": "Integration tests asserting correct totals for hourly vs daily employees, idempotent runs, and export schema; smoke tests for permissions and validation messages.",
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2025-12-01T13:14:27.262Z"
       },
       {
         "id": "26",
@@ -2245,9 +2311,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-01T13:00:37.267Z",
+      "lastModified": "2025-12-01T13:14:27.266Z",
       "taskCount": 35,
-      "completedCount": 30,
+      "completedCount": 31,
       "tags": [
         "master"
       ]

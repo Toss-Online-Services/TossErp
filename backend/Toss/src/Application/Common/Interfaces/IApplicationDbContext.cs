@@ -24,6 +24,7 @@ using Toss.Domain.Entities.Notifications;
 using Toss.Domain.Entities.Businesses;
 using Toss.Domain.Entities.Assets;
 using Toss.Domain.Entities.Quality;
+using Toss.Domain.Entities.HR;
 
 namespace Toss.Application.Common.Interfaces;
 
@@ -181,6 +182,11 @@ public interface IApplicationDbContext
     DbSet<ChecklistRunItem> ChecklistRunItems { get; }
     DbSet<Incident> Incidents { get; }
     DbSet<ActionItem> ActionItems { get; }
+
+    // HR entities
+    DbSet<Employee> Employees { get; }
+    DbSet<Attendance> Attendances { get; }
+    DbSet<PayrollRun> PayrollRuns { get; }
 
     // Onboarding entities
     DbSet<OnboardingStatus> OnboardingStatuses { get; }
