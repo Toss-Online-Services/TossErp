@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Toss.Application.Common.Interfaces.Authentication;
+using Toss.Application.Common.Interfaces.Analytics;
+using Toss.Application.Common.Interfaces.Tenancy;
+using Toss.Domain.Enums;
 using Toss.Infrastructure.Identity;
 
 namespace Toss.Web.Endpoints;
@@ -38,6 +41,8 @@ public class Auth : EndpointGroupBase
         ITokenService tokenService,
         ITwoFactorSessionStore sessionStore,
         IOtpSender otpSender,
+        IBusinessEventService? eventService,
+        IBusinessContext? businessContext,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.Password))
@@ -96,6 +101,26 @@ public class Auth : EndpointGroupBase
         }
 
         var authTokens = await tokenService.CreateAsync(user.Id, cancellationToken);
+        
+        // Track login event for analytics
+        if (eventService != null && businessContext != null && businessContext.HasBusiness)
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await eventService.EmitEventAsync(
+                        BusinessEventType.Login,
+                        module: "Auth",
+                        userId: user.Id);
+                }
+                catch
+                {
+                    // Silently fail - don't break login
+                }
+            });
+        }
+        
         return Results.Json(authTokens);
     }
 

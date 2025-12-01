@@ -28,6 +28,8 @@ using Toss.Domain.Entities.Assets;
 using Toss.Domain.Entities.Quality;
 using Toss.Domain.Entities.HR;
 using Toss.Domain.Entities.Support;
+using Toss.Domain.Entities.Collaborations;
+using Toss.Domain.Entities.Analytics;
 using Toss.Infrastructure.Identity;
 using Toss.Domain.Entities.Businesses;
 using BusinessSettings = Toss.Domain.Entities.Businesses.BusinessSettings;
@@ -495,6 +497,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// </summary>
     public DbSet<TicketNote> TicketNotes => Set<TicketNote>();
 
+    // Collaboration entities
+    /// <summary>
+    /// Collaboration links for public feedback/offers.
+    /// </summary>
+    public DbSet<CollabLink> CollabLinks => Set<CollabLink>();
+
+    // Analytics entities
+    /// <summary>
+    /// Business events for analytics and metrics tracking.
+    /// </summary>
+    public DbSet<BusinessEvent> BusinessEvents => Set<BusinessEvent>();
+
     // Catalog entities
     /// <summary>
     /// Product attributes for configurable products (size, color, etc.).
@@ -799,5 +813,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<TicketNote>()
             .HasQueryFilter(note => !_businessContext.HasBusiness || note.BusinessId == _businessContext.CurrentBusinessId);
+
+        // Collaboration entities
+        builder.Entity<CollabLink>()
+            .HasQueryFilter(link => !_businessContext.HasBusiness || link.BusinessId == _businessContext.CurrentBusinessId);
+
+        // Analytics entities
+        builder.Entity<BusinessEvent>()
+            .HasQueryFilter(e => !_businessContext.HasBusiness || e.BusinessId == _businessContext.CurrentBusinessId);
     }
 }

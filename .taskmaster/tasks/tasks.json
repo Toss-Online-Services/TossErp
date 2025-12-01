@@ -2045,7 +2045,7 @@
           "7",
           "10"
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -2066,10 +2066,10 @@
               1
             ],
             "details": "Implement Ticket {Id, Type, Status, LinkedType, LinkedId, Title, Description, CreatedAt, CreatedById, ClosedAt?} and TicketNote {Id, TicketId, Note, CreatedAt, CreatedById}. Add enums TicketType, TicketStatus, LinkedType (or reuse existing linking abstraction). Add EF configurations (keys, relationships, indexes), update DbContext with DbSet<Ticket> and DbSet<TicketNote>, and create an initial migration following existing migration patterns.",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": "Unit tests for entity defaults/constraints and verifying EF model builds; run migration to ensure schema generation.",
             "parentId": "undefined",
-            "updatedAt": "2025-12-01T13:44:39.560Z"
+            "updatedAt": "2025-12-01T13:51:18.352Z"
           },
           {
             "id": 3,
@@ -2079,9 +2079,10 @@
               2
             ],
             "details": "Add ITicketService and TicketService methods: CreateAsync, GetByIdAsync, QueryAsync (filters by status/type/linked), UpdateAsync (limited fields), AddNoteAsync, ChangeStatusAsync. Enforce allowed transitions (e.g., New→Open→InProgress→Resolved→Closed; prevent invalid/duplicate closings), validate LinkedType/LinkedId existence via shared services, and emit a domain event on status change for optional notifications.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit tests covering allowed/forbidden transitions, note creation appends in order, and linked entity validation behavior (mocked).",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T14:01:15.839Z"
           },
           {
             "id": 4,
@@ -2091,9 +2092,10 @@
               3
             ],
             "details": "Add SupportTicketsController with routes: POST /api/support/tickets, GET /api/support/tickets/{id}, GET /api/support/tickets (filters), PATCH /api/support/tickets/{id}, POST /api/support/tickets/{id}/notes, PATCH /api/support/tickets/{id}/status. Define request/response DTOs and use the existing mapper (e.g., AutoMapper/Mapster) and validation attributes/filters. Apply authorization/tenant context middleware consistent with other controllers.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests verifying 201/200/400/404 responses, payload shapes, filtering, and that notes appear in chronological order.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T14:02:37.537Z"
           },
           {
             "id": 5,
@@ -2104,12 +2106,13 @@
               4
             ],
             "details": "Subscribe to the status-changed domain event or hook within ChangeStatusAsync to call the existing notification service (email/in-app/push). Include ticket id, previous/new status, and linked entity context in the message. Make notifications controlled by app settings/feature flag; ensure graceful no-op if the notification service is unavailable.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Mock notification service to assert calls and payloads on valid transitions; verify no calls for invalid/no-op transitions.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T14:03:28.589Z"
           }
         ],
-        "updatedAt": "2025-12-01T13:44:39.560Z"
+        "updatedAt": "2025-12-01T14:03:28.589Z"
       },
       {
         "id": "25",
@@ -2244,8 +2247,76 @@
           "16",
           "14"
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add CommentType and Type field; relax CreatedBy for public comments",
+            "description": "Extend the Comment model and DTOs to support feedback/offer types and allow anonymous public submissions without authenticated users.",
+            "dependencies": [],
+            "details": "- Add enum `CommentType { General, Feedback, Offer }` in `backend\\Toss\\src\\Domain\\Enums\\CommentType.cs`.\n- Extend `backend\\Toss\\src\\Domain\\Entities\\Notifications\\Comment.cs` with `public CommentType Type { get; set; } = CommentType.General;`.\n- Update EF config `backend\\Toss\\src\\Infrastructure\\Data\\Configurations\\Notifications\\CommentConfiguration.cs`: add mapping for `Type`, remove `.IsRequired()` on `CreatedBy` to allow null for anonymous, keep max lengths.\n- Update DTO in `backend\\Toss\\src\\Application\\Notifications\\Queries\\GetComments\\GetCommentsQuery.cs` to include `Type`.\n- Update `backend\\Toss\\src\\Application\\Notifications\\Commands\\CreateComment\\CreateCommentCommand.cs` to accept optional `Type` (default General).\n- Generate EF Core migration adding `Type` column and relaxing `CreatedBy` nullability.",
+            "status": "done",
+            "testStrategy": "Unit tests for mapping and defaulting CommentType; migration applies cleanly and preserves existing data.",
+            "updatedAt": "2025-12-01T14:12:45.717Z",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Introduce CollabLink entity for tokenized public submissions (feedback/offer)",
+            "description": "Create a token entity to securely scope anonymous submissions to a specific business record (Sale or PurchaseRequest).",
+            "dependencies": [
+              1
+            ],
+            "details": "- Add `CollabLink` entity in `backend\\Toss\\src\\Domain\\Entities\\Collaborations\\CollabLink.cs` with fields: `LinkCode`, `BusinessId`, `LinkedType`, `LinkedId`, `Purpose` (Feedback/Offer), `IsActive`, `CreatedAt`, `ExpiresAt`.\n- Add DbSet and configuration: `backend\\Toss\\src\\Infrastructure\\Data\\ApplicationDbContext.cs` and `Configurations\\Collaborations\\CollabLinkConfiguration.cs` (unique index on `LinkCode`, composite index on `(BusinessId, LinkedType, LinkedId, Purpose)`).\n- Add basic service to validate tokens (e.g., `ICollabLinkService`) in `Application` and implementation in `Infrastructure`.\n- Optional internal command (staff-only) to generate links for a record for MVP.\n- Create EF migration to add `CollabLinks` table.",
+            "status": "done",
+            "testStrategy": "Unit tests for token validation (active, not expired, purpose matches); migration creates indexes and constraints.",
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T14:15:07.397Z"
+          },
+          {
+            "id": 3,
+            "title": "Add anonymous POST /api/v1/Collab/feedback endpoint with token and captcha",
+            "description": "Create a public feedback endpoint to submit sales feedback using tokenized link and captcha verification.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "- New endpoint group `backend\\Toss\\src\\Web\\Endpoints\\Collab.cs` using `EndpointGroupBase` with `GroupName = \"Collab\"`.\n- Map `group.MapPost(\"feedback\", SubmitFeedback)` and decorate with `.AllowAnonymous()` and `.RequireRateLimiting(\"PublicLimiter\")`.\n- Request DTO: `{ salesId: int, rating: int (1..5), note: string, token: string, captchaToken?: string }`.\n- In handler: validate token via `ICollabLinkService` (Purpose=Feedback, LinkedType=\"Sale\", LinkedId=salesId), verify captcha via `ICaptchaVerifier` (configurable hCaptcha/Turnstile or Noop in dev), then create a `Comment` with `LinkedType=\"Sale\"`, `LinkedId=salesId`, `Type=CommentType.Feedback`, `Body` including note and rating (e.g., JSON string) and save via DbContext (anonymous allowed by step 1).\n- Return 201 with new comment id; handle 400/403 for invalid/expired token or captcha.",
+            "status": "done",
+            "testStrategy": "Integration tests: valid token creates comment; invalid/expired token returns 403; missing/invalid captcha returns 400/403; comment persisted with Type=Feedback and correct linkage.",
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T14:26:45.455Z"
+          },
+          {
+            "id": 4,
+            "title": "Add anonymous POST /api/v1/Collab/offer endpoint for supplier offers",
+            "description": "Create a public supplier offer endpoint with token and captcha to attach offers to purchase requests (or configured target).",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "- In `backend\\Toss\\src\\Web\\Endpoints\\Collab.cs`, map `group.MapPost(\"offer\", SubmitOffer)` with `.AllowAnonymous()` and `.RequireRateLimiting(\"PublicLimiter\")`.\n- Request DTO: `{ purchaseRequestId: int, price?: decimal, note: string, token: string, captchaToken?: string }`.\n- Validate token via `ICollabLinkService` (Purpose=Offer, LinkedType=\"PurchaseRequest\", LinkedId=purchaseRequestId), verify captcha via `ICaptchaVerifier`.\n- Persist as `Comment` with `LinkedType=\"PurchaseRequest\"`, `LinkedId=purchaseRequestId`, `Type=CommentType.Offer`, `Body` containing note (and optionally structured price JSON if provided).\n- Return 201 with comment id; return errors for invalid token/captcha as in feedback.",
+            "status": "done",
+            "testStrategy": "Integration tests: valid token creates offer comment; invalid token forbidden; verify comment Type=Offer and linkage to purchase request.",
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T14:26:46.940Z"
+          },
+          {
+            "id": 5,
+            "title": "Configure PublicLimiter and captcha verifier service; wire into Collab endpoints",
+            "description": "Add rate limiter policy for public endpoints and pluggable captcha verification service (hCaptcha/Turnstile or Noop in dev).",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "- In `backend\\Toss\\src\\Web\\Program.cs`, add `options.AddFixedWindowLimiter(\"PublicLimiter\", ...)` (e.g., 10 req/min, queue limit 2) and ensure `app.UseRateLimiter()` is in pipeline (already present).\n- Define `ICaptchaVerifier` in `backend\\Toss\\src\\Application\\Common\\Interfaces\\Security\\ICaptchaVerifier.cs` with `ValidateAsync(token, ip)`.\n- Implement `TurnstileCaptchaVerifier`/`HCaptchaVerifier` in `backend\\Toss\\src\\Infrastructure\\Services\\Security\\` reading secrets from configuration; add `NoopCaptchaVerifier` for development.\n- Register via DI in `backend\\Toss\\src\\Infrastructure\\DependencyInjection.cs` with environment/config-based selection.\n- Update Collab endpoints to call `ICaptchaVerifier` and handle failure responses consistently.",
+            "status": "done",
+            "testStrategy": "Integration tests exercising rate limiting headers and 429 on burst; unit tests for `ICaptchaVerifier` Noop vs strict modes; endpoint tests verify captcha invocation and error paths.",
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T14:26:49.765Z"
+          }
+        ],
+        "updatedAt": "2025-12-01T14:26:49.765Z"
       },
       {
         "id": "29",
@@ -2371,15 +2442,16 @@
           "29",
           "30"
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2025-12-01T14:40:14.483Z"
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-01T13:44:39.563Z",
+      "lastModified": "2025-12-01T14:40:14.487Z",
       "taskCount": 35,
-      "completedCount": 32,
+      "completedCount": 35,
       "tags": [
         "master"
       ]

@@ -2,6 +2,7 @@ using Toss.Application.Common.Exceptions;
 using Toss.Application.Common.Interfaces;
 using Toss.Application.Common.Interfaces.Tenancy;
 using Toss.Domain.Entities.Notifications;
+using Toss.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Toss.Application.Notifications.Queries.GetComments;
@@ -20,6 +21,7 @@ public record CommentDto
     public int LinkedId { get; init; }
     public string Body { get; init; } = string.Empty;
     public string CreatedBy { get; init; } = string.Empty;
+    public CommentType Type { get; init; }
     public int? ParentCommentId { get; init; }
     public bool IsEdited { get; init; }
     public DateTimeOffset Created { get; init; }
@@ -90,6 +92,7 @@ public class GetCommentsQueryHandler : IRequestHandler<GetCommentsQuery, List<Co
             LinkedId = comment.LinkedId,
             Body = comment.Body,
             CreatedBy = comment.CreatedBy ?? string.Empty,
+            Type = comment.Type,
             ParentCommentId = comment.ParentCommentId,
             IsEdited = comment.IsEdited,
             Created = comment.Created,

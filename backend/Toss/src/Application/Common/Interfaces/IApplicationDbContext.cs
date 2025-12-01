@@ -26,6 +26,8 @@ using Toss.Domain.Entities.Assets;
 using Toss.Domain.Entities.Quality;
 using Toss.Domain.Entities.HR;
 using Toss.Domain.Entities.Support;
+using Toss.Domain.Entities.Collaborations;
+using Toss.Domain.Entities.Analytics;
 
 namespace Toss.Application.Common.Interfaces;
 
@@ -192,6 +194,12 @@ public interface IApplicationDbContext
     // Support entities
     DbSet<Ticket> Tickets { get; }
     DbSet<TicketNote> TicketNotes { get; }
+
+    // Collaboration entities
+    DbSet<CollabLink> CollabLinks { get; }
+
+    // Analytics entities
+    DbSet<BusinessEvent> BusinessEvents { get; }
 
     // Onboarding entities
     DbSet<OnboardingStatus> OnboardingStatuses { get; }

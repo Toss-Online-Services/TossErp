@@ -48,7 +48,7 @@ public static class DependencyInjection
         RegisterIdentityServices(builder.Services, builder.Configuration);
 
         // Register infrastructure services (AI, User Management)
-        RegisterInfrastructureServices(builder.Services);
+        RegisterInfrastructureServices(builder.Services, builder.Configuration, builder.Environment);
 
         builder.Services.AddMemoryCache();
 
@@ -147,7 +147,7 @@ public static class DependencyInjection
     /// <summary>
     /// Registers infrastructure services for AI and other features.
     /// </summary>
-    private static void RegisterInfrastructureServices(IServiceCollection services)
+    private static void RegisterInfrastructureServices(IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
         // AI Services
         services.AddScoped<Toss.Infrastructure.Services.ArtificialIntelligence.IAISettingsService, 
@@ -170,6 +170,25 @@ public static class DependencyInjection
             Toss.Infrastructure.Services.Notifications.NotificationService>();
         services.AddScoped<Toss.Application.Common.Interfaces.Localization.IBusinessLocalizationService,
             Toss.Infrastructure.Services.Localization.BusinessLocalizationService>();
+        services.AddScoped<Toss.Application.Common.Interfaces.Collaborations.ICollabLinkService,
+            Toss.Infrastructure.Services.Collaborations.CollabLinkService>();
+        services.AddScoped<Toss.Application.Common.Interfaces.Analytics.IBusinessEventService,
+            Toss.Infrastructure.Services.Analytics.BusinessEventService>();
+
+        // Captcha verifier - use Noop in development, Turnstile in production if configured
+        var captchaProvider = configuration["Captcha:Provider"] ?? "Noop";
+        if (captchaProvider == "Turnstile" && !environment.IsDevelopment())
+        {
+            services.AddHttpClient<Toss.Infrastructure.Services.Security.TurnstileCaptchaVerifier>();
+            services.AddScoped<Toss.Application.Common.Interfaces.Security.ICaptchaVerifier,
+                Toss.Infrastructure.Services.Security.TurnstileCaptchaVerifier>();
+        }
+        else
+        {
+            // Use Noop in development or if not configured
+            services.AddScoped<Toss.Application.Common.Interfaces.Security.ICaptchaVerifier,
+                Toss.Infrastructure.Services.Security.NoopCaptchaVerifier>();
+        }
     }
 
     /// <summary>

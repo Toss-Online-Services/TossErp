@@ -2,6 +2,7 @@ using Toss.Application.Common.Exceptions;
 using Toss.Application.Common.Interfaces;
 using Toss.Application.Common.Interfaces.Tenancy;
 using Toss.Domain.Entities.Notifications;
+using Toss.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Toss.Application.Notifications.Commands.CreateComment;
@@ -12,6 +13,8 @@ public record CreateCommentCommand : IRequest<int>
     public int LinkedId { get; init; }
     public string Body { get; init; } = string.Empty;
     public int? ParentCommentId { get; init; }
+    public CommentType Type { get; init; } = CommentType.General;
+    public string? CreatedBy { get; init; } // Optional for anonymous comments
 }
 
 public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand, int>
@@ -47,10 +50,8 @@ public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand,
             throw new ValidationException("Comment body is required.");
         }
 
-        if (string.IsNullOrWhiteSpace(_user.Id))
-        {
-            throw new ForbiddenAccessException("User must be authenticated to create comments.");
-        }
+        // Determine CreatedBy: use provided value, or current user, or null for anonymous
+        var createdBy = request.CreatedBy ?? _user.Id;
 
         // Validate parent comment exists if provided
         if (request.ParentCommentId.HasValue)
@@ -71,7 +72,8 @@ public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand,
             LinkedType = request.LinkedType,
             LinkedId = request.LinkedId,
             Body = request.Body,
-            ParentCommentId = request.ParentCommentId
+            ParentCommentId = request.ParentCommentId,
+            Type = request.Type
         };
 
         _context.Comments.Add(comment);

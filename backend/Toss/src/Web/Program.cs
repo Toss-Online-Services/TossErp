@@ -26,6 +26,15 @@ builder.Services.AddRateLimiter(options =>
         limiterOptions.QueueLimit = 2;
         limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
     });
+
+    // Public limiter for collaboration endpoints (feedback/offers)
+    options.AddFixedWindowLimiter("PublicLimiter", limiterOptions =>
+    {
+        limiterOptions.Window = TimeSpan.FromMinutes(1);
+        limiterOptions.PermitLimit = 10; // 10 requests per minute
+        limiterOptions.QueueLimit = 2;
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
 });
 
 var app = builder.Build();
@@ -104,6 +113,7 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<BusinessContextMiddleware>();
+app.UseMiddleware<AnalyticsMiddleware>();
 
 app.Map("/", () => Results.Redirect("/api"));
 

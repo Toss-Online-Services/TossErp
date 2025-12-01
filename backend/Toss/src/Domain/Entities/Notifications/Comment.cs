@@ -1,5 +1,6 @@
 using Toss.Domain.Common;
 using Toss.Domain.Entities.Businesses;
+using Toss.Domain.Enums;
 
 namespace Toss.Domain.Entities.Notifications;
 
@@ -31,7 +32,12 @@ public class Comment : BaseAuditableEntity, IBusinessScopedEntity
     /// </summary>
     public string Body { get; set; }
 
-    // Note: CreatedBy is inherited from BaseAuditableEntity
+    /// <summary>
+    /// Gets or sets the comment type (General, Feedback, Offer)
+    /// </summary>
+    public CommentType Type { get; set; } = CommentType.General;
+
+    // Note: CreatedBy is inherited from BaseAuditableEntity (can be null for anonymous comments)
 
     /// <summary>
     /// Gets or sets the parent comment ID (for threaded comments)

@@ -14,6 +14,7 @@ using Toss.Application.Inventory.Queries.GetStockMovementHistory;
 using Toss.Application.Inventory.Queries.GetStockOnHand;
 using Toss.Application.Inventory.Queries.SearchProducts;
 using Toss.Application.Inventory.Queries.GetLowStockItems;
+using Toss.Application.Inventory.Commands.AcknowledgeStockAlert;
 using Toss.Domain.Constants;
 
 namespace Toss.Web.Endpoints;
@@ -33,6 +34,8 @@ public class Inventory : EndpointGroupBase
         group.MapGet("categories", GetCategories);
         group.MapGet("stock-levels", GetStockLevels);
         group.MapGet("low-stock-alerts", GetLowStockAlerts);
+        group.MapPost("stock-alerts/{id}/acknowledge", AcknowledgeStockAlert)
+            .WithName("AcknowledgeStockAlert");
         group.MapPost("stock/adjust", AdjustStock);
         group.MapPost("stock/transfer", TransferStock);
         group.MapGet("stock/movements", GetStockMovementHistory);
@@ -157,6 +160,12 @@ public class Inventory : EndpointGroupBase
     {
         var result = await sender.Send(query);
         return Results.Ok(result);
+    }
+
+    public async Task<IResult> AcknowledgeStockAlert(ISender sender, int id)
+    {
+        var result = await sender.Send(new AcknowledgeStockAlertCommand { AlertId = id });
+        return result ? Results.Ok() : Results.NotFound();
     }
 }
 

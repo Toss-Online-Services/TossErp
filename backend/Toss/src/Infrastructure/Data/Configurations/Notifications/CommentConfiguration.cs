@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Toss.Domain.Entities.Notifications;
+using Toss.Domain.Enums;
 
 namespace Toss.Infrastructure.Data.Configurations.Notifications;
 
@@ -17,8 +18,12 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
             .IsRequired();
 
         builder.Property(c => c.CreatedBy)
-            .HasMaxLength(450)
-            .IsRequired();
+            .HasMaxLength(450);
+            // Note: Not required to allow anonymous comments for public feedback/offers
+
+        builder.Property(c => c.Type)
+            .HasConversion<int>()
+            .HasDefaultValue(CommentType.General);
 
         // Relationships
         builder.HasOne(c => c.Business)
