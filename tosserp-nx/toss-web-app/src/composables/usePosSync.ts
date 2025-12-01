@@ -1,9 +1,11 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useIndexedDB } from './useIndexedDB'
 import { useNetworkStatus } from './useNetworkStatus'
+import { useToast } from './useToast'
 
 export const usePosSync = () => {
   const { isOnline } = useNetworkStatus()
+  const { success, error: showError } = useToast()
   const {
     queueSale,
     getQueuedSales,
@@ -13,12 +15,13 @@ export const usePosSync = () => {
 
   const isSyncing = ref(false)
   const syncError = ref<string | null>(null)
+  const lastSyncAt = ref<Date | null>(null)
 
   const generateIdempotencyKey = () => {
     return `pos-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   }
 
-  const syncQueuedSales = async (apiBaseUrl: string) => {
+  const syncQueuedSales = async (apiBaseUrl: string, showNotifications = true) => {
     if (!isOnline.value || isSyncing.value) return
 
     isSyncing.value = true
@@ -26,15 +29,23 @@ export const usePosSync = () => {
 
     try {
       const unsyncedSales = await getQueuedSales(false)
+      
+      if (unsyncedSales.length === 0) {
+        isSyncing.value = false
+        return
+      }
+
+      let successCount = 0
+      let failureCount = 0
 
       for (const sale of unsyncedSales) {
         try {
+          const token = localStorage.getItem('auth_token')
           const response = await fetch(`${apiBaseUrl}/api/sales/pos/checkout`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              // Add auth header if needed
-              // 'Authorization': `Bearer ${token}`
+              ...(token ? { Authorization: `Bearer ${token}` } : {})
             },
             body: JSON.stringify({
               shopId: sale.shopId,
@@ -55,14 +66,30 @@ export const usePosSync = () => {
           
           // Mark as synced
           await markSaleSynced(sale.id, result.saleId)
+          successCount++
         } catch (error) {
           console.error(`Failed to sync sale ${sale.id}:`, error)
+          failureCount++
           // Don't remove on error - will retry later
+        }
+      }
+
+      lastSyncAt.value = new Date()
+
+      if (showNotifications) {
+        if (successCount > 0) {
+          success(`${successCount} sale${successCount !== 1 ? 's' : ''} synced successfully`)
+        }
+        if (failureCount > 0) {
+          showError(`${failureCount} sale${failureCount !== 1 ? 's' : ''} failed to sync. Will retry later.`)
         }
       }
     } catch (error) {
       syncError.value = error instanceof Error ? error.message : 'Sync failed'
       console.error('Sync error:', error)
+      if (showNotifications) {
+        showError('Failed to sync queued sales. Will retry when online.')
+      }
     } finally {
       isSyncing.value = false
     }
@@ -100,17 +127,46 @@ export const usePosSync = () => {
     return saleId
   }
 
-  const pendingSalesCount = computed(async () => {
+  const pendingSalesCount = ref(0)
+
+  const updatePendingCount = async () => {
     const unsynced = await getQueuedSales(false)
-    return unsynced.length
-  })
+    pendingSalesCount.value = unsynced.length
+  }
+
+  // Initialize pending count
+  if (typeof window !== 'undefined') {
+    updatePendingCount()
+    
+    // Watch for online status to trigger sync
+    watch(isOnline, async (online) => {
+      if (online && !isSyncing.value) {
+        const config = useRuntimeConfig()
+        const apiBaseUrl = config.public.apiBase || 'http://localhost:5000'
+        await syncQueuedSales(apiBaseUrl, true)
+        await updatePendingCount()
+      }
+    })
+
+    // Auto-sync periodically when online
+    setInterval(async () => {
+      if (isOnline.value && !isSyncing.value) {
+        const config = useRuntimeConfig()
+        const apiBaseUrl = config.public.apiBase || 'http://localhost:5000'
+        await syncQueuedSales(apiBaseUrl, false) // Silent sync
+        await updatePendingCount()
+      }
+    }, 30000) // Every 30 seconds
+  }
 
   return {
     isSyncing,
     syncError,
+    lastSyncAt,
+    pendingSalesCount,
     syncQueuedSales,
     queueSaleForSync,
-    pendingSalesCount,
+    updatePendingCount,
     generateIdempotencyKey
   }
 }

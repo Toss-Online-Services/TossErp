@@ -181,14 +181,7 @@ const handleCheckout = async () => {
   }
 }
 
-// Watch for online status to trigger sync
-watch(isOnline, async (online) => {
-  if (online && !isSyncing.value) {
-    const apiBaseUrl = useRuntimeConfig().public.apiBase || 'http://localhost:5000'
-    const { syncQueuedSales } = usePosSync()
-    await syncQueuedSales(apiBaseUrl)
-  }
-})
+// Sync is now handled automatically by usePosSync composable
 
 onMounted(() => {
   loadCart()

@@ -2512,10 +2512,11 @@
         "description": "Deliver customer CRM, staff, attendance, and payroll interfaces referencing backend APIs.",
         "details": "- Create People landing page summarizing customers, leads, outstanding balances, and HR alerts.",
         "testStrategy": "",
-        "status": "pending",
+        "status": "done",
         "dependencies": [],
         "priority": "medium",
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-01T18:24:34.205Z"
       },
       {
         "id": "42",
@@ -2523,10 +2524,11 @@
         "description": "Ship driver logistics, support tickets, quality checklists, and collaboration link surfaces in Nuxt.",
         "details": "- Build Jobs/Logistics screen for drivers: delivery list cards, status buttons, route grouping, and detail modals calling /api/logistics endpoints.",
         "testStrategy": "",
-        "status": "pending",
+        "status": "done",
         "dependencies": [],
         "priority": "medium",
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-01T20:02:35.867Z"
       },
       {
         "id": "43",
@@ -2534,10 +2536,11 @@
         "description": "Visualize backend analytics, business events, and Today View metrics in Nuxt.",
         "details": "- Build Analytics page mirroring Creative Tim sample with KPI cards, line/bar charts, and module usage tiles; consume /api/analytics/summary + /api/analytics/weekly.",
         "testStrategy": "",
-        "status": "pending",
+        "status": "done",
         "dependencies": [],
         "priority": "medium",
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-01T20:13:31.827Z"
       },
       {
         "id": "44",
@@ -2545,17 +2548,18 @@
         "description": "Finalize Nuxt PWA offline queue, automated testing, and deployment scripts for the frontend.",
         "details": "- Implement IndexedDB sync queue composables (usePosSync, useOfflineStore) that store queued POS/orders + retries when network restored; show toast/log state.",
         "testStrategy": "",
-        "status": "pending",
+        "status": "done",
         "dependencies": [],
         "priority": "medium",
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-01T20:26:23.523Z"
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-01T16:10:08.170Z",
+      "lastModified": "2025-12-01T20:26:23.526Z",
       "taskCount": 44,
-      "completedCount": 40,
+      "completedCount": 44,
       "tags": [
         "master"
       ]

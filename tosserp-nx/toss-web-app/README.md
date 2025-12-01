@@ -1,84 +1,29 @@
-# TOSS ERP-III Frontend (Nuxt 4)
+# TOSS ERP-III Frontend
 
-Mobile-first, offline-first ERP frontend built with Nuxt 4, Vue 3, TailwindCSS, and shadcn-style components.
+Mobile-first, offline-first ERP-III frontend built with Nuxt 4, Vue 3, and TailwindCSS.
+
+## Features
+
+- **Offline-First PWA**: Works seamlessly offline with IndexedDB queuing
+- **Mobile-First Design**: Optimized for township and rural SMMEs
+- **Real-Time Sync**: Automatic sync when network is restored
+- **Material Dashboard UI**: Modern, clean interface inspired by Material Design
 
 ## Tech Stack
 
-- **Framework**: Nuxt 4 (Vue 3, Composition API, TypeScript)
-- **Styling**: TailwindCSS with Material Dashboard design tokens
-- **Components**: shadcn-style components (Headless UI + Tailwind)
-- **Icons**: lucide-vue-next
-- **PWA**: @vite-pwa/nuxt for offline-first capabilities
-- **State**: Pinia (when needed), composables for local state
-- **Offline Storage**: IndexedDB via `idb` library
-
-## Design System
-
-### Color Palette
-
-Based on Material Dashboard Pro:
-- **Primary**: Rose/Pink (#e91e63) - Main brand color
-- **Success**: Green (#4CAF50)
-- **Info**: Blue (#1A73E8)
-- **Warning**: Orange (#fb8c00)
-- **Danger**: Red (#F44335)
-
-### Typography
-
-- **Font Family**: System UI stack (Roboto on Material, system fallbacks)
-- **Scale**: xs (0.75rem) → 4xl (2.25rem)
-- **Line Heights**: Tight (1.25), Normal (1.5), Relaxed (1.75)
-
-### Spacing
-
-Material Dashboard spacing scale:
-- xs: 0.25rem (4px)
-- sm: 0.5rem (8px)
-- md: 1rem (16px)
-- lg: 1.5rem (24px)
-- xl: 2rem (32px)
-- 2xl: 3rem (48px)
-
-## Project Structure
-
-```
-toss-web-app/
-├── src/
-│   ├── assets/
-│   │   └── css/
-│   │       └── styles.css          # Global styles + Tailwind directives
-│   ├── components/
-│   │   ├── ui/                      # shadcn-style components
-│   │   │   ├── Button.vue
-│   │   │   ├── Card.vue
-│   │   │   └── ...
-│   │   ├── Navbar.vue
-│   │   ├── Footer.vue
-│   │   └── BottomNav.vue           # Mobile bottom navigation
-│   ├── composables/
-│   │   ├── useIndexedDB.ts         # IndexedDB wrapper
-│   │   ├── useNetworkStatus.ts     # Network connectivity
-│   │   └── usePosSync.ts           # POS offline sync
-│   ├── layouts/
-│   │   └── MainLayout.vue          # Main app shell
-│   ├── pages/                      # File-based routing
-│   │   ├── dashboard.vue
-│   │   ├── sales/
-│   │   │   └── pos.vue
-│   │   └── ...
-│   └── lib/
-│       └── utils.ts                # cn() utility for class merging
-├── nuxt.config.ts                  # Nuxt configuration
-├── tailwind.config.js              # Tailwind + Material Dashboard tokens
-└── postcss.config.js               # PostCSS config
-```
+- **Nuxt 4**: Vue.js framework with SSR/SSG support
+- **Vue 3**: Composition API with TypeScript
+- **TailwindCSS**: Utility-first CSS framework
+- **PWA**: Service Worker with offline caching
+- **IndexedDB**: Local storage for offline operations
+- **Vitest**: Unit testing framework
 
 ## Development
 
 ### Prerequisites
 
-- Node.js 18+
-- pnpm (recommended) or npm
+- Node.js 20+
+- pnpm 8+
 
 ### Setup
 
@@ -86,194 +31,95 @@ toss-web-app/
 # Install dependencies
 pnpm install
 
-# Start dev server
+# Start development server
 pnpm dev
-# or
-nx serve toss-web-app
+
+# Type check
+pnpm typecheck
+
+# Lint
+pnpm lint
+
+# Test
+pnpm test
+
+# Build
+pnpm build
 ```
 
-The app will be available at `http://localhost:4200`
+## Environment Variables
 
-### Available Scripts
+Create a `.env` file in the project root:
 
-```bash
-# Development
-pnpm dev                    # Start dev server
-nx serve toss-web-app       # Same as above
-
-# Building
-pnpm build                  # Build for production
-nx build toss-web-app       # Same as above
-
-# Type checking
-pnpm typecheck              # Run TypeScript type check
-nx typecheck toss-web-app   # Same as above
-
-# Linting
-pnpm lint                   # Run ESLint
-nx lint toss-web-app        # Same as above
-
-# Testing
-pnpm test                   # Run Vitest tests
-nx test toss-web-app        # Same as above
-```
-
-## Component Development
-
-### Creating New Components
-
-Components are auto-imported in Nuxt. Place them in `src/components/`:
-
-```vue
-<!-- src/components/ui/MyComponent.vue -->
-<script setup lang="ts">
-import { cn } from '@/lib/utils'
-
-defineProps<{
-  class?: string
-}>()
-</script>
-
-<template>
-  <div :class="cn('base-classes', $props.class)">
-    <slot />
-  </div>
-</template>
-```
-
-### Using Components
-
-No imports needed thanks to Nuxt auto-imports:
-
-```vue
-<template>
-  <MyComponent class="custom-class">
-    Content
-  </MyComponent>
-</template>
-```
-
-## Styling Guidelines
-
-### Use Tailwind Utilities
-
-Prefer Tailwind utility classes over custom CSS:
-
-```vue
-<div class="flex items-center gap-4 p-6 bg-card rounded-lg shadow-material-md">
-```
-
-### Use Design Tokens
-
-Reference CSS variables for colors:
-
-```vue
-<div class="bg-primary text-primary-foreground">
-```
-
-### Material Dashboard Shadows
-
-Use Material-specific shadows for cards:
-
-```vue
-<div class="shadow-material-sm">  <!-- Small elevation -->
-<div class="shadow-material-md">  <!-- Medium elevation -->
-<div class="shadow-material-lg">  <!-- Large elevation -->
-```
-
-## PWA Configuration
-
-The app is configured as a PWA with:
-
-- **Offline caching**: Shell assets cached for offline use
-- **API caching**: NetworkFirst strategy for API calls (5min TTL)
-- **Service Worker**: Auto-update on new deployments
-- **Manifest**: Standalone app with shortcuts to POS and Stock
-
-### Offline Sync
-
-Use composables for offline-first features:
-
-```typescript
-import { usePosSync } from '@/composables/usePosSync'
-
-const { queueSale, syncQueue } = usePosSync()
-
-// Queue sale when offline
-await queueSale(saleData)
-
-// Sync when online
-await syncQueue()
-```
-
-## Testing
-
-### Unit Tests (Vitest)
-
-Place tests next to components:
-
-```typescript
-// src/components/ui/Button.test.ts
-import { describe, it, expect } from 'vitest'
-import { mount } from '@vue/test-utils'
-import Button from './Button.vue'
-
-describe('Button', () => {
-  it('renders correctly', () => {
-    const wrapper = mount(Button, {
-      slots: { default: 'Click me' }
-    })
-    expect(wrapper.text()).toBe('Click me')
-  })
-})
-```
-
-### E2E Tests (Playwright)
-
-E2E tests are in `toss-web-app-e2e/`:
-
-```bash
-nx e2e toss-web-app-e2e
+```env
+NUXT_PUBLIC_API_BASE=http://localhost:5000
 ```
 
 ## Deployment
 
-### Static Export
+### Using Deployment Scripts
 
+**Linux/Mac:**
 ```bash
-nx build toss-web-app
-# Output: dist/toss-web-app/
+chmod +x scripts/deploy.sh
+./scripts/deploy.sh
 ```
 
-### Environment Variables
-
-Create `.env` file:
-
-```env
-NUXT_PUBLIC_API_BASE_URL=https://api.tosserp.com
-NUXT_PUBLIC_APP_NAME=TOSS ERP-III
+**Windows:**
+```powershell
+.\scripts\deploy.ps1
 ```
 
-Access in code:
+### Manual Deployment
 
-```typescript
-const apiUrl = useRuntimeConfig().public.apiBaseUrl
+1. Build the application:
+   ```bash
+   pnpm build
+   ```
+
+2. The build output will be in `dist/toss-web-app/`
+
+3. Deploy to your hosting platform:
+   - **Vercel**: Connect your repo, set environment variables
+   - **Netlify**: Connect your repo, set environment variables
+   - **Docker**: Use the provided Dockerfile (if available)
+
+### Environment Variables for Production
+
+Set these in your hosting platform:
+
+- `NUXT_PUBLIC_API_BASE`: Backend API URL (e.g., `https://api.toss.africa`)
+
+## Offline Sync
+
+The application automatically queues operations when offline and syncs when online:
+
+- **POS Sales**: Queued in IndexedDB, synced on reconnect
+- **Stock Adjustments**: Queued for sync
+- **Other Operations**: Generic offline store available
+
+## Testing
+
+Run tests with:
+```bash
+pnpm test
 ```
 
-## Resources
+Tests are located in `src/**/__tests__/` directories.
 
-- [Nuxt 4 Docs](https://nuxt.com/docs)
-- [Vue 3 Docs](https://vuejs.org/)
-- [TailwindCSS Docs](https://tailwindcss.com/docs)
-- [Material Dashboard Pro](https://demos.creative-tim.com/material-dashboard-pro/pages/dashboards/analytics.html) (Design reference)
-- [shadcn/ui](https://ui.shadcn.com/) (Component patterns)
+## Project Structure
 
-## Contributing
+```
+src/
+├── components/       # Vue components
+│   ├── ui/          # Reusable UI components
+├── composables/     # Vue composables
+│   ├── __tests__/   # Composable tests
+├── layouts/         # Layout components
+├── pages/           # File-based routing
+└── assets/          # Static assets
+```
 
-1. Follow the existing component patterns
-2. Use TypeScript for all new code
-3. Write tests for new components/composables
-4. Ensure mobile-first responsive design
-5. Test offline functionality
-6. Follow the Material Dashboard design language
+## License
 
+MIT

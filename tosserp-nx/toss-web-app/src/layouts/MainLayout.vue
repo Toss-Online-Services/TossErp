@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import BottomNav from '@/components/BottomNav.vue'
+import Toaster from '@/components/Toaster.vue'
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -220,5 +221,8 @@ onUnmounted(() => {
 
     <!-- Mobile bottom navigation -->
     <BottomNav />
+
+    <!-- Toast notifications -->
+    <Toaster />
   </div>
 </template>

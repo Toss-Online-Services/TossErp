@@ -26,6 +26,18 @@ interface QueuedSale {
   saleId?: number // Set after successful sync
 }
 
+interface QueuedOperation {
+  id: string
+  type: string
+  endpoint: string
+  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+  payload: any
+  createdAt: number
+  synced: boolean
+  retryCount: number
+  maxRetries?: number
+}
+
 interface TossDB extends DBSchema {
   cart: {
     key: string
@@ -49,6 +61,11 @@ interface TossDB extends DBSchema {
     }
     indexes: { 'by-sku': string; 'by-barcode': string }
   }
+  operations: {
+    key: string
+    value: QueuedOperation
+    indexes: { 'by-synced': boolean; 'by-created': number; 'by-type': string }
+  }
 }
 
 let db: IDBPDatabase<TossDB> | null = null
@@ -57,8 +74,8 @@ export const useIndexedDB = () => {
   const initDB = async () => {
     if (db) return db
 
-    db = await openDB<TossDB>('toss-pos-db', 1, {
-      upgrade(db) {
+    db = await openDB<TossDB>('toss-pos-db', 2, {
+      upgrade(db, oldVersion, newVersion) {
         // Cart store
         if (!db.objectStoreNames.contains('cart')) {
           const cartStore = db.createObjectStore('cart', { keyPath: 'productId' })
@@ -77,6 +94,14 @@ export const useIndexedDB = () => {
           const productsStore = db.createObjectStore('products', { keyPath: 'id' })
           productsStore.createIndex('by-sku', 'sku')
           productsStore.createIndex('by-barcode', 'barcode')
+        }
+
+        // Operations store (for generic offline operations)
+        if (!db.objectStoreNames.contains('operations')) {
+          const operationsStore = db.createObjectStore('operations', { keyPath: 'id' })
+          operationsStore.createIndex('by-synced', 'synced')
+          operationsStore.createIndex('by-created', 'createdAt')
+          operationsStore.createIndex('by-type', 'type')
         }
       }
     })
