@@ -2,8 +2,11 @@
 using Toss.Application.Common.Interfaces;
 using Toss.Infrastructure.Data;
 using Toss.Web.Services;
+using Toss.Web.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 
 using NSwag;
 using NSwag.Generation.Processors.Security;
@@ -37,6 +40,9 @@ public static class DependencyInjection
 
         builder.Services.AddEndpointsApiExplorer();
 
+        // Add API versioning
+        builder.Services.AddApiVersioningServices();
+
         // Add CORS policy for frontend access (Development only)
         if (builder.Environment.IsDevelopment())
         {
@@ -56,21 +62,8 @@ public static class DependencyInjection
             });
         }
 
-        builder.Services.AddOpenApiDocument((configure, sp) =>
-        {
-            configure.Title = "Toss API";
-
-            // Add JWT
-            configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
-            {
-                Type = OpenApiSecuritySchemeType.ApiKey,
-                Name = "Authorization",
-                In = OpenApiSecurityApiKeyLocation.Header,
-                Description = "Type into the textbox: Bearer {your JWT token}."
-            });
-
-            configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
-        });
+        // Configure versioned OpenAPI/Swagger
+        builder.Services.AddVersionedSwagger(builder.Configuration);
     }
 
     public static void AddKeyVaultIfConfigured(this IHostApplicationBuilder builder)

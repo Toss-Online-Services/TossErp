@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Asp.Versioning;
 
 namespace Toss.Web.Infrastructure;
 
@@ -9,9 +10,10 @@ public static class WebApplicationExtensions
         var groupName = group.GroupName ?? group.GetType().Name;
 
         return app
-            .MapGroup($"/api/{groupName}")
+            .MapGroup($"/api/v{{version:apiVersion}}/{groupName}")
             .WithGroupName(groupName)
-            .WithTags(groupName);
+            .WithTags(groupName)
+            .HasApiVersion(new ApiVersion(1, 0));
     }
 
     public static WebApplication MapEndpoints(this WebApplication app)
