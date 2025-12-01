@@ -71,6 +71,12 @@ const navigationSections = [
         signalKey: 'deliveries'
       },
       {
+        name: 'Support',
+        description: 'Tickets, help, documentation',
+        path: '/support',
+        icon: HelpCircle
+      },
+      {
         name: 'Settings',
         description: 'Tenants, roles, channels, integrations',
         path: '/settings',
@@ -124,19 +130,30 @@ onUnmounted(() => {
     </div>
 
     <aside :class="[
-      'bg-card border-r transition-all duration-300 flex flex-col fixed lg:relative h-full z-50 overflow-hidden',
+      'bg-card border-r transition-all duration-300 flex flex-col fixed lg:relative h-full z-50 overflow-hidden shadow-material-sm',
       isMobile ? (sidebarOpen ? 'w-64' : 'w-0') : (sidebarOpen ? 'w-64' : 'w-16'),
       isMobile && !sidebarOpen ? '-translate-x-full' : 'translate-x-0'
     ]">
-      <div class="p-4 border-b flex items-center justify-between">
-        <div v-if="sidebarOpen">
-          <p class="text-xs uppercase tracking-wide text-muted-foreground">TOSS ERP III</p>
-          <h3 class="text-sm font-semibold">Township Command Center</h3>
+      <div class="p-4 border-b flex items-center justify-between bg-gradient-to-r from-primary/5 to-primary/10">
+        <div v-if="sidebarOpen" class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <span class="text-primary-foreground font-bold text-sm">T</span>
+            </div>
+            <div>
+              <p class="text-xs uppercase tracking-wide text-muted-foreground font-semibold">TOSS ERP III</p>
+              <h3 class="text-sm font-bold text-foreground">Command Center</h3>
+            </div>
+          </div>
         </div>
-        <button @click="toggleSidebar" class="p-2 hover:bg-accent rounded-md hidden lg:block"
-          :class="{ 'mx-auto': !sidebarOpen }">
-          <ChevronRight v-if="!sidebarOpen" :size="20" />
-          <ChevronLeft v-else :size="20" />
+        <button
+          @click="toggleSidebar"
+          class="p-2 hover:bg-accent rounded-md hidden lg:block transition-colors"
+          :class="{ 'mx-auto': !sidebarOpen }"
+          aria-label="Toggle sidebar"
+        >
+          <ChevronRight v-if="!sidebarOpen" :size="20" class="text-muted-foreground" />
+          <ChevronLeft v-else :size="20" class="text-muted-foreground" />
         </button>
       </div>
 
@@ -155,10 +172,10 @@ onUnmounted(() => {
               :to="item.path"
               @click="closeSidebarOnMobile"
               :class="[
-                'flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm',
+                'flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm font-medium',
                 route.path.startsWith(item.path)
-                  ? 'bg-primary text-primary-foreground'
-                  : 'hover:bg-accent hover:text-accent-foreground'
+                  ? 'bg-primary text-primary-foreground shadow-material-sm'
+                  : 'hover:bg-accent hover:text-accent-foreground text-muted-foreground'
               ]"
             >
               <component :is="item.icon" :size="20" />
@@ -192,15 +209,15 @@ onUnmounted(() => {
     <div class="flex-1 flex flex-col overflow-hidden">
       <Navbar :on-toggle-sidebar="toggleSidebar" />
 
-      <main class="flex-1 overflow-auto pb-16 lg:pb-0">
-        <div class="p-4 md:p-8">
+      <main class="flex-1 overflow-auto pb-16 lg:pb-0 bg-background">
+        <div class="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
           <slot />
         </div>
       </main>
 
       <Footer class="hidden lg:block" />
     </div>
-    
+
     <!-- Mobile bottom navigation -->
     <BottomNav />
   </div>

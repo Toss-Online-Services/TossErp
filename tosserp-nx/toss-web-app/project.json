@@ -40,9 +40,10 @@
       }
     },
     "typecheck": {
-      "executor": "@nx/vite:typecheck",
+      "executor": "nx:run-commands",
       "options": {
-        "buildTarget": "toss-web-app:build"
+        "command": "vue-tsc --noEmit",
+        "cwd": "toss-web-app"
       }
     },
     "lint": {

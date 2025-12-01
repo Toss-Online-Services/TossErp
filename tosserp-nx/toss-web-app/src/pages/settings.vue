@@ -2,6 +2,7 @@
 import Card from '@/components/ui/Card.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardContent from '@/components/ui/CardContent.vue'
+import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import { Settings } from 'lucide-vue-next'
 </script>
 
@@ -9,8 +10,9 @@ import { Settings } from 'lucide-vue-next'
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-xl font-bold tracking-tight">Settings</h1>
-        <p class="text-muted-foreground">User preferences and configuration</p>
+        <Breadcrumbs />
+        <h1 class="text-2xl md:text-3xl font-bold tracking-tight mt-2">Settings</h1>
+        <p class="text-muted-foreground mt-1">User preferences and configuration</p>
       </div>
     </div>
     <Card>

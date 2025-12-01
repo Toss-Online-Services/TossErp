@@ -4,7 +4,8 @@ import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
 import CardContent from '@/components/ui/CardContent.vue'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
-import { ShoppingBag, Plus, FileText, Receipt } from 'lucide-vue-next'
+import Button from '@/components/ui/Button.vue'
+import { ShoppingCart, FileText, PackageCheck, Plus } from 'lucide-vue-next'
 </script>
 
 <template>
@@ -12,71 +13,59 @@ import { ShoppingBag, Plus, FileText, Receipt } from 'lucide-vue-next'
     <div class="flex items-center justify-between">
       <div>
         <Breadcrumbs />
-        <h1 class="text-2xl md:text-3xl font-bold tracking-tight mt-2">Sales</h1>
-        <p class="text-muted-foreground mt-1">Manage sales, POS, orders, and invoices</p>
+        <h1 class="text-2xl md:text-3xl font-bold tracking-tight mt-2">Procurement</h1>
+        <p class="text-muted-foreground mt-1">Manage purchase requests, orders, and receipts</p>
       </div>
-      <NuxtLink
-        to="/sales/pos"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-      >
-        <Plus :size="18" />
-        <span>New Sale</span>
-      </NuxtLink>
+      <Button>
+        <Plus :size="18" class="mr-2" />
+        New Purchase Request
+      </Button>
     </div>
 
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <NuxtLink
-        to="/sales/pos"
-        class="block"
-      >
-        <Card class="hover:shadow-material-md transition-shadow cursor-pointer">
-          <CardHeader>
-            <CardTitle class="flex items-center gap-2">
-              <ShoppingBag class="h-5 w-5 text-primary" />
-              Point of Sale
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p class="text-sm text-muted-foreground">
-              Offline-first POS for quick transactions
-            </p>
-          </CardContent>
-        </Card>
-      </NuxtLink>
-
-      <NuxtLink
-        to="/sales/orders"
-        class="block"
-      >
+    <div class="grid gap-4 md:grid-cols-3">
+      <NuxtLink to="/procurement/requests" class="block">
         <Card class="hover:shadow-material-md transition-shadow cursor-pointer">
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
               <FileText class="h-5 w-5 text-primary" />
-              Sales Orders
+              Purchase Requests
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p class="text-sm text-muted-foreground">
-              Manage customer orders and quotes
+              Create and manage purchase requests
             </p>
           </CardContent>
         </Card>
       </NuxtLink>
 
-      <NuxtLink
-        to="/sales/invoices"
-        class="block"
-      >
+      <NuxtLink to="/procurement/orders" class="block">
         <Card class="hover:shadow-material-md transition-shadow cursor-pointer">
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
-              <Receipt class="h-5 w-5 text-primary" />
-              Invoices
+              <ShoppingCart class="h-5 w-5 text-primary" />
+              Purchase Orders
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p class="text-sm text-muted-foreground">
-              Create and manage customer invoices
+              Track purchase orders and approvals
+            </p>
+          </CardContent>
+        </Card>
+      </NuxtLink>
+
+      <NuxtLink to="/procurement/receipts" class="block">
+        <Card class="hover:shadow-material-md transition-shadow cursor-pointer">
+          <CardHeader>
+            <CardTitle class="flex items-center gap-2">
+              <PackageCheck class="h-5 w-5 text-primary" />
+              Goods Receipts
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p class="text-sm text-muted-foreground">
+              Record goods received from suppliers
             </p>
           </CardContent>
         </Card>

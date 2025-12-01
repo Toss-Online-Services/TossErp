@@ -5,6 +5,7 @@ import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
 import CardContent from '@/components/ui/CardContent.vue'
 import CardSkeleton from '@/components/ui/CardSkeleton.vue'
+import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -78,7 +79,8 @@ const formatCurrency = (value: number) => {
 <template>
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Dashboard</h1>
+      <Breadcrumbs />
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight mt-2">Dashboard</h1>
       <p class="text-muted-foreground mt-1">Today's overview and quick actions</p>
     </div>
 

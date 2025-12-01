@@ -2464,10 +2464,11 @@
         "description": "Implement the Creative Tim-inspired mobile-first dashboard shell, sidebar nav, top bar, and route scaffolding for all MVP modules.",
         "details": "- Build Nuxt layout(s) to provide the Material Dashboard style: collapsible sidebar w/ module groups (Home, Sales, Stock, Money, People, Jobs, Support, Settings) and top bar with search/profile/actions.",
         "testStrategy": "",
-        "status": "pending",
+        "status": "done",
         "dependencies": [],
         "priority": "medium",
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-01T15:46:26.507Z"
       },
       {
         "id": "38",
@@ -2475,10 +2476,11 @@
         "description": "Build mobile-first POS checkout, queue orders, quotesordersdeliveryinvoice screens wired to backend APIs.",
         "details": "- Implement POS checkout view with product search, barcode input, cart lines, tender selection (cash/card/mobile/on account), change calculator, and offline queue indicator using existing useNetworkStatus composable.",
         "testStrategy": "",
-        "status": "pending",
+        "status": "done",
         "dependencies": [],
         "priority": "medium",
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-01T15:53:25.199Z"
       },
       {
         "id": "39",
@@ -2486,10 +2488,11 @@
         "description": "Deliver stock, supplier, purchase request/order/grn experiences with low-stock alerts and stock transfer tooling.",
         "details": "- Build inventory landing page showing stock KPIs, low-stock list, and quick actions to adjust, transfer, or create purchase request.",
         "testStrategy": "",
-        "status": "pending",
+        "status": "done",
         "dependencies": [],
         "priority": "medium",
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-01T15:59:38.742Z"
       },
       {
         "id": "40",
@@ -2497,10 +2500,11 @@
         "description": "Build Money section UI (cashbook, accounts, invoices/reports) tying into new accounting APIs.",
         "details": "- Create Money landing page summarizing cash-in/out, account balances, outstanding invoices, creditors/debtors using /api/accounting and /api/reports endpoints.",
         "testStrategy": "",
-        "status": "pending",
+        "status": "done",
         "dependencies": [],
         "priority": "medium",
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-01T16:10:08.161Z"
       },
       {
         "id": "41",
@@ -2549,9 +2553,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-01T15:25:30.462Z",
+      "lastModified": "2025-12-01T16:10:08.170Z",
       "taskCount": 44,
-      "completedCount": 36,
+      "completedCount": 40,
       "tags": [
         "master"
       ]

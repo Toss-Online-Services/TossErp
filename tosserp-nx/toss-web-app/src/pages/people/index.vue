@@ -3,6 +3,7 @@ import Card from '@/components/ui/Card.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
 import CardContent from '@/components/ui/CardContent.vue'
+import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import { Users, UserPlus } from 'lucide-vue-next'
 </script>
 
@@ -10,7 +11,8 @@ import { Users, UserPlus } from 'lucide-vue-next'
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl md:text-3xl font-bold tracking-tight">People</h1>
+        <Breadcrumbs />
+        <h1 class="text-2xl md:text-3xl font-bold tracking-tight mt-2">People</h1>
         <p class="text-muted-foreground mt-1">Manage customers and staff</p>
       </div>
       <button
