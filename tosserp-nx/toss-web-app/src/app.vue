@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import MainLayout from '@/layouts/MainLayout.vue'
+import { onMounted } from 'vue'
+
+onMounted(() => {
+  // Apply dark mode by default
+  document.documentElement.classList.add('dark')
+})
 </script>
 
 <template>
-  <MainLayout>
+  <NuxtLayout>
     <NuxtPage />
-  </MainLayout>
+  </NuxtLayout>
 </template>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// Redirect to dashboard
+// Redirect to dashboard immediately
 await navigateTo('/dashboard')
 </script>
 
 <template>
-  <div></div>
+  <div>Redirecting to dashboard...</div>
 </template>

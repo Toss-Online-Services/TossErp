@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import type { PaginatedResponse } from '../types/api'
 
 export interface CustomerDto {
   id: number
@@ -34,15 +35,6 @@ export interface CustomerInteractionDto {
   notes: string
   createdDate: string
   createdBy?: string
-}
-
-export interface PaginatedResponse<T> {
-  items: T[]
-  pageNumber: number
-  totalPages: number
-  totalCount: number
-  hasPreviousPage: boolean
-  hasNextPage: boolean
 }
 
 export const useCrmApi = () => {

@@ -1682,9 +1682,10 @@
             "description": "Introduce core inventory entities, EF Core configurations, and DbContext updates with initial migration.",
             "dependencies": [],
             "details": "Create entities with fields: Item {Id, Sku, Name, Unit, IsActive, AverageCost, CurrentQty?}, StockLocation {Id, Code, Name, IsActive}, InventoryTransaction {Id, ItemId, FromLocationId?, ToLocationId?, Quantity, UnitCost, Type (Purchase, Adjustment, TransferOut, TransferIn, Consume, Produce), Timestamp, Reference}, ReorderLevel {Id, ItemId, LocationId, MinLevel}. Add EF Core configurations, relationships, and indexes; extend DbContext with DbSets and OnModelCreating. Generate migration and update database per repo conventions discovered. Ensure soft-delete/auditing alignment if used.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Compile build; run migration in dev; verify tables/columns; add minimal unit tests for entity configuration if pattern exists.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T21:37:30.755Z"
           },
           {
             "id": 2,
@@ -1694,9 +1695,10 @@
               1
             ],
             "details": "Add ItemsController and StockLocationsController (or extend existing). Implement endpoints: GET list/detail with filters, POST create, PUT/PATCH update, DELETE/archive if applicable. Use DTOs, validators, and mapping helpers per repo conventions. Enforce unique constraints (e.g., SKU, Location Code) with proper error responses. Secure endpoints with existing auth/tenant filters. Add repository/service layer or MediatR handlers if used in the codebase.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests: create, update, list, and conflict handling (duplicate SKU/Code). Verify authorization and validation errors.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T21:37:51.856Z"
           },
           {
             "id": 3,
@@ -1707,9 +1709,10 @@
               2
             ],
             "details": "Create InventoryService with methods: PostAdjustment(itemId, locationId, qty, unitCost?), PostPurchase(itemId, locationId, qty, unitCost), Transfer(itemId, fromLocationId, toLocationId, qty). Persist InventoryTransaction rows (two rows for transfer: out/in). Maintain Item.AverageCost using weighted average on purchase/positive adjustments; prevent negative stock per business rule. Ensure concurrency handling (transactions/row version). Add MovementsController with POST /api/inventory/movements and specific routes. Return resulting SOH and average cost.\n<info added on 2025-11-28T11:47:40.279Z>\n- Implemented application handlers: Application/Inventory/Commands/TransferStockCommand.cs and Application/Inventory/Queries/GetStockOnHandQuery.cs. Transfer posts two InventoryTransaction rows (OUT from source, IN to destination) using the source location’s current weighted average unit cost at posting time; carry that unit cost to the IN row so valuation remains consistent across locations. Purchases/positive adjustments remain the only operations that recalculate average cost; transfers do not change the global item average, only per-location balances and valuation.\n- Added API endpoints:\n  - POST /api/inventory/stock/transfer → accepts { itemId, fromLocationId, toLocationId, quantity } (quantity > 0). Validates item and locations exist, from != to, and sufficient stock at source. Executes in a single transaction with optimistic concurrency checks. Returns updated stock-on-hand for both locations plus current average cost used for the transfer.\n  - GET /api/inventory/stock/soh?itemId={id}&locationId={id} → returns stock-on-hand by item/location with quantity and extended valuation (qty × location-weighted unit cost). Supports filtering by item and/or location; when no filters are provided, returns per-location aggregates.\n- Persistence/business rules: prevent negative stock at source before posting; lock/verify row versions as needed to avoid double-posting under concurrency; use InventoryService to encapsulate posting and valuation logic. Ensure transfer cost is derived from the source location’s latest average at the moment of posting, not from destination.\n- Controller wiring: expose routes in Controllers/Inventory/StockController.cs (or equivalent existing inventory controller) mapping to the command/query handlers; standardize problem details for validation errors and insufficient stock.\n- Tests: add unit tests for weighted-average math on purchase vs transfer, and for transfer out/in symmetry; integration tests for both endpoints covering happy path, insufficient stock, concurrent transfers, and SOH aggregation.\n</info added on 2025-11-28T11:47:40.279Z>",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit tests for weighted average math across sequences; integration tests posting purchases, adjustments, and transfers verifying quantities per location and average cost updates.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T21:38:11.471Z"
           },
           {
             "id": 4,
@@ -1719,9 +1722,10 @@
               3
             ],
             "details": "Implement query: GET /api/stock/soh?itemId&locationId. Create read model or SQL aggregation to compute per (ItemId, LocationId) balances from InventoryTransaction or from maintained quantities if denormalized. Optimize with indexes and consider a view/stored projection if pattern exists. Include total across all locations when locationId is absent. Ensure authorization/tenant scoping.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests: after posting movements, call SOH endpoint to verify balances for specific location and totals. Performance sanity (query uses index/aggregation).",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T21:38:27.935Z"
           },
           {
             "id": 5,
@@ -1731,12 +1735,13 @@
               4
             ],
             "details": "Implement a background job (IHostedService/Quartz/Hangfire per repo) that periodically queries items with SOH < MinLevel per location using the SOH projection. Create alert records or dispatch domain events to existing Notification system. Make schedule configurable via app settings. Ensure idempotency and avoid duplicate alerts within a time window. Add admin endpoint to trigger manual run if pattern exists.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration test: seed ReorderLevel and stock below threshold, run job (or invoke handler) and assert alert creation. Verify no duplicates on repeated runs within window; security checks for multi-tenant scoping.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T21:38:47.367Z"
           }
         ],
-        "updatedAt": "2025-11-28T11:45:50.325Z"
+        "updatedAt": "2025-12-01T21:38:47.367Z"
       },
       {
         "id": "18",
@@ -2557,7 +2562,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-01T20:26:23.526Z",
+      "lastModified": "2025-12-01T21:38:47.420Z",
       "taskCount": 44,
       "completedCount": 44,
       "tags": [

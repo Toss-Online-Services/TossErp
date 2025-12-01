@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import type { PaginatedResponse } from '../types/api'
 
 export type PaymentType = 'Cash' | 'Card' | 'Mobile' | 'OnAccount'
 export type SaleStatus = 'Pending' | 'Completed' | 'Voided' | 'Refunded'
@@ -35,15 +36,6 @@ export interface SaleDto {
   status: SaleStatus
   total: number
   paymentMethod: PaymentType
-}
-
-export interface PaginatedResponse<T> {
-  items: T[]
-  pageNumber: number
-  totalPages: number
-  totalCount: number
-  hasPreviousPage: boolean
-  hasNextPage: boolean
 }
 
 export const useSalesApi = () => {

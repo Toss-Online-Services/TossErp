@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import type { PaginatedResponse } from '../types/api'
 
 export interface ProductDto {
   id: number
@@ -36,14 +37,7 @@ export interface StockOnHandDto {
   lastStockDate: string
 }
 
-export interface PaginatedResponse<T> {
-  items: T[]
-  pageNumber: number
-  totalPages: number
-  totalCount: number
-  hasPreviousPage: boolean
-  hasNextPage: boolean
-}
+import type { PaginatedResponse } from '~/types/api'
 
 export interface AdjustStockRequest {
   productId: number
