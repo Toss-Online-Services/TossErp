@@ -7,6 +7,7 @@ using Microsoft.Extensions.ServiceDiscovery;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using HealthChecks.Npgsql;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -91,26 +92,58 @@ public static class Extensions
 
     public static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
-        builder.Services.AddHealthChecks()
+        var healthChecksBuilder = builder.Services.AddHealthChecks()
             // Add a default liveness check to ensure app is responsive
             .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
+
+        // Add database health check if connection string is configured
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        if (!string.IsNullOrWhiteSpace(connectionString))
+        {
+            healthChecksBuilder.AddNpgsql(
+                connectionString,
+                name: "database",
+                tags: new[] { "ready", "db" },
+                timeout: TimeSpan.FromSeconds(3));
+        }
 
         return builder;
     }
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
-        // Adding health checks endpoints to applications in non-development environments has security implications.
-        // See https://aka.ms/dotnet/aspire/healthchecks for details before enabling these endpoints in non-development environments.
+        // Health checks endpoints for production use
+        // In production, consider adding authentication/authorization to these endpoints
+        // See https://aka.ms/dotnet/aspire/healthchecks for security details
+        
+        // Liveness probe: indicates the app is running (minimal check)
+        // Kubernetes/Docker will use this to determine if container should be restarted
+        app.MapHealthChecks("/health/live", new HealthCheckOptions
+        {
+            Predicate = r => r.Tags.Contains("live"),
+            AllowCachingResponses = false
+        });
+
+        // Readiness probe: indicates the app is ready to accept traffic
+        // Includes database connectivity and other critical dependencies
+        app.MapHealthChecks("/health/ready", new HealthCheckOptions
+        {
+            Predicate = r => r.Tags.Contains("ready"),
+            AllowCachingResponses = false
+        });
+
+        // Combined health check endpoint (for backward compatibility and general monitoring)
+        // In production, consider restricting access to this endpoint
         if (app.Environment.IsDevelopment())
         {
-            // All health checks must pass for app to be considered ready to accept traffic after starting
             app.MapHealthChecks("/health");
-
-            // Only health checks tagged with the "live" tag must pass for app to be considered alive
-            app.MapHealthChecks("/alive", new HealthCheckOptions
+        }
+        else
+        {
+            // In production, map /health but consider adding IP restrictions or authentication
+            app.MapHealthChecks("/health", new HealthCheckOptions
             {
-                Predicate = r => r.Tags.Contains("live")
+                AllowCachingResponses = false
             });
         }
 

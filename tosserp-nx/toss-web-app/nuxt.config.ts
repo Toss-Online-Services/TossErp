@@ -24,7 +24,8 @@ export default defineNuxtConfig({
     plugins: [nxViteTsPaths()],
   },
   modules: [
-    '@vite-pwa/nuxt'
+    '@vite-pwa/nuxt',
+    '@nuxtjs/tailwindcss'
   ],
   pwa: {
     registerType: 'autoUpdate',

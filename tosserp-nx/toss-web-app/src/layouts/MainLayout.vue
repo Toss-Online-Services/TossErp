@@ -199,9 +199,9 @@ onUnmounted(() => {
       </main>
 
       <Footer class="hidden lg:block" />
-      
-      <!-- Mobile bottom navigation -->
-      <BottomNav />
     </div>
+    
+    <!-- Mobile bottom navigation -->
+    <BottomNav />
   </div>
 </template>
