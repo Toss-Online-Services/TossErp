@@ -1826,7 +1826,7 @@
           "17",
           "12"
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -1834,9 +1834,10 @@
             "description": "Enumerate solution and project files; locate DbContext, entities, controllers, and inventory/billing modules to align Projects/Jobs implementation.",
             "dependencies": [],
             "details": "List `*.sln`, `*.csproj`, and `appsettings*.json`. Search for `DbContext`, `OnModelCreating`, and `Controller` classes. Search for `Inventory`, `Stock`, `Invoice`, and `Billing` services or repositories. Open representative files to capture routing attributes, DTO/mapping, validation filters, transactions, and response conventions to follow.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "No code changes. Validate by listing files and summarizing conventions found.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T07:23:41.500Z"
           },
           {
             "id": 2,
@@ -1846,9 +1847,10 @@
               1
             ],
             "details": "Add `Project { Id, CustomerId, Status }` with a `ProjectStatus` enum. Add `ProjectTask` with `ProjectId`. Add `ProjectMaterial { Id, ProjectId, ItemId, Qty }`. Add `LabourEntry { Id, ProjectId, Hours, Rate }`. Configure relationships via Fluent API/config classes (FKs, cascade behavior, required fields, indexes). Update DbContext to include DbSets and model configuration. Generate a migration per repo naming standards.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Build passes; migration generation produces expected tables, FKs, and indexes without errors.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T07:28:06.200Z"
           },
           {
             "id": 3,
@@ -1858,9 +1860,10 @@
               2
             ],
             "details": "Follow existing controller base class and routing patterns (`[Route(\"api/projects\")]`). Use DTOs and mapping strategy (AutoMapper or manual) consistent with repo. Implement status machine: New → In Progress → On Hold → Completed → Closed with guards and permission checks. Return consistent response types and error handling per conventions.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit tests for valid/invalid status transitions and auth rules; manual API smoke tests for create/get/patch.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T07:34:18.090Z"
           },
           {
             "id": 4,
@@ -1871,9 +1874,10 @@
               3
             ],
             "details": "Integrate with existing inventory/stock service or repository; validate item existence and available quantity; handle concurrency and wrap updates in a transaction; persist `ProjectMaterial` and `LabourEntry`; return updated summaries. Apply existing validation/authorization filters and audit logging if standard.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests: create project, add materials (assert stock decreased; test insufficient stock), add labour (assert persisted). Verify transactional behavior and error responses.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T07:34:30.020Z"
           },
           {
             "id": 5,
@@ -1884,11 +1888,13 @@
               4
             ],
             "details": "Validate invoice existence and permissions using existing billing/invoice service. Enforce status-based rules for linking (e.g., restrict when Closed). Extend GET projection to include related collections and invoice link via eager loading or projection DTOs. Update Swagger/OpenAPI docs if present.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "E2E test: create project, add materials and labour, link invoice, retrieve aggregated view; verify permissions and status rules are enforced.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T07:34:40.881Z"
           }
-        ]
+        ],
+        "updatedAt": "2025-12-01T07:34:40.881Z"
       },
       {
         "id": "20",
@@ -1935,8 +1941,9 @@
           "17",
           "1"
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2025-12-01T07:41:14.360Z"
       },
       {
         "id": "23",
@@ -1997,8 +2004,9 @@
           "6",
           "7"
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "in-progress",
+        "subtasks": [],
+        "updatedAt": "2025-12-01T07:42:25.930Z"
       },
       {
         "id": "27",
@@ -2159,9 +2167,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-11-29T11:44:38.263Z",
+      "lastModified": "2025-12-01T07:42:25.933Z",
       "taskCount": 35,
-      "completedCount": 18,
+      "completedCount": 20,
       "tags": [
         "master"
       ]

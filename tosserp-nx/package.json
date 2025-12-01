@@ -28,5 +28,8 @@
     "vue-router": "^4.5.0",
     "vue-tsc": "^2.2.8"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@vite-pwa/nuxt": "^1.1.0",
+    "idb": "^8.0.3"
+  }
 }

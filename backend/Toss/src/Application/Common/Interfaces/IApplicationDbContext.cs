@@ -18,6 +18,8 @@ using Toss.Domain.Entities.Vendors;
 using Toss.Domain.Entities.Tax;
 using Toss.Domain.Entities.Manufacturing;
 using Toss.Domain.Entities.Tasks;
+using Toss.Domain.Entities.Projects;
+using Toss.Domain.Entities.Audit;
 using Toss.Domain.Entities.Businesses;
 
 namespace Toss.Application.Common.Interfaces;
@@ -149,6 +151,15 @@ public interface IApplicationDbContext
 
     // Task entities
     DbSet<TaskItem> TaskItems { get; }
+
+    // Project entities
+    DbSet<Project> Projects { get; }
+    DbSet<ProjectTask> ProjectTasks { get; }
+    DbSet<ProjectMaterial> ProjectMaterials { get; }
+    DbSet<LabourEntry> LabourEntries { get; }
+
+    // Audit entities
+    DbSet<AuditEntry> AuditEntries { get; }
 
     // Onboarding entities
     DbSet<OnboardingStatus> OnboardingStatuses { get; }

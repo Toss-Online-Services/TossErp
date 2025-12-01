@@ -21,6 +21,8 @@ using Toss.Domain.Entities.Tax;
 using Toss.Domain.Entities.Onboarding;
 using Toss.Domain.Entities.Manufacturing;
 using Toss.Domain.Entities.Tasks;
+using Toss.Domain.Entities.Projects;
+using Toss.Domain.Entities.Audit;
 using Toss.Infrastructure.Identity;
 using Toss.Domain.Entities.Businesses;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -375,6 +377,33 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// </summary>
     public DbSet<TaskItem> TaskItems => Set<TaskItem>();
 
+    // Project entities
+    /// <summary>
+    /// Projects/jobs for tracking work, materials, and labour.
+    /// </summary>
+    public DbSet<Project> Projects => Set<Project>();
+    
+    /// <summary>
+    /// Tasks within projects.
+    /// </summary>
+    public DbSet<ProjectTask> ProjectTasks => Set<ProjectTask>();
+    
+    /// <summary>
+    /// Materials consumed in projects.
+    /// </summary>
+    public DbSet<ProjectMaterial> ProjectMaterials => Set<ProjectMaterial>();
+    
+    /// <summary>
+    /// Labour/time entries for projects.
+    /// </summary>
+    public DbSet<LabourEntry> LabourEntries => Set<LabourEntry>();
+
+    // Audit entities
+    /// <summary>
+    /// Audit trail entries for tracking entity changes.
+    /// </summary>
+    public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
+
     // Catalog entities
     /// <summary>
     /// Product attributes for configurable products (size, color, etc.).
@@ -605,5 +634,20 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<TaskItem>()
             .HasQueryFilter(task => !_businessContext.HasBusiness || task.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Project>()
+            .HasQueryFilter(project => !_businessContext.HasBusiness || project.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<ProjectTask>()
+            .HasQueryFilter(task => !_businessContext.HasBusiness || task.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<ProjectMaterial>()
+            .HasQueryFilter(material => !_businessContext.HasBusiness || material.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<LabourEntry>()
+            .HasQueryFilter(labour => !_businessContext.HasBusiness || labour.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<AuditEntry>()
+            .HasQueryFilter(audit => !_businessContext.HasBusiness || audit.BusinessId == _businessContext.CurrentBusinessId);
     }
 }

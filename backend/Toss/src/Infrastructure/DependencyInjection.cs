@@ -65,6 +65,7 @@ public static class DependencyInjection
         services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
         services.AddScoped<ISaveChangesInterceptor, DateTimeOffsetInterceptor>();
         services.AddScoped<ISaveChangesInterceptor, DateTimeInterceptor>();
+        services.AddScoped<ISaveChangesInterceptor, AuditSaveChangesInterceptor>();
     }
 
     /// <summary>
