@@ -23,6 +23,7 @@ using Toss.Domain.Entities.Audit;
 using Toss.Domain.Entities.Notifications;
 using Toss.Domain.Entities.Businesses;
 using Toss.Domain.Entities.Assets;
+using Toss.Domain.Entities.Quality;
 
 namespace Toss.Application.Common.Interfaces;
 
@@ -172,6 +173,14 @@ public interface IApplicationDbContext
     // Asset entities
     DbSet<Asset> Assets { get; }
     DbSet<AssetMaintenanceLog> AssetMaintenanceLogs { get; }
+
+    // Quality entities
+    DbSet<QualityChecklist> QualityChecklists { get; }
+    DbSet<ChecklistItem> ChecklistItems { get; }
+    DbSet<ChecklistRun> ChecklistRuns { get; }
+    DbSet<ChecklistRunItem> ChecklistRunItems { get; }
+    DbSet<Incident> Incidents { get; }
+    DbSet<ActionItem> ActionItems { get; }
 
     // Onboarding entities
     DbSet<OnboardingStatus> OnboardingStatuses { get; }

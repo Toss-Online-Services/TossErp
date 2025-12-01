@@ -1,9 +1,9 @@
+using Toss.Application.Common.Exceptions;
 using Toss.Application.Common.Interfaces;
 using Toss.Application.Common.Interfaces.Tenancy;
 using Toss.Application.Common.Models;
 using Toss.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
-using Mapster;
 
 namespace Toss.Application.Assets.Queries.GetAssets;
 
@@ -39,6 +39,7 @@ public class GetAssetsQueryHandler : IRequestHandler<GetAssetsQuery, PaginatedLi
         }
 
         var query = _context.Assets
+            .Include(a => a.Shop)
             .Where(a => a.BusinessId == _businessContext.CurrentBusinessId!.Value)
             .AsQueryable();
 
@@ -76,9 +77,29 @@ public class GetAssetsQueryHandler : IRequestHandler<GetAssetsQuery, PaginatedLi
 
         query = query.OrderByDescending(a => a.Created);
 
-        return await query
-            .ProjectToType<AssetDto>()
-            .PaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);
+        var assetQuery = query
+            .Select(a => new AssetDto
+            {
+                Id = a.Id,
+                Name = a.Name,
+                Code = a.Code,
+                Value = a.Value,
+                PurchaseCost = a.PurchaseCost,
+                PurchaseDate = a.PurchaseDate,
+                Location = a.Location,
+                ShopId = a.ShopId,
+                ShopName = a.Shop != null ? a.Shop.Name : null,
+                Condition = a.Condition,
+                Category = a.Category,
+                Brand = a.Brand,
+                Model = a.Model,
+                SerialNumber = a.SerialNumber,
+                Notes = a.Notes,
+                IsActive = a.IsActive,
+                Created = a.Created
+            });
+
+        return await PaginatedList<AssetDto>.CreateAsync(assetQuery, request.PageNumber, request.PageSize, cancellationToken);
     }
 }
 

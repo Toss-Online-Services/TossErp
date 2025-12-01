@@ -25,6 +25,7 @@ using Toss.Domain.Entities.Projects;
 using Toss.Domain.Entities.Audit;
 using Toss.Domain.Entities.Notifications;
 using Toss.Domain.Entities.Assets;
+using Toss.Domain.Entities.Quality;
 using Toss.Infrastructure.Identity;
 using Toss.Domain.Entities.Businesses;
 using BusinessSettings = Toss.Domain.Entities.Businesses.BusinessSettings;
@@ -434,6 +435,37 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// </summary>
     public DbSet<AssetMaintenanceLog> AssetMaintenanceLogs => Set<AssetMaintenanceLog>();
 
+    // Quality entities
+    /// <summary>
+    /// Quality checklists for standardizing quality checks.
+    /// </summary>
+    public DbSet<QualityChecklist> QualityChecklists => Set<QualityChecklist>();
+    
+    /// <summary>
+    /// Items within quality checklists.
+    /// </summary>
+    public DbSet<ChecklistItem> ChecklistItems => Set<ChecklistItem>();
+    
+    /// <summary>
+    /// Completed runs/executions of quality checklists.
+    /// </summary>
+    public DbSet<ChecklistRun> ChecklistRuns => Set<ChecklistRun>();
+    
+    /// <summary>
+    /// Results for individual checklist items in a run.
+    /// </summary>
+    public DbSet<ChecklistRunItem> ChecklistRunItems => Set<ChecklistRunItem>();
+    
+    /// <summary>
+    /// Quality incidents that need to be tracked and resolved.
+    /// </summary>
+    public DbSet<Incident> Incidents => Set<Incident>();
+    
+    /// <summary>
+    /// Action items assigned to resolve incidents or follow up on quality issues.
+    /// </summary>
+    public DbSet<ActionItem> ActionItems => Set<ActionItem>();
+
     // Catalog entities
     /// <summary>
     /// Product attributes for configurable products (size, color, etc.).
@@ -702,5 +734,24 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<AssetMaintenanceLog>()
             .HasQueryFilter(log => !_businessContext.HasBusiness || log.BusinessId == _businessContext.CurrentBusinessId);
+
+        // Quality entities
+        builder.Entity<QualityChecklist>()
+            .HasQueryFilter(checklist => !_businessContext.HasBusiness || checklist.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<ChecklistItem>()
+            .HasQueryFilter(item => !_businessContext.HasBusiness || item.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<ChecklistRun>()
+            .HasQueryFilter(run => !_businessContext.HasBusiness || run.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<ChecklistRunItem>()
+            .HasQueryFilter(item => !_businessContext.HasBusiness || item.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Incident>()
+            .HasQueryFilter(incident => !_businessContext.HasBusiness || incident.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<ActionItem>()
+            .HasQueryFilter(action => !_businessContext.HasBusiness || action.BusinessId == _businessContext.CurrentBusinessId);
     }
 }

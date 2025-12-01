@@ -1914,9 +1914,9 @@
           "6",
           "7"
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [],
-        "updatedAt": "2025-12-01T11:19:53.649Z"
+        "updatedAt": "2025-12-01T11:52:59.389Z"
       },
       {
         "id": "21",
@@ -1964,8 +1964,72 @@
           "6",
           "7"
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Discover repository structure and extract API/domain conventions",
+            "description": "Explore solution layout, modules, and patterns to mirror for the Quality module.",
+            "dependencies": [],
+            "details": "Enumerate Controllers, Domain/Entities, Persistence/DbContext, Services, DTOs, Validation, Auth, and Test projects under C:\\Users\\PROBOOK\\source\\repos\\Toss-Online-Services\\TossErp. Note routing attributes, naming, EF Core configuration style, error handling, and permission patterns used in existing modules (e.g., Projects, Support, Notifications).\n<info added on 2025-12-01T12:36:15.138Z>\nImplement Quality domain and EF Core configs following existing conventions:\n\n- Domain entities (namespace Toss.Domain.Entities.Quality), each inherits BaseAuditableEntity and implements IBusinessScopedEntity, with BusinessId and Business navigation:\n  - QualityChecklist: Name (required, max 200), Description (max 1000), ICollection<ChecklistItem> Items { get; private set; } initialized in ctor.\n  - ChecklistItem: QualityChecklistId (FK), Title (required, max 300), IsRequired (bool), Order (int).\n  - Incident: Title (required, max 300), Description (max 2000), Type (IncidentType), Severity (IncidentSeverity), OccurredAt (DateTimeOffset), Optional QualityChecklistId/ChecklistItemId FKs if needed later.\n  - ActionItem: IncidentId (FK), Title (required, max 300), DueDate (nullable DateTime), AssignedToId (match user FK type used in Projects/Notifications modules), Status (ActionItemStatus), CompletedAt (nullable).\n\n- Enums (namespace Toss.Domain.Enums):\n  - IncidentType (e.g., Safety, Quality, Environmental, Other)\n  - IncidentSeverity (e.g., Low, Medium, High, Critical)\n  - ActionItemStatus (e.g., Open, InProgress, Blocked, Completed, Cancelled)\n\n- EF Core configurations under Infrastructure/Data/Configurations/Quality:\n  - QualityChecklistConfiguration.cs: HasIndex(BusinessId, Name).IsUnique(); Property limits (Name 200, Description 1000); HasMany(c => c.Items).WithOne(i => i.QualityChecklist).HasForeignKey(i => i.QualityChecklistId).OnDelete(DeleteBehavior.Cascade).\n  - ChecklistItemConfiguration.cs: Property Title max 300; Property Order required; HasIndex(QualityChecklistId, Order).\n  - IncidentConfiguration.cs: Property Title max 300, Description max 2000; Property Type required; Property Severity required; HasIndex(BusinessId, Severity, OccurredAt); optional FKs to checklist/item configured WithMany().OnDelete(DeleteBehavior.SetNull) if added.\n  - ActionItemConfiguration.cs: Property Title max 300; Property Status required; HasIndex(BusinessId, Status); HasIndex(AssignedToId, Status); HasOne(ai => ai.Incident).WithMany(i => i.ActionItems).HasForeignKey(ai => ai.IncidentId).OnDelete(DeleteBehavior.Cascade).\n\n- ApplicationDbContext:\n  - Add DbSet<QualityChecklist>, DbSet<ChecklistItem>, DbSet<Incident>, DbSet<ActionItem>.\n  - Ensure ApplyBusinessFilters() includes global filters for all four entities (e => e.BusinessId == _currentBusinessId).\n  - Register configurations in OnModelCreating via assembly scan (consistent with existing modules).\n\n- Patterns to mirror:\n  - Constructors initialize collections and set required properties; collection setters private.\n  - Decimal precision via HasPrecision where applicable (not expected for these entities).\n  - Use same user FK type and naming as existing assigned/owner patterns (e.g., AssignedToId) from Projects/Support modules to keep cross-module consistency.\n\nFile layout to add:\n- Domain/Entities/Quality/QualityChecklist.cs\n- Domain/Entities/Quality/ChecklistItem.cs\n- Domain/Entities/Quality/Incident.cs\n- Domain/Entities/Quality/ActionItem.cs\n- Domain/Enums/IncidentType.cs\n- Domain/Enums/IncidentSeverity.cs\n- Domain/Enums/ActionItemStatus.cs\n- Infrastructure/Data/Configurations/Quality/QualityChecklistConfiguration.cs\n- Infrastructure/Data/Configurations/Quality/ChecklistItemConfiguration.cs\n- Infrastructure/Data/Configurations/Quality/IncidentConfiguration.cs\n- Infrastructure/Data/Configurations/Quality/ActionItemConfiguration.cs\n</info added on 2025-12-01T12:36:15.138Z>",
+            "status": "done",
+            "testStrategy": "Not applicable; research step only.",
+            "updatedAt": "2025-12-01T12:36:22.187Z",
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "Define Quality domain entities and EF Core configurations",
+            "description": "Create entities and relationships for QualityChecklist, ChecklistItem, Incident, and ActionItem following established patterns.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add entity classes with keys and navigation properties; include Incident.Type and Incident.Severity enums, ActionItem.AssigneeId and DueDate, plus statuses. Configure via Fluent API (DbSet<> in DbContext, OnModelCreating), add indexes (e.g., Incident.Severity, Date), set required fields, cascading rules. Prepare initial migration per project conventions.",
+            "status": "done",
+            "testStrategy": "Add or adapt mapping tests if the repo includes them; otherwise validate build and migration creation locally.",
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T12:54:54.549Z"
+          },
+          {
+            "id": 3,
+            "title": "Implement application/service layer for Quality operations",
+            "description": "Create service interfaces and implementations for creating checklists, recording runs, logging incidents, and assigning actions with validation and auth.",
+            "dependencies": [
+              2
+            ],
+            "details": "Introduce IQualityService with methods: CreateChecklist, RecordChecklistRun, LogIncident, AssignActionItem. Enforce validation (required fields, due date in future, severity/type enums), authorization policies consistent with existing modules, and domain events if used. Ensure transactional save behavior and error handling mirrors project norms.",
+            "status": "done",
+            "testStrategy": "Unit tests for service methods using in-memory/test DbContext or mocks; cover success, validation failures, and permission denials.",
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T13:00:36.418Z"
+          },
+          {
+            "id": 4,
+            "title": "Add Quality HTTP endpoints, DTOs, and validators",
+            "description": "Expose endpoints for checklist creation, run recording, incident logging, and action assignment, matching routing and response styles used elsewhere.",
+            "dependencies": [
+              3
+            ],
+            "details": "Create controller(s) with routes like POST /api/quality/checklists, POST /api/quality/checks/run, POST /api/quality/incidents, POST /api/quality/actions. Define request/response DTOs and validation attributes/filters. Map DTOs to domain via mappers used in the project. Apply authorization attributes and consistent error responses.",
+            "status": "in-progress",
+            "testStrategy": "Integration-style controller tests (or WebApplicationFactory if used) to assert 200/201 responses, validation errors, and auth enforcement.",
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T13:00:37.263Z"
+          },
+          {
+            "id": 5,
+            "title": "Implement integration tests for creation, permissions, and listing by severity/date",
+            "description": "Write end-to-end tests verifying records persist, permissions are enforced, and list queries support severity/date filtering.",
+            "dependencies": [
+              4
+            ],
+            "details": "Seed test data; test creating incidents, recording checklist runs, assigning actions, and verify persistence. Add list endpoints/queries if not present to filter incidents by severity and date, including pagination/sorting per conventions. Ensure cross-business access is blocked per existing authorization patterns.",
+            "status": "pending",
+            "testStrategy": "Integration tests using existing test harness and fixtures; assert data created, filters work (severity/date), and unauthorized access is rejected.",
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2025-12-01T13:00:37.263Z"
       },
       {
         "id": "24",
@@ -2181,9 +2245,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-01T11:19:53.666Z",
+      "lastModified": "2025-12-01T13:00:37.267Z",
       "taskCount": 35,
-      "completedCount": 29,
+      "completedCount": 30,
       "tags": [
         "master"
       ]
