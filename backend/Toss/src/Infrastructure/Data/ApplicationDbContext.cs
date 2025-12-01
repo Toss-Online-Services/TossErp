@@ -24,6 +24,7 @@ using Toss.Domain.Entities.Tasks;
 using Toss.Domain.Entities.Projects;
 using Toss.Domain.Entities.Audit;
 using Toss.Domain.Entities.Notifications;
+using Toss.Domain.Entities.Assets;
 using Toss.Infrastructure.Identity;
 using Toss.Domain.Entities.Businesses;
 using BusinessSettings = Toss.Domain.Entities.Businesses.BusinessSettings;
@@ -422,6 +423,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// </summary>
     public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
 
+    // Asset entities
+    /// <summary>
+    /// Physical and intangible assets owned by businesses.
+    /// </summary>
+    public DbSet<Asset> Assets => Set<Asset>();
+    
+    /// <summary>
+    /// Maintenance logs for assets.
+    /// </summary>
+    public DbSet<AssetMaintenanceLog> AssetMaintenanceLogs => Set<AssetMaintenanceLog>();
+
     // Catalog entities
     /// <summary>
     /// Product attributes for configurable products (size, color, etc.).
@@ -684,5 +696,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<BusinessSettings>()
             .HasQueryFilter(settings => !_businessContext.HasBusiness || settings.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Asset>()
+            .HasQueryFilter(asset => !_businessContext.HasBusiness || asset.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<AssetMaintenanceLog>()
+            .HasQueryFilter(log => !_businessContext.HasBusiness || log.BusinessId == _businessContext.CurrentBusinessId);
     }
 }

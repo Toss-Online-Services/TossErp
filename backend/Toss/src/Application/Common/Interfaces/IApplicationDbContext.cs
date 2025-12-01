@@ -22,6 +22,7 @@ using Toss.Domain.Entities.Projects;
 using Toss.Domain.Entities.Audit;
 using Toss.Domain.Entities.Notifications;
 using Toss.Domain.Entities.Businesses;
+using Toss.Domain.Entities.Assets;
 
 namespace Toss.Application.Common.Interfaces;
 
@@ -167,6 +168,10 @@ public interface IApplicationDbContext
     DbSet<Notification> Notifications { get; }
     DbSet<Comment> Comments { get; }
     DbSet<NotificationPreference> NotificationPreferences { get; }
+
+    // Asset entities
+    DbSet<Asset> Assets { get; }
+    DbSet<AssetMaintenanceLog> AssetMaintenanceLogs { get; }
 
     // Onboarding entities
     DbSet<OnboardingStatus> OnboardingStatuses { get; }
