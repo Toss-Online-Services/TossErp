@@ -20,6 +20,7 @@ using Toss.Domain.Entities.Manufacturing;
 using Toss.Domain.Entities.Tasks;
 using Toss.Domain.Entities.Projects;
 using Toss.Domain.Entities.Audit;
+using Toss.Domain.Entities.Notifications;
 using Toss.Domain.Entities.Businesses;
 
 namespace Toss.Application.Common.Interfaces;
@@ -160,6 +161,11 @@ public interface IApplicationDbContext
 
     // Audit entities
     DbSet<AuditEntry> AuditEntries { get; }
+
+    // Notification entities
+    DbSet<Notification> Notifications { get; }
+    DbSet<Comment> Comments { get; }
+    DbSet<NotificationPreference> NotificationPreferences { get; }
 
     // Onboarding entities
     DbSet<OnboardingStatus> OnboardingStatuses { get; }

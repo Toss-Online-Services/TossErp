@@ -166,6 +166,8 @@ public static class DependencyInjection
         services.AddScoped<IOperationsTodayService, OperationsTodayService>();
         services.AddScoped<Toss.Application.Common.Interfaces.Manufacturing.IManufacturingCostingService,
             Toss.Infrastructure.Services.Manufacturing.ManufacturingCostingService>();
+        services.AddScoped<Toss.Application.Common.Interfaces.Notifications.INotificationService,
+            Toss.Infrastructure.Services.Notifications.NotificationService>();
     }
 
     /// <summary>

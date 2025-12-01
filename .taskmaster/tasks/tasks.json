@@ -1094,7 +1094,7 @@
           "8",
           "9"
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -1102,9 +1102,10 @@
             "description": "Explore the codebase to find controllers, entity base classes, DbContext, DTO mapping, and any SignalR hubs or domain event patterns to align with.",
             "dependencies": [],
             "details": "Use glob/grep to list .cs files and search for Notification/Comment, base entities (e.g., Auditable, CreatedBy), typical controller routing attributes, services, and DI patterns. Note conventions for authorization, tenant scoping, and pagination to follow in new endpoints.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": null,
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T07:52:16.275Z"
           },
           {
             "id": 2,
@@ -1114,9 +1115,10 @@
               1
             ],
             "details": "Create Comment {Id, LinkedType, LinkedId, Body, CreatedBy, CreatedAt} and Notification {Id, UserId, Type, LinkedType, LinkedId, Payload, IsRead, CreatedAt}. Add DbSet<> to DbContext, fluent configurations (indexes on LinkedType+LinkedId, UserId+IsRead+CreatedAt), value constraints, and relationships if applicable. Generate and review EF migration.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Build migration; verify ModelSnapshot updates and indexes created. Run a local migrate to ensure schema applies cleanly.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T07:56:18.282Z"
           },
           {
             "id": 3,
@@ -1126,9 +1128,10 @@
               2
             ],
             "details": "Add CommentsController with DTOs and validation attributes, map to Comment entity, enforce tenant/business scoping, set CreatedBy from the authenticated user, order by CreatedAt desc with pagination, and return shapes consistent with existing APIs. Handle 400/401/403/404 using the project’s ProblemDetails pattern.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests: can create and fetch thread; unauthorized users blocked; cross-tenant access denied; invalid input returns 400.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T08:01:53.559Z"
           },
           {
             "id": 4,
@@ -1139,9 +1142,10 @@
               3
             ],
             "details": "If SignalR exists, add NotificationsHub broadcasting on new notifications; otherwise expose GET /api/notifications (filters: unread, since, paging) and POST /api/notifications/mark-read. Wire domain events to create Notification entries on comment created and other triggers.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Integration tests: creating a comment produces a notification; unread count updates; SignalR hub (if present) receives broadcasts or polling returns new items.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T08:02:05.334Z"
           },
           {
             "id": 5,
@@ -1151,11 +1155,13 @@
               4
             ],
             "details": "Add UserNotificationPreference storage (entity or existing settings), CRUD APIs or internal service to update/read preferences. Hook into payment and inventory services/events to conditionally enqueue notifications based on preferences. Ensure secure access control and multi-tenant boundaries.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit/integration tests: updating preferences affects downstream notifications; simulate payment/stock events and confirm notifications are created or suppressed per user settings.",
-            "parentId": "undefined"
+            "parentId": "undefined",
+            "updatedAt": "2025-12-01T08:02:17.958Z"
           }
-        ]
+        ],
+        "updatedAt": "2025-12-01T08:02:17.958Z"
       },
       {
         "id": "11",
@@ -2004,9 +2010,9 @@
           "6",
           "7"
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [],
-        "updatedAt": "2025-12-01T07:42:25.930Z"
+        "updatedAt": "2025-12-01T07:49:15.950Z"
       },
       {
         "id": "27",
@@ -2126,8 +2132,9 @@
           "15",
           "21"
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "in-progress",
+        "subtasks": [],
+        "updatedAt": "2025-12-01T08:06:24.148Z"
       },
       {
         "id": "34",
@@ -2167,9 +2174,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-01T07:42:25.933Z",
+      "lastModified": "2025-12-01T08:06:24.159Z",
       "taskCount": 35,
-      "completedCount": 20,
+      "completedCount": 22,
       "tags": [
         "master"
       ]

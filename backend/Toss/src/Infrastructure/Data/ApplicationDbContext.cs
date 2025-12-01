@@ -23,6 +23,7 @@ using Toss.Domain.Entities.Manufacturing;
 using Toss.Domain.Entities.Tasks;
 using Toss.Domain.Entities.Projects;
 using Toss.Domain.Entities.Audit;
+using Toss.Domain.Entities.Notifications;
 using Toss.Infrastructure.Identity;
 using Toss.Domain.Entities.Businesses;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -404,6 +405,22 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// </summary>
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
 
+    // Notification entities
+    /// <summary>
+    /// In-app notifications for users.
+    /// </summary>
+    public DbSet<Notification> Notifications => Set<Notification>();
+    
+    /// <summary>
+    /// Comments on transactions and entities.
+    /// </summary>
+    public DbSet<Comment> Comments => Set<Comment>();
+    
+    /// <summary>
+    /// User notification preferences.
+    /// </summary>
+    public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
+
     // Catalog entities
     /// <summary>
     /// Product attributes for configurable products (size, color, etc.).
@@ -649,5 +666,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<AuditEntry>()
             .HasQueryFilter(audit => !_businessContext.HasBusiness || audit.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Notification>()
+            .HasQueryFilter(notification => !_businessContext.HasBusiness || notification.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<Comment>()
+            .HasQueryFilter(comment => !_businessContext.HasBusiness || comment.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<NotificationPreference>()
+            .HasQueryFilter(pref => !_businessContext.HasBusiness || pref.BusinessId == _businessContext.CurrentBusinessId);
+
+        builder.Entity<BusinessSettings>()
+            .HasQueryFilter(settings => !_businessContext.HasBusiness || settings.BusinessId == _businessContext.CurrentBusinessId);
     }
 }
