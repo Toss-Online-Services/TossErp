@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-
-onMounted(() => {
-  // Apply dark mode by default
-  document.documentElement.classList.add('dark')
-})
+// Don't apply dark mode to main content - Material Dashboard Pro uses light content area
 </script>
 
 <template>

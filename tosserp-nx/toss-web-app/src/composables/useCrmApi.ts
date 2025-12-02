@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { PaginatedResponse } from '../types/api'
+import type { PaginatedResponse } from '~/types/api'
 
 export interface CustomerDto {
   id: number

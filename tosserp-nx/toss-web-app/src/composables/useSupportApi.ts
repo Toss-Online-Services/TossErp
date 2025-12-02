@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { PaginatedResponse } from '../types/api'
+import type { PaginatedResponse } from '~/types/api'
 
 export type TicketType = 'Bug' | 'Feature' | 'Question' | 'Other'
 export type TicketStatus = 'Open' | 'InProgress' | 'Resolved' | 'Closed'
@@ -19,8 +19,6 @@ export interface TicketDto {
   noteCount: number
   created: string
 }
-
-import type { PaginatedResponse } from '~/types/api'
 
 export const useSupportApi = () => {
   const isLoading = ref(false)

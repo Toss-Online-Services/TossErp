@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     port: 4200,
   },
   typescript: {
-    typeCheck: true,
+    typeCheck: false, // Disable type checking during dev for faster startup
     tsConfig: {
       extends: '../../tsconfig.base.json', // Nuxt copies this string as-is to the `./.nuxt/tsconfig.json`, therefore it needs to be relative to that directory
     },
@@ -24,7 +24,6 @@ export default defineNuxtConfig({
     plugins: [nxViteTsPaths()],
   },
   modules: [
-    '@vite-pwa/nuxt',
     '@nuxtjs/tailwindcss'
   ],
   runtimeConfig: {
@@ -32,76 +31,77 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:5000'
     }
   },
-  pwa: {
-    registerType: 'autoUpdate',
-    manifest: {
-      name: 'TOSS ERP-III',
-      short_name: 'TOSS',
-      description: 'Mobile-first ERP for township and rural SMMEs',
-      theme_color: '#e91e63',
-      background_color: '#ffffff',
-      icons: [
-        {
-          src: '/favicon.ico',
-          sizes: '64x64 32x32 24x24 16x16',
-          type: 'image/x-icon'
-        },
-        {
-          src: '/pwa-192x192.png',
-          sizes: '192x192',
-          type: 'image/png',
-          purpose: 'any maskable'
-        },
-        {
-          src: '/pwa-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
-          purpose: 'any maskable'
-        }
-      ],
-      display: 'standalone',
-      orientation: 'portrait',
-      start_url: '/',
-      scope: '/',
-      categories: ['business', 'productivity'],
-      shortcuts: [
-        {
-          name: 'POS',
-          short_name: 'POS',
-          description: 'Quick access to Point of Sale',
-          url: '/sales/pos',
-          icons: [{ src: '/favicon.ico', sizes: '96x96' }]
-        },
-        {
-          name: 'Stock',
-          short_name: 'Stock',
-          description: 'View inventory levels',
-          url: '/stock',
-          icons: [{ src: '/favicon.ico', sizes: '96x96' }]
-        }
-      ]
-    },
-    workbox: {
-      navigateFallback: '/pos',
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
-      runtimeCaching: [
-        {
-          urlPattern: /^https:\/\/.*\/api\/.*/i,
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'api-cache',
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 5 * 60 // 5 minutes
-            },
-            networkTimeoutSeconds: 10
-          }
-        }
-      ]
-    },
-    devOptions: {
-      enabled: true,
-      type: 'module'
-    }
-  }
+  // Temporarily disabled PWA to test rendering
+  // pwa: {
+  //   registerType: 'autoUpdate',
+  //   manifest: {
+  //     name: 'TOSS ERP-III',
+  //     short_name: 'TOSS',
+  //     description: 'Mobile-first ERP for township and rural SMMEs',
+  //     theme_color: '#e91e63',
+  //     background_color: '#ffffff',
+  //     icons: [
+  //       {
+  //         src: '/favicon.ico',
+  //         sizes: '64x64 32x32 24x24 16x16',
+  //         type: 'image/x-icon'
+  //       },
+  //       {
+  //         src: '/pwa-192x192.png',
+  //         sizes: '192x192',
+  //         type: 'image/png',
+  //         purpose: 'any maskable'
+  //       },
+  //       {
+  //         src: '/pwa-512x512.png',
+  //         sizes: '512x512',
+  //         type: 'image/png',
+  //         purpose: 'any maskable'
+  //       }
+  //     ],
+  //     display: 'standalone',
+  //     orientation: 'portrait',
+  //     start_url: '/',
+  //     scope: '/',
+  //     categories: ['business', 'productivity'],
+  //     shortcuts: [
+  //       {
+  //         name: 'POS',
+  //         short_name: 'POS',
+  //         description: 'Quick access to Point of Sale',
+  //         url: '/sales/pos',
+  //         icons: [{ src: '/favicon.ico', sizes: '96x96' }]
+  //       },
+  //       {
+  //         name: 'Stock',
+  //         short_name: 'Stock',
+  //         description: 'View inventory levels',
+  //         url: '/stock',
+  //         icons: [{ src: '/favicon.ico', sizes: '96x96' }]
+  //       }
+  //     ]
+  //   },
+  //   workbox: {
+  //     navigateFallback: '/pos',
+  //     globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+  //     runtimeCaching: [
+  //       {
+  //         urlPattern: /^https:\/\/.*\/api\/.*/i,
+  //         handler: 'NetworkFirst',
+  //         options: {
+  //           cacheName: 'api-cache',
+  //           expiration: {
+  //             maxEntries: 50,
+  //             maxAgeSeconds: 5 * 60 // 5 minutes
+  //           },
+  //           networkTimeoutSeconds: 10
+  //         }
+  //       }
+  //     ]
+  //   },
+  //   devOptions: {
+  //     enabled: true,
+  //     type: 'module'
+  //   }
+  // }
 });

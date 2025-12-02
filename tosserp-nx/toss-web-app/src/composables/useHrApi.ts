@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { PaginatedResponse } from '../types/api'
+import type { PaginatedResponse } from '~/types/api'
 
 export type EmployeeRateType = 'Hourly' | 'Daily' | 'Monthly'
 
@@ -40,8 +40,6 @@ export interface PayrollRunDto {
   generatedAt: string
   notes?: string
 }
-
-import type { PaginatedResponse } from '~/types/api'
 
 export const useHrApi = () => {
   const isLoading = ref(false)

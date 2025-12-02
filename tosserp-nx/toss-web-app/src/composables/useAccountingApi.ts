@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { PaginatedResponse } from '../types/api'
+import type { PaginatedResponse } from '~/types/api'
 
 export interface AccountDto {
   id: number
@@ -93,8 +93,6 @@ export interface CreditorDto {
   oldestInvoiceDate?: string
   latestDueDate?: string
 }
-
-import type { PaginatedResponse } from '~/types/api'
 
 export const useAccountingApi = () => {
   const isLoading = ref(false)

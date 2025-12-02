@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { PaginatedResponse } from '../types/api'
+import type { PaginatedResponse } from '~/types/api'
 
 export interface ProductDto {
   id: number
@@ -36,8 +36,6 @@ export interface StockOnHandDto {
   averageCost: number
   lastStockDate: string
 }
-
-import type { PaginatedResponse } from '~/types/api'
 
 export interface AdjustStockRequest {
   productId: number

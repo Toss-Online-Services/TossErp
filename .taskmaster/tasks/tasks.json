@@ -2558,12 +2558,88 @@
         "priority": "medium",
         "subtasks": [],
         "updatedAt": "2025-12-01T20:26:23.523Z"
+      },
+      {
+        "id": "45",
+        "title": "Frontend re-platform: archive legacy apps, bootstrap Nuxt 4 + MCP, rebuild dashboard shell",
+        "description": "Archive/remove the existing `toss-web` and `tosserp-nx` frontends, initialize a clean Nuxt 4 workspace integrated with Nuxt MCP Toolkit, and recreate the dashboard shell using Creative Tim Material Dashboard patterns with shadcn components, validating each stage with tests.",
+        "details": "Scope and references:\n- Legacy apps to archive: `toss-web` (Nuxt 4 app with Tailwind/shadcn; see toss-web/nuxt.config.ts, toss-web/tailwind.config.js, toss-web/package.json) and `tosserp-nx` (Nx workspace hosting `toss-web-app`; see tosserp-nx/toss-web-app and E2E specs under tosserp-nx/toss-web-app-e2e/src/*.spec.ts).\n- Existing MCP config present at project root `.mcp.json` with `task-master-ai` server.\n- shadcn install guidance available at `shadcn-vue-installation.html`.\n\nImplementation plan:\n1) Archive/remove legacy frontends\n- Create `archive/2025-12-replatform/` and move `toss-web` and `tosserp-nx` into it to preserve history while removing them from active builds.\n- Update any top-level docs mentioning these apps (e.g., `CLAUDE.md`, `AGENTS.md`) to point to the new workspace once created.\n- Verify no build/test scripts reference archived paths (remove/replace scripts in the new app’s package.json instead of editing legacy files).\n\n2) Bootstrap a fresh Nuxt 4 workspace\n- Create new app directory `apps/web` (monorepo-friendly). Initialize: `npx nuxi@latest init apps/web` (Node 22 as per legacy engines).\n- Install core modules and tooling: `nuxt`, `@nuxt/test-utils`, `vitest`, `@playwright/test`, `@nuxtjs/tailwind`, `@pinia/nuxt`, `@vueuse/nuxt`, `@vite-pwa/nuxt` (for future offline), `typescript`, `eslint` (align rules from `toss-web/eslint.config.js`).\n- Configure `apps/web/nuxt.config.ts`:\n  - Add modules: `['@nuxtjs/tailwind', '@pinia/nuxt', '@vueuse/nuxt']`.\n  - Set `app.head`, page transitions, alias.\n  - Enable Nuxt Test Utils and Vitest defaults.\n- Configure Tailwind: create `apps/web/tailwind.config.js` and `apps/web/postcss.config.js`; copy/adapt design tokens/colors from `toss-web/tailwind.config.js` to maintain brand consistency.\n\n3) Integrate shadcn components (Vue)\n- Follow `shadcn-vue-installation.html` with Nuxt: add `shadcn-nuxt` (or `shadcn-vue`) and `tailwindcss-animate`.\n- Generate baseline UI primitives: Button, Card, Input, DropdownMenu, Tabs, Sheet, NavigationMenu.\n- Ensure styles co-exist with Creative Tim’s Material design tokens; prefer Tailwind utilities with CSS variables for theme alignment.\n\n4) Nuxt MCP Toolkit wiring\n- Ensure root `.mcp.json` remains configured for `task-master-ai` (already present). If needed, add project-local `.mcp.json` in `apps/web` that defers to root or references the same server.\n- Add optional helper slash commands in `.claude/commands/` (e.g., `taskmaster-next.md`, `taskmaster-complete.md`) to streamline development in the new app.\n\n5) Rebuild the dashboard shell (Creative Tim + shadcn)\n- Layout structure:\n  - `apps/web/layouts/default.vue`: App shell with top AppBar, left persistent Drawer/SideNav, responsive behavior, main content area.\n  - Components (create under `apps/web/components/ui/`): `AppTopBar.vue`, `SideNav.vue`, `KpiCard.vue`, `StatCard.vue`, `NavItem.vue` using shadcn primitives.\n- Styling and patterns:\n  - Replicate Creative Tim Material Dashboard card styles (elevations, rounded corners, gradient headers) via Tailwind and custom CSS vars.\n  - Implement a grid-based dashboard page at `apps/web/pages/index.vue` with KPI cards and charts placeholders.\n- Navigation routes (stubs only for now): `/analytics`, `/money`, `/people`, `/operations`, `/projects` with simple pages and shared shell.\n- State management: add Pinia store `apps/web/stores/ui.ts` for layout state (drawer open, theme), and `apps/web/stores/auth.ts` stub to prepare for future integration.\n\n6) Migration references (do not port full features yet)\n- Use legacy files only as reference:\n  - E2E: `tosserp-nx/toss-web-app-e2e/src/navigation.spec.ts`, `layout.spec.ts` for coverage goals.\n  - Pages: `tosserp-nx/toss-web-app/src/pages/*` to validate route taxonomy and nomenclature.\n  - Styles/tokens: `toss-web/tailwind.config.js` and `toss-web/nuxt.config.ts` for consistent theme and module settings.\n\n7) Testing and scripts\n- Add scripts in `apps/web/package.json`: `dev`, `build`, `preview`, `test`, `test:ui`, `test:e2e`, `typecheck`, `lint`.\n- Vitest: set up `apps/web/vitest.config.ts` with `happy-dom` or `jsdom`, and Nuxt Test Utils integration.\n- Playwright: `apps/web/playwright.config.ts` and sample E2E specs under `apps/web/tests/e2e/`.\n\nDeliverables:\n- Archived legacy frontends under `archive/2025-12-replatform/`.\n- New Nuxt 4 app at `apps/web` with Tailwind, shadcn, Pinia, testing, and MCP connectivity.\n- Dashboard shell implemented with Creative Tim Material Dashboard patterns + shadcn components.\n- Passing unit/integration/E2E tests for layout, navigation, and initial pages.\n- Updated docs referencing the new frontend location and commands.",
+        "testStrategy": "Validation is staged to mirror the implementation plan.\n1) Archival\n- Confirm `archive/2025-12-replatform/{toss-web,tosserp-nx}` exist and are excluded from active builds.\n- Grep the repo to ensure no scripts or CI steps reference archived paths.\n\n2) Bootstrap integrity\n- Run `pnpm install` (or npm/yarn per chosen PM) in `apps/web` and `pnpm dev` to confirm local dev starts without errors.\n- `pnpm build` succeeds; `pnpm preview` serves the built app.\n\n3) Tailwind + shadcn\n- Snapshot test `KpiCard.vue` renders with expected classes (Vitest + @vue/test-utils).\n- Visual check: default layout shows shadcn Button and Card with Material-inspired styling; assert presence of expected DOM roles/classes in unit tests.\n\n4) Shell + navigation\n- Unit tests: `layouts/default.vue` mounts and renders `AppTopBar` and `SideNav` with drawer toggle behavior.\n- Route tests (Nuxt Test Utils): navigating to `/analytics`, `/money`, `/people`, `/operations`, `/projects` renders correct page titles and active nav state.\n\n5) E2E\n- Playwright specs in `apps/web/tests/e2e/`:\n  - `navigation.spec.ts`: open '/', assert side nav links, navigate through core routes, verify shell remains persistent.\n  - `layout.spec.ts`: toggle drawer, verify responsive behavior at breakpoints.\n- Reference parity: port minimum expectations from `tosserp-nx/toss-web-app-e2e/src/{navigation,layout}.spec.ts` to ensure comparable coverage.\n\n6) Quality gates\n- `pnpm typecheck` passes (no TS errors).\n- `pnpm test` (Vitest) and `pnpm test:e2e` (Playwright) pass locally.\n- Linting (if configured) returns no errors.\n- Documentation: README snippet updated with new dev/build/test commands and paths.\n\nExit criteria\n- New app is the only active frontend, ships a functional dashboard shell following Creative Tim Material patterns with shadcn components, and all tests pass.",
+        "status": "in-progress",
+        "dependencies": [
+          "1",
+          "36"
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scan repo to confirm legacy frontends, `.mcp.json`, Tailwind/shadcn files, and Nx e2e specs",
+            "description": "Explore the repository to verify exact paths and conventions for `toss-web`, `tosserp-nx`, root `.mcp.json`, Tailwind configs, shadcn guide, and e2e specs to ground subsequent steps in the actual codebase.",
+            "dependencies": [],
+            "details": "Use glob/grep across the workspace to list directories and files: `toss-web/**`, `tosserp-nx/**`, `.mcp.json`, Tailwind configs, `shadcn-vue-installation.html`, and any Nx e2e specs. Capture discovered paths and note design tokens, lint/test tools, and Node/PNPM engines used to align the new app.\n<info added on 2025-12-02T12:38:16.113Z>\nArchive plan and cleanup notes based on scan:\n1) Create archive/2025-12-replatform/ and move projects with history: git mv toss-web archive/2025-12-replatform/toss-web and git mv tosserp-nx archive/2025-12-replatform/tosserp-nx.\n2) Preserve reference assets and configs:\n- Keep shadcn-vue-installation.html at repo root for reuse.\n- Record design tokens to port from archive/2025-12-replatform/toss-web/tailwind.config.js (Material gradients, sidebar palette, --toss-* tokens).\n- Note Nuxt config and scripts from archive/2025-12-replatform/toss-web/{nuxt.config.ts, package.json}; dev script ran nuxt dev on port 3001 and used Vitest/Playwright.\n- Keep Nx e2e specs under archive/2025-12-replatform/tosserp-nx/toss-web-app-e2e/src (e.g., navigation.spec.ts) as acceptance criteria references (Dashboard, Sales, Stock, Money, People, Jobs; sidebar toggle).\n3) Clean references so archived apps no longer build or run:\n- Root package.json: remove/adjust any scripts referencing toss-web or tosserp-nx.\n- CI/workflows (e.g., .github/workflows/*): drop build/test jobs for archived paths.\n- Nx configs under archive/… are inert; if nx.json/workspace.json/project.json exist at root, remove project entries for toss-web-app and its e2e target.\n- Any Docker/compose, Makefile, or shell scripts: update paths away from toss-web and tosserp-nx.\n- Ensure .gitignore excludes archive/2025-12-replatform/* from tooling that auto-discovers apps (lint/typecheck builds can still run but should not include archived projects).\n4) MCP stays unchanged: root .mcp.json already configures mcpServers.task-master-ai via npx -y task-master-ai; confirm no new endpoint is introduced and that archiving does not alter this file.\n5) Engines alignment: note toss-web used Node 22; carry this forward in the new workspace, but do not change engines in archived package.json files.\nValidation: after moves, grep repo for “toss-web” and “tosserp-nx” to ensure only occurrences are under archive/; run existing CI/lint at root to confirm no broken references remain.\n</info added on 2025-12-02T12:38:16.113Z>",
+            "status": "done",
+            "testStrategy": "Document a paths inventory and verify each expected artifact exists; record any deviations to adjust later steps.",
+            "parentId": "undefined",
+            "updatedAt": "2025-12-02T12:38:35.993Z"
+          },
+          {
+            "id": 2,
+            "title": "Archive `toss-web` and `tosserp-nx` into `archive/2025-12-replatform/` and clean references",
+            "description": "Create an archive folder and move both legacy frontends into it, then ensure active scripts/CI/docs no longer reference them to prevent build failures.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create `archive/2025-12-replatform/` and move `toss-web/` and `tosserp-nx/` into it intact. Update high-level docs (e.g., `CLAUDE.md`, `AGENTS.md`) to mention the forthcoming `apps/web`. Grep the repo for references to old paths and remove/replace references by adding scripts in the new app instead of modifying archived files.",
+            "status": "in-progress",
+            "testStrategy": "Confirm both archived directories exist; run a repo-wide search for lingering references; run a top-level build/test dry-run to ensure missing paths do not break pipelines.",
+            "parentId": "undefined",
+            "updatedAt": "2025-12-02T12:39:03.815Z"
+          },
+          {
+            "id": 3,
+            "title": "Bootstrap `apps/web` Nuxt 4 workspace with Tailwind, Pinia, TypeScript, Vitest, Playwright",
+            "description": "Initialize a clean Nuxt 4 app and configure Tailwind, Pinia, VueUse, Nuxt Test Utils, Vitest, Playwright, and TypeScript aligned with repository conventions and branding.",
+            "dependencies": [
+              2
+            ],
+            "details": "Run `npx nuxi@latest init apps/web`. Install modules: `@nuxtjs/tailwind`, `@pinia/nuxt`, `@vueuse/nuxt`, `@nuxt/test-utils`, `vitest`, `@playwright/test`, `typescript`. Configure `apps/web/nuxt.config.ts` with modules, head, transitions; add `apps/web/tailwind.config.js` and `postcss.config.js`, port brand tokens from legacy Tailwind. Add scripts to `apps/web/package.json`: dev/build/preview/test/test:ui/test:e2e/typecheck/lint.",
+            "status": "pending",
+            "testStrategy": "`pnpm dev` starts; `pnpm test` (Vitest) passes sample unit tests; `pnpm exec playwright test` runs a smoke spec; TypeScript typecheck succeeds.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "Integrate shadcn (Vue) primitives and wire MCP Toolkit connectivity",
+            "description": "Install shadcn for Vue with Nuxt and generate baseline UI primitives; ensure MCP server connectivity remains functional and add helper Claude command files.",
+            "dependencies": [
+              3
+            ],
+            "details": "Follow `shadcn-vue-installation.html` to add `shadcn-nuxt` and `tailwindcss-animate`. Generate Button, Card, Input, DropdownMenu, Tabs, Sheet, NavigationMenu primitives. Ensure root `.mcp.json` is intact; optionally add `apps/web/.mcp.json` that points to the same server. Create `.claude/commands/taskmaster-next.md` and `taskmaster-complete.md` for streamlined development workflows.",
+            "status": "pending",
+            "testStrategy": "Render shadcn primitives in a sample Nuxt page; Claude Code shows MCP tools; custom slash commands appear and execute as expected.",
+            "parentId": "undefined"
+          },
+          {
+            "id": 5,
+            "title": "Rebuild dashboard shell with routes, stores, Creative Tim styles, and tests",
+            "description": "Implement the Nuxt layout shell (TopBar + SideNav), shadcn-based KPI/Stat cards, stub routes, and Pinia stores, styled with Creative Tim Material patterns; cover layout and navigation with unit and e2e tests.",
+            "dependencies": [
+              4
+            ],
+            "details": "Create `apps/web/layouts/default.vue`. Add components under `apps/web/components/ui/`: `AppTopBar.vue`, `SideNav.vue`, `KpiCard.vue`, `StatCard.vue`, `NavItem.vue`. Add pages: `/analytics`, `/money`, `/people`, `/operations`, `/projects` (stubs). Add stores: `apps/web/stores/ui.ts` (drawer/theme) and `apps/web/stores/auth.ts` (stub). Apply Tailwind + CSS variables to replicate Creative Tim elevations/rounded/gradients. Add Vitest unit tests and Playwright e2e for nav and responsive behavior.",
+            "status": "pending",
+            "testStrategy": "Vitest: assert layout renders, store behavior (drawer toggles), and components render states. Playwright: navigate across all stub routes, verify active link styles and responsive drawer behavior; ensure CI passes.",
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2025-12-02T12:39:03.815Z"
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-01T21:38:47.420Z",
-      "taskCount": 44,
+      "lastModified": "2025-12-02T12:39:03.824Z",
+      "taskCount": 45,
       "completedCount": 44,
       "tags": [
         "master"

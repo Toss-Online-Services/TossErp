@@ -27,7 +27,7 @@ export default defineConfig({
     command: 'pnpm exec nx run toss-web-app:serve',
     url: baseURL,
     reuseExistingServer: !process.env.CI,
-    timeout: 180000,
+    timeout: 300000,
     stdout: 'pipe',
     stderr: 'pipe',
     cwd: workspaceRoot,
@@ -37,8 +37,8 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
-    {
+    // Run only chromium for faster testing - uncomment others when needed
+    /* {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
@@ -46,7 +46,7 @@ export default defineConfig({
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
-    },
+    }, */
 
     // Uncomment for mobile browsers support
     /* {

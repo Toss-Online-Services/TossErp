@@ -158,7 +158,7 @@ onUnmounted(() => {
         </button>
       </div>
 
-      <nav class="flex-1 p-4 space-y-5 overflow-y-auto">
+      <nav class="flex-1 p-4 space-y-5 overflow-y-auto custom-scrollbar">
         <div v-for="section in navigationSections" :key="section.label">
           <p
             v-if="sidebarOpen"
@@ -210,7 +210,7 @@ onUnmounted(() => {
     <div class="flex-1 flex flex-col overflow-hidden">
       <Navbar :on-toggle-sidebar="toggleSidebar" />
 
-      <main class="flex-1 overflow-auto pb-16 lg:pb-0 bg-background">
+      <main class="flex-1 overflow-auto pb-16 lg:pb-0 bg-background custom-scrollbar">
         <div class="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
           <slot />
         </div>

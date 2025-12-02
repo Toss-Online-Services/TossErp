@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { PaginatedResponse } from '../types/api'
+import type { PaginatedResponse } from '~/types/api'
 
 export interface QualityChecklistDto {
   id: number
@@ -9,8 +9,6 @@ export interface QualityChecklistDto {
   itemCount: number
   created: string
 }
-
-import type { PaginatedResponse } from '~/types/api'
 
 export const useQualityApi = () => {
   const isLoading = ref(false)

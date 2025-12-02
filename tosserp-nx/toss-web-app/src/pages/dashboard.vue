@@ -1,71 +1,64 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import CardHeader from '@/components/ui/CardHeader.vue'
 import CardTitle from '@/components/ui/CardTitle.vue'
 import CardContent from '@/components/ui/CardContent.vue'
-import CardSkeleton from '@/components/ui/CardSkeleton.vue'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import { 
-  TrendingUp, 
-  TrendingDown, 
-  DollarSign, 
-  ShoppingBag,
-  Boxes,
+  Calendar,
   Users,
-  AlertCircle,
-  CheckCircle,
-  Info
+  DollarSign,
+  UserPlus,
+  TrendingUp,
+  BarChart3
 } from 'lucide-vue-next'
 
-const isLoading = ref(true)
+// KPI Data
 const kpiData = ref({
-  todaySales: { value: 0, change: 0, status: 'neutral' as 'good' | 'warning' | 'bad' | 'neutral' },
-  moneyIn: { value: 0, change: 0, status: 'neutral' as 'good' | 'warning' | 'bad' | 'neutral' },
-  moneyOut: { value: 0, change: 0, status: 'neutral' as 'good' | 'warning' | 'bad' | 'neutral' },
-  lowStockCount: { value: 0, status: 'neutral' as 'good' | 'warning' | 'bad' | 'neutral' }
+  bookings: { value: 281, change: 55, period: 'last week' },
+  todayUsers: { value: 2300, change: 3, period: 'last month' },
+  revenue: { value: 34000, change: 35, period: 'last month' },
+  followers: { value: 2910, change: null, period: 'Just updated' }
 })
 
-// Simulate data loading
-onMounted(async () => {
-  // TODO: Replace with actual API call
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  
-  kpiData.value = {
-    todaySales: { value: 12450, change: 12.5, status: 'good' },
-    moneyIn: { value: 18500, change: 8.2, status: 'good' },
-    moneyOut: { value: 3200, change: -5.1, status: 'good' },
-    lowStockCount: { value: 3, status: 'warning' }
-  }
-  
-  isLoading.value = false
-})
+// Chart data - Website Views (Bar Chart)
+const websiteViewsData = computed(() => ({
+  labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+  datasets: [{
+    label: 'Views',
+    data: [65, 78, 90, 81, 95, 55, 40],
+    backgroundColor: 'rgba(34, 197, 94, 0.8)',
+    borderColor: 'rgba(34, 197, 94, 1)',
+    borderWidth: 1
+  }]
+}))
 
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case 'good':
-      return CheckCircle
-    case 'warning':
-      return AlertCircle
-    case 'bad':
-      return AlertCircle
-    default:
-      return Info
-  }
-}
+// Chart data - Daily Sales (Line Chart)
+const dailySalesData = computed(() => ({
+  labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+  datasets: [{
+    label: 'Sales',
+    data: [300, 400, 350, 450, 500, 550, 480, 520, 490, 530, 510, 580],
+    borderColor: 'rgba(34, 197, 94, 1)',
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    tension: 0.4,
+    fill: true
+  }]
+}))
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'good':
-      return 'text-emerald-600'
-    case 'warning':
-      return 'text-amber-600'
-    case 'bad':
-      return 'text-red-600'
-    default:
-      return 'text-muted-foreground'
-  }
-}
+// Chart data - Completed Tasks (Line Chart)
+const completedTasksData = computed(() => ({
+  labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  datasets: [{
+    label: 'Tasks',
+    data: [400, 450, 420, 480, 500, 520, 490, 510, 530],
+    borderColor: 'rgba(34, 197, 94, 1)',
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    tension: 0.4,
+    fill: true
+  }]
+}))
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('en-ZA', {
@@ -74,232 +67,225 @@ const formatCurrency = (value: number) => {
     minimumFractionDigits: 0
   }).format(value)
 }
+
+// Simple chart rendering using SVG (no external library needed for MVP)
+const renderBarChart = (data: number[], maxValue: number = 100) => {
+  const max = Math.max(...data, maxValue)
+  return data.map((value, index) => ({
+    x: index,
+    value,
+    height: (value / max) * 100
+  }))
+}
+
+const renderLineChart = (data: number[], maxValue: number = 600) => {
+  const max = Math.max(...data, maxValue)
+  return data.map((value, index) => ({
+    x: index,
+    value,
+    y: 100 - (value / max) * 100
+  }))
+}
+
+const websiteViewsBars = computed(() => renderBarChart(websiteViewsData.value.datasets[0].data))
+const dailySalesPoints = computed(() => renderLineChart(dailySalesData.value.datasets[0].data))
+const completedTasksPoints = computed(() => renderLineChart(completedTasksData.value.datasets[0].data))
 </script>
 
 <template>
-  <div class="space-y-6">
+  <ClientOnly>
+    <div class="space-y-6">
+    <!-- Header Section -->
     <div>
       <Breadcrumbs />
-      <h1 class="text-2xl md:text-3xl font-bold tracking-tight mt-2">Dashboard</h1>
-      <p class="text-muted-foreground mt-1">Today's overview and quick actions</p>
+      <h1 class="text-3xl font-bold tracking-tight mt-2">Analytics</h1>
+      <p class="text-muted-foreground mt-1">Check the sales, value and bounce rate by country.</p>
     </div>
 
-    <!-- KPI Cards with Traffic Light Indicators -->
+    <!-- Charts Row - Top -->
+    <div class="grid gap-4 md:grid-cols-3">
+      <!-- Website Views Chart -->
+      <Card>
+        <CardHeader>
+          <CardTitle class="text-lg font-semibold">Website Views</CardTitle>
+          <p class="text-sm text-muted-foreground">Last Campaign Performance</p>
+        </CardHeader>
+        <CardContent>
+          <div class="h-[200px] relative">
+            <svg class="w-full h-full" viewBox="0 0 300 200" preserveAspectRatio="none">
+              <g v-for="(bar, index) in websiteViewsBars" :key="index">
+                <rect
+                  :x="(index * 40) + 20"
+                  :y="200 - (bar.height * 1.8)"
+                  width="30"
+                  :height="bar.height * 1.8"
+                  fill="rgba(34, 197, 94, 0.8)"
+                  rx="2"
+                />
+              </g>
+            </svg>
+          </div>
+          <p class="text-xs text-muted-foreground mt-2">campaign sent 2 days ago</p>
+        </CardContent>
+      </Card>
+
+      <!-- Daily Sales Chart -->
+      <Card>
+        <CardHeader>
+          <CardTitle class="text-lg font-semibold">Daily Sales</CardTitle>
+          <p class="text-sm text-muted-foreground">
+            <span class="text-emerald-600 font-semibold">(+15%)</span> increase in today sales.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div class="h-[200px] relative">
+            <svg class="w-full h-full" viewBox="0 0 300 200" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="salesGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:rgba(34, 197, 94, 0.3);stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:rgba(34, 197, 94, 0.05);stop-opacity:1" />
+                </linearGradient>
+              </defs>
+              <path
+                :d="`M ${dailySalesPoints.map((p, i) => `${(i * 25) + 10},${p.y * 1.8}`).join(' L ')}`"
+                fill="url(#salesGradient)"
+                stroke="rgba(34, 197, 94, 1)"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+          <p class="text-xs text-muted-foreground mt-2">updated 4 min ago</p>
+        </CardContent>
+      </Card>
+
+      <!-- Completed Tasks Chart -->
+      <Card>
+        <CardHeader>
+          <CardTitle class="text-lg font-semibold">Completed Tasks</CardTitle>
+          <p class="text-sm text-muted-foreground">Last Campaign Performance</p>
+        </CardHeader>
+        <CardContent>
+          <div class="h-[200px] relative">
+            <svg class="w-full h-full" viewBox="0 0 300 200" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="tasksGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:rgba(34, 197, 94, 0.3);stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:rgba(34, 197, 94, 0.05);stop-opacity:1" />
+                </linearGradient>
+              </defs>
+              <path
+                :d="`M ${completedTasksPoints.map((p, i) => `${(i * 30) + 10},${p.y * 1.8}`).join(' L ')}`"
+                fill="url(#tasksGradient)"
+                stroke="rgba(34, 197, 94, 1)"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+          <p class="text-xs text-muted-foreground mt-2">just updated</p>
+        </CardContent>
+      </Card>
+    </div>
+
+    <!-- KPI Cards Row - Middle -->
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <template v-if="isLoading">
-        <CardSkeleton v-for="i in 4" :key="i" />
-      </template>
-      <template v-else>
-        <!-- Today's Sales -->
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle class="text-sm font-medium">Today's Sales</CardTitle>
-            <div class="flex items-center gap-2">
-              <component 
-                :is="getStatusIcon(kpiData.todaySales.status)" 
-                :class="['h-4 w-4', getStatusColor(kpiData.todaySales.status)]"
-              />
-              <ShoppingBag class="h-4 w-4 text-muted-foreground" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div class="text-2xl font-bold">{{ formatCurrency(kpiData.todaySales.value) }}</div>
-            <div class="flex items-center gap-1 text-xs mt-1">
-              <TrendingUp 
-                v-if="kpiData.todaySales.change > 0" 
-                class="h-3 w-3 text-emerald-600" 
-              />
-              <TrendingDown 
-                v-else-if="kpiData.todaySales.change < 0" 
-                class="h-3 w-3 text-red-600" 
-              />
-              <span 
-                :class="kpiData.todaySales.change > 0 ? 'text-emerald-600' : 'text-red-600'"
-              >
-                {{ Math.abs(kpiData.todaySales.change) }}% from yesterday
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+      <!-- Bookings -->
+      <Card>
+        <CardHeader class="flex flex-row items-center justify-between pb-2">
+          <CardTitle class="text-sm font-medium">Bookings</CardTitle>
+          <Calendar class="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div class="text-2xl font-bold">{{ kpiData.bookings.value }}</div>
+          <p class="text-xs text-emerald-600 mt-1">
+            +{{ kpiData.bookings.change }}% than {{ kpiData.bookings.period }}
+          </p>
+        </CardContent>
+      </Card>
 
-        <!-- Money In -->
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle class="text-sm font-medium">Money In</CardTitle>
-            <div class="flex items-center gap-2">
-              <component 
-                :is="getStatusIcon(kpiData.moneyIn.status)" 
-                :class="['h-4 w-4', getStatusColor(kpiData.moneyIn.status)]"
-              />
-              <TrendingUp class="h-4 w-4 text-muted-foreground" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div class="text-2xl font-bold">{{ formatCurrency(kpiData.moneyIn.value) }}</div>
-            <div class="flex items-center gap-1 text-xs mt-1">
-              <TrendingUp 
-                v-if="kpiData.moneyIn.change > 0" 
-                class="h-3 w-3 text-emerald-600" 
-              />
-              <TrendingDown 
-                v-else-if="kpiData.moneyIn.change < 0" 
-                class="h-3 w-3 text-red-600" 
-              />
-              <span 
-                :class="kpiData.moneyIn.change > 0 ? 'text-emerald-600' : 'text-red-600'"
-              >
-                {{ Math.abs(kpiData.moneyIn.change) }}% from yesterday
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+      <!-- Today's Users -->
+      <Card>
+        <CardHeader class="flex flex-row items-center justify-between pb-2">
+          <CardTitle class="text-sm font-medium">Today's Users</CardTitle>
+          <Users class="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div class="text-2xl font-bold">{{ kpiData.todayUsers.value.toLocaleString() }}</div>
+          <p class="text-xs text-emerald-600 mt-1">
+            +{{ kpiData.todayUsers.change }}% than {{ kpiData.todayUsers.period }}
+          </p>
+        </CardContent>
+      </Card>
 
-        <!-- Money Out -->
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle class="text-sm font-medium">Money Out</CardTitle>
-            <div class="flex items-center gap-2">
-              <component 
-                :is="getStatusIcon(kpiData.moneyOut.status)" 
-                :class="['h-4 w-4', getStatusColor(kpiData.moneyOut.status)]"
-              />
-              <TrendingDown class="h-4 w-4 text-muted-foreground" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div class="text-2xl font-bold">{{ formatCurrency(kpiData.moneyOut.value) }}</div>
-            <div class="flex items-center gap-1 text-xs mt-1">
-              <TrendingUp 
-                v-if="kpiData.moneyOut.change > 0" 
-                class="h-3 w-3 text-red-600" 
-              />
-              <TrendingDown 
-                v-else-if="kpiData.moneyOut.change < 0" 
-                class="h-3 w-3 text-emerald-600" 
-              />
-              <span 
-                :class="kpiData.moneyOut.change > 0 ? 'text-red-600' : 'text-emerald-600'"
-              >
-                {{ Math.abs(kpiData.moneyOut.change) }}% from yesterday
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+      <!-- Revenue -->
+      <Card>
+        <CardHeader class="flex flex-row items-center justify-between pb-2">
+          <CardTitle class="text-sm font-medium">Revenue</CardTitle>
+          <DollarSign class="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div class="text-2xl font-bold">{{ formatCurrency(kpiData.revenue.value) }}</div>
+          <p class="text-xs text-emerald-600 mt-1">
+            +{{ kpiData.revenue.change }}% than {{ kpiData.revenue.period }}
+          </p>
+        </CardContent>
+      </Card>
 
-        <!-- Low Stock Alert -->
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle class="text-sm font-medium">Low Stock Items</CardTitle>
-            <div class="flex items-center gap-2">
-              <component 
-                :is="getStatusIcon(kpiData.lowStockCount.status)" 
-                :class="['h-4 w-4', getStatusColor(kpiData.lowStockCount.status)]"
-              />
-              <Boxes class="h-4 w-4 text-muted-foreground" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div class="text-2xl font-bold">{{ kpiData.lowStockCount.value }}</div>
-            <p class="text-xs text-muted-foreground mt-1">
-              {{ kpiData.lowStockCount.value === 0 ? 'All good!' : 'Need reorder' }}
-            </p>
-          </CardContent>
-        </Card>
-      </template>
+      <!-- Followers -->
+      <Card>
+        <CardHeader class="flex flex-row items-center justify-between pb-2">
+          <CardTitle class="text-sm font-medium">Followers</CardTitle>
+          <UserPlus class="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div class="text-2xl font-bold">+{{ kpiData.followers.value.toLocaleString() }}</div>
+          <p class="text-xs text-muted-foreground mt-1">{{ kpiData.followers.period }}</p>
+        </CardContent>
+      </Card>
     </div>
 
-    <!-- Quick Actions -->
-    <Card>
-      <CardHeader>
-        <CardTitle class="text-lg">Quick Actions</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          <NuxtLink
-            to="/sales/pos"
-            class="flex items-center gap-3 p-4 border rounded-lg hover:bg-accent transition-colors"
-          >
-            <ShoppingBag class="h-5 w-5 text-primary" />
-            <div>
-              <p class="font-medium text-sm">New Sale</p>
-              <p class="text-xs text-muted-foreground">Start POS transaction</p>
-            </div>
-          </NuxtLink>
-          
-          <NuxtLink
-            to="/stock"
-            class="flex items-center gap-3 p-4 border rounded-lg hover:bg-accent transition-colors"
-          >
-            <Boxes class="h-5 w-5 text-primary" />
-            <div>
-              <p class="font-medium text-sm">Check Stock</p>
-              <p class="text-xs text-muted-foreground">View inventory levels</p>
-            </div>
-          </NuxtLink>
-          
-          <NuxtLink
-            to="/people"
-            class="flex items-center gap-3 p-4 border rounded-lg hover:bg-accent transition-colors"
-          >
-            <Users class="h-5 w-5 text-primary" />
-            <div>
-              <p class="font-medium text-sm">Add Customer</p>
-              <p class="text-xs text-muted-foreground">Register new customer</p>
-            </div>
-          </NuxtLink>
-          
-          <NuxtLink
-            to="/money"
-            class="flex items-center gap-3 p-4 border rounded-lg hover:bg-accent transition-colors"
-          >
-            <DollarSign class="h-5 w-5 text-primary" />
-            <div>
-              <p class="font-medium text-sm">View Money</p>
-              <p class="text-xs text-muted-foreground">Cash flow summary</p>
-            </div>
-          </NuxtLink>
+    <!-- Image Cards Row - Bottom -->
+    <div class="grid gap-4 md:grid-cols-3">
+      <Card class="overflow-hidden p-0">
+        <div class="h-64 bg-gradient-to-br from-blue-400 to-blue-600 relative">
+          <div class="absolute inset-0 bg-black/20"></div>
+          <div class="absolute bottom-4 left-4 right-4">
+            <h3 class="text-white font-semibold text-lg">VIVA MONTI</h3>
+            <p class="text-white/80 text-sm">4BN DISCOUNT</p>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </Card>
 
-    <!-- AI Copilot Suggestions -->
-    <Card>
-      <CardHeader>
-        <CardTitle class="text-lg flex items-center gap-2">
-          <Info class="h-5 w-5" />
-          AI Copilot Suggestions
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div class="space-y-3">
-          <div 
-            v-if="kpiData.lowStockCount.value > 0"
-            class="flex items-start gap-3 p-3 bg-amber-50 border border-amber-200 rounded-lg"
-          >
-            <AlertCircle class="h-5 w-5 text-amber-600 mt-0.5" />
-            <div class="flex-1">
-              <p class="text-sm font-medium text-amber-900">
-                You have {{ kpiData.lowStockCount.value }} item(s) running low on stock
-              </p>
-              <p class="text-xs text-amber-700 mt-1">
-                Consider reordering to avoid stockouts. <NuxtLink to="/stock" class="underline">View stock alerts</NuxtLink>
-              </p>
-            </div>
-          </div>
-          
-          <div class="flex items-start gap-3 p-3 bg-sky-50 border border-sky-200 rounded-lg">
-            <Info class="h-5 w-5 text-sky-600 mt-0.5" />
-            <div class="flex-1">
-              <p class="text-sm font-medium text-sky-900">
-                Today's sales are {{ kpiData.todaySales.change > 0 ? 'up' : 'down' }} {{ Math.abs(kpiData.todaySales.change) }}%
-              </p>
-              <p class="text-xs text-sky-700 mt-1">
-                {{ kpiData.todaySales.change > 0 ? 'Great work! Keep it up.' : 'Consider promotions or marketing to boost sales.' }}
-              </p>
-            </div>
+      <Card class="overflow-hidden p-0">
+        <div class="h-64 bg-gradient-to-br from-amber-400 to-orange-600 relative">
+          <div class="absolute inset-0 bg-black/20"></div>
+          <div class="absolute bottom-4 left-4 right-4">
+            <h3 class="text-white font-semibold text-lg">Ancient Ruins</h3>
+            <p class="text-white/80 text-sm">Historical Site</p>
           </div>
         </div>
-      </CardContent>
-    </Card>
-  </div>
+      </Card>
+
+      <Card class="overflow-hidden p-0">
+        <div class="h-64 bg-gradient-to-br from-emerald-400 to-green-600 relative">
+          <div class="absolute inset-0 bg-black/20"></div>
+          <div class="absolute bottom-4 left-4 right-4">
+            <h3 class="text-white font-semibold text-lg">Tropical Resort</h3>
+            <p class="text-white/80 text-sm">Paradise Destination</p>
+          </div>
+        </div>
+      </Card>
+    </div>
+    </div>
+    <template #fallback>
+      <div class="space-y-6">
+        <div class="h-8 bg-gray-200 rounded animate-pulse"></div>
+        <div class="grid gap-4 md:grid-cols-3">
+          <div class="h-64 bg-gray-200 rounded animate-pulse" v-for="i in 3" :key="i"></div>
+        </div>
+        <div class="grid gap-4 md:grid-cols-4">
+          <div class="h-32 bg-gray-200 rounded animate-pulse" v-for="i in 4" :key="i"></div>
+        </div>
+      </div>
+    </template>
+  </ClientOnly>
 </template>
