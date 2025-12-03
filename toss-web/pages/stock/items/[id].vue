@@ -25,6 +25,7 @@ const supplier = ref<any>(null)
 const allSuppliers = ref<any[]>([])
 const loading = ref(false)
 const showAdjustModal = ref(false)
+const mainImage = ref<string>('')
 
 const itemId = computed(() => route.params.id as string)
 
@@ -58,6 +59,9 @@ async function loadItem() {
       console.error('Item not found for ID:', itemId.value)
       return
     }
+    
+    // Set initial main image
+    mainImage.value = item.value.imageUrl || getRandomProductImage()
     
     // Find primary supplier for this item (latest/default supplier)
     if (item.value.supplier) {
@@ -174,21 +178,51 @@ function handleStockAdjusted() {
   loadItem()
   loadMovements()
 }
+
+function getRandomProductImage() {
+  const images = [
+    '/images/products/product-details-1.jpg',
+    '/images/products/product-details-2.jpg',
+    '/images/products/product-details-3.jpg',
+    '/images/products/product-details-4.jpg',
+    '/images/products/product-details-5.jpg',
+    '/images/products/product-1-min.jpg',
+    '/images/products/product-2-min.jpg',
+    '/images/products/product-3-min.jpg',
+    '/images/products/product-4-min.jpg',
+    '/images/products/product-5-min.jpg',
+    '/images/products/product-6-min.jpg',
+    '/images/products/product-7-min.jpg',
+    '/images/products/product-11.jpg'
+  ]
+  // Use item ID to consistently select an image for the same item
+  const index = parseInt(itemId.value) % images.length
+  return images[index]
+}
+
+function getThumbnailImages() {
+  // Get 4 thumbnail images (excluding the main image)
+  const allImages = [
+    '/images/products/product-details-1.jpg',
+    '/images/products/product-details-2.jpg',
+    '/images/products/product-details-3.jpg',
+    '/images/products/product-details-4.jpg',
+    '/images/products/product-details-5.jpg'
+  ]
+  const mainImg = item.value?.imageUrl || getRandomProductImage()
+  // Return first 4 thumbnails, or use product-details images
+  return allImages.slice(0, 4)
+}
+
+function setMainImage(imageSrc: string) {
+  if (item.value) {
+    mainImage.value = imageSrc
+  }
+}
 </script>
 
 <template>
   <div class="py-6">
-    <!-- Back Button -->
-    <div class="mb-6">
-      <NuxtLink
-        to="/stock/items"
-        class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-      >
-        <i class="material-symbols-rounded">arrow_back</i>
-        <span>Back to Items</span>
-      </NuxtLink>
-    </div>
-
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-12">
       <i class="material-symbols-rounded text-6xl text-gray-400 animate-spin">refresh</i>
@@ -196,113 +230,125 @@ function handleStockAdjusted() {
     </div>
 
     <!-- Item Details -->
-    <div v-else-if="item" class="space-y-6">
-      <!-- Header -->
-      <div class="bg-white rounded-xl shadow-sm p-6">
-        <div class="flex items-start justify-between mb-6">
-          <div class="flex items-start gap-4">
-            <div class="w-16 h-16 bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg flex items-center justify-center text-white">
-              <i class="material-symbols-rounded text-3xl">inventory_2</i>
-            </div>
-            <div>
-              <h1 class="text-3xl font-bold text-gray-900 mb-1">{{ item.name }}</h1>
-              <p class="text-gray-600">Code: {{ item.code }}</p>
-              <p v-if="item.barcode" class="text-sm text-gray-500 mt-1">Barcode: {{ item.barcode }}</p>
-            </div>
-          </div>
-          <div class="flex gap-2">
-            <button
-              @click="handleAdjust"
-              class="px-4 py-2 bg-gradient-to-br from-gray-800 to-gray-900 text-white rounded-lg hover:shadow-lg transition-all"
-            >
-              <i class="material-symbols-rounded align-middle mr-2">tune</i>
-              Adjust Stock
-            </button>
-          </div>
-        </div>
-
-        <!-- Item Info Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div>
-            <div class="text-sm text-gray-600 mb-1">Category</div>
-            <div class="text-lg font-semibold text-gray-900">{{ item.category }}</div>
-          </div>
-          <div>
-            <div class="text-sm text-gray-600 mb-1">Unit</div>
-            <div class="text-lg font-semibold text-gray-900">{{ item.unit }}</div>
-          </div>
-          <div>
-            <div class="text-sm text-gray-600 mb-1">Cost Price</div>
-            <div class="text-lg font-semibold text-gray-900">{{ formatCurrency(item.costPrice) }}</div>
-          </div>
-          <div>
-            <div class="text-sm text-gray-600 mb-1">Selling Price</div>
-            <div class="text-lg font-semibold text-gray-900">{{ formatCurrency(item.sellingPrice) }}</div>
-          </div>
-        </div>
-        
-        <!-- Supplier Information -->
-        <div v-if="supplier || item.supplier" class="mt-6 pt-6 border-t border-gray-200">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="text-sm text-gray-600 mb-1">Supplier</div>
-              <div v-if="supplier" class="flex items-center gap-2">
-                <NuxtLink
-                  :to="`/buying/suppliers/${supplier.id}`"
-                  class="text-lg font-semibold text-gray-900 hover:text-gray-700 hover:underline flex items-center gap-2"
+    <div v-else-if="item">
+      <div class="bg-white rounded-xl shadow-card overflow-hidden">
+        <div class="p-6">
+          <h5 class="mb-4 text-lg font-semibold text-gray-900">Item Details</h5>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left Column: Item Images (matches template col-xl-5 col-lg-6) -->
+            <div class="lg:col-span-5 text-center">
+              <img 
+                :src="mainImage || item.imageUrl || getRandomProductImage()" 
+                :alt="item.name"
+                class="w-full rounded-xl shadow-lg mx-auto object-cover"
+                style="max-height: 500px;"
+              />
+              <!-- Thumbnail Gallery (matches template) -->
+              <div class="flex gap-3 mt-4 pt-2 justify-center">
+                <figure 
+                  v-for="(thumb, index) in getThumbnailImages()" 
+                  :key="index"
+                  class="cursor-pointer hover:opacity-80 transition-opacity"
+                  @click="setMainImage(thumb)"
                 >
-                  <i class="material-symbols-rounded text-xl">store</i>
-                  {{ supplier.name }}
-                  <i class="material-symbols-rounded text-sm">open_in_new</i>
-                </NuxtLink>
+                  <img 
+                    :src="thumb" 
+                    :alt="`${item.name} - View ${index + 1}`"
+                    class="rounded-lg shadow object-cover"
+                    style="width: 100px; height: 100px;"
+                  />
+                </figure>
               </div>
-              <div v-else class="text-lg font-semibold text-gray-900">{{ item.supplier }}</div>
             </div>
-            <div v-if="supplier" class="flex items-center gap-4 text-sm text-gray-600">
-              <div v-if="supplier.phone" class="flex items-center gap-1">
-                <i class="material-symbols-rounded text-base">phone</i>
-                <a :href="`tel:${supplier.phone}`" class="hover:text-gray-900 hover:underline">
-                  {{ supplier.phone }}
-                </a>
+            
+            <!-- Right Column: Item Information (matches template col-lg-5 mx-auto) -->
+            <div class="lg:col-span-7 lg:col-start-6">
+              <h3 class="mt-lg-0 mt-4 text-2xl font-bold text-gray-900">{{ item.name }}</h3>
+              
+              <div class="mb-3 mt-2">
+                <p class="text-sm text-gray-600 mb-1">Code: {{ item.code }}</p>
+                <p v-if="item.barcode" class="text-sm text-gray-600 mb-1">Barcode: {{ item.barcode }}</p>
               </div>
-              <div v-if="supplier.email" class="flex items-center gap-1">
-                <i class="material-symbols-rounded text-base">email</i>
-                <a :href="`mailto:${supplier.email}`" class="hover:text-gray-900 hover:underline">
-                  {{ supplier.email }}
-                </a>
+              
+              <div class="mb-3">
+                <h6 class="mb-0 text-sm font-semibold text-gray-700">Price</h6>
+                <h5 class="text-xl font-bold text-gray-900 mt-1">{{ formatCurrency(item.sellingPrice) }}</h5>
+                <p class="text-sm text-gray-600 mt-1">Cost: {{ formatCurrency(item.costPrice) }}</p>
+              </div>
+              
+              <div class="mb-3">
+                <span 
+                  :class="[
+                    'px-3 py-1 text-xs font-semibold rounded-full',
+                    getStockStatus(item).color === 'text-red-600 bg-red-100' ? 'bg-red-100 text-red-600' :
+                    getStockStatus(item).color === 'text-orange-600 bg-orange-100' ? 'bg-orange-100 text-orange-600' :
+                    'bg-green-100 text-green-600'
+                  ]"
+                >
+                  {{ getStockStatus(item).text }}
+                </span>
+              </div>
+              
+              <div class="mb-4 mt-4">
+                <label class="text-sm font-semibold text-gray-700 mb-2 block">Description</label>
+                <ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
+                  <li>Category: {{ item.category }}</li>
+                  <li>Unit: {{ item.unit }}</li>
+                  <li>Current Stock: {{ item.currentStock }} {{ item.unit }}</li>
+                  <li v-if="item.minStock > 0">Minimum Stock: {{ item.minStock }} {{ item.unit }}</li>
+                  <li>Stock Value: {{ formatCurrency(item.currentStock * item.costPrice) }}</li>
+                </ul>
+              </div>
+              
+              <!-- Supplier Information -->
+              <div v-if="supplier || item.supplier" class="mb-4 pt-4 border-t border-gray-200">
+                <label class="text-sm font-semibold text-gray-700 mb-2 block">Supplier</label>
+                <div v-if="supplier" class="space-y-2">
+                  <div>
+                    <NuxtLink
+                      :to="`/buying/suppliers/${supplier.id}`"
+                      class="text-base font-semibold text-gray-900 hover:text-gray-700 hover:underline flex items-center gap-2"
+                    >
+                      <i class="material-symbols-rounded text-xl">store</i>
+                      {{ supplier.name }}
+                      <i class="material-symbols-rounded text-sm">open_in_new</i>
+                    </NuxtLink>
+                  </div>
+                  <div v-if="supplier.phone" class="flex items-center gap-2 text-sm text-gray-600">
+                    <i class="material-symbols-rounded text-base">phone</i>
+                    <a :href="`tel:${supplier.phone}`" class="hover:text-gray-900 hover:underline">
+                      {{ supplier.phone }}
+                    </a>
+                  </div>
+                  <div v-if="supplier.email" class="flex items-center gap-2 text-sm text-gray-600">
+                    <i class="material-symbols-rounded text-base">email</i>
+                    <a :href="`mailto:${supplier.email}`" class="hover:text-gray-900 hover:underline">
+                      {{ supplier.email }}
+                    </a>
+                  </div>
+                </div>
+                <div v-else class="text-sm text-gray-600">{{ item.supplier }}</div>
+              </div>
+              
+              <div class="mt-4">
+                <button
+                  @click="handleAdjust"
+                  class="w-full px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+                  type="button"
+                >
+                  <i class="material-symbols-rounded align-middle mr-2">tune</i>
+                  Adjust Stock
+                </button>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Stock Status Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-xl shadow-sm p-6">
-          <div class="text-sm text-gray-600 mb-2">Current Stock</div>
-          <div class="text-3xl font-bold text-gray-900 mb-2">{{ item.currentStock }} {{ item.unit }}</div>
-          <span :class="['px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full', getStockStatus(item).color]">
-            {{ getStockStatus(item).text }}
-          </span>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm p-6">
-          <div class="text-sm text-gray-600 mb-2">Minimum Stock</div>
-          <div class="text-3xl font-bold text-gray-900">{{ item.minStock }} {{ item.unit }}</div>
-          <div class="text-xs text-gray-500 mt-2">
-            {{ item.currentStock < item.minStock ? 'Below minimum' : 'Above minimum' }}
-          </div>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm p-6">
-          <div class="text-sm text-gray-600 mb-2">Stock Value</div>
-          <div class="text-3xl font-bold text-gray-900">{{ formatCurrency(item.currentStock * item.costPrice) }}</div>
-          <div class="text-xs text-gray-500 mt-2">At cost price</div>
         </div>
       </div>
 
       <!-- Stock Movements History -->
-      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div class="bg-white rounded-xl shadow-card overflow-hidden mt-6">
         <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-xl font-bold text-gray-900">Stock Movement History</h2>
+          <h5 class="mb-0 text-lg font-semibold text-gray-900">Stock Movement History</h5>
         </div>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
@@ -381,13 +427,13 @@ function handleStockAdjusted() {
       </div>
 
       <!-- All Suppliers Section -->
-      <div v-if="allSuppliers.length > 0" class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div v-if="allSuppliers.length > 0" class="bg-white rounded-xl shadow-card overflow-hidden mt-6">
         <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <h5 class="mb-0 text-lg font-semibold text-gray-900 flex items-center gap-2">
             <i class="material-symbols-rounded text-xl">store</i>
             All Suppliers for This Item
-          </h2>
-          <p class="text-sm text-gray-600 mt-1">Suppliers who have supplied this product</p>
+          </h5>
+          <p class="text-sm text-gray-600 mt-1 mb-0">Suppliers who have supplied this product</p>
         </div>
         <div class="p-6">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
