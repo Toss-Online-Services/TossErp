@@ -46,23 +46,23 @@ const completedTasksData = ref([
 </script>
 
 <template>
-  <div class="py-2">
+  <div class="py-6">
     <!-- Page Header -->
-    <div class="ms-3 mb-4">
-      <h3 class="text-3xl font-bold text-gray-900 mb-1">Analytics</h3>
+    <div class="mb-8">
+      <h3 class="text-3xl font-bold text-gray-900 mb-2">Analytics</h3>
       <p class="text-gray-600 text-sm">
         Check the sales, value and bounce rate by country.
       </p>
     </div>
 
     <!-- Chart Cards Row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <!-- Website Views / Sales Trend -->
-      <div class="bg-white rounded-xl shadow-sm">
-        <div class="p-6">
-          <h6 class="text-base font-semibold text-gray-900 mb-0">Today's Sales</h6>
-          <p class="text-sm text-gray-600">Last Campaign Performance</p>
-          <div class="mt-4">
+      <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+        <div class="p-6 pb-4">
+          <h6 class="text-base font-semibold text-gray-900 mb-1">Today's Sales</h6>
+          <p class="text-sm text-gray-600 mb-4">Last Campaign Performance</p>
+          <div class="mt-2">
             <!-- Bar Chart -->
             <div class="h-44 flex items-end justify-between gap-1 px-2">
               <div
@@ -88,13 +88,13 @@ const completedTasksData = ref([
       </div>
 
       <!-- Daily Sales -->
-      <div class="bg-white rounded-xl shadow-sm">
-        <div class="p-6">
-          <h6 class="text-base font-semibold text-gray-900 mb-0">Daily Sales</h6>
-          <p class="text-sm text-gray-600">
+      <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+        <div class="p-6 pb-4">
+          <h6 class="text-base font-semibold text-gray-900 mb-1">Daily Sales</h6>
+          <p class="text-sm text-gray-600 mb-4">
             (<span class="font-bold">+15%</span>) increase in today sales.
           </p>
-          <div class="mt-4">
+          <div class="mt-2">
             <!-- Line Chart -->
             <div class="h-44 relative">
               <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -127,11 +127,11 @@ const completedTasksData = ref([
       </div>
 
       <!-- Completed Tasks / Orders -->
-      <div class="bg-white rounded-xl shadow-sm">
-        <div class="p-6">
-          <h6 class="text-base font-semibold text-gray-900 mb-0">Pending Orders</h6>
-          <p class="text-sm text-gray-600">Last Campaign Performance</p>
-          <div class="mt-4">
+      <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+        <div class="p-6 pb-4">
+          <h6 class="text-base font-semibold text-gray-900 mb-1">Pending Orders</h6>
+          <p class="text-sm text-gray-600 mb-4">Last Campaign Performance</p>
+          <div class="mt-2">
             <!-- Line Chart -->
             <div class="h-44 relative">
               <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -165,7 +165,7 @@ const completedTasksData = ref([
     </div>
 
     <!-- Stats Cards Row -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <!-- Today's Sales -->
       <div class="bg-white rounded-xl shadow-sm">
         <div class="p-3 px-4">
@@ -253,7 +253,7 @@ const completedTasksData = ref([
     </div>
 
     <!-- Sales by Country / Products Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-4">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
       <!-- Sales Table (left side) -->
       <div class="lg:col-span-7">
         <div class="bg-white rounded-xl shadow-sm">
@@ -356,7 +356,7 @@ const completedTasksData = ref([
     </div>
 
     <!-- Bottom Section: Active Users & Sales Overview -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Active Users Card (Left) -->
       <div class="lg:col-span-5">
         <div class="bg-white rounded-xl shadow-sm">

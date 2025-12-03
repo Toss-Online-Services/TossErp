@@ -3,6 +3,12 @@ import { ref } from 'vue'
 
 const sidebarMinimized = ref(false)
 const notificationsOpen = ref(false)
+const salesMenuOpen = ref(false)
+const buyingMenuOpen = ref(false)
+const accountingMenuOpen = ref(false)
+const logisticsMenuOpen = ref(false)
+const projectsMenuOpen = ref(false)
+const hrMenuOpen = ref(false)
 
 const toggleSidebarMinimize = () => {
   sidebarMinimized.value = !sidebarMinimized.value
@@ -21,7 +27,7 @@ const toggleSidebarMinimize = () => {
       <!-- Sidebar Header -->
       <div class="px-4 py-3">
         <NuxtLink to="/" class="flex items-center">
-          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+          <div class="w-8 h-8 bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg flex items-center justify-center">
             <i class="material-symbols-rounded text-white text-xl">store</i>
           </div>
             <span v-if="!sidebarMinimized" class="ml-2 text-sm font-semibold text-gray-900">TOSS</span>
@@ -36,7 +42,7 @@ const toggleSidebarMinimize = () => {
           <!-- User Profile Section -->
           <li class="mb-2">
             <button class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group">
-              <img src="https://ui-avatars.com/api/?name=Brooklyn+Alice&background=3b82f6&color=fff" alt="User" class="w-8 h-8 rounded-full">
+              <img src="https://ui-avatars.com/api/?name=Brooklyn+Alice&background=1f2937&color=fff" alt="User" class="w-8 h-8 rounded-full">
               <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Brooklyn Alice</span>
               <i v-if="!sidebarMinimized" class="material-symbols-rounded ml-auto text-gray-400 text-sm">expand_more</i>
             </button>
@@ -44,152 +50,369 @@ const toggleSidebarMinimize = () => {
 
           <hr class="border-gray-300 my-2">
 
-          <!-- Dashboards Section -->
-          <li>
-            <button class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group">
-              <i class="material-symbols-rounded text-gray-600 group-hover:text-gray-900 text-xl">space_dashboard</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm">Dashboards</span>
-              <i v-if="!sidebarMinimized" class="material-symbols-rounded ml-auto text-gray-400 text-sm">expand_more</i>
-            </button>
-          </li>
-
-          <!-- Dashboard Sub-items -->
+          <!-- Main Navigation -->
           <li>
             <NuxtLink
               to="/"
-              class="flex items-center px-3 py-2 ml-8 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors group"
-              active-class="!bg-gray-900 !text-white"
+              class="flex items-center px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+              active-class="!bg-blue-50 !text-blue-600"
             >
-              <span v-if="!sidebarMinimized" class="text-xs font-medium mr-2">A</span>
-              <span v-if="!sidebarMinimized" class="text-sm">Analytics</span>
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">space_dashboard</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Dashboard</span>
             </NuxtLink>
           </li>
+
           <li>
             <NuxtLink
-              to="/discover"
-              class="flex items-center px-3 py-2 ml-8 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors group"
+              to="/pos"
+              class="flex items-center px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+              active-class="!bg-blue-50 !text-blue-600"
             >
-              <span v-if="!sidebarMinimized" class="text-xs font-medium mr-2">D</span>
-              <span v-if="!sidebarMinimized" class="text-sm">Discover</span>
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">point_of_sale</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">POS</span>
             </NuxtLink>
           </li>
+
           <li>
             <NuxtLink
-              to="/sales-dashboard"
-              class="flex items-center px-3 py-2 ml-8 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors group"
+              to="/stock/items"
+              class="flex items-center px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+              active-class="!bg-blue-50 !text-blue-600"
             >
-              <span v-if="!sidebarMinimized" class="text-xs font-medium mr-2">S</span>
-              <span v-if="!sidebarMinimized" class="text-sm">Sales</span>
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">inventory_2</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Stock</span>
             </NuxtLink>
           </li>
+
           <li>
             <NuxtLink
-              to="/automotive"
-              class="flex items-center px-3 py-2 ml-8 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors group"
+              to="/customers"
+              class="flex items-center px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+              active-class="!bg-blue-50 !text-blue-600"
             >
-              <span v-if="!sidebarMinimized" class="text-xs font-medium mr-2">A</span>
-              <span v-if="!sidebarMinimized" class="text-sm">Automotive</span>
-            </NuxtLink>
-          </li>
-          <li>
-            <NuxtLink
-              to="/smart-home"
-              class="flex items-center px-3 py-2 ml-8 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors group"
-            >
-              <span v-if="!sidebarMinimized" class="text-xs font-medium mr-2">S</span>
-              <span v-if="!sidebarMinimized" class="text-sm">Smart Home</span>
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">group</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Customers</span>
             </NuxtLink>
           </li>
 
-          <!-- PAGES Section -->
-          <li class="mt-3">
-            <h6 v-if="!sidebarMinimized" class="px-3 text-xs font-bold text-gray-600 uppercase tracking-wider">Pages</h6>
-          </li>
           <li>
-            <button class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group">
-              <i class="material-symbols-rounded text-gray-600 group-hover:text-gray-900 text-xl">contract</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm">Pages</span>
-              <i v-if="!sidebarMinimized" class="material-symbols-rounded ml-auto text-gray-400 text-sm">expand_more</i>
+            <button 
+              @click="salesMenuOpen = !salesMenuOpen"
+              class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+            >
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">receipt_long</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Sales</span>
+              <i 
+                v-if="!sidebarMinimized" 
+                class="material-symbols-rounded ml-auto text-gray-400 text-sm transition-transform"
+                :class="{ 'rotate-180': salesMenuOpen }"
+              >
+                expand_more
+              </i>
             </button>
+            <!-- Sales Submenu -->
+            <ul v-if="salesMenuOpen && !sidebarMinimized" class="ml-8 mt-1 space-y-0.5">
+              <li>
+                <NuxtLink
+                  to="/sales/quotations"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Quotations
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/sales/orders"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Orders
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/sales/invoices"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Invoices
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/sales/deliveries"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Deliveries
+                </NuxtLink>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <button 
+              @click="buyingMenuOpen = !buyingMenuOpen"
+              class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+            >
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">shopping_cart</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Buying</span>
+              <i 
+                v-if="!sidebarMinimized" 
+                class="material-symbols-rounded ml-auto text-gray-400 text-sm transition-transform"
+                :class="{ 'rotate-180': buyingMenuOpen }"
+              >
+                expand_more
+              </i>
+            </button>
+            <!-- Buying Submenu -->
+            <ul v-if="buyingMenuOpen && !sidebarMinimized" class="ml-8 mt-1 space-y-0.5">
+              <li>
+                <NuxtLink
+                  to="/buying/purchase-orders"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Purchase Orders
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/buying/suppliers"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Suppliers
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/buying/receipts"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Goods Receipts
+                </NuxtLink>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <button 
+              @click="accountingMenuOpen = !accountingMenuOpen"
+              class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+            >
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">account_balance</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Accounting</span>
+              <i 
+                v-if="!sidebarMinimized" 
+                class="material-symbols-rounded ml-auto text-gray-400 text-sm transition-transform"
+                :class="{ 'rotate-180': accountingMenuOpen }"
+              >
+                expand_more
+              </i>
+            </button>
+            <!-- Accounting Submenu -->
+            <ul v-if="accountingMenuOpen && !sidebarMinimized" class="ml-8 mt-1 space-y-0.5">
+              <li>
+                <NuxtLink
+                  to="/accounting/chart-of-accounts"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Chart of Accounts
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/accounting/journals"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Journal Entries
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/accounting/reports"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Reports
+                </NuxtLink>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <button 
+              @click="logisticsMenuOpen = !logisticsMenuOpen"
+              class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+            >
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">local_shipping</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Logistics</span>
+              <i 
+                v-if="!sidebarMinimized" 
+                class="material-symbols-rounded ml-auto text-gray-400 text-sm transition-transform"
+                :class="{ 'rotate-180': logisticsMenuOpen }"
+              >
+                expand_more
+              </i>
+            </button>
+            <!-- Logistics Submenu -->
+            <ul v-if="logisticsMenuOpen && !sidebarMinimized" class="ml-8 mt-1 space-y-0.5">
+              <li>
+                <NuxtLink
+                  to="/logistics/drivers"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Drivers
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/logistics/deliveries"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Deliveries
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/logistics/routes"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Routes
+                </NuxtLink>
+              </li>
+            </ul>
+          </li>
+
+          <!-- MORE Section -->
+          <hr class="border-gray-300 my-3 mx-3">
+          
+          <li>
+            <button 
+              @click="projectsMenuOpen = !projectsMenuOpen"
+              class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+            >
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">widgets</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Projects</span>
+              <i 
+                v-if="!sidebarMinimized" 
+                class="material-symbols-rounded ml-auto text-gray-400 text-sm transition-transform"
+                :class="{ 'rotate-180': projectsMenuOpen }"
+              >
+                expand_more
+              </i>
+            </button>
+            <!-- Projects Submenu -->
+            <ul v-if="projectsMenuOpen && !sidebarMinimized" class="ml-8 mt-1 space-y-0.5">
+              <li>
+                <NuxtLink
+                  to="/projects/list"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  All Projects
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/projects/tasks"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Tasks
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/projects/time-tracking"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Time Tracking
+                </NuxtLink>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <button 
+              @click="hrMenuOpen = !hrMenuOpen"
+              class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+            >
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">badge</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">HR & Payroll</span>
+              <i 
+                v-if="!sidebarMinimized" 
+                class="material-symbols-rounded ml-auto text-gray-400 text-sm transition-transform"
+                :class="{ 'rotate-180': hrMenuOpen }"
+              >
+                expand_more
+              </i>
+            </button>
+            <!-- HR Submenu -->
+            <ul v-if="hrMenuOpen && !sidebarMinimized" class="ml-8 mt-1 space-y-0.5">
+              <li>
+                <NuxtLink
+                  to="/hr/employees"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Employees
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/hr/attendance"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Attendance
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/hr/payroll"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-blue-50 !text-blue-600"
+                >
+                  Payroll
+                </NuxtLink>
+              </li>
+            </ul>
           </li>
 
           <li>
             <button class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group">
-              <i class="material-symbols-rounded text-gray-600 group-hover:text-gray-900 text-xl">account_circle</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm">Account</span>
-              <i v-if="!sidebarMinimized" class="material-symbols-rounded ml-auto text-gray-400 text-sm">expand_more</i>
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">psychology</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">AI Copilot</span>
             </button>
           </li>
 
-          <li>
-            <button class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group">
-              <i class="material-symbols-rounded text-gray-600 group-hover:text-gray-900 text-xl">apps</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm">Applications</span>
-              <i v-if="!sidebarMinimized" class="material-symbols-rounded ml-auto text-gray-400 text-sm">expand_more</i>
-            </button>
-          </li>
-
-          <li>
-            <button class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group">
-              <i class="material-symbols-rounded text-gray-600 group-hover:text-gray-900 text-xl">storefront</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm">Ecommerce</span>
-              <i v-if="!sidebarMinimized" class="material-symbols-rounded ml-auto text-gray-400 text-sm">expand_more</i>
-            </button>
-          </li>
-
-          <li>
-            <button class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group">
-              <i class="material-symbols-rounded text-gray-600 group-hover:text-gray-900 text-xl">group</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm">Team</span>
-              <i v-if="!sidebarMinimized" class="material-symbols-rounded ml-auto text-gray-400 text-sm">expand_more</i>
-            </button>
-          </li>
-
-          <li>
-            <button class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group">
-              <i class="material-symbols-rounded text-gray-600 group-hover:text-gray-900 text-xl">widgets</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm">Projects</span>
-              <i v-if="!sidebarMinimized" class="material-symbols-rounded ml-auto text-gray-400 text-sm">expand_more</i>
-            </button>
-          </li>
-
-          <li>
-            <button class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group">
-              <i class="material-symbols-rounded text-gray-600 group-hover:text-gray-900 text-xl">tv_signin</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm">Authentication</span>
-              <i v-if="!sidebarMinimized" class="material-symbols-rounded ml-auto text-gray-400 text-sm">expand_more</i>
-            </button>
-          </li>
-
-          <!-- DOCS Section -->
+          <!-- SETTINGS Section -->
           <li class="mt-3">
             <hr class="border-gray-300 mb-3">
-            <h6 v-if="!sidebarMinimized" class="px-3 text-xs font-bold text-gray-600 uppercase tracking-wider">Docs</h6>
           </li>
+          
           <li>
             <button class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group">
-              <i class="material-symbols-rounded text-gray-600 group-hover:text-gray-900 text-xl">upcoming</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm">Basic</span>
-              <i v-if="!sidebarMinimized" class="material-symbols-rounded ml-auto text-gray-400 text-sm">expand_more</i>
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">settings</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Settings</span>
             </button>
           </li>
-
+          
           <li>
             <button class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group">
-              <i class="material-symbols-rounded text-gray-600 group-hover:text-gray-900 text-xl">view_in_ar</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm">Components</span>
-              <i v-if="!sidebarMinimized" class="material-symbols-rounded ml-auto text-gray-400 text-sm">expand_more</i>
+              <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">help</i>
+              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Help & Support</span>
             </button>
-          </li>
-
-          <li>
-            <NuxtLink
-              to="/changelog"
-              class="flex items-center px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
-            >
-              <i class="material-symbols-rounded text-gray-600 group-hover:text-gray-900 text-xl">receipt_long</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm">Changelog</span>
-            </NuxtLink>
           </li>
         </ul>
       </div>
