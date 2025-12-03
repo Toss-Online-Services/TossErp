@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   close: []
   print: []
+  send: []
 }>()
 
 function formatCurrency(amount: number) {
@@ -40,6 +41,10 @@ function handlePrint() {
 function handleClose() {
   emit('close')
 }
+
+function handleSend() {
+  emit('send')
+}
 </script>
 
 <template>
@@ -54,6 +59,13 @@ function handleClose() {
         <div class="flex items-center justify-between mb-4 print:hidden">
           <h2 class="text-2xl font-bold text-gray-900">Receipt</h2>
           <div class="flex items-center gap-2">
+            <button
+              v-if="sale.customerName"
+              @click="handleSend"
+              class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <i class="material-symbols-rounded">send</i>
+            </button>
             <button
               @click="handlePrint"
               class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -132,7 +144,7 @@ function handleClose() {
           </div>
           <div class="flex justify-between text-lg font-bold pt-2 border-t">
             <span>Total:</span>
-            <span class="text-blue-600">{{ formatCurrency(sale.total) }}</span>
+            <span class="text-gray-900">{{ formatCurrency(sale.total) }}</span>
           </div>
         </div>
 

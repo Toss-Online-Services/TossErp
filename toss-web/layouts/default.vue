@@ -57,7 +57,7 @@ const toggleSidebarMinimize = () => {
             <NuxtLink
               to="/"
               class="flex items-center px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
-              active-class="!bg-blue-50 !text-blue-600"
+              active-class="!bg-gray-100 !text-gray-900"
             >
               <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">space_dashboard</i>
               <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Dashboard</span>
@@ -68,7 +68,7 @@ const toggleSidebarMinimize = () => {
             <NuxtLink
               to="/pos"
               class="flex items-center px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
-              active-class="!bg-blue-50 !text-blue-600"
+              active-class="!bg-gray-100 !text-gray-900"
             >
               <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">point_of_sale</i>
               <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">POS</span>
@@ -79,7 +79,7 @@ const toggleSidebarMinimize = () => {
             <NuxtLink
               to="/stock/items"
               class="flex items-center px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
-              active-class="!bg-blue-50 !text-blue-600"
+              active-class="!bg-gray-100 !text-gray-900"
             >
               <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">inventory_2</i>
               <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Stock</span>
@@ -90,7 +90,7 @@ const toggleSidebarMinimize = () => {
             <NuxtLink
               to="/customers"
               class="flex items-center px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
-              active-class="!bg-blue-50 !text-blue-600"
+              active-class="!bg-gray-100 !text-gray-900"
             >
               <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">group</i>
               <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Customers</span>
@@ -118,7 +118,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/sales/quotations"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Quotations
                 </NuxtLink>
@@ -127,7 +127,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/sales/orders"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Orders
                 </NuxtLink>
@@ -136,7 +136,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/sales/invoices"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Invoices
                 </NuxtLink>
@@ -145,7 +145,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/sales/deliveries"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Deliveries
                 </NuxtLink>
@@ -174,7 +174,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/buying/purchase-orders"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Purchase Orders
                 </NuxtLink>
@@ -183,7 +183,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/buying/suppliers"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Suppliers
                 </NuxtLink>
@@ -192,7 +192,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/buying/receipts"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Goods Receipts
                 </NuxtLink>
@@ -221,7 +221,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/accounting/chart-of-accounts"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Chart of Accounts
                 </NuxtLink>
@@ -230,7 +230,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/accounting/journals"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Journal Entries
                 </NuxtLink>
@@ -239,7 +239,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/accounting/reports"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Reports
                 </NuxtLink>
@@ -268,7 +268,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/logistics/drivers"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Drivers
                 </NuxtLink>
@@ -277,7 +277,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/logistics/deliveries"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Deliveries
                 </NuxtLink>
@@ -286,7 +286,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/logistics/routes"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Routes
                 </NuxtLink>
@@ -318,7 +318,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/projects/list"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   All Projects
                 </NuxtLink>
@@ -327,7 +327,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/projects/tasks"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Tasks
                 </NuxtLink>
@@ -336,7 +336,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/projects/time-tracking"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Time Tracking
                 </NuxtLink>
@@ -365,7 +365,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/hr/employees"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Employees
                 </NuxtLink>
@@ -374,7 +374,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/hr/attendance"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Attendance
                 </NuxtLink>
@@ -383,7 +383,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/hr/payroll"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-blue-50 !text-blue-600"
+                  active-class="!bg-gray-100 !text-gray-900"
                 >
                   Payroll
                 </NuxtLink>
@@ -456,7 +456,7 @@ const toggleSidebarMinimize = () => {
               <input
                 type="text"
                 placeholder="Search here"
-                class="px-4 py-2 pr-10 text-sm bg-transparent border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors w-64"
+                class="px-4 py-2 pr-10 text-sm bg-transparent border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900 transition-colors w-64"
               >
               <i class="material-symbols-rounded absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">search</i>
             </div>
@@ -492,7 +492,7 @@ const toggleSidebarMinimize = () => {
                   href="javascript:;"
                   class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
                 >
-                  <i class="material-symbols-rounded text-blue-500">email</i>
+                  <i class="material-symbols-rounded text-gray-900">email</i>
                   <div>
                     <h6 class="text-sm font-semibold text-gray-900">Check new messages</h6>
                   </div>

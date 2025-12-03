@@ -325,7 +325,7 @@ const affiliatesColors = ['#03A9F4', '#3A416F', '#fb8c00', '#a8b8d8', '#e91e63']
         <div class="bg-white rounded-xl shadow-sm p-6">
           <h6 class="text-base font-semibold mb-4">Quick Actions</h6>
           <div class="grid grid-cols-2 gap-3">
-            <button class="bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg p-6 flex flex-col items-center justify-center gap-3 transition-all shadow-md hover:shadow-lg">
+            <button class="bg-gradient-to-br from-gray-800 to-gray-900 hover:from-gray-900 hover:to-gray-950 text-white rounded-lg p-6 flex flex-col items-center justify-center gap-3 transition-all shadow-md hover:shadow-lg">
               <i class="material-symbols-rounded text-3xl">add_shopping_cart</i>
               <span class="text-sm font-medium">New Sale</span>
             </button>
@@ -390,7 +390,7 @@ const affiliatesColors = ['#03A9F4', '#3A416F', '#fb8c00', '#a8b8d8', '#e91e63']
 
               <div>
                 <div class="flex items-center mb-2">
-                  <div class="w-6 h-6 rounded bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mr-2">
+                  <div class="w-6 h-6 rounded bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center mr-2">
                     <i class="material-symbols-rounded text-white text-xs opacity-90">ads_click</i>
                   </div>
                   <p class="text-xs font-bold mb-0">Clicks</p>

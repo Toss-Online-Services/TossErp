@@ -63,7 +63,7 @@ function formatCurrency(amount: number) {
       </div>
       <button
         @click="showAddModal = true"
-        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-shadow"
+        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-gray-800 to-gray-900 text-white rounded-lg hover:shadow-lg transition-shadow"
       >
         <i class="material-symbols-rounded text-xl">add</i>
         <span>Add Item</span>
@@ -78,7 +78,7 @@ function formatCurrency(amount: number) {
             <p class="text-sm text-gray-600 mb-1">Total Items</p>
             <h4 class="text-2xl font-bold text-gray-900">{{ stockStore.items.length }}</h4>
           </div>
-          <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white">
+          <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-white">
             <i class="material-symbols-rounded text-2xl">inventory_2</i>
           </div>
         </div>
@@ -212,7 +212,7 @@ function formatCurrency(amount: number) {
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button class="text-blue-600 hover:text-blue-900 mr-3">
+                <button class="text-gray-900 hover:text-gray-800 mr-3">
                   <i class="material-symbols-rounded text-lg">edit</i>
                 </button>
                 <button class="text-gray-600 hover:text-gray-900">
@@ -234,7 +234,7 @@ function formatCurrency(amount: number) {
         <button
           v-if="!searchQuery"
           @click="showAddModal = true"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800"
         >
           <i class="material-symbols-rounded">add</i>
           <span>Add Item</span>

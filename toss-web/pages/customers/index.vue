@@ -71,7 +71,7 @@ function getStatusColor(status: string) {
       </div>
       <button
         @click="showAddModal = true"
-        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-shadow"
+        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-gray-800 to-gray-900 text-white rounded-lg hover:shadow-lg transition-shadow"
       >
         <i class="material-symbols-rounded text-xl">person_add</i>
         <span>Add Customer</span>
@@ -86,7 +86,7 @@ function getStatusColor(status: string) {
             <p class="text-sm text-gray-600 mb-1">Total Customers</p>
             <h4 class="text-2xl font-bold text-gray-900">{{ crmStore.customers.length }}</h4>
           </div>
-          <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white">
+          <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-white">
             <i class="material-symbols-rounded text-2xl">group</i>
           </div>
         </div>
@@ -152,7 +152,7 @@ function getStatusColor(status: string) {
             :class="[
               'px-4 py-2 rounded-lg transition-colors',
               selectedFilter === 'all'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-gray-900 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             ]"
           >
@@ -163,7 +163,7 @@ function getStatusColor(status: string) {
             :class="[
               'px-4 py-2 rounded-lg transition-colors',
               selectedFilter === 'active'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-gray-900 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             ]"
           >
@@ -174,7 +174,7 @@ function getStatusColor(status: string) {
             :class="[
               'px-4 py-2 rounded-lg transition-colors',
               selectedFilter === 'credit'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-gray-900 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             ]"
           >
@@ -185,7 +185,7 @@ function getStatusColor(status: string) {
             :class="[
               'px-4 py-2 rounded-lg transition-colors',
               selectedFilter === 'vip'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-gray-900 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             ]"
           >
@@ -228,7 +228,7 @@ function getStatusColor(status: string) {
             <tr v-for="customer in filteredCustomers" :key="customer.id" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                  <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center text-white font-bold">
                     {{ customer.name.charAt(0) }}
                   </div>
                   <div class="ml-4">
@@ -261,7 +261,7 @@ function getStatusColor(status: string) {
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button class="text-blue-600 hover:text-blue-900 mr-3">
+                <button class="text-gray-900 hover:text-gray-800 mr-3">
                   <i class="material-symbols-rounded text-lg">visibility</i>
                 </button>
                 <button class="text-gray-600 hover:text-gray-900">
@@ -283,7 +283,7 @@ function getStatusColor(status: string) {
         <button
           v-if="!searchQuery"
           @click="showAddModal = true"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800"
         >
           <i class="material-symbols-rounded">person_add</i>
           <span>Add Customer</span>

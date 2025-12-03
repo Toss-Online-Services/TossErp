@@ -126,13 +126,13 @@ function updateQuantity(cartItemId: string, quantity: number) {
         </div>
         <div class="flex justify-between text-lg font-bold pt-3 border-t">
           <span>Total</span>
-          <span class="text-blue-600">{{ formatCurrency(posStore.cartTotal) }}</span>
+          <span class="text-gray-900">{{ formatCurrency(posStore.cartTotal) }}</span>
         </div>
 
         <button
           @click="emit('checkout')"
           :disabled="posStore.cart.length === 0"
-          class="w-full py-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-bold text-lg hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full py-4 bg-gradient-to-br from-gray-800 to-gray-900 text-white rounded-xl font-bold text-lg hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Checkout {{ formatCurrency(posStore.cartTotal) }}
         </button>
