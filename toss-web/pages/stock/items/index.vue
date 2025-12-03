@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { useStockStore, type Item } from '~/stores/stock'
+import { useBuyingStore } from '~/stores/buying'
 import ItemModal from '~/components/stock/ItemModal.vue'
 import StockAdjustmentModal from '~/components/stock/StockAdjustmentModal.vue'
 
@@ -13,6 +14,7 @@ useHead({
 })
 
 const stockStore = useStockStore()
+const buyingStore = useBuyingStore()
 const searchQuery = ref('')
 const showAddModal = ref(false)
 const showEditModal = ref(false)
@@ -62,8 +64,16 @@ const stats = computed(() => {
 // Methods
 onMounted(async () => {
   await stockStore.fetchItems()
+  await buyingStore.fetchSuppliers()
   console.log('Items loaded:', stockStore.items.length, stockStore.items)
 })
+
+function getSupplierForItem(item: Item) {
+  if (!item.supplier) return null
+  return buyingStore.suppliers.find(s => 
+    s.name.toLowerCase() === item.supplier?.toLowerCase()
+  ) || null
+}
 
 function handleAdd() {
   selectedItem.value = null
@@ -228,6 +238,7 @@ function getStockStatus(item: Item) {
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost Price</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Selling Price</th>
@@ -247,6 +258,18 @@ function getStockStatus(item: Item) {
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.category }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div v-if="getSupplierForItem(item)">
+                <NuxtLink
+                  :to="`/buying/suppliers/${getSupplierForItem(item)?.id}`"
+                  class="text-sm font-medium text-gray-900 hover:text-gray-700 hover:underline flex items-center gap-1"
+                >
+                  <i class="material-symbols-rounded text-base">store</i>
+                  {{ getSupplierForItem(item)?.name }}
+                </NuxtLink>
+              </div>
+              <span v-else class="text-sm text-gray-400">-</span>
+            </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
               {{ item.currentStock }} {{ item.unit }}
               <span v-if="item.minStock > 0" class="text-gray-500">Min: {{ item.minStock }}</span>

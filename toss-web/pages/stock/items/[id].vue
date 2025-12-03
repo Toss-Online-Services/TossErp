@@ -2,6 +2,7 @@
 import { onMounted, ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStockStore, type Item, type StockMovement } from '~/stores/stock'
+import { useBuyingStore } from '~/stores/buying'
 import StockAdjustmentModal from '~/components/stock/StockAdjustmentModal.vue'
 
 // Make this page client-only to avoid SSR issues
@@ -16,9 +17,12 @@ useHead({
 
 const route = useRoute()
 const stockStore = useStockStore()
+const buyingStore = useBuyingStore()
 
 const item = ref<Item | null>(null)
 const movements = ref<StockMovement[]>([])
+const supplier = ref<any>(null)
+const allSuppliers = ref<any[]>([])
 const loading = ref(false)
 const showAdjustModal = ref(false)
 
@@ -35,13 +39,14 @@ const movementTypes = {
 onMounted(async () => {
   console.log('Item detail page mounted, ID:', itemId.value)
   await loadItem()
-  await loadMovements()
 })
 
 async function loadItem() {
   loading.value = true
   try {
     await stockStore.fetchItems()
+    await buyingStore.fetchSuppliers()
+    
     const foundItem = stockStore.getItemById(itemId.value)
     console.log('Looking for item with ID:', itemId.value)
     console.log('Available items:', stockStore.items.map(i => ({ id: i.id, name: i.name })))
@@ -51,6 +56,56 @@ async function loadItem() {
     
     if (!item.value) {
       console.error('Item not found for ID:', itemId.value)
+      return
+    }
+    
+    // Find primary supplier for this item (latest/default supplier)
+    if (item.value.supplier) {
+      supplier.value = buyingStore.suppliers.find(s => 
+        s.name.toLowerCase() === item.value?.supplier?.toLowerCase()
+      ) || null
+    }
+    
+    // Load movements and purchase orders to find all suppliers
+    await loadMovements()
+    await buyingStore.fetchPurchaseOrders()
+    
+    // Find all suppliers who have supplied this item
+    const supplierMap = new Map<string, any>()
+    
+    // Get suppliers from purchase movements
+    movements.value
+      .filter(m => m.type === 'purchase' && m.supplierName)
+      .forEach(movement => {
+        if (movement.supplierName && !supplierMap.has(movement.supplierName)) {
+          const foundSupplier = buyingStore.suppliers.find(s => 
+            s.name.toLowerCase() === movement.supplierName?.toLowerCase()
+          )
+          if (foundSupplier) {
+            supplierMap.set(movement.supplierName, foundSupplier)
+          }
+        }
+      })
+    
+    // Also check purchase orders for this item
+    buyingStore.purchaseOrders.forEach(po => {
+      const hasItem = po.items.some(poItem => poItem.itemId === item.value?.id)
+      if (hasItem && po.supplierName && !supplierMap.has(po.supplierName)) {
+        const foundSupplier = buyingStore.suppliers.find(s => 
+          s.name.toLowerCase() === po.supplierName.toLowerCase()
+        )
+        if (foundSupplier) {
+          supplierMap.set(po.supplierName, foundSupplier)
+        }
+      }
+    })
+    
+    // Convert map to array
+    allSuppliers.value = Array.from(supplierMap.values())
+    
+    // If no suppliers found from movements/POs but item has a supplier, add it
+    if (supplier.value && !allSuppliers.value.find(s => s.id === supplier.value.id)) {
+      allSuppliers.value.push(supplier.value)
     }
   } catch (error) {
     console.error('Failed to load item:', error)
@@ -64,6 +119,25 @@ async function loadMovements() {
     await stockStore.fetchMovements(itemId.value)
     // Movements are already filtered in the store when itemId is provided
     movements.value = stockStore.movements.filter(m => m.itemId === itemId.value)
+    
+    // Enhance movements with supplier info from purchase orders if missing
+    if (item.value) {
+      await buyingStore.fetchPurchaseOrders()
+      movements.value = movements.value.map(movement => {
+        if (movement.type === 'purchase' && movement.referenceType === 'PO' && movement.referenceId && !movement.supplierName) {
+          // Try to find the PO and get supplier info
+          const po = buyingStore.purchaseOrders.find(po => 
+            po.poNumber === movement.referenceId || po.id === movement.referenceId
+          )
+          if (po) {
+            movement.supplierId = po.supplierId
+            movement.supplierName = po.supplierName
+          }
+        }
+        return movement
+      })
+    }
+    
     console.log('Loaded movements:', movements.value.length, 'for item:', itemId.value)
   } catch (error) {
     console.error('Failed to load movements:', error)
@@ -166,6 +240,40 @@ function handleStockAdjusted() {
             <div class="text-lg font-semibold text-gray-900">{{ formatCurrency(item.sellingPrice) }}</div>
           </div>
         </div>
+        
+        <!-- Supplier Information -->
+        <div v-if="supplier || item.supplier" class="mt-6 pt-6 border-t border-gray-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-600 mb-1">Supplier</div>
+              <div v-if="supplier" class="flex items-center gap-2">
+                <NuxtLink
+                  :to="`/buying/suppliers/${supplier.id}`"
+                  class="text-lg font-semibold text-gray-900 hover:text-gray-700 hover:underline flex items-center gap-2"
+                >
+                  <i class="material-symbols-rounded text-xl">store</i>
+                  {{ supplier.name }}
+                  <i class="material-symbols-rounded text-sm">open_in_new</i>
+                </NuxtLink>
+              </div>
+              <div v-else class="text-lg font-semibold text-gray-900">{{ item.supplier }}</div>
+            </div>
+            <div v-if="supplier" class="flex items-center gap-4 text-sm text-gray-600">
+              <div v-if="supplier.phone" class="flex items-center gap-1">
+                <i class="material-symbols-rounded text-base">phone</i>
+                <a :href="`tel:${supplier.phone}`" class="hover:text-gray-900 hover:underline">
+                  {{ supplier.phone }}
+                </a>
+              </div>
+              <div v-if="supplier.email" class="flex items-center gap-1">
+                <i class="material-symbols-rounded text-base">email</i>
+                <a :href="`mailto:${supplier.email}`" class="hover:text-gray-900 hover:underline">
+                  {{ supplier.email }}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Stock Status Cards -->
@@ -203,18 +311,19 @@ function handleStockAdjusted() {
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reference</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="loading">
-                <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                <td colspan="6" class="px-6 py-8 text-center text-gray-500">
                   Loading movements...
                 </td>
               </tr>
               <tr v-else-if="movements.length === 0">
-                <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                <td colspan="6" class="px-6 py-8 text-center text-gray-500">
                   No stock movements recorded yet
                 </td>
               </tr>
@@ -240,6 +349,23 @@ function handleStockAdjusted() {
                   {{ movement.quantity > 0 ? '+' : '' }}{{ movement.quantity }} {{ item.unit }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <div v-if="movement.type === 'purchase' && movement.supplierName">
+                    <NuxtLink
+                      v-if="movement.supplierId"
+                      :to="`/buying/suppliers/${movement.supplierId}`"
+                      class="text-gray-900 hover:text-gray-700 hover:underline flex items-center gap-1"
+                    >
+                      <i class="material-symbols-rounded text-base">store</i>
+                      {{ movement.supplierName }}
+                    </NuxtLink>
+                    <span v-else class="flex items-center gap-1">
+                      <i class="material-symbols-rounded text-base">store</i>
+                      {{ movement.supplierName }}
+                    </span>
+                  </div>
+                  <span v-else class="text-gray-400">-</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <span v-if="movement.referenceType && movement.referenceId">
                     {{ movement.referenceType }} #{{ movement.referenceId }}
                   </span>
@@ -251,6 +377,65 @@ function handleStockAdjusted() {
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- All Suppliers Section -->
+      <div v-if="allSuppliers.length > 0" class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <i class="material-symbols-rounded text-xl">store</i>
+            All Suppliers for This Item
+          </h2>
+          <p class="text-sm text-gray-600 mt-1">Suppliers who have supplied this product</p>
+        </div>
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div
+              v-for="supp in allSuppliers"
+              :key="supp.id"
+              class="border border-gray-200 rounded-lg p-4 hover:border-gray-300 hover:shadow-md transition-all"
+            >
+              <div class="flex items-start justify-between mb-3">
+                <NuxtLink
+                  :to="`/buying/suppliers/${supp.id}`"
+                  class="flex items-center gap-2 text-base font-semibold text-gray-900 hover:text-gray-700 hover:underline flex-1"
+                >
+                  <i class="material-symbols-rounded text-xl">store</i>
+                  {{ supp.name }}
+                  <i class="material-symbols-rounded text-sm">open_in_new</i>
+                </NuxtLink>
+                <span
+                  v-if="supp.id === supplier?.id"
+                  class="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-700"
+                >
+                  Primary
+                </span>
+              </div>
+              <div class="space-y-2 text-sm text-gray-600">
+                <div v-if="supp.code" class="flex items-center gap-1">
+                  <i class="material-symbols-rounded text-base">tag</i>
+                  <span>{{ supp.code }}</span>
+                </div>
+                <div v-if="supp.phone" class="flex items-center gap-1">
+                  <i class="material-symbols-rounded text-base">phone</i>
+                  <a :href="`tel:${supp.phone}`" class="hover:text-gray-900 hover:underline">
+                    {{ supp.phone }}
+                  </a>
+                </div>
+                <div v-if="supp.email" class="flex items-center gap-1">
+                  <i class="material-symbols-rounded text-base">email</i>
+                  <a :href="`mailto:${supp.email}`" class="hover:text-gray-900 hover:underline">
+                    {{ supp.email }}
+                  </a>
+                </div>
+                <div v-if="supp.paymentTerms" class="flex items-center gap-1">
+                  <i class="material-symbols-rounded text-base">account_balance</i>
+                  <span>{{ supp.paymentTerms }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

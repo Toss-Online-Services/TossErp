@@ -404,7 +404,8 @@ export const useBuyingStore = defineStore('buying', () => {
           const stockItem = stockStore.items.find(i => i.id === item.itemId)
           if (stockItem) {
             stockItem.currentStock += item.receivedQuantity
-            // Create stock movement
+            // Create stock movement with supplier info
+            const po = purchaseOrders.value.find(po => po.id === gr.purchaseOrderId)
             stockStore.movements.push({
               id: `mov_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
               itemId: item.itemId,
@@ -414,6 +415,8 @@ export const useBuyingStore = defineStore('buying', () => {
               warehouse: gr.warehouse,
               referenceType: 'GoodsReceipt',
               referenceId: newGR.id,
+              supplierId: gr.supplierId,
+              supplierName: gr.supplierName,
               notes: `Received from ${gr.supplierName}`,
               createdBy: 'current_user', // TODO: Get from auth
               createdAt: new Date()

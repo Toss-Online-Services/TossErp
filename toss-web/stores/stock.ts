@@ -31,6 +31,8 @@ export interface StockMovement {
   warehouse: string
   referenceType?: string
   referenceId?: string
+  supplierId?: string
+  supplierName?: string
   notes?: string
   createdBy: string
   createdAt: Date

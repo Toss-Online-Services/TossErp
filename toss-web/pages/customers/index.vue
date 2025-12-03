@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
-import { useCrmStore } from '~/stores/crm'
+import { useCrmStore, type Customer } from '~/stores/crm'
+import CustomerModal from '~/components/crm/CustomerModal.vue'
 
 useHead({
   title: 'Customers - TOSS'
@@ -9,6 +10,8 @@ useHead({
 const crmStore = useCrmStore()
 const searchQuery = ref('')
 const showAddModal = ref(false)
+const showEditModal = ref(false)
+const selectedCustomer = ref<Customer | null>(null)
 const selectedFilter = ref('all')
 
 // Computed
@@ -50,6 +53,22 @@ function formatDate(date?: Date) {
     month: 'short',
     day: 'numeric'
   })
+}
+
+function handleView(customer: Customer) {
+  navigateTo(`/customers/${customer.id}`)
+}
+
+function handleEdit(customer: Customer) {
+  selectedCustomer.value = customer
+  showEditModal.value = true
+}
+
+function handleCustomerSaved() {
+  showAddModal.value = false
+  showEditModal.value = false
+  selectedCustomer.value = null
+  crmStore.fetchCustomers()
 }
 
 function getStatusColor(status: string) {
@@ -261,12 +280,22 @@ function getStatusColor(status: string) {
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button class="text-gray-900 hover:text-gray-800 mr-3">
-                  <i class="material-symbols-rounded text-lg">visibility</i>
-                </button>
-                <button class="text-gray-600 hover:text-gray-900">
-                  <i class="material-symbols-rounded text-lg">more_vert</i>
-                </button>
+                <div class="flex items-center justify-end gap-2">
+                  <button
+                    @click="handleView(customer)"
+                    class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="View"
+                  >
+                    <i class="material-symbols-rounded text-lg">visibility</i>
+                  </button>
+                  <button
+                    @click="handleEdit(customer)"
+                    class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Edit"
+                  >
+                    <i class="material-symbols-rounded text-lg">edit</i>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -290,6 +319,20 @@ function getStatusColor(status: string) {
         </button>
       </div>
     </div>
+
+    <!-- Modals -->
+    <CustomerModal
+      :show="showAddModal"
+      :customer="null"
+      @close="showAddModal = false"
+      @saved="handleCustomerSaved"
+    />
+    <CustomerModal
+      :show="showEditModal"
+      :customer="selectedCustomer"
+      @close="showEditModal = false; selectedCustomer = null"
+      @saved="handleCustomerSaved"
+    />
   </div>
 </template>
 
