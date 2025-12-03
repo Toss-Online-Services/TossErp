@@ -17,6 +17,8 @@ const toggleSidebarMinimize = () => {
 
 <template>
   <div class="min-h-screen bg-gray-100">
+    <!-- Offline Indicator -->
+    <OfflineIndicator />
     <!-- Sidebar -->
     <aside
       :class="[
