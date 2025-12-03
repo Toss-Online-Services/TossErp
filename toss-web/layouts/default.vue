@@ -145,7 +145,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/stock/items"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/stock/items') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Items
                 </NuxtLink>
@@ -154,7 +154,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/stock/movements"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/stock/movements') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Movements
                 </NuxtLink>
@@ -163,7 +163,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/stock/reconciliation"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/stock/reconciliation') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Reconciliation
                 </NuxtLink>
@@ -172,7 +172,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/stock/alerts"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/stock/alerts') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Alerts
                 </NuxtLink>
@@ -217,7 +217,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/sales/quotations"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/sales/quotations') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Quotations
                 </NuxtLink>
@@ -226,7 +226,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/sales/orders"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/sales/orders') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Orders
                 </NuxtLink>
@@ -235,7 +235,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/sales/invoices"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/sales/invoices') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Invoices
                 </NuxtLink>
@@ -244,7 +244,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/sales/deliveries"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/sales/deliveries') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Deliveries
                 </NuxtLink>
@@ -278,7 +278,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/buying/purchase-orders"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/buying/purchase-orders') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Purchase Orders
                 </NuxtLink>
@@ -287,7 +287,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/buying/suppliers"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/buying/suppliers') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Suppliers
                 </NuxtLink>
@@ -296,7 +296,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/buying/receipts"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/buying/receipts') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Goods Receipts
                 </NuxtLink>
@@ -330,7 +330,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/accounting/chart-of-accounts"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/accounting/chart-of-accounts') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Chart of Accounts
                 </NuxtLink>
@@ -339,7 +339,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/accounting/journals"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/accounting/journals') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Journal Entries
                 </NuxtLink>
@@ -348,7 +348,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/accounting/reports"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/accounting/reports') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Reports
                 </NuxtLink>
@@ -382,7 +382,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/logistics/drivers"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/logistics/drivers') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Drivers
                 </NuxtLink>
@@ -391,7 +391,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/logistics/deliveries"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/logistics/deliveries') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Deliveries
                 </NuxtLink>
@@ -400,7 +400,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/logistics/routes"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/logistics/routes') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Routes
                 </NuxtLink>
@@ -437,7 +437,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/projects/list"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/projects/list') ? '!bg-gray-900 !text-white' : ''"
                 >
                   All Projects
                 </NuxtLink>
@@ -446,7 +446,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/projects/tasks"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/projects/tasks') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Tasks
                 </NuxtLink>
@@ -455,7 +455,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/projects/time-tracking"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/projects/time-tracking') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Time Tracking
                 </NuxtLink>
@@ -489,7 +489,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/hr/employees"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/hr/employees') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Employees
                 </NuxtLink>
@@ -498,7 +498,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/hr/attendance"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/hr/attendance') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Attendance
                 </NuxtLink>
@@ -507,7 +507,7 @@ onMounted(() => {
                 <NuxtLink
                   to="/hr/payroll"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-900 !text-white"
+                  :class="route.path.startsWith('/hr/payroll') ? '!bg-gray-900 !text-white' : ''"
                 >
                   Payroll
                 </NuxtLink>

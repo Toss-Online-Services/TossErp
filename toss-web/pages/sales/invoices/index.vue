@@ -22,7 +22,7 @@ const selectedInvoice = ref<Invoice | null>(null)
 
 // Computed
 const filteredInvoices = computed(() => {
-  let filtered = salesStore.invoices
+  let filtered = (salesStore.invoices || []).filter(inv => inv != null)
 
   if (statusFilter.value !== 'all') {
     filtered = filtered.filter(inv => inv.status === statusFilter.value)
@@ -31,27 +31,32 @@ const filteredInvoices = computed(() => {
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(inv =>
-      inv.invoiceNumber.toLowerCase().includes(query) ||
-      inv.customerName.toLowerCase().includes(query)
+      (inv.invoiceNumber || '').toLowerCase().includes(query) ||
+      (inv.customerName || '').toLowerCase().includes(query)
     )
   }
 
-  return filtered.sort((a, b) => new Date(b.invoiceDate).getTime() - new Date(a.invoiceDate).getTime())
+  return filtered.sort((a, b) => {
+    const dateA = a.invoiceDate ? new Date(a.invoiceDate).getTime() : 0
+    const dateB = b.invoiceDate ? new Date(b.invoiceDate).getTime() : 0
+    return dateB - dateA
+  })
 })
 
 const stats = computed(() => {
-  const invoices = salesStore.invoices
+  const invoices = salesStore.invoices || []
   const now = new Date()
-  const overdue = invoices.filter(inv => 
-    inv.status !== 'paid' && inv.status !== 'cancelled' && new Date(inv.dueDate) < now
-  ).length
+  const overdue = invoices.filter(inv => {
+    if (!inv || !inv.dueDate) return false
+    return inv.status !== 'paid' && inv.status !== 'cancelled' && new Date(inv.dueDate) < now
+  }).length
   const totalReceivables = invoices
-    .filter(inv => inv.status !== 'paid' && inv.status !== 'cancelled')
-    .reduce((sum, inv) => sum + inv.amountDue, 0)
+    .filter(inv => inv && inv.status !== 'paid' && inv.status !== 'cancelled')
+    .reduce((sum, inv) => sum + (inv.amountDue || 0), 0)
   
   return {
     total: invoices.length,
-    unpaid: invoices.filter(inv => inv.status === 'sent' || inv.status === 'partially_paid').length,
+    unpaid: invoices.filter(inv => inv && (inv.status === 'sent' || inv.status === 'partially_paid')).length,
     overdue,
     totalReceivables
   }
@@ -222,7 +227,7 @@ function formatDate(date: Date | undefined) {
 
     <!-- Invoices Table -->
     <div class="bg-white rounded-xl shadow-card overflow-hidden">
-      <div v-if="salesStore.invoices.length === 0" class="p-12 text-center">
+      <div v-if="!salesStore.invoices || salesStore.invoices.length === 0" class="p-12 text-center">
         <i class="material-symbols-rounded text-6xl text-gray-300 mb-4">receipt_long</i>
         <h3 class="text-lg font-semibold text-gray-900 mb-2">No invoices found</h3>
         <p class="text-gray-600 mb-6">Get started by creating your first invoice</p>

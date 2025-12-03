@@ -90,6 +90,32 @@ function getPaymentStatusLabel(status: string) {
   return labels[status] || status
 }
 
+async function handleCreateInvoice() {
+  if (!order.value) return
+  try {
+    const invoice = await salesStore.createInvoiceFromOrder(order.value.id)
+    navigateTo(`/sales/invoices/${invoice.id}`)
+  } catch (error) {
+    console.error('Failed to create invoice:', error)
+  }
+}
+
+function handlePrint() {
+  window.print()
+}
+
+async function handleSend() {
+  if (!order.value) return
+  try {
+    // TODO: Implement send functionality (email/SMS/WhatsApp)
+    // This would typically send the order to the customer
+    alert(`Sending order ${order.value.orderNumber} to ${order.value.customerName}...`)
+    // await salesStore.sendOrder(order.value.id)
+  } catch (error) {
+    console.error('Failed to send order:', error)
+  }
+}
+
 onMounted(async () => {
   await loadOrder()
 })
@@ -121,50 +147,101 @@ onMounted(async () => {
 
     <div v-else>
       <!-- Header -->
-      <div class="mb-6 flex items-center justify-between">
-        <div>
-          <button
-            @click="navigateTo('/sales/orders')"
-            class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
-          >
-            <i class="material-symbols-rounded text-lg">arrow_back</i>
-            <span>Back</span>
-          </button>
-          <h3 class="text-3xl font-bold text-gray-900 mb-2">{{ order.orderNumber }}</h3>
-          <p class="text-gray-600 text-sm">Sales order details and items</p>
-        </div>
-        <div class="flex items-center gap-3">
-          <span :class="['px-3 py-1 text-sm font-medium rounded-full', getStatusColor(order.status)]">
-            {{ getStatusLabel(order.status) }}
-          </span>
-          <span :class="['px-3 py-1 text-sm font-medium rounded-full', getPaymentStatusColor(order.paymentStatus)]">
-            {{ getPaymentStatusLabel(order.paymentStatus) }}
-          </span>
+      <div class="mb-6">
+        <button
+          @click="navigateTo('/sales/orders')"
+          class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+        >
+          <i class="material-symbols-rounded text-lg">arrow_back</i>
+          <span>Back to Orders</span>
+        </button>
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h3 class="text-3xl font-bold text-gray-900 mb-2">{{ order.orderNumber }}</h3>
+            <p class="text-gray-600 text-sm">Sales order details and items</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <span :class="['px-3 py-1 text-sm font-medium rounded-full', getStatusColor(order.status)]">
+              {{ getStatusLabel(order.status) }}
+            </span>
+            <span :class="['px-3 py-1 text-sm font-medium rounded-full', getPaymentStatusColor(order.paymentStatus)]">
+              {{ getPaymentStatusLabel(order.paymentStatus) }}
+            </span>
+            <button
+              v-if="order.status === 'confirmed' && order.paymentStatus !== 'paid'"
+              @click="handleCreateInvoice"
+              class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+            >
+              <i class="material-symbols-rounded text-lg">receipt_long</i>
+              <span>Create Invoice</span>
+            </button>
+            <button
+              @click="handlePrint"
+              class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <i class="material-symbols-rounded text-lg">print</i>
+              <span>Print</span>
+            </button>
+            <button
+              @click="handleSend"
+              class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <i class="material-symbols-rounded text-lg">send</i>
+              <span>Send</span>
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Info Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="bg-white rounded-xl shadow-card p-6">
-          <h4 class="text-sm font-medium text-gray-600 mb-4">Customer Information</h4>
-          <div class="space-y-2">
+          <h4 class="text-sm font-medium text-gray-600 mb-4 flex items-center gap-2">
+            <i class="material-symbols-rounded text-lg">person</i>
+            Customer Information
+          </h4>
+          <div class="space-y-3">
             <div>
-              <p class="text-sm text-gray-500">Customer</p>
-              <p class="text-base font-medium text-gray-900">{{ order.customerName }}</p>
+              <p class="text-xs text-gray-500 mb-1">Customer Name</p>
+              <p class="text-base font-semibold text-gray-900">{{ order.customerName }}</p>
+            </div>
+            <div v-if="order.quotationId">
+              <p class="text-xs text-gray-500 mb-1">Quotation</p>
+              <p class="text-sm text-gray-700">{{ order.quotationId }}</p>
             </div>
           </div>
         </div>
 
         <div class="bg-white rounded-xl shadow-card p-6">
-          <h4 class="text-sm font-medium text-gray-600 mb-4">Order Dates</h4>
-          <div class="space-y-2">
+          <h4 class="text-sm font-medium text-gray-600 mb-4 flex items-center gap-2">
+            <i class="material-symbols-rounded text-lg">calendar_today</i>
+            Order Dates
+          </h4>
+          <div class="space-y-3">
             <div>
-              <p class="text-sm text-gray-500">Order Date</p>
-              <p class="text-base font-medium text-gray-900">{{ formatDate(order.orderDate) }}</p>
+              <p class="text-xs text-gray-500 mb-1">Order Date</p>
+              <p class="text-base font-semibold text-gray-900">{{ formatDate(order.orderDate) }}</p>
             </div>
             <div v-if="order.deliveryDate">
-              <p class="text-sm text-gray-500">Delivery Date</p>
-              <p class="text-base font-medium text-gray-900">{{ formatDate(order.deliveryDate) }}</p>
+              <p class="text-xs text-gray-500 mb-1">Expected Delivery</p>
+              <p class="text-base font-semibold text-gray-900">{{ formatDate(order.deliveryDate) }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-card p-6">
+          <h4 class="text-sm font-medium text-gray-600 mb-4 flex items-center gap-2">
+            <i class="material-symbols-rounded text-lg">info</i>
+            Order Summary
+          </h4>
+          <div class="space-y-3">
+            <div>
+              <p class="text-xs text-gray-500 mb-1">Total Items</p>
+              <p class="text-base font-semibold text-gray-900">{{ order.items.length }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500 mb-1">Total Amount</p>
+              <p class="text-lg font-bold text-gray-900">R {{ order.total.toFixed(2) }}</p>
             </div>
           </div>
         </div>
@@ -172,66 +249,93 @@ onMounted(async () => {
 
       <!-- Items Table -->
       <div class="bg-white rounded-xl shadow-card overflow-hidden mb-6">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h4 class="text-lg font-semibold text-gray-900">Order Items</h4>
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h4 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <i class="material-symbols-rounded text-xl">shopping_cart</i>
+            Order Items
+          </h4>
+          <span class="text-sm text-gray-500">{{ order.items.length }} item(s)</span>
         </div>
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rate</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="item in order.items" :key="item.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4">
-                <div class="text-sm font-medium text-gray-900">{{ item.itemName }}</div>
-              </td>
-              <td class="px-6 py-4 text-sm text-gray-900">
-                {{ item.quantity }}
-              </td>
-              <td class="px-6 py-4 text-sm text-gray-900">
-                R {{ item.rate.toFixed(2) }}
-              </td>
-              <td class="px-6 py-4 text-sm text-gray-900">
-                R {{ item.discount.toFixed(2) }}
-              </td>
-              <td class="px-6 py-4 text-sm font-medium text-gray-900 text-right">
-                R {{ item.amount.toFixed(2) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rate</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr v-for="item in order.items" :key="item.id" class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">{{ item.itemName }}</div>
+                  <div v-if="item.itemId" class="text-xs text-gray-500 mt-1">ID: {{ item.itemId }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="text-sm text-gray-900 font-medium">{{ item.quantity }}</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="text-sm text-gray-900">R {{ item.rate.toFixed(2) }}</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="text-sm text-gray-900">
+                    <span v-if="item.discount > 0" class="text-orange-600">-R {{ item.discount.toFixed(2) }}</span>
+                    <span v-else class="text-gray-400">-</span>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right">
+                  <span class="text-sm font-semibold text-gray-900">R {{ item.amount.toFixed(2) }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <!-- Totals -->
-      <div class="bg-white rounded-xl shadow-card p-6">
-        <div class="flex justify-end">
-          <div class="w-64 space-y-2">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600">Subtotal:</span>
-              <span class="text-gray-900">R {{ order.subtotal.toFixed(2) }}</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600">Discount:</span>
-              <span class="text-gray-900">R {{ order.discount.toFixed(2) }}</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600">Tax (15%):</span>
-              <span class="text-gray-900">R {{ order.tax.toFixed(2) }}</span>
-            </div>
-            <div class="flex justify-between text-lg font-bold border-t border-gray-200 pt-2">
-              <span class="text-gray-900">Total:</span>
-              <span class="text-gray-900">R {{ order.total.toFixed(2) }}</span>
+      <!-- Totals and Notes -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Totals -->
+        <div class="lg:col-span-2 bg-white rounded-xl shadow-card p-6">
+          <h4 class="text-sm font-medium text-gray-600 mb-4 flex items-center gap-2">
+            <i class="material-symbols-rounded text-lg">receipt</i>
+            Order Summary
+          </h4>
+          <div class="flex justify-end">
+            <div class="w-full max-w-sm space-y-3">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Subtotal:</span>
+                <span class="text-gray-900 font-medium">R {{ order.subtotal.toFixed(2) }}</span>
+              </div>
+              <div v-if="order.discount > 0" class="flex justify-between text-sm">
+                <span class="text-gray-600">Discount:</span>
+                <span class="text-orange-600 font-medium">-R {{ order.discount.toFixed(2) }}</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Tax (15%):</span>
+                <span class="text-gray-900 font-medium">R {{ order.tax.toFixed(2) }}</span>
+              </div>
+              <div class="flex justify-between text-lg font-bold border-t-2 border-gray-300 pt-3 mt-3">
+                <span class="text-gray-900">Total:</span>
+                <span class="text-gray-900">R {{ order.total.toFixed(2) }}</span>
+              </div>
             </div>
           </div>
         </div>
-        <div v-if="order.notes" class="mt-6 pt-6 border-t border-gray-200">
-          <h4 class="text-sm font-medium text-gray-600 mb-2">Notes</h4>
-          <p class="text-sm text-gray-900">{{ order.notes }}</p>
+
+        <!-- Notes -->
+        <div class="bg-white rounded-xl shadow-card p-6">
+          <h4 class="text-sm font-medium text-gray-600 mb-4 flex items-center gap-2">
+            <i class="material-symbols-rounded text-lg">note</i>
+            Notes
+          </h4>
+          <div v-if="order.notes" class="text-sm text-gray-700 leading-relaxed">
+            {{ order.notes }}
+          </div>
+          <div v-else class="text-sm text-gray-400 italic">
+            No notes added
+          </div>
         </div>
       </div>
     </div>

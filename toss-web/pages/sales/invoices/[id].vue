@@ -74,6 +74,22 @@ function getStatusLabel(status: string) {
   return labels[status] || status
 }
 
+function handlePrint() {
+  window.print()
+}
+
+async function handleSend() {
+  if (!invoice.value) return
+  try {
+    // TODO: Implement send functionality (email/SMS/WhatsApp)
+    // This would typically send the invoice to the customer
+    alert(`Sending invoice ${invoice.value.invoiceNumber} to ${invoice.value.customerName}...`)
+    // await salesStore.sendInvoice(invoice.value.id)
+  } catch (error) {
+    console.error('Failed to send invoice:', error)
+  }
+}
+
 onMounted(async () => {
   await loadInvoice()
 })
@@ -121,6 +137,20 @@ onMounted(async () => {
           <span :class="['px-3 py-1 text-sm font-medium rounded-full', getStatusColor(invoice.status)]">
             {{ getStatusLabel(invoice.status) }}
           </span>
+          <button
+            @click="handlePrint"
+            class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <i class="material-symbols-rounded text-lg">print</i>
+            <span>Print</span>
+          </button>
+          <button
+            @click="handleSend"
+            class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <i class="material-symbols-rounded text-lg">send</i>
+            <span>Send</span>
+          </button>
         </div>
       </div>
 
