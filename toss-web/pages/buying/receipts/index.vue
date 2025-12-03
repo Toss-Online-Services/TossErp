@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { useBuyingStore, type GoodsReceipt, type GoodsReceiptStatus } from '~/stores/buying'
+import GoodsReceiptModal from '~/components/buying/GoodsReceiptModal.vue'
 
 definePageMeta({
   layout: 'default'
@@ -56,6 +57,11 @@ function handleCreate() {
 
 function handleView(gr: GoodsReceipt) {
   navigateTo(`/buying/receipts/${gr.id}`)
+}
+
+function handleReceiptSaved() {
+  showCreateModal.value = false
+  buyingStore.fetchGoodsReceipts()
 }
 
 function getStatusColor(status: GoodsReceiptStatus) {
@@ -242,5 +248,13 @@ function formatDate(date: Date) {
         </tbody>
       </table>
     </div>
+
+    <!-- Modals -->
+    <GoodsReceiptModal
+      :show="showCreateModal"
+      :goods-receipt="null"
+      @close="showCreateModal = false"
+      @saved="handleReceiptSaved"
+    />
   </div>
 </template>

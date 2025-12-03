@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { useBuyingStore, type Supplier } from '~/stores/buying'
+import SupplierModal from '~/components/buying/SupplierModal.vue'
 
 definePageMeta({
   layout: 'default'
@@ -50,6 +51,10 @@ onMounted(async () => {
 function handleAdd() {
   selectedSupplier.value = null
   showAddModal.value = true
+}
+
+function handleView(supplier: Supplier) {
+  navigateTo(`/buying/suppliers/${supplier.id}`)
 }
 
 function handleEdit(supplier: Supplier) {
@@ -199,6 +204,13 @@ function getStatusColor(status: boolean) {
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <div class="flex items-center justify-end gap-2">
                 <button
+                  @click="handleView(supplier)"
+                  class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="View"
+                >
+                  <i class="material-symbols-rounded text-lg">visibility</i>
+                </button>
+                <button
                   @click="handleEdit(supplier)"
                   class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
                   title="Edit"
@@ -211,5 +223,19 @@ function getStatusColor(status: boolean) {
         </tbody>
       </table>
     </div>
+
+    <!-- Modals -->
+    <SupplierModal
+      :show="showAddModal"
+      :supplier="null"
+      @close="showAddModal = false"
+      @saved="handleSupplierSaved"
+    />
+    <SupplierModal
+      :show="showEditModal"
+      :supplier="selectedSupplier"
+      @close="showEditModal = false; selectedSupplier = null"
+      @saved="handleSupplierSaved"
+    />
   </div>
 </template>
