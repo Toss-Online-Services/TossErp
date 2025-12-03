@@ -196,7 +196,65 @@ export const useSalesStore = defineStore('sales', () => {
       await new Promise(resolve => setTimeout(resolve, 500))
       
       // Mock data
-      orders.value = []
+      orders.value = [
+        {
+          id: '1',
+          orderNumber: 'SO-2025-001',
+          customerId: 'cust-1',
+          customerName: 'Thabo Builders',
+          quotationId: '1',
+          orderDate: new Date('2025-01-10'),
+          deliveryDate: new Date('2025-01-20'),
+          items: [
+            {
+              id: '1',
+              itemId: 'item-1',
+              itemName: 'Cement 50kg',
+              quantity: 100,
+              rate: 100,
+              discount: 0,
+              tax: 1500,
+              amount: 11500
+            }
+          ],
+          subtotal: 10000,
+          discount: 0,
+          tax: 1500,
+          total: 11500,
+          status: 'confirmed',
+          paymentStatus: 'unpaid',
+          createdBy: 'admin',
+          createdAt: new Date('2025-01-10')
+        },
+        {
+          id: '2',
+          orderNumber: 'SO-2025-002',
+          customerId: 'cust-2',
+          customerName: 'Mpho Hardware',
+          orderDate: new Date('2025-01-15'),
+          items: [
+            {
+              id: '2',
+              itemId: 'item-2',
+              itemName: 'Steel Bars 12mm',
+              quantity: 50,
+              rate: 150,
+              discount: 500,
+              tax: 1050,
+              amount: 7300
+            }
+          ],
+          subtotal: 7000,
+          discount: 500,
+          tax: 1050,
+          total: 7550,
+          status: 'partially_delivered',
+          paymentStatus: 'partially_paid',
+          notes: 'Partial delivery completed',
+          createdBy: 'admin',
+          createdAt: new Date('2025-01-15')
+        }
+      ]
     } catch (error) {
       console.error('Failed to fetch orders:', error)
     } finally {
@@ -211,9 +269,112 @@ export const useSalesStore = defineStore('sales', () => {
       await new Promise(resolve => setTimeout(resolve, 500))
       
       // Mock data
-      invoices.value = []
+      invoices.value = [
+        {
+          id: '1',
+          invoiceNumber: 'INV-2025-001',
+          customerId: 'cust-1',
+          customerName: 'Thabo Builders',
+          orderId: '1',
+          invoiceDate: new Date('2025-01-10'),
+          dueDate: new Date('2025-02-09'),
+          items: [
+            {
+              id: '1',
+              itemId: 'item-1',
+              itemName: 'Cement 50kg',
+              quantity: 100,
+              rate: 100,
+              discount: 0,
+              tax: 1500,
+              amount: 11500
+            }
+          ],
+          subtotal: 10000,
+          discount: 0,
+          tax: 1500,
+          total: 11500,
+          amountPaid: 0,
+          amountDue: 11500,
+          status: 'sent',
+          paymentTerms: 'Net 30',
+          createdAt: new Date('2025-01-10')
+        },
+        {
+          id: '2',
+          invoiceNumber: 'INV-2025-002',
+          customerId: 'cust-2',
+          customerName: 'Mpho Hardware',
+          orderId: '2',
+          invoiceDate: new Date('2025-01-15'),
+          dueDate: new Date('2025-02-14'),
+          items: [
+            {
+              id: '2',
+              itemId: 'item-2',
+              itemName: 'Steel Bars 12mm',
+              quantity: 50,
+              rate: 150,
+              discount: 500,
+              tax: 1050,
+              amount: 7300
+            }
+          ],
+          subtotal: 7000,
+          discount: 500,
+          tax: 1050,
+          total: 7550,
+          amountPaid: 3000,
+          amountDue: 4550,
+          status: 'partially_paid',
+          paymentTerms: 'Net 30',
+          createdAt: new Date('2025-01-15')
+        }
+      ]
     } catch (error) {
       console.error('Failed to fetch invoices:', error)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function fetchDeliveries() {
+    loading.value = true
+    try {
+      // TODO: Replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // Mock data
+      deliveries.value = [
+        {
+          id: '1',
+          deliveryNumber: 'DN-2025-001',
+          orderId: '1',
+          orderNumber: 'SO-2025-001',
+          customerId: 'cust-1',
+          customerName: 'Thabo Builders',
+          deliveryDate: new Date('2025-01-20'),
+          items: [
+            {
+              id: '1',
+              itemId: 'item-1',
+              itemName: 'Cement 50kg',
+              quantity: 100,
+              rate: 100,
+              discount: 0,
+              tax: 1500,
+              amount: 11500
+            }
+          ],
+          status: 'delivered',
+          driverId: 'driver-1',
+          driverName: 'John Driver',
+          notes: 'Delivered successfully',
+          createdAt: new Date('2025-01-20')
+        }
+      ]
+    } catch (error) {
+      console.error('Failed to fetch deliveries:', error)
     } finally {
       loading.value = false
     }
@@ -340,6 +501,22 @@ export const useSalesStore = defineStore('sales', () => {
     return `INV-${year}-${sequence}`
   }
 
+  function getQuotationById(id: string): Quotation | undefined {
+    return quotations.value.find(q => q.id === id)
+  }
+
+  function getOrderById(id: string): SalesOrder | undefined {
+    return orders.value.find(o => o.id === id)
+  }
+
+  function getInvoiceById(id: string): Invoice | undefined {
+    return invoices.value.find(inv => inv.id === id)
+  }
+
+  function getDeliveryById(id: string): DeliveryNote | undefined {
+    return deliveries.value.find(d => d.id === id)
+  }
+
   return {
     // State
     quotations,
@@ -357,9 +534,14 @@ export const useSalesStore = defineStore('sales', () => {
     fetchQuotations,
     fetchOrders,
     fetchInvoices,
+    fetchDeliveries,
     createQuotation,
     convertQuotationToOrder,
-    createInvoiceFromOrder
+    createInvoiceFromOrder,
+    getQuotationById,
+    getOrderById,
+    getInvoiceById,
+    getDeliveryById
   }
 })
 

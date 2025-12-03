@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const sidebarMinimized = ref(false)
 const notificationsOpen = ref(false)
 const salesMenuOpen = ref(false)
@@ -9,10 +11,52 @@ const accountingMenuOpen = ref(false)
 const logisticsMenuOpen = ref(false)
 const projectsMenuOpen = ref(false)
 const hrMenuOpen = ref(false)
+const stockMenuOpen = ref(false)
 
 const toggleSidebarMinimize = () => {
   sidebarMinimized.value = !sidebarMinimized.value
 }
+
+// Function to update menu states based on current route
+function updateMenuStates() {
+  const path = route.path
+
+  // Reset all menus
+  stockMenuOpen.value = false
+  salesMenuOpen.value = false
+  buyingMenuOpen.value = false
+  accountingMenuOpen.value = false
+  logisticsMenuOpen.value = false
+  projectsMenuOpen.value = false
+  hrMenuOpen.value = false
+
+  // Auto-expand menu based on current route
+  if (path.startsWith('/stock')) {
+    stockMenuOpen.value = true
+  } else if (path.startsWith('/sales')) {
+    salesMenuOpen.value = true
+  } else if (path.startsWith('/buying')) {
+    buyingMenuOpen.value = true
+  } else if (path.startsWith('/accounting')) {
+    accountingMenuOpen.value = true
+  } else if (path.startsWith('/logistics')) {
+    logisticsMenuOpen.value = true
+  } else if (path.startsWith('/projects')) {
+    projectsMenuOpen.value = true
+  } else if (path.startsWith('/hr')) {
+    hrMenuOpen.value = true
+  }
+}
+
+// Watch for route changes
+watch(() => route.path, () => {
+  updateMenuStates()
+})
+
+// Initialize menu states on mount
+onMounted(() => {
+  updateMenuStates()
+})
 </script>
 
 <template>
@@ -76,14 +120,64 @@ const toggleSidebarMinimize = () => {
           </li>
 
           <li>
-            <NuxtLink
-              to="/stock/items"
-              class="flex items-center px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
-              active-class="!bg-gray-100 !text-gray-900"
+            <button 
+              @click="stockMenuOpen = !stockMenuOpen"
+              :class="[
+                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
+                route.path.startsWith('/stock') 
+                  ? 'bg-gray-100 text-gray-900' 
+                  : 'text-gray-900 hover:bg-gray-100'
+              ]"
             >
               <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">inventory_2</i>
               <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Stock</span>
-            </NuxtLink>
+              <i 
+                v-if="!sidebarMinimized" 
+                class="material-symbols-rounded ml-auto text-gray-400 text-sm transition-transform"
+                :class="{ 'rotate-180': stockMenuOpen }"
+              >
+                expand_more
+              </i>
+            </button>
+            <!-- Stock Submenu -->
+            <ul v-if="stockMenuOpen && !sidebarMinimized" class="ml-8 mt-1 space-y-0.5">
+              <li>
+                <NuxtLink
+                  to="/stock/items"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-gray-900 !text-white"
+                >
+                  Items
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/stock/movements"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-gray-900 !text-white"
+                >
+                  Movements
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/stock/reconciliation"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-gray-900 !text-white"
+                >
+                  Reconciliation
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/stock/alerts"
+                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  active-class="!bg-gray-900 !text-white"
+                >
+                  Alerts
+                </NuxtLink>
+              </li>
+            </ul>
           </li>
 
           <li>
@@ -100,7 +194,12 @@ const toggleSidebarMinimize = () => {
           <li>
             <button 
               @click="salesMenuOpen = !salesMenuOpen"
-              class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+              :class="[
+                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
+                route.path.startsWith('/sales') 
+                  ? 'bg-gray-100 text-gray-900' 
+                  : 'text-gray-900 hover:bg-gray-100'
+              ]"
             >
               <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">receipt_long</i>
               <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Sales</span>
@@ -118,7 +217,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/sales/quotations"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Quotations
                 </NuxtLink>
@@ -127,7 +226,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/sales/orders"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Orders
                 </NuxtLink>
@@ -136,7 +235,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/sales/invoices"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Invoices
                 </NuxtLink>
@@ -145,7 +244,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/sales/deliveries"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Deliveries
                 </NuxtLink>
@@ -156,7 +255,12 @@ const toggleSidebarMinimize = () => {
           <li>
             <button 
               @click="buyingMenuOpen = !buyingMenuOpen"
-              class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+              :class="[
+                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
+                route.path.startsWith('/buying') 
+                  ? 'bg-gray-100 text-gray-900' 
+                  : 'text-gray-900 hover:bg-gray-100'
+              ]"
             >
               <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">shopping_cart</i>
               <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Buying</span>
@@ -174,7 +278,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/buying/purchase-orders"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Purchase Orders
                 </NuxtLink>
@@ -183,7 +287,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/buying/suppliers"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Suppliers
                 </NuxtLink>
@@ -192,7 +296,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/buying/receipts"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Goods Receipts
                 </NuxtLink>
@@ -203,7 +307,12 @@ const toggleSidebarMinimize = () => {
           <li>
             <button 
               @click="accountingMenuOpen = !accountingMenuOpen"
-              class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+              :class="[
+                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
+                route.path.startsWith('/accounting') 
+                  ? 'bg-gray-100 text-gray-900' 
+                  : 'text-gray-900 hover:bg-gray-100'
+              ]"
             >
               <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">account_balance</i>
               <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Accounting</span>
@@ -221,7 +330,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/accounting/chart-of-accounts"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Chart of Accounts
                 </NuxtLink>
@@ -230,7 +339,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/accounting/journals"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Journal Entries
                 </NuxtLink>
@@ -239,7 +348,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/accounting/reports"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Reports
                 </NuxtLink>
@@ -250,7 +359,12 @@ const toggleSidebarMinimize = () => {
           <li>
             <button 
               @click="logisticsMenuOpen = !logisticsMenuOpen"
-              class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+              :class="[
+                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
+                route.path.startsWith('/logistics') 
+                  ? 'bg-gray-100 text-gray-900' 
+                  : 'text-gray-900 hover:bg-gray-100'
+              ]"
             >
               <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">local_shipping</i>
               <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Logistics</span>
@@ -268,7 +382,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/logistics/drivers"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Drivers
                 </NuxtLink>
@@ -277,7 +391,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/logistics/deliveries"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Deliveries
                 </NuxtLink>
@@ -286,7 +400,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/logistics/routes"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Routes
                 </NuxtLink>
@@ -300,7 +414,12 @@ const toggleSidebarMinimize = () => {
           <li>
             <button 
               @click="projectsMenuOpen = !projectsMenuOpen"
-              class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+              :class="[
+                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
+                route.path.startsWith('/projects') 
+                  ? 'bg-gray-100 text-gray-900' 
+                  : 'text-gray-900 hover:bg-gray-100'
+              ]"
             >
               <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">widgets</i>
               <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Projects</span>
@@ -318,7 +437,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/projects/list"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   All Projects
                 </NuxtLink>
@@ -327,7 +446,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/projects/tasks"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Tasks
                 </NuxtLink>
@@ -336,7 +455,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/projects/time-tracking"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Time Tracking
                 </NuxtLink>
@@ -347,7 +466,12 @@ const toggleSidebarMinimize = () => {
           <li>
             <button 
               @click="hrMenuOpen = !hrMenuOpen"
-              class="flex items-center w-full px-3 py-2 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors group"
+              :class="[
+                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
+                route.path.startsWith('/hr') 
+                  ? 'bg-gray-100 text-gray-900' 
+                  : 'text-gray-900 hover:bg-gray-100'
+              ]"
             >
               <i class="material-symbols-rounded opacity-50 text-gray-900 group-hover:opacity-100 text-xl">badge</i>
               <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">HR & Payroll</span>
@@ -365,7 +489,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/hr/employees"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Employees
                 </NuxtLink>
@@ -374,7 +498,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/hr/attendance"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Attendance
                 </NuxtLink>
@@ -383,7 +507,7 @@ const toggleSidebarMinimize = () => {
                 <NuxtLink
                   to="/hr/payroll"
                   class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  active-class="!bg-gray-100 !text-gray-900"
+                  active-class="!bg-gray-900 !text-white"
                 >
                   Payroll
                 </NuxtLink>

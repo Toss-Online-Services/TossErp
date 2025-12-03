@@ -155,22 +155,65 @@ export const useStockStore = defineStore('stock', () => {
       // TODO: Replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 500))
       
-      // Mock data
-      movements.value = [
-        {
-          id: '1',
-          itemId: '1',
-          itemName: 'Cement 50kg',
+      // Preserve existing adjustments that were made
+      const existingAdjustments = movements.value.filter(m => m.type === 'adjustment')
+      
+      // Generate mock movements for all items or specific item
+      const mockMovements: StockMovement[] = []
+      
+      items.value.forEach((item, index) => {
+        // Only generate for requested item, or all if no itemId specified
+        if (itemId && item.id !== itemId) return
+        
+        // Add some purchase movements
+        mockMovements.push({
+          id: `mov_${item.id}_purchase_1`,
+          itemId: item.id,
+          itemName: item.name,
           type: 'purchase',
-          quantity: 50,
-          warehouse: 'main',
+          quantity: Math.max(item.currentStock + 20, 50),
+          warehouse: item.warehouse,
           referenceType: 'PO',
-          referenceId: 'PO-001',
-          notes: 'Received from PPC',
+          referenceId: `PO-00${index + 1}`,
+          notes: `Initial stock purchase`,
           createdBy: 'admin',
-          createdAt: new Date()
+          createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // 30 days ago
+        })
+        
+        // Add some sale movements if stock is less than initial
+        const initialStock = Math.max(item.currentStock + 20, 50)
+        if (item.currentStock < initialStock) {
+          const soldQty = initialStock - item.currentStock
+          mockMovements.push({
+            id: `mov_${item.id}_sale_1`,
+            itemId: item.id,
+            itemName: item.name,
+            type: 'sale',
+            quantity: -soldQty,
+            warehouse: item.warehouse,
+            referenceType: 'SI',
+            referenceId: `SI-00${index + 1}`,
+            notes: `Sales transaction`,
+            createdBy: 'admin',
+            createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000) // 15 days ago
+          })
         }
-      ]
+        
+        // Add existing adjustments for this item
+        existingAdjustments
+          .filter(m => m.itemId === item.id)
+          .forEach(adj => mockMovements.push(adj))
+      })
+      
+      // Sort by date, newest first
+      mockMovements.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      
+      // If itemId specified, only return movements for that item
+      if (itemId) {
+        movements.value = mockMovements.filter(m => m.itemId === itemId)
+      } else {
+        movements.value = mockMovements
+      }
     } catch (error) {
       console.error('Failed to fetch movements:', error)
     } finally {
