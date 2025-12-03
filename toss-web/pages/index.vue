@@ -14,35 +14,44 @@ const stats = ref({
   lowStock: 8
 })
 
-const salesTrendData = ref([
-  { day: 'M', amount: 50 },
-  { day: 'T', amount: 60 },
-  { day: 'W', amount: 45 },
-  { day: 'T', amount: 55 },
-  { day: 'F', amount: 70 },
-  { day: 'S', amount: 85 },
-  { day: 'S', amount: 65 }
-])
+// Chart data based on Material Dashboard template
+const salesTrendLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const salesTrendData = [50, 40, 300, 220, 500, 250, 400]
 
-const dailySalesData = ref([
-  { point: 0, value: 40 },
-  { point: 1, value: 60 },
-  { point: 2, value: 50 },
-  { point: 3, value: 80 },
-  { point: 4, value: 70 },
-  { point: 5, value: 90 },
-  { point: 6, value: 85 }
-])
+const dailySalesLabels = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const dailySalesDatasets = [
+  {
+    label: 'Organic Search',
+    data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+    borderColor: '#e91e63',
+    backgroundColor: 'transparent',
+    tension: 0.4,
+    pointRadius: 2
+  },
+  {
+    label: 'Referral',
+    data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
+    borderColor: '#3A416F',
+    backgroundColor: 'transparent',
+    tension: 0.4,
+    pointRadius: 2
+  },
+  {
+    label: 'Direct',
+    data: [40, 80, 70, 90, 30, 90, 140, 130, 200],
+    borderColor: '#03A9F4',
+    backgroundColor: 'transparent',
+    tension: 0.4,
+    pointRadius: 2
+  }
+]
 
-const completedTasksData = ref([
-  { point: 0, value: 60 },
-  { point: 1, value: 70 },
-  { point: 2, value: 65 },
-  { point: 3, value: 75 },
-  { point: 4, value: 80 },
-  { point: 5, value: 85 },
-  { point: 6, value: 90 }
-])
+const salesOverviewLabels = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const salesOverviewData = [50, 100, 200, 190, 400, 350, 500, 450, 700]
+
+const affiliatesLabels = ['Creative Tim', 'Github', 'Bootsnipp', 'Dev.to', 'Codeinwp']
+const affiliatesData = [15, 20, 12, 60, 20]
+const affiliatesColors = ['#03A9F4', '#3A416F', '#fb8c00', '#a8b8d8', '#e91e63']
 </script>
 
 <template>
@@ -57,27 +66,18 @@ const completedTasksData = ref([
 
     <!-- Chart Cards Row -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-      <!-- Website Views / Sales Trend -->
+      <!-- Today's Sales - Bar Chart -->
       <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
         <div class="p-6 pb-4">
           <h6 class="text-base font-semibold text-gray-900 mb-1">Today's Sales</h6>
           <p class="text-sm text-gray-600 mb-4">Last Campaign Performance</p>
           <div class="mt-2">
-            <!-- Bar Chart -->
-            <div class="h-44 flex items-end justify-between gap-1 px-2">
-              <div
-                v-for="(item, index) in salesTrendData"
-                :key="index"
-                class="flex-1 flex flex-col items-center group relative"
-              >
-                <div
-                  class="w-full bg-gradient-to-t from-blue-600 to-blue-500 rounded-t transition-all hover:from-blue-700 hover:to-blue-600"
-                  :style="{ height: `${item.amount}%` }"
-                >
-                </div>
-                <p class="text-xs text-gray-600 mt-2">{{ item.day }}</p>
-              </div>
-            </div>
+            <BarChart 
+              :labels="salesTrendLabels" 
+              :data="salesTrendData"
+              backgroundColor="#3A416F"
+              :height="176"
+            />
           </div>
         </div>
         <hr class="border-gray-200 my-0">
@@ -87,7 +87,7 @@ const completedTasksData = ref([
         </div>
       </div>
 
-      <!-- Daily Sales -->
+      <!-- Daily Sales - Multi-line Chart -->
       <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
         <div class="p-6 pb-4">
           <h6 class="text-base font-semibold text-gray-900 mb-1">Daily Sales</h6>
@@ -95,28 +95,11 @@ const completedTasksData = ref([
             (<span class="font-bold">+15%</span>) increase in today sales.
           </p>
           <div class="mt-2">
-            <!-- Line Chart -->
-            <div class="h-44 relative">
-              <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="salesGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.3" />
-                    <stop offset="100%" style="stop-color:#10b981;stop-opacity:0" />
-                  </linearGradient>
-                </defs>
-                <path
-                  d="M 0,60 L 15,40 L 30,50 L 45,20 L 60,30 L 75,10 L 90,15 L 100,15"
-                  fill="none"
-                  stroke="#10b981"
-                  stroke-width="2"
-                  vector-effect="non-scaling-stroke"
-                />
-                <path
-                  d="M 0,60 L 15,40 L 30,50 L 45,20 L 60,30 L 75,10 L 90,15 L 100,15 L 100,100 L 0,100 Z"
-                  fill="url(#salesGradient)"
-                />
-              </svg>
-            </div>
+            <LineChart 
+              :labels="dailySalesLabels" 
+              :datasets="dailySalesDatasets"
+              :height="176"
+            />
           </div>
         </div>
         <hr class="border-gray-200 my-0">
@@ -126,34 +109,27 @@ const completedTasksData = ref([
         </div>
       </div>
 
-      <!-- Completed Tasks / Orders -->
+      <!-- Sales Overview - Line Chart with Fill -->
       <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
         <div class="p-6 pb-4">
-          <h6 class="text-base font-semibold text-gray-900 mb-1">Pending Orders</h6>
-          <p class="text-sm text-gray-600 mb-4">Last Campaign Performance</p>
+          <h6 class="text-base font-semibold text-gray-900 mb-1">Sales Overview</h6>
+          <p class="text-sm text-gray-600 mb-4">
+            <span class="font-bold text-green-600">+4%</span> more in 2025
+          </p>
           <div class="mt-2">
-            <!-- Line Chart -->
-            <div class="h-44 relative">
-              <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="ordersGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3" />
-                    <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0" />
-                  </linearGradient>
-                </defs>
-                <path
-                  d="M 0,40 L 15,35 L 30,45 L 45,30 L 60,42 L 75,28 L 90,38 L 100,35"
-                  fill="none"
-                  stroke="#6366f1"
-                  stroke-width="2"
-                  vector-effect="non-scaling-stroke"
-                />
-                <path
-                  d="M 0,40 L 15,35 L 30,45 L 45,30 L 60,42 L 75,28 L 90,38 L 100,35 L 100,100 L 0,100 Z"
-                  fill="url(#ordersGradient)"
-                />
-              </svg>
-            </div>
+            <LineChart 
+              :labels="salesOverviewLabels" 
+              :datasets="[{
+                label: 'Sales',
+                data: salesOverviewData,
+                borderColor: '#0ea5e9',
+                backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0
+              }]"
+              :height="176"
+            />
           </div>
         </div>
         <hr class="border-gray-200 my-0">
@@ -357,34 +333,17 @@ const completedTasksData = ref([
 
     <!-- Bottom Section: Active Users & Sales Overview -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <!-- Active Users Card (Left) -->
+      <!-- Active Users Card with Bar Chart -->
       <div class="lg:col-span-5">
         <div class="bg-white rounded-xl shadow-sm">
           <div class="p-6 pb-0">
-            <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg -mt-10 mb-6 p-4">
-              <div class="h-44 flex items-end justify-between gap-2 px-4">
-                <div class="flex-1 flex flex-col items-center">
-                  <div class="w-full bg-white/30 rounded-t h-[60%]"></div>
-                </div>
-                <div class="flex-1 flex flex-col items-center">
-                  <div class="w-full bg-white/30 rounded-t h-[75%]"></div>
-                </div>
-                <div class="flex-1 flex flex-col items-center">
-                  <div class="w-full bg-white/30 rounded-t h-[50%]"></div>
-                </div>
-                <div class="flex-1 flex flex-col items-center">
-                  <div class="w-full bg-white/30 rounded-t h-[85%]"></div>
-                </div>
-                <div class="flex-1 flex flex-col items-center">
-                  <div class="w-full bg-white/30 rounded-t h-[65%]"></div>
-                </div>
-                <div class="flex-1 flex flex-col items-center">
-                  <div class="w-full bg-white/30 rounded-t h-[90%]"></div>
-                </div>
-                <div class="flex-1 flex flex-col items-center">
-                  <div class="w-full bg-white/30 rounded-t h-[70%]"></div>
-                </div>
-              </div>
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg -mt-10 mb-6 p-6">
+              <BarChart 
+                :labels="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+                :data="[300, 230, 224, 218, 156, 200, 330]"
+                backgroundColor="rgba(255, 255, 255, 0.8)"
+                :height="176"
+              />
             </div>
 
             <h6 class="ms-2 mb-0 font-semibold">Active Users</h6>
@@ -392,7 +351,7 @@ const completedTasksData = ref([
               (<span class="font-bold text-gray-900">+11%</span>) than last week
             </p>
 
-            <div class="grid grid-cols-4 gap-2 mt-4 px-2">
+            <div class="grid grid-cols-4 gap-2 mt-4 px-2 pb-4">
               <div>
                 <div class="flex items-center mb-2">
                   <div class="w-6 h-6 rounded bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center mr-2">
@@ -449,42 +408,47 @@ const completedTasksData = ref([
         </div>
       </div>
 
-      <!-- Sales Overview (Right) -->
+      <!-- Affiliates Program - Doughnut Chart (Right) -->
       <div class="lg:col-span-7">
-        <div class="bg-white rounded-xl shadow-sm p-6">
-          <div class="mb-4">
-            <h6 class="text-base font-semibold mb-1">Sales overview</h6>
-            <p class="text-sm text-gray-600">
-              <i class="fa fa-arrow-up text-success"></i>
-              <span class="font-bold">4% more</span> in 2021
+        <div class="bg-white rounded-xl shadow-sm">
+          <div class="p-6 pb-0">
+            <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg -mt-10 mb-6 p-6">
+              <div class="flex items-center justify-center">
+                <div class="w-64">
+                  <DoughnutChart 
+                    :labels="affiliatesLabels"
+                    :data="affiliatesData"
+                    :colors="affiliatesColors"
+                    :height="176"
+                    :cutout="60"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <h6 class="ms-2 mb-0 font-semibold">Affiliates Program</h6>
+            <p class="text-sm text-gray-600 ms-2 mb-4">
+              Top referral sources
             </p>
-          </div>
-          <div class="h-72 relative">
-            <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="overviewGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:0.3" />
-                  <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:0" />
-                </linearGradient>
-              </defs>
-              <!-- Grid lines -->
-              <line x1="0" y1="25" x2="100" y2="25" stroke="#e5e7eb" stroke-width="0.5" vector-effect="non-scaling-stroke" />
-              <line x1="0" y1="50" x2="100" y2="50" stroke="#e5e7eb" stroke-width="0.5" vector-effect="non-scaling-stroke" />
-              <line x1="0" y1="75" x2="100" y2="75" stroke="#e5e7eb" stroke-width="0.5" vector-effect="non-scaling-stroke" />
-              
-              <!-- Line chart -->
-              <path
-                d="M 0,70 L 10,60 L 20,65 L 30,45 L 40,50 L 50,35 L 60,40 L 70,30 L 80,35 L 90,25 L 100,30"
-                fill="none"
-                stroke="#0ea5e9"
-                stroke-width="3"
-                vector-effect="non-scaling-stroke"
-              />
-              <path
-                d="M 0,70 L 10,60 L 20,65 L 30,45 L 40,50 L 50,35 L 60,40 L 70,30 L 80,35 L 90,25 L 100,30 L 100,100 L 0,100 Z"
-                fill="url(#overviewGradient)"
-              />
-            </svg>
+
+            <div class="px-2 pb-4">
+              <table class="w-full">
+                <tbody>
+                  <tr v-for="(label, index) in affiliatesLabels" :key="index" class="border-b border-gray-100">
+                    <td class="py-3">
+                      <div class="flex items-center">
+                        <div 
+                          class="w-3 h-3 rounded-full mr-3"
+                          :style="{ backgroundColor: affiliatesColors[index] }"
+                        ></div>
+                        <h6 class="text-sm font-normal mb-0">{{ label }}</h6>
+                      </div>
+                    </td>
+                    <td class="text-sm font-bold text-right">{{ affiliatesData[index] }}%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
