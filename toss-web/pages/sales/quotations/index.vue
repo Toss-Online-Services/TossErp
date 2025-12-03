@@ -5,7 +5,8 @@ import { useCrmStore } from '~/stores/crm'
 import { useStockStore } from '~/stores/stock'
 
 definePageMeta({
-  layout: 'default'
+  layout: 'default',
+  ssr: false
 })
 
 useHead({

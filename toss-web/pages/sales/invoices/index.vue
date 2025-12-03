@@ -4,7 +4,8 @@ import { useSalesStore, type Invoice } from '~/stores/sales'
 import { useCrmStore } from '~/stores/crm'
 
 definePageMeta({
-  layout: 'default'
+  layout: 'default',
+  ssr: false
 })
 
 useHead({
@@ -40,18 +41,30 @@ const filteredInvoices = computed(() => {
 
 const stats = computed(() => {
   const invoices = salesStore.invoices
+  const now = new Date()
+  const overdue = invoices.filter(inv => 
+    inv.status !== 'paid' && inv.status !== 'cancelled' && new Date(inv.dueDate) < now
+  ).length
+  const totalReceivables = invoices
+    .filter(inv => inv.status !== 'paid' && inv.status !== 'cancelled')
+    .reduce((sum, inv) => sum + inv.amountDue, 0)
+  
   return {
     total: invoices.length,
     unpaid: invoices.filter(inv => inv.status === 'sent' || inv.status === 'partially_paid').length,
-    overdue: salesStore.overdueInvoices.length,
-    totalReceivables: salesStore.totalReceivables
+    overdue,
+    totalReceivables
   }
 })
 
 // Methods
 onMounted(async () => {
-  await salesStore.fetchInvoices()
-  await crmStore.fetchCustomers()
+  try {
+    await salesStore.fetchInvoices()
+    await crmStore.fetchCustomers()
+  } catch (error) {
+    console.error('Error loading invoices:', error)
+  }
 })
 
 function handleCreate() {

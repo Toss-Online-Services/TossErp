@@ -3,7 +3,8 @@ import { onMounted, ref, computed } from 'vue'
 import { useSalesStore, type DeliveryNote } from '~/stores/sales'
 
 definePageMeta({
-  layout: 'default'
+  layout: 'default',
+  ssr: false
 })
 
 useHead({
