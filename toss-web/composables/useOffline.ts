@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useOnline } from '@vueuse/core'
 
 export interface QueuedOperation {
@@ -16,6 +16,7 @@ export const useOffline = () => {
 
   // Load queue from localStorage
   const loadQueue = () => {
+    if (typeof window === 'undefined') return
     try {
       const stored = localStorage.getItem('toss_offline_queue')
       if (stored) {
@@ -28,6 +29,7 @@ export const useOffline = () => {
 
   // Save queue to localStorage
   const saveQueue = () => {
+    if (typeof window === 'undefined') return
     try {
       localStorage.setItem('toss_offline_queue', JSON.stringify(queue.value))
     } catch (error) {

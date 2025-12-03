@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import BarChart from '~/components/charts/BarChart.vue'
+import LineChart from '~/components/charts/LineChart.vue'
+import DoughnutChart from '~/components/charts/DoughnutChart.vue'
 
 // Set page title
 useHead({
@@ -55,7 +58,7 @@ const affiliatesColors = ['#03A9F4', '#3A416F', '#fb8c00', '#a8b8d8', '#e91e63']
 </script>
 
 <template>
-  <div class="py-6">
+  <div class="py-6 pb-12">
     <!-- Page Header -->
     <div class="mb-8">
       <h3 class="text-3xl font-bold text-gray-900 mb-2">Analytics</h3>
@@ -72,12 +75,17 @@ const affiliatesColors = ['#03A9F4', '#3A416F', '#fb8c00', '#a8b8d8', '#e91e63']
           <h6 class="text-base font-semibold text-gray-900 mb-1">Today's Sales</h6>
           <p class="text-sm text-gray-600 mb-4">Last Campaign Performance</p>
           <div class="mt-2">
-            <BarChart 
-              :labels="salesTrendLabels" 
-              :data="salesTrendData"
-              backgroundColor="#3A416F"
-              :height="176"
-            />
+            <ClientOnly>
+              <BarChart 
+                :labels="salesTrendLabels" 
+                :data="salesTrendData"
+                backgroundColor="#3A416F"
+                :height="176"
+              />
+              <template #fallback>
+                <div class="h-44 flex items-center justify-center text-gray-400">Loading chart...</div>
+              </template>
+            </ClientOnly>
           </div>
         </div>
         <hr class="border-gray-200 my-0">
@@ -95,11 +103,16 @@ const affiliatesColors = ['#03A9F4', '#3A416F', '#fb8c00', '#a8b8d8', '#e91e63']
             (<span class="font-bold">+15%</span>) increase in today sales.
           </p>
           <div class="mt-2">
-            <LineChart 
-              :labels="dailySalesLabels" 
-              :datasets="dailySalesDatasets"
-              :height="176"
-            />
+            <ClientOnly>
+              <LineChart 
+                :labels="dailySalesLabels" 
+                :datasets="dailySalesDatasets"
+                :height="176"
+              />
+              <template #fallback>
+                <div class="h-44 flex items-center justify-center text-gray-400">Loading chart...</div>
+              </template>
+            </ClientOnly>
           </div>
         </div>
         <hr class="border-gray-200 my-0">
@@ -117,19 +130,24 @@ const affiliatesColors = ['#03A9F4', '#3A416F', '#fb8c00', '#a8b8d8', '#e91e63']
             <span class="font-bold text-green-600">+4%</span> more in 2025
           </p>
           <div class="mt-2">
-            <LineChart 
-              :labels="salesOverviewLabels" 
-              :datasets="[{
-                label: 'Sales',
-                data: salesOverviewData,
-                borderColor: '#0ea5e9',
-                backgroundColor: 'rgba(14, 165, 233, 0.1)',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 0
-              }]"
-              :height="176"
-            />
+            <ClientOnly>
+              <LineChart 
+                :labels="salesOverviewLabels" 
+                :datasets="[{
+                  label: 'Sales',
+                  data: salesOverviewData,
+                  borderColor: '#0ea5e9',
+                  backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                  fill: true,
+                  tension: 0.4,
+                  pointRadius: 0
+                }]"
+                :height="176"
+              />
+              <template #fallback>
+                <div class="h-44 flex items-center justify-center text-gray-400">Loading chart...</div>
+              </template>
+            </ClientOnly>
           </div>
         </div>
         <hr class="border-gray-200 my-0">
@@ -338,12 +356,17 @@ const affiliatesColors = ['#03A9F4', '#3A416F', '#fb8c00', '#a8b8d8', '#e91e63']
         <div class="bg-white rounded-xl shadow-sm">
           <div class="p-6 pb-0">
             <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg -mt-10 mb-6 p-6">
-              <BarChart 
-                :labels="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
-                :data="[300, 230, 224, 218, 156, 200, 330]"
-                backgroundColor="rgba(255, 255, 255, 0.8)"
-                :height="176"
-              />
+              <ClientOnly>
+                <BarChart 
+                  :labels="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+                  :data="[300, 230, 224, 218, 156, 200, 330]"
+                  backgroundColor="rgba(255, 255, 255, 0.8)"
+                  :height="176"
+                />
+                <template #fallback>
+                  <div class="h-44 flex items-center justify-center text-white/50">Loading chart...</div>
+                </template>
+              </ClientOnly>
             </div>
 
             <h6 class="ms-2 mb-0 font-semibold">Active Users</h6>
@@ -415,13 +438,18 @@ const affiliatesColors = ['#03A9F4', '#3A416F', '#fb8c00', '#a8b8d8', '#e91e63']
             <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg -mt-10 mb-6 p-6">
               <div class="flex items-center justify-center">
                 <div class="w-64">
-                  <DoughnutChart 
-                    :labels="affiliatesLabels"
-                    :data="affiliatesData"
-                    :colors="affiliatesColors"
-                    :height="176"
-                    :cutout="60"
-                  />
+                  <ClientOnly>
+                    <DoughnutChart 
+                      :labels="affiliatesLabels"
+                      :data="affiliatesData"
+                      :colors="affiliatesColors"
+                      :height="176"
+                      :cutout="60"
+                    />
+                    <template #fallback>
+                      <div class="h-44 flex items-center justify-center text-white/50">Loading chart...</div>
+                    </template>
+                  </ClientOnly>
                 </div>
               </div>
             </div>

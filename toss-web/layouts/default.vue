@@ -534,7 +534,7 @@ const toggleSidebarMinimize = () => {
       </nav>
 
       <!-- Page Content -->
-      <div class="px-4 py-4">
+      <div class="px-4 py-4 pb-12">
         <slot />
       </div>
     </main>

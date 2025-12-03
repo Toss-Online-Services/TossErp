@@ -1,4 +1,4 @@
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 interface QueuedOperation {
   id: string
@@ -10,12 +10,13 @@ interface QueuedOperation {
 }
 
 export function useOfflineSync() {
-  const isOnline = ref(navigator.onLine)
+  const isOnline = ref(typeof window !== 'undefined' ? navigator.onLine : true)
   const syncQueue = ref<QueuedOperation[]>([])
   const isSyncing = ref(false)
 
   // Update online status
   function updateOnlineStatus() {
+    if (typeof window === 'undefined') return
     isOnline.value = navigator.onLine
     if (isOnline.value) {
       syncPendingOperations()
@@ -46,6 +47,7 @@ export function useOfflineSync() {
 
   // Save queue to localStorage
   function saveQueueToStorage() {
+    if (typeof window === 'undefined') return
     try {
       localStorage.setItem('toss_sync_queue', JSON.stringify(syncQueue.value))
     } catch (error) {
@@ -55,6 +57,7 @@ export function useOfflineSync() {
 
   // Load queue from localStorage
   function loadQueueFromStorage() {
+    if (typeof window === 'undefined') return
     try {
       const stored = localStorage.getItem('toss_sync_queue')
       if (stored) {
@@ -116,6 +119,7 @@ export function useOfflineSync() {
 
   // Initialize
   onMounted(() => {
+    if (typeof window === 'undefined') return
     loadQueueFromStorage()
     window.addEventListener('online', updateOnlineStatus)
     window.addEventListener('offline', updateOnlineStatus)
