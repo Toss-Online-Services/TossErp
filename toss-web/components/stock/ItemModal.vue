@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { useStockStore, type Item } from '~/stores/stock'
 import { useBuyingStore } from '~/stores/buying'
+import StockAdjustmentForm from '~/components/stock/StockAdjustmentForm.vue'
 
 interface Props {
   show: boolean
@@ -265,6 +266,35 @@ async function handleSave() {
 function handleClose() {
   emit('close')
   resetForm()
+}
+
+function handleStockAdjusted() {
+  // Refresh item data after stock adjustment
+  if (props.item) {
+    stockStore.fetchItems().then(() => {
+      // Update formData with fresh item data
+      const updatedItem = stockStore.getItemById(props.item!.id)
+      if (updatedItem) {
+        Object.assign(formData.value, {
+          code: updatedItem.code,
+          name: updatedItem.name,
+          description: updatedItem.description || '',
+          category: updatedItem.category,
+          unit: updatedItem.unit,
+          costPrice: updatedItem.costPrice,
+          sellingPrice: updatedItem.sellingPrice,
+          currentStock: updatedItem.currentStock,
+          minStock: updatedItem.minStock,
+          maxStock: updatedItem.maxStock || 0,
+          warehouse: updatedItem.warehouse || 'main',
+          barcode: updatedItem.barcode || '',
+          supplier: updatedItem.supplier || '',
+          isActive: updatedItem.isActive,
+          imageUrl: updatedItem.imageUrl || ''
+        })
+      }
+    })
+  }
 }
 
 // Load suppliers
@@ -648,6 +678,25 @@ const suppliers = computed(() => buyingStore.suppliers)
                           </label>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Stock Adjustment Section (only in edit mode) -->
+                <div v-if="isEditing && props.item" class="w-full mt-6">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="font-weight-bolder mb-4 flex items-center gap-2">
+                        <i class="material-symbols-rounded text-xl">tune</i>
+                        Adjust Stock
+                      </h5>
+                      <StockAdjustmentForm
+                        :item="props.item"
+                        :show-item-info="false"
+                        :compact="true"
+                        @adjusted="handleStockAdjusted"
+                        @cancelled="() => {}"
+                      />
                     </div>
                   </div>
                 </div>

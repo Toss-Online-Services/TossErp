@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { useStockStore, type Item, type StockMovement } from '~/stores/stock'
 import { useBuyingStore } from '~/stores/buying'
+import StockAdjustmentForm from '~/components/stock/StockAdjustmentForm.vue'
 
 interface Props {
   show: boolean
@@ -30,12 +31,34 @@ const allSuppliers = ref<any[]>([])
 const loading = ref(false)
 const mainImage = ref<string>('')
 
+// Collapsible sections state
+const isAdjustStockExpanded = ref(false)
+const isStockHistoryExpanded = ref(false)
+const isAllSuppliersExpanded = ref(false)
+
 const movementTypes = {
   purchase: { label: 'Purchase', color: 'text-green-600 bg-green-100', icon: 'shopping_cart' },
   sale: { label: 'Sale', color: 'text-blue-600 bg-blue-100', icon: 'point_of_sale' },
   adjustment: { label: 'Adjustment', color: 'text-orange-600 bg-orange-100', icon: 'tune' },
   transfer: { label: 'Transfer', color: 'text-purple-600 bg-purple-100', icon: 'swap_horiz' },
   return: { label: 'Return', color: 'text-gray-600 bg-gray-100', icon: 'undo' }
+}
+
+// Helper functions for template
+function getMovementType(movement: StockMovement) {
+  return movementTypes[movement.type as keyof typeof movementTypes] || movementTypes.adjustment
+}
+
+function getMovementIcon(movement: StockMovement) {
+  return getMovementType(movement).icon
+}
+
+function getMovementLabel(movement: StockMovement) {
+  return getMovementType(movement).label || movement.type
+}
+
+function getMovementColor(movement: StockMovement) {
+  return getMovementType(movement).color
 }
 
 watch(() => props.show, async (newVal) => {
@@ -177,10 +200,30 @@ function formatCurrency(amount: number) {
 }
 
 function formatDate(date: Date) {
-  return new Intl.DateTimeFormat('en-ZA', {
-    dateStyle: 'medium',
-    timeStyle: 'short'
-  }).format(new Date(date))
+  const d = new Date(date)
+  const now = new Date()
+  const diffTime = Math.abs(now.getTime() - d.getTime())
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  
+  // Format: "22 DEC 7:20 PM" style
+  const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+  const day = d.getDate()
+  const month = months[d.getMonth()]
+  const hours = d.getHours()
+  const minutes = d.getMinutes()
+  const ampm = hours >= 12 ? 'PM' : 'AM'
+  const displayHours = hours % 12 || 12
+  const displayMinutes = minutes.toString().padStart(2, '0')
+  
+  if (diffDays === 0) {
+    return `Today ${displayHours}:${displayMinutes} ${ampm}`
+  } else if (diffDays === 1) {
+    return `Yesterday ${displayHours}:${displayMinutes} ${ampm}`
+  } else if (diffDays <= 7) {
+    return `${day} ${month} ${displayHours}:${displayMinutes} ${ampm}`
+  } else {
+    return `${day} ${month}`
+  }
 }
 
 function getStockStatus(item: Item) {
@@ -193,6 +236,11 @@ function handleAdjust() {
   if (item.value) {
     emit('adjust', item.value)
   }
+}
+
+function handleStockAdjusted() {
+  loadItem()
+  loadMovements()
 }
 
 function handleEdit() {
@@ -394,107 +442,171 @@ function setMainImage(imageSrc: string) {
                       <div v-else class="text-sm text-gray-600">{{ item.supplier }}</div>
                     </div>
                     
-                    <div class="mt-4">
-                      <button
-                        @click="handleAdjust"
-                        class="w-full px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
-                        type="button"
-                      >
-                        <i class="material-symbols-rounded align-middle mr-2">tune</i>
-                        Adjust Stock
-                      </button>
-                    </div>
                   </div>
+                </div>
+
+                <!-- Stock Adjustment Section -->
+                <div class="mt-6 border-t border-gray-200 pt-6">
+                  <button
+                    @click="isAdjustStockExpanded = !isAdjustStockExpanded"
+                    class="w-full flex items-center justify-between text-lg font-semibold text-gray-900 mb-4 hover:text-gray-700 transition-colors"
+                    type="button"
+                  >
+                    <span class="flex items-center gap-2">
+                      <i class="material-symbols-rounded text-xl">tune</i>
+                      Adjust Stock
+                    </span>
+                    <i 
+                      class="material-symbols-rounded text-xl transition-transform duration-200"
+                      :class="{ 'rotate-180': isAdjustStockExpanded }"
+                    >
+                      expand_more
+                    </i>
+                  </button>
+                  <Transition name="expand">
+                    <div v-if="isAdjustStockExpanded">
+                      <StockAdjustmentForm
+                        :item="item"
+                        :show-item-info="false"
+                        :compact="true"
+                        @adjusted="handleStockAdjusted"
+                        @cancelled="() => {}"
+                      />
+                    </div>
+                  </Transition>
                 </div>
 
                 <!-- Stock Movements History -->
                 <div class="mt-6 border-t border-gray-200 pt-6">
-                  <h5 class="mb-4 text-lg font-semibold text-gray-900">Stock Movement History</h5>
-                  <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                      <thead class="bg-gray-50">
-                        <tr>
-                          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
-                          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reference</th>
-                          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
-                        </tr>
-                      </thead>
-                      <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-if="loading">
-                          <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                            Loading movements...
-                          </td>
-                        </tr>
-                        <tr v-else-if="movements.length === 0">
-                          <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                            No stock movements recorded yet
-                          </td>
-                        </tr>
-                        <tr v-for="movement in movements" :key="movement.id" class="hover:bg-gray-50">
-                          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {{ formatDate(movement.createdAt) }}
-                          </td>
-                          <td class="px-4 py-4 whitespace-nowrap">
-                            <span
-                              :class="[
-                                'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
-                                movementTypes[movement.type]?.color || 'text-gray-600 bg-gray-100'
-                              ]"
-                            >
-                              <i class="material-symbols-rounded text-sm mr-1">
-                                {{ movementTypes[movement.type]?.icon || 'help' }}
-                              </i>
-                              {{ movementTypes[movement.type]?.label || movement.type }}
-                            </span>
-                          </td>
-                          <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold"
-                              :class="movement.quantity > 0 ? 'text-green-600' : 'text-red-600'">
-                            {{ movement.quantity > 0 ? '+' : '' }}{{ movement.quantity }} {{ item.unit }}
-                          </td>
-                          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <div v-if="movement.type === 'purchase' && movement.supplierName">
-                              <NuxtLink
-                                v-if="movement.supplierId"
-                                :to="`/buying/suppliers/${movement.supplierId}`"
-                                class="text-gray-900 hover:text-gray-700 hover:underline flex items-center gap-1"
-                                @click="handleClose"
+                  <button
+                    @click="isStockHistoryExpanded = !isStockHistoryExpanded"
+                    class="w-full flex items-center justify-between text-lg font-semibold text-gray-900 mb-4 hover:text-gray-700 transition-colors"
+                    type="button"
+                  >
+                    <span class="flex items-center gap-2">
+                      <i class="material-symbols-rounded text-xl">history</i>
+                      Stock Movement History
+                    </span>
+                    <i 
+                      class="material-symbols-rounded text-xl transition-transform duration-200"
+                      :class="{ 'rotate-180': isStockHistoryExpanded }"
+                    >
+                      expand_more
+                    </i>
+                  </button>
+                  <Transition name="expand">
+                    <div v-if="isStockHistoryExpanded">
+                      <!-- Loading State -->
+                      <div v-if="loading" class="text-center py-8 text-gray-500">
+                        <i class="material-symbols-rounded text-4xl animate-spin mb-2">refresh</i>
+                        <p>Loading movements...</p>
+                      </div>
+
+                      <!-- Empty State -->
+                      <div v-else-if="movements.length === 0" class="text-center py-8 text-gray-500">
+                        <i class="material-symbols-rounded text-4xl mb-2">history</i>
+                        <p>No stock movements recorded yet</p>
+                      </div>
+
+                      <!-- Timeline -->
+                      <div v-else class="relative pl-16">
+                        <!-- Timeline Line -->
+                        <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+
+                        <!-- Timeline Items -->
+                        <div
+                          v-for="movement in movements"
+                          :key="movement.id"
+                          class="relative mb-3 last:mb-0"
+                        >
+                          <!-- Timeline Icon -->
+                          <div
+                            class="absolute left-6 flex items-center justify-center w-12 h-12 rounded-full border-2 border-white shadow-sm z-10 -translate-x-1/2"
+                            :class="[
+                              movement.quantity > 0 
+                                ? 'bg-green-100 text-green-600' 
+                                : movement.quantity < 0 
+                                ? 'bg-red-100 text-red-600' 
+                                : getMovementColor(movement)
+                            ]"
+                          >
+                            <i class="material-symbols-rounded text-lg">
+                              {{ getMovementIcon(movement) }}
+                            </i>
+                          </div>
+
+                          <!-- Timeline Content -->
+                          <div class="ml-8 pt-1">
+                            <!-- Title and Timestamp -->
+                            <h6 class="text-sm font-semibold text-gray-900 mb-0">
+                              {{ getMovementLabel(movement) }}
+                              <span
+                                class="ml-2 text-sm font-semibold"
+                                :class="movement.quantity > 0 ? 'text-green-600' : 'text-red-600'"
                               >
-                                <i class="material-symbols-rounded text-base">store</i>
-                                {{ movement.supplierName }}
-                              </NuxtLink>
-                              <span v-else class="flex items-center gap-1">
-                                <i class="material-symbols-rounded text-base">store</i>
-                                {{ movement.supplierName }}
+                                {{ movement.quantity > 0 ? '+' : '' }}{{ movement.quantity }} {{ item?.unit }}
                               </span>
+                            </h6>
+                            <p class="text-xs text-gray-500 mt-1 mb-0">
+                              {{ formatDate(movement.createdAt) }}
+                            </p>
+
+                            <!-- Description/Details -->
+                            <div 
+                              v-if="(movement.type === 'purchase' && movement.supplierName) || (movement.referenceType && movement.referenceId) || movement.notes" 
+                              class="text-sm text-gray-600 mt-3 mb-2"
+                            >
+                              <div v-if="movement.type === 'purchase' && movement.supplierName" class="flex items-center gap-1 mb-1">
+                                <i class="material-symbols-rounded text-base">store</i>
+                                <span>
+                                  <NuxtLink
+                                    v-if="movement.supplierId"
+                                    :to="`/buying/suppliers/${movement.supplierId}`"
+                                    class="hover:text-gray-900 hover:underline"
+                                    @click="handleClose"
+                                  >
+                                    {{ movement.supplierName }}
+                                  </NuxtLink>
+                                  <span v-else>{{ movement.supplierName }}</span>
+                                </span>
+                              </div>
+                              <div v-if="movement.referenceType && movement.referenceId" class="flex items-center gap-1 mb-1">
+                                <i class="material-symbols-rounded text-base">link</i>
+                                <span>{{ movement.referenceType }} #{{ movement.referenceId }}</span>
+                              </div>
+                              <div v-if="movement.notes" class="text-gray-500 italic">
+                                {{ movement.notes }}
+                              </div>
                             </div>
-                            <span v-else class="text-gray-400">-</span>
-                          </td>
-                          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <span v-if="movement.referenceType && movement.referenceId">
-                              {{ movement.referenceType }} #{{ movement.referenceId }}
-                            </span>
-                            <span v-else class="text-gray-400">-</span>
-                          </td>
-                          <td class="px-4 py-4 text-sm text-gray-500">
-                            {{ movement.notes || '-' }}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Transition>
                 </div>
 
                 <!-- All Suppliers Section -->
                 <div v-if="allSuppliers.length > 0" class="mt-6 border-t border-gray-200 pt-6">
-                  <h5 class="mb-2 text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <i class="material-symbols-rounded text-xl">store</i>
-                    All Suppliers for This Item
-                  </h5>
-                  <p class="text-sm text-gray-600 mb-4">Suppliers who have supplied this product</p>
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <button
+                    @click="isAllSuppliersExpanded = !isAllSuppliersExpanded"
+                    class="w-full flex items-center justify-between text-lg font-semibold text-gray-900 mb-2 hover:text-gray-700 transition-colors"
+                    type="button"
+                  >
+                    <span class="flex items-center gap-2">
+                      <i class="material-symbols-rounded text-xl">store</i>
+                      All Suppliers for This Item
+                    </span>
+                    <i 
+                      class="material-symbols-rounded text-xl transition-transform duration-200"
+                      :class="{ 'rotate-180': isAllSuppliersExpanded }"
+                    >
+                      expand_more
+                    </i>
+                  </button>
+                  <Transition name="expand">
+                    <div v-if="isAllSuppliersExpanded">
+                      <p class="text-sm text-gray-600 mb-4">Suppliers who have supplied this product</p>
+                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div
                       v-for="supp in allSuppliers"
                       :key="supp.id"
@@ -540,7 +652,9 @@ function setMainImage(imageSrc: string) {
                         </div>
                       </div>
                     </div>
-                  </div>
+                      </div>
+                    </div>
+                  </Transition>
                 </div>
               </div>
 
@@ -585,6 +699,29 @@ function setMainImage(imageSrc: string) {
 .modal-leave-to > div > div {
   transform: scale(0.95);
   opacity: 0;
+}
+
+/* Expand/Collapse transitions */
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.expand-enter-to,
+.expand-leave-from {
+  max-height: 2000px;
+  opacity: 1;
 }
 </style>
 

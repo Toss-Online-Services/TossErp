@@ -102,16 +102,28 @@ function handleViewEdit(item: Item) {
   handleEdit(item)
 }
 
+function handleViewAdjust(item: Item) {
+  // Close view modal and open adjust modal
+  showViewModal.value = false
+  selectedItem.value = item
+  showAdjustModal.value = true
+}
+
+function handleAdjustmentSaved() {
+  showAdjustModal.value = false
+  stockStore.fetchItems()
+  // Reopen view modal if we have a selected item
+  if (selectedItem.value) {
+    showViewModal.value = true
+  }
+}
+
 function handleItemSaved() {
   showAddModal.value = false
   showEditModal.value = false
   stockStore.fetchItems()
 }
 
-function handleAdjustmentSaved() {
-  showAdjustModal.value = false
-  stockStore.fetchItems()
-}
 
 function getStockStatus(item: Item) {
   if (item.currentStock <= 0) {
@@ -412,6 +424,7 @@ function getItemImage(itemId: string) {
       :item="selectedItem"
       @close="showViewModal = false; selectedItem = null"
       @edit="handleViewEdit"
+      @adjust="handleViewAdjust"
     />
     <StockAdjustmentModal
       :show="showAdjustModal"
