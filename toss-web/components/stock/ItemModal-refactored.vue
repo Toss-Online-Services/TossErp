@@ -132,112 +132,20 @@ function validate() {
 }
 
 function getItemImage(itemId?: string) {
-  // Only return image URL if explicitly set
   if (formData.value.imageUrl) return formData.value.imageUrl
   
-  // For existing items, try to get from item data
-  if (itemId && props.item?.imageUrl) {
-    return props.item.imageUrl
+  const images = [
+    '/images/products/product-1-min.jpg',
+    '/images/products/product-2-min.jpg',
+    '/images/products/product-3-min.jpg',
+    '/images/products/product-4-min.jpg',
+    '/images/products/product-5-min.jpg'
+  ]
+  if (itemId) {
+    const index = parseInt(itemId) % images.length
+    return images[index]
   }
-  
-  // Return null for new items or when no image is set
-  return null
-}
-
-const hasImage = computed(() => {
-  return !!(formData.value.imageUrl || (props.item?.imageUrl && isEditing.value))
-})
-
-const fileInputRef = ref<HTMLInputElement | null>(null)
-const isDragging = ref(false)
-
-function processImageFile(file: File) {
-  // Validate file type
-  if (!file.type.startsWith('image/')) {
-    alert('Please select an image file')
-    return false
-  }
-  
-  // Validate file size (max 5MB)
-  if (file.size > 5 * 1024 * 1024) {
-    alert('Image size must be less than 5MB')
-    return false
-  }
-  
-  // Convert to data URL
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    const result = e.target?.result as string
-    if (result) {
-      formData.value.imageUrl = result
-    }
-  }
-  reader.onerror = () => {
-    alert('Failed to read image file')
-  }
-  reader.readAsDataURL(file)
-  
-  return true
-}
-
-function handleFileSelect(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  
-  if (!file) return
-  
-  processImageFile(file)
-  
-  // Reset input so same file can be selected again
-  if (fileInputRef.value) {
-    fileInputRef.value.value = ''
-  }
-}
-
-function triggerFileInput() {
-  fileInputRef.value?.click()
-}
-
-function handleRemoveImage() {
-  formData.value.imageUrl = ''
-  if (fileInputRef.value) {
-    fileInputRef.value.value = ''
-  }
-}
-
-// Drag and drop handlers
-function handleDragEnter(event: DragEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-  isDragging.value = true
-}
-
-function handleDragOver(event: DragEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-}
-
-function handleDragLeave(event: DragEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-  // Only set to false if we're leaving the drop zone entirely
-  const target = event.target as HTMLElement
-  const relatedTarget = event.relatedTarget as HTMLElement
-  if (!target.contains(relatedTarget)) {
-    isDragging.value = false
-  }
-}
-
-function handleDrop(event: DragEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-  isDragging.value = false
-  
-  const files = event.dataTransfer?.files
-  if (!files || files.length === 0) return
-  
-  const file = files[0]
-  processImageFile(file)
+  return images[0]
 }
 
 async function handleSave() {
@@ -294,19 +202,9 @@ const suppliers = computed(() => buyingStore.suppliers)
             @click.stop
           >
             <!-- Header Row - Matching template -->
-            <div class="relative p-6 border-b border-gray-200">
-              <!-- Close Button -->
-              <button
-                @click="handleClose"
-                class="absolute top-6 right-6 z-10 p-1 text-gray-400 hover:text-gray-600 transition-colors rounded-full hover:bg-gray-100"
-                type="button"
-                aria-label="Close modal"
-              >
-                <i class="text-2xl material-symbols-rounded">close</i>
-              </button>
-              
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pr-10">
-                <div>
+            <div class="p-6 border-b border-gray-200">
+              <div class="row">
+                <div class="col-lg-6">
                   <h4 class="mb-1 text-xl font-semibold text-gray-900">
                     {{ isEditing ? 'Make the changes below' : 'Add new item' }}
                   </h4>
@@ -314,12 +212,12 @@ const suppliers = computed(() => buyingStore.suppliers)
                     {{ isEditing ? 'Update your item information' : 'This information will let us know more about your item.' }}
                   </p>
                 </div>
-                <div class="flex justify-end items-center lg:justify-end">
+                <div class="col-lg-6 text-right d-flex flex-column justify-content-center">
                   <button
                     @click="handleSave"
                     type="button"
                     :disabled="isSubmitting"
-                    class="px-4 py-2 text-white bg-gradient-dark rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
+                    class="btn bg-gradient-dark mb-0 ms-lg-auto me-lg-0 me-auto mt-lg-0 mt-2"
                   >
                     <span v-if="isSubmitting">Saving...</span>
                     <span v-else>Save</span>
@@ -330,96 +228,42 @@ const suppliers = computed(() => buyingStore.suppliers)
 
             <!-- Form Content - Matching edit-product.html layout -->
             <form @submit.prevent="handleSave" class="p-6">
-              <div class="flex flex-col lg:flex-row gap-6 mt-4">
+              <div class="row mt-4">
                 <!-- Left Column: Image Card (col-lg-4) -->
-                <div class="w-full lg:w-1/3 flex-shrink-0">
+                <div class="col-lg-4">
                   <div class="card mt-4" data-animation="true">
                     <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                      <!-- Hidden file input -->
-                      <input
-                        ref="fileInputRef"
-                        type="file"
-                        accept="image/*"
-                        class="hidden"
-                        @change="handleFileSelect"
-                      />
-                      
-                      <!-- Image Display or Placeholder -->
-                      <div 
-                        v-if="hasImage" 
-                        class="blur-shadow-image cursor-pointer group"
-                        :class="{ 'drag-active': isDragging }"
-                        @click="triggerFileInput"
-                        @dragenter="handleDragEnter"
-                        @dragover="handleDragOver"
-                        @dragleave="handleDragLeave"
-                        @drop="handleDrop"
-                      >
+                      <a class="d-block blur-shadow-image">
                         <img
-                          :src="formData.imageUrl || props.item?.imageUrl"
+                          :src="formData.imageUrl || getItemImage(props.item?.id)"
                           :alt="formData.name || 'Product'"
-                          class="img-fluid shadow border-radius-lg block"
+                          class="img-fluid shadow border-radius-lg"
                           style="width: 100%; height: 250px; object-fit: cover;"
                         />
-                        <div
-                          class="colored-shadow"
-                          :style="{ backgroundImage: `url('${formData.imageUrl || props.item?.imageUrl}')` }"
-                        ></div>
-                        <!-- Overlay hint on hover -->
-                        <div class="image-overlay absolute inset-0 bg-black bg-opacity-0 transition-all duration-200 flex items-center justify-center rounded-lg pointer-events-none">
-                          <span class="text-white opacity-0 transition-opacity text-sm font-medium">Click or drag to change image</span>
-                        </div>
-                        <!-- Drag overlay -->
-                        <div v-if="isDragging" class="absolute inset-0 bg-blue-500 bg-opacity-50 flex items-center justify-center rounded-lg z-10">
-                          <div class="text-center text-white">
-                            <i class="material-symbols-rounded text-4xl mb-2 block">cloud_upload</i>
-                            <p class="text-sm font-medium">Drop image here</p>
-                          </div>
-                        </div>
-                      </div>
-                      <!-- Placeholder for new product or no image -->
+                      </a>
                       <div
-                        v-else
-                        class="flex items-center justify-center blur-shadow-image border-2 border-dashed rounded-lg cursor-pointer transition-colors"
-                        :class="isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'"
-                        style="width: 100%; height: 250px; background-color: #f9fafb;"
-                        @click="triggerFileInput"
-                        @dragenter="handleDragEnter"
-                        @dragover="handleDragOver"
-                        @dragleave="handleDragLeave"
-                        @drop="handleDrop"
-                      >
-                        <div v-if="!isDragging" class="text-center p-4">
-                          <i class="material-symbols-rounded text-5xl text-gray-400 mb-2 block">image</i>
-                          <p class="text-sm text-gray-600 mb-1">Click to browse or drag an image here</p>
-                          <p class="text-xs text-gray-500 mb-0">or enter image URL below</p>
-                        </div>
-                        <div v-else class="text-center p-4">
-                          <i class="material-symbols-rounded text-5xl text-blue-500 mb-2 block">cloud_upload</i>
-                          <p class="text-sm text-blue-600 font-medium mb-1">Drop image here</p>
-                          <p class="text-xs text-blue-500 mb-0">Release to upload</p>
-                        </div>
-                      </div>
+                        class="colored-shadow"
+                        :style="{ backgroundImage: `url('${formData.imageUrl || getItemImage(props.item?.id)}')` }"
+                      ></div>
                     </div>
                     <div class="card-body text-center">
-                      <!-- Image Action Buttons (only show when image exists) -->
-                      <div v-if="hasImage" class="mt-n6 flex justify-center items-center gap-2">
+                      <div class="mt-n6 mx-auto">
                         <button
                           type="button"
-                          class="btn bg-gradient-dark btn-sm"
-                          @click="triggerFileInput"
+                          class="btn bg-gradient-dark btn-sm mb-0 me-2"
+                          @click="() => {}"
                         >
                           Edit
                         </button>
                         <button
                           type="button"
-                          class="btn btn-outline-dark btn-sm"
-                          @click="handleRemoveImage"
+                          class="btn btn-outline-dark btn-sm mb-0"
+                          @click="formData.imageUrl = ''"
                         >
                           Remove
                         </button>
                       </div>
-                      <h5 class="font-weight-normal mt-4 mb-0">Product Image</h5>
+                      <h5 class="font-weight-normal mt-4">Product Image</h5>
                       <div class="mt-3 input-group input-group-dynamic">
                         <label class="form-label">Image URL</label>
                         <input
@@ -429,37 +273,36 @@ const suppliers = computed(() => buyingStore.suppliers)
                           placeholder="https://example.com/image.jpg"
                         />
                       </div>
-                      <p class="text-xs text-gray-500 mt-2 mb-0">Or paste an image URL above</p>
                     </div>
                   </div>
                 </div>
 
                 <!-- Right Column: Product Information (col-lg-8) -->
-                <div class="w-full lg:w-2/3 flex-grow">
+                <div class="col-lg-8 mt-lg-0 mt-4">
                   <div class="card">
                     <div class="card-body">
                       <h5 class="font-weight-bolder">Product Information</h5>
-                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                        <div>
+                      <div class="row mt-4">
+                        <div class="col-12 col-sm-6">
                           <div class="input-group input-group-dynamic">
                             <label class="form-label">Name <span class="text-red-500">*</span></label>
                             <input
                               v-model="formData.name"
                               type="text"
-                              class="form-control w-full"
+                              class="form-control w-100"
                               :class="{ 'border-red-500': errors.name }"
                               placeholder="Item name"
                             />
                           </div>
                           <p v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name }}</p>
                         </div>
-                        <div>
+                        <div class="col-12 col-sm-6 mt-3 mt-sm-0">
                           <div class="input-group input-group-dynamic">
                             <label class="form-label">Item Code <span class="text-red-500">*</span></label>
                             <input
                               v-model="formData.code"
                               type="text"
-                              class="form-control w-full"
+                              class="form-control w-100"
                               :class="{ 'border-red-500': errors.code }"
                               placeholder="e.g., CEM-001"
                             />
@@ -467,20 +310,20 @@ const suppliers = computed(() => buyingStore.suppliers)
                           <p v-if="errors.code" class="mt-1 text-sm text-red-600">{{ errors.code }}</p>
                         </div>
                       </div>
-                      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
-                        <div>
+                      <div class="row mt-4">
+                        <div class="col-3">
                           <div class="input-group input-group-dynamic">
                             <label class="form-label">Current Stock</label>
                             <input
                               v-model.number="formData.currentStock"
                               type="number"
                               min="0"
-                              class="form-control w-full"
+                              class="form-control w-100"
                               placeholder="0"
                             />
                           </div>
                         </div>
-                        <div>
+                        <div class="col-3">
                           <div class="input-group input-group-dynamic">
                             <label class="form-label">Cost Price <span class="text-red-500">*</span></label>
                             <input
@@ -488,14 +331,14 @@ const suppliers = computed(() => buyingStore.suppliers)
                               type="number"
                               step="0.01"
                               min="0"
-                              class="form-control w-full"
+                              class="form-control w-100"
                               :class="{ 'border-red-500': errors.costPrice }"
                               placeholder="0.00"
                             />
                           </div>
                           <p v-if="errors.costPrice" class="mt-1 text-sm text-red-600">{{ errors.costPrice }}</p>
                         </div>
-                        <div>
+                        <div class="col-3">
                           <div class="input-group input-group-dynamic">
                             <label class="form-label">Selling Price <span class="text-red-500">*</span></label>
                             <input
@@ -503,21 +346,21 @@ const suppliers = computed(() => buyingStore.suppliers)
                               type="number"
                               step="0.01"
                               min="0"
-                              class="form-control w-full"
+                              class="form-control w-100"
                               :class="{ 'border-red-500': errors.sellingPrice }"
                               placeholder="0.00"
                             />
                           </div>
                           <p v-if="errors.sellingPrice" class="mt-1 text-sm text-red-600">{{ errors.sellingPrice }}</p>
                         </div>
-                        <div>
+                        <div class="col-3">
                           <div class="input-group input-group-dynamic">
                             <label class="form-label">Min Stock</label>
                             <input
                               v-model.number="formData.minStock"
                               type="number"
                               min="0"
-                              class="form-control w-full"
+                              class="form-control w-100"
                               :class="{ 'border-red-500': errors.minStock }"
                               placeholder="0"
                             />
@@ -525,34 +368,30 @@ const suppliers = computed(() => buyingStore.suppliers)
                           <p v-if="errors.minStock" class="mt-1 text-sm text-red-600">{{ errors.minStock }}</p>
                         </div>
                       </div>
-                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                        <div>
-                          <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Description
-                            <span class="text-xs text-gray-500 font-normal">(optional)</span>
-                          </label>
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <label class="mt-4">Description</label>
+                          <p class="form-text text-muted text-xs ms-1 d-inline">(optional)</p>
                           <textarea
                             v-model="formData.description"
                             rows="4"
-                            class="form-control w-full"
+                            class="mt-2 form-control"
                             placeholder="Item description..."
                           ></textarea>
                         </div>
-                        <div>
-                          <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Category <span class="text-red-500">*</span>
-                          </label>
+                        <div class="col-sm-6">
+                          <label class="mt-4 ms-0">Category <span class="text-red-500">*</span></label>
                           <select
                             v-model="formData.category"
-                            class="form-control w-full"
+                            class="form-control"
                             :class="{ 'border-red-500': errors.category }"
                           >
                             <option value="">Select category</option>
                             <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
                           </select>
                           <p v-if="errors.category" class="mt-1 text-sm text-red-600">{{ errors.category }}</p>
-                          <label class="block text-sm font-medium text-gray-700 mb-2 mt-3">Unit of Measure</label>
-                          <select v-model="formData.unit" class="form-control w-full">
+                          <label class="mt-3 ms-0">Unit of Measure</label>
+                          <select v-model="formData.unit" class="form-control">
                             <option v-for="u in units" :key="u" :value="u">{{ u }}</option>
                           </select>
                         </div>
@@ -563,9 +402,9 @@ const suppliers = computed(() => buyingStore.suppliers)
               </div>
 
               <!-- Second Row: Additional Info and Pricing -->
-              <div class="flex flex-col sm:flex-row gap-6 mt-4">
+              <div class="row mt-4">
                 <!-- Additional Info Card (col-sm-4) -->
-                <div class="w-full sm:w-1/3">
+                <div class="col-sm-4">
                   <div class="card">
                     <div class="card-body">
                       <h5 class="font-weight-bolder">Additional Info</h5>
@@ -574,30 +413,28 @@ const suppliers = computed(() => buyingStore.suppliers)
                         <input
                           v-model="formData.barcode"
                           type="text"
-                          class="form-control w-full"
+                          class="form-control w-100"
                           placeholder="Optional"
                         />
                       </div>
-                      <div class="input-group input-group-dynamic mt-3">
-                        <label class="form-label">Default Supplier</label>
-                        <select v-model="formData.supplier" class="form-control w-full">
-                          <option value="">No supplier</option>
-                          <option v-for="supp in suppliers" :key="supp.id" :value="supp.name">
-                            {{ supp.name }}
-                          </option>
-                        </select>
-                      </div>
+                      <label class="mt-3 form-control ms-0">Default Supplier</label>
+                      <select v-model="formData.supplier" class="form-control">
+                        <option value="">No supplier</option>
+                        <option v-for="supp in suppliers" :key="supp.id" :value="supp.name">
+                          {{ supp.name }}
+                        </option>
+                      </select>
                     </div>
                   </div>
                 </div>
 
                 <!-- Pricing Card (col-sm-8) -->
-                <div class="w-full sm:w-2/3">
+                <div class="col-sm-8 mt-sm-0 mt-4">
                   <div class="card">
                     <div class="card-body">
-                      <h5 class="font-weight-bolder mb-3">Pricing & Status</h5>
-                      <div class="grid grid-cols-12 gap-4">
-                        <div class="col-span-12 sm:col-span-3">
+                      <div class="row">
+                        <h5 class="font-weight-bolder mb-3">Pricing & Status</h5>
+                        <div class="col-3">
                           <div class="input-group input-group-dynamic">
                             <label class="form-label">Cost Price</label>
                             <input
@@ -605,21 +442,19 @@ const suppliers = computed(() => buyingStore.suppliers)
                               type="number"
                               step="0.01"
                               min="0"
-                              class="form-control w-full"
+                              class="form-control w-100"
                               :class="{ 'border-red-500': errors.costPrice }"
                               placeholder="0.00"
                             />
                           </div>
                         </div>
-                        <div class="col-span-12 sm:col-span-4">
-                          <div class="input-group input-group-dynamic">
-                            <label class="form-label">Currency</label>
-                            <select class="form-control w-full" disabled>
-                              <option value="ZAR" selected>ZAR</option>
-                            </select>
-                          </div>
+                        <div class="col-4">
+                          <label class="form-control ms-0">Currency</label>
+                          <select class="form-control" disabled>
+                            <option value="ZAR" selected>ZAR</option>
+                          </select>
                         </div>
-                        <div class="col-span-12 sm:col-span-5">
+                        <div class="col-5">
                           <div class="input-group input-group-dynamic">
                             <label class="form-label">Selling Price</label>
                             <input
@@ -627,25 +462,27 @@ const suppliers = computed(() => buyingStore.suppliers)
                               type="number"
                               step="0.01"
                               min="0"
-                              class="form-control w-full"
+                              class="form-control w-100"
                               :class="{ 'border-red-500': errors.sellingPrice }"
                               placeholder="0.00"
                             />
                           </div>
                         </div>
                       </div>
-                      <div class="mt-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Active Status</label>
-                        <div class="flex items-center gap-2">
-                          <input
-                            v-model="formData.isActive"
-                            class="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900"
-                            type="checkbox"
-                            :id="isEditing ? 'isActiveEdit' : 'isActiveNew'"
-                          />
-                          <label class="text-sm font-medium text-gray-700 cursor-pointer" :for="isEditing ? 'isActiveEdit' : 'isActiveNew'">
-                            Item is active
-                          </label>
+                      <div class="row">
+                        <div class="col-12">
+                          <label class="mt-4 form-label">Active Status</label>
+                          <div class="form-check form-switch ps-0 ms-1">
+                            <input
+                              v-model="formData.isActive"
+                              class="mt-1 form-check-input"
+                              type="checkbox"
+                              :id="isEditing ? 'isActiveEdit' : 'isActiveNew'"
+                            />
+                            <label class="form-check-label ms-2" :for="isEditing ? 'isActiveEdit' : 'isActiveNew'">
+                              Item is active
+                            </label>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -653,6 +490,14 @@ const suppliers = computed(() => buyingStore.suppliers)
                 </div>
               </div>
             </form>
+
+            <!-- Close Button -->
+            <button
+              @click="handleClose"
+              class="absolute top-4 right-4 z-10 text-gray-400 transition-colors hover:text-gray-600"
+            >
+              <i class="text-2xl material-symbols-rounded">close</i>
+            </button>
           </div>
         </div>
       </div>
@@ -736,142 +581,5 @@ const suppliers = computed(() => buyingStore.suppliers)
   background-position: center;
   z-index: -1;
   border-radius: 0.5rem;
-}
-
-/* Card styles matching Material Dashboard */
-.card {
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  margin-bottom: 1.5rem;
-}
-
-.card-header {
-  border: none;
-  background: transparent;
-  padding: 0;
-}
-
-.card-body {
-  padding: 1.5rem;
-}
-
-/* Form control styles */
-.form-control {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: #495057;
-  background-color: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 0.375rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.form-control:focus {
-  outline: 0;
-  border-color: #42424a;
-  box-shadow: 0 0 0 0.2rem rgba(66, 66, 74, 0.25);
-}
-
-.form-control:disabled {
-  background-color: #e9ecef;
-  opacity: 1;
-}
-
-/* Button styles */
-.btn {
-  display: inline-block;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #212529;
-  text-align: center;
-  text-decoration: none;
-  vertical-align: middle;
-  cursor: pointer;
-  user-select: none;
-  border: 1px solid transparent;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  border-radius: 0.375rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.btn-sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  border-radius: 0.25rem;
-}
-
-.btn-outline-dark {
-  color: #42424a;
-  border-color: #42424a;
-  background-color: transparent;
-}
-
-.btn-outline-dark:hover {
-  color: #fff;
-  background-color: #42424a;
-  border-color: #42424a;
-}
-
-/* Utility classes */
-.mt-n4 {
-  margin-top: -1.5rem;
-}
-
-.mt-n6 {
-  margin-top: -2.5rem;
-}
-
-.z-index-2 {
-  z-index: 2;
-}
-
-.blur-shadow-image {
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.5rem;
-  display: block;
-}
-
-.img-fluid {
-  max-width: 100%;
-  height: auto;
-}
-
-.block {
-  display: block;
-}
-
-/* Image placeholder styling */
-.blur-shadow-image {
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.5rem;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.hidden {
-  display: none;
-}
-
-/* Image hover overlay */
-.blur-shadow-image.group:hover .image-overlay {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
-.blur-shadow-image.group:hover .image-overlay span {
-  opacity: 1;
-}
-
-/* Drag and drop styles */
-.drag-active {
-  border: 2px dashed #3b82f6 !important;
-  background-color: rgba(59, 130, 246, 0.1) !important;
 }
 </style>

@@ -3,6 +3,7 @@ import { onMounted, ref, computed } from 'vue'
 import { useStockStore, type Item } from '~/stores/stock'
 import { useBuyingStore } from '~/stores/buying'
 import ItemModal from '~/components/stock/ItemModal.vue'
+import ItemViewModal from '~/components/stock/ItemViewModal.vue'
 import StockAdjustmentModal from '~/components/stock/StockAdjustmentModal.vue'
 
 definePageMeta({
@@ -18,6 +19,7 @@ const buyingStore = useBuyingStore()
 const searchQuery = ref('')
 const showAddModal = ref(false)
 const showEditModal = ref(false)
+const showViewModal = ref(false)
 const showAdjustModal = ref(false)
 const selectedCategory = ref('all')
 const selectedItem = ref<Item | null>(null)
@@ -91,8 +93,13 @@ function handleAdjust(item: Item) {
 }
 
 function handleViewHistory(item: Item) {
-  navigateTo(`/stock/items/${item.id}`)
-  console.log('Navigating to item:', item.id, item.name)
+  selectedItem.value = item
+  showViewModal.value = true
+}
+
+function handleViewEdit(item: Item) {
+  showViewModal.value = false
+  handleEdit(item)
 }
 
 function handleItemSaved() {
@@ -358,13 +365,13 @@ function getItemImage(itemId: string) {
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-3">
-                  <NuxtLink
-                    :to="`/stock/items/${item.id}`"
+                  <button
+                    @click="handleViewHistory(item)"
                     class="text-gray-600 hover:text-gray-900 transition-colors"
                     title="View item"
                   >
                     <i class="material-symbols-rounded text-lg">visibility</i>
-                  </NuxtLink>
+                  </button>
                   <button
                     @click="handleEdit(item)"
                     class="text-gray-600 hover:text-gray-900 transition-colors"
@@ -399,6 +406,12 @@ function getItemImage(itemId: string) {
       :item="selectedItem"
       @close="showEditModal = false; selectedItem = null"
       @saved="handleItemSaved"
+    />
+    <ItemViewModal
+      :show="showViewModal"
+      :item="selectedItem"
+      @close="showViewModal = false; selectedItem = null"
+      @edit="handleViewEdit"
     />
     <StockAdjustmentModal
       :show="showAdjustModal"
