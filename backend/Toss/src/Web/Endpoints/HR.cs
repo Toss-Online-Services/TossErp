@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Toss.Application.HR.Commands.CreateEmployee;
 using Toss.Application.HR.Commands.UpdateEmployee;
 using Toss.Application.HR.Commands.DeleteEmployee;
@@ -82,7 +83,7 @@ public class HR : EndpointGroupBase
 
     public async Task<IResult> DeleteEmployee(ISender sender, int id)
     {
-        var result = await sender.Send(new DeleteEmployeeCommand(id));
+        var result = await sender.Send(new DeleteEmployeeCommand { Id = id });
         return result ? Results.Ok() : Results.NotFound();
     }
 
@@ -116,10 +117,21 @@ public class HR : EndpointGroupBase
         return Results.Ok(result);
     }
 
-    public async Task<IResult> ExportPayroll(ISender sender, [AsParameters] ExportPayrollQuery query)
+    public async Task<IResult> ExportPayroll(
+        ISender sender,
+        [FromQuery] DateTimeOffset fromDate,
+        [FromQuery] DateTimeOffset toDate,
+        [FromBody] List<int>? employeeIds)
     {
-        var csvBytes = await sender.Send(query);
-        var fileName = $"payroll_{query.FromDate:yyyyMMdd}_{query.ToDate:yyyyMMdd}.csv";
+        var exportQuery = new ExportPayrollQuery
+        {
+            FromDate = fromDate,
+            ToDate = toDate,
+            EmployeeIds = employeeIds
+        };
+
+        var csvBytes = await sender.Send(exportQuery);
+        var fileName = $"payroll_{fromDate:yyyyMMdd}_{toDate:yyyyMMdd}.csv";
         return Results.File(csvBytes, "text/csv", fileName);
     }
 }

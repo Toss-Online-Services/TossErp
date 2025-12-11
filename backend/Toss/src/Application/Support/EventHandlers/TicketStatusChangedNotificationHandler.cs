@@ -62,6 +62,8 @@ public class TicketStatusChangedNotificationHandler : INotificationHandler<Ticke
                 "Failed to create notification for ticket status change: TicketId={TicketId}",
                 notification.TicketId);
         }
+
+        await Task.CompletedTask;
     }
 }
 

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -30,6 +28,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__TossDb=Host=postgres;Port=5432;Database=${POSTGRES_DB:-TossErp};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-TossErp};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
       - Security__EnforceHttps=false
     ports:
@@ -38,7 +37,7 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/live"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -46,6 +45,43 @@ services:
     networks:
       - toss-network
     restart: unless-stopped
+
+  web:
+    build:
+      context: ./toss-web
+      dockerfile: Dockerfile
+    container_name: toss-web
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+      - NITRO_PORT=3000
+      - NUXT_PUBLIC_API_BASE=http://toss-api:8080/api
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - toss-network
+    restart: unless-stopped
+
+  playwright-mcp:
+    image: mcr.microsoft.com/playwright:v1.49.0-jammy
+    container_name: toss-playwright-mcp
+    command: >
+      bash -lc "npx playwright install --with-deps &&
+                npx playwright install-deps &&
+                PORT=3000 npx playwright mcp-server"
+    ports:
+      - "8123:3000"
+    working_dir: /srv
+    networks:
+      - toss-network
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
 
 volumes:
   postgres_data:

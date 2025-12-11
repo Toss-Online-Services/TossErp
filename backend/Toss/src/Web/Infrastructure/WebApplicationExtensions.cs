@@ -9,11 +9,17 @@ public static class WebApplicationExtensions
     {
         var groupName = group.GroupName ?? group.GetType().Name;
 
+        var versionSet = app.NewApiVersionSet()
+            .HasApiVersion(new ApiVersion(1, 0))
+            .ReportApiVersions()
+            .Build();
+
         return app
             .MapGroup($"/api/v{{version:apiVersion}}/{groupName}")
             .WithGroupName(groupName)
             .WithTags(groupName)
-            .HasApiVersion(new ApiVersion(1, 0));
+            .WithApiVersionSet(versionSet)
+            .MapToApiVersion(1.0);
     }
 
     public static WebApplication MapEndpoints(this WebApplication app)

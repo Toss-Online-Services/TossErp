@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useAccountingApi } from '~/composables/useAccountingApi'
 
 export type AccountType = 'asset' | 'liability' | 'equity' | 'income' | 'expense'
 export type AccountSubType = 
@@ -48,6 +49,7 @@ export interface JournalEntry {
 }
 
 export const useAccountingStore = defineStore('accounting', () => {
+  const accountingApi = useAccountingApi()
   // State
   const accounts = ref<Account[]>([])
   const journalEntries = ref<JournalEntry[]>([])
@@ -126,175 +128,15 @@ export const useAccountingStore = defineStore('accounting', () => {
   })
 
   // Actions
-  async function fetchAccounts() {
+  async function fetchAccounts(shopId?: number) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      // Mock data
-      accounts.value = [
-        // Assets
-        {
-          id: 'acc-1',
-          code: '1000',
-          name: 'Cash',
-          type: 'asset',
-          subType: 'current_asset',
-          balance: 50000,
-          isActive: true,
-          description: 'Cash on hand and in bank',
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        {
-          id: 'acc-2',
-          code: '1100',
-          name: 'Accounts Receivable',
-          type: 'asset',
-          subType: 'current_asset',
-          balance: 25000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        {
-          id: 'acc-3',
-          code: '1200',
-          name: 'Inventory',
-          type: 'asset',
-          subType: 'current_asset',
-          balance: 75000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        {
-          id: 'acc-4',
-          code: '1500',
-          name: 'Equipment',
-          type: 'asset',
-          subType: 'fixed_asset',
-          balance: 100000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        // Liabilities
-        {
-          id: 'acc-5',
-          code: '2000',
-          name: 'Accounts Payable',
-          type: 'liability',
-          subType: 'current_liability',
-          balance: 15000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        {
-          id: 'acc-6',
-          code: '2500',
-          name: 'Loans Payable',
-          type: 'liability',
-          subType: 'long_term_liability',
-          balance: 50000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        // Equity
-        {
-          id: 'acc-7',
-          code: '3000',
-          name: 'Owner\'s Equity',
-          type: 'equity',
-          balance: 150000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        {
-          id: 'acc-8',
-          code: '3100',
-          name: 'Retained Earnings',
-          type: 'equity',
-          balance: 35000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        // Income
-        {
-          id: 'acc-9',
-          code: '4000',
-          name: 'Sales Revenue',
-          type: 'income',
-          subType: 'revenue',
-          balance: 200000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        {
-          id: 'acc-10',
-          code: '4100',
-          name: 'Service Revenue',
-          type: 'income',
-          subType: 'revenue',
-          balance: 50000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        // Expenses
-        {
-          id: 'acc-11',
-          code: '5000',
-          name: 'Cost of Goods Sold',
-          type: 'expense',
-          subType: 'cost_of_sales',
-          balance: 120000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        {
-          id: 'acc-12',
-          code: '6000',
-          name: 'Rent Expense',
-          type: 'expense',
-          subType: 'operating_expense',
-          balance: 12000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        {
-          id: 'acc-13',
-          code: '6100',
-          name: 'Salaries Expense',
-          type: 'expense',
-          subType: 'operating_expense',
-          balance: 30000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        },
-        {
-          id: 'acc-14',
-          code: '6200',
-          name: 'Utilities Expense',
-          type: 'expense',
-          subType: 'operating_expense',
-          balance: 5000,
-          isActive: true,
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date()
-        }
-      ]
-    } catch (error) {
-      console.error('Failed to fetch accounts:', error)
+      const { data, error } = await accountingApi.getAccounts(shopId)
+      if (error.value) {
+        console.error('Failed to fetch accounts:', error.value)
+        return
+      }
+      accounts.value = (data.value ?? []).map(mapAccountFromApi)
     } finally {
       loading.value = false
     }
@@ -405,16 +247,19 @@ export const useAccountingStore = defineStore('accounting', () => {
   async function createAccount(data: Omit<Account, 'id' | 'createdAt' | 'updatedAt'>) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
+      const { data: created, error } = await accountingApi.createAccount(data)
+      if (error.value) {
+        console.error('Failed to create account:', error.value)
+        throw error.value
+      }
+
       const account: Account = {
         ...data,
-        id: `acc-${Date.now()}`,
+        id: created.value?.id ? String(created.value.id) : `acc-${Date.now()}`,
         createdAt: new Date(),
         updatedAt: new Date()
       }
-      
+
       accounts.value.push(account)
       return account
     } catch (error) {
@@ -545,6 +390,22 @@ export const useAccountingStore = defineStore('accounting', () => {
       expense: 'Expense'
     }
     return labels[type] || type
+  }
+
+  function mapAccountFromApi(account: any): Account {
+    return {
+      id: String(account.id ?? crypto.randomUUID()),
+      code: account.code ?? '',
+      name: account.name ?? 'Account',
+      type: account.type ?? 'asset',
+      subType: account.subType,
+      parentId: account.parentId ? String(account.parentId) : undefined,
+      balance: account.balance ?? 0,
+      isActive: account.isActive ?? true,
+      description: account.description,
+      createdAt: account.createdAt ? new Date(account.createdAt) : new Date(),
+      updatedAt: account.updatedAt ? new Date(account.updatedAt) : new Date()
+    }
   }
 
   return {

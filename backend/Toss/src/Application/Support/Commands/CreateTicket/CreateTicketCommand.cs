@@ -64,7 +64,7 @@ public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, i
             BusinessId = _businessContext.CurrentBusinessId!.Value,
             Type = request.Type,
             Title = request.Title,
-            Description = request.Description,
+            Description = request.Description ?? string.Empty,
             Status = TicketStatus.New,
             LinkedEntityType = request.LinkedEntityType,
             LinkedEntityId = request.LinkedEntityId,

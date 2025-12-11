@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useCrmApi } from '~/composables/useCrmApi'
 
 export interface Customer {
   id: string
@@ -70,6 +71,7 @@ export interface Opportunity {
 }
 
 export const useCrmStore = defineStore('crm', () => {
+  const crmApi = useCrmApi()
   // State
   const customers = ref<Customer[]>([])
   const leads = ref<Lead[]>([])
@@ -120,52 +122,16 @@ export const useCrmStore = defineStore('crm', () => {
   })
 
   // Actions
-  async function fetchCustomers() {
+  async function fetchCustomers(storeId?: number) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      // Mock data
-      customers.value = [
-        {
-          id: '1',
-          name: 'Thabo Builders',
-          phone: '+27 82 123 4567',
-          email: 'thabo@builders.co.za',
-          address: '123 Main Road, Soweto',
-          city: 'Johannesburg',
-          postalCode: '1809',
-          customerType: 'business',
-          creditLimit: 50000,
-          currentBalance: 15000,
-          outstandingAmount: 15000,
-          totalPurchases: 125000,
-          lastPurchaseDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-          status: 'active',
-          tags: ['wholesale', 'vip'],
-          notes: 'Regular customer, always pays on time',
-          createdAt: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000),
-          updatedAt: new Date()
-        },
-        {
-          id: '2',
-          name: 'Sipho Grocery',
-          phone: '+27 83 234 5678',
-          customerType: 'business',
-          creditLimit: 20000,
-          currentBalance: 5000,
-          outstandingAmount: 5000,
-          totalPurchases: 45000,
-          lastPurchaseDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-          status: 'active',
-          tags: ['retail'],
-          createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
-          updatedAt: new Date()
-        }
-      ]
-    } catch (error) {
-      console.error('Failed to fetch customers:', error)
+      const { data, error } = await crmApi.getCustomers(storeId)
+      if (error.value) {
+        console.error('Failed to fetch customers:', error.value)
+        return
+      }
+      const items = data.value?.items ?? data.value ?? []
+      customers.value = items.map(mapCustomerFromApi)
     } finally {
       loading.value = false
     }
@@ -203,16 +169,16 @@ export const useCrmStore = defineStore('crm', () => {
     }
   }
 
-  async function fetchCommunications(relatedId?: string) {
+  async function fetchCommunications(customerId: string) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      // Mock data
-      communications.value = []
-    } catch (error) {
-      console.error('Failed to fetch communications:', error)
+      const { data, error } = await crmApi.getInteractions(Number(customerId))
+      if (error.value) {
+        console.error('Failed to fetch communications:', error.value)
+        return
+      }
+      const items = data.value?.items ?? data.value ?? []
+      communications.value = items.map(mapCommunicationFromApi(customerId))
     } finally {
       loading.value = false
     }
@@ -221,21 +187,21 @@ export const useCrmStore = defineStore('crm', () => {
   async function createCustomer(data: Omit<Customer, 'id' | 'createdAt' | 'updatedAt'>) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
+      const { data: created, error } = await crmApi.createCustomer(data)
+      if (error.value) {
+        console.error('Failed to create customer:', error.value)
+        throw error.value
+      }
+      const id = created.value?.id ? String(created.value.id) : `cust_${Date.now()}`
       const customer: Customer = {
         ...data,
-        id: `cust_${Date.now()}`,
+        id,
         createdAt: new Date(),
         updatedAt: new Date()
       }
       
       customers.value.unshift(customer)
       return customer
-    } catch (error) {
-      console.error('Failed to create customer:', error)
-      throw error
     } finally {
       loading.value = false
     }
@@ -244,8 +210,11 @@ export const useCrmStore = defineStore('crm', () => {
   async function updateCustomer(id: string, updates: Partial<Customer>) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      const { error } = await crmApi.updateCustomer(Number(id), updates)
+      if (error.value) {
+        console.error('Failed to update customer:', error.value)
+        throw error.value
+      }
       
       const index = customers.value.findIndex(c => c.id === id)
       if (index !== -1) {
@@ -255,9 +224,20 @@ export const useCrmStore = defineStore('crm', () => {
           updatedAt: new Date()
         }
       }
-    } catch (error) {
-      console.error('Failed to update customer:', error)
-      throw error
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function deleteCustomer(id: string) {
+    loading.value = true
+    try {
+      const { error } = await crmApi.deleteCustomer(Number(id))
+      if (error.value) {
+        console.error('Failed to delete customer:', error.value)
+        throw error.value
+      }
+      customers.value = customers.value.filter(c => c.id !== id)
     } finally {
       loading.value = false
     }
@@ -359,6 +339,47 @@ export const useCrmStore = defineStore('crm', () => {
     return customers.value.find(c => c.id === id)
   }
 
+  function mapCustomerFromApi(customer: any): Customer {
+    const fallbackName = `${customer.firstName ?? ''} ${customer.lastName ?? ''}`.trim() || 'Customer'
+    return {
+      id: String(customer.id ?? customer.customerId ?? crypto.randomUUID()),
+      name: customer.name ?? fallbackName,
+      email: customer.email,
+      phone: customer.phone ?? customer.mobileNumber,
+      address: customer.address,
+      city: customer.city,
+      postalCode: customer.postalCode,
+      customerType: customer.customerType ?? 'business',
+      creditLimit: customer.creditLimit ?? 0,
+      currentBalance: customer.currentBalance ?? customer.balance ?? 0,
+      outstandingAmount: customer.outstandingAmount ?? customer.balance ?? 0,
+      totalPurchases: customer.totalPurchases ?? 0,
+      lastPurchaseDate: customer.lastPurchaseDate ? new Date(customer.lastPurchaseDate) : undefined,
+      status: customer.status ?? 'active',
+      tags: customer.tags ?? [],
+      notes: customer.notes,
+      createdAt: customer.createdAt ? new Date(customer.createdAt) : new Date(),
+      updatedAt: customer.updatedAt ? new Date(customer.updatedAt) : new Date()
+    }
+  }
+
+  function mapCommunicationFromApi(customerId: string) {
+    return (comm: any): Communication => ({
+      id: String(comm.id ?? crypto.randomUUID()),
+      relatedTo: 'customer',
+      relatedId: customerId,
+      type: comm.type ?? 'note',
+      subject: comm.subject ?? 'Interaction',
+      content: comm.content ?? '',
+      direction: comm.direction ?? 'outbound',
+      status: comm.status ?? 'completed',
+      scheduledAt: comm.scheduledAt ? new Date(comm.scheduledAt) : undefined,
+      completedAt: comm.completedAt ? new Date(comm.completedAt) : undefined,
+      createdBy: comm.createdBy ?? 'system',
+      createdAt: comm.createdAt ? new Date(comm.createdAt) : new Date()
+    })
+  }
+
   return {
     // State
     customers,
@@ -380,6 +401,7 @@ export const useCrmStore = defineStore('crm', () => {
     fetchCommunications,
     createCustomer,
     updateCustomer,
+    deleteCustomer,
     createLead,
     convertLeadToCustomer,
     logCommunication,

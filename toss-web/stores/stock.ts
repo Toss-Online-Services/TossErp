@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useInventoryApi } from '~/composables/useInventoryApi'
 
 export interface Item {
   id: string
@@ -81,143 +82,87 @@ export const useStockStore = defineStore('stock', () => {
   })
 
   // Actions
-  async function fetchItems() {
+  async function fetchItems(shopId?: number) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      const inventoryApi = useInventoryApi()
+      const { data, error } = await inventoryApi.getProducts(shopId)
       
-      // Mock data
-      items.value = [
-        {
-          id: '1',
-          code: 'CEM-001',
-          name: 'Cement 50kg',
-          category: 'Building Materials',
-          unit: 'bag',
-          costPrice: 85,
-          sellingPrice: 100,
-          currentStock: 45,
-          minStock: 20,
-          maxStock: 200,
-          warehouse: 'main',
-          barcode: '1234567890123',
-          supplier: 'PPC Cement',
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        {
-          id: '2',
-          code: 'SUG-001',
-          name: 'Sugar 2.5kg',
-          category: 'Groceries',
-          unit: 'pack',
-          costPrice: 28,
-          sellingPrice: 35,
-          currentStock: 15,
-          minStock: 30,
-          maxStock: 100,
-          warehouse: 'main',
-          barcode: '2345678901234',
-          supplier: 'Tongaat Hulett',
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        {
-          id: '3',
-          code: 'OIL-001',
-          name: 'Cooking Oil 750ml',
-          category: 'Groceries',
-          unit: 'bottle',
-          costPrice: 22,
-          sellingPrice: 28,
-          currentStock: 8,
-          minStock: 20,
-          maxStock: 80,
-          warehouse: 'main',
-          barcode: '3456789012345',
-          supplier: 'Willowton Oil',
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      ]
+      if (error) {
+        console.error('Failed to fetch items:', error)
+        // Fallback to empty array on error
+        items.value = []
+        return
+      }
+      
+      if (data?.value?.items) {
+        // Map backend data to frontend format
+        items.value = data.value.items.map((item: any) => ({
+          id: item.id?.toString() || item.productId?.toString() || '',
+          code: item.code || item.sku || '',
+          name: item.name || '',
+          description: item.description,
+          category: item.categoryName || item.category || '',
+          unit: item.unit || 'unit',
+          costPrice: item.costPrice || item.purchasePrice || 0,
+          sellingPrice: item.sellingPrice || item.price || 0,
+          currentStock: item.stockOnHand || item.quantity || 0,
+          minStock: item.minStock || item.reorderLevel || 0,
+          maxStock: item.maxStock,
+          warehouse: item.warehouseName || item.warehouse || 'main',
+          barcode: item.barcode,
+          supplier: item.supplierName,
+          imageUrl: item.imageUrl,
+          isActive: item.isActive !== false,
+          createdAt: item.created ? new Date(item.created) : new Date(),
+          updatedAt: item.lastModified ? new Date(item.lastModified) : new Date()
+        }))
+      } else {
+        items.value = []
+      }
     } catch (error) {
       console.error('Failed to fetch items:', error)
+      items.value = []
     } finally {
       loading.value = false
     }
   }
 
-  async function fetchMovements(itemId?: string) {
+  async function fetchMovements(itemId?: string, shopId?: number) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      const inventoryApi = useInventoryApi()
+      const productId = itemId ? parseInt(itemId) : undefined
+      const { data, error } = await inventoryApi.getStockMovementHistory(shopId, productId)
       
-      // Preserve existing adjustments that were made
-      const existingAdjustments = movements.value.filter(m => m.type === 'adjustment')
+      if (error) {
+        console.error('Failed to fetch movements:', error)
+        movements.value = []
+        return
+      }
       
-      // Generate mock movements for all items or specific item
-      const mockMovements: StockMovement[] = []
-      
-      items.value.forEach((item, index) => {
-        // Only generate for requested item, or all if no itemId specified
-        if (itemId && item.id !== itemId) return
-        
-        // Add some purchase movements
-        mockMovements.push({
-          id: `mov_${item.id}_purchase_1`,
-          itemId: item.id,
-          itemName: item.name,
-          type: 'purchase',
-          quantity: Math.max(item.currentStock + 20, 50),
-          warehouse: item.warehouse,
-          referenceType: 'PO',
-          referenceId: `PO-00${index + 1}`,
-          notes: `Initial stock purchase`,
-          createdBy: 'admin',
-          createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // 30 days ago
-        })
-        
-        // Add some sale movements if stock is less than initial
-        const initialStock = Math.max(item.currentStock + 20, 50)
-        if (item.currentStock < initialStock) {
-          const soldQty = initialStock - item.currentStock
-          mockMovements.push({
-            id: `mov_${item.id}_sale_1`,
-            itemId: item.id,
-            itemName: item.name,
-            type: 'sale',
-            quantity: -soldQty,
-            warehouse: item.warehouse,
-            referenceType: 'SI',
-            referenceId: `SI-00${index + 1}`,
-            notes: `Sales transaction`,
-            createdBy: 'admin',
-            createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000) // 15 days ago
-          })
-        }
-        
-        // Add existing adjustments for this item
-        existingAdjustments
-          .filter(m => m.itemId === item.id)
-          .forEach(adj => mockMovements.push(adj))
-      })
-      
-      // Sort by date, newest first
-      mockMovements.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      
-      // If itemId specified, only return movements for that item
-      if (itemId) {
-        movements.value = mockMovements.filter(m => m.itemId === itemId)
+      if (data?.value?.items) {
+        movements.value = data.value.items.map((mov: any) => ({
+          id: mov.id?.toString() || '',
+          itemId: mov.productId?.toString() || mov.itemId?.toString() || '',
+          itemName: mov.productName || mov.itemName || '',
+          type: mov.movementType?.toLowerCase() || mov.type || 'adjustment',
+          quantity: mov.quantityChange || mov.quantity || 0,
+          warehouse: mov.warehouseName || mov.warehouse || 'main',
+          referenceType: mov.referenceType,
+          referenceId: mov.referenceId?.toString(),
+          supplierId: mov.supplierId?.toString(),
+          supplierName: mov.supplierName,
+          notes: mov.notes,
+          createdBy: mov.createdBy || 'system',
+          createdAt: mov.created ? new Date(mov.created) : new Date()
+        }))
       } else {
-        movements.value = mockMovements
+        movements.value = []
       }
     } catch (error) {
       console.error('Failed to fetch movements:', error)
+      movements.value = []
     } finally {
       loading.value = false
     }
@@ -226,17 +171,30 @@ export const useStockStore = defineStore('stock', () => {
   async function createItem(item: Omit<Item, 'id' | 'createdAt' | 'updatedAt'>) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      const inventoryApi = useInventoryApi()
+      const { data, error } = await inventoryApi.createProduct({
+        name: item.name,
+        code: item.code,
+        sku: item.code,
+        description: item.description,
+        categoryId: undefined, // TODO: Map category name to ID
+        unit: item.unit,
+        costPrice: item.costPrice,
+        sellingPrice: item.sellingPrice,
+        minStock: item.minStock,
+        maxStock: item.maxStock,
+        barcode: item.barcode,
+        isActive: item.isActive
+      })
       
-      const newItem: Item = {
-        ...item,
-        id: `item_${Date.now()}`,
-        createdAt: new Date(),
-        updatedAt: new Date()
+      if (error || !data?.value) {
+        throw error || new Error('Failed to create item')
       }
       
-      items.value.push(newItem)
+      // Refresh items list
+      await fetchItems()
+      
+      const newItem = items.value.find(i => i.id === data.value.id.toString())
       return newItem
     } catch (error) {
       console.error('Failed to create item:', error)
@@ -249,17 +207,28 @@ export const useStockStore = defineStore('stock', () => {
   async function updateItem(id: string, updates: Partial<Item>) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      const inventoryApi = useInventoryApi()
+      const productId = parseInt(id)
+      const { data, error } = await inventoryApi.updateProduct(productId, {
+        name: updates.name,
+        code: updates.code,
+        sku: updates.code,
+        description: updates.description,
+        unit: updates.unit,
+        costPrice: updates.costPrice,
+        sellingPrice: updates.sellingPrice,
+        minStock: updates.minStock,
+        maxStock: updates.maxStock,
+        barcode: updates.barcode,
+        isActive: updates.isActive
+      })
       
-      const index = items.value.findIndex(item => item.id === id)
-      if (index !== -1) {
-        items.value[index] = {
-          ...items.value[index],
-          ...updates,
-          updatedAt: new Date()
-        }
+      if (error) {
+        throw error
       }
+      
+      // Refresh items list
+      await fetchItems()
     } catch (error) {
       console.error('Failed to update item:', error)
       throw error
@@ -268,30 +237,20 @@ export const useStockStore = defineStore('stock', () => {
     }
   }
 
-  async function adjustStock(itemId: string, quantity: number, notes?: string) {
+  async function adjustStock(itemId: string, quantity: number, notes?: string, shopId?: number) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      const inventoryApi = useInventoryApi()
+      const productId = parseInt(itemId)
+      const { data, error } = await inventoryApi.adjustStock(productId, shopId || 1, quantity, notes)
       
-      const item = items.value.find(i => i.id === itemId)
-      if (item) {
-        item.currentStock += quantity
-        
-        const movement: StockMovement = {
-          id: `mov_${Date.now()}`,
-          itemId,
-          itemName: item.name,
-          type: 'adjustment',
-          quantity,
-          warehouse: item.warehouse,
-          notes,
-          createdBy: 'admin',
-          createdAt: new Date()
-        }
-        
-        movements.value.unshift(movement)
+      if (error) {
+        throw error
       }
+      
+      // Refresh items and movements
+      await fetchItems(shopId)
+      await fetchMovements(itemId, shopId)
     } catch (error) {
       console.error('Failed to adjust stock:', error)
       throw error
@@ -304,13 +263,52 @@ export const useStockStore = defineStore('stock', () => {
     return items.value.find(item => item.id === id)
   }
 
-  function searchItems(query: string): Item[] {
-    const lowerQuery = query.toLowerCase()
-    return items.value.filter(item => 
-      item.name.toLowerCase().includes(lowerQuery) ||
-      item.code.toLowerCase().includes(lowerQuery) ||
-      item.barcode?.includes(query)
-    )
+  async function searchItems(query: string, shopId?: number): Promise<Item[]> {
+    try {
+      const inventoryApi = useInventoryApi()
+      const { data, error } = await inventoryApi.searchProducts(query, shopId)
+      
+      if (error || !data?.value) {
+        // Fallback to local search
+        const lowerQuery = query.toLowerCase()
+        return items.value.filter(item => 
+          item.name.toLowerCase().includes(lowerQuery) ||
+          item.code.toLowerCase().includes(lowerQuery) ||
+          item.barcode?.includes(query)
+        )
+      }
+      
+      // Map backend results to frontend format
+      return data.value.items.map((item: any) => ({
+        id: item.id?.toString() || '',
+        code: item.code || item.sku || '',
+        name: item.name || '',
+        description: item.description,
+        category: item.categoryName || item.category || '',
+        unit: item.unit || 'unit',
+        costPrice: item.costPrice || 0,
+        sellingPrice: item.sellingPrice || 0,
+        currentStock: item.stockOnHand || 0,
+        minStock: item.minStock || 0,
+        maxStock: item.maxStock,
+        warehouse: item.warehouseName || 'main',
+        barcode: item.barcode,
+        supplier: item.supplierName,
+        imageUrl: item.imageUrl,
+        isActive: item.isActive !== false,
+        createdAt: item.created ? new Date(item.created) : new Date(),
+        updatedAt: item.lastModified ? new Date(item.lastModified) : new Date()
+      }))
+    } catch (error) {
+      console.error('Failed to search items:', error)
+      // Fallback to local search
+      const lowerQuery = query.toLowerCase()
+      return items.value.filter(item => 
+        item.name.toLowerCase().includes(lowerQuery) ||
+        item.code.toLowerCase().includes(lowerQuery) ||
+        item.barcode?.includes(query)
+      )
+    }
   }
 
   return {

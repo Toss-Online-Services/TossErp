@@ -509,9 +509,9 @@ function setMainImage(imageSrc: string) {
                       </div>
 
                       <!-- Timeline -->
-                      <div v-else class="relative pl-16">
+                      <div v-else class="relative" style="padding-left: 3.5rem;">
                         <!-- Timeline Line -->
-                        <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+                        <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
 
                         <!-- Timeline Items -->
                         <div
@@ -521,7 +521,8 @@ function setMainImage(imageSrc: string) {
                         >
                           <!-- Timeline Icon -->
                           <div
-                            class="absolute left-6 flex items-center justify-center w-12 h-12 rounded-full border-2 border-white shadow-sm z-10 -translate-x-1/2"
+                            class="absolute left-4 flex items-center justify-center w-12 h-12 rounded-full border-2 border-white shadow-sm z-10"
+                            style="transform: translateX(-50%);"
                             :class="[
                               movement.quantity > 0 
                                 ? 'bg-green-100 text-green-600' 
@@ -536,7 +537,7 @@ function setMainImage(imageSrc: string) {
                           </div>
 
                           <!-- Timeline Content -->
-                          <div class="ml-8 pt-1">
+                          <div class="pt-1" style="margin-left: 2.8125rem;">
                             <!-- Title and Timestamp -->
                             <h6 class="text-sm font-semibold text-gray-900 mb-0">
                               {{ getMovementLabel(movement) }}

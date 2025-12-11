@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useSalesApi } from '~/composables/useSalesApi'
 
 export interface Customer {
   id: string
@@ -100,7 +101,11 @@ export interface Invoice {
   createdAt: Date
 }
 
+// Alias to align with backend sale DTOs used by API composables
+export type Sale = SalesOrder
+
 export const useSalesStore = defineStore('sales', () => {
+  const salesApi = useSalesApi()
   // State
   const quotations = ref<Quotation[]>([])
   const orders = ref<SalesOrder[]>([])
@@ -146,235 +151,59 @@ export const useSalesStore = defineStore('sales', () => {
   })
 
   // Actions
-  async function fetchQuotations() {
+  async function fetchQuotations(shopId?: number) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      // Mock data
-      quotations.value = [
-        {
-          id: '1',
-          quotationNumber: 'QT-2025-001',
-          customerId: 'cust-1',
-          customerName: 'Thabo Builders',
-          date: new Date(),
-          validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-          items: [
-            {
-              id: '1',
-              itemId: 'item-1',
-              itemName: 'Cement 50kg',
-              quantity: 100,
-              rate: 100,
-              discount: 0,
-              tax: 1500,
-              amount: 11500
-            }
-          ],
-          subtotal: 10000,
-          discount: 0,
-          tax: 1500,
-          total: 11500,
-          status: 'sent',
-          createdBy: 'admin',
-          createdAt: new Date()
-        }
-      ]
-    } catch (error) {
-      console.error('Failed to fetch quotations:', error)
+      const { data, error } = await salesApi.getQuotes(shopId)
+      if (error.value) {
+        console.error('Failed to fetch quotations:', error.value)
+        return
+      }
+      quotations.value = (data.value ?? []).map(mapQuoteFromApi)
     } finally {
       loading.value = false
     }
   }
 
-  async function fetchOrders() {
+  async function fetchOrders(shopId?: number, status?: string) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      // Mock data
-      orders.value = [
-        {
-          id: '1',
-          orderNumber: 'SO-2025-001',
-          customerId: 'cust-1',
-          customerName: 'Thabo Builders',
-          quotationId: '1',
-          orderDate: new Date('2025-01-10'),
-          deliveryDate: new Date('2025-01-20'),
-          items: [
-            {
-              id: '1',
-              itemId: 'item-1',
-              itemName: 'Cement 50kg',
-              quantity: 100,
-              rate: 100,
-              discount: 0,
-              tax: 1500,
-              amount: 11500
-            }
-          ],
-          subtotal: 10000,
-          discount: 0,
-          tax: 1500,
-          total: 11500,
-          status: 'confirmed',
-          paymentStatus: 'unpaid',
-          createdBy: 'admin',
-          createdAt: new Date('2025-01-10')
-        },
-        {
-          id: '2',
-          orderNumber: 'SO-2025-002',
-          customerId: 'cust-2',
-          customerName: 'Mpho Hardware',
-          orderDate: new Date('2025-01-15'),
-          items: [
-            {
-              id: '2',
-              itemId: 'item-2',
-              itemName: 'Steel Bars 12mm',
-              quantity: 50,
-              rate: 150,
-              discount: 500,
-              tax: 1050,
-              amount: 7300
-            }
-          ],
-          subtotal: 7000,
-          discount: 500,
-          tax: 1050,
-          total: 7550,
-          status: 'partially_delivered',
-          paymentStatus: 'partially_paid',
-          notes: 'Partial delivery completed',
-          createdBy: 'admin',
-          createdAt: new Date('2025-01-15')
-        }
-      ]
-    } catch (error) {
-      console.error('Failed to fetch orders:', error)
+      const { data, error } = await salesApi.getOrders(shopId)
+      if (error.value) {
+        console.error('Failed to fetch orders:', error.value)
+        return
+      }
+      const filtered = status ? (data.value ?? []).filter(o => (o as any).status === status) : (data.value ?? [])
+      orders.value = filtered.map(mapOrderFromApi)
     } finally {
       loading.value = false
     }
   }
 
-  async function fetchInvoices() {
+  async function fetchInvoices(shopId?: number, status?: string) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      // Mock data
-      invoices.value = [
-        {
-          id: '1',
-          invoiceNumber: 'INV-2025-001',
-          customerId: 'cust-1',
-          customerName: 'Thabo Builders',
-          orderId: '1',
-          invoiceDate: new Date('2025-01-10'),
-          dueDate: new Date('2025-02-09'),
-          items: [
-            {
-              id: '1',
-              itemId: 'item-1',
-              itemName: 'Cement 50kg',
-              quantity: 100,
-              rate: 100,
-              discount: 0,
-              tax: 1500,
-              amount: 11500
-            }
-          ],
-          subtotal: 10000,
-          discount: 0,
-          tax: 1500,
-          total: 11500,
-          amountPaid: 0,
-          amountDue: 11500,
-          status: 'sent',
-          paymentTerms: 'Net 30',
-          createdAt: new Date('2025-01-10')
-        },
-        {
-          id: '2',
-          invoiceNumber: 'INV-2025-002',
-          customerId: 'cust-2',
-          customerName: 'Mpho Hardware',
-          orderId: '2',
-          invoiceDate: new Date('2025-01-15'),
-          dueDate: new Date('2025-02-14'),
-          items: [
-            {
-              id: '2',
-              itemId: 'item-2',
-              itemName: 'Steel Bars 12mm',
-              quantity: 50,
-              rate: 150,
-              discount: 500,
-              tax: 1050,
-              amount: 7300
-            }
-          ],
-          subtotal: 7000,
-          discount: 500,
-          tax: 1050,
-          total: 7550,
-          amountPaid: 3000,
-          amountDue: 4550,
-          status: 'partially_paid',
-          paymentTerms: 'Net 30',
-          createdAt: new Date('2025-01-15')
-        }
-      ]
-    } catch (error) {
-      console.error('Failed to fetch invoices:', error)
+      const { data, error } = await salesApi.getInvoices(shopId, status)
+      if (error.value) {
+        console.error('Failed to fetch invoices:', error.value)
+        return
+      }
+      const items = data.value?.items ?? data.value ?? []
+      invoices.value = items.map(mapInvoiceFromApi)
     } finally {
       loading.value = false
     }
   }
 
-  async function fetchDeliveries() {
+  async function fetchDeliveries(shopId?: number) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      // Mock data
-      deliveries.value = [
-        {
-          id: '1',
-          deliveryNumber: 'DN-2025-001',
-          orderId: '1',
-          orderNumber: 'SO-2025-001',
-          customerId: 'cust-1',
-          customerName: 'Thabo Builders',
-          deliveryDate: new Date('2025-01-20'),
-          items: [
-            {
-              id: '1',
-              itemId: 'item-1',
-              itemName: 'Cement 50kg',
-              quantity: 100,
-              rate: 100,
-              discount: 0,
-              tax: 1500,
-              amount: 11500
-            }
-          ],
-          status: 'delivered',
-          driverId: 'driver-1',
-          driverName: 'John Driver',
-          notes: 'Delivered successfully',
-          createdAt: new Date('2025-01-20')
-        }
-      ]
-    } catch (error) {
-      console.error('Failed to fetch deliveries:', error)
+      const { data, error } = await salesApi.getDeliveryNotes(shopId)
+      if (error.value) {
+        console.error('Failed to fetch delivery notes:', error.value)
+        return
+      }
+      deliveries.value = (data.value ?? []).map(mapDeliveryFromApi)
     } finally {
       loading.value = false
     }
@@ -515,6 +344,103 @@ export const useSalesStore = defineStore('sales', () => {
 
   function getDeliveryById(id: string): DeliveryNote | undefined {
     return deliveries.value.find(d => d.id === id)
+  }
+
+  function mapQuoteFromApi(quote: any): Quotation {
+    return {
+      id: String(quote.id ?? quote.saleId ?? crypto.randomUUID()),
+      quotationNumber: quote.quotationNumber ?? quote.quoteNumber ?? quote.documentNumber ?? `QT-${Date.now()}`,
+      customerId: String(quote.customerId ?? quote.customer?.id ?? ''),
+      customerName: quote.customerName ?? quote.customer?.name ?? 'Customer',
+      date: quote.date ? new Date(quote.date) : new Date(),
+      validUntil: quote.validUntil ? new Date(quote.validUntil) : new Date(),
+      items: (quote.items ?? quote.lines ?? []).map(mapLineItemFromApi),
+      subtotal: quote.subtotal ?? quote.subTotal ?? quote.total ?? 0,
+      discount: quote.discount ?? 0,
+      tax: quote.tax ?? 0,
+      total: quote.total ?? 0,
+      status: quote.status ?? 'draft',
+      notes: quote.notes,
+      createdBy: quote.createdBy ?? 'system',
+      createdAt: quote.createdAt ? new Date(quote.createdAt) : new Date()
+    }
+  }
+
+  function mapOrderFromApi(order: any): SalesOrder {
+    return {
+      id: String(order.id ?? order.saleId ?? crypto.randomUUID()),
+      orderNumber: order.orderNumber ?? order.saleNumber ?? order.documentNumber ?? `SO-${Date.now()}`,
+      customerId: String(order.customerId ?? order.customer?.id ?? ''),
+      customerName: order.customerName ?? order.customer?.name ?? 'Customer',
+      quotationId: order.quotationId ? String(order.quotationId) : undefined,
+      orderDate: order.orderDate ? new Date(order.orderDate) : new Date(),
+      deliveryDate: order.deliveryDate ? new Date(order.deliveryDate) : undefined,
+      items: (order.items ?? order.lines ?? []).map(mapLineItemFromApi),
+      subtotal: order.subtotal ?? order.subTotal ?? order.total ?? 0,
+      discount: order.discount ?? 0,
+      tax: order.tax ?? 0,
+      total: order.total ?? 0,
+      status: order.status ?? 'confirmed',
+      paymentStatus: order.paymentStatus ?? 'unpaid',
+      notes: order.notes,
+      createdBy: order.createdBy ?? 'system',
+      createdAt: order.createdAt ? new Date(order.createdAt) : new Date()
+    }
+  }
+
+  function mapInvoiceFromApi(invoice: any): Invoice {
+    return {
+      id: String(invoice.id ?? invoice.invoiceId ?? crypto.randomUUID()),
+      invoiceNumber: invoice.invoiceNumber ?? invoice.documentNumber ?? `INV-${Date.now()}`,
+      customerId: String(invoice.customerId ?? invoice.customer?.id ?? ''),
+      customerName: invoice.customerName ?? invoice.customer?.name ?? 'Customer',
+      orderId: invoice.orderId ? String(invoice.orderId) : undefined,
+      invoiceDate: invoice.invoiceDate ? new Date(invoice.invoiceDate) : new Date(),
+      dueDate: invoice.dueDate ? new Date(invoice.dueDate) : new Date(),
+      items: (invoice.items ?? invoice.lines ?? []).map(mapLineItemFromApi),
+      subtotal: invoice.subtotal ?? invoice.subTotal ?? invoice.total ?? 0,
+      discount: invoice.discount ?? 0,
+      tax: invoice.tax ?? 0,
+      total: invoice.total ?? 0,
+      amountPaid: invoice.amountPaid ?? invoice.paidAmount ?? 0,
+      amountDue: invoice.amountDue ?? invoice.outstandingAmount ?? Math.max((invoice.total ?? 0) - (invoice.amountPaid ?? 0), 0),
+      status: invoice.status ?? 'draft',
+      paymentTerms: invoice.paymentTerms,
+      notes: invoice.notes,
+      createdAt: invoice.createdAt ? new Date(invoice.createdAt) : new Date()
+    }
+  }
+
+  function mapDeliveryFromApi(delivery: any): DeliveryNote {
+    return {
+      id: String(delivery.id ?? delivery.deliveryNoteId ?? crypto.randomUUID()),
+      deliveryNumber: delivery.deliveryNumber ?? delivery.documentNumber ?? `DN-${Date.now()}`,
+      orderId: delivery.orderId ? String(delivery.orderId) : '',
+      orderNumber: delivery.orderNumber ?? '',
+      customerId: String(delivery.customerId ?? delivery.customer?.id ?? ''),
+      customerName: delivery.customerName ?? delivery.customer?.name ?? 'Customer',
+      deliveryDate: delivery.deliveryDate ? new Date(delivery.deliveryDate) : new Date(),
+      items: (delivery.items ?? delivery.lines ?? []).map(mapLineItemFromApi),
+      status: delivery.status ?? 'pending',
+      driverId: delivery.driverId ? String(delivery.driverId) : undefined,
+      driverName: delivery.driverName,
+      notes: delivery.notes,
+      signature: delivery.signature,
+      createdAt: delivery.createdAt ? new Date(delivery.createdAt) : new Date()
+    }
+  }
+
+  function mapLineItemFromApi(line: any): QuotationItem {
+    return {
+      id: String(line.id ?? crypto.randomUUID()),
+      itemId: String(line.itemId ?? line.productId ?? ''),
+      itemName: line.itemName ?? line.productName ?? 'Item',
+      quantity: line.quantity ?? line.qty ?? 0,
+      rate: line.rate ?? line.unitPrice ?? 0,
+      discount: line.discount ?? 0,
+      tax: line.tax ?? 0,
+      amount: line.amount ?? line.total ?? 0
+    }
   }
 
   return {

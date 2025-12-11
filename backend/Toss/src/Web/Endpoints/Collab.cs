@@ -29,7 +29,7 @@ public class Collab : EndpointGroupBase
             var id = await sender.Send(command);
             return Results.Created($"/api/collab/feedback/{id}", new { id });
         }
-        catch (Toss.Application.Common.Exceptions.ForbiddenAccessException ex)
+        catch (Toss.Application.Common.Exceptions.ForbiddenAccessException)
         {
             return Results.Forbid();
         }
@@ -46,7 +46,7 @@ public class Collab : EndpointGroupBase
             var id = await sender.Send(command);
             return Results.Created($"/api/collab/offer/{id}", new { id });
         }
-        catch (Toss.Application.Common.Exceptions.ForbiddenAccessException ex)
+        catch (Toss.Application.Common.Exceptions.ForbiddenAccessException)
         {
             return Results.Forbid();
         }
