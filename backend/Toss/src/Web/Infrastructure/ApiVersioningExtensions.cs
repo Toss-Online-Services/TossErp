@@ -50,7 +50,7 @@ public static class ApiVersioningExtensions
             document.Title = "TOSS ERP-III API";
             document.Version = apiVersion.ApiVersion.ToString();
             document.Description = "TOSS ERP-III - Mobile-first, offline-first ERP for South African township and rural SMMEs";
-            document.DocumentName = apiVersion.GroupName;
+            document.DocumentName = "v1"; // Fixed document name for NSwag generation
 
             // Add JWT Bearer authentication
             document.AddSecurity("Bearer", Enumerable.Empty<string>(), new OpenApiSecurityScheme

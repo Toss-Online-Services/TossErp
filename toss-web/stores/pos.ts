@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useOfflineSync } from '~/composables/useOfflineSync'
+import { useSalesApi } from '~/composables/useSalesApi'
 
 export interface CartItem {
   id: string
@@ -38,6 +39,7 @@ export interface Sale {
 
 export const usePosStore = defineStore('pos', () => {
   const { queueOperation } = useOfflineSync()
+  const salesApi = useSalesApi()
 
   // State
   const cart = ref<CartItem[]>([])
@@ -130,36 +132,63 @@ export const usePosStore = defineStore('pos', () => {
       throw new Error('Insufficient payment')
     }
 
-    const sale: Sale = {
-      id: `sale_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      invoiceNumber: generateInvoiceNumber(),
-      customerId,
-      customerName,
-      items: [...cart.value],
-      subtotal: cartSubtotal.value,
-      discount: cartDiscount.value,
-      tax: cartTax.value,
-      total: cartTotal.value,
-      payments,
-      change,
-      status: 'pending_sync',
-      createdAt: new Date(),
-      createdBy: 'current_user' // TODO: Get from auth
-    }
-
     try {
-      // Queue for offline sync
-      queueOperation('sale', sale)
+      // Get ShopId - for now default to 1, in production this should come from store context
+      const shopId = 1 // TODO: Get from store context or user's default shop
+      
+      // Determine primary payment method (use the first payment method with amount > 0)
+      const primaryPayment = payments.find(p => p.amount > 0) ?? payments[0]
+      const paymentType = primaryPayment?.type ?? 'cash'
 
-      // Add to recent sales
+      // Format items for backend (ProductId, Quantity, UnitPrice, DiscountAmount)
+      // Note: Backend calculates tax automatically, so we don't send it
+      const items = cart.value.map(i => ({
+        productId: Number(i.itemId),
+        quantity: i.quantity,
+        unitPrice: i.price,
+        discountAmount: i.discount
+      }))
+
+      // Generate idempotency key for offline sync support
+      const idempotencyKey = `pos_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+      // Send to backend POS checkout
+      const { data, error } = await salesApi.posCheckout(
+        shopId,
+        items,
+        paymentType,
+        customerId ? Number(customerId) : undefined,
+        idempotencyKey,
+        `POS sale - ${paymentType} payment`
+      )
+
+      if (error.value) {
+        console.error('Failed to complete sale:', error.value)
+        throw error.value
+      }
+
+      // Map backend response to frontend Sale format
+      const saleId = data.value?.saleId ? String(data.value.saleId) : `sale_${Date.now()}`
+      const sale: Sale = {
+        id: saleId,
+        invoiceNumber: data.value?.saleNumber ?? generateInvoiceNumber(),
+        customerId,
+        customerName,
+        items: [...cart.value],
+        subtotal: cartSubtotal.value,
+        discount: cartDiscount.value,
+        tax: cartTax.value,
+        total: data.value?.total ?? cartTotal.value,
+        payments,
+        change,
+        status: 'completed',
+        createdAt: new Date(),
+        createdBy: 'current_user'
+      }
+
       recentSales.value.unshift(sale)
-
-      // Clear cart
       clearCart()
-
-      // Set as current sale for receipt
       currentSale.value = sale
-
       return sale
     } catch (error) {
       console.error('Failed to complete sale:', error)
@@ -179,11 +208,13 @@ export const usePosStore = defineStore('pos', () => {
   async function fetchRecentSales(limit: number = 20) {
     loading.value = true
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      // Mock data would be loaded here
-      // recentSales.value = response.data
+      const { data, error } = await salesApi.getSales(undefined, undefined, 1, limit)
+      if (error.value) {
+        console.error('Failed to fetch recent sales:', error.value)
+        return
+      }
+      const items = data.value?.items ?? data.value ?? []
+      recentSales.value = items.map(mapSaleFromApi)
     } catch (error) {
       console.error('Failed to fetch recent sales:', error)
     } finally {
@@ -232,6 +263,39 @@ export const usePosStore = defineStore('pos', () => {
 
   function getHeldSales() {
     return JSON.parse(localStorage.getItem('held_sales') || '[]')
+  }
+
+  function mapSaleFromApi(sale: any): Sale {
+    const payments: PaymentMethod[] = sale.payments ?? [
+      { type: 'cash', amount: sale.total ?? 0 }
+    ]
+
+    return {
+      id: String(sale.id ?? sale.saleId ?? crypto.randomUUID()),
+      invoiceNumber: sale.invoiceNumber ?? sale.saleNumber ?? `INV-${Date.now()}`,
+      customerId: sale.customerId ? String(sale.customerId) : undefined,
+      customerName: sale.customerName,
+      items: (sale.items ?? sale.lines ?? []).map((line: any) => ({
+        id: String(line.id ?? crypto.randomUUID()),
+        itemId: String(line.itemId ?? line.productId ?? ''),
+        name: line.itemName ?? line.productName ?? 'Item',
+        code: line.itemCode ?? line.code ?? '',
+        price: line.unitPrice ?? line.price ?? 0,
+        quantity: line.quantity ?? line.qty ?? 0,
+        discount: line.discount ?? 0,
+        tax: line.tax ?? 0,
+        total: line.total ?? 0
+      })),
+      subtotal: sale.subtotal ?? sale.subTotal ?? sale.total ?? 0,
+      discount: sale.discount ?? 0,
+      tax: sale.tax ?? 0,
+      total: sale.total ?? 0,
+      payments,
+      change: sale.change ?? 0,
+      status: sale.status ?? 'completed',
+      createdAt: sale.createdAt ? new Date(sale.createdAt) : new Date(),
+      createdBy: sale.createdBy ?? 'system'
+    }
   }
 
   return {
