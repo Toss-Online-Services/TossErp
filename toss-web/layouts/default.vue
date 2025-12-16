@@ -153,500 +153,544 @@ onMounted(() => {
 // Initialize menu states on mount
 onMounted(() => {
   updateMenuStates()
+  
+  // Ensure navigation is visible after Material Dashboard initializes
+  // Material Dashboard JS should handle this, but we ensure it in Vue context
+  if (typeof window !== 'undefined') {
+    const ensureNavVisible = () => {
+      const navCollapse = document.getElementById('sidenav-collapse-main')
+      if (navCollapse) {
+        // Material Dashboard should initialize this, but ensure it's visible
+        // Use Bootstrap Collapse API if available
+        if ((window as any).bootstrap?.Collapse) {
+          try {
+            // Get existing instance or create new one
+            let collapseInstance = (window as any).bootstrap.Collapse.getInstance(navCollapse)
+            if (!collapseInstance) {
+              collapseInstance = new (window as any).bootstrap.Collapse(navCollapse, {
+                toggle: false
+              })
+            }
+            // Show it
+            if (!navCollapse.classList.contains('show')) {
+              collapseInstance.show()
+            }
+          } catch (e) {
+            // Fallback: manual show
+            navCollapse.classList.add('show')
+          }
+        } else {
+          // Bootstrap not ready yet, add show class manually
+          navCollapse.classList.add('show')
+        }
+      }
+    }
+    
+    // Try multiple times to catch different load scenarios
+    ensureNavVisible() // Immediate
+    setTimeout(ensureNavVisible, 100)
+    setTimeout(ensureNavVisible, 500)
+    setTimeout(ensureNavVisible, 1000)
+    setTimeout(ensureNavVisible, 2000) // After Material Dashboard JS should be loaded
+  }
 })
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="min-vh-100">
     <!-- Offline Indicator -->
     <OfflineIndicator />
     <!-- Sidebar -->
     <aside
       :class="[
-        'fixed top-0 left-0 z-40 h-screen transition-all duration-300 my-2 ms-2 bg-white rounded-xl shadow-lg',
-        sidebarMinimized ? 'w-20' : 'w-64'
+        'sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2  bg-white my-2',
+        sidebarMinimized ? 'sidenav-mini' : ''
       ]"
+      id="sidenav-main"
     >
       <!-- Sidebar Header -->
-      <div class="px-4 py-3">
-        <NuxtLink to="/" class="flex items-center">
-          <div class="flex justify-center items-center w-8 h-8 bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg">
-            <i class="text-xl text-white material-symbols-rounded">store</i>
-          </div>
-            <span v-if="!sidebarMinimized" class="ml-2 text-sm font-semibold text-gray-900">TOSS</span>
+      <div class="sidenav-header">
+        <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
+        <NuxtLink to="/" class="navbar-brand px-4 py-3 m-0">
+          <img src="/assets/img/logo-ct-dark.png" class="navbar-brand-img" width="26" height="26" alt="main_logo">
+          <span class="ms-1 text-sm text-dark">TOSS</span>
         </NuxtLink>
       </div>
 
-      <hr class="mx-3 my-2 border-gray-300">
+      <hr class="horizontal dark mt-0 mb-2">
 
       <!-- Navigation -->
-      <div class="px-2 pb-4 overflow-y-auto h-[calc(100vh-120px)]">
-        <ul class="space-y-0.5">
+      <div class="collapse navbar-collapse  w-auto h-auto" id="sidenav-collapse-main">
+        <ul class="navbar-nav">
           <!-- User Profile Section -->
-          <li class="mb-2">
-            <button class="flex items-center px-3 py-2 w-full text-gray-900 rounded-lg transition-colors hover:bg-gray-100 group">
-              <img src="https://ui-avatars.com/api/?name=Brooklyn+Alice&background=1f2937&color=fff" alt="User" class="w-8 h-8 rounded-full">
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Brooklyn Alice</span>
-              <i v-if="!sidebarMinimized" class="ml-auto text-sm text-gray-400 material-symbols-rounded">expand_more</i>
-            </button>
+          <li class="nav-item mb-2 mt-0">
+            <a data-bs-toggle="collapse" href="#ProfileNav" class="nav-link text-dark" aria-controls="ProfileNav" role="button" aria-expanded="false">
+              <img src="https://ui-avatars.com/api/?name=Brooklyn+Alice&background=1f2937&color=fff" class="avatar" alt="User">
+              <span class="nav-link-text ms-2 ps-1">Brooklyn Alice</span>
+            </a>
+            <div class="collapse" id="ProfileNav" style="">
+              <ul class="nav ">
+                <li class="nav-item">
+                  <NuxtLink to="/settings" class="nav-link text-dark">
+                    <span class="sidenav-mini-icon"> MP </span>
+                    <span class="sidenav-normal  ms-3  ps-1"> My Profile </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/settings" class="nav-link text-dark ">
+                    <span class="sidenav-mini-icon"> S </span>
+                    <span class="sidenav-normal  ms-3  ps-1"> Settings </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <a href="javascript:;" class="nav-link text-dark ">
+                    <span class="sidenav-mini-icon"> L </span>
+                    <span class="sidenav-normal  ms-3  ps-1"> Logout </span>
+                  </a>
+                </li>
+              </ul>
+            </div>
           </li>
 
-          <hr class="my-2 border-gray-300">
+          <hr class="horizontal dark mt-0">
 
           <!-- Main Navigation -->
-          <li>
+          <li class="nav-item">
             <NuxtLink
               to="/"
-              class="flex items-center px-3 py-2 text-gray-900 rounded-lg transition-colors hover:bg-gray-100 group"
-              active-class="!bg-gray-100 !text-gray-900"
+              class="nav-link text-dark"
+              active-class="active bg-gradient-primary"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">space_dashboard</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Dashboard</span>
+              <i class="material-symbols-rounded opacity-5">space_dashboard</i>
+              <span class="nav-link-text ms-1 ps-1">Dashboard</span>
             </NuxtLink>
           </li>
 
-          <li>
+          <li class="nav-item">
             <NuxtLink
               to="/pos"
-              class="flex items-center px-3 py-2 text-gray-900 rounded-lg transition-colors hover:bg-gray-100 group"
-              active-class="!bg-gray-100 !text-gray-900"
+              class="nav-link text-dark"
+              active-class="active bg-gradient-primary"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">point_of_sale</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">POS</span>
+              <i class="material-symbols-rounded opacity-5">point_of_sale</i>
+              <span class="nav-link-text ms-1 ps-1">POS</span>
             </NuxtLink>
           </li>
 
-          <li>
-            <button 
-              @click="stockMenuOpen = !stockMenuOpen"
-              :class="[
-                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
-                route.path.startsWith('/stock') 
-                  ? 'bg-gray-100 text-gray-900' 
-                  : 'text-gray-900 hover:bg-gray-100'
-              ]"
+          <li class="nav-item">
+            <a 
+              data-bs-toggle="collapse" 
+              href="#stockNav" 
+              class="nav-link text-dark"
+              :class="route.path.startsWith('/stock') ? 'active bg-gradient-primary' : ''"
+              aria-controls="stockNav" 
+              role="button" 
+              :aria-expanded="stockMenuOpen"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">inventory_2</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Stock</span>
-              <i 
-                v-if="!sidebarMinimized" 
-                class="ml-auto text-sm text-gray-400 transition-transform material-symbols-rounded"
-                :class="{ 'rotate-180': stockMenuOpen }"
-              >
-                expand_more
-              </i>
-            </button>
-            <!-- Stock Submenu -->
-            <ul v-if="stockMenuOpen && !sidebarMinimized" class="mt-1 ml-8 space-y-0.5">
-              <li>
-                <NuxtLink
-                  to="/stock/items"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/stock/items') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Items
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/stock/movements"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/stock/movements') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Movements
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/stock/reconciliation"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/stock/reconciliation') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Reconciliation
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/stock/alerts"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/stock/alerts') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Alerts
-                </NuxtLink>
-              </li>
-            </ul>
+              <i class="material-symbols-rounded opacity-5">inventory_2</i>
+              <span class="nav-link-text ms-1 ps-1">Stock</span>
+            </a>
+            <div class="collapse" :class="{show: stockMenuOpen}" id="stockNav">
+              <ul class="nav">
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/stock/items"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/stock/items') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> I </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Items </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/stock/movements"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/stock/movements') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> M </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Movements </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/stock/reconciliation"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/stock/reconciliation') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> R </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Reconciliation </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/stock/alerts"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/stock/alerts') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> A </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Alerts </span>
+                  </NuxtLink>
+                </li>
+              </ul>
+            </div>
           </li>
 
-          <li>
+          <li class="nav-item">
             <NuxtLink
               to="/customers"
-              class="flex items-center px-3 py-2 text-gray-900 rounded-lg transition-colors hover:bg-gray-100 group"
-              active-class="!bg-gray-100 !text-gray-900"
+              class="nav-link text-dark"
+              active-class="active bg-gradient-primary"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">group</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Customers</span>
+              <i class="material-symbols-rounded opacity-5">group</i>
+              <span class="nav-link-text ms-1 ps-1">Customers</span>
             </NuxtLink>
           </li>
 
-          <li>
-            <button 
-              @click="salesMenuOpen = !salesMenuOpen"
-              :class="[
-                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
-                route.path.startsWith('/sales') 
-                  ? 'bg-gray-100 text-gray-900' 
-                  : 'text-gray-900 hover:bg-gray-100'
-              ]"
+          <li class="nav-item">
+            <a 
+              data-bs-toggle="collapse" 
+              href="#salesNav" 
+              class="nav-link text-dark"
+              :class="route.path.startsWith('/sales') ? 'active bg-gradient-primary' : ''"
+              aria-controls="salesNav" 
+              role="button" 
+              :aria-expanded="salesMenuOpen"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">receipt_long</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Sales</span>
-              <i 
-                v-if="!sidebarMinimized" 
-                class="ml-auto text-sm text-gray-400 transition-transform material-symbols-rounded"
-                :class="{ 'rotate-180': salesMenuOpen }"
-              >
-                expand_more
-              </i>
-            </button>
-            <!-- Sales Submenu -->
-            <ul v-if="salesMenuOpen && !sidebarMinimized" class="mt-1 ml-8 space-y-0.5">
-              <li>
-                <NuxtLink
-                  to="/sales/quotations"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/sales/quotations') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Quotations
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/sales/orders"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/sales/orders') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Orders
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/sales/invoices"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/sales/invoices') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Invoices
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/sales/deliveries"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/sales/deliveries') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Deliveries
-                </NuxtLink>
-              </li>
-            </ul>
+              <i class="material-symbols-rounded opacity-5">receipt_long</i>
+              <span class="nav-link-text ms-1 ps-1">Sales</span>
+            </a>
+            <div class="collapse" :class="{show: salesMenuOpen}" id="salesNav">
+              <ul class="nav">
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/sales/quotations"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/sales/quotations') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> Q </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Quotations </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/sales/orders"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/sales/orders') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> O </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Orders </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/sales/invoices"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/sales/invoices') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> I </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Invoices </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/sales/deliveries"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/sales/deliveries') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> D </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Deliveries </span>
+                  </NuxtLink>
+                </li>
+              </ul>
+            </div>
           </li>
 
-          <li>
-            <button 
-              @click="buyingMenuOpen = !buyingMenuOpen"
-              :class="[
-                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
-                route.path.startsWith('/buying') 
-                  ? 'bg-gray-100 text-gray-900' 
-                  : 'text-gray-900 hover:bg-gray-100'
-              ]"
+          <li class="nav-item">
+            <a 
+              data-bs-toggle="collapse" 
+              href="#buyingNav" 
+              class="nav-link text-dark"
+              :class="route.path.startsWith('/buying') ? 'active bg-gradient-primary' : ''"
+              aria-controls="buyingNav" 
+              role="button" 
+              :aria-expanded="buyingMenuOpen"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">shopping_cart</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Buying</span>
-              <i 
-                v-if="!sidebarMinimized" 
-                class="ml-auto text-sm text-gray-400 transition-transform material-symbols-rounded"
-                :class="{ 'rotate-180': buyingMenuOpen }"
-              >
-                expand_more
-              </i>
-            </button>
-            <!-- Buying Submenu -->
-            <ul v-if="buyingMenuOpen && !sidebarMinimized" class="mt-1 ml-8 space-y-0.5">
-              <li>
-                <NuxtLink
-                  to="/buying/purchase-orders"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/buying/purchase-orders') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Purchase Orders
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/buying/suppliers"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/buying/suppliers') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Suppliers
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/buying/receipts"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/buying/receipts') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Goods Receipts
-                </NuxtLink>
-              </li>
-            </ul>
+              <i class="material-symbols-rounded opacity-5">shopping_cart</i>
+              <span class="nav-link-text ms-1 ps-1">Buying</span>
+            </a>
+            <div class="collapse" :class="{show: buyingMenuOpen}" id="buyingNav">
+              <ul class="nav">
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/buying/purchase-orders"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/buying/purchase-orders') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> PO </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Purchase Orders </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/buying/suppliers"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/buying/suppliers') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> S </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Suppliers </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/buying/receipts"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/buying/receipts') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> GR </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Goods Receipts </span>
+                  </NuxtLink>
+                </li>
+              </ul>
+            </div>
           </li>
 
-          <li>
-            <button 
-              @click="accountingMenuOpen = !accountingMenuOpen"
-              :class="[
-                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
-                route.path.startsWith('/accounting') 
-                  ? 'bg-gray-100 text-gray-900' 
-                  : 'text-gray-900 hover:bg-gray-100'
-              ]"
+          <li class="nav-item">
+            <a 
+              data-bs-toggle="collapse" 
+              href="#accountingNav" 
+              class="nav-link text-dark"
+              :class="route.path.startsWith('/accounting') ? 'active bg-gradient-primary' : ''"
+              aria-controls="accountingNav" 
+              role="button" 
+              :aria-expanded="accountingMenuOpen"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">account_balance</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Accounting</span>
-              <i 
-                v-if="!sidebarMinimized" 
-                class="ml-auto text-sm text-gray-400 transition-transform material-symbols-rounded"
-                :class="{ 'rotate-180': accountingMenuOpen }"
-              >
-                expand_more
-              </i>
-            </button>
-            <!-- Accounting Submenu -->
-            <ul v-if="accountingMenuOpen && !sidebarMinimized" class="mt-1 ml-8 space-y-0.5">
-              <li>
-                <NuxtLink
-                  to="/accounting/chart-of-accounts"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/accounting/chart-of-accounts') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Chart of Accounts
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/accounting/journals"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/accounting/journals') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Journal Entries
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/accounting/reports"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/accounting/reports') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Reports
-                </NuxtLink>
-              </li>
-            </ul>
+              <i class="material-symbols-rounded opacity-5">account_balance</i>
+              <span class="nav-link-text ms-1 ps-1">Accounting</span>
+            </a>
+            <div class="collapse" :class="{show: accountingMenuOpen}" id="accountingNav">
+              <ul class="nav">
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/accounting/chart-of-accounts"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/accounting/chart-of-accounts') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> COA </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Chart of Accounts </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/accounting/journals"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/accounting/journals') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> JE </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Journal Entries </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/accounting/reports"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/accounting/reports') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> R </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Reports </span>
+                  </NuxtLink>
+                </li>
+              </ul>
+            </div>
           </li>
 
-          <li>
-            <button 
-              @click="logisticsMenuOpen = !logisticsMenuOpen"
-              :class="[
-                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
-                route.path.startsWith('/logistics') 
-                  ? 'bg-gray-100 text-gray-900' 
-                  : 'text-gray-900 hover:bg-gray-100'
-              ]"
+          <li class="nav-item">
+            <a 
+              data-bs-toggle="collapse" 
+              href="#logisticsNav" 
+              class="nav-link text-dark"
+              :class="route.path.startsWith('/logistics') ? 'active bg-gradient-primary' : ''"
+              aria-controls="logisticsNav" 
+              role="button" 
+              :aria-expanded="logisticsMenuOpen"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">local_shipping</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Logistics</span>
-              <i 
-                v-if="!sidebarMinimized" 
-                class="ml-auto text-sm text-gray-400 transition-transform material-symbols-rounded"
-                :class="{ 'rotate-180': logisticsMenuOpen }"
-              >
-                expand_more
-              </i>
-            </button>
-            <!-- Logistics Submenu -->
-            <ul v-if="logisticsMenuOpen && !sidebarMinimized" class="mt-1 ml-8 space-y-0.5">
-              <li>
-                <NuxtLink
-                  to="/logistics/drivers"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/logistics/drivers') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Drivers
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/logistics/deliveries"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/logistics/deliveries') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Deliveries
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/logistics/routes"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/logistics/routes') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Routes
-                </NuxtLink>
-              </li>
-            </ul>
+              <i class="material-symbols-rounded opacity-5">local_shipping</i>
+              <span class="nav-link-text ms-1 ps-1">Logistics</span>
+            </a>
+            <div class="collapse" :class="{show: logisticsMenuOpen}" id="logisticsNav">
+              <ul class="nav">
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/logistics/drivers"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/logistics/drivers') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> D </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Drivers </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/logistics/deliveries"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/logistics/deliveries') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> DL </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Deliveries </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/logistics/routes"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/logistics/routes') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> R </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Routes </span>
+                  </NuxtLink>
+                </li>
+              </ul>
+            </div>
           </li>
 
           <!-- MORE Section -->
-          <hr class="mx-3 my-3 border-gray-300">
+          <li class="nav-item mt-3">
+            <h6 class="ps-3 ms-2 text-uppercase text-xs font-weight-bolder text-dark">MORE</h6>
+          </li>
           
-          <li>
-            <button 
-              @click="projectsMenuOpen = !projectsMenuOpen"
-              :class="[
-                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
-                route.path.startsWith('/projects') 
-                  ? 'bg-gray-100 text-gray-900' 
-                  : 'text-gray-900 hover:bg-gray-100'
-              ]"
+          <li class="nav-item">
+            <a 
+              data-bs-toggle="collapse" 
+              href="#projectsNav" 
+              class="nav-link text-dark"
+              :class="route.path.startsWith('/projects') ? 'active bg-gradient-primary' : ''"
+              aria-controls="projectsNav" 
+              role="button" 
+              :aria-expanded="projectsMenuOpen"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">widgets</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Projects</span>
-              <i 
-                v-if="!sidebarMinimized" 
-                class="ml-auto text-sm text-gray-400 transition-transform material-symbols-rounded"
-                :class="{ 'rotate-180': projectsMenuOpen }"
-              >
-                expand_more
-              </i>
-            </button>
-            <!-- Projects Submenu -->
-            <ul v-if="projectsMenuOpen && !sidebarMinimized" class="mt-1 ml-8 space-y-0.5">
-              <li>
-                <NuxtLink
-                  to="/projects/list"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/projects/list') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  All Projects
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/projects/tasks"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/projects/tasks') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Tasks
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/projects/time-tracking"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/projects/time-tracking') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Time Tracking
-                </NuxtLink>
-              </li>
-            </ul>
+              <i class="material-symbols-rounded opacity-5">widgets</i>
+              <span class="nav-link-text ms-1 ps-1">Projects</span>
+            </a>
+            <div class="collapse" :class="{show: projectsMenuOpen}" id="projectsNav">
+              <ul class="nav">
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/projects/list"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/projects/list') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> AP </span>
+                    <span class="sidenav-normal ms-1 ps-1"> All Projects </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/projects/tasks"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/projects/tasks') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> T </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Tasks </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/projects/time-tracking"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/projects/time-tracking') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> TT </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Time Tracking </span>
+                  </NuxtLink>
+                </li>
+              </ul>
+            </div>
           </li>
 
-          <li>
-            <button 
-              @click="hrMenuOpen = !hrMenuOpen"
-              :class="[
-                'flex items-center w-full px-3 py-2 rounded-lg transition-colors group',
-                route.path.startsWith('/hr') 
-                  ? 'bg-gray-100 text-gray-900' 
-                  : 'text-gray-900 hover:bg-gray-100'
-              ]"
+          <li class="nav-item">
+            <a 
+              data-bs-toggle="collapse" 
+              href="#hrNav" 
+              class="nav-link text-dark"
+              :class="route.path.startsWith('/hr') ? 'active bg-gradient-primary' : ''"
+              aria-controls="hrNav" 
+              role="button" 
+              :aria-expanded="hrMenuOpen"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">badge</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">HR & Payroll</span>
-              <i 
-                v-if="!sidebarMinimized" 
-                class="ml-auto text-sm text-gray-400 transition-transform material-symbols-rounded"
-                :class="{ 'rotate-180': hrMenuOpen }"
-              >
-                expand_more
-              </i>
-            </button>
-            <!-- HR Submenu -->
-            <ul v-if="hrMenuOpen && !sidebarMinimized" class="mt-1 ml-8 space-y-0.5">
-              <li>
-                <NuxtLink
-                  to="/hr/employees"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/hr/employees') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Employees
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/hr/attendance"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/hr/attendance') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Attendance
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/hr/payroll"
-                  class="flex items-center px-3 py-2 text-sm text-gray-700 rounded-lg transition-colors hover:bg-gray-100"
-                  :class="route.path.startsWith('/hr/payroll') ? '!bg-gray-900 !text-white' : ''"
-                >
-                  Payroll
-                </NuxtLink>
-              </li>
-            </ul>
+              <i class="material-symbols-rounded opacity-5">badge</i>
+              <span class="nav-link-text ms-1 ps-1">HR & Payroll</span>
+            </a>
+            <div class="collapse" :class="{show: hrMenuOpen}" id="hrNav">
+              <ul class="nav">
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/hr/employees"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/hr/employees') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> E </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Employees </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/hr/attendance"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/hr/attendance') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> A </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Attendance </span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink
+                    to="/hr/payroll"
+                    class="nav-link text-dark"
+                    :class="route.path.startsWith('/hr/payroll') ? 'active' : ''"
+                  >
+                    <span class="sidenav-mini-icon"> P </span>
+                    <span class="sidenav-normal ms-1 ps-1"> Payroll </span>
+                  </NuxtLink>
+                </li>
+              </ul>
+            </div>
           </li>
 
-          <li>
+          <li class="nav-item">
             <NuxtLink
               to="/copilot"
-              class="flex items-center px-3 py-2 text-gray-900 rounded-lg transition-colors hover:bg-gray-100 group"
-              active-class="!bg-gray-100 !text-gray-900"
+              class="nav-link text-dark"
+              active-class="active bg-gradient-primary"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">psychology</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">AI Copilot</span>
+              <i class="material-symbols-rounded opacity-5">psychology</i>
+              <span class="nav-link-text ms-1 ps-1">AI Copilot</span>
             </NuxtLink>
           </li>
 
           <!-- SETTINGS Section -->
-          <li class="mt-3">
-            <hr class="mb-3 border-gray-300">
+          <li class="nav-item mt-3">
+            <h6 class="ps-3 ms-2 text-uppercase text-xs font-weight-bolder text-dark">SETTINGS</h6>
           </li>
           
-          <li>
+          <li class="nav-item">
             <NuxtLink
               to="/settings"
-              class="flex items-center px-3 py-2 text-gray-900 rounded-lg transition-colors hover:bg-gray-100 group"
-              active-class="!bg-gray-100 !text-gray-900"
+              class="nav-link text-dark"
+              active-class="active bg-gradient-primary"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">settings</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Settings</span>
+              <i class="material-symbols-rounded opacity-5">settings</i>
+              <span class="nav-link-text ms-1 ps-1">Settings</span>
             </NuxtLink>
           </li>
           
-          <li>
+          <li class="nav-item">
             <NuxtLink
               to="/help"
-              class="flex items-center px-3 py-2 text-gray-900 rounded-lg transition-colors hover:bg-gray-100 group"
-              active-class="!bg-gray-100 !text-gray-900"
+              class="nav-link text-dark"
+              active-class="active bg-gradient-primary"
             >
-              <i class="text-xl text-gray-900 opacity-50 material-symbols-rounded group-hover:opacity-100">help</i>
-              <span v-if="!sidebarMinimized" class="ml-3 text-sm font-medium">Help & Support</span>
+              <i class="material-symbols-rounded opacity-5">help</i>
+              <span class="nav-link-text ms-1 ps-1">Help & Support</span>
             </NuxtLink>
           </li>
         </ul>
@@ -654,202 +698,129 @@ onMounted(() => {
     </aside>
 
     <!-- Main Content Area -->
-    <main :class="['transition-all duration-300', sidebarMinimized ? 'ml-24' : 'ml-72']">
+    <main class="main-content border-radius-lg ">
       <!-- Top Navbar -->
-      <nav class="sticky top-2 z-30 px-4 py-2 mx-3 mt-2 rounded-xl shadow-md backdrop-blur-md bg-white/80">
-        <div class="flex justify-between items-center">
-          <!-- Left: Sidebar Toggle & Breadcrumbs -->
-          <div class="flex gap-4 items-center">
-            <button
-              @click="toggleSidebarMinimize"
-              class="p-2 text-gray-600 transition-colors hover:text-gray-900"
-            >
-              <div class="flex flex-col gap-1">
-                <span class="w-5 h-0.5 bg-current"></span>
-                <span class="w-5 h-0.5 bg-current"></span>
-                <span class="w-5 h-0.5 bg-current"></span>
+      <nav class="navbar navbar-main navbar-expand-lg position-sticky mt-2 top-1 px-0 py-1 mx-3 shadow-none border-radius-lg z-index-sticky" id="navbarBlur" data-scroll="true">
+        <div class="container-fluid py-1 px-2">
+          <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none ">
+            <a href="javascript:;" class="nav-link text-body p-0">
+              <div class="sidenav-toggler-inner">
+                <i class="sidenav-toggler-line"></i>
+                <i class="sidenav-toggler-line"></i>
+                <i class="sidenav-toggler-line"></i>
               </div>
-            </button>
-
-            <nav aria-label="breadcrumb">
-              <ol class="flex gap-2 items-center text-sm">
-                <li
-                  v-for="(crumb, index) in breadcrumbs"
-                  :key="index"
-                  class="flex gap-2 items-center"
-                >
-                  <NuxtLink
-                    v-if="index < breadcrumbs.length - 1"
-                    :to="crumb.path"
-                    class="text-gray-500 hover:text-gray-700"
-                  >
-                    {{ crumb.label }}
-                  </NuxtLink>
-                  <span v-else class="font-semibold text-gray-900">{{ crumb.label }}</span>
-                  <span v-if="index < breadcrumbs.length - 1" class="text-gray-400">/</span>
-                </li>
-              </ol>
-            </nav>
+            </a>
           </div>
+          <nav aria-label="breadcrumb" class="ps-2">
+            <ol class="breadcrumb bg-transparent mb-0 p-0">
+              <li
+                v-for="(crumb, index) in breadcrumbs"
+                :key="index"
+                class="breadcrumb-item text-sm"
+                :class="{'active': index === breadcrumbs.length - 1}"
+              >
+                <NuxtLink
+                  v-if="index < breadcrumbs.length - 1"
+                  :to="crumb.path"
+                  class="opacity-5 text-dark"
+                >
+                  {{ crumb.label }}
+                </NuxtLink>
+                <span v-else class="text-dark">{{ crumb.label }}</span>
+              </li>
+            </ol>
+          </nav>
 
-          <!-- Right: Search, Notifications, Settings, User -->
-          <div class="flex gap-3 items-center">
-            <!-- Search -->
-            <div class="hidden relative md:block">
-              <form @submit.prevent="handleSearch">
+          <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+            <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+              <!-- Search -->
+              <div class="input-group input-group-outline">
+                <label class="form-label">Search here</label>
                 <input
                   v-model="searchQuery"
                   type="text"
-                  placeholder="Search here"
-                  class="px-4 py-2 pr-10 w-64 text-sm bg-transparent rounded-lg border border-gray-300 transition-colors focus:outline-none focus:border-gray-900"
+                  class="form-control"
+                  @keyup.enter="handleSearch"
                 >
-                <button type="submit" class="absolute right-3 top-1/2 text-gray-400 -translate-y-1/2 hover:text-gray-600">
-                  <i class="text-lg material-symbols-rounded">search</i>
-                </button>
-              </form>
-            </div>
-
-            <!-- User Menu -->
-            <div class="relative">
-              <button
-                @click="userMenuOpen = !userMenuOpen"
-                class="p-2 text-gray-600 transition-colors hover:text-gray-900"
-              >
-                <i class="material-symbols-rounded">account_circle</i>
-              </button>
-              <!-- User Dropdown -->
-              <div
-                v-if="userMenuOpen"
-                class="absolute right-0 z-50 py-2 mt-2 w-48 bg-white rounded-xl border border-gray-200 shadow-lg"
-                @click.stop
-              >
-                <NuxtLink
-                  to="/settings"
-                  class="flex gap-3 items-center px-4 py-2 transition-colors hover:bg-gray-50"
-                  @click="userMenuOpen = false"
-                >
-                  <i class="text-base text-gray-600 material-symbols-rounded">person</i>
-                  <span class="text-sm text-gray-900">My Profile</span>
-                </NuxtLink>
-                <NuxtLink
-                  to="/settings"
-                  class="flex gap-3 items-center px-4 py-2 transition-colors hover:bg-gray-50"
-                  @click="userMenuOpen = false"
-                >
-                  <i class="text-base text-gray-600 material-symbols-rounded">settings</i>
-                  <span class="text-sm text-gray-900">Settings</span>
-                </NuxtLink>
-                <hr class="my-2 border-gray-200">
-                <button
-                  class="flex gap-3 items-center px-4 py-2 w-full text-left transition-colors hover:bg-gray-50"
-                  @click="userMenuOpen = false"
-                >
-                  <i class="text-base text-gray-600 material-symbols-rounded">logout</i>
-                  <span class="text-sm text-gray-900">Logout</span>
-                </button>
               </div>
             </div>
+            <ul class="navbar-nav  justify-content-end">
 
-            <!-- Settings -->
-            <NuxtLink
-              to="/settings"
-              class="p-2 text-gray-600 transition-colors hover:text-gray-900"
-            >
-              <i class="material-symbols-rounded">settings</i>
-            </NuxtLink>
+              <!-- User Menu -->
+              <li class="nav-item">
+                <a href="javascript:;" class="px-1 py-0 nav-link line-height-0" target="_blank">
+                  <i class="material-symbols-rounded">
+                    account_circle
+                  </i>
+                </a>
+              </li>
+              
+              <!-- Settings Icon -->
+              <li class="nav-item">
+                <a href="javascript:;" class="nav-link py-0 px-1 line-height-0">
+                  <i class="material-symbols-rounded fixed-plugin-button-nav">
+                    settings
+                  </i>
+                </a>
+              </li>
 
-            <!-- Notifications -->
-            <div class="relative">
-              <button
-                @click="notificationsOpen = !notificationsOpen"
-                class="relative p-2 text-gray-600 transition-colors hover:text-gray-900"
-              >
-                <i class="material-symbols-rounded">notifications</i>
-                <span
-                  v-if="unreadCount > 0"
-                  class="flex absolute top-0 right-0 justify-center items-center w-4 h-4 text-xs text-white bg-red-500 rounded-full"
+              <!-- Notifications -->
+              <li class="nav-item dropdown py-0 pe-3">
+                <a 
+                  href="javascript:;" 
+                  class="nav-link py-0 px-1 position-relative line-height-0" 
+                  id="dropdownMenuButton" 
+                  data-bs-toggle="dropdown" 
+                  aria-expanded="false"
                 >
-                  {{ unreadCount > 9 ? '9+' : unreadCount }}
-                </span>
-              </button>
-
-              <!-- Notifications Dropdown -->
-              <div
-                v-if="notificationsOpen"
-                class="overflow-y-auto absolute right-0 z-50 py-2 mt-2 w-80 max-h-96 bg-white rounded-xl border border-gray-200 shadow-lg"
-                @click.stop
-              >
-                <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
-                  <h6 class="text-sm font-semibold text-gray-900">Notifications</h6>
-                  <button
-                    v-if="unreadCount > 0"
-                    @click="clearAllNotifications"
-                    class="text-xs text-blue-600 hover:text-blue-800"
-                  >
-                    Mark all read
-                  </button>
-                </div>
-                <div v-if="notifications.length === 0" class="px-4 py-8 text-center">
-                  <i class="mb-2 text-4xl text-gray-400 material-symbols-rounded">notifications_off</i>
-                  <p class="text-sm text-gray-600">No notifications</p>
-                </div>
-                <div v-else>
-                  <button
-                    v-for="notification in notifications"
-                    :key="notification.id"
-                    @click="markNotificationAsRead(notification.id)"
-                    class="flex gap-3 items-start px-4 py-3 w-full text-left border-b border-gray-100 transition-colors hover:bg-gray-50 last:border-0"
-                    :class="{ 'bg-blue-50': !notification.read }"
-                  >
-                    <div
-                      class="flex flex-shrink-0 justify-center items-center w-8 h-8 rounded-lg"
-                      :class="{
-                        'bg-red-100': notification.color === 'red',
-                        'bg-green-100': notification.color === 'green',
-                        'bg-blue-100': notification.color === 'blue',
-                        'bg-orange-100': notification.color === 'orange'
-                      }"
+                  <i class="material-symbols-rounded">
+                    notifications
+                  </i>
+                  <span v-if="unreadCount > 0" class="position-absolute top-5 start-100 translate-middle badge rounded-pill bg-danger border border-white small py-1 px-2">
+                    <span class="small">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
+                    <span class="visually-hidden">unread notifications</span>
+                  </span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4" aria-labelledby="dropdownMenuButton">
+                  <li v-for="notification in notifications.slice(0, 3)" :key="notification.id" class="mb-2">
+                    <a
+                      href="javascript:;"
+                      class="dropdown-item border-radius-md"
                     >
-                      <i
-                        class="text-base material-symbols-rounded"
-                        :class="{
-                          'text-red-600': notification.color === 'red',
-                          'text-green-600': notification.color === 'green',
-                          'text-blue-600': notification.color === 'blue',
-                          'text-orange-600': notification.color === 'orange'
-                        }"
-                      >
-                        {{ notification.icon }}
-                      </i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <h6 class="text-sm font-semibold text-gray-900">{{ notification.title }}</h6>
-                      <p class="mt-1 text-xs text-gray-600">{{ notification.message }}</p>
-                      <p class="mt-1 text-xs text-gray-400">{{ notification.time }}</p>
-                    </div>
-                    <div v-if="!notification.read" class="flex-shrink-0 mt-2 w-2 h-2 bg-blue-600 rounded-full"></div>
-                  </button>
-                </div>
-              </div>
-            </div>
+                      <div class="d-flex align-items-center py-1">
+                        <span class="material-symbols-rounded">{{ notification.icon }}</span>
+                        <div class="ms-2">
+                          <h6 class="text-sm font-weight-normal my-auto">
+                            {{ notification.message }}
+                          </h6>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+                </ul>
+              </li>
 
-            <!-- Mobile Sidebar Toggle -->
-            <button
-              @click="toggleSidebarMinimize"
-              class="p-2 text-gray-600 transition-colors hover:text-gray-900 xl:hidden"
-            >
-              <div class="flex flex-col gap-1">
-                <span class="w-5 h-0.5 bg-current"></span>
-                <span class="w-5 h-0.5 bg-current"></span>
-                <span class="w-5 h-0.5 bg-current"></span>
-              </div>
-            </button>
+              <!-- Mobile Sidebar Toggle -->
+              <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                <a 
+                  href="javascript:;" 
+                  class="nav-link text-body p-0" 
+                  id="iconNavbarSidenav"
+                >
+                  <div class="sidenav-toggler-inner">
+                    <i class="sidenav-toggler-line"></i>
+                    <i class="sidenav-toggler-line"></i>
+                    <i class="sidenav-toggler-line"></i>
+                  </div>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
       </nav>
 
       <!-- Page Content -->
-      <div class="px-4 py-4 pb-12">
+      <div class="container-fluid py-4">
         <slot />
       </div>
     </main>

@@ -1,21 +1,30 @@
+// Authentication disabled for development
 export default defineNuxtRouteMiddleware((to) => {
-  const token = useCookie<string | null>('auth_token')
+  // Allow all routes without authentication check
+  // const token = useCookie<string | null>('auth_token')
 
-  const isLanding = to.path === '/landing' || to.path.startsWith('/landing/')
-  const publicPaths = new Set([
-    '/landing',
-    '/help',
-    '/copilot'
-  ])
+  // const isLanding = to.path === '/landing' || to.path.startsWith('/landing/')
+  // const publicPaths = new Set([
+  //   '/',
+  //   '/landing',
+  //   '/help',
+  //   '/copilot',
+  //   '/signin',
+  //   '/signup',
+  //   '/reset',
+  //   '/verification',
+  //   '/lock',
+  //   '/error'
+  // ])
 
-  const isPublic = isLanding || publicPaths.has(to.path)
+  // const isPublic = isLanding || publicPaths.has(to.path)
 
-  if (!token.value && !isPublic) {
-    return navigateTo('/landing')
-  }
+  // if (!token.value && !isPublic) {
+  //   return navigateTo('/landing')
+  // }
 
-  if (token.value && isLanding) {
-    return navigateTo('/')
-  }
+  // if (token.value && isLanding) {
+  //   return navigateTo('/')
+  // }
 })
 

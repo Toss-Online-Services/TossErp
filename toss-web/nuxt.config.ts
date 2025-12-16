@@ -3,6 +3,14 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   
+  pages: true,
+
+  css: [
+    // Keep app-level CSS here; load public vendor CSS via head.link
+    '~/assets/css/material-bridge.css',
+    '~/assets/css/main.css'
+  ],
+
   runtimeConfig: {
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:5000/api'
@@ -35,6 +43,10 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'stylesheet', href: '/assets/css/material-dashboard.min.css' },
+        { rel: 'stylesheet', href: '/assets/css/nucleo-icons.css' },
+        { rel: 'stylesheet', href: '/assets/css/nucleo-svg.css' },
+        { rel: 'stylesheet', href: '/assets/css/material-bridge.css' },
         { 
           rel: 'stylesheet', 
           href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0' 
@@ -42,6 +54,36 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap'
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700'
+        }
+      ],
+      script: [
+        {
+          src: '/assets/js/core/popper.min.js',
+          defer: true
+        },
+        {
+          src: '/assets/js/core/bootstrap.min.js',
+          defer: true
+        },
+        {
+          src: '/assets/js/plugins/perfect-scrollbar.min.js',
+          defer: true
+        },
+        {
+          src: '/assets/js/plugins/smooth-scrollbar.min.js',
+          defer: true
+        },
+        {
+          src: '/assets/js/plugins/chartjs.min.js',
+          defer: true
+        },
+        {
+          src: '/assets/js/material-dashboard.min.js',
+          defer: true
         }
       ]
     }

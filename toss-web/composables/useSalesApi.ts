@@ -55,10 +55,37 @@ export function useSalesApi() {
     return { data, error }
   }
 
-  async function posCheckout(cartItems: any[], paymentMethod: string, amountPaid: number, customerId?: number) {
-    const { data, error, execute } = useApi<{ saleId: number }>('/sales/pos/checkout', {
+  async function posCheckout(
+    shopId: number,
+    items: Array<{ productId: number; quantity: number; unitPrice: number; discountAmount: number }>,
+    paymentMethod: 'cash' | 'card' | 'mobile' | 'credit',
+    customerId?: number,
+    paymentReference?: string,
+    notes?: string
+  ) {
+    // Map payment method string to PaymentType enum (Cash=0, Card=1, MobileMoney=2, etc.)
+    const paymentTypeMap: Record<string, number> = {
+      cash: 0,
+      card: 1,
+      mobile: 2,
+      credit: 3
+    }
+
+    const { data, error, execute } = useApi<{ saleId: number; saleNumber: string; total: number; receiptId?: number; receiptNumber?: string; isNewSale: boolean }>('/sales/pos/checkout', {
       method: 'POST',
-      body: { cartItems, paymentMethod, amountPaid, customerId },
+      body: {
+        shopId,
+        customerId,
+        paymentMethod: paymentTypeMap[paymentMethod] ?? 0,
+        paymentReference,
+        notes,
+        items: items.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          discountAmount: item.discountAmount
+        }))
+      },
       headers: getHeaders()
     })
     await execute()
