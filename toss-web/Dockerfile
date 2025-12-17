@@ -1,27 +1,35 @@
+# Multi-stage build for Nuxt 4 application
 FROM node:20-alpine AS builder
+
+# Set working directory
 WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
 
 # Install dependencies
-COPY package*.json ./
-RUN npm ci --include=dev
+RUN npm ci
 
-# Copy source
+# Copy application code
 COPY . .
 
-# Build the Nuxt 4 app (Nitro)
+# Build the application
 RUN npm run build
 
-FROM node:20-alpine AS runner
+# Production stage
+FROM node:20-alpine
+
 WORKDIR /app
+
+# Copy built application from builder
+COPY --from=builder /app/.output /app/.output
+COPY --from=builder /app/package*.json ./
+
+# Set environment to production
 ENV NODE_ENV=production
-ENV PORT=3000
-ENV HOST=0.0.0.0
-ENV NITRO_PORT=3000
 
-# Copy built output only
-COPY --from=builder /app/.output ./.output
-
+# Expose port
 EXPOSE 3000
 
+# Start the application
 CMD ["node", ".output/server/index.mjs"]
-

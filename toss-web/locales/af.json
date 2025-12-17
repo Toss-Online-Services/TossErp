@@ -1,0 +1,73 @@
+{
+  "common": {
+    "welcome": "Welkom by TOSS ERP",
+    "loading": "Laai...",
+    "save": "Stoor",
+    "cancel": "Kanselleer",
+    "delete": "Verwyder",
+    "edit": "Wysig",
+    "search": "Soek",
+    "filter": "Filter",
+    "export": "Uitvoer",
+    "print": "Druk",
+    "close": "Sluit",
+    "submit": "Dien in",
+    "back": "Terug",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "yes": "Ja",
+    "no": "Nee",
+    "ok": "OK",
+    "error": "Fout",
+    "success": "Sukses",
+    "warning": "Waarskuwing",
+    "info": "Inligting"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "sales": "Verkope",
+    "inventory": "Voorraad",
+    "customers": "Kliënte",
+    "suppliers": "Verskaffers",
+    "reports": "Verslae",
+    "settings": "Instellings",
+    "logout": "Teken uit"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalSales": "Totale Verkope",
+    "totalRevenue": "Totale Inkomste",
+    "lowStock": "Lae Voorraad Items",
+    "pendingOrders": "Hangende Bestellings"
+  },
+  "sales": {
+    "title": "Verkope",
+    "newSale": "Nuwe Verkoop",
+    "saleDetails": "Verkoop Besonderhede",
+    "customer": "Kliënt",
+    "products": "Produkte",
+    "total": "Totaal",
+    "payment": "Betaling",
+    "complete": "Voltooi Verkoop"
+  },
+  "inventory": {
+    "title": "Voorraad",
+    "addProduct": "Voeg Produk by",
+    "productName": "Produk Naam",
+    "sku": "SKU",
+    "quantity": "Hoeveelheid",
+    "price": "Prys",
+    "category": "Kategorie",
+    "lowStockAlert": "Lae Voorraad Waarskuwing"
+  },
+  "auth": {
+    "login": "Teken in",
+    "logout": "Teken uit",
+    "register": "Registreer",
+    "email": "E-pos",
+    "password": "Wagwoord",
+    "confirmPassword": "Bevestig Wagwoord",
+    "forgotPassword": "Wagwoord vergeet?",
+    "rememberMe": "Onthou my"
+  }
+}

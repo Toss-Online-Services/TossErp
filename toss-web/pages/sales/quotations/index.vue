@@ -1,311 +1,333 @@
-<script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
-import { useSalesStore, type Quotation, type QuotationStatus } from '~/stores/sales'
-import { useCrmStore } from '~/stores/crm'
-import { useStockStore } from '~/stores/stock'
-
-definePageMeta({
-  layout: 'default',
-  ssr: false
-})
-
-useHead({
-  title: 'Quotations - TOSS'
-})
-
-const salesStore = useSalesStore()
-const crmStore = useCrmStore()
-const stockStore = useStockStore()
-const searchQuery = ref('')
-const statusFilter = ref<QuotationStatus | 'all'>('all')
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
-const selectedQuotation = ref<Quotation | null>(null)
-
-// Computed
-const filteredQuotations = computed(() => {
-  let filtered = salesStore.quotations
-
-  if (statusFilter.value !== 'all') {
-    filtered = filtered.filter(q => q.status === statusFilter.value)
-  }
-
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(q =>
-      q.quotationNumber.toLowerCase().includes(query) ||
-      q.customerName.toLowerCase().includes(query)
-    )
-  }
-
-  return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-})
-
-const stats = computed(() => {
-  const quotes = salesStore.quotations
-  return {
-    total: quotes.length,
-    pending: quotes.filter(q => q.status === 'sent').length,
-    accepted: quotes.filter(q => q.status === 'accepted').length,
-    totalValue: quotes.reduce((sum, q) => sum + q.total, 0)
-  }
-})
-
-// Methods
-onMounted(async () => {
-  await salesStore.fetchQuotations()
-  await crmStore.fetchCustomers()
-  await stockStore.fetchItems()
-})
-
-function handleCreate() {
-  selectedQuotation.value = null
-  showCreateModal.value = true
-}
-
-function handleEdit(quotation: Quotation) {
-  selectedQuotation.value = quotation
-  showEditModal.value = true
-}
-
-function handleView(quotation: Quotation) {
-  navigateTo(`/sales/quotations/${quotation.id}`)
-}
-
-function handleConvertToOrder(quotation: Quotation) {
-  if (confirm('Convert this quotation to a sales order?')) {
-    salesStore.convertQuotationToOrder(quotation.id)
-    salesStore.fetchQuotations()
-    salesStore.fetchOrders()
-  }
-}
-
-function handleQuotationSaved() {
-  showCreateModal.value = false
-  showEditModal.value = false
-  selectedQuotation.value = null
-  salesStore.fetchQuotations()
-}
-
-function getStatusColor(status: QuotationStatus) {
-  const colors: Record<QuotationStatus, string> = {
-    draft: 'text-gray-600 bg-gray-100',
-    sent: 'text-blue-600 bg-blue-100',
-    accepted: 'text-green-600 bg-green-100',
-    rejected: 'text-red-600 bg-red-100',
-    expired: 'text-orange-600 bg-orange-100'
-  }
-  return colors[status] || 'text-gray-600 bg-gray-100'
-}
-
-function getStatusLabel(status: QuotationStatus) {
-  const labels: Record<QuotationStatus, string> = {
-    draft: 'Draft',
-    sent: 'Sent',
-    accepted: 'Accepted',
-    rejected: 'Rejected',
-    expired: 'Expired'
-  }
-  return labels[status] || status
-}
-
-function formatDate(date: Date | undefined) {
-  if (!date) return '-'
-  return new Date(date).toLocaleDateString('en-ZA', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
-</script>
-
 <template>
-  <div class="py-6">
-    <div class="mb-8">
-      <h3 class="text-3xl font-bold text-gray-900 mb-2">Quotations</h3>
-      <p class="text-gray-600 text-sm">Create and manage sales quotations</p>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-      <div class="bg-white rounded-xl shadow-card p-6">
-        <div class="flex items-center justify-between">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+    <!-- Page Header -->
+    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
+      <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div>
-            <p class="text-sm font-medium text-gray-600">Total Quotations</p>
-            <p class="mt-2 text-3xl font-bold text-gray-900">{{ stats.total }}</p>
+            <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {{ t('sales.quotations.title') }}
+            </h1>
+            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              {{ t('sales.quotations.subtitle') }}
+            </p>
           </div>
-          <div class="p-3 bg-blue-100 rounded-lg">
-            <i class="material-symbols-rounded text-2xl text-blue-600">description</i>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl shadow-card p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-gray-600">Pending</p>
-            <p class="mt-2 text-3xl font-bold text-orange-600">{{ stats.pending }}</p>
-          </div>
-          <div class="p-3 bg-orange-100 rounded-lg">
-            <i class="material-symbols-rounded text-2xl text-orange-600">schedule</i>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl shadow-card p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-gray-600">Accepted</p>
-            <p class="mt-2 text-3xl font-bold text-green-600">{{ stats.accepted }}</p>
-          </div>
-          <div class="p-3 bg-green-100 rounded-lg">
-            <i class="material-symbols-rounded text-2xl text-green-600">check_circle</i>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl shadow-card p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-gray-600">Total Value</p>
-            <p class="mt-2 text-3xl font-bold text-gray-900">R {{ stats.totalValue.toFixed(2) }}</p>
-          </div>
-          <div class="p-3 bg-purple-100 rounded-lg">
-            <i class="material-symbols-rounded text-2xl text-purple-600">payments</i>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filters and Actions -->
-    <div class="bg-white rounded-xl shadow-card p-6 mb-6">
-      <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div class="flex-1 w-full flex gap-4">
-          <div class="flex-1">
-            <div class="relative">
-              <i class="material-symbols-rounded absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</i>
-              <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Search by quotation number or customer..."
-                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-              />
-            </div>
-          </div>
-          <div class="md:w-48">
-            <select
-              v-model="statusFilter"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white"
+          <div class="flex space-x-3">
+            <button 
+              @click="downloadTemplate"
+              class="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200"
             >
-              <option value="all">All Status</option>
-              <option value="draft">Draft</option>
-              <option value="sent">Sent</option>
-              <option value="accepted">Accepted</option>
-              <option value="rejected">Rejected</option>
-              <option value="expired">Expired</option>
-            </select>
+              <Icon name="mdi:file-download" class="mr-2" />
+              {{ t('common.template') }}
+            </button>
+            <NuxtLink 
+              to="/sales/quotations/create"
+              class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200 text-sm font-semibold"
+            >
+              <Icon name="mdi:plus" class="mr-2" />
+              {{ t('sales.quotations.newQuotation') }}
+            </NuxtLink>
           </div>
         </div>
-        <button
-          @click="handleCreate"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap"
-        >
-          <i class="material-symbols-rounded text-lg">add</i>
-          <span>Create Quotation</span>
-        </button>
       </div>
     </div>
 
-    <!-- Quotations Table -->
-    <div class="bg-white rounded-xl shadow-card overflow-hidden">
-      <div v-if="salesStore.quotations.length === 0" class="p-12 text-center">
-        <i class="material-symbols-rounded text-6xl text-gray-300 mb-4">description</i>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">No quotations found</h3>
-        <p class="text-gray-600 mb-6">Get started by creating your first quotation</p>
-        <button
-          @click="handleCreate"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-        >
-          <i class="material-symbols-rounded text-lg">add</i>
-          <span>Create Quotation</span>
-        </button>
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-slate-600 dark:text-slate-400">{{ t('sales.quotations.draft') }}</p>
+              <p class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ stats.draft }}</p>
+            </div>
+            <Icon name="mdi:file-document-outline" class="w-10 h-10 text-blue-500" />
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-slate-600 dark:text-slate-400">{{ t('sales.quotations.sent') }}</p>
+              <p class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ stats.sent }}</p>
+            </div>
+            <Icon name="mdi:email-send" class="w-10 h-10 text-green-500" />
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-slate-600 dark:text-slate-400">{{ t('sales.quotations.accepted') }}</p>
+              <p class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ stats.accepted }}</p>
+            </div>
+            <Icon name="mdi:check-circle" class="w-10 h-10 text-purple-500" />
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-slate-600 dark:text-slate-400">{{ t('sales.quotations.expired') }}</p>
+              <p class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ stats.expired }}</p>
+            </div>
+            <Icon name="mdi:clock-alert-outline" class="w-10 h-10 text-orange-500" />
+          </div>
+        </div>
       </div>
 
-      <div v-else-if="filteredQuotations.length === 0" class="p-12 text-center">
-        <i class="material-symbols-rounded text-6xl text-gray-300 mb-4">search</i>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">No quotations match your filters</h3>
-        <p class="text-gray-600 mb-6">Try adjusting your search or filter criteria</p>
+      <!-- Filters and Search -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="relative">
+            <Icon name="mdi:magnify" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+            <input
+              v-model="searchQuery"
+              type="text"
+              :placeholder="t('common.search')"
+              class="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <select
+            v-model="filterStatus"
+            class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">{{ t('sales.quotations.allStatus') }}</option>
+            <option value="draft">{{ t('sales.quotations.draft') }}</option>
+            <option value="sent">{{ t('sales.quotations.sent') }}</option>
+            <option value="accepted">{{ t('sales.quotations.accepted') }}</option>
+            <option value="rejected">{{ t('sales.quotations.rejected') }}</option>
+            <option value="expired">{{ t('sales.quotations.expired') }}</option>
+          </select>
+
+          <input
+            v-model="filterStartDate"
+            type="date"
+            class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+
+          <input
+            v-model="filterEndDate"
+            type="date"
+            class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
       </div>
 
-      <table v-else class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quotation #</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valid Until</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="quotation in filteredQuotations" :key="quotation.id" class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm font-medium text-gray-900">{{ quotation.quotationNumber }}</div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ quotation.customerName }}</div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ formatDate(quotation.date) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ formatDate(quotation.validUntil) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ quotation.items.length }} item{{ quotation.items.length !== 1 ? 's' : '' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              R {{ quotation.total.toFixed(2) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span :class="['px-2 py-1 text-xs font-medium rounded-full', getStatusColor(quotation.status)]">
-                {{ getStatusLabel(quotation.status) }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <div class="flex items-center justify-end gap-2">
-                <button
-                  @click="handleView(quotation)"
-                  class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-                  title="View"
-                >
-                  <i class="material-symbols-rounded text-lg">visibility</i>
-                </button>
-                <button
-                  v-if="quotation.status === 'draft'"
-                  @click="handleEdit(quotation)"
-                  class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-                  title="Edit"
-                >
-                  <i class="material-symbols-rounded text-lg">edit</i>
-                </button>
-                <button
-                  v-if="quotation.status === 'accepted'"
-                  @click="handleConvertToOrder(quotation)"
-                  class="p-2 text-green-600 hover:text-green-900 hover:bg-green-100 rounded-lg transition-colors"
-                  title="Convert to Order"
-                >
-                  <i class="material-symbols-rounded text-lg">shopping_bag</i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Quotations Table -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+            <thead class="bg-slate-50 dark:bg-slate-900">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {{ t('sales.quotations.quotationNo') }}
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {{ t('sales.quotations.customer') }}
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {{ t('sales.quotations.date') }}
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {{ t('sales.quotations.validUntil') }}
+                </th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {{ t('common.total') }}
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {{ t('common.status') }}
+                </th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {{ t('common.actions') }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+              <tr v-for="quotation in filteredQuotations" :key="quotation.id" class="hover:bg-slate-50 dark:hover:bg-slate-700">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">
+                  {{ quotation.quotationNo }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
+                  {{ quotation.customerName }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">
+                  {{ formatDate(quotation.date) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">
+                  {{ formatDate(quotation.validUntil) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-slate-900 dark:text-white">
+                  R{{ formatCurrency(quotation.grandTotal) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span :class="getStatusClass(quotation.status)" class="px-2.5 py-1 rounded-full text-xs font-medium">
+                    {{ t(`sales.quotations.${quotation.status}`) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                  <button @click="viewQuotation(quotation.id)" class="text-blue-600 hover:text-blue-800">
+                    <Icon name="mdi:eye" />
+                  </button>
+                  <button @click="editQuotation(quotation.id)" class="text-green-600 hover:text-green-800">
+                    <Icon name="mdi:pencil" />
+                  </button>
+                  <button v-if="quotation.status === 'accepted'" @click="convertToOrder(quotation.id)" class="text-purple-600 hover:text-purple-800">
+                    <Icon name="mdi:file-document-arrow-right" />
+                  </button>
+                  <button @click="deleteQuotation(quotation.id)" class="text-red-600 hover:text-red-800">
+                    <Icon name="mdi:delete" />
+                  </button>
+                </td>
+              </tr>
+              <tr v-if="filteredQuotations.length === 0">
+                <td colspan="7" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                  {{ t('sales.quotations.noQuotations') }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useI18n } from '#i18n'
+
+const { t } = useI18n()
+
+// Page metadata
+useHead({
+  title: 'Quotations - TOSS ERP',
+  meta: [
+    { name: 'description', content: 'Manage sales quotations and convert them to orders' }
+  ]
+})
+
+definePageMeta({
+  layout: 'default'
+})
+
+// State
+const searchQuery = ref('')
+const filterStatus = ref('')
+const filterStartDate = ref('')
+const filterEndDate = ref('')
+
+const stats = ref({
+  draft: 0,
+  sent: 0,
+  accepted: 0,
+  expired: 0
+})
+
+const quotations = ref<any[]>([])
+
+// Computed
+const filteredQuotations = computed(() => {
+  return quotations.value.filter(q => {
+    const matchesSearch = !searchQuery.value || 
+      q.quotationNo.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      q.customerName.toLowerCase().includes(searchQuery.value.toLowerCase())
+    
+    const matchesStatus = !filterStatus.value || q.status === filterStatus.value
+    
+    const matchesDate = (!filterStartDate.value || new Date(q.date) >= new Date(filterStartDate.value)) &&
+      (!filterEndDate.value || new Date(q.date) <= new Date(filterEndDate.value))
+    
+    return matchesSearch && matchesStatus && matchesDate
+  })
+})
+
+// Methods
+const loadQuotations = async () => {
+  // TODO: Load from API
+  quotations.value = [
+    {
+      id: 1,
+      quotationNo: 'QTN-2025-001',
+      customerName: 'Sipho Dlamini',
+      date: '2025-11-01',
+      validUntil: '2025-11-30',
+      grandTotal: 15000,
+      status: 'sent'
+    },
+    {
+      id: 2,
+      quotationNo: 'QTN-2025-002',
+      customerName: 'Thandi Mkhize',
+      date: '2025-11-05',
+      validUntil: '2025-12-05',
+      grandTotal: 8500,
+      status: 'accepted'
+    }
+  ]
+  
+  updateStats()
+}
+
+const updateStats = () => {
+  stats.value = {
+    draft: quotations.value.filter(q => q.status === 'draft').length,
+    sent: quotations.value.filter(q => q.status === 'sent').length,
+    accepted: quotations.value.filter(q => q.status === 'accepted').length,
+    expired: quotations.value.filter(q => q.status === 'expired').length
+  }
+}
+
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString('en-ZA')
+}
+
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-ZA', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount)
+}
+
+const getStatusClass = (status: string) => {
+  const classes: Record<string, string> = {
+    draft: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
+    sent: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+    accepted: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+    rejected: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+    expired: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300'
+  }
+  return classes[status] || classes.draft
+}
+
+const viewQuotation = (id: number) => {
+  navigateTo(`/sales/quotations/${id}`)
+}
+
+const editQuotation = (id: number) => {
+  navigateTo(`/sales/quotations/${id}/edit`)
+}
+
+const convertToOrder = async (id: number) => {
+  // TODO: Implement conversion to sales order
+  console.log('Converting quotation to order:', id)
+}
+
+const deleteQuotation = async (id: number) => {
+  if (confirm(t('sales.quotations.confirmDelete'))) {
+    quotations.value = quotations.value.filter(q => q.id !== id)
+    updateStats()
+  }
+}
+
+const downloadTemplate = () => {
+  // TODO: Download quotation template
+  console.log('Downloading template')
+}
+
+onMounted(() => {
+  loadQuotations()
+})
+</script>

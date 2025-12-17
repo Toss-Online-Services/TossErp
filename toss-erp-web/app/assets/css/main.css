@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Inter font import */
 @font-face {
   font-family: 'Inter';
   font-style: normal;
@@ -11,53 +12,116 @@
     format('woff2');
 }
 
+/* Material Dashboard Shadcn Color Scheme */
 :root {
-  --background: 0 0% 100%;
-  --foreground: 224 71.4% 4.1%;
-  --muted: 220 14.3% 95.9%;
-  --muted-foreground: 220 8.9% 46.1%;
+  /* Base colors - Light mode (stone-based palette) */
+  --background: 0 0% 97%;
+  --foreground: 20 14.3% 4.1%;
+  
+  /* Muted colors */
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  
+  /* Card colors */
   --card: 0 0% 100%;
-  --card-foreground: 224 71.4% 4.1%;
+  --card-foreground: 20 14.3% 4.1%;
+  
+  /* Popover colors */
   --popover: 0 0% 100%;
-  --popover-foreground: 224 71.4% 4.1%;
-  --primary: 221 83% 53%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 217 32% 17%;
-  --secondary-foreground: 210 40% 98%;
-  --accent: 292 60% 57%;
-  --accent-foreground: 210 40% 98%;
-  --success: 142 45% 49%;
+  --popover-foreground: 20 14.3% 4.1%;
+  
+  /* Primary - Dark stone with gradient effect */
+  --primary: 20 5.9% 10%;
+  --primary-foreground: 0 0% 100%;
+  
+  /* Secondary */
+  --secondary: 60 4.8% 95.9%;
+  --secondary-foreground: 24 9.8% 10%;
+  
+  /* Accent */
+  --accent: 60 4.8% 95.9%;
+  --accent-foreground: 24 9.8% 10%;
+  
+  /* Success (green) */
+  --success: 142 76% 36%;
+  --success-foreground: 0 0% 100%;
+  
+  /* Warning */
   --warning: 37 92% 50%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 220 13% 91%;
-  --input: 220 13% 91%;
-  --ring: 221 83% 53%;
+  --warning-foreground: 0 0% 100%;
+  
+  /* Destructive */
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  
+  /* Border & Input */
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 20 5.9% 10%;
+  
+  /* Radius */
   --radius: 0.75rem;
+  
+  /* Sidebar specific */
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 20 14.3% 4.1%;
+  --sidebar-primary: 20 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 60 4.8% 95.9%;
+  --sidebar-accent-foreground: 24 9.8% 10%;
+  --sidebar-border: 214 32% 91%;
+  
+  /* Chart colors */
+  --chart-1: 221 83% 53%;
+  --chart-2: 142 76% 36%;
+  --chart-3: 37 92% 50%;
+  --chart-4: 291 64% 64%;
+  --chart-5: 0 84.2% 60.2%;
 }
 
+/* Dark mode */
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 213 31% 91%;
-  --muted: 217.2 32.6% 12%;
-  --muted-foreground: 215 20.2% 65%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 221 83% 53%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 217 32% 17%;
-  --secondary-foreground: 210 40% 98%;
-  --accent: 291 64% 64%;
-  --accent-foreground: 210 40% 98%;
-  --success: 142 45% 49%;
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  
+  --primary: 0 0% 100%;
+  --primary-foreground: 0 0% 0%;
+  
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  
+  --success: 142 76% 36%;
+  --success-foreground: 0 0% 100%;
+  
   --warning: 37 92% 50%;
+  --warning-foreground: 0 0% 0%;
+  
   --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217 19% 27%;
-  --input: 217 19% 27%;
-  --ring: 221 83% 53%;
+  --destructive-foreground: 0 0% 98%;
+  
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 0 0% 100%;
+  
+  --sidebar-background: 240 10% 3.9%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 0 0% 100%;
+  --sidebar-primary-foreground: 0 0% 0%;
+  --sidebar-accent: 240 3.7% 15.9%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 240 3.7% 15.9%;
 }
 
 @layer base {
@@ -69,19 +133,127 @@
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   }
+
+  /* Custom scrollbar for better aesthetics */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 @layer components {
+  /* Card component styling */
   .card-surface {
-    @apply rounded-2xl bg-card text-card-foreground shadow-lg shadow-black/5 dark:shadow-black/30;
+    @apply rounded-lg border border-border bg-card text-card-foreground;
   }
-
+  
+  /* KPI grid layout */
   .kpi-grid {
-    @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-4;
+    @apply grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4;
   }
 
+  /* Section titles */
   .section-title {
-    @apply text-lg font-semibold text-foreground;
+    @apply text-sm font-semibold text-foreground;
+  }
+  
+  /* Primary button with gradient (Material Dashboard style) */
+  .btn-primary {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium;
+    @apply px-4 py-2 shadow-sm hover:shadow-md;
+    @apply bg-stone-800 hover:bg-stone-700 text-stone-50;
+    @apply border border-stone-900;
+    @apply transition-all duration-300 ease-in;
+    background-image: linear-gradient(to bottom, rgb(68 64 60), rgb(41 37 36));
+    position: relative;
+  }
+  
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 0px rgba(255,255,255,0.25), inset 0 -2px 0px rgba(0,0,0,0.35);
+    pointer-events: none;
+  }
+  
+  .btn-primary:hover {
+    background-image: linear-gradient(to bottom, rgb(41 37 36), rgb(41 37 36));
+  }
+  
+  /* Secondary button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-normal;
+    @apply px-4 py-2 shadow-sm;
+    @apply bg-transparent text-stone-700 dark:text-stone-300;
+    @apply border border-stone-300 dark:border-stone-600;
+    @apply transition-all duration-150;
+  }
+  
+  .btn-secondary:hover {
+    @apply border-stone-600 dark:border-stone-400 opacity-60;
+  }
+  
+  /* Active nav item with gradient */
+  .nav-item-active {
+    @apply px-3 py-2.5 rounded-lg text-sm font-normal;
+    @apply shadow-sm hover:shadow-md;
+    @apply bg-stone-800 hover:bg-stone-700 text-stone-50;
+    @apply border border-stone-900;
+    @apply transition-all duration-300 ease-in;
+    background-image: linear-gradient(to bottom, rgb(68 64 60), rgb(41 37 36));
+    position: relative;
+  }
+  
+  .nav-item-active::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 0px rgba(255,255,255,0.25), inset 0 -2px 0px rgba(0,0,0,0.35);
+    pointer-events: none;
+  }
+  
+  /* Inactive nav item */
+  .nav-item {
+    @apply px-3 py-2.5 rounded-lg text-sm font-normal;
+    @apply text-stone-700 dark:text-stone-300;
+    @apply border border-transparent;
+    @apply transition-colors duration-200;
+  }
+  
+  .nav-item:hover {
+    @apply bg-stone-100 dark:bg-stone-800;
+  }
+  
+  /* Status badges */
+  .badge-success {
+    @apply text-xs font-normal text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full;
+  }
+  
+  .badge-warning {
+    @apply text-xs font-normal text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded-full;
+  }
+  
+  .badge-destructive {
+    @apply text-xs font-normal text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full;
   }
 }
-

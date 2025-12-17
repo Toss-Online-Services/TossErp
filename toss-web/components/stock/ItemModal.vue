@@ -1,926 +1,487 @@
+<template>
+  <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-slate-200/50 dark:border-slate-700/50 animate-slideUp">
+      <!-- Header with Gradient -->
+      <div class="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-6 py-6 overflow-hidden">
+        <div class="absolute inset-0 bg-black/10"></div>
+        <div class="relative z-10 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+              <CubeIcon class="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-white">
+                {{ isEditing ? 'Edit Item' : 'Create New Item' }}
+              </h3>
+              <p class="text-sm text-white/80 mt-0.5">
+                {{ isEditing ? 'Update your inventory item details' : 'Add a new product to your inventory' }}
+              </p>
+            </div>
+          </div>
+          <button
+            @click="$emit('close')"
+            class="p-2 text-white/80 hover:text-white hover:bg-white/20 rounded-lg transition-all duration-200"
+          >
+            <XMarkIcon class="w-6 h-6" />
+          </button>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form @submit.prevent="handleSubmit" class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Basic Information Section -->
+          <div class="md:col-span-2">
+            <div class="flex items-center space-x-2 mb-6">
+              <div class="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+                <DocumentTextIcon class="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h4 class="text-base font-semibold text-slate-900 dark:text-white">Basic Information</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Product identification and description</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- SKU -->
+          <div>
+            <label for="sku" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              SKU <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="sku"
+              v-model="formData.sku"
+              type="text"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              placeholder="Enter SKU"
+            />
+          </div>
+
+          <!-- Barcode -->
+          <div>
+            <label for="barcode" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Barcode
+            </label>
+            <div class="relative">
+              <input
+                id="barcode"
+                v-model="formData.barcode"
+                type="text"
+                class="w-full px-4 py-2.5 pr-24 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
+                placeholder="Enter barcode or scan"
+              />
+              <button
+                type="button"
+                @click="showBarcodeScanner = true"
+                class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-md hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center space-x-1.5 text-xs font-semibold shadow-md hover:shadow-lg hover:scale-105"
+              >
+                <QrCodeIcon class="w-4 h-4" />
+                <span>Scan</span>
+              </button>
+            </div>
+            <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+              Click "Scan" button or use a USB barcode scanner
+            </p>
+          </div>
+
+          <!-- Name -->
+          <div class="md:col-span-2">
+            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Item Name <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="name"
+              v-model="formData.name"
+              type="text"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              placeholder="Enter item name"
+            />
+          </div>
+
+          <!-- Description -->
+          <div class="md:col-span-2">
+            <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Description
+            </label>
+            <textarea
+              id="description"
+              v-model="formData.description"
+              rows="3"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              placeholder="Enter item description"
+            ></textarea>
+          </div>
+
+          <!-- Category -->
+          <div>
+            <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Category <span class="text-red-500">*</span>
+            </label>
+            <select
+              id="category"
+              v-model="formData.category"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              <option value="">Select category</option>
+              <option v-for="category in categories" :key="category" :value="category">
+                {{ category }}
+              </option>
+              <option value="__new__">+ Add New Category</option>
+            </select>
+            <input
+              v-if="formData.category === '__new__'"
+              v-model="newCategory"
+              type="text"
+              placeholder="Enter new category"
+              class="w-full mt-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              @blur="addNewCategory"
+            />
+          </div>
+
+          <!-- Unit -->
+          <div>
+            <label for="unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Unit of Measure <span class="text-red-500">*</span>
+            </label>
+            <select
+              id="unit"
+              v-model="formData.unit"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              <option value="">Select unit</option>
+              <option value="PCS">Pieces (PCS)</option>
+              <option value="KG">Kilograms (KG)</option>
+              <option value="LTR">Liters (LTR)</option>
+              <option value="MTR">Meters (MTR)</option>
+              <option value="BOX">Box</option>
+              <option value="PACK">Pack</option>
+              <option value="BOTTLE">Bottle</option>
+              <option value="CARTON">Carton</option>
+              <option value="DOZEN">Dozen</option>
+              <option value="PAIR">Pair</option>
+            </select>
+          </div>
+
+          <!-- Pricing Section -->
+          <div class="md:col-span-2 mt-4">
+            <div class="flex items-center space-x-2 mb-6">
+              <div class="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                <CurrencyDollarIcon class="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h4 class="text-base font-semibold text-slate-900 dark:text-white">Pricing</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Set your selling and cost prices</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selling Price -->
+          <div>
+            <label for="sellingPrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Selling Price (R) <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="sellingPrice"
+              v-model.number="formData.sellingPrice"
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              placeholder="0.00"
+            />
+          </div>
+
+          <!-- Cost Price -->
+          <div>
+            <label for="costPrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Cost Price (R)
+            </label>
+            <input
+              id="costPrice"
+              v-model.number="formData.costPrice"
+              type="number"
+              min="0"
+              step="0.01"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              placeholder="0.00"
+            />
+          </div>
+
+          <!-- Stock Management Section -->
+          <div class="md:col-span-2 mt-4">
+            <div class="flex items-center space-x-2 mb-6">
+              <div class="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg">
+                <ArchiveBoxIcon class="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h4 class="text-base font-semibold text-slate-900 dark:text-white">Stock Management</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Configure reorder alerts and thresholds</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reorder Level -->
+          <div>
+            <label for="reorderLevel" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Reorder Level <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="reorderLevel"
+              v-model.number="formData.reorderLevel"
+              type="number"
+              min="0"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              placeholder="0"
+            />
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Minimum stock level before reorder alert
+            </p>
+          </div>
+
+          <!-- Reorder Quantity -->
+          <div>
+            <label for="reorderQty" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Reorder Quantity <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="reorderQty"
+              v-model.number="formData.reorderQty"
+              type="number"
+              min="1"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              placeholder="0"
+            />
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Suggested quantity to reorder
+            </p>
+          </div>
+
+          <!-- Status -->
+          <div class="md:col-span-2">
+            <label class="flex items-center">
+              <input
+                v-model="formData.isActive"
+                type="checkbox"
+                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+              />
+              <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Active Item</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
+          <button
+            type="button"
+            @click="$emit('close')"
+            class="px-6 py-3 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="relative px-8 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 overflow-hidden group"
+          >
+            <span class="relative z-10 flex items-center justify-center">
+              <CheckIcon v-if="isEditing" class="w-5 h-5 mr-2" />
+              <PlusIcon v-else class="w-5 h-5 mr-2" />
+              {{ isEditing ? 'Update Item' : 'Create Item' }}
+            </span>
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Barcode Scanner Component -->
+    <BarcodeScanner
+      v-model="showBarcodeScanner"
+      @barcode-scanned="handleBarcodeScanned"
+    />
+  </div>
+</template>
+
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useStockStore, type Item } from '~/stores/stock'
-import { useBuyingStore } from '~/stores/buying'
-import StockAdjustmentForm from '~/components/stock/StockAdjustmentForm.vue'
+import { 
+  XMarkIcon,
+  CubeIcon,
+  DocumentTextIcon,
+  CurrencyDollarIcon,
+  ArchiveBoxIcon,
+  CheckIcon,
+  PlusIcon,
+  QrCodeIcon
+} from '@heroicons/vue/24/outline'
+import BarcodeScanner from '~/components/pos/BarcodeScanner.vue'
+import type { ItemDto, CreateItemRequest, UpdateItemRequest } from '../../composables/useStock'
 
+// Props
 interface Props {
-  show: boolean
-  item?: Item | null
+  item?: ItemDto | null
+  categories: string[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
   item: null
 })
 
+// Emits
 const emit = defineEmits<{
   close: []
-  saved: [item: Item]
+  save: [data: CreateItemRequest | UpdateItemRequest]
 }>()
 
-const stockStore = useStockStore()
-const buyingStore = useBuyingStore()
+// Computed
+const isEditing = computed(() => !!props.item)
 
-// Form state
-const formData = ref({
-  code: '',
+// Form data
+const formData = ref<CreateItemRequest & { id?: string }>({
+  sku: '',
+  barcode: '',
   name: '',
   description: '',
   category: '',
-  unit: 'unit',
-  costPrice: 0,
+  unit: '',
   sellingPrice: 0,
-  currentStock: 0,
-  minStock: 0,
-  maxStock: 0,
-  warehouse: 'main',
-  barcode: '',
-  supplier: '',
-  isActive: true,
-  imageUrl: ''
+  costPrice: 0,
+  reorderLevel: 0,
+  reorderQty: 1,
+  isActive: true
 })
 
-const isEditing = computed(() => !!props.item)
-const isSubmitting = ref(false)
-const errors = ref<Record<string, string>>({})
+const newCategory = ref('')
 
-// Common categories
-const categories = ['Groceries', 'Building Materials', 'Electronics', 'Clothing', 'Hardware', 'Other']
-const units = ['unit', 'pack', 'box', 'bag', 'bottle', 'kg', 'g', 'l', 'ml', 'm', 'cm']
+// Barcode Scanner state
+const showBarcodeScanner = ref(false)
+
+// Barcode Scanner handler
+const handleBarcodeScanned = (barcode: string) => {
+  formData.value.barcode = barcode
+  showBarcodeScanner.value = false
+  
+  // Optional: Show success feedback
+  console.log('Barcode scanned:', barcode)
+}
 
 // Watch for item changes
-watch(() => props.item, (newItem) => {
-  if (newItem) {
+watch(() => props.item, (item) => {
+  if (item) {
     formData.value = {
-      code: newItem.code,
-      name: newItem.name,
-      description: newItem.description || '',
-      category: newItem.category,
-      unit: newItem.unit,
-      costPrice: newItem.costPrice,
-      sellingPrice: newItem.sellingPrice,
-      currentStock: newItem.currentStock,
-      minStock: newItem.minStock,
-      maxStock: newItem.maxStock || 0,
-      warehouse: newItem.warehouse,
-      barcode: newItem.barcode || '',
-      supplier: newItem.supplier || '',
-      isActive: newItem.isActive,
-      imageUrl: newItem.imageUrl || ''
+      id: item.id,
+      sku: item.sku,
+      barcode: item.barcode || '',
+      name: item.name,
+      description: item.description || '',
+      category: item.category,
+      unit: item.unit,
+      sellingPrice: item.sellingPrice,
+      costPrice: item.costPrice || 0,
+      reorderLevel: item.reorderLevel,
+      reorderQty: item.reorderQty,
+      isActive: item.isActive
     }
   } else {
-    resetForm()
+    // Reset form for new item
+    formData.value = {
+      sku: '',
+      barcode: '',
+      name: '',
+      description: '',
+      category: '',
+      unit: '',
+      sellingPrice: 0,
+      costPrice: 0,
+      reorderLevel: 0,
+      reorderQty: 1,
+      isActive: true
+    }
   }
 }, { immediate: true })
 
-function resetForm() {
-  formData.value = {
-    code: '',
-    name: '',
-    description: '',
-    category: '',
-    unit: 'unit',
-    costPrice: 0,
-    sellingPrice: 0,
-    currentStock: 0,
-    minStock: 0,
-    maxStock: 0,
-    warehouse: 'main',
-    barcode: '',
-    supplier: '',
-    isActive: true,
-    imageUrl: ''
-  }
-  errors.value = {}
-}
-
-function validate() {
-  errors.value = {}
-  
-  if (!formData.value.code.trim()) {
-    errors.value.code = 'Item code is required'
-  }
-  
-  if (!formData.value.name.trim()) {
-    errors.value.name = 'Item name is required'
-  }
-  
-  if (!formData.value.category) {
-    errors.value.category = 'Category is required'
-  }
-  
-  if (formData.value.costPrice < 0) {
-    errors.value.costPrice = 'Cost price cannot be negative'
-  }
-  
-  if (formData.value.sellingPrice < 0) {
-    errors.value.sellingPrice = 'Selling price cannot be negative'
-  }
-  
-  if (formData.value.sellingPrice < formData.value.costPrice) {
-    errors.value.sellingPrice = 'Selling price should be higher than cost price'
-  }
-  
-  if (formData.value.minStock < 0) {
-    errors.value.minStock = 'Minimum stock cannot be negative'
-  }
-  
-  if (formData.value.maxStock > 0 && formData.value.maxStock < formData.value.minStock) {
-    errors.value.maxStock = 'Maximum stock should be higher than minimum stock'
-  }
-  
-  return Object.keys(errors.value).length === 0
-}
-
-function getItemImage(itemId?: string) {
-  // Only return image URL if explicitly set
-  if (formData.value.imageUrl) return formData.value.imageUrl
-  
-  // For existing items, try to get from item data
-  if (itemId && props.item?.imageUrl) {
-    return props.item.imageUrl
-  }
-  
-  // Return null for new items or when no image is set
-  return null
-}
-
-const hasImage = computed(() => {
-  return !!(formData.value.imageUrl || (props.item?.imageUrl && isEditing.value))
-})
-
-const fileInputRef = ref<HTMLInputElement | null>(null)
-const isDragging = ref(false)
-
-function processImageFile(file: File) {
-  // Validate file type
-  if (!file.type.startsWith('image/')) {
-    alert('Please select an image file')
-    return false
-  }
-  
-  // Validate file size (max 5MB)
-  if (file.size > 5 * 1024 * 1024) {
-    alert('Image size must be less than 5MB')
-    return false
-  }
-  
-  // Convert to data URL
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    const result = e.target?.result as string
-    if (result) {
-      formData.value.imageUrl = result
-    }
-  }
-  reader.onerror = () => {
-    alert('Failed to read image file')
-  }
-  reader.readAsDataURL(file)
-  
-  return true
-}
-
-function handleFileSelect(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  
-  if (!file) return
-  
-  processImageFile(file)
-  
-  // Reset input so same file can be selected again
-  if (fileInputRef.value) {
-    fileInputRef.value.value = ''
+// Methods
+const addNewCategory = () => {
+  if (newCategory.value.trim()) {
+    formData.value.category = newCategory.value.trim()
+    newCategory.value = ''
   }
 }
 
-function triggerFileInput() {
-  fileInputRef.value?.click()
-}
-
-function handleRemoveImage() {
-  formData.value.imageUrl = ''
-  if (fileInputRef.value) {
-    fileInputRef.value.value = ''
+const handleSubmit = () => {
+  // If adding new category, use the newCategory value
+  if (formData.value.category === '__new__' && newCategory.value.trim()) {
+    formData.value.category = newCategory.value.trim()
   }
-}
 
-// Drag and drop handlers
-function handleDragEnter(event: DragEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-  isDragging.value = true
-}
-
-function handleDragOver(event: DragEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-}
-
-function handleDragLeave(event: DragEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-  // Only set to false if we're leaving the drop zone entirely
-  const target = event.target as HTMLElement
-  const relatedTarget = event.relatedTarget as HTMLElement
-  if (!target.contains(relatedTarget)) {
-    isDragging.value = false
+  // Remove id if creating new item
+  const submitData = { ...formData.value }
+  if (!isEditing.value) {
+    delete submitData.id
   }
+
+  emit('save', submitData as CreateItemRequest | UpdateItemRequest)
 }
-
-function handleDrop(event: DragEvent) {
-  event.preventDefault()
-  event.stopPropagation()
-  isDragging.value = false
-  
-  const files = event.dataTransfer?.files
-  if (!files || files.length === 0) return
-  
-  const file = files[0]
-  processImageFile(file)
-}
-
-async function handleSave() {
-  if (!validate()) return
-  
-  isSubmitting.value = true
-  try {
-    if (isEditing.value && props.item) {
-      await stockStore.updateItem(props.item.id, formData.value)
-      emit('saved', { ...props.item, ...formData.value } as Item)
-    } else {
-      const newItem = await stockStore.createItem(formData.value)
-      emit('saved', newItem)
-    }
-    emit('close')
-    resetForm()
-  } catch (error) {
-    console.error('Failed to save item:', error)
-    alert('Failed to save item. Please try again.')
-  } finally {
-    isSubmitting.value = false
-  }
-}
-
-function handleClose() {
-  emit('close')
-  resetForm()
-}
-
-function handleStockAdjusted() {
-  // Refresh item data after stock adjustment
-  if (props.item) {
-    stockStore.fetchItems().then(() => {
-      // Update formData with fresh item data
-      const updatedItem = stockStore.getItemById(props.item!.id)
-      if (updatedItem) {
-        Object.assign(formData.value, {
-          code: updatedItem.code,
-          name: updatedItem.name,
-          description: updatedItem.description || '',
-          category: updatedItem.category,
-          unit: updatedItem.unit,
-          costPrice: updatedItem.costPrice,
-          sellingPrice: updatedItem.sellingPrice,
-          currentStock: updatedItem.currentStock,
-          minStock: updatedItem.minStock,
-          maxStock: updatedItem.maxStock || 0,
-          warehouse: updatedItem.warehouse || 'main',
-          barcode: updatedItem.barcode || '',
-          supplier: updatedItem.supplier || '',
-          isActive: updatedItem.isActive,
-          imageUrl: updatedItem.imageUrl || ''
-        })
-      }
-    })
-  }
-}
-
-// Load suppliers
-watch(() => props.show, async (newVal) => {
-  if (newVal) {
-    await buyingStore.fetchSuppliers()
-  }
-}, { immediate: true })
-
-const suppliers = computed(() => buyingStore.suppliers)
 </script>
 
-<template>
-  <Teleport to="body">
-    <Transition name="modal">
-      <div
-        v-if="show"
-        class="overflow-y-auto fixed inset-0 z-50"
-        @click.self="handleClose"
-        style="background-color: rgba(0, 0, 0, 0.5);"
-      >
-        <div class="flex justify-center items-center p-4 min-h-screen">
-          <!-- Modal Container - Matching edit-product.html structure -->
-          <div
-            class="overflow-y-auto relative w-full max-w-6xl bg-white rounded-xl shadow-xl"
-            style="max-height: 90vh;"
-            @click.stop
-          >
-            <!-- Header Row - Matching template -->
-            <div class="relative p-6 border-b border-gray-200">
-              <!-- Close Button -->
-              <button
-                @click="handleClose"
-                class="absolute top-6 right-6 z-10 p-1 text-gray-400 hover:text-gray-600 transition-colors rounded-full hover:bg-gray-100"
-                type="button"
-                aria-label="Close modal"
-              >
-                <i class="text-2xl material-symbols-rounded">close</i>
-              </button>
-              
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pr-10">
-                <div>
-                  <h4 class="mb-1 text-xl font-semibold text-gray-900">
-                    {{ isEditing ? 'Make the changes below' : 'Add new item' }}
-                  </h4>
-                  <p class="text-sm text-gray-600">
-                    {{ isEditing ? 'Update your item information' : 'This information will let us know more about your item.' }}
-                  </p>
-                </div>
-                <div class="flex justify-end items-center lg:justify-end">
-                  <button
-                    @click="handleSave"
-                    type="button"
-                    :disabled="isSubmitting"
-                    class="px-4 py-2 text-white bg-gradient-dark rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
-                  >
-                    <span v-if="isSubmitting">Saving...</span>
-                    <span v-else>Save</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Form Content - Matching edit-product.html layout -->
-            <form @submit.prevent="handleSave" class="p-6">
-              <div class="flex flex-col lg:flex-row gap-6 mt-4">
-                <!-- Left Column: Image Card (col-lg-4) -->
-                <div class="w-full lg:w-1/3 flex-shrink-0">
-                  <div class="card mt-4" data-animation="true">
-                    <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                      <!-- Hidden file input -->
-                      <input
-                        ref="fileInputRef"
-                        type="file"
-                        accept="image/*"
-                        class="hidden"
-                        @change="handleFileSelect"
-                      />
-                      
-                      <!-- Image Display or Placeholder -->
-                      <div 
-                        v-if="hasImage" 
-                        class="blur-shadow-image cursor-pointer group"
-                        :class="{ 'drag-active': isDragging }"
-                        @click="triggerFileInput"
-                        @dragenter="handleDragEnter"
-                        @dragover="handleDragOver"
-                        @dragleave="handleDragLeave"
-                        @drop="handleDrop"
-                      >
-                        <img
-                          :src="formData.imageUrl || props.item?.imageUrl"
-                          :alt="formData.name || 'Product'"
-                          class="img-fluid shadow border-radius-lg block"
-                          style="width: 100%; height: 250px; object-fit: cover;"
-                        />
-                        <div
-                          class="colored-shadow"
-                          :style="{ backgroundImage: `url('${formData.imageUrl || props.item?.imageUrl}')` }"
-                        ></div>
-                        <!-- Overlay hint on hover -->
-                        <div class="image-overlay absolute inset-0 bg-black bg-opacity-0 transition-all duration-200 flex items-center justify-center rounded-lg pointer-events-none">
-                          <span class="text-white opacity-0 transition-opacity text-sm font-medium">Click or drag to change image</span>
-                        </div>
-                        <!-- Drag overlay -->
-                        <div v-if="isDragging" class="absolute inset-0 bg-blue-500 bg-opacity-50 flex items-center justify-center rounded-lg z-10">
-                          <div class="text-center text-white">
-                            <i class="material-symbols-rounded text-4xl mb-2 block">cloud_upload</i>
-                            <p class="text-sm font-medium">Drop image here</p>
-                          </div>
-                        </div>
-                      </div>
-                      <!-- Placeholder for new product or no image -->
-                      <div
-                        v-else
-                        class="flex items-center justify-center blur-shadow-image border-2 border-dashed rounded-lg cursor-pointer transition-colors"
-                        :class="isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'"
-                        style="width: 100%; height: 250px; background-color: #f9fafb;"
-                        @click="triggerFileInput"
-                        @dragenter="handleDragEnter"
-                        @dragover="handleDragOver"
-                        @dragleave="handleDragLeave"
-                        @drop="handleDrop"
-                      >
-                        <div v-if="!isDragging" class="text-center p-4">
-                          <i class="material-symbols-rounded text-5xl text-gray-400 mb-2 block">image</i>
-                          <p class="text-sm text-gray-600 mb-1">Click to browse or drag an image here</p>
-                          <p class="text-xs text-gray-500 mb-0">or enter image URL below</p>
-                        </div>
-                        <div v-else class="text-center p-4">
-                          <i class="material-symbols-rounded text-5xl text-blue-500 mb-2 block">cloud_upload</i>
-                          <p class="text-sm text-blue-600 font-medium mb-1">Drop image here</p>
-                          <p class="text-xs text-blue-500 mb-0">Release to upload</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card-body text-center">
-                      <!-- Image Action Buttons (only show when image exists) -->
-                      <div v-if="hasImage" class="mt-n6 flex justify-center items-center gap-2">
-                        <button
-                          type="button"
-                          class="btn bg-gradient-dark btn-sm"
-                          @click="triggerFileInput"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-outline-dark btn-sm"
-                          @click="handleRemoveImage"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      <h5 class="font-weight-normal mt-4 mb-0">Product Image</h5>
-                      <div class="mt-3 input-group input-group-dynamic">
-                        <label class="form-label">Image URL</label>
-                        <input
-                          v-model="formData.imageUrl"
-                          type="url"
-                          class="form-control"
-                          placeholder="https://example.com/image.jpg"
-                        />
-                      </div>
-                      <p class="text-xs text-gray-500 mt-2 mb-0">Or paste an image URL above</p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Right Column: Product Information (col-lg-8) -->
-                <div class="w-full lg:w-2/3 flex-grow">
-                  <div class="card">
-                    <div class="card-body">
-                      <h5 class="font-weight-bolder">Product Information</h5>
-                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                        <div>
-                          <div class="input-group input-group-dynamic">
-                            <label class="form-label">Name <span class="text-red-500">*</span></label>
-                            <input
-                              v-model="formData.name"
-                              type="text"
-                              class="form-control w-full"
-                              :class="{ 'border-red-500': errors.name }"
-                              placeholder="Item name"
-                            />
-                          </div>
-                          <p v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name }}</p>
-                        </div>
-                        <div>
-                          <div class="input-group input-group-dynamic">
-                            <label class="form-label">Item Code <span class="text-red-500">*</span></label>
-                            <input
-                              v-model="formData.code"
-                              type="text"
-                              class="form-control w-full"
-                              :class="{ 'border-red-500': errors.code }"
-                              placeholder="e.g., CEM-001"
-                            />
-                          </div>
-                          <p v-if="errors.code" class="mt-1 text-sm text-red-600">{{ errors.code }}</p>
-                        </div>
-                      </div>
-                      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
-                        <div>
-                          <div class="input-group input-group-dynamic">
-                            <label class="form-label">Current Stock</label>
-                            <input
-                              v-model.number="formData.currentStock"
-                              type="number"
-                              min="0"
-                              class="form-control w-full"
-                              placeholder="0"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <div class="input-group input-group-dynamic">
-                            <label class="form-label">Cost Price <span class="text-red-500">*</span></label>
-                            <input
-                              v-model.number="formData.costPrice"
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              class="form-control w-full"
-                              :class="{ 'border-red-500': errors.costPrice }"
-                              placeholder="0.00"
-                            />
-                          </div>
-                          <p v-if="errors.costPrice" class="mt-1 text-sm text-red-600">{{ errors.costPrice }}</p>
-                        </div>
-                        <div>
-                          <div class="input-group input-group-dynamic">
-                            <label class="form-label">Selling Price <span class="text-red-500">*</span></label>
-                            <input
-                              v-model.number="formData.sellingPrice"
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              class="form-control w-full"
-                              :class="{ 'border-red-500': errors.sellingPrice }"
-                              placeholder="0.00"
-                            />
-                          </div>
-                          <p v-if="errors.sellingPrice" class="mt-1 text-sm text-red-600">{{ errors.sellingPrice }}</p>
-                        </div>
-                        <div>
-                          <div class="input-group input-group-dynamic">
-                            <label class="form-label">Min Stock</label>
-                            <input
-                              v-model.number="formData.minStock"
-                              type="number"
-                              min="0"
-                              class="form-control w-full"
-                              :class="{ 'border-red-500': errors.minStock }"
-                              placeholder="0"
-                            />
-                          </div>
-                          <p v-if="errors.minStock" class="mt-1 text-sm text-red-600">{{ errors.minStock }}</p>
-                        </div>
-                      </div>
-                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                        <div>
-                          <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Description
-                            <span class="text-xs text-gray-500 font-normal">(optional)</span>
-                          </label>
-                          <textarea
-                            v-model="formData.description"
-                            rows="4"
-                            class="form-control w-full"
-                            placeholder="Item description..."
-                          ></textarea>
-                        </div>
-                        <div>
-                          <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Category <span class="text-red-500">*</span>
-                          </label>
-                          <select
-                            v-model="formData.category"
-                            class="form-control w-full"
-                            :class="{ 'border-red-500': errors.category }"
-                          >
-                            <option value="">Select category</option>
-                            <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-                          </select>
-                          <p v-if="errors.category" class="mt-1 text-sm text-red-600">{{ errors.category }}</p>
-                          <label class="block text-sm font-medium text-gray-700 mb-2 mt-3">Unit of Measure</label>
-                          <select v-model="formData.unit" class="form-control w-full">
-                            <option v-for="u in units" :key="u" :value="u">{{ u }}</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Second Row: Additional Info and Pricing -->
-              <div class="flex flex-col sm:flex-row gap-6 mt-4">
-                <!-- Additional Info Card (col-sm-4) -->
-                <div class="w-full sm:w-1/3">
-                  <div class="card">
-                    <div class="card-body">
-                      <h5 class="font-weight-bolder">Additional Info</h5>
-                      <div class="input-group input-group-dynamic mt-3">
-                        <label class="form-label">Barcode</label>
-                        <input
-                          v-model="formData.barcode"
-                          type="text"
-                          class="form-control w-full"
-                          placeholder="Optional"
-                        />
-                      </div>
-                      <div class="input-group input-group-dynamic mt-3">
-                        <label class="form-label">Default Supplier</label>
-                        <select v-model="formData.supplier" class="form-control w-full">
-                          <option value="">No supplier</option>
-                          <option v-for="supp in suppliers" :key="supp.id" :value="supp.name">
-                            {{ supp.name }}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Pricing Card (col-sm-8) -->
-                <div class="w-full sm:w-2/3">
-                  <div class="card">
-                    <div class="card-body">
-                      <h5 class="font-weight-bolder mb-3">Pricing & Status</h5>
-                      <div class="grid grid-cols-12 gap-4">
-                        <div class="col-span-12 sm:col-span-3">
-                          <div class="input-group input-group-dynamic">
-                            <label class="form-label">Cost Price</label>
-                            <input
-                              v-model.number="formData.costPrice"
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              class="form-control w-full"
-                              :class="{ 'border-red-500': errors.costPrice }"
-                              placeholder="0.00"
-                            />
-                          </div>
-                        </div>
-                        <div class="col-span-12 sm:col-span-4">
-                          <div class="input-group input-group-dynamic">
-                            <label class="form-label">Currency</label>
-                            <select class="form-control w-full" disabled>
-                              <option value="ZAR" selected>ZAR</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div class="col-span-12 sm:col-span-5">
-                          <div class="input-group input-group-dynamic">
-                            <label class="form-label">Selling Price</label>
-                            <input
-                              v-model.number="formData.sellingPrice"
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              class="form-control w-full"
-                              :class="{ 'border-red-500': errors.sellingPrice }"
-                              placeholder="0.00"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div class="mt-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Active Status</label>
-                        <div class="flex items-center gap-2">
-                          <input
-                            v-model="formData.isActive"
-                            class="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900"
-                            type="checkbox"
-                            :id="isEditing ? 'isActiveEdit' : 'isActiveNew'"
-                          />
-                          <label class="text-sm font-medium text-gray-700 cursor-pointer" :for="isEditing ? 'isActiveEdit' : 'isActiveNew'">
-                            Item is active
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Stock Adjustment Section (only in edit mode) -->
-                <div v-if="isEditing && props.item" class="w-full mt-6">
-                  <div class="card">
-                    <div class="card-body">
-                      <h5 class="font-weight-bolder mb-4 flex items-center gap-2">
-                        <i class="material-symbols-rounded text-xl">tune</i>
-                        Adjust Stock
-                      </h5>
-                      <StockAdjustmentForm
-                        :item="props.item"
-                        :show-item-info="false"
-                        :compact="true"
-                        @adjusted="handleStockAdjusted"
-                        @cancelled="() => {}"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
-</template>
-
 <style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.modal-enter-active > div > div,
-.modal-leave-active > div > div {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
 }
 
-.modal-enter-from > div > div,
-.modal-leave-to > div > div {
-  transform: scale(0.95);
-  opacity: 0;
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out;
 }
 
-/* Material Dashboard styles matching template */
-.bg-gradient-dark {
-  background: linear-gradient(195deg, #42424a, #191919) !important;
+/* Smooth scrollbar styling */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
 }
 
-.border-radius-lg {
-  border-radius: 0.5rem;
-}
-
-.border-radius-xl {
-  border-radius: 0.75rem;
-}
-
-.input-group-dynamic {
-  position: relative;
-}
-
-.input-group-dynamic .form-label {
-  position: absolute;
-  top: 0.5rem;
-  left: 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #7b809a;
-  pointer-events: none;
-  transition: all 0.2s;
-  transform-origin: 0 0;
-}
-
-.input-group-dynamic .form-control:focus ~ .form-label,
-.input-group-dynamic .form-control:not(:placeholder-shown) ~ .form-label,
-.input-group-dynamic .form-control.has-value ~ .form-label {
-  transform: translateY(-0.5rem) scale(0.85);
-  opacity: 0.8;
-}
-
-.input-group-dynamic .form-control {
-  padding-top: 1.5rem;
-  padding-bottom: 0.5rem;
-}
-
-.colored-shadow {
-  position: absolute;
-  top: 12%;
-  left: 4%;
-  width: 100%;
-  height: 100%;
-  display: block;
-  opacity: 0.3;
-  filter: blur(40px);
-  background-size: cover;
-  background-position: center;
-  z-index: -1;
-  border-radius: 0.5rem;
-}
-
-/* Card styles matching Material Dashboard */
-.card {
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  margin-bottom: 1.5rem;
-}
-
-.card-header {
-  border: none;
+.overflow-y-auto::-webkit-scrollbar-track {
   background: transparent;
-  padding: 0;
 }
 
-.card-body {
-  padding: 1.5rem;
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgb(203 213 225 / 0.5);
+  border-radius: 4px;
 }
 
-/* Form control styles */
-.form-control {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: #495057;
-  background-color: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 0.375rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: rgb(148 163 184 / 0.7);
 }
 
-.form-control:focus {
-  outline: 0;
-  border-color: #42424a;
-  box-shadow: 0 0 0 0.2rem rgba(66, 66, 74, 0.25);
+.dark .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgb(51 65 85 / 0.5);
 }
 
-.form-control:disabled {
-  background-color: #e9ecef;
-  opacity: 1;
-}
-
-/* Button styles */
-.btn {
-  display: inline-block;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #212529;
-  text-align: center;
-  text-decoration: none;
-  vertical-align: middle;
-  cursor: pointer;
-  user-select: none;
-  border: 1px solid transparent;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  border-radius: 0.375rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.btn-sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  border-radius: 0.25rem;
-}
-
-.btn-outline-dark {
-  color: #42424a;
-  border-color: #42424a;
-  background-color: transparent;
-}
-
-.btn-outline-dark:hover {
-  color: #fff;
-  background-color: #42424a;
-  border-color: #42424a;
-}
-
-/* Utility classes */
-.mt-n4 {
-  margin-top: -1.5rem;
-}
-
-.mt-n6 {
-  margin-top: -2.5rem;
-}
-
-.z-index-2 {
-  z-index: 2;
-}
-
-.blur-shadow-image {
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.5rem;
-  display: block;
-}
-
-.img-fluid {
-  max-width: 100%;
-  height: auto;
-}
-
-.block {
-  display: block;
-}
-
-/* Image placeholder styling */
-.blur-shadow-image {
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.5rem;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.hidden {
-  display: none;
-}
-
-/* Image hover overlay */
-.blur-shadow-image.group:hover .image-overlay {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
-.blur-shadow-image.group:hover .image-overlay span {
-  opacity: 1;
-}
-
-/* Drag and drop styles */
-.drag-active {
-  border: 2px dashed #3b82f6 !important;
-  background-color: rgba(59, 130, 246, 0.1) !important;
+.dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: rgb(71 85 105 / 0.7);
 }
 </style>

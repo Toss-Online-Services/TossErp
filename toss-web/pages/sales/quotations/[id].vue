@@ -1,315 +1,247 @@
-<script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
-import { useSalesStore, type Quotation } from '~/stores/sales'
-
-definePageMeta({
-  layout: 'default',
-  ssr: false
-})
-
-useHead({
-  title: 'Quotation Details - TOSS'
-})
-
-const route = useRoute()
-const salesStore = useSalesStore()
-
-const quotation = ref<Quotation | null>(null)
-const loading = ref(false)
-
-const quotationId = computed(() => {
-  const id = route.params.id
-  return Array.isArray(id) ? id[0] : String(id)
-})
-
-async function loadQuotation() {
-  loading.value = true
-  try {
-    await salesStore.fetchQuotations()
-    const id = quotationId.value
-    console.log('Loading quotation with ID:', id)
-    
-    quotation.value = salesStore.getQuotationById(id) || null
-    
-    if (!quotation.value) {
-      console.error('Quotation not found for ID:', id)
-    }
-  } catch (error) {
-    console.error('Failed to load quotation:', error)
-  } finally {
-    loading.value = false
-  }
-}
-
-function formatDate(date: Date | undefined) {
-  if (!date) return '-'
-  return new Date(date).toLocaleDateString('en-ZA', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
-
-function getStatusColor(status: string) {
-  const colors: Record<string, string> = {
-    draft: 'text-gray-600 bg-gray-100',
-    sent: 'text-blue-600 bg-blue-100',
-    accepted: 'text-green-600 bg-green-100',
-    rejected: 'text-red-600 bg-red-100',
-    expired: 'text-orange-600 bg-orange-100'
-  }
-  return colors[status] || 'text-gray-600 bg-gray-100'
-}
-
-function getStatusLabel(status: string) {
-  const labels: Record<string, string> = {
-    draft: 'Draft',
-    sent: 'Sent',
-    accepted: 'Accepted',
-    rejected: 'Rejected',
-    expired: 'Expired'
-  }
-  return labels[status] || status
-}
-
-async function handleConvertToOrder() {
-  if (!quotation.value) return
-  try {
-    const order = await salesStore.convertQuotationToOrder(quotation.value.id)
-    navigateTo(`/sales/orders/${order.id}`)
-  } catch (error) {
-    console.error('Failed to convert quotation:', error)
-  }
-}
-
-function handlePrint() {
-  window.print()
-}
-
-async function handleSend() {
-  if (!quotation.value) return
-  try {
-    // TODO: Implement send functionality (email/SMS/WhatsApp)
-    // This would typically send the quotation to the customer
-    alert(`Sending quotation ${quotation.value.quotationNumber} to ${quotation.value.customerName}...`)
-    // await salesStore.sendQuotation(quotation.value.id)
-  } catch (error) {
-    console.error('Failed to send quotation:', error)
-  }
-}
-
-onMounted(async () => {
-  await loadQuotation()
-})
-</script>
-
 <template>
-  <div class="py-6">
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="text-center">
-        <i class="material-symbols-rounded text-6xl text-gray-300 mb-4 animate-spin">refresh</i>
-        <p class="text-gray-600">Loading quotation...</p>
-      </div>
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <!-- Loading State -->
+    <div v-if="loading" class="text-center py-12">
+      <Icon name="mdi:loading" class="animate-spin text-4xl text-blue-600 mb-4" />
+      <p class="text-gray-600">{{ t('common.loading') }}</p>
     </div>
 
-    <div v-else-if="!quotation" class="flex items-center justify-center py-12">
-      <div class="text-center">
-        <i class="material-symbols-rounded text-6xl text-gray-300 mb-4">error</i>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Quotation not found</h3>
-        <p class="text-gray-600 mb-6">The quotation you're looking for doesn't exist</p>
-        <button
-          @click="navigateTo('/sales/quotations')"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-        >
-          <i class="material-symbols-rounded text-lg">arrow_back</i>
-          <span>Back to Quotations</span>
-        </button>
-      </div>
+    <!-- Error State -->
+    <div v-else-if="error" class="text-center py-12">
+      <Icon name="mdi:alert-circle" class="text-4xl text-red-600 mb-4" />
+      <p class="text-red-600 mb-4">{{ error }}</p>
+      <button @click="navigateTo('/sales/quotations')" class="btn btn-secondary">
+        {{ t('common.back') }}
+      </button>
     </div>
 
-    <div v-else>
-      <!-- Header -->
-      <div class="mb-6">
-        <button
-          @click="navigateTo('/sales/quotations')"
-          class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
-        >
-          <i class="material-symbols-rounded text-lg">arrow_back</i>
-          <span>Back to Quotations</span>
-        </button>
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h3 class="text-3xl font-bold text-gray-900 mb-2">{{ quotation.quotationNumber }}</h3>
-            <p class="text-gray-600 text-sm">Quotation details and items</p>
-          </div>
-          <div class="flex flex-wrap items-center gap-3">
-            <span :class="['px-3 py-1 text-sm font-medium rounded-full', getStatusColor(quotation.status)]">
-              {{ getStatusLabel(quotation.status) }}
+    <!-- Quotation Content -->
+    <div v-else-if="quotation">
+      <!-- Header with Actions -->
+      <div class="flex items-start justify-between mb-8">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <NuxtLink to="/sales/quotations" class="text-gray-600 hover:text-gray-900">
+              <Icon name="mdi:arrow-left" size="24" />
+            </NuxtLink>
+            <h1 class="text-3xl font-bold">{{ quotation.quotationNo }}</h1>
+            <span :class="getStatusClass(quotation.status)" class="px-3 py-1 text-sm font-semibold rounded-full">
+              {{ t(`sales.quotations.${quotation.status}`) }}
             </span>
-            <button
-              v-if="quotation.status === 'accepted'"
-              @click="handleConvertToOrder"
-              class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-            >
-              <i class="material-symbols-rounded text-lg">shopping_cart</i>
-              <span>Convert to Order</span>
-            </button>
-            <button
-              @click="handlePrint"
-              class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <i class="material-symbols-rounded text-lg">print</i>
-              <span>Print</span>
-            </button>
-            <button
-              @click="handleSend"
-              class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <i class="material-symbols-rounded text-lg">send</i>
-              <span>Send</span>
-            </button>
           </div>
+          <p class="text-gray-600">{{ t('sales.quotations.createdOn') }} {{ formatDate(quotation.createdAt) }}</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2">
+          <button
+            v-if="quotation.status === 'draft' || quotation.status === 'sent'"
+            @click="editQuotation"
+            class="btn btn-secondary flex items-center gap-2"
+          >
+            <Icon name="mdi:pencil" />
+            {{ t('common.edit') }}
+          </button>
+          
+          <button
+            v-if="quotation.status !== 'accepted' && quotation.status !== 'rejected'"
+            @click="downloadPDF"
+            class="btn btn-secondary flex items-center gap-2"
+          >
+            <Icon name="mdi:file-pdf-box" />
+            {{ t('sales.quotations.viewPdf') }}
+          </button>
+          
+          <button
+            v-if="quotation.status === 'draft'"
+            @click="sendEmail"
+            class="btn btn-primary flex items-center gap-2"
+          >
+            <Icon name="mdi:email-send" />
+            {{ t('sales.quotations.sendEmail') }}
+          </button>
+          
+          <button
+            v-if="quotation.status === 'accepted'"
+            @click="convertToOrder"
+            class="btn btn-primary flex items-center gap-2"
+          >
+            <Icon name="mdi:swap-horizontal" />
+            {{ t('sales.quotations.convertToOrder') }}
+          </button>
         </div>
       </div>
 
-      <!-- Info Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div class="bg-white rounded-xl shadow-card p-6">
-          <h4 class="text-sm font-medium text-gray-600 mb-4 flex items-center gap-2">
-            <i class="material-symbols-rounded text-lg">person</i>
-            Customer Information
-          </h4>
-          <div class="space-y-3">
+      <!-- Quotation Details Card -->
+      <div class="bg-white rounded-lg shadow-sm mb-6">
+        <!-- Header Section -->
+        <div class="p-8 border-b">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- From (Company) -->
             <div>
-              <p class="text-xs text-gray-500 mb-1">Customer Name</p>
-              <p class="text-base font-semibold text-gray-900">{{ quotation.customerName }}</p>
+              <h3 class="text-sm font-semibold text-gray-500 uppercase mb-2">{{ t('sales.quotations.from') }}</h3>
+              <div class="text-lg font-bold mb-1">TOSS Online Services</div>
+              <div class="text-gray-600 text-sm">
+                <p>123 Township Street</p>
+                <p>Johannesburg, Gauteng 2000</p>
+                <p>South Africa</p>
+                <p class="mt-2">
+                  <Icon name="mdi:phone" class="inline mr-1" />
+                  +27 11 123 4567
+                </p>
+                <p>
+                  <Icon name="mdi:email" class="inline mr-1" />
+                  sales@toss.co.za
+                </p>
+              </div>
+            </div>
+
+            <!-- To (Customer) -->
+            <div>
+              <h3 class="text-sm font-semibold text-gray-500 uppercase mb-2">{{ t('sales.quotations.to') }}</h3>
+              <div class="text-lg font-bold mb-1">{{ quotation.customerName }}</div>
+              <div class="text-gray-600 text-sm">
+                <p v-if="quotation.customer.businessName">{{ quotation.customer.businessName }}</p>
+                <p>{{ quotation.customer.address }}</p>
+                <p class="mt-2">
+                  <Icon name="mdi:phone" class="inline mr-1" />
+                  {{ quotation.customer.phone }}
+                </p>
+                <p v-if="quotation.customer.email">
+                  <Icon name="mdi:email" class="inline mr-1" />
+                  {{ quotation.customer.email }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quotation Meta -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-6 border-t">
+            <div>
+              <div class="text-xs text-gray-500 uppercase">{{ t('sales.quotations.quotationNo') }}</div>
+              <div class="font-medium">{{ quotation.quotationNo }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500 uppercase">{{ t('sales.quotations.date') }}</div>
+              <div class="font-medium">{{ formatDate(quotation.quotationDate) }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500 uppercase">{{ t('sales.quotations.validUntil') }}</div>
+              <div class="font-medium">{{ formatDate(quotation.validUntil) }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500 uppercase">{{ t('sales.quotations.priceList') }}</div>
+              <div class="font-medium capitalize">{{ quotation.priceList }}</div>
             </div>
           </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-card p-6">
-          <h4 class="text-sm font-medium text-gray-600 mb-4 flex items-center gap-2">
-            <i class="material-symbols-rounded text-lg">calendar_today</i>
-            Quotation Dates
-          </h4>
-          <div class="space-y-3">
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Quotation Date</p>
-              <p class="text-base font-semibold text-gray-900">{{ formatDate(quotation.date) }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Valid Until</p>
-              <p class="text-base font-semibold text-gray-900">{{ formatDate(quotation.validUntil) }}</p>
-            </div>
+        <!-- Line Items -->
+        <div class="p-8">
+          <h3 class="text-lg font-semibold mb-4">{{ t('sales.quotations.items') }}</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full">
+              <thead class="border-b-2 border-gray-200">
+                <tr>
+                  <th class="text-left py-3 px-2 text-sm font-semibold text-gray-600">#</th>
+                  <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600">{{ t('sales.quotations.product') }}</th>
+                  <th class="text-right py-3 px-4 text-sm font-semibold text-gray-600">{{ t('sales.quotations.quantity') }}</th>
+                  <th class="text-right py-3 px-4 text-sm font-semibold text-gray-600">{{ t('sales.quotations.rate') }}</th>
+                  <th class="text-right py-3 px-4 text-sm font-semibold text-gray-600">{{ t('sales.quotations.discount') }}</th>
+                  <th class="text-right py-3 px-4 text-sm font-semibold text-gray-600">{{ t('sales.quotations.amount') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in quotation.items" :key="item.id" class="border-b border-gray-100">
+                  <td class="py-3 px-2 text-gray-600">{{ index + 1 }}</td>
+                  <td class="py-3 px-4">
+                    <div class="font-medium">{{ item.productName }}</div>
+                    <div class="text-sm text-gray-500">{{ item.description }}</div>
+                  </td>
+                  <td class="py-3 px-4 text-right">{{ formatNumber(item.quantity) }}</td>
+                  <td class="py-3 px-4 text-right">R{{ formatCurrency(item.rate) }}</td>
+                  <td class="py-3 px-4 text-right">{{ item.discountPercent }}%</td>
+                  <td class="py-3 px-4 text-right font-medium">R{{ formatCurrency(item.amount) }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-card p-6">
-          <h4 class="text-sm font-medium text-gray-600 mb-4 flex items-center gap-2">
-            <i class="material-symbols-rounded text-lg">info</i>
-            Quotation Summary
-          </h4>
-          <div class="space-y-3">
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Total Items</p>
-              <p class="text-base font-semibold text-gray-900">{{ quotation.items.length }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Total Amount</p>
-              <p class="text-lg font-bold text-gray-900">R {{ quotation.total.toFixed(2) }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Items Table -->
-      <div class="bg-white rounded-xl shadow-card overflow-hidden mb-6">
-        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h4 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <i class="material-symbols-rounded text-xl">shopping_cart</i>
-            Quotation Items
-          </h4>
-          <span class="text-sm text-gray-500">{{ quotation.items.length }} item(s)</span>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rate</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="item in quotation.items" :key="item.id" class="hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">{{ item.itemName }}</div>
-                  <div v-if="item.itemId" class="text-xs text-gray-500 mt-1">ID: {{ item.itemId }}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="text-sm text-gray-900 font-medium">{{ item.quantity }}</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="text-sm text-gray-900">R {{ item.rate.toFixed(2) }}</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="text-sm text-gray-900">
-                    <span v-if="item.discount > 0" class="text-orange-600">-R {{ item.discount.toFixed(2) }}</span>
-                    <span v-else class="text-gray-400">-</span>
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right">
-                  <span class="text-sm font-semibold text-gray-900">R {{ item.amount.toFixed(2) }}</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Totals and Notes -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Totals -->
-        <div class="lg:col-span-2 bg-white rounded-xl shadow-card p-6">
-          <h4 class="text-sm font-medium text-gray-600 mb-4 flex items-center gap-2">
-            <i class="material-symbols-rounded text-lg">receipt</i>
-            Quotation Summary
-          </h4>
+        <div class="px-8 pb-8">
           <div class="flex justify-end">
-            <div class="w-full max-w-sm space-y-3">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Subtotal:</span>
-                <span class="text-gray-900 font-medium">R {{ quotation.subtotal.toFixed(2) }}</span>
+            <div class="w-full md:w-1/2 lg:w-1/3 space-y-2">
+              <div class="flex justify-between py-2 border-b">
+                <span class="text-gray-600">{{ t('sales.quotations.subtotal') }}</span>
+                <span class="font-medium">R{{ formatCurrency(quotation.subtotal) }}</span>
               </div>
-              <div v-if="quotation.discount > 0" class="flex justify-between text-sm">
-                <span class="text-gray-600">Discount:</span>
-                <span class="text-orange-600 font-medium">-R {{ quotation.discount.toFixed(2) }}</span>
+              
+              <div v-if="quotation.discountAmount > 0" class="flex justify-between py-2 border-b">
+                <span class="text-gray-600">{{ t('sales.quotations.discount') }}</span>
+                <span class="font-medium text-red-600">-R{{ formatCurrency(quotation.discountAmount) }}</span>
               </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Tax (15%):</span>
-                <span class="text-gray-900 font-medium">R {{ quotation.tax.toFixed(2) }}</span>
+              
+              <div class="flex justify-between py-2 border-b">
+                <span class="text-gray-600">{{ t('sales.quotations.taxableAmount') }}</span>
+                <span class="font-medium">R{{ formatCurrency(quotation.taxableAmount) }}</span>
               </div>
-              <div class="flex justify-between text-lg font-bold border-t-2 border-gray-300 pt-3 mt-3">
-                <span class="text-gray-900">Total:</span>
-                <span class="text-gray-900">R {{ quotation.total.toFixed(2) }}</span>
+              
+              <div class="flex justify-between py-2 border-b">
+                <span class="text-gray-600">{{ t('sales.quotations.vat') }} (15%)</span>
+                <span class="font-medium">R{{ formatCurrency(quotation.taxAmount) }}</span>
+              </div>
+              
+              <div class="flex justify-between py-3 border-t-2 border-gray-300">
+                <span class="text-lg font-bold">{{ t('sales.quotations.grandTotal') }}</span>
+                <span class="text-2xl font-bold text-blue-600">R{{ formatCurrency(quotation.grandTotal) }}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Notes -->
-        <div class="bg-white rounded-xl shadow-card p-6">
-          <h4 class="text-sm font-medium text-gray-600 mb-4 flex items-center gap-2">
-            <i class="material-symbols-rounded text-lg">note</i>
-            Notes
-          </h4>
-          <div v-if="quotation.notes" class="text-sm text-gray-700 leading-relaxed">
-            {{ quotation.notes }}
+        <!-- Terms and Notes -->
+        <div v-if="quotation.termsAndConditions || quotation.notes" class="px-8 pb-8 border-t">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+            <div v-if="quotation.termsAndConditions">
+              <h3 class="text-sm font-semibold text-gray-500 uppercase mb-2">
+                {{ t('sales.quotations.termsAndConditions') }}
+              </h3>
+              <p class="text-sm text-gray-600 whitespace-pre-line">{{ quotation.termsAndConditions }}</p>
+            </div>
+            
+            <div v-if="quotation.notes">
+              <h3 class="text-sm font-semibold text-gray-500 uppercase mb-2">
+                {{ t('sales.quotations.notes') }}
+              </h3>
+              <p class="text-sm text-gray-600 whitespace-pre-line">{{ quotation.notes }}</p>
+            </div>
           </div>
-          <div v-else class="text-sm text-gray-400 italic">
-            No notes added
+        </div>
+      </div>
+
+      <!-- Activity Timeline -->
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Icon name="mdi:history" />
+          {{ t('sales.quotations.activityTimeline') }}
+        </h3>
+        
+        <div class="space-y-4">
+          <div v-for="activity in quotation.activities" :key="activity.id" class="flex gap-4">
+            <div class="flex-shrink-0">
+              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                <Icon :name="getActivityIcon(activity.type)" class="text-blue-600" />
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-medium">{{ activity.title }}</span>
+                <span class="text-sm text-gray-500">{{ formatDateTime(activity.timestamp) }}</span>
+              </div>
+              <p class="text-sm text-gray-600">{{ activity.description }}</p>
+              <p v-if="activity.user" class="text-xs text-gray-500 mt-1">{{ t('sales.quotations.by') }} {{ activity.user }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -317,3 +249,203 @@ onMounted(async () => {
   </div>
 </template>
 
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter, useNuxtApp } from '#app'
+import type { QuotationRecord } from '../../../types/sales'
+import { generateQuotationPdf } from '../../../utils/pdf/quotation'
+
+const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
+const toast = useToast()
+const nuxtApp = useNuxtApp()
+
+// State
+const loading = ref(true)
+const error = ref('')
+const quotation = ref<QuotationRecord | null>(null)
+
+// Fetch quotation on mount
+onMounted(async () => {
+  await fetchQuotation()
+})
+
+const fetchQuotation = async () => {
+  try {
+    loading.value = true
+    error.value = ''
+    const id = route.params.id as string
+    
+    const response = await nuxtApp.$fetch<{ data: QuotationRecord }>(`/api/sales/quotations/${id}`)
+    quotation.value = response.data
+    
+    loading.value = false
+  } catch (err: any) {
+    error.value = err.message || t('sales.quotations.errorLoading')
+    loading.value = false
+    console.error('Error loading quotation:', err)
+  }
+}
+
+// Methods
+const getStatusClass = (status: string) => {
+  const classes = {
+    'draft': 'bg-gray-100 text-gray-800',
+    'sent': 'bg-blue-100 text-blue-800',
+    'accepted': 'bg-green-100 text-green-800',
+    'rejected': 'bg-red-100 text-red-800',
+    'expired': 'bg-orange-100 text-orange-800'
+  }
+  return classes[status] || 'bg-gray-100 text-gray-800'
+}
+
+const getActivityIcon = (type: string) => {
+  const icons = {
+    'created': 'mdi:file-document-plus',
+    'sent': 'mdi:email-send',
+    'accepted': 'mdi:check-circle',
+    'rejected': 'mdi:close-circle',
+    'converted': 'mdi:swap-horizontal',
+    'updated': 'mdi:pencil'
+  }
+  return icons[type] || 'mdi:circle'
+}
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-ZA', { 
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
+}
+
+const formatDateTime = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toLocaleString('en-ZA', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
+const formatCurrency = (amount: number): string => {
+  return amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+const formatNumber = (num: number): string => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+const editQuotation = () => {
+  router.push(`/sales/quotations/${quotation.value?.id}/edit`)
+}
+
+const downloadPDF = async () => {
+  if (!quotation.value) return
+  
+  try {
+    await generateQuotationPdf(quotation.value)
+    toast.add({
+      title: t('sales.quotations.pdfGenerated'),
+      color: 'green'
+    })
+  } catch (err) {
+    console.error('Error generating PDF:', err)
+    toast.add({
+      title: t('sales.quotations.errorGeneratingPdf'),
+      color: 'red'
+    })
+  }
+}
+
+const sendEmail = async () => {
+  if (!quotation.value) return
+  
+  try {
+    await nuxtApp.$fetch(`/api/sales/quotations/${quotation.value.id}/status`, {
+      method: 'PATCH',
+      body: { status: 'sent' }
+    })
+    
+    quotation.value.status = 'sent'
+    quotation.value.activities.push({
+      id: String(quotation.value.activities.length + 1),
+      type: 'sent',
+      title: 'Quotation Sent',
+      description: 'Quotation was sent to customer via email',
+      user: 'Current User',
+      timestamp: new Date().toISOString()
+    })
+    
+    toast.add({
+      title: t('sales.quotations.emailSent'),
+      color: 'green'
+    })
+  } catch (err) {
+    console.error('Error sending email:', err)
+    toast.add({
+      title: t('sales.quotations.errorSending'),
+      color: 'red'
+    })
+  }
+}
+
+const convertToOrder = async () => {
+  if (!quotation.value) return
+  
+  if (!confirm(t('sales.quotations.confirmConvertToOrder'))) {
+    return
+  }
+  
+  try {
+    const response = await nuxtApp.$fetch<{ data: { orderId: string } }>(
+      `/api/sales/quotations/${quotation.value.id}/convert`,
+      { method: 'POST' }
+    )
+    
+    toast.add({
+      title: t('sales.quotations.convertedToOrder'),
+      color: 'green'
+    })
+    
+    // Navigate to the new order
+    router.push(`/sales/orders/${response.data.orderId}`)
+  } catch (err) {
+    console.error('Error converting to order:', err)
+    toast.add({
+      title: t('sales.quotations.errorConverting'),
+      color: 'red'
+    })
+  }
+}
+
+// Page meta
+definePageMeta({
+  layout: 'default',
+  middleware: 'auth'
+})
+
+// SEO
+useHead({
+  title: computed(() => quotation.value ? quotation.value.quotationNumber : t('sales.quotations.title'))
+})
+</script>
+
+<style scoped>
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-colors;
+}
+
+.btn-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+}
+</style>

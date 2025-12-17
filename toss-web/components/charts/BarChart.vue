@@ -1,108 +1,141 @@
+<template>
+  <div class="chart-container">
+    <canvas ref="chartCanvas"></canvas>
+  </div>
+</template>
+
 <script setup lang="ts">
-import { computed } from 'vue'
-import { Bar } from 'vue-chartjs'
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
+  Chart,
+  BarController,
   BarElement,
-  Title,
+  LinearScale,
+  CategoryScale,
   Tooltip,
-  Legend
+  Legend,
+  type ChartConfiguration
 } from 'chart.js'
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+// Register Chart.js components
+Chart.register(
+  BarController,
+  BarElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip,
+  Legend
+)
 
 interface Props {
   labels: string[]
   data: number[]
-  backgroundColor?: string
+  label?: string
+  color?: string
   height?: number
   horizontal?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  backgroundColor: '#3A416F',
-  height: 300,
+  label: 'Data',
+  color: '#3B82F6', // Blue default
+  height: 200,
   horizontal: false
 })
 
-const chartData = computed(() => ({
-  labels: props.labels,
-  datasets: [{
-    label: 'Sales',
-    data: props.data,
-    backgroundColor: props.backgroundColor,
-    borderWidth: 0,
-    borderRadius: 4,
-    borderSkipped: false,
-    maxBarThickness: 35
-  }]
-}))
+const chartCanvas = ref<HTMLCanvasElement | null>(null)
+let chartInstance: Chart | null = null
 
-const chartOptions = computed(() => ({
-  indexAxis: props.horizontal ? 'y' as const : 'x' as const,
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false
-    },
-    tooltip: {
-      enabled: true
-    }
-  },
-  scales: {
-    y: {
-      grid: {
-        drawBorder: false,
-        display: true,
-        drawOnChartArea: true,
-        drawTicks: false,
-        borderDash: [5, 5],
-        color: '#c1c4ce5c'
-      },
-      ticks: {
-        display: true,
-        padding: 10,
-        color: '#9ca2b7',
-        font: {
-          size: 12,
-          weight: 300,
-          family: 'Inter',
-          style: 'normal',
-          lineHeight: 2
+const createChart = () => {
+  if (!chartCanvas.value) return
+
+  // Destroy existing chart
+  if (chartInstance) {
+    chartInstance.destroy()
+  }
+
+  const config: ChartConfiguration = {
+    type: 'bar',
+    data: {
+      labels: props.labels,
+      datasets: [
+        {
+          label: props.label,
+          data: props.data,
+          backgroundColor: props.color,
+          borderRadius: 8,
+          borderSkipped: false,
         }
-      }
+      ]
     },
-    x: {
-      grid: {
-        drawBorder: false,
-        display: false,
-        drawOnChartArea: true,
-        drawTicks: true,
-        color: '#c1c4ce5c'
+    options: {
+      indexAxis: props.horizontal ? 'y' : 'x',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          cornerRadius: 8,
+          titleFont: {
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: 13
+          }
+        }
       },
-      ticks: {
-        display: true,
-        color: '#9ca2b7',
-        padding: 10,
-        font: {
-          size: 12,
-          weight: 300,
-          family: 'Inter',
-          style: 'normal',
-          lineHeight: 2
+      scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          border: {
+            display: false
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            display: true,
+            color: 'rgba(0, 0, 0, 0.05)'
+          },
+          border: {
+            display: false
+          }
         }
       }
     }
   }
-}))
+
+  chartInstance = new Chart(chartCanvas.value, config)
+}
+
+onMounted(() => {
+  createChart()
+})
+
+watch(() => [props.data, props.labels], () => {
+  createChart()
+}, { deep: true })
+
+onBeforeUnmount(() => {
+  if (chartInstance) {
+    chartInstance.destroy()
+  }
+})
 </script>
 
-<template>
-  <div :style="{ height: `${height}px` }">
-    <Bar :data="chartData" :options="chartOptions" />
-  </div>
-</template>
-
+<style scoped>
+.chart-container {
+  position: relative;
+  height: v-bind(height + 'px');
+  width: 100%;
+}
+</style>

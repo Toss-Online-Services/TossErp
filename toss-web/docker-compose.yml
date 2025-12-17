@@ -1,0 +1,54 @@
+# TOSS Web Docker Configuration
+version: '3.8'
+
+services:
+  toss-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3001"
+    environment:
+      - NODE_ENV=production
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+    networks:
+      - toss-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Add database for complete setup (optional)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: toss_erp
+      POSTGRES_USER: toss_user
+      POSTGRES_PASSWORD: toss_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - toss-network
+
+  # Redis for session management (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - toss-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  toss-network:
+    driver: bridge

@@ -1,302 +1,201 @@
+<template>
+  <div class="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center" @click="$emit('close')">
+    <div class="relative p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-gray-800" @click.stop>
+      <div class="mt-3">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+            {{ account ? 'Edit Account' : 'Create New Account' }}
+          </h3>
+          <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Form -->
+        <form @submit.prevent="handleSubmit" class="space-y-4">
+          <!-- Account Code and Name -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Account Code *
+              </label>
+              <input
+                v-model="formData.code"
+                type="text"
+                required
+                placeholder="e.g., 1110"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Account Name *
+              </label>
+              <input
+                v-model="formData.name"
+                type="text"
+                required
+                placeholder="e.g., Cash and Bank"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+          </div>
+
+          <!-- Account Type -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Account Type *
+            </label>
+            <select
+              v-model="formData.type"
+              required
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            >
+              <option value="">Select Type</option>
+              <option value="Asset">Asset</option>
+              <option value="Liability">Liability</option>
+              <option value="Equity">Equity</option>
+              <option value="Revenue">Revenue</option>
+              <option value="Expense">Expense</option>
+            </select>
+          </div>
+
+          <!-- Parent Account -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Parent Account
+            </label>
+            <select
+              v-model="formData.parentId"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            >
+              <option value="">No Parent (Root Account)</option>
+              <option v-for="acc in groupAccounts" :key="acc.id" :value="acc.id">
+                {{ acc.code }} - {{ acc.name }}
+              </option>
+            </select>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Select a parent account to create a hierarchical structure
+            </p>
+          </div>
+
+          <!-- Opening Balance -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Opening Balance (R)
+            </label>
+            <input
+              v-model.number="formData.openingBalance"
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            />
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Enter the opening balance for this account (if applicable)
+            </p>
+          </div>
+
+          <!-- Checkboxes -->
+          <div class="flex items-center space-x-6">
+            <label class="flex items-center">
+              <input
+                v-model="formData.isGroup"
+                type="checkbox"
+                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
+              />
+              <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Is Group Account</span>
+            </label>
+
+            <label class="flex items-center">
+              <input
+                v-model="formData.isActive"
+                type="checkbox"
+                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
+              />
+              <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Active</span>
+            </label>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-600">
+            <button
+              type="button"
+              @click="$emit('close')"
+              class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              {{ account ? 'Update Account' : 'Create Account' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useAccountingStore, type Account, type AccountType } from '~/stores/accounting'
+import { ref, onMounted } from 'vue'
+import type { Account } from '~/composables/useAccounting'
 
-interface Props {
-  show: boolean
+const props = defineProps<{
   account?: Account | null
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  account: null
-})
-
-const emit = defineEmits<{
-  close: []
-  saved: [account: Account]
+  accounts?: Account[]
 }>()
 
-const accountingStore = useAccountingStore()
+const emit = defineEmits<{
+  (e: 'close'): void
+  (e: 'save', data: any): void
+}>()
 
-// Form state
+// Form data
 const formData = ref({
   code: '',
   name: '',
-  type: 'asset' as AccountType,
-  subType: '' as string,
+  type: '' as 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense' | '',
   parentId: '',
-  balance: 0,
-  isActive: true,
-  description: ''
+  openingBalance: 0,
+  isGroup: false,
+  isActive: true
 })
 
-const isEditing = computed(() => !!props.account)
-const isSubmitting = ref(false)
-const errors = ref<Record<string, string>>({})
+// Filter accounts that are groups (for parent selection)
+const groupAccounts = ref<Account[]>([])
 
-// Watch for account changes
-watch(() => props.account, (newAccount) => {
-  if (newAccount) {
+onMounted(() => {
+  // If editing, populate form with existing data
+  if (props.account) {
     formData.value = {
-      code: newAccount.code,
-      name: newAccount.name,
-      type: newAccount.type,
-      subType: newAccount.subType || '',
-      parentId: newAccount.parentId || '',
-      balance: newAccount.balance,
-      isActive: newAccount.isActive,
-      description: newAccount.description || ''
+      code: props.account.code,
+      name: props.account.name,
+      type: props.account.type,
+      parentId: props.account.parentId || '',
+      openingBalance: props.account.openingBalance || 0,
+      isGroup: props.account.isGroup,
+      isActive: props.account.isActive
     }
-  } else {
-    resetForm()
   }
-}, { immediate: true })
 
-function resetForm() {
-  formData.value = {
-    code: '',
-    name: '',
-    type: 'asset',
-    subType: '',
-    parentId: '',
-    balance: 0,
-    isActive: true,
-    description: ''
+  // Filter group accounts for parent selection
+  if (props.accounts) {
+    groupAccounts.value = props.accounts.filter(acc => acc.isGroup && acc.id !== props.account?.id)
   }
-  errors.value = {}
-}
-
-function validate() {
-  errors.value = {}
-  
-  if (!formData.value.code.trim()) {
-    errors.value.code = 'Account code is required'
-  }
-  
-  if (!formData.value.name.trim()) {
-    errors.value.name = 'Account name is required'
-  }
-  
-  return Object.keys(errors.value).length === 0
-}
-
-async function handleSave() {
-  if (!validate()) return
-  
-  isSubmitting.value = true
-  try {
-    if (isEditing.value && props.account) {
-      await accountingStore.updateAccount(props.account.id, formData.value)
-    } else {
-      await accountingStore.createAccount(formData.value as any)
-    }
-    
-    emit('saved', props.account || {} as Account)
-    resetForm()
-  } catch (error) {
-    console.error('Failed to save account:', error)
-  } finally {
-    isSubmitting.value = false
-  }
-}
-
-function handleClose() {
-  resetForm()
-  emit('close')
-}
-
-const accountTypes: Array<{ value: AccountType; label: string }> = [
-  { value: 'asset', label: 'Asset' },
-  { value: 'liability', label: 'Liability' },
-  { value: 'equity', label: 'Equity' },
-  { value: 'income', label: 'Income' },
-  { value: 'expense', label: 'Expense' }
-]
-
-const subTypes = computed(() => {
-  const subTypesMap: Record<AccountType, Array<{ value: string; label: string }>> = {
-    asset: [
-      { value: 'current_asset', label: 'Current Asset' },
-      { value: 'fixed_asset', label: 'Fixed Asset' }
-    ],
-    liability: [
-      { value: 'current_liability', label: 'Current Liability' },
-      { value: 'long_term_liability', label: 'Long-term Liability' }
-    ],
-    equity: [
-      { value: 'equity', label: 'Equity' }
-    ],
-    income: [
-      { value: 'revenue', label: 'Revenue' }
-    ],
-    expense: [
-      { value: 'cost_of_sales', label: 'Cost of Sales' },
-      { value: 'operating_expense', label: 'Operating Expense' },
-      { value: 'other_expense', label: 'Other Expense' }
-    ]
-  }
-  return subTypesMap[formData.value.type] || []
 })
+
+const handleSubmit = () => {
+  emit('save', {
+    ...formData.value,
+    type: formData.value.type || undefined
+  })
+}
 </script>
-
-<template>
-  <Teleport to="body">
-    <Transition name="modal">
-      <div
-        v-if="show"
-        class="fixed inset-0 z-50 overflow-y-auto"
-        @click.self="handleClose"
-      >
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-          <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="handleClose"></div>
-
-          <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-              <div class="flex items-center justify-between mb-6">
-                <h3 class="text-2xl font-bold text-gray-900">
-                  {{ isEditing ? 'Edit Account' : 'Create Account' }}
-                </h3>
-                <button
-                  @click="handleClose"
-                  class="text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  <i class="material-symbols-rounded text-2xl">close</i>
-                </button>
-              </div>
-
-              <form @submit.prevent="handleSave" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                      Account Code <span class="text-red-500">*</span>
-                    </label>
-                    <input
-                      v-model="formData.code"
-                      type="text"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                      :class="{ 'border-red-500': errors.code }"
-                      placeholder="e.g., 1000"
-                    />
-                    <p v-if="errors.code" class="mt-1 text-sm text-red-600">{{ errors.code }}</p>
-                  </div>
-
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                      Account Name <span class="text-red-500">*</span>
-                    </label>
-                    <input
-                      v-model="formData.name"
-                      type="text"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                      :class="{ 'border-red-500': errors.name }"
-                      placeholder="e.g., Cash"
-                    />
-                    <p v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name }}</p>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                      Account Type <span class="text-red-500">*</span>
-                    </label>
-                    <select
-                      v-model="formData.type"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                    >
-                      <option v-for="type in accountTypes" :key="type.value" :value="type.value">
-                        {{ type.label }}
-                      </option>
-                    </select>
-                  </div>
-
-                  <div v-if="subTypes.length > 0">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                      Sub Type
-                    </label>
-                    <select
-                      v-model="formData.subType"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                    >
-                      <option value="">Select sub type...</option>
-                      <option v-for="subType in subTypes" :key="subType.value" :value="subType.value">
-                        {{ subType.label }}
-                      </option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Opening Balance
-                  </label>
-                  <input
-                    v-model.number="formData.balance"
-                    type="number"
-                    step="0.01"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                    placeholder="0.00"
-                  />
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    v-model="formData.description"
-                    rows="3"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                    placeholder="Account description..."
-                  ></textarea>
-                </div>
-
-                <div class="flex items-center">
-                  <input
-                    v-model="formData.isActive"
-                    type="checkbox"
-                    id="isActive"
-                    class="h-4 w-4 text-gray-900 focus:ring-gray-900 border-gray-300 rounded"
-                  />
-                  <label for="isActive" class="ml-2 block text-sm text-gray-700">
-                    Active
-                  </label>
-                </div>
-
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
-                  <button
-                    type="button"
-                    @click="handleClose"
-                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    :disabled="isSubmitting"
-                    class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {{ isSubmitting ? 'Saving...' : isEditing ? 'Update' : 'Create' }}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
-</template>
-
-<style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-</style>
 
