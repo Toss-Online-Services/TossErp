@@ -5,7 +5,7 @@
 
 import type { Ref } from 'vue'
 
-export interface AIMessage {
+export interface AIBackendMessage {
   role: 'user' | 'assistant'
   content: string
   timestamp: Date

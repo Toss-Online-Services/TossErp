@@ -1,6 +1,6 @@
 // PATCH /api/pools/:id/join - Join a pool
 import { defineEventHandler, getRouterParam, readBody, createError } from 'h3'
-import type { JoinPoolDto, Pool, PoolParticipant } from '~/types/group-buying'
+import type { JoinPoolDto, Pool, PoolParticipant } from '../../../types/group-buying'
 
 export default defineEventHandler(async (event) => {
   const poolId = getRouterParam(event, 'id')

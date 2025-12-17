@@ -1,6 +1,6 @@
 // GET /api/pools/:id/savings - Calculate savings for a participant
 import { defineEventHandler, getRouterParam, getQuery, createError } from 'h3'
-import type { PoolSavingsCalculation } from '~/types/group-buying'
+import type { PoolSavingsCalculation } from '../../../types/group-buying'
 
 export default defineEventHandler(async (event) => {
   const poolId = getRouterParam(event, 'id')

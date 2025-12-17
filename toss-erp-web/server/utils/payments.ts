@@ -1,7 +1,7 @@
 // Payment Integration Utilities for TOSS
 // Handles payment link generation and webhook processing
 
-import type { PoolParticipant } from '~/types/group-buying'
+import type { PoolParticipant } from '../types/group-buying'
 
 interface PaymentProvider {
   name: 'payfast' | 'yoco' | 'ozow' | 'snapscan'

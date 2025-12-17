@@ -1,8 +1,8 @@
 // WhatsApp Integration Utilities for TOSS
 // Handles sending pool invites, delivery updates, and notifications
 
-import type { Pool } from '~/types/group-buying'
-import type { DeliveryStop } from '~/types/logistics'
+import type { Pool } from '../types/group-buying'
+import type { DeliveryStop } from '../types/logistics'
 
 interface WhatsAppMessage {
   to: string // Phone number in international format (+27...)
@@ -57,20 +57,20 @@ export async function sendPoolInvite(pool: Pool, phoneNumber: string, customMess
   const inviteLink = `${appUrl}/pools/${pool.id}/join`
   
   const defaultMessage = `
-🛒 *Join Group Buy: ${pool.title}*
+🛒 *Join Group Buy: ${pool.title || 'Group Purchase'}*
 
-📦 Item: ${pool.sku}
-🎯 Target: ${pool.targetQuantity} units
-💰 *Save ${pool.savingsPercentage}%* (R${pool.currentPrice} → R${pool.poolPrice})
-📍 Area: ${pool.area}
-⏰ Closes: ${formatDate(pool.deadline)}
-👥 ${pool.participantCount}/${pool.maxParticipants} shops joined
+📦 Item: ${pool.sku || 'N/A'}
+🎯 Target: ${pool.targetQuantity || 0} units
+💰 *Save ${pool.savingsPercentage || 0}%* (R${pool.currentPrice || 0} → R${pool.poolPrice || 0})
+📍 Area: ${pool.area || 'N/A'}
+⏰ Closes: ${pool.deadline ? formatDate(pool.deadline) : 'TBD'}
+👥 ${pool.participantCount || 0}/${pool.maxParticipants || 0} shops joined
 
 ${customMessage || 'Join now to unlock bulk pricing!'}
 
 Join here: ${inviteLink}
 
-Led by ${pool.leadShopName}
+Led by ${pool.leadShopName || 'Lead Shop'}
 `.trim()
   
   const result = await sendWhatsAppMessage({
@@ -113,23 +113,27 @@ export async function sendBulkPoolInvites(
  * Send pool status update to all participants
  */
 export async function notifyPoolProgress(pool: Pool): Promise<void> {
-  const progressPercentage = (pool.currentCommitment / pool.targetQuantity) * 100
+  const targetQty = pool.targetQuantity || 1
+  const currentCommit = pool.currentCommitment || 0
+  const progressPercentage = (currentCommit / targetQty) * 100
   const message = `
-🔔 *Pool Update: ${pool.title}*
+🔔 *Pool Update: ${pool.title || 'Group Purchase'}*
 
-Progress: ${progressPercentage.toFixed(0)}% (${pool.currentCommitment}/${pool.targetQuantity} units)
-👥 ${pool.participantCount} shops participating
-⏰ ${getTimeRemaining(pool.deadline)}
+Progress: ${progressPercentage.toFixed(0)}% (${currentCommit}/${targetQty} units)
+👥 ${pool.participantCount || 0} shops participating
+⏰ ${pool.deadline ? getTimeRemaining(pool.deadline) : 'No deadline set'}
 
-${progressPercentage >= 100 ? '✅ Target reached! Waiting for confirmation.' : `💪 ${pool.targetQuantity - pool.currentCommitment} more units needed!`}
+${progressPercentage >= 100 ? '✅ Target reached! Waiting for confirmation.' : `💪 ${targetQty - currentCommit} more units needed!`}
 `.trim()
   
-  for (const participant of pool.participants) {
-    // TODO: Get participant phone number from database
-    // await sendWhatsAppMessage({
-    //   to: participant.phone,
-    //   body: message
-    // })
+  if (pool.participants && Array.isArray(pool.participants)) {
+    for (const participant of pool.participants) {
+      // TODO: Get participant phone number from database
+      // await sendWhatsAppMessage({
+      //   to: participant.phone,
+      //   body: message
+      // })
+    }
   }
 }
 
@@ -137,19 +141,27 @@ ${progressPercentage >= 100 ? '✅ Target reached! Waiting for confirmation.' : 
  * Send pool confirmation notification with payment link
  */
 export async function notifyPoolConfirmed(pool: Pool, participantId: string, paymentLink: string): Promise<void> {
-  const participant = pool.participants.find(p => p.id === participantId)
+  if (!pool.participants || !Array.isArray(pool.participants)) return
+  
+  const participant = pool.participants.find((p: any) => p.id === participantId)
   if (!participant) return
   
+  const quantityCommitted = participant.quantityCommitted || 0
+  const costShare = participant.costShare || 0
+  const deliveryFeeShare = participant.deliveryFeeShare || 0
+  const currentPrice = pool.currentPrice || 0
+  const savings = (quantityCommitted * currentPrice) - costShare
+  
   const message = `
-✅ *Pool Confirmed: ${pool.title}*
+✅ *Pool Confirmed: ${pool.title || 'Group Purchase'}*
 
 Your share:
-📦 Quantity: ${participant.quantityCommitted} units
-💵 Amount: R${participant.costShare.toFixed(2)}
-🚚 Delivery: R${participant.deliveryFeeShare.toFixed(2)}
-*Total: R${(participant.costShare + participant.deliveryFeeShare).toFixed(2)}*
+📦 Quantity: ${quantityCommitted} units
+💵 Amount: R${costShare.toFixed(2)}
+🚚 Delivery: R${deliveryFeeShare.toFixed(2)}
+*Total: R${(costShare + deliveryFeeShare).toFixed(2)}*
 
-💰 *You saved R${((participant.quantityCommitted * pool.currentPrice) - participant.costShare).toFixed(2)}!*
+💰 *You saved R${savings.toFixed(2)}!*
 
 Pay now: ${paymentLink}
 
@@ -206,6 +218,11 @@ Status: ${statusMessage}
 ${status !== 'delivered' ? `Track delivery: ${trackingLink}` : 'Thank you for your order!'}
 `.trim()
   
+  if (!stop.shopPhone) {
+    console.warn(`No phone number for shop ${stop.shopName}`)
+    return
+  }
+  
   await sendWhatsAppMessage({
     to: stop.shopPhone,
     body: message
@@ -225,6 +242,11 @@ Driver: ${driverName}
 
 Please be ready to receive your order.
 `.trim()
+  
+  if (!stop.shopPhone) {
+    console.warn(`No phone number for shop ${stop.shopName}`)
+    return
+  }
   
   await sendWhatsAppMessage({
     to: stop.shopPhone,
@@ -253,7 +275,7 @@ Thank you! Your order will be processed shortly.
 
 // Helper functions
 
-function formatDate(date: Date): string {
+function formatDate(date: Date | string): string {
   const options: Intl.DateTimeFormatOptions = {
     weekday: 'short',
     month: 'short',
@@ -272,7 +294,7 @@ function formatTime(date: Date): string {
   return new Date(date).toLocaleTimeString('en-ZA', options)
 }
 
-function getTimeRemaining(deadline: Date): string {
+function getTimeRemaining(deadline: Date | string): string {
   const now = new Date()
   const diff = new Date(deadline).getTime() - now.getTime()
   

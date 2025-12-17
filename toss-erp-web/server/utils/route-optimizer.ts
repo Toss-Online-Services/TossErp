@@ -1,7 +1,7 @@
 // Route Optimization Utilities for TOSS
 // Simple nearest-neighbor algorithm for MVP, can be enhanced with Google Maps API
 
-import type { Location, DeliveryStop, RouteOptimizationRequest, RouteOptimizationResponse } from '~/types/logistics'
+import type { Location, DeliveryStop, RouteOptimizationRequest, RouteOptimizationResponse } from '../types/logistics'
 
 /**
  * Calculate distance between two coordinates using Haversine formula
@@ -89,7 +89,7 @@ export function optimizeRouteAdvanced(request: RouteOptimizationRequest): RouteO
   const { pickupLocation, stops, vehicleType } = request
   
   // Convert stops to DeliveryStop-like objects for optimization
-  const deliveryStops: DeliveryStop[] = stops.map((stop, index) => ({
+  const deliveryStops: DeliveryStop[] = stops.map((stop: any, index: number) => ({
     id: `temp-stop-${index}`,
     runId: '',
     shopId: '',
@@ -99,21 +99,21 @@ export function optimizeRouteAdvanced(request: RouteOptimizationRequest): RouteO
     sequenceNumber: 0,
     estimatedArrival: new Date(),
     orderId: '',
-    orderType: 'purchase-order',
+    orderType: 'purchase-order' as const,
     items: [],
     weight: 0,
     volume: 0,
-    status: 'pending',
+    status: 'pending' as const,
     feeShare: 0,
     createdAt: new Date(),
     updatedAt: new Date()
   }))
   
   // Apply priority sorting if provided
-  if (stops.some(s => s.priority)) {
+  if (stops.some((s: any) => s.priority)) {
     deliveryStops.sort((a, b) => {
-      const stopA = stops.find(s => s.location === a.location)
-      const stopB = stops.find(s => s.location === b.location)
+      const stopA = stops.find((s: any) => s.location === a.location)
+      const stopB = stops.find((s: any) => s.location === b.location)
       return (stopB?.priority || 0) - (stopA?.priority || 0)
     })
   }

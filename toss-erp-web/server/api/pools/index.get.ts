@@ -1,6 +1,6 @@
 // GET /api/pools - List all pools with filters
 import { defineEventHandler, getQuery } from 'h3'
-import type { Pool, PoolFilterDto } from '~/types/group-buying'
+import type { Pool, PoolFilterDto } from '../../types/group-buying'
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event) as Partial<PoolFilterDto>
@@ -267,7 +267,7 @@ export default defineEventHandler(async (event) => {
   
   if (query.participantShopId) {
     filteredPools = filteredPools.filter(p =>
-      p.participants.some(part => part.shopId === query.participantShopId)
+      p.participants.some((part: any) => part.shopId === query.participantShopId)
     )
   }
   

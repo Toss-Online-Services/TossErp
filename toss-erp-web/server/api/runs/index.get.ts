@@ -1,6 +1,6 @@
 // GET /api/runs - List all delivery runs with filters
 import { defineEventHandler, getQuery } from 'h3'
-import type { SharedRun, RunFilterDto } from '~/types/logistics'
+import type { SharedRun, RunFilterDto } from '../../types/logistics'
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event) as Partial<RunFilterDto>
@@ -119,7 +119,7 @@ export default defineEventHandler(async (event) => {
   
   if (query.zone) {
     filteredRuns = filteredRuns.filter(r =>
-      r.dropList.some(stop => stop.location.zone === query.zone)
+      r.dropList.some((stop: any) => stop.location.zone === query.zone)
     )
   }
   

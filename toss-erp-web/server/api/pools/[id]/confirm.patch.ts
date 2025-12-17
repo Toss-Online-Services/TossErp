@@ -1,6 +1,6 @@
 // PATCH /api/pools/:id/confirm - Confirm pool and create PO
 import { defineEventHandler, getRouterParam, readBody, createError } from 'h3'
-import type { Pool, ConfirmPoolDto } from '~/types/group-buying'
+import type { Pool, ConfirmPoolDto } from '../../../types/group-buying'
 
 export default defineEventHandler(async (event) => {
   const poolId = getRouterParam(event, 'id')

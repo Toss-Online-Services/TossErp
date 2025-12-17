@@ -1,6 +1,6 @@
 // GET /api/pools/:id - Get pool details
 import { defineEventHandler, getRouterParam, createError } from 'h3'
-import type { Pool } from '~/types/group-buying'
+import type { Pool } from '../../types/group-buying'
 
 export default defineEventHandler(async (event) => {
   const poolId = getRouterParam(event, 'id')

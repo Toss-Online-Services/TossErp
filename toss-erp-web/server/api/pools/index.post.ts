@@ -1,6 +1,6 @@
 // POST /api/pools - Create a new pool
 import { defineEventHandler, readBody, createError } from 'h3'
-import type { CreatePoolDto, Pool, PoolParticipant } from '~/types/group-buying'
+import type { CreatePoolDto, Pool, PoolParticipant } from '../../types/group-buying'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<CreatePoolDto>(event)

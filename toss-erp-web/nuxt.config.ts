@@ -3,12 +3,8 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   srcDir: 'app/',
-  pages: true,
 
-  css: [
-    '~/assets/css/material-bridge.css',
-    '~/assets/css/main.css'
-  ],
+  css: ['~/assets/css/main.css'],
 
   runtimeConfig: {
     public: {
@@ -21,72 +17,17 @@ export default defineNuxtConfig({
     'shadcn-nuxt',
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    '@vite-pwa/nuxt',
-    '@nuxtjs/color-mode',
-    '@nuxt/icon',
-    '@nuxt/image',
-    'nuxt-lodash'
+    '@vite-pwa/nuxt'
   ],
-
-  colorMode: {
-    classSuffix: '',
-    preference: 'system',
-    fallback: 'light'
-  },
 
   app: {
     head: {
-      title: 'TOSS - The One-Stop Solution',
-      meta: [
-        { charset: 'utf-8' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { 
-          name: 'description', 
-          content: 'ERP-III platform for South African township and rural SMMEs' 
-        }
-      ],
+      title: 'TOSS ERP Web',
+      meta: [{ name: 'description', content: 'ERP-III frontend scaffold' }],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'stylesheet', href: '/assets/css/material-dashboard.min.css' },
-        { rel: 'stylesheet', href: '/assets/css/nucleo-icons.css' },
-        { rel: 'stylesheet', href: '/assets/css/nucleo-svg.css' },
-        { 
-          rel: 'stylesheet', 
-          href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0' 
-        },
         {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap'
-        },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700'
-        }
-      ],
-      script: [
-        {
-          src: '/assets/js/core/popper.min.js',
-          defer: true
-        },
-        {
-          src: '/assets/js/core/bootstrap.min.js',
-          defer: true
-        },
-        {
-          src: '/assets/js/plugins/perfect-scrollbar.min.js',
-          defer: true
-        },
-        {
-          src: '/assets/js/plugins/smooth-scrollbar.min.js',
-          defer: true
-        },
-        {
-          src: '/assets/js/plugins/chartjs.min.js',
-          defer: true
-        },
-        {
-          src: '/assets/js/material-dashboard.min.js',
-          defer: true
+          href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200'
         }
       ]
     }
@@ -94,75 +35,44 @@ export default defineNuxtConfig({
 
   shadcn: {
     prefix: '',
-    componentDir: './components/ui'
+    componentDir: 'app/components/ui'
   },
 
   typescript: {
-    strict: false,
-    typeCheck: false
+    strict: true,
+    typeCheck: true
   },
 
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
-      name: 'TOSS - The One-Stop Solution',
+      name: 'TOSS ERP Web',
       short_name: 'TOSS ERP',
-      description: 'ERP-III platform for South African township and rural SMMEs',
-      theme_color: '#1f2937',
+      description: 'ERP-III frontend scaffold with ERPNext-style modules',
+      theme_color: '#0f172a',
       background_color: '#ffffff',
       display: 'standalone',
-      orientation: 'portrait',
-      scope: '/',
       start_url: '/',
       icons: [
-        {
-          src: '/icon-192x192.png',
-          sizes: '192x192',
-          type: 'image/png'
-        },
-        {
-          src: '/icon-512x512.png',
-          sizes: '512x512',
-          type: 'image/png'
-        },
-        {
-          src: '/icon-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
-          purpose: 'any maskable'
-        }
+        { src: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+        { src: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+        { src: '/icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
       ]
     },
     workbox: {
       navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+      globPatterns: ['**/*.{js,css,html,png,svg,ico,json,woff2}'],
       runtimeCaching: [
         {
-          urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+          urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
           handler: 'CacheFirst',
           options: {
             cacheName: 'google-fonts-cache',
             expiration: {
-              maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              maxEntries: 16,
+              maxAgeSeconds: 60 * 60 * 24 * 365
             },
-            cacheableResponse: {
-              statuses: [0, 200]
-            }
-          }
-        },
-        {
-          urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'gstatic-fonts-cache',
-            expiration: {
-              maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-            },
-            cacheableResponse: {
-              statuses: [0, 200]
-            }
+            cacheableResponse: { statuses: [0, 200] }
           }
         },
         {
@@ -170,20 +80,19 @@ export default defineNuxtConfig({
           handler: 'NetworkFirst',
           options: {
             cacheName: 'api-cache',
+            networkTimeoutSeconds: 5,
             expiration: {
               maxEntries: 50,
-              maxAgeSeconds: 60 * 5 // 5 minutes
+              maxAgeSeconds: 60 * 5
             },
-            cacheableResponse: {
-              statuses: [0, 200]
-            }
+            cacheableResponse: { statuses: [0, 200] }
           }
         }
       ]
     },
     client: {
       installPrompt: true,
-      periodicSyncForUpdates: 3600 // Check for updates every hour
+      periodicSyncForUpdates: 3600
     },
     devOptions: {
       enabled: true,

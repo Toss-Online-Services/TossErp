@@ -1,3 +1,4 @@
+import { computed } from 'vue'
 import { useOnline } from '@vueuse/core'
 
 export function useOfflineStatus() {

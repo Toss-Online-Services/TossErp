@@ -223,6 +223,10 @@ const seedQuotations = async () => {
   const customers = seedCustomers()
   const products = seedProducts()
 
+  if (!products[0] || !products[1] || !products[2] || !products[3]) {
+    throw new Error('Failed to seed products')
+  }
+
   const quotationAItems = [
     buildItem(products[0], 40, 5),
     buildItem(products[2], 10)
@@ -234,6 +238,10 @@ const seedQuotations = async () => {
 
   const totalsA = computeTotals(quotationAItems)
   const totalsB = computeTotals(quotationBItems)
+
+  if (!customers[0] || !customers[1]) {
+    throw new Error('Failed to seed customers')
+  }
 
   const now = new Date()
   const store: QuotationStore = {
@@ -473,6 +481,10 @@ export const updateQuotationRecord = async (
   }
 
   const record = store.records[index]
+  if (!record) {
+    throw createError({ statusCode: 404, statusMessage: 'Quotation not found' })
+  }
+
   let items = record.items
   if (updates.items && updates.items.length > 0) {
     const meta = await getQuotationMeta()
@@ -529,9 +541,15 @@ export const changeQuotationStatus = async (id: string, status: QuotationStatus)
   }
 
   record.status = status
+  
+  const activityType = status === 'converted' ? 'converted' : 
+                      status === 'sent' ? 'sent' : 
+                      status === 'accepted' ? 'accepted' : 
+                      status === 'rejected' ? 'rejected' : 'updated'
+  
   record.activities.push({
     id: randomUUID(),
-    type: status === 'converted' ? 'converted' : status,
+    type: activityType,
     title: `Quotation ${status}`,
     description: `Status changed to ${status}.`,
     user: 'System',
