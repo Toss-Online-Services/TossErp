@@ -99,7 +99,7 @@
         </div>
 
         <!-- Empty State -->
-        <div v-if="filteredTemplates.length === 0" class="text-center py-8">
+        <div v-if="Object.keys(filteredTemplates).length === 0" class="text-center py-8">
           <DocumentTextIcon class="mx-auto h-12 w-12 text-slate-400" />
           <h3 class="mt-2 text-sm font-medium text-slate-900 dark:text-white">No templates found</h3>
           <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">

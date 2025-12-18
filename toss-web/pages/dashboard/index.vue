@@ -101,7 +101,7 @@
                 <span>Updated {{ minutesAgo }} min ago</span>
               </div>
             </div>
-            <LineChart
+            <ChartsLineChart
               :labels="dailySalesLabels"
               :data="dailySalesData"
               label="Revenue"
@@ -157,7 +157,7 @@
                 View All
               </MaterialButton>
             </div>
-            <BarChart
+            <ChartsBarChart
               :labels="categoryLabels"
               :data="categoryData"
               label="Sales"

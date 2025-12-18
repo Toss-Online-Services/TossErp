@@ -1,5 +1,5 @@
 import { defineEventHandler } from 'h3'
-import { findQuotation } from '~/server/utils/quotations'
+import { findQuotation } from '../../../../utils/quotations'
 
 export default defineEventHandler(async (event) => {
   const id = event.context.params?.id

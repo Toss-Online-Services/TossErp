@@ -184,7 +184,7 @@ const getCameras = async () => {
   try {
     const devices = await navigator.mediaDevices.enumerateDevices()
     availableCameras.value = devices.filter(device => device.kind === 'videoinput')
-    if (availableCameras.value.length > 0) {
+    if (availableCameras.value.length > 0 && availableCameras.value[0]) {
       selectedCamera.value = availableCameras.value[0].deviceId
     }
   } catch (error) {
@@ -238,6 +238,8 @@ const toggleFlash = async () => {
   
   try {
     const track = stream.getVideoTracks()[0]
+    if (!track) return
+    
     const capabilities = track.getCapabilities() as any
     
     if (capabilities.torch) {

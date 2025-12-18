@@ -1,136 +1,151 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
-    <!-- Page Header with Glass Morphism -->
-    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
-      <div class="w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-        <div class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-          <div class="flex-1 min-w-0">
-            <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent truncate">
-              Items Management
-            </h1>
-            <p class="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
-              Manage inventory items, track stock levels, and monitor performance
-            </p>
+  <div class="min-vh-100 bg-gray-100 g-sidenav-show">
+    <!-- Page Header -->
+    <div class="py-4">
+      <div class="container-fluid">
+        <div class="row align-items-center justify-content-between">
+          <div class="col-auto">
+            <div class="mb-0">
+              <p class="text-sm text-muted-foreground">Stock</p>
+              <h1 class="text-3xl font-bold">Items Management</h1>
+            </div>
           </div>
-          <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
+          <div class="col-auto">
             <button
               @click="showCreateModal = true"
-              class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold text-sm sm:text-base whitespace-nowrap"
+              class="btn btn-primary"
             >
-              <PlusIcon class="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
-              <span class="hidden sm:inline">Add Item</span>
-              <span class="sm:hidden ml-1">Add</span>
+              <PlusIcon class="w-4 h-4 mr-2" />
+              Add Item
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
+    <div class="container-fluid py-4">
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+    <div class="row g-4 mb-4">
       <!-- Total Items Card -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Items</p>
-            <p class="text-3xl font-bold text-slate-900 dark:text-white">
-              {{ stockOverview?.totalItems || 0 }}
-            </p>
-          </div>
-          <div class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
-            <CubeIcon class="w-8 h-8 text-white" />
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card shadow-lg border-0 rounded-xl h-100">
+          <div class="card-body flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Items</p>
+              <p class="text-3xl font-bold text-slate-900 dark:text-white">
+                {{ stockOverview?.totalItems || 0 }}
+              </p>
+            </div>
+            <div class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
+              <CubeIcon class="w-8 h-8 text-white" />
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Low Stock Card -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Low Stock</p>
-            <p class="text-3xl font-bold text-slate-900 dark:text-white">
-              {{ stockOverview?.lowStockItems || 0 }}
-            </p>
-          </div>
-          <div class="p-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl">
-            <ExclamationTriangleIcon class="w-8 h-8 text-white" />
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card shadow-lg border-0 rounded-xl h-100">
+          <div class="card-body flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Low Stock</p>
+              <p class="text-3xl font-bold text-slate-900 dark:text-white">
+                {{ stockOverview?.lowStockItems || 0 }}
+              </p>
+            </div>
+            <div class="p-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl">
+              <ExclamationTriangleIcon class="w-8 h-8 text-white" />
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Out of Stock Card -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Out of Stock</p>
-            <p class="text-3xl font-bold text-slate-900 dark:text-white">
-              {{ stockOverview?.outOfStockItems || 0 }}
-            </p>
-          </div>
-          <div class="p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl">
-            <XCircleIcon class="w-8 h-8 text-white" />
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card shadow-lg border-0 rounded-xl h-100">
+          <div class="card-body flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Out of Stock</p>
+              <p class="text-3xl font-bold text-slate-900 dark:text-white">
+                {{ stockOverview?.outOfStockItems || 0 }}
+              </p>
+            </div>
+            <div class="p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl">
+              <XCircleIcon class="w-8 h-8 text-white" />
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Total Value Card -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Value</p>
-            <p class="text-3xl font-bold text-slate-900 dark:text-white">
-              R{{ formatCurrency(stockOverview?.totalValue || 0) }}
-            </p>
-          </div>
-          <div class="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
-            <CurrencyDollarIcon class="w-8 h-8 text-white" />
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="card shadow-lg border-0 rounded-xl h-100">
+          <div class="card-body flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Value</p>
+              <p class="text-3xl font-bold text-slate-900 dark:text-white">
+                R{{ formatCurrency(stockOverview?.totalValue || 0) }}
+              </p>
+            </div>
+            <div class="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+              <CurrencyDollarIcon class="w-8 h-8 text-white" />
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Filters and Search -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 sm:p-6 mb-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <!-- Search -->
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <MagnifyingGlassIcon class="h-5 w-5 text-slate-400" />
-          </div>
-          <input
-            v-model="searchTerm"
-            type="text"
-            placeholder="Search items..."
-            class="w-full pl-11 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
-          />
-        </div>
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card border-0 rounded-xl shadow">
+          <div class="card-body">
+            <div class="row g-3">
+              <!-- Search -->
+              <div class="col-12 col-md-6 col-lg-3">
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <MagnifyingGlassIcon class="h-5 w-5 text-slate-400" />
+                  </div>
+                  <input
+                    v-model="searchTerm"
+                    type="text"
+                    placeholder="Search items..."
+                    class="w-full pl-11 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
+                  />
+                </div>
+              </div>
 
-        <!-- Category Filter -->
-        <select
-          v-model="selectedCategory"
-          class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
-        >
-          <option value="">All Categories</option>
-          <option v-for="category in categories" :key="category" :value="category">
-            {{ category }}
-          </option>
-        </select>
+              <!-- Category Filter -->
+              <div class="col-12 col-md-6 col-lg-3">
+                <select
+                  v-model="selectedCategory"
+                  class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
+                >
+                  <option value="">All Categories</option>
+                  <option v-for="category in categories" :key="category" :value="category">
+                    {{ category }}
+                  </option>
+                </select>
+              </div>
 
-        <!-- Stock Status Filter -->
-        <select
-          v-model="stockFilter"
-          class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
-        >
-          <option value="">All Stock Levels</option>
-          <option value="low">Low Stock</option>
-          <option value="out">Out of Stock</option>
-          <option value="in-stock">In Stock</option>
-        </select>
+              <!-- Stock Status Filter -->
+              <div class="col-12 col-md-6 col-lg-3">
+                <select
+                  v-model="stockFilter"
+                  class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
+                >
+                  <option value="">All Stock Levels</option>
+                  <option value="low">Low Stock</option>
+                  <option value="out">Out of Stock</option>
+                  <option value="in-stock">In Stock</option>
+                </select>
+              </div>
 
-        <!-- Quick Actions -->
-        <div class="flex space-x-2 sm:col-span-2 lg:col-span-1">
+              <!-- Quick Actions -->
+              <div class="col-12 col-md-6 col-lg-3">
+                <div class="flex gap-2">
           <button
             @click="exportData"
             class="flex-1 inline-flex items-center justify-center px-3 sm:px-4 py-2.5 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 whitespace-nowrap"
@@ -144,14 +159,19 @@
             title="Refresh"
           >
             <ArrowPathIcon class="w-4 h-4" />
-          </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Items Table -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
-      <div class="overflow-x-auto">
+    <div class="row">
+      <div class="col-12">
+        <div class="card border-0 rounded-xl shadow-lg overflow-hidden">
+        <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
           <thead class="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800">
             <tr>
@@ -374,6 +394,8 @@
               </button>
             </nav>
           </div>
+        </div>
+      </div>
         </div>
       </div>
     </div>

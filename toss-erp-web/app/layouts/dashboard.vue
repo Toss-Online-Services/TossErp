@@ -38,8 +38,8 @@ const handleSearch = (query: string) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-background text-foreground">
-    <div class="flex h-screen overflow-hidden">
+  <div class="min-h-screen min-vh-100 bg-gray-100 text-foreground g-sidenav-show">
+    <div class="flex min-h-screen overflow-hidden bg-gray-100">
       <!-- Sidebar -->
       <MaterialSidebar
         v-model:open="sidebarOpen"
@@ -48,7 +48,12 @@ const handleSearch = (query: string) => {
       />
 
       <!-- Main Content Area -->
-      <div class="flex-1 flex flex-col overflow-hidden lg:ml-[272px]">
+      <div
+        :class="[
+          'main-content relative flex-1 flex flex-col overflow-hidden transition-all duration-300',
+          sidebarOpen ? 'lg:ml-[272px]' : 'lg:ml-0'
+        ]"
+      >
         <!-- Top Navigation -->
         <MaterialTopNav
           :title="pageTitle"
@@ -59,13 +64,15 @@ const handleSearch = (query: string) => {
         />
 
         <!-- Page Content -->
-        <main class="flex-1 overflow-y-auto p-4 lg:p-6 bg-gray-50">
-          <slot />
+        <main class="flex-1 overflow-y-auto px-3 pb-10 bg-gray-50">
+          <div class="container-fluid py-4">
+            <slot />
+          </div>
         </main>
 
         <!-- Footer -->
-        <footer class="border-t border-border bg-card py-4 px-4 lg:px-6">
-          <div class="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0">
+        <footer class="mx-3 mb-4 border-t border-border bg-card/90 backdrop-blur border-radius-lg shadow-sm">
+          <div class="flex flex-col md:flex-row items-center justify-between px-4 py-4 space-y-2 md:space-y-0">
             <div class="text-sm text-muted-foreground">
               <p>&copy; {{ new Date().getFullYear() }} TOSS Online Services. Built for South African SMMEs.</p>
             </div>

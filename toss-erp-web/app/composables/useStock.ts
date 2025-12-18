@@ -2,6 +2,66 @@
  * Stock/Inventory API Composable
  * Connects to TOSS backend /api/inventory endpoints
  */
+
+// Type definitions
+export interface ItemDto {
+  id: number
+  shopId: number
+  name: string
+  sku?: string
+  barcode?: string
+  description?: string
+  categoryId?: number
+  category?: string // Display name
+  unitPrice: number
+  sellingPrice?: number // Alias for unitPrice
+  costPrice?: number
+  reorderLevel?: number
+  reorderQty?: number // Alias for reorderLevel
+  quantityOnHand?: number
+  unit?: string
+  isActive: boolean
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface CreateItemRequest {
+  shopId: number
+  name: string
+  sku?: string
+  barcode?: string
+  description?: string
+  categoryId?: number
+  unitPrice: number
+  costPrice?: number
+  reorderLevel?: number
+  isActive: boolean
+  id?: string | number // For updates
+}
+
+export interface UpdateItemRequest {
+  id?: number | string
+  name?: string
+  sku?: string
+  barcode?: string
+  description?: string
+  categoryId?: number
+  unitPrice?: number
+  costPrice?: number
+  reorderLevel?: number
+  isActive?: boolean
+}
+
+export interface WarehouseDto {
+  id: number
+  shopId: number
+  name: string
+  address?: string
+  isActive: boolean
+  createdAt?: string
+  updatedAt?: string
+}
+
 export const useStock = () => {
   const { get, post } = useApi()
 

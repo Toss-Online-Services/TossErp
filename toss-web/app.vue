@@ -1,5 +1,5 @@
 <template>
-  <div class="g-sidenav-show g-sidenav-pinned bg-gray-100">
+  <div class="min-h-screen bg-background text-foreground font-sans antialiased">
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

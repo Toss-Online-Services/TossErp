@@ -1,5 +1,5 @@
 import { defineEventHandler } from 'h3'
-import { convertQuotationToOrder } from '~/server/utils/quotations'
+import { convertQuotationToOrder } from '../../../../../utils/quotations'
 
 export default defineEventHandler(async (event) => {
   const id = event.context.params?.id

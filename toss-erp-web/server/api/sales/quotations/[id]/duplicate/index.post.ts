@@ -1,5 +1,5 @@
 import { defineEventHandler } from 'h3'
-import { duplicateQuotationRecord } from '~/server/utils/quotations'
+import { duplicateQuotationRecord } from '../../../../../utils/quotations'
 
 export default defineEventHandler(async (event) => {
   const id = event.context.params?.id

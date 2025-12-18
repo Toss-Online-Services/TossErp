@@ -266,14 +266,16 @@ const removeLineItem = (index: number) => {
 }
 
 const onDebitChange = (index: number) => {
-  if (formData.value.lineItems[index].debit > 0) {
-    formData.value.lineItems[index].credit = 0
+  const item = formData.value.lineItems[index]
+  if (item && item.debit > 0) {
+    item.credit = 0
   }
 }
 
 const onCreditChange = (index: number) => {
-  if (formData.value.lineItems[index].credit > 0) {
-    formData.value.lineItems[index].debit = 0
+  const item = formData.value.lineItems[index]
+  if (item && item.credit > 0) {
+    item.debit = 0
   }
 }
 

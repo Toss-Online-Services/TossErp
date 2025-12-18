@@ -21,7 +21,8 @@ export default defineNuxtConfig({
     'shadcn-nuxt',
     '@vueuse/nuxt',
     '@pinia/nuxt',
-    '@vite-pwa/nuxt'
+    '@vite-pwa/nuxt',
+    '@nuxt/icon'
   ],
   
   shadcn: {

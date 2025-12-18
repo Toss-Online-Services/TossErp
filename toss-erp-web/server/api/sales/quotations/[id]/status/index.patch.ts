@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { changeQuotationStatus, QuotationStatus } from '~/server/utils/quotations'
+import { changeQuotationStatus, QuotationStatus } from '../../../../../utils/quotations'
 
 export default defineEventHandler(async (event) => {
   const id = event.context.params?.id

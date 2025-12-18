@@ -73,6 +73,6 @@ function getDefaultColors(count: number, alpha: number = 0.8): string[] {
     `rgba(34, 197, 94, ${alpha})`,    // Emerald
   ]
   
-  return Array.from({ length: count }, (_, i) => colors[i % colors.length])
+  return Array.from({ length: count }, (_, i) => colors[i % colors.length]).filter((c): c is string => c !== undefined)
 }
 </script>

@@ -263,7 +263,7 @@ let lastMessageCount = messages.value.length
 watch(() => messages.value.length, async (newLength) => {
   if (newLength > lastMessageCount && isVoiceSupported.value) {
     const lastMessage = messages.value[messages.value.length - 1]
-    if (lastMessage.type === 'bot' && isVoiceListening.value) {
+    if (lastMessage && lastMessage.type === 'bot' && isVoiceListening.value) {
       // Speak the AI response
       try {
         await speak(lastMessage.content)

@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { createQuotationRecord } from '~/server/utils/quotations'
+import { createQuotationRecord } from '../../../utils/quotations'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)

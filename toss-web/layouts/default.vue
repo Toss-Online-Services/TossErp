@@ -178,39 +178,69 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-vh-100">
+  <div class="g-sidenav-show bg-gray-100 min-vh-100">
     <!-- Offline Indicator -->
     <OfflineIndicator />
     <!-- Sidebar -->
     <aside
       :class="[
-        'sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-white',
+        'sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2 bg-white my-2',
         sidebarMinimized ? 'sidenav-mini' : ''
       ]"
       id="sidenav-main"
     >
       <!-- Sidebar Header -->
       <div class="sidenav-header">
-        <NuxtLink to="/" class="navbar-brand m-0">
-          <span class="ms-1 font-weight-bold text-dark">TOSS</span>
+        <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
+        <NuxtLink to="/" class="navbar-brand px-4 py-3 m-0">
+          <img src="/logo.svg" class="navbar-brand-img" width="26" height="26" alt="TOSS Logo">
+          <span class="ms-1 text-sm text-dark font-weight-bold">TOSS ERP</span>
         </NuxtLink>
       </div>
 
       <hr class="horizontal dark mt-0 mb-2">
 
       <!-- Navigation -->
-      <div class="navbar-nav-wrapper w-auto">
+      <div class="collapse show navbar-collapse w-auto h-auto" id="sidenav-collapse-main">
         <ul class="navbar-nav">
-          <!-- User Profile Section -->
-          <li class="mb-2">
-            <button class="ct-nav-item w-full group">
-              <img src="https://ui-avatars.com/api/?name=Brooklyn+Alice&background=1f2937&color=fff" alt="User" class="w-8 h-8 rounded-full">
-              <span v-if="!sidebarMinimized" class="text-sm font-medium">Brooklyn Alice</span>
-              <i v-if="!sidebarMinimized" class="ml-auto text-sm material-symbols-rounded ct-nav-icon">expand_more</i>
-            </button>
+          <!-- User Profile Section with Dropdown -->
+          <li class="nav-item mb-2 mt-0">
+            <a 
+              data-bs-toggle="collapse" 
+              href="#ProfileNav" 
+              class="nav-link text-dark" 
+              aria-controls="ProfileNav" 
+              role="button" 
+              aria-expanded="false"
+            >
+              <img src="https://ui-avatars.com/api/?name=Brooklyn+Alice&background=1f2937&color=fff&size=36" alt="User" class="avatar">
+              <span v-if="!sidebarMinimized" class="nav-link-text ms-2 ps-1">Brooklyn Alice</span>
+            </a>
+            <div class="collapse" id="ProfileNav">
+              <ul class="nav">
+                <li class="nav-item">
+                  <NuxtLink to="/settings" class="nav-link text-dark">
+                    <span class="sidenav-mini-icon">MP</span>
+                    <span class="sidenav-normal ms-3 ps-1">My Profile</span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <NuxtLink to="/settings" class="nav-link text-dark">
+                    <span class="sidenav-mini-icon">S</span>
+                    <span class="sidenav-normal ms-3 ps-1">Settings</span>
+                  </NuxtLink>
+                </li>
+                <li class="nav-item">
+                  <a href="javascript:;" class="nav-link text-dark">
+                    <span class="sidenav-mini-icon">L</span>
+                    <span class="sidenav-normal ms-3 ps-1">Logout</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
           </li>
 
-          <hr class="my-2 border-[hsl(var(--ct-border))]">
+          <hr class="horizontal dark mt-0">
 
           <!-- Main Navigation -->
           <li class="nav-item">
@@ -680,15 +710,26 @@ onMounted(() => {
     <!-- Main Content Area -->
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
       <!-- Top Navbar -->
-      <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
-        <div class="container-fluid py-1 px-3">
-          <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+      <nav class="navbar navbar-main navbar-expand-lg position-sticky mt-2 top-1 px-0 py-1 mx-3 shadow-none border-radius-lg z-index-sticky" id="navbarBlur" data-scroll="true">
+        <div class="container-fluid py-1 px-2">
+          <!-- Desktop Sidenav Toggler -->
+          <div class="sidenav-toggler sidenav-toggler-inner d-xl-block d-none">
+            <a href="javascript:;" class="nav-link text-body p-0" @click="toggleSidebarMinimize">
+              <div class="sidenav-toggler-inner">
+                <i class="sidenav-toggler-line"></i>
+                <i class="sidenav-toggler-line"></i>
+                <i class="sidenav-toggler-line"></i>
+              </div>
+            </a>
+          </div>
+          
+          <nav aria-label="breadcrumb" class="ps-2">
+            <ol class="breadcrumb bg-transparent mb-0 p-0">
               <li
                 v-for="(crumb, index) in breadcrumbs"
                 :key="index"
                 class="breadcrumb-item text-sm"
-                :class="{'active': index === breadcrumbs.length - 1}"
+                :class="{'active font-weight-bold': index === breadcrumbs.length - 1}"
               >
                 <NuxtLink
                   v-if="index < breadcrumbs.length - 1"
@@ -700,7 +741,6 @@ onMounted(() => {
                 <span v-else class="text-dark">{{ crumb.label }}</span>
               </li>
             </ol>
-            <h6 class="font-weight-bolder mb-0" v-if="breadcrumbs.length > 0">{{ breadcrumbs[breadcrumbs.length - 1].label }}</h6>
           </nav>
 
           <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -719,56 +759,52 @@ onMounted(() => {
             <ul class="navbar-nav justify-content-end">
 
               <!-- User Menu -->
-              <li class="nav-item dropdown pe-2 d-flex align-items-center">
+              <li class="nav-item">
                 <a 
                   href="javascript:;" 
-                  class="nav-link text-body p-0" 
+                  class="px-1 py-0 nav-link line-height-0" 
                   id="dropdownMenuButton" 
                   data-bs-toggle="dropdown" 
                   aria-expanded="false"
                 >
-                  <i class="material-symbols-rounded cursor-pointer">account_circle</i>
+                  <i class="material-symbols-rounded">account_circle</i>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
-                  <li>
+                <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4" aria-labelledby="dropdownMenuButton">
+                  <li class="mb-2">
                     <NuxtLink
                       to="/settings"
                       class="dropdown-item border-radius-md"
                     >
-                      <div class="d-flex py-1">
-                        <div class="d-flex flex-column justify-content-center">
-                          <h6 class="text-sm font-weight-normal mb-1">
-                            <span class="font-weight-bold">My Profile</span>
-                          </h6>
+                      <div class="d-flex align-items-center py-1">
+                        <span class="material-symbols-rounded">person</span>
+                        <div class="ms-2">
+                          <h6 class="text-sm font-weight-normal my-auto">My Profile</h6>
                         </div>
                       </div>
                     </NuxtLink>
                   </li>
-                  <li>
+                  <li class="mb-2">
                     <NuxtLink
                       to="/settings"
                       class="dropdown-item border-radius-md"
                     >
-                      <div class="d-flex py-1">
-                        <div class="d-flex flex-column justify-content-center">
-                          <h6 class="text-sm font-weight-normal mb-1">
-                            <span class="font-weight-bold">Settings</span>
-                          </h6>
+                      <div class="d-flex align-items-center py-1">
+                        <span class="material-symbols-rounded">settings</span>
+                        <div class="ms-2">
+                          <h6 class="text-sm font-weight-normal my-auto">Settings</h6>
                         </div>
                       </div>
                     </NuxtLink>
                   </li>
-                  <li><hr class="dropdown-divider"></li>
                   <li>
                     <a
                       href="javascript:;"
                       class="dropdown-item border-radius-md"
                     >
-                      <div class="d-flex py-1">
-                        <div class="d-flex flex-column justify-content-center">
-                          <h6 class="text-sm font-weight-normal mb-1">
-                            <span class="font-weight-bold">Logout</span>
-                          </h6>
+                      <div class="d-flex align-items-center py-1">
+                        <span class="material-symbols-rounded">logout</span>
+                        <div class="ms-2">
+                          <h6 class="text-sm font-weight-normal my-auto">Logout</h6>
                         </div>
                       </div>
                     </a>
@@ -777,33 +813,33 @@ onMounted(() => {
               </li>
 
               <!-- Settings Icon -->
-              <li class="nav-item d-flex align-items-center">
-                <NuxtLink
-                  to="/settings"
-                  class="nav-link text-body font-weight-bold px-0"
+              <li class="nav-item">
+                <a 
+                  href="javascript:;"
+                  class="nav-link py-0 px-1 line-height-0"
                 >
-                  <i class="material-symbols-rounded">settings</i>
-                </NuxtLink>
+                  <i class="material-symbols-rounded fixed-plugin-button-nav">settings</i>
+                </a>
               </li>
 
               <!-- Notifications -->
-              <li class="nav-item dropdown pe-2 d-flex align-items-center">
+              <li class="nav-item dropdown py-0 pe-3">
                 <a 
                   href="javascript:;" 
-                  class="nav-link text-body p-0" 
+                  class="nav-link py-0 px-1 position-relative line-height-0" 
                   id="dropdownNotification" 
                   data-bs-toggle="dropdown" 
                   aria-expanded="false"
                 >
-                  <i class="material-symbols-rounded cursor-pointer">notifications</i>
+                  <i class="material-symbols-rounded">notifications</i>
                   <span v-if="unreadCount > 0" class="position-absolute top-5 start-100 translate-middle badge rounded-pill bg-danger border border-white small py-1 px-2">
-                    {{ unreadCount > 9 ? '9+' : unreadCount }}
+                    <span class="small">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
                     <span class="visually-hidden">unread notifications</span>
                   </span>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4" aria-labelledby="dropdownNotification" style="max-height: 400px; overflow-y: auto; min-width: 300px;">
+                <ul class="dropdown-menu dropdown-menu-end p-2 me-sm-n4" aria-labelledby="dropdownNotification" style="max-height: 400px; overflow-y: auto; min-width: 300px;">
                   <li class="mb-2">
-                    <div class="d-flex justify-content-between align-items-center px-3">
+                    <div class="d-flex justify-content-between align-items-center px-2">
                       <h6 class="text-sm font-weight-bold mb-0">Notifications</h6>
                       <button
                         v-if="unreadCount > 0"
@@ -816,41 +852,24 @@ onMounted(() => {
                   </li>
                   <li v-if="notifications.length === 0">
                     <div class="text-center py-4">
-                      <i class="material-symbols-rounded opacity-6" style="font-size: 3rem;">notifications_off</i>
+                      <i class="material-symbols-rounded opacity-5" style="font-size: 3rem;">notifications_off</i>
                       <p class="text-sm text-secondary mb-0">No notifications</p>
                     </div>
                   </li>
-                  <li v-else v-for="notification in notifications" :key="notification.id">
+                  <li v-else v-for="notification in notifications" :key="notification.id" class="mb-2">
                     <a
                       href="javascript:;"
                       @click="markNotificationAsRead(notification.id)"
                       class="dropdown-item border-radius-md"
                       :class="{ 'bg-light': !notification.read }"
                     >
-                      <div class="d-flex py-1">
-                        <div class="my-auto">
-                          <div 
-                            class="icon icon-sm icon-shape shadow text-center border-radius-md"
-                            :class="{
-                              'bg-gradient-danger': notification.color === 'red',
-                              'bg-gradient-success': notification.color === 'green',
-                              'bg-gradient-primary': notification.color === 'blue',
-                              'bg-gradient-warning': notification.color === 'orange'
-                            }"
-                          >
-                            <i class="material-symbols-rounded opacity-10 text-white">{{ notification.icon }}</i>
-                          </div>
-                        </div>
-                        <div class="d-flex flex-column justify-content-center ms-3">
-                          <h6 class="text-sm font-weight-bold mb-1">
+                      <div class="d-flex align-items-center py-1">
+                        <span class="material-symbols-rounded">{{ notification.icon }}</span>
+                        <div class="ms-2">
+                          <h6 class="text-sm font-weight-normal my-auto">
                             {{ notification.title }}
                           </h6>
-                          <p class="text-xs text-secondary mb-0">
-                            {{ notification.message }}
-                          </p>
-                          <p class="text-xs text-secondary mb-0">
-                            {{ notification.time }}
-                          </p>
+                          <p class="text-xs text-secondary mb-0">{{ notification.message }}</p>
                         </div>
                       </div>
                     </a>
@@ -878,7 +897,7 @@ onMounted(() => {
       </nav>
 
       <!-- Page Content -->
-      <div class="container-fluid py-4">
+      <div class="container-fluid py-2">
         <slot />
       </div>
     </main>

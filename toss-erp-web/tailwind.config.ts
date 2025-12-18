@@ -123,13 +123,13 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
+          'Roboto',
           'Inter var',
           'Inter',
           'system-ui',
           '-apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',
-          'Roboto',
           'sans-serif'
         ]
       },

@@ -69,24 +69,24 @@
                   <div>
                     <h5 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Custom Fields:</h5>
                     <ul class="space-y-1 text-gray-600 dark:text-gray-400">
-                      <li v-for="field in getSelectedEnterpriseConfig()?.customFields.slice(0, 3)" :key="field.id" class="flex items-center">
+                      <li v-for="field in getSelectedEnterpriseConfig()?.customFields?.slice(0, 3)" :key="field.id" class="flex items-center">
                         <CheckIcon class="w-4 h-4 text-green-500 mr-2" />
                         {{ field.name }}
                       </li>
-                      <li v-if="getSelectedEnterpriseConfig()?.customFields.length > 3" class="text-gray-500">
-                        +{{ getSelectedEnterpriseConfig()?.customFields.length - 3 }} more fields...
+                      <li v-if="(getSelectedEnterpriseConfig()?.customFields?.length ?? 0) > 3" class="text-gray-500">
+                        +{{ (getSelectedEnterpriseConfig()?.customFields?.length ?? 0) - 3 }} more fields...
                       </li>
                     </ul>
                   </div>
                   <div>
                     <h5 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Service Offerings:</h5>
                     <ul class="space-y-1 text-gray-600 dark:text-gray-400">
-                      <li v-for="service in getSelectedEnterpriseConfig()?.serviceOfferings.slice(0, 3)" :key="service.id" class="flex items-center">
+                      <li v-for="service in getSelectedEnterpriseConfig()?.serviceOfferings?.slice(0, 3)" :key="service.id" class="flex items-center">
                         <CheckIcon class="w-4 h-4 text-green-500 mr-2" />
                         {{ service.name }}
                       </li>
-                      <li v-if="getSelectedEnterpriseConfig()?.serviceOfferings.length > 3" class="text-gray-500">
-                        +{{ getSelectedEnterpriseConfig()?.serviceOfferings.length - 3 }} more services...
+                      <li v-if="(getSelectedEnterpriseConfig()?.serviceOfferings?.length ?? 0) > 3" class="text-gray-500">
+                        +{{ (getSelectedEnterpriseConfig()?.serviceOfferings?.length ?? 0) - 3 }} more services...
                       </li>
                     </ul>
                   </div>

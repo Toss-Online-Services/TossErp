@@ -123,7 +123,7 @@
               </div>
 
               <!-- Triggers Section -->
-              <div v-if="workflowForm.triggers.length > 0">
+              <div v-if="(workflowForm.triggers?.length ?? 0) > 0">
                 <h5 class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Triggers</h5>
                 <div class="space-y-2">
                   <div
@@ -151,7 +151,7 @@
               </div>
 
               <!-- Actions Section -->
-              <div v-if="workflowForm.actions.length > 0">
+              <div v-if="(workflowForm.actions?.length ?? 0) > 0">
                 <h5 class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Actions</h5>
                 <div class="space-y-2">
                   <div
@@ -190,7 +190,7 @@
               </div>
 
               <!-- Empty State -->
-              <div v-if="workflowForm.triggers.length === 0 && workflowForm.actions.length === 0" class="text-center py-8">
+              <div v-if="(workflowForm.triggers?.length ?? 0) === 0 && (workflowForm.actions?.length ?? 0) === 0" class="text-center py-8">
                 <CogIcon class="mx-auto h-12 w-12 text-slate-400" />
                 <h3 class="mt-2 text-sm font-medium text-slate-900 dark:text-white">No workflow steps yet</h3>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Add triggers and actions to build your automation workflow.</p>
@@ -417,8 +417,8 @@ const quickTemplates = {
 const canSave = computed(() => {
   return workflowForm.value.name && 
          workflowForm.value.description && 
-         workflowForm.value.enterpriseTypes?.length > 0 &&
-         (workflowForm.value.triggers?.length > 0 || workflowForm.value.actions?.length > 0)
+         (workflowForm.value.enterpriseTypes?.length ?? 0) > 0 &&
+         ((workflowForm.value.triggers?.length ?? 0) > 0 || (workflowForm.value.actions?.length ?? 0) > 0)
 })
 
 // Methods

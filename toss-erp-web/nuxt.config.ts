@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: 'app/',
 
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/material-bridge.css'],
 
   runtimeConfig: {
     public: {
@@ -28,6 +28,10 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200'
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap'
         }
       ]
     }

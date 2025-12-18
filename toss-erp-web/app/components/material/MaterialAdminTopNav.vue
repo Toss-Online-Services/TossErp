@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Menu, Bell as BellIcon, Cog6Tooth as Cog6ToothIcon, MagnifyingGlass as MagnifyingGlassIcon, ChevronRight } from '@heroicons/vue/24/outline'
+import { Bars3Icon as Menu, BellIcon, Cog6ToothIcon, MagnifyingGlassIcon, ChevronRightIcon as ChevronRight } from '@heroicons/vue/24/outline'
 
 interface Props {
   title?: string

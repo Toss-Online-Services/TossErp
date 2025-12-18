@@ -12,17 +12,39 @@ export const useApiInterceptor = () => {
       onRequest: async ({ options }) => {
         // Add auth header if token exists and is not expired
         if (token.value && !isTokenExpired()) {
-          options.headers = {
-            ...options.headers,
-            ...getAuthHeader()
+          const authHeaders = getAuthHeader()
+          if (options.headers) {
+            if (options.headers instanceof Headers) {
+              Object.entries(authHeaders).forEach(([key, value]) => {
+                options.headers.set(key, value)
+              })
+            } else {
+              options.headers = {
+                ...options.headers,
+                ...authHeaders
+              }
+            }
+          } else {
+            options.headers = authHeaders
           }
         } else if (token.value && isTokenExpired() && refreshToken.value) {
           // Try to refresh token before request
           const refreshSuccess = await forceRefresh()
           if (refreshSuccess) {
-            options.headers = {
-              ...options.headers,
-              ...getAuthHeader()
+            const authHeaders = getAuthHeader()
+            if (options.headers) {
+              if (options.headers instanceof Headers) {
+                Object.entries(authHeaders).forEach(([key, value]) => {
+                  options.headers.set(key, value)
+                })
+              } else {
+                options.headers = {
+                  ...options.headers,
+                  ...authHeaders
+                }
+              }
+            } else {
+              options.headers = authHeaders
             }
           } else {
             // Refresh failed, redirect to login

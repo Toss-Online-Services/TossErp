@@ -197,9 +197,27 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useI18n } from '#i18n'
 
-const { t } = useI18n()
+// Simple translation fallback (i18n not configured)
+const translations: Record<string, string> = {
+  'sales.quotations.title': 'Quotations',
+  'sales.quotations.subtitle': 'Manage and track your sales quotations',
+  'sales.quotations.newQuotation': 'New Quotation',
+  'common.template': 'Template',
+  'common.search': 'Search',
+  'common.status': 'Status',
+  'common.all': 'All',
+  'common.draft': 'Draft',
+  'common.sent': 'Sent',
+  'common.accepted': 'Accepted',
+  'common.expired': 'Expired',
+  'common.actions': 'Actions',
+  'common.view': 'View',
+  'common.edit': 'Edit',
+  'common.delete': 'Delete',
+  'common.noData': 'No quotations found'
+}
+const t = (key: string) => translations[key] || key
 
 // Page metadata
 useHead({

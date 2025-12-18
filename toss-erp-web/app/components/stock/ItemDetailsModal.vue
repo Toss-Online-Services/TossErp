@@ -13,7 +13,7 @@
                 {{ item?.name }}
               </h3>
               <p class="text-sm text-gray-500 dark:text-gray-400">
-                {{ item?.category }}
+                {{ item?.category || (item?.categoryId ? `Category ${item.categoryId}` : 'No category') }}
               </p>
             </div>
           </div>

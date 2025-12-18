@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery } from 'h3'
-import { listQuotations } from '~/server/utils/quotations'
+import { listQuotations } from '../../../utils/quotations'
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)

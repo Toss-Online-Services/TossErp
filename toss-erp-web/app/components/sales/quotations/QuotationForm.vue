@@ -173,7 +173,7 @@
                 />
               </td>
               <td class="px-3 py-3 text-right font-medium">
-                {{ formatCurrency(item.amount) }}
+                {{ formatCurrency(item.amount || 0) }}
               </td>
               <td class="px-3 py-3">
                 <button
@@ -206,7 +206,7 @@
 
         <div class="flex justify-between py-2 border-b">
           <span>{{ t('sales.quotations.discount') }}</span>
-          <span class="font-medium text-red-600">-{{ formatCurrency(totals.discount) }}</span>
+          <span class="font-medium text-red-600">-{{ formatCurrency(totals.discount || totals.discountAmount) }}</span>
         </div>
 
         <div class="flex justify-between py-2 border-b">
@@ -216,7 +216,7 @@
 
         <div class="flex justify-between py-2 border-b">
           <span>{{ t('sales.quotations.vat') }} (15%)</span>
-          <span class="font-medium">{{ formatCurrency(totals.tax) }}</span>
+          <span class="font-medium">{{ formatCurrency(totals.tax || totals.taxAmount) }}</span>
         </div>
 
         <div class="flex justify-between py-3 text-lg font-bold">
@@ -288,7 +288,8 @@ const emit = defineEmits<{
   (e: 'cancel'): void
 }>()
 
-const { t } = useI18n()
+// const { t } = useI18n() // TODO: Configure i18n if needed
+const t = (key: string) => key // Temporary fallback
 const today = new Date().toISOString().split('T')[0]
 
 const createEmptyLineItem = (): QuotationFormItemInput => ({
@@ -320,7 +321,24 @@ const products = computed(() => props.meta.products)
 
 const selectedCustomer = computed(() => props.meta.customers.find((customer) => customer.id === formState.value.customerId))
 
-const totals = computed<QuotationTotals>(() => calculateQuotationTotals(lineItems.value))
+const totals = computed<QuotationTotals>(() => {
+  const calculated = calculateQuotationTotals(lineItems.value.map(item => ({
+    id: item.productId,
+    productId: item.productId,
+    productName: item.productName || '',
+    description: item.description,
+    quantity: item.quantity,
+    rate: item.rate || 0,
+    discountPercent: item.discountPercent,
+    vatRate: 15, // Default VAT rate
+    amount: item.amount || 0
+  })))
+  return {
+    ...calculated,
+    discount: calculated.discountAmount,
+    tax: calculated.taxAmount
+  }
+})
 
 const formatCurrency = (amount: number): string => `R${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
 
@@ -373,7 +391,10 @@ const removeLineItem = (index: number) => {
 }
 
 const updateLineAmount = (index: number) => {
-  lineItems.value[index].amount = calculateLineAmount(lineItems.value[index])
+  const item = lineItems.value[index]
+  if (item && item.rate !== undefined) {
+    item.amount = calculateLineAmount(item.quantity, item.rate, item.discountPercent || 0)
+  }
 }
 
 const onProductChange = (index: number, productId: string) => {
@@ -382,11 +403,12 @@ const onProductChange = (index: number, productId: string) => {
     return
   }
 
-  lineItems.value[index].rate = product.price
-  lineItems.value[index].description = product.description
-  lineItems.value[index].productName = product.name
-  lineItems.value[index].vatRate = product.vatRate
-  updateLineAmount(index)
+  if (lineItems.value[index]) {
+    lineItems.value[index].rate = product.price
+    lineItems.value[index].description = product.description
+    lineItems.value[index].productName = product.name
+    updateLineAmount(index)
+  }
 }
 
 const handleSubmit = (status: 'draft' | 'sent') => {
@@ -395,7 +417,7 @@ const handleSubmit = (status: 'draft' | 'sent') => {
     return
   }
 
-  const itemsPayload = buildQuotationItemsPayload(lineItems.value)
+  const itemsPayload = buildQuotationItemsPayload(lineItems.value, products.value)
   if (!itemsPayload.length) {
     alert(t('sales.quotations.addAtLeastOneItem'))
     return

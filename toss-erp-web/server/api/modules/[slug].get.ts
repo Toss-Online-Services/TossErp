@@ -1,4 +1,4 @@
-import modules from '~/server/data/modules'
+import modules from '../../data/modules'
 
 export default defineEventHandler((event) => {
   const slug = getRouterParam(event, 'slug')

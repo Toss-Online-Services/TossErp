@@ -42,7 +42,7 @@ const props = withDefaults(defineProps<Props>(), {
   status: 'active'
 })
 
-const colorClasses = {
+const colorClasses: Record<string, string> = {
   blue: 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600',
   green: 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600',
   purple: 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600',

@@ -1,10 +1,9 @@
-// @ts-nocheck
 <script setup lang="ts">
-import { computed, defineAsyncComponent } from 'vue'
+// @ts-nocheck
+import { computed } from 'vue'
 
-const BarChart = defineAsyncComponent(() => import('../components/charts/BarChart.vue'))
-const LineChart = defineAsyncComponent(() => import('../components/charts/LineChart.vue'))
-const DoughnutChart = defineAsyncComponent(() => import('../components/charts/DoughnutChart.vue'))
+// Charts are auto-imported by Nuxt from components/charts/
+// Use: ChartsLineChart, ChartsBarChart, ChartsDoughnutChart
 
 const statCards = [
   { title: 'Bookings', value: 281, delta: '+55%', icon: 'weekend' },
@@ -14,10 +13,10 @@ const statCards = [
 ]
 
 const salesByCountry = [
-  { country: 'United States', sales: 2500, value: '$230,900', bounce: '29.9%', flag: '/assets/img/icons/flags/US.png' },
-  { country: 'Germany', sales: 3900, value: '$440,000', bounce: '40.22%', flag: '/assets/img/icons/flags/DE.png' },
-  { country: 'Great Britain', sales: 1400, value: '$190,700', bounce: '23.44%', flag: '/assets/img/icons/flags/GB.png' },
-  { country: 'Brasil', sales: 562, value: '$143,960', bounce: '32.14%', flag: '/assets/img/icons/flags/BR.png' }
+  { country: 'United States', sales: 2500, value: '$230,900', bounce: '29.9%', color: 'bg-blue-500' },
+  { country: 'Germany', sales: 3900, value: '$440,000', bounce: '40.22%', color: 'bg-red-500' },
+  { country: 'Great Britain', sales: 1400, value: '$190,700', bounce: '23.44%', color: 'bg-orange-500' },
+  { country: 'Brasil', sales: 562, value: '$143,960', bounce: '32.14%', color: 'bg-green-500' }
 ]
 
 const activeUsers = [
@@ -98,7 +97,7 @@ const formattedStatCards = computed(() => statCards)
                 <div class="pe-2">
                   <div class="chart">
                     <ClientOnly>
-                      <BarChart :labels="barLabels" :data="barData" backgroundColor="rgba(233, 30, 99, 0.8)" :height="170" />
+                      <ChartsBarChart :labels="barLabels" :data="barData" backgroundColor="rgba(233, 30, 99, 0.8)" :height="170" />
                       <template #fallback>
                         <div style="height: 170px"></div>
                       </template>
@@ -122,7 +121,7 @@ const formattedStatCards = computed(() => statCards)
                 <div class="pe-2">
                   <div class="chart">
                     <ClientOnly>
-                      <LineChart
+                      <ChartsLineChart
                         :labels="lineLabels"
                         :datasets="[{ label: 'Sales', data: lineData, borderColor: '#e91e63', backgroundColor: 'rgba(233, 30, 99, 0.1)', fill: true, tension: 0.4, pointRadius: 0 }]"
                         :height="170"
@@ -150,7 +149,7 @@ const formattedStatCards = computed(() => statCards)
                 <div class="pe-2">
                   <div class="chart">
                     <ClientOnly>
-                      <LineChart
+                      <ChartsLineChart
                         :labels="barLabels"
                         :datasets="[{ label: 'Tasks', data: [50, 45, 60, 70, 65, 75, 80], borderColor: '#03a9f4', backgroundColor: 'rgba(3, 169, 244, 0.1)', fill: true, tension: 0.4, pointRadius: 0 }]"
                         :height="170"
@@ -187,7 +186,8 @@ const formattedStatCards = computed(() => statCards)
                       <td class="w-30">
                         <div class="d-flex px-2 py-1 align-items-center">
                           <div>
-                            <img :src="row.flag" alt="Country flag" style="width: 32px; height: 32px; object-fit: cover;" class="border-radius-lg">
+                            <div :class="['icon', 'icon-shape', 'icon-sm', 'rounded-circle', 'shadow', 'text-center', row.color]" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                            </div>
                           </div>
                           <div class="ms-4">
                             <p class="text-xs font-weight-bold mb-0">Country:</p>
@@ -261,7 +261,7 @@ const formattedStatCards = computed(() => statCards)
                   <div class="col-lg-6">
                     <div class="d-flex flex-column h-100">
                       <ClientOnly>
-                        <DoughnutChart 
+                        <ChartsDoughnutChart 
                           :labels="affiliatesLabels" 
                           :data="affiliatesData" 
                           :colors="affiliatesColors" 

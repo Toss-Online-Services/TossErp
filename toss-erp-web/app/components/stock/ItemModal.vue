@@ -342,8 +342,9 @@ const emit = defineEmits<{
 // Computed
 const isEditing = computed(() => !!props.item)
 
-// Form data
-const formData = ref<CreateItemRequest & { id?: string }>({
+// Form data - using local category field that maps to categoryId
+const formData = ref<CreateItemRequest & { id?: string; category?: string; unit?: string; sellingPrice?: number; reorderQty?: number }>({
+  shopId: 1, // Default shop ID, should come from props or context
   sku: '',
   barcode: '',
   name: '',
@@ -376,21 +377,24 @@ watch(() => props.item, (item) => {
   if (item) {
     formData.value = {
       id: item.id,
-      sku: item.sku,
+      shopId: item.shopId,
+      sku: item.sku || '',
       barcode: item.barcode || '',
       name: item.name,
       description: item.description || '',
-      category: item.category,
-      unit: item.unit,
-      sellingPrice: item.sellingPrice,
+      category: item.category || '',
+      categoryId: item.categoryId,
+      unit: item.unit || '',
+      sellingPrice: item.sellingPrice || item.unitPrice || 0,
       costPrice: item.costPrice || 0,
-      reorderLevel: item.reorderLevel,
-      reorderQty: item.reorderQty,
+      reorderLevel: item.reorderLevel || item.reorderQty || 0,
+      reorderQty: item.reorderQty || item.reorderLevel || 1,
       isActive: item.isActive
     }
   } else {
     // Reset form for new item
     formData.value = {
+      shopId: 1,
       sku: '',
       barcode: '',
       name: '',
@@ -420,10 +424,23 @@ const handleSubmit = () => {
     formData.value.category = newCategory.value.trim()
   }
 
-  // Remove id if creating new item
-  const submitData = { ...formData.value }
-  if (!isEditing.value) {
-    delete submitData.id
+  // Map form data to API format
+  const submitData: CreateItemRequest | UpdateItemRequest = {
+    shopId: formData.value.shopId || 1,
+    name: formData.value.name,
+    sku: formData.value.sku,
+    barcode: formData.value.barcode,
+    description: formData.value.description,
+    categoryId: formData.value.categoryId, // Map category string to ID if needed
+    unitPrice: formData.value.sellingPrice || formData.value.unitPrice || 0,
+    costPrice: formData.value.costPrice,
+    reorderLevel: formData.value.reorderLevel || formData.value.reorderQty || 0,
+    isActive: formData.value.isActive
+  }
+
+  // Add id for updates
+  if (isEditing.value && formData.value.id) {
+    (submitData as UpdateItemRequest & { id: number }).id = Number(formData.value.id)
   }
 
   emit('save', submitData as CreateItemRequest | UpdateItemRequest)

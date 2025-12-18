@@ -1,41 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
-    <!-- Page Header with Glass Morphism -->
-    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Business Analytics
-            </h1>
-            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400 flex items-center space-x-2">
-              <span>{{ formatDate(new Date()) }}</span>
-              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
-                Live
-              </span>
-            </p>
-          </div>
-          <div class="flex items-center space-x-3">
-            <MaterialButton
-              @click="refreshData"
-              variant="outlined"
-              size="md"
-            >
-              <ArrowPathIcon class="w-4 h-4 mr-2" :class="{ 'animate-spin': loading }" />
-              Refresh
-            </MaterialButton>
-          </div>
-        </div>
-      </div>
-    </div>
-
+  <div class="min-h-screen">
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="container-fluid py-4">
       <!-- Loading State -->
-      <div v-if="loading" class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div v-for="i in 4" :key="i" class="bg-white dark:bg-slate-800 rounded-2xl p-6 animate-pulse shadow-lg">
+      <div v-if="loading" class="row g-4">
+        <div v-for="i in 4" :key="i" class="col-12 col-md-6 col-xl-3">
+          <div class="card border-0 shadow-material p-4 animate-pulse">
             <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mb-2"></div>
             <div class="h-8 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
           </div>
@@ -43,51 +13,60 @@
       </div>
 
       <!-- Dashboard Content -->
-      <div v-else class="space-y-6">
+      <div v-else class="space-y-4">
         <!-- Key Metrics - Material Design Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <MaterialStatsCard
-            label="Total Revenue"
-            :value="metrics.totalRevenue"
-            :icon="CurrencyDollarIcon"
-            :change="metrics.revenueChange"
-            gradient="green"
-            :sparkline-data="revenueSparkline"
-            prefix="R"
-          />
+        <div class="row g-4 mb-4">
+          <div class="col-12 col-md-6 col-xl-3">
+            <MaterialStatsCard
+              label="Total Revenue"
+              :value="metrics.totalRevenue"
+              :icon="CurrencyDollarIcon"
+              :change="metrics.revenueChange"
+              gradient="green"
+              :sparkline-data="revenueSparkline"
+              prefix="R"
+            />
+          </div>
 
-          <MaterialStatsCard
-            label="Total Orders"
-            :value="metrics.totalOrders"
-            :icon="ShoppingCartIcon"
-            :change="metrics.ordersChange"
-            gradient="blue"
-            :sparkline-data="ordersSparkline"
-          />
+          <div class="col-12 col-md-6 col-xl-3">
+            <MaterialStatsCard
+              label="Total Orders"
+              :value="metrics.totalOrders"
+              :icon="ShoppingCartIcon"
+              :change="metrics.ordersChange"
+              gradient="blue"
+              :sparkline-data="ordersSparkline"
+            />
+          </div>
 
-          <MaterialStatsCard
-            label="Group Buy Savings"
-            :value="metrics.groupBuySavings"
-            :icon="UserGroupIcon"
-            :change="15.3"
-            gradient="purple"
-            prefix="R"
-          />
+          <div class="col-12 col-md-6 col-xl-3">
+            <MaterialStatsCard
+              label="Group Buy Savings"
+              :value="metrics.groupBuySavings"
+              :icon="UserGroupIcon"
+              :change="15.3"
+              gradient="purple"
+              prefix="R"
+            />
+          </div>
 
-          <MaterialStatsCard
-            label="Delivery Costs"
-            :value="metrics.totalDeliveryCost"
-            :icon="TruckIcon"
-            :change="-12.5"
-            gradient="orange"
-            prefix="R"
-          />
+          <div class="col-12 col-md-6 col-xl-3">
+            <MaterialStatsCard
+              label="Delivery Costs"
+              :value="metrics.totalDeliveryCost"
+              :icon="TruckIcon"
+              :change="-12.5"
+              gradient="orange"
+              prefix="R"
+            />
+          </div>
         </div>
 
         <!-- Charts Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="row g-4 mb-4">
           <!-- Revenue Trend -->
-          <MaterialCard variant="elevated" class="lg:col-span-2" hover>
+          <div class="col-12 col-lg-8">
+            <MaterialCard variant="elevated" hover>
             <div class="flex items-center justify-between mb-6">
               <div>
                 <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Daily Sales</h3>
@@ -108,10 +87,12 @@
               color="#10B981"
               :height="280"
             />
-          </MaterialCard>
+            </MaterialCard>
+          </div>
 
           <!-- Quick Stats -->
-          <MaterialCard variant="elevated" hover>
+          <div class="col-12 col-lg-4">
+            <MaterialCard variant="elevated" hover>
             <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-6">Quick Stats</h3>
             <div class="space-y-4">
               <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-900/10 rounded-xl border border-blue-200/50 dark:border-blue-800/50">
@@ -144,13 +125,15 @@
                 </div>
               </div>
             </div>
-          </MaterialCard>
+            </MaterialCard>
+          </div>
         </div>
 
         <!-- Sales by Category & Stock Levels -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="row g-4 mb-4">
           <!-- Sales by Category -->
-          <MaterialCard variant="elevated" hover>
+          <div class="col-12 col-lg-6">
+            <MaterialCard variant="elevated" hover>
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Sales by Category</h3>
               <MaterialButton variant="text" color="primary" size="sm">
@@ -164,10 +147,12 @@
               color="#3B82F6"
               :height="280"
             />
-          </MaterialCard>
+            </MaterialCard>
+          </div>
 
           <!-- Low Stock Alerts -->
-          <MaterialCard variant="elevated" hover>
+          <div class="col-12 col-lg-6">
+            <MaterialCard variant="elevated" hover>
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Low Stock Items</h3>
               <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
@@ -200,11 +185,14 @@
             >
               View all items →
             </NuxtLink>
-          </MaterialCard>
+            </MaterialCard>
+          </div>
         </div>
 
         <!-- AI Insights Card -->
-        <MaterialCard gradient="purple" class="p-8 text-white relative overflow-hidden">
+        <div class="row g-4">
+          <div class="col-12">
+            <MaterialCard gradient="purple" class="p-8 text-white relative overflow-hidden">
           <!-- Decorative elements -->
           <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
           <div class="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full -ml-24 -mb-24"></div>
@@ -242,7 +230,9 @@
               </div>
             </div>
           </div>
-        </MaterialCard>
+            </MaterialCard>
+          </div>
+        </div>
       </div>
     </div>
   </div>

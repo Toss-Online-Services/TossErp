@@ -93,11 +93,12 @@
     <div class="border-t border-gray-200 dark:border-gray-700 p-4">
       <div class="flex items-center space-x-3">
         <img
+          v-if="userInfo"
           :src="userInfo.avatar"
           :alt="userInfo.name"
           class="w-10 h-10 rounded-full"
         />
-        <div v-if="!collapsed" class="flex-1 min-w-0">
+        <div v-if="!collapsed && userInfo" class="flex-1 min-w-0">
           <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
             {{ userInfo.name }}
           </p>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ModuleData } from '~/server/data/modules'
+import type { ModuleData } from '~/types/modules'
 
 const props = defineProps<{
   moduleData: ModuleData
