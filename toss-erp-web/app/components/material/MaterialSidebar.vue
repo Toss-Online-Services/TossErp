@@ -1,13 +1,33 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import type { Component } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-
-interface MenuItem {
-  label: string
-  icon: string
-  to?: string
-  children?: MenuItem[]
-}
+import {
+  ArrowLeftRight,
+  Banknote,
+  BarChart3,
+  Bell,
+  Boxes,
+  CheckSquare,
+  ChevronLeft,
+  ChevronRight,
+  CircleUserRound,
+  ContactRound,
+  CreditCard,
+  FileSignature,
+  FileSpreadsheet,
+  FolderKanban,
+  LayoutDashboard,
+  Menu,
+  Package,
+  ReceiptText,
+  Settings,
+  ShoppingBag,
+  Truck,
+  UserCircle,
+  Users,
+  Wallet
+} from 'lucide-vue-next'
 
 interface Props {
   open: boolean
@@ -22,6 +42,17 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   role: 'retailer'
 })
+
+interface MenuLink {
+  name: string
+  path: string
+  icon: Component
+}
+
+interface MenuGroup {
+  title: string
+  items: MenuLink[]
+}
 
 const emit = defineEmits<{
   'update:open': [value: boolean]
@@ -39,6 +70,7 @@ const sidebarOpen = computed({
 })
 
 const checkMobile = () => {
+  if (typeof window === 'undefined') return
   isMobile.value = window.innerWidth < 1024
   if (isMobile.value) {
     sidebarOpen.value = false
@@ -56,7 +88,9 @@ const toggleSidebar = () => {
 const moduleGroups: MenuGroup[] = [
   {
     title: 'Dashboard',
-    items: [{ name: 'Today', path: '/dashboard', icon: LayoutDashboard }]
+    items: [
+      { name: 'Analytics', path: '/dashboard/analytics', icon: LayoutDashboard }
+    ]
   },
   {
     title: 'Selling',
@@ -164,7 +198,7 @@ onUnmounted(() => {
           to="/"
           class="flex items-center gap-3"
         >
-          <div class="flex items-center justify-center w-10 h-10 bg-stone-900 text-white rounded-lg shadow-md">
+          <div class="flex items-center justify-center w-10 h-10 text-white rounded-lg shadow-md bg-stone-900">
             <span class="text-sm font-bold">T</span>
           </div>
           <div class="flex flex-col leading-tight">
@@ -174,7 +208,7 @@ onUnmounted(() => {
         </NuxtLink>
         <button
           @click="toggleSidebar"
-          class="p-2 rounded-lg hover:bg-gray-100 text-stone-700 transition-colors"
+          class="p-2 transition-colors rounded-lg hover:bg-gray-100 text-stone-700"
           :class="{ 'mx-auto': collapsed && !isMobile }"
           aria-label="Toggle sidebar"
         >
@@ -184,7 +218,7 @@ onUnmounted(() => {
         </button>
       </div>
 
-      <div class="h-px bg-gray-200 mx-4"></div>
+      <div class="h-px mx-4 bg-gray-200"></div>
 
       <!-- User Profile Section -->
       <div
@@ -194,19 +228,19 @@ onUnmounted(() => {
         <div class="relative">
           <button
             @click="showProfileMenu = !showProfileMenu"
-            class="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-gray-100 transition-colors"
+            class="flex items-center w-full gap-3 p-2 transition-colors rounded-xl hover:bg-gray-100"
           >
-            <div class="w-10 h-10 rounded-full bg-stone-800 text-white flex items-center justify-center shadow-md">
+            <div class="flex items-center justify-center w-10 h-10 text-white rounded-full shadow-md bg-stone-800">
               <UserCircle :size="20" />
             </div>
             <div class="flex-1 text-left">
               <p class="text-sm font-medium text-stone-900">{{ userInfo.name }}</p>
-              <p class="text-xs text-stone-500 truncate">{{ userInfo.email }}</p>
+              <p class="text-xs truncate text-stone-500">{{ userInfo.email }}</p>
             </div>
           </button>
           <div
             v-if="showProfileMenu"
-            class="absolute left-0 right-0 mt-2 bg-white border border-stone-200 rounded-xl shadow-lg z-50"
+            class="absolute left-0 right-0 z-50 mt-2 bg-white border shadow-lg border-stone-200 rounded-xl"
           >
             <NuxtLink
               to="/admin/settings"
@@ -217,7 +251,7 @@ onUnmounted(() => {
             </NuxtLink>
             <button
               @click="handleLogout"
-              class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 rounded-b-xl"
+              class="w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-gray-50 rounded-b-xl"
             >
               Logout
             </button>
@@ -226,7 +260,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Navigation -->
-      <nav class="flex-1 overflow-y-auto px-3 pb-4 pt-3 space-y-4">
+      <nav class="flex-1 px-3 pt-3 pb-4 space-y-4 overflow-y-auto">
         <div
           v-for="group in navigation"
           :key="group.title"
@@ -288,7 +322,7 @@ onUnmounted(() => {
         v-if="isMobile && sidebarOpen"
         @click="sidebarOpen = false"
         @touchstart="sidebarOpen = false"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+        class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
       />
     </Transition>
   </div>

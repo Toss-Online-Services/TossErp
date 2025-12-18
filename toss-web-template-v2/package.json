@@ -1,0 +1,28 @@
+{
+  "name": "toss-web-template-v2",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "nuxt": "^4.2.2",
+    "vue": "^3.5.25",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@nuxt/icon": "^2.1.1",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@pinia/nuxt": "^0.11.3",
+    "@vueuse/core": "^14.1.0",
+    "@vueuse/nuxt": "^14.1.0",
+    "chart.js": "^4.5.1",
+    "pinia": "^3.0.4",
+    "vue-chartjs": "^5.3.3",
+    "vue3-perfect-scrollbar": "^2.0.0"
+  }
+}
