@@ -11,7 +11,7 @@
       :disabled="disabled"
       :required="required"
       :class="inputClasses"
-      @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+      @input="$emit('update:modelValue', $event.target.value)"
       @blur="$emit('blur', $event)"
       @focus="$emit('focus', $event)"
     />

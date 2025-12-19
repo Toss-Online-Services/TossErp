@@ -10,11 +10,6 @@ export default defineNuxtConfig({
     '@vueuse/nuxt'
   ],
 
-  css: [
-    '~/assets/css/main.css',
-    '~/assets/css/material-dashboard.css'
-  ],
-
   app: {
     head: {
       title: 'Material Dashboard 3 PRO - Nuxt',
@@ -24,7 +19,7 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { hid: 'description', name: 'description', content: 'Material Dashboard 3 PRO React converted to Nuxt 4' }
+        { name: 'description', content: 'Material Dashboard 3 PRO React converted to Nuxt 4' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

@@ -1,9 +1,9 @@
 <template>
-  <div class="container-fluid py-4">
+  <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-12">
         <div class="card">
-          <div class="card-header pb-0">
+          <div class="pb-0 card-header">
             <MDTypography variant="h4" font-weight="bold">
               Edit Product
             </MDTypography>
@@ -16,13 +16,13 @@
               <div class="row">
                 <div class="col-lg-8">
                   <!-- Product Information -->
-                  <div class="card mb-4">
+                  <div class="mb-4 card">
                     <div class="card-body">
                       <MDTypography variant="h6" font-weight="medium" class="mb-3">
                         Product Information
                       </MDTypography>
                       <div class="row">
-                        <div class="col-12 mb-3">
+                        <div class="mb-3 col-12">
                           <MDInput
                             v-model="product.name"
                             label="Product Name"
@@ -31,7 +31,7 @@
                             required
                           />
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="mb-3 col-md-6">
                           <label class="form-label">Category</label>
                           <select v-model="product.category" class="form-select">
                             <option value="electronics">Electronics</option>
@@ -40,7 +40,7 @@
                             <option value="accessories">Accessories</option>
                           </select>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="mb-3 col-md-6">
                           <MDInput
                             v-model="product.sku"
                             label="SKU"
@@ -49,7 +49,7 @@
                             required
                           />
                         </div>
-                        <div class="col-12 mb-3">
+                        <div class="mb-3 col-12">
                           <label class="form-label">Description</label>
                           <textarea 
                             v-model="product.description"
@@ -63,13 +63,13 @@
                   </div>
 
                   <!-- Pricing -->
-                  <div class="card mb-4">
+                  <div class="mb-4 card">
                     <div class="card-body">
                       <MDTypography variant="h6" font-weight="medium" class="mb-3">
                         Pricing
                       </MDTypography>
                       <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="mb-3 col-md-4">
                           <MDInput
                             v-model="product.price"
                             label="Price"
@@ -79,7 +79,7 @@
                             required
                           />
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="mb-3 col-md-4">
                           <MDInput
                             v-model="product.comparePrice"
                             label="Compare at Price"
@@ -88,7 +88,7 @@
                             step="0.01"
                           />
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="mb-3 col-md-4">
                           <MDInput
                             v-model="product.costPrice"
                             label="Cost per Item"
@@ -102,13 +102,13 @@
                   </div>
 
                   <!-- Inventory -->
-                  <div class="card mb-4">
+                  <div class="mb-4 card">
                     <div class="card-body">
                       <MDTypography variant="h6" font-weight="medium" class="mb-3">
                         Inventory
                       </MDTypography>
                       <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="mb-3 col-md-6">
                           <MDInput
                             v-model="product.stock"
                             label="Stock Quantity"
@@ -117,7 +117,7 @@
                             required
                           />
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="mb-3 col-md-6">
                           <MDInput
                             v-model="product.weight"
                             label="Weight (kg)"
@@ -133,18 +133,18 @@
 
                 <div class="col-lg-4">
                   <!-- Product Images -->
-                  <div class="card mb-4">
+                  <div class="mb-4 card">
                     <div class="card-body">
                       <MDTypography variant="h6" font-weight="medium" class="mb-3">
                         Product Media
                       </MDTypography>
                       <div class="row">
-                        <div class="col-12 mb-3" v-for="(image, index) in product.images" :key="index">
+                        <div class="mb-3 col-12" v-for="(image, index) in product.images" :key="index">
                           <div class="position-relative">
                             <img :src="image" class="img-fluid border-radius-lg" alt="product">
                             <button 
                               type="button"
-                              class="btn btn-sm btn-icon-only btn-rounded btn-outline-danger position-absolute top-0 end-0 m-2"
+                              class="top-0 m-2 btn btn-sm btn-icon-only btn-rounded btn-outline-danger position-absolute end-0"
                               @click="removeImage(index)"
                             >
                               <Icon name="mdi:close" size="16" />
@@ -152,9 +152,9 @@
                           </div>
                         </div>
                         <div class="col-12">
-                          <div class="border border-dashed border-2 border-radius-lg p-4 text-center">
-                            <Icon name="mdi:cloud-upload" size="48" class="text-secondary mb-2" />
-                            <MDTypography variant="caption" color="text" class="d-block mb-2">
+                          <div class="p-4 text-center border border-2 border-dashed border-radius-lg">
+                            <Icon name="mdi:cloud-upload" size="48" class="mb-2 text-secondary" />
+                            <MDTypography variant="caption" color="text" class="mb-2 d-block">
                               Drop files here or click to upload
                             </MDTypography>
                             <MDButton color="info" size="sm">
@@ -167,12 +167,12 @@
                   </div>
 
                   <!-- Product Status -->
-                  <div class="card mb-4">
+                  <div class="mb-4 card">
                     <div class="card-body">
                       <MDTypography variant="h6" font-weight="medium" class="mb-3">
                         Product Status
                       </MDTypography>
-                      <div class="form-check form-switch mb-3">
+                      <div class="mb-3 form-check form-switch">
                         <input 
                           v-model="product.active"
                           class="form-check-input" 
@@ -183,7 +183,7 @@
                           Active
                         </label>
                       </div>
-                      <div class="form-check form-switch mb-3">
+                      <div class="mb-3 form-check form-switch">
                         <input 
                           v-model="product.featured"
                           class="form-check-input" 
@@ -209,7 +209,7 @@
                   </div>
 
                   <!-- Actions -->
-                  <div class="d-grid gap-2">
+                  <div class="gap-2 d-grid">
                     <MDButton type="submit" color="success" size="lg">
                       <Icon name="mdi:content-save" class="me-1" />
                       Save Changes

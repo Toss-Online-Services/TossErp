@@ -12,3 +12,8 @@ useHead({
   }
 })
 </script>
+
+<style>
+@import './assets/css/main.css';
+@import './assets/css/material-dashboard.css';
+</style>
