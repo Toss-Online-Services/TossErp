@@ -5,7 +5,7 @@
       <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
-            <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               Live Delivery Tracking
             </h1>
             <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
@@ -26,7 +26,7 @@
     <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <!-- Map Placeholder -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-        <div class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-4 border-b border-slate-200 dark:border-slate-700">
+        <div class="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 p-4 border-b border-slate-200 dark:border-slate-700">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="p-2 bg-purple-600 rounded-lg">
@@ -40,7 +40,7 @@
           </div>
         </div>
         <div class="p-6">
-          <div class="bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl h-96 flex items-center justify-center relative overflow-hidden">
+          <div class="bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl h-96 flex items-center justify-center relative overflow-hidden">
             <!-- Animated Background Pattern -->
             <div class="absolute inset-0 opacity-10">
               <div class="absolute top-10 left-10 w-32 h-32 bg-purple-500 rounded-full blur-3xl animate-pulse"></div>
@@ -177,7 +177,7 @@
           <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-2xl">
             
             <!-- Header -->
-            <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+            <div class="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4 flex items-center justify-between rounded-t-2xl">
               <div>
                 <h3 class="text-xl font-bold text-white">Delivery Tracking</h3>
                 <p class="text-sm text-white/80">Order #{{ selectedDelivery.orderId }}</p>
@@ -191,10 +191,10 @@
             <div class="p-6 space-y-6">
               
               <!-- Driver Info -->
-              <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-4">
+              <div class="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-4">
                 <h4 class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3">Driver</h4>
                 <div class="flex items-center gap-3">
-                  <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white font-bold text-lg">
+                  <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg">
                     {{ selectedDelivery.driverName.charAt(0) }}
                   </div>
                   <div>
@@ -228,7 +228,7 @@
                       </div>
                       <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                         <div
-                          class="bg-gradient-to-r from-purple-600 to-pink-600 h-2 rounded-full transition-all duration-500"
+                          class="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full transition-all duration-500"
                           :style="{ width: selectedDelivery.progress + '%' }"
                         ></div>
                       </div>

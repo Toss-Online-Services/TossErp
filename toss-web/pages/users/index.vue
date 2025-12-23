@@ -5,7 +5,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div class="flex items-center justify-between">
           <div class="flex-1 min-w-0">
-            <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               User Management
             </h1>
             <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
@@ -15,7 +15,7 @@
           <div class="flex space-x-2 sm:space-x-3 flex-shrink-0">
             <button
               @click="showAddModal = true"
-              class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold text-sm sm:text-base"
+              class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-semibold text-sm sm:text-base"
             >
               <PlusIcon class="w-5 h-5 mr-2" />
               Add User
@@ -35,7 +35,7 @@
               <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Users</p>
               <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ users.length }}</p>
             </div>
-            <div class="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl">
+            <div class="p-3 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl">
               <UsersIcon class="w-8 h-8 text-white" />
             </div>
           </div>
@@ -219,7 +219,7 @@
             @click.stop
           >
             <!-- Header -->
-            <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+            <div class="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4 flex items-center justify-between rounded-t-2xl">
               <div>
                 <h3 class="text-xl font-bold text-white">{{ editingUser ? 'Edit User' : 'Add New User' }}</h3>
                 <p class="text-sm text-white/80">{{ editingUser ? 'Update user details' : 'Create a new staff member' }}</p>
@@ -349,7 +349,7 @@
                 </button>
                 <button
                   type="submit"
-                  class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all"
+                  class="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all"
                 >
                   {{ editingUser ? 'Update User' : 'Add User' }}
                 </button>

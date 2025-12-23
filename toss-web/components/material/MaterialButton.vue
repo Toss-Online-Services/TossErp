@@ -37,11 +37,11 @@ const buttonClasses = computed(() => {
   // Color and variant combinations - Material Dashboard Pro
   const colorVariants = {
     primary: {
-      filled: 'bg-[#e91e63] text-white hover:bg-[#e91e63] shadow-material-button hover:shadow-material-button-hover focus:ring-[#e91e63]',
-      outlined: 'border-2 border-[#e91e63] text-[#e91e63] hover:bg-[#e91e63]/5 focus:ring-[#e91e63]',
-      text: 'text-[#e91e63] hover:bg-[#e91e63]/5',
-      elevated: 'bg-[#e91e63] text-white hover:bg-[#e91e63] shadow-material-primary hover:shadow-material-button-hover focus:ring-[#e91e63]',
-      tonal: 'bg-[#e91e63]/10 text-[#e91e63] hover:bg-[#e91e63]/20'
+      filled: 'bg-[#1A73E8] text-white hover:bg-[#1A73E8] shadow-material-button hover:shadow-material-button-hover focus:ring-[#1A73E8]',
+      outlined: 'border-2 border-[#1A73E8] text-[#1A73E8] hover:bg-[#1A73E8]/5 focus:ring-[#1A73E8]',
+      text: 'text-[#1A73E8] hover:bg-[#1A73E8]/5',
+      elevated: 'bg-[#1A73E8] text-white hover:bg-[#1A73E8] shadow-material-primary hover:shadow-material-button-hover focus:ring-[#1A73E8]',
+      tonal: 'bg-[#1A73E8]/10 text-[#1A73E8] hover:bg-[#1A73E8]/20'
     },
     secondary: {
       filled: 'bg-[#737373] text-white hover:bg-[#737373] shadow-material hover:shadow-material-lg focus:ring-[#737373]',

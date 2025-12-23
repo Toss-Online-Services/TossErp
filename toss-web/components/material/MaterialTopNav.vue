@@ -106,9 +106,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <nav class="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-material mt-2 mx-3 border-radius-lg">
+  <nav class="sticky top-0 z-40 bg-white/80 dark:bg-[#1d1d1d]/80 backdrop-blur-md border-0 rounded-xl mx-4 mt-2 py-1" style="box-shadow: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1), 0 0.125rem 0.25rem -0.0625rem rgba(0, 0, 0, 0.06);">
     <div class="px-4 lg:px-6">
-      <div class="flex items-center justify-between h-16">
+      <div class="flex items-center justify-between h-14">
         <!-- Left Section -->
         <div class="flex items-center gap-4">
           <button

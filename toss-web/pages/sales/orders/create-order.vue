@@ -106,7 +106,7 @@
               <Button 
                 @click="voidOrder"
                 variant="destructive"
-                class="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700"
+                class="w-full bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
               >
                 ❌ Void Order
               </Button>

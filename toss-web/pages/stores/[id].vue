@@ -88,7 +88,7 @@
                 <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">Sales</p>
                 <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ store.salesCount || 0 }}</p>
               </div>
-              <div class="p-2 sm:p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg flex-shrink-0">
+              <div class="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg flex-shrink-0">
                 <ShoppingBagIcon class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
             </div>

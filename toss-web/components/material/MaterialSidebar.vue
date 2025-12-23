@@ -173,22 +173,23 @@ onUnmounted(() => {
   <div class="relative">
     <aside
       :class="[
-        'fixed lg:fixed top-0 left-0 h-screen bg-white border-r border-gray-200 transition-all duration-300 z-50 flex flex-col shadow-lg',
-        collapsed && !isMobile ? 'w-16' : 'w-64',
+        'fixed lg:fixed top-0 left-0 h-screen bg-white dark:bg-[#1d1d1d] border-0 transition-all duration-300 z-50 flex flex-col',
+        collapsed && !isMobile ? 'w-16' : 'w-60',
         isMobile && !sidebarOpen ? '-translate-x-full' : 'translate-x-0',
-        !isMobile ? 'lg:ml-2 lg:mt-2 lg:mb-2 lg:rounded-lg lg:h-[calc(100vh-1rem)]' : '',
-        isMobile ? 'w-80' : ''
+        !isMobile ? 'lg:ml-2 lg:mt-2 lg:mb-2 lg:rounded-xl lg:h-[calc(100vh-1rem)]' : '',
+        isMobile ? 'w-72' : ''
       ]"
+      style="box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15);"
     >
     <!-- Sidebar Header -->
-      <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+      <div class="flex items-center justify-between h-16 px-4 pb-0">
         <div v-if="!collapsed || isMobile" class="flex items-center gap-3">
-          <div class="flex items-center justify-center w-8 h-8 bg-[#e91e63] text-white rounded-lg shadow-md">
+          <div class="flex items-center justify-center w-9 h-9 rounded-lg text-white" style="background: linear-gradient(195deg, #49a3f1 0%, #1A73E8 100%); box-shadow: 0 4px 20px 0 rgba(26, 115, 232, 0.14), 0 7px 10px -5px rgba(26, 115, 232, 0.4);">
             <span class="text-sm font-bold">T</span>
           </div>
           <div class="flex flex-col">
-            <span class="text-sm font-bold text-gray-900">TOSS</span>
-            <span class="text-[10px] text-gray-500">ERP III</span>
+            <span class="text-sm font-semibold text-gray-900 dark:text-white">TOSS ERP</span>
+            <span class="text-[10px] text-gray-500 dark:text-gray-400">Material Dashboard</span>
           </div>
         </div>
         <button
@@ -212,7 +213,7 @@ onUnmounted(() => {
           @click="showProfileMenu = !showProfileMenu"
           class="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-gray-100 transition-colors"
         >
-          <div class="w-10 h-10 rounded-full bg-[#e91e63] text-white flex items-center justify-center shadow-md">
+          <div class="w-10 h-10 rounded-full bg-[#1A73E8] text-white flex items-center justify-center shadow-md">
             <UserCircle :size="20" />
           </div>
           <div class="flex-1 text-left">
@@ -250,7 +251,7 @@ onUnmounted(() => {
       >
         <p
           v-if="!collapsed || isMobile"
-          class="px-3 text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2"
+          class="px-3 text-[0.65rem] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2 mt-4 first:mt-0"
         >
           {{ group.title }}
         </p>
@@ -260,31 +261,33 @@ onUnmounted(() => {
           :to="item.path"
           :title="(collapsed && !isMobile) ? `${group.title} • ${item.name}` : ''"
           :class="[
-            'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
+            'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-normal transition-all duration-200',
             isActive(item.path)
-              ? 'bg-[#e91e63] text-white shadow-md'
-              : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200'
+              ? 'text-white'
+              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
           ]"
+          :style="isActive(item.path) ? 'background: linear-gradient(195deg, #42424a 0%, #191919 100%); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 0, 0, 0.4);' : ''"
           @click="isMobile && (sidebarOpen = false)"
         >
-          <component :is="item.icon" :size="20" class="flex-shrink-0" />
+          <component :is="item.icon" :size="18" class="flex-shrink-0" />
           <span v-if="!collapsed || isMobile" class="truncate">{{ item.name }}</span>
         </NuxtLink>
       </div>
     </nav>
 
     <!-- Footer -->
-      <div class="p-4 border-t border-gray-200">
+      <div class="p-4 border-t border-gray-100 dark:border-gray-800">
       <NuxtLink
         to="/settings"
         :class="[
-          'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+          'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-normal transition-all duration-200',
           route.path === '/settings'
-            ? 'bg-[#e91e63] text-white shadow-md'
-            : 'text-gray-700 hover:bg-gray-100'
+            ? 'text-white'
+            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
         ]"
+        :style="route.path === '/settings' ? 'background: linear-gradient(195deg, #42424a 0%, #191919 100%); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 0, 0, 0.4);' : ''"
       >
-        <Settings :size="20" />
+        <Settings :size="18" />
         <span v-if="!collapsed || isMobile">Settings</span>
       </NuxtLink>
     </div>

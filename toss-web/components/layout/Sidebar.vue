@@ -213,9 +213,9 @@ onUnmounted(() => {
 }
 
 .nav-link-active {
-  background: #e91e63;
+  background: #1A73E8;
   color: white;
-  box-shadow: 0 10px 15px -3px rgba(233, 30, 99, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(26, 115, 232, 0.3);
 }
 
 .nav-link-active:hover {

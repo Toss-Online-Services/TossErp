@@ -31,48 +31,111 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Material Dashboard Pro Color Scheme - Info Blue Primary (#1A73E8) */
+    --background: 0 0% 97%;
+    --foreground: 0 0% 9%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --popover-foreground: 0 0% 9%;
+    
+    /* Primary: Info Blue #1A73E8 - HSL: 214, 84%, 51% */
+    --primary: 214 84% 51%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary: Gray #737373 */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 45%;
+    
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
+    
+    /* Destructive: Red #F44335 */
+    --destructive: 4 90% 58%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Border: Light gray */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 214 84% 51%;
     --radius: 0.5rem;
+    
+    /* Sidebar styling */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 233 14% 35%;
+    --sidebar-accent: 214 84% 51%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-primary: 214 84% 51%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-ring: 214 84% 51%;
+    
+    /* Semantic colors */
+    --success: 122 39% 49%;
+    --success-foreground: 0 0% 100%;
+    --warning: 33 100% 49%;
+    --warning-foreground: 0 0% 100%;
+    --info: 214 84% 51%;
+    --info-foreground: 0 0% 100%;
+    
+    /* Chart colors */
+    --chart-1: 214 84% 51%;
+    --chart-2: 122 39% 49%;
+    --chart-3: 33 100% 49%;
+    --chart-4: 4 90% 58%;
+    --chart-5: 271 81% 56%;
+    
+    /* Support colors */
+    --support-info: 214 84% 51%;
+    --support-warning: 33 100% 49%;
+    --support-success: 122 39% 49%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    /* Dark mode - Material Dashboard Pro */
+    --background: 0 0% 9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 11%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 11%;
+    --popover-foreground: 0 0% 98%;
+    
+    /* Primary: Info Blue in dark mode */
+    --primary: 214 84% 60%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 16%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 0 0% 16%;
+    --accent-foreground: 0 0% 98%;
+    
+    --destructive: 4 90% 45%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 214 84% 60%;
+    
+    /* Sidebar dark mode */
+    --sidebar-background: 0 0% 11%;
+    --sidebar-foreground: 0 0% 85%;
+    --sidebar-accent: 214 84% 51%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-primary: 214 84% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-ring: 214 84% 60%;
+    
+    /* Chart colors - slightly lighter for dark mode */
+    --chart-1: 214 84% 60%;
+    --chart-2: 122 39% 55%;
+    --chart-3: 33 100% 55%;
+    --chart-4: 4 90% 55%;
+    --chart-5: 271 81% 60%;
   }
 }
 
@@ -88,16 +151,141 @@
 
 /* Custom styles for Material Dashboard feel */
 @layer components {
+  /* Material Dashboard Card */
   .card-material {
-    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-card hover:shadow-card-hover transition-shadow duration-300;
+    @apply bg-white dark:bg-[#1d1d1d] rounded-lg border border-gray-200 dark:border-gray-800;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   }
   
+  .card-material:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  /* Material Dashboard Primary Button with Gradient */
   .btn-primary {
-    @apply bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-200;
+    background: linear-gradient(195deg, #49a3f1 0%, #1A73E8 100%);
+    box-shadow: 0 4px 20px 0 rgba(26, 115, 232, 0.14), 0 7px 10px -5px rgba(26, 115, 232, 0.4);
   }
   
+  .btn-primary:hover {
+    box-shadow: 0 8px 24px 0 rgba(26, 115, 232, 0.2), 0 10px 14px -6px rgba(26, 115, 232, 0.5);
+    transform: translateY(-1px);
+  }
+  
+  /* Material Dashboard Secondary Button */
   .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-medium py-2.5 px-5 rounded-lg border border-gray-300 dark:border-gray-600 transition-all duration-200;
+  }
+  
+  .btn-secondary:hover {
+    @apply bg-gray-50 dark:bg-gray-700;
+  }
+  
+  /* Material Dashboard Info Button with Gradient */
+  .btn-info {
+    @apply text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-200;
+    background: linear-gradient(195deg, #49a3f1 0%, #1A73E8 100%);
+    box-shadow: 0 4px 20px 0 rgba(26, 115, 232, 0.14), 0 7px 10px -5px rgba(26, 115, 232, 0.4);
+  }
+  
+  /* Material Dashboard Success Button with Gradient */
+  .btn-success {
+    @apply text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-200;
+    background: linear-gradient(195deg, #66BB6A 0%, #43A047 100%);
+    box-shadow: 0 4px 20px 0 rgba(76, 175, 80, 0.14), 0 7px 10px -5px rgba(76, 175, 80, 0.4);
+  }
+  
+  /* Material Dashboard Warning Button with Gradient */
+  .btn-warning {
+    @apply text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-200;
+    background: linear-gradient(195deg, #FFA726 0%, #FB8C00 100%);
+    box-shadow: 0 4px 20px 0 rgba(251, 140, 0, 0.14), 0 7px 10px -5px rgba(251, 140, 0, 0.4);
+  }
+  
+  /* Material Dashboard Danger Button with Gradient */
+  .btn-danger {
+    @apply text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-200;
+    background: linear-gradient(195deg, #EF5350 0%, #E53935 100%);
+    box-shadow: 0 4px 20px 0 rgba(244, 67, 53, 0.14), 0 7px 10px -5px rgba(244, 67, 53, 0.4);
+  }
+  
+  /* Material Dashboard Dark Button with Gradient */
+  .btn-dark {
+    @apply text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-200;
+    background: linear-gradient(195deg, #42424a 0%, #191919 100%);
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Material Dashboard Sidebar */
+  .sidebar-material {
+    @apply bg-white dark:bg-[#1d1d1d] border-0;
+    box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15);
+  }
+  
+  /* Material Dashboard Nav Link */
+  .nav-link-material {
+    @apply flex items-center gap-3 px-4 py-2.5 text-sm font-normal text-gray-600 dark:text-gray-300 rounded-lg transition-all duration-200;
+  }
+  
+  .nav-link-material:hover {
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+  
+  .nav-link-material.active {
+    @apply text-white;
+    background: linear-gradient(195deg, #42424a 0%, #191919 100%);
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Material Dashboard Badge Colors */
+  .badge-primary {
+    @apply bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300;
+  }
+  
+  .badge-success {
+    @apply bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300;
+  }
+  
+  .badge-info {
+    @apply bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300;
+  }
+  
+  .badge-warning {
+    @apply bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300;
+  }
+  
+  .badge-danger {
+    @apply bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300;
+  }
+  
+  /* Material Dashboard Stat Card Header with Gradient Icon */
+  .stat-card-icon {
+    @apply flex items-center justify-center w-16 h-16 rounded-xl text-white shadow-lg -mt-10;
+  }
+  
+  .stat-card-icon.primary {
+    background: linear-gradient(195deg, #49a3f1 0%, #1A73E8 100%);
+  }
+  
+  .stat-card-icon.info {
+    background: linear-gradient(195deg, #49a3f1 0%, #1A73E8 100%);
+  }
+  
+  .stat-card-icon.success {
+    background: linear-gradient(195deg, #66BB6A 0%, #43A047 100%);
+  }
+  
+  .stat-card-icon.warning {
+    background: linear-gradient(195deg, #FFA726 0%, #FB8C00 100%);
+  }
+  
+  .stat-card-icon.danger {
+    background: linear-gradient(195deg, #EF5350 0%, #E53935 100%);
+  }
+  
+  .stat-card-icon.dark {
+    background: linear-gradient(195deg, #42424a 0%, #191919 100%);
   }
 }
 

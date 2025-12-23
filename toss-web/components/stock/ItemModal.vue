@@ -2,7 +2,7 @@
   <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-slate-200/50 dark:border-slate-700/50 animate-slideUp">
       <!-- Header with Gradient -->
-      <div class="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-6 py-6 overflow-hidden">
+      <div class="relative bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 px-6 py-6 overflow-hidden">
         <div class="absolute inset-0 bg-black/10"></div>
         <div class="relative z-10 flex items-center justify-between">
           <div class="flex items-center space-x-3">
@@ -287,14 +287,14 @@
           </button>
           <button
             type="submit"
-            class="relative px-8 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 overflow-hidden group"
+            class="relative px-8 py-3 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 overflow-hidden group"
           >
             <span class="relative z-10 flex items-center justify-center">
               <CheckIcon v-if="isEditing" class="w-5 h-5 mr-2" />
               <PlusIcon v-else class="w-5 h-5 mr-2" />
               {{ isEditing ? 'Update Item' : 'Create Item' }}
             </span>
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-700 via-blue-600 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
           </button>
         </div>
       </form>

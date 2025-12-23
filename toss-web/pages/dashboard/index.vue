@@ -67,13 +67,14 @@ definePageMeta({
     />
 
     <!-- KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 pt-6">
       <AppKpiCard
         title="Today Sales"
         :value="formatCurrency(todaySales)"
         change="+12.5%"
         change-type="positive"
         :icon="DollarSign"
+        icon-variant="primary"
       />
       <AppKpiCard
         title="Cash In"
@@ -81,6 +82,7 @@ definePageMeta({
         change="+8.3%"
         change-type="positive"
         :icon="ArrowUpCircle"
+        icon-variant="success"
       />
       <AppKpiCard
         title="Cash Out"
@@ -88,6 +90,7 @@ definePageMeta({
         change="-5.2%"
         change-type="negative"
         :icon="ArrowDownCircle"
+        icon-variant="danger"
       />
       <AppKpiCard
         title="Low Stock"
@@ -95,6 +98,7 @@ definePageMeta({
         change="3 items"
         change-type="negative"
         :icon="Package"
+        icon-variant="warning"
       />
       <AppKpiCard
         title="Pending Deliveries"
@@ -102,6 +106,7 @@ definePageMeta({
         change="2 today"
         change-type="neutral"
         :icon="Truck"
+        icon-variant="info"
       />
     </div>
 

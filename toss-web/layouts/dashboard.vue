@@ -38,7 +38,7 @@ const handleSearch = (query: string) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-background text-foreground">
+  <div class="min-h-screen bg-[#f0f2f5] dark:bg-[#171717] text-foreground">
     <div class="flex h-screen overflow-hidden">
       <!-- Sidebar -->
       <MaterialSidebar
@@ -48,7 +48,7 @@ const handleSearch = (query: string) => {
       />
 
       <!-- Main Content Area -->
-      <div class="flex-1 flex flex-col overflow-hidden lg:ml-[272px]">
+      <div class="flex-1 flex flex-col overflow-hidden lg:ml-[256px]">
         <!-- Top Navigation -->
         <MaterialTopNav
           :title="pageTitle"
@@ -60,12 +60,12 @@ const handleSearch = (query: string) => {
         />
 
         <!-- Page Content -->
-        <main class="flex-1 overflow-y-auto p-4 lg:p-6 bg-background">
+        <main class="flex-1 overflow-y-auto p-4 lg:p-6">
           <slot />
         </main>
 
         <!-- Footer -->
-        <footer class="border-t border-border bg-card py-4 px-4 lg:px-6">
+        <footer class="bg-transparent py-4 px-4 lg:px-6">
           <div class="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0">
             <div class="text-sm text-muted-foreground">
               <p>&copy; {{ new Date().getFullYear() }} TOSS Online Services. Built for South African SMMEs.</p>

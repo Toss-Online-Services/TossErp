@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="mb-6 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl p-4 sm:p-6 text-white relative overflow-hidden">
+  <div v-if="show" class="mb-6 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-2xl shadow-2xl p-4 sm:p-6 text-white relative overflow-hidden">
     <div class="absolute top-0 right-0 w-32 h-32 sm:w-64 sm:h-64 bg-white/10 rounded-full -mr-16 sm:-mr-32 -mt-16 sm:-mt-32"></div>
     <div class="relative z-10 flex items-start gap-3 sm:gap-4">
       <div class="p-2 sm:p-3 bg-white/20 backdrop-blur-sm rounded-xl flex-shrink-0">

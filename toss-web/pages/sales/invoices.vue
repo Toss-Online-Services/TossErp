@@ -111,7 +111,7 @@
               <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Overdue</p>
               <p class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ stats.overdueInvoices }}</p>
             </div>
-            <div class="p-2 sm:p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl">
+            <div class="p-2 sm:p-3 bg-gradient-to-br from-red-500 to-blue-600 rounded-xl">
               <ExclamationTriangleIcon class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
           </div>

@@ -69,7 +69,7 @@
               {{ stockOverview?.outOfStockItems || 0 }}
             </p>
           </div>
-          <div class="p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl">
+          <div class="p-3 bg-gradient-to-br from-red-500 to-blue-600 rounded-xl">
             <XCircleIcon class="w-8 h-8 text-white" />
           </div>
         </div>
@@ -266,7 +266,7 @@
                   class="inline-flex px-3 py-1 text-xs font-semibold rounded-full"
                   :class="{
                     'bg-gradient-to-r from-green-500 to-emerald-600 text-white': item.isActive,
-                    'bg-gradient-to-r from-red-500 to-pink-600 text-white': !item.isActive
+                    'bg-gradient-to-r from-red-500 to-blue-600 text-white': !item.isActive
                   }"
                 >
                   {{ item.isActive ? 'Active' : 'Inactive' }}

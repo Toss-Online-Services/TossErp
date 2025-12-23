@@ -35,7 +35,7 @@ const accentMap: Record<Accent, { icon: string; card: string }> = {
   indigo: { icon: 'bg-gradient-info text-white shadow-material-info', card: 'border-[#1A73E8]/20' },
   emerald: { icon: 'bg-gradient-success text-white shadow-material-success', card: 'border-[#4CAF50]/20' },
   amber: { icon: 'bg-gradient-warning text-white shadow-material-warning', card: 'border-[#fb8c00]/20' },
-  purple: { icon: 'bg-gradient-primary text-white shadow-material-primary', card: 'border-[#e91e63]/20' },
+  purple: { icon: 'bg-gradient-primary text-white shadow-material-primary', card: 'border-[#1A73E8]/20' },
   rose: { icon: 'bg-gradient-danger text-white shadow-material-danger', card: 'border-[#F44335]/20' },
   cyan: { icon: 'bg-gradient-info text-white shadow-material-info', card: 'border-[#1A73E8]/20' }
 }

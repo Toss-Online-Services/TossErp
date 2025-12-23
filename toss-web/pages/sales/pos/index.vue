@@ -31,7 +31,7 @@
           <button @click="toggleFullscreen" 
                   :class="[
                     'flex-1 sm:flex-none px-4 py-2 sm:px-6 sm:py-3 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base font-semibold',
-                    isFullscreen ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+                    isFullscreen ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
                   ]"
                   :title="isFullscreen ? 'Exit Fullscreen (F11)' : 'Enter Fullscreen (F11)'">
             <component :is="isFullscreen ? ArrowsPointingInIcon : ArrowsPointingOutIcon" class="inline w-4 h-4 mr-2 sm:w-5 sm:h-5" />
@@ -386,7 +386,7 @@
                   <button 
                     @click="showVoidSaleModal = true"
                     :disabled="cartItems.length === 0"
-                    class="w-full py-2.5 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    class="w-full py-2.5 bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     <span>❌</span>
                     <span>Void Sale</span>

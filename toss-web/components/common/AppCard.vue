@@ -18,10 +18,10 @@ const paddingClasses = {
 </script>
 
 <template>
-  <div class="bg-card border border-border rounded-lg shadow-sm">
-    <div v-if="title || subtitle" class="border-b border-border px-4 py-3">
-      <h3 v-if="title" class="text-base font-semibold text-foreground">{{ title }}</h3>
-      <p v-if="subtitle" class="text-sm text-muted-foreground mt-1">{{ subtitle }}</p>
+  <div class="bg-card border-0 rounded-xl" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+    <div v-if="title || subtitle" class="px-4 py-4">
+      <h3 v-if="title" class="text-base font-semibold text-foreground mb-0">{{ title }}</h3>
+      <p v-if="subtitle" class="text-sm text-muted-foreground mt-0.5 mb-0">{{ subtitle }}</p>
     </div>
     <div :class="paddingClasses[padding]">
       <slot />
