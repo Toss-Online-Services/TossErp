@@ -54,12 +54,13 @@ const handleSearch = (query: string) => {
           :title="pageTitle"
           :subtitle="pageSubtitle"
           :notification-count="notificationCount"
+          :user-info="userInfo"
           @toggle-sidebar="sidebarOpen = !sidebarOpen"
           @search="handleSearch"
         />
 
         <!-- Page Content -->
-        <main class="flex-1 overflow-y-auto p-4 lg:p-6 bg-gray-50">
+        <main class="flex-1 overflow-y-auto p-4 lg:p-6 bg-background">
           <slot />
         </main>
 

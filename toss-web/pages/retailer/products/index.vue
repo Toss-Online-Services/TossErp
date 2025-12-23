@@ -38,17 +38,17 @@
           </MaterialInput>
         </div>
         <div class="sm:w-64">
-          <UiSelect v-model="selectedCategory">
-            <UiSelectTrigger>
-              <UiSelectValue placeholder="All Categories" />
-            </UiSelectTrigger>
-            <UiSelectContent>
-              <UiSelectItem value="">All Categories</UiSelectItem>
-              <UiSelectItem v-for="cat in categories" :key="cat.id" :value="String(cat.id)">
+          <Select v-model="selectedCategory">
+            <SelectTrigger>
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">All Categories</SelectItem>
+              <SelectItem v-for="cat in categories" :key="cat.id" :value="String(cat.id)">
                 {{ cat.name }}
-              </UiSelectItem>
-            </UiSelectContent>
-          </UiSelect>
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </MaterialCard>

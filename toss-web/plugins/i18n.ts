@@ -1,25 +1,9 @@
-import { createI18n } from 'vue-i18n'
-import en from '~/locales/en.json'
-import zu from '~/locales/zu.json'
-import xh from '~/locales/xh.json'
-import st from '~/locales/st.json'
-import tn from '~/locales/tn.json'
+// This plugin is disabled because @nuxtjs/i18n module handles i18n automatically
+// The module is configured in nuxt.config.ts
+// If you need custom i18n behavior, configure it in nuxt.config.ts i18n section
 
-export default defineNuxtPlugin(({ vueApp }) => {
-  const i18n = createI18n({
-    legacy: false,
-    globalInjection: true,
-    locale: 'en',
-    fallbackLocale: 'en',
-    messages: {
-      en,
-      zu,
-      xh,
-      st,
-      tn
-    }
-  })
-
-  vueApp.use(i18n)
+export default defineNuxtPlugin(() => {
+  // i18n is handled by @nuxtjs/i18n module
+  // This is an empty plugin to prevent the warning
 })
 

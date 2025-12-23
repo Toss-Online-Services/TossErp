@@ -534,7 +534,7 @@ export default defineNuxtConfig({
       periodicSyncForUpdates: 20
     },
     devOptions: {
-      enabled: false,  // Disabled in dev to prevent crashes on Windows
+      enabled: true,  // Enable PWA in dev for testing
       type: 'module'
     }
   }

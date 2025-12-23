@@ -5,7 +5,7 @@
 
 import { ref } from 'vue'
 
-export interface AIMessage {
+export interface OpenAIMessage {
   role: 'system' | 'user' | 'assistant'
   content: string
 }
@@ -30,7 +30,7 @@ export const useOpenAI = () => {
   const config = useRuntimeConfig()
   const isLoading = ref(false)
   const error = ref<string | null>(null)
-  const conversationHistory = ref<AIMessage[]>([])
+  const conversationHistory = ref<OpenAIMessage[]>([])
 
   /**
    * Send a message to OpenAI with business context
@@ -48,7 +48,7 @@ export const useOpenAI = () => {
       const systemPrompt = buildSystemPrompt(businessContext)
 
       // Prepare messages
-      const messages: AIMessage[] = [
+      const messages: OpenAIMessage[] = [
         { role: 'system', content: systemPrompt },
         ...conversationHistory.value,
         { role: 'user', content: userMessage }
@@ -209,7 +209,7 @@ Provide practical, actionable advice. When suggesting actions, be specific and c
   /**
    * Add message to history without sending
    */
-  const addToHistory = (message: AIMessage) => {
+  const addToHistory = (message: OpenAIMessage) => {
     conversationHistory.value.push(message)
   }
 

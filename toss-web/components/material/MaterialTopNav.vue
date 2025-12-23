@@ -1,16 +1,25 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { Search, Bell, Menu, ChevronDown, User } from 'lucide-vue-next'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { Search, Bell, Menu, ChevronDown, User, Command, Wifi, WifiOff } from 'lucide-vue-next'
+import { useNetworkStatus } from '~/composables/useNetworkStatus'
+import { useOutbox } from '~/composables/useOutbox'
+import CommandPalette from '~/components/common/CommandPalette.vue'
 
 interface Props {
   title?: string
   subtitle?: string
   notificationCount?: number
+  userInfo?: {
+    name: string
+    email: string
+    avatar?: string
+  }
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  notificationCount: 0
+  notificationCount: 0,
+  userInfo: () => ({ name: 'User', email: 'user@example.com' })
 })
 
 const emit = defineEmits<{
@@ -19,9 +28,14 @@ const emit = defineEmits<{
 }>()
 
 const route = useRoute()
+const router = useRouter()
+const { isOnline } = useNetworkStatus()
+const { pendingCount } = useOutbox()
+
 const searchQuery = ref('')
 const showNotifications = ref(false)
 const showUserMenu = ref(false)
+const showCommandPalette = ref(false)
 
 const handleSearch = (e: Event) => {
   e.preventDefault()
@@ -37,6 +51,58 @@ const toggleUserMenu = () => {
   showUserMenu.value = !showUserMenu.value
   showNotifications.value = false
 }
+
+const openCommandPalette = () => {
+  showCommandPalette.value = true
+}
+
+const commandPaletteCommands = computed(() => [
+  {
+    id: 'dashboard',
+    label: 'Go to Dashboard',
+    action: () => router.push('/dashboard')
+  },
+  {
+    id: 'sales',
+    label: 'Go to Sales',
+    action: () => router.push('/sales')
+  },
+  {
+    id: 'pos',
+    label: 'Open POS',
+    action: () => router.push('/pos')
+  },
+  {
+    id: 'stock',
+    label: 'View Stock',
+    action: () => router.push('/stock')
+  },
+  {
+    id: 'buying',
+    label: 'View Buying',
+    action: () => router.push('/buying')
+  },
+  {
+    id: 'settings',
+    label: 'Open Settings',
+    action: () => router.push('/settings')
+  }
+])
+
+const handleKeyDown = (e: KeyboardEvent) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault()
+    openCommandPalette()
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', handleKeyDown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyDown)
+})
 </script>
 
 <template>
@@ -60,27 +126,40 @@ const toggleUserMenu = () => {
           </div>
 
           <!-- Search -->
-          <form @submit="handleSearch" class="hidden md:block">
-            <div class="relative">
-              <Search
-                :size="18"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-              />
-              <input
-                v-model="searchQuery"
-                type="search"
-                placeholder="Search..."
-                class="pl-10 pr-4 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary w-64 lg:w-96"
-              />
-            </div>
-          </form>
+          <button
+            @click="openCommandPalette"
+            class="hidden md:flex items-center gap-2 px-3 py-2 bg-background border border-border rounded-lg text-sm text-muted-foreground hover:border-primary transition-colors w-64 lg:w-96"
+          >
+            <Search :size="18" />
+            <span class="flex-1 text-left">Search...</span>
+            <kbd class="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold text-muted-foreground bg-muted rounded border border-border">
+              <Command :size="12" />K
+            </kbd>
+          </button>
         </div>
 
         <!-- Right Section -->
         <div class="flex items-center gap-2">
+          <!-- Offline Indicator -->
+          <div class="relative">
+            <div
+              :class="[
+                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
+                isOnline ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' : 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400'
+              ]"
+            >
+              <Wifi v-if="isOnline" :size="14" />
+              <WifiOff v-else :size="14" />
+              <span class="hidden sm:inline">{{ isOnline ? 'Online' : 'Offline' }}</span>
+              <span v-if="!isOnline && pendingCount > 0" class="ml-1 px-1.5 py-0.5 bg-orange-200 dark:bg-orange-800 rounded text-xs">
+                {{ pendingCount }}
+              </span>
+            </div>
+          </div>
+
           <!-- Search Button (Mobile) -->
           <button
-            @click="emit('toggle-sidebar')"
+            @click="openCommandPalette"
             class="p-2 rounded-lg hover:bg-accent transition-colors md:hidden"
             aria-label="Search"
           >
@@ -124,7 +203,7 @@ const toggleUserMenu = () => {
               class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent transition-colors"
               aria-label="User menu"
             >
-              <div class="w-8 h-8 rounded-full bg-[#e91e63] text-white flex items-center justify-center shadow-material-button">
+              <div class="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-sm">
                 <User :size="18" />
               </div>
               <ChevronDown :size="16" class="hidden sm:block" />
@@ -136,8 +215,8 @@ const toggleUserMenu = () => {
               class="absolute right-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-lg z-50"
             >
               <div class="px-4 py-3 border-b border-border">
-                <p class="text-sm font-medium">John Doe</p>
-                <p class="text-xs text-muted-foreground">john@example.com</p>
+                <p class="text-sm font-medium">{{ userInfo.name }}</p>
+                <p class="text-xs text-muted-foreground">{{ userInfo.email }}</p>
               </div>
               <NuxtLink
                 to="/settings"
@@ -182,5 +261,8 @@ const toggleUserMenu = () => {
       @click="showNotifications = false; showUserMenu = false"
       class="fixed inset-0 z-40"
     />
+
+    <!-- Command Palette -->
+    <CommandPalette v-model:open="showCommandPalette" :commands="commandPaletteCommands" />
   </nav>
 </template>

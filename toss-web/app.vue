@@ -23,7 +23,9 @@
     </NuxtLayout>
     
     <!-- PWA Install Prompt -->
-    <PwaInstallPrompt />
+    <ClientOnly>
+      <PwaInstallPrompt />
+    </ClientOnly>
     
     <!-- Toast Notifications -->
     <ClientOnly>

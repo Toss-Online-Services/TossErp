@@ -61,19 +61,19 @@
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Area/Township *
                 </label>
-                <UiSelect v-model="form.area" required>
-                  <UiSelectTrigger class="w-full">
-                    <UiSelectValue placeholder="Select area" />
-                  </UiSelectTrigger>
-                  <UiSelectContent>
-                    <UiSelectItem value="soweto">Soweto</UiSelectItem>
-                    <UiSelectItem value="alexandra">Alexandra</UiSelectItem>
-                    <UiSelectItem value="katlehong">Katlehong</UiSelectItem>
-                    <UiSelectItem value="tembisa">Tembisa</UiSelectItem>
-                    <UiSelectItem value="diepsloot">Diepsloot</UiSelectItem>
-                    <UiSelectItem value="other">Other</UiSelectItem>
-                  </UiSelectContent>
-                </UiSelect>
+                <Select v-model="form.area" required>
+                  <SelectTrigger class="w-full">
+                    <SelectValue placeholder="Select area" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="soweto">Soweto</SelectItem>
+                    <SelectItem value="alexandra">Alexandra</SelectItem>
+                    <SelectItem value="katlehong">Katlehong</SelectItem>
+                    <SelectItem value="tembisa">Tembisa</SelectItem>
+                    <SelectItem value="diepsloot">Diepsloot</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <MaterialInput
@@ -88,7 +88,7 @@
               <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Physical Address *
               </label>
-              <UiTextarea
+              <Textarea
                 v-model="form.address"
                 required
                 rows="2"
@@ -176,7 +176,7 @@
               </h4>
               
               <label class="flex items-start space-x-3 cursor-pointer group">
-                <UiSwitch v-model="form.whatsappAlerts" class="mt-1" />
+                <Switch v-model="form.whatsappAlerts" class="mt-1" />
                 <div>
                   <span class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary transition-colors">
                     Enable WhatsApp Alerts
@@ -188,7 +188,7 @@
               </label>
 
               <label class="flex items-start space-x-3 cursor-pointer group mt-3">
-                <UiSwitch v-model="form.termsAccepted" class="mt-1" />
+                <Switch v-model="form.termsAccepted" class="mt-1" />
                 <div>
                   <span class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary transition-colors">
                     I agree to the Terms & Conditions *

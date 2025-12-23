@@ -1,6 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  // Skip middleware for login, register, and public pages
-  const publicPages = ['/auth/login', '/auth/register', '/auth/forgot-password', '/unauthorized']
+  // Skip middleware for login, register, landing page, and public pages
+  const publicPages = ['/', '/auth/login', '/auth/register', '/auth/forgot-password', '/unauthorized', '/landing']
   if (publicPages.includes(to.path) || to.path.startsWith('/auth/')) {
     return
   }

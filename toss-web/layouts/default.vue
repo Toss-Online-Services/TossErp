@@ -24,11 +24,27 @@ type Role = 'admin' | 'retailer' | 'supplier' | 'driver'
 const route = useRoute()
 const { user } = useAuth()
 
+// Get the layout name from the route - Nuxt sets this when definePageMeta specifies a layout
+const currentLayout = computed(() => {
+  // In Nuxt 3, when layout is specified in definePageMeta, it's available via route.meta.layout
+  // But we also check the path as a fallback
+  return route.meta?.layout || (route.path === '/' ? 'landing' : 'default')
+})
+
 const hideChrome = computed(() => {
+  // If the page is using landing layout, hide chrome
+  if (currentLayout.value === 'landing' || currentLayout.value === false) {
+    return true
+  }
+  // Check if page explicitly wants to hide chrome
   if (route.meta?.hideChrome) {
     return true
   }
-  return route.path.startsWith('/auth')
+  // Root path and auth pages should hide chrome
+  if (route.path === '/' || route.path.startsWith('/auth')) {
+    return true
+  }
+  return false
 })
 
 const pageTitle = computed(() => (route.meta?.title as string) || 'ERP Overview')
