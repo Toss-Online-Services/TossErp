@@ -53,9 +53,9 @@ describe('MaterialSidebar', () => {
       }
     })
 
-    expect(wrapper.text()).toContain('POS')
-    expect(wrapper.text()).toContain('Products')
-    expect(wrapper.text()).toContain('Inventory')
+    expect(wrapper.text()).toContain('POS & Store Solutions')
+    expect(wrapper.text()).toContain('Inventory Management')
+    expect(wrapper.text()).toContain('Warehouse Management')
   })
 
   it('renders supplier navigation when role is supplier', () => {
@@ -66,9 +66,10 @@ describe('MaterialSidebar', () => {
       }
     })
 
-    expect(wrapper.text()).toContain('Orders')
-    expect(wrapper.text()).toContain('Products')
-    expect(wrapper.text()).toContain('Analytics')
+    // Supplier currently uses the same module groups as other roles.
+    expect(wrapper.text()).toContain('Dashboard')
+    expect(wrapper.text()).toContain('Sales & Marketing')
+    expect(wrapper.text()).toContain('Inventory Management')
   })
 })
 

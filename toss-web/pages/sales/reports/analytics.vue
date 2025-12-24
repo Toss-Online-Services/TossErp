@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
-            <Icon name="mdi:chart-line" class="mr-3 text-blue-600" />
+            <Icon name="mdi:chart-line" class="mr-3 text-primary" />
             {{ t('analytics.title') }}
           </h1>
           <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -116,7 +116,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center">
-          <Icon name="mdi:chart-timeline-variant" class="mr-2 text-blue-600" />
+          <Icon name="mdi:chart-timeline-variant" class="mr-2 text-primary" />
           {{ t('analytics.charts.salesTrends') }}
         </h2>
         <div class="flex space-x-2">
@@ -137,7 +137,7 @@
       </div>
 
       <div v-if="loading" class="h-80 flex items-center justify-center">
-        <Icon name="mdi:loading" class="w-12 h-12 animate-spin text-blue-600" />
+        <Icon name="mdi:loading" class="w-12 h-12 animate-spin text-primary" />
       </div>
 
       <canvas v-else id="salesTrendChart" class="w-full h-80"></canvas>
@@ -153,7 +153,7 @@
         </h2>
 
         <div v-if="loading" class="flex justify-center py-12">
-          <Icon name="mdi:loading" class="w-8 h-8 animate-spin text-blue-600" />
+          <Icon name="mdi:loading" class="w-8 h-8 animate-spin text-primary" />
         </div>
 
         <div v-else class="space-y-4">
@@ -189,20 +189,20 @@
       <!-- Customer Segments -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
-          <Icon name="mdi:account-group" class="mr-2 text-purple-600" />
+          <Icon name="mdi:account-group" class="mr-2 text-primary" />
           {{ t('analytics.sections.customerSegments') }}
         </h2>
 
         <div v-if="loading" class="flex justify-center py-12">
-          <Icon name="mdi:loading" class="w-8 h-8 animate-spin text-blue-600" />
+          <Icon name="mdi:loading" class="w-8 h-8 animate-spin text-primary" />
         </div>
 
         <div v-else>
           <canvas id="customerSegmentChart" class="w-full h-64"></canvas>
 
           <div class="mt-6 grid grid-cols-2 gap-4">
-            <div class="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <p class="text-2xl font-bold text-blue-600">{{ customerAnalytics.newCustomers || 0 }}</p>
+            <div class="text-center p-3 bg-primary/10 rounded-lg">
+              <p class="text-2xl font-bold text-primary">{{ customerAnalytics.newCustomers || 0 }}</p>
               <p class="text-sm text-gray-600 dark:text-gray-400">{{ t('analytics.labels.newCustomers') }}</p>
             </div>
             <div class="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
@@ -224,7 +224,7 @@
         </h2>
 
         <div v-if="loading" class="flex justify-center py-12">
-          <Icon name="mdi:loading" class="w-8 h-8 animate-spin text-blue-600" />
+          <Icon name="mdi:loading" class="w-8 h-8 animate-spin text-primary" />
         </div>
 
         <canvas v-else id="categoryChart" class="w-full h-64"></canvas>
@@ -233,12 +233,12 @@
       <!-- Payment Methods -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
-          <Icon name="mdi:credit-card-multiple" class="mr-2 text-purple-600" />
+          <Icon name="mdi:credit-card-multiple" class="mr-2 text-primary" />
           {{ t('analytics.sections.paymentMethods') }}
         </h2>
 
         <div v-if="loading" class="flex justify-center py-12">
-          <Icon name="mdi:loading" class="w-8 h-8 animate-spin text-blue-600" />
+          <Icon name="mdi:loading" class="w-8 h-8 animate-spin text-primary" />
         </div>
 
         <div v-else class="space-y-3">
@@ -282,7 +282,7 @@
       </div>
 
       <div v-if="loadingForecast" class="h-80 flex items-center justify-center">
-        <Icon name="mdi:loading" class="w-12 h-12 animate-spin text-blue-600" />
+        <Icon name="mdi:loading" class="w-12 h-12 animate-spin text-primary" />
       </div>
 
       <canvas v-else-if="forecast" id="forecastChart" class="w-full h-80"></canvas>
@@ -629,7 +629,7 @@ onMounted(() => {
 }
 
 .btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700;
+  @apply bg-primary text-primary-foreground hover:bg-primary/90;
 }
 
 .btn-secondary {

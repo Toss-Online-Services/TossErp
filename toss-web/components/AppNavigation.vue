@@ -26,21 +26,31 @@
             </button>
             
             <!-- Dropdown Menu -->
-            <div v-show="showModules" class="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+            <div v-show="showModules" class="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-[80vh] overflow-y-auto">
               <div class="py-2">
                 <h3 class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Core Modules</h3>
-                <NuxtLink to="/inventory" class="dropdown-link">📦 Inventory</NuxtLink>
-                <NuxtLink to="/sales" class="dropdown-link">💰 Sales & CRM</NuxtLink>
-                <NuxtLink to="/pos" class="dropdown-link">🛒 Point of Sale</NuxtLink>
+                <NuxtLink to="/accounting" class="dropdown-link">💰 Money (Finance)</NuxtLink>
+                <NuxtLink to="/sales" class="dropdown-link">🛒 Sales & CRM</NuxtLink>
+                <NuxtLink to="/stock" class="dropdown-link">📦 Stock</NuxtLink>
+                <NuxtLink to="/pos" class="dropdown-link">💳 Point of Sale</NuxtLink>
                 <NuxtLink to="/purchasing" class="dropdown-link">🛍️ Purchasing</NuxtLink>
-                <NuxtLink to="/accounting" class="dropdown-link">📊 Accounting</NuxtLink>
+                
+                <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                <h3 class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Operations</h3>
+                <NuxtLink to="/manufacturing" class="dropdown-link">🏭 Manufacturing</NuxtLink>
+                <NuxtLink to="/projects" class="dropdown-link">📁 Projects</NuxtLink>
+                <NuxtLink to="/quality" class="dropdown-link">✅ Quality</NuxtLink>
+                <NuxtLink to="/assets" class="dropdown-link">🏢 Assets</NuxtLink>
+                
+                <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                <h3 class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">People & Support</h3>
+                <NuxtLink to="/hr" class="dropdown-link">👥 HR & Payroll</NuxtLink>
+                <NuxtLink to="/support" class="dropdown-link">🎧 Support</NuxtLink>
                 
                 <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
                 <h3 class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Collaboration</h3>
-                <NuxtLink to="/buying/group-buying" class="dropdown-link">🤝 Group Purchasing</NuxtLink>
+                <NuxtLink to="/purchasing/group-buying" class="dropdown-link">🤝 Group Buying</NuxtLink>
                 <NuxtLink to="/logistics" class="dropdown-link">🚚 Shared Logistics</NuxtLink>
-                <NuxtLink to="/tools" class="dropdown-link">🔧 Tool Sharing</NuxtLink>
-                <NuxtLink to="/credit" class="dropdown-link">🏦 Pooled Credit</NuxtLink>
               </div>
             </div>
           </div>
@@ -108,14 +118,30 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div v-show="showMobileMenu" class="md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+    <div v-show="showMobileMenu" class="md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 max-h-[80vh] overflow-y-auto">
       <div class="px-4 pt-2 pb-3 space-y-1">
         <NuxtLink to="/dashboard" class="mobile-nav-link">Dashboard</NuxtLink>
-        <NuxtLink to="/inventory" class="mobile-nav-link">📦 Inventory</NuxtLink>
-        <NuxtLink to="/sales" class="mobile-nav-link">💰 Sales</NuxtLink>
-        <NuxtLink to="/pos" class="mobile-nav-link">🛒 POS</NuxtLink>
-        <NuxtLink to="/buying/group-buying" class="mobile-nav-link">🤝 Group Buying</NuxtLink>
-        <NuxtLink to="/reports" class="mobile-nav-link">Reports</NuxtLink>
+        
+        <p class="px-3 mt-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Core</p>
+        <NuxtLink to="/accounting" class="mobile-nav-link">💰 Money</NuxtLink>
+        <NuxtLink to="/sales" class="mobile-nav-link">🛒 Sales</NuxtLink>
+        <NuxtLink to="/stock" class="mobile-nav-link">📦 Stock</NuxtLink>
+        <NuxtLink to="/pos" class="mobile-nav-link">💳 POS</NuxtLink>
+        <NuxtLink to="/purchasing" class="mobile-nav-link">🛍️ Purchasing</NuxtLink>
+        
+        <p class="px-3 mt-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Operations</p>
+        <NuxtLink to="/manufacturing" class="mobile-nav-link">🏭 Manufacturing</NuxtLink>
+        <NuxtLink to="/projects" class="mobile-nav-link">📁 Projects</NuxtLink>
+        <NuxtLink to="/quality" class="mobile-nav-link">✅ Quality</NuxtLink>
+        <NuxtLink to="/assets" class="mobile-nav-link">🏢 Assets</NuxtLink>
+        
+        <p class="px-3 mt-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">People</p>
+        <NuxtLink to="/hr" class="mobile-nav-link">👥 HR</NuxtLink>
+        <NuxtLink to="/support" class="mobile-nav-link">🎧 Support</NuxtLink>
+        
+        <p class="px-3 mt-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">More</p>
+        <NuxtLink to="/purchasing/group-buying" class="mobile-nav-link">🤝 Group Buying</NuxtLink>
+        <NuxtLink to="/logistics" class="mobile-nav-link">🚚 Logistics</NuxtLink>
       </div>
     </div>
   </nav>

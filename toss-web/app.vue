@@ -35,17 +35,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import ToastContainer from '~/components/notifications/ToastContainer.vue'
+
+const uiController = useUiControllerStore()
+
+useHead({
+  htmlAttrs: {
+    dir: computed(() => uiController.direction),
+    class: computed(() => ({ rtl: uiController.direction === 'rtl' })),
+  },
+})
 
 // Offline detection
 const isOnline = ref(true)
 
 onMounted(() => {
-  // Force light mode and clear any stored preferences
-  document.documentElement.classList.remove('dark')
-  document.documentElement.classList.add('light')
-  localStorage.setItem('nuxt-color-mode', 'light')
+  uiController.loadPersistedState()
   
   // Offline detection
   isOnline.value = navigator.onLine

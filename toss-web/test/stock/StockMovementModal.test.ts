@@ -4,7 +4,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import StockMovementModal from '../../components/stock/StockMovementModal.vue'
 
 // Mock useStock composable
-vi.mock('~/composables/useStock', () => ({
+vi.mock('../../composables/useStock', () => ({
   useStock: () => ({
     getItems: vi.fn().mockResolvedValue({
       items: [
@@ -77,7 +77,7 @@ describe('StockMovementModal', () => {
       })
 
       expect(wrapper.html()).toContain('from-red-500')
-      expect(wrapper.html()).toContain('to-pink-600')
+	  expect(wrapper.html()).toContain('to-red-600')
     })
   })
 
@@ -286,7 +286,12 @@ describe('StockMovementModal', () => {
       await form.trigger('submit.prevent')
 
       expect(wrapper.emitted('save')).toBeTruthy()
-      expect(wrapper.emitted('save')?.[0][0]).toMatchObject({
+      const saves = wrapper.emitted('save')
+      expect(saves).toBeTruthy()
+
+      const firstPayload = saves?.[0]?.[0]
+      expect(firstPayload).toBeTruthy()
+      expect(firstPayload).toMatchObject({
         itemSku: 'BREAD-001',
         quantity: 50,
         movementType: 'receipt'
@@ -402,8 +407,12 @@ describe('StockMovementModal', () => {
         props: { movementType: 'receipt' }
       })
 
-      const cancelButton = wrapper.find('button:contains("Cancel")')
-      await cancelButton.trigger('click')
+      const cancelButton = wrapper
+        .findAll('button')
+        .find((b) => b.text() === 'Cancel')
+
+      expect(cancelButton).toBeTruthy()
+      await cancelButton!.trigger('click')
 
       expect(wrapper.emitted('close')).toBeTruthy()
     })
@@ -413,7 +422,7 @@ describe('StockMovementModal', () => {
         props: { movementType: 'receipt' }
       })
 
-      const closeButton = wrapper.find('button').first()
+      const closeButton = wrapper.find('button[aria-label="Close"]')
       await closeButton.trigger('click')
 
       expect(wrapper.emitted('close')).toBeTruthy()

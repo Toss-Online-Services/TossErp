@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useAuth } from '~/composables/useAuth'
 import GlobalAiAssistant from '~/components/ai/GlobalAiAssistant.vue'
+import { useUiControllerStore } from '~/stores/uiController'
 
 interface Props {
   role?: 'admin' | 'retailer' | 'supplier' | 'driver'
@@ -14,7 +15,12 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const { user } = useAuth()
+const uiController = useUiControllerStore()
 const sidebarOpen = ref(true)
+const sidebarCollapsed = computed({
+  get: () => uiController.miniSidenav,
+  set: (value: boolean) => uiController.setMiniSidenav(value)
+})
 const notificationCount = ref(0)
 
 const userInfo = computed(() => {
@@ -38,17 +44,23 @@ const handleSearch = (query: string) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#f0f2f5] dark:bg-[#171717] text-foreground">
+  <div class="min-h-screen bg-muted/40 text-foreground">
     <div class="flex h-screen overflow-hidden">
       <!-- Sidebar -->
       <MaterialSidebar
-        v-model:open="sidebarOpen"
+        :open="sidebarOpen"
+        :collapsed="sidebarCollapsed"
+        @update:open="(value) => (sidebarOpen = value)"
+        @update:collapsed="(value) => (sidebarCollapsed = value)"
         :role="role"
         :user-info="userInfo"
       />
 
       <!-- Main Content Area -->
-      <div class="flex-1 flex flex-col overflow-hidden lg:ml-[256px]">
+      <div
+        class="flex-1 flex flex-col overflow-hidden"
+        :class="sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'"
+      >
         <!-- Top Navigation -->
         <MaterialTopNav
           :title="pageTitle"

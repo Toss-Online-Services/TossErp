@@ -15,8 +15,8 @@ const modules = [
   '@pinia/nuxt',
   '@vueuse/nuxt',
   
-  // PWA & Performance (skip heavy modules in dev)
-  ...(isDev ? [] : ['@vite-pwa/nuxt']),
+  // PWA (always enabled; control dev behavior via pwa.devOptions)
+  '@vite-pwa/nuxt',
   '@nuxtjs/web-vitals',
   ...(isDev ? [] : ['@nuxtjs/partytown']),
   
@@ -415,8 +415,8 @@ export default defineNuxtConfig({
       name: 'TOSS ERP III - Township One-Stop Solution',
       short_name: 'TOSS ERP',
       description: 'AI-powered collaborative business platform for South African SMMEs',
-      theme_color: '#1d4ed8',
-      background_color: '#0f172a',
+      theme_color: '#1A73E8',
+      background_color: '#ffffff',
       display: 'standalone',
       orientation: 'portrait',
       scope: '/',
@@ -473,8 +473,9 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+      navigateFallback: '/offline.html',
+      navigateFallbackDenylist: [/^\/api\//],
+      globPatterns: ['**/*.{js,css,html,png,svg,ico,webmanifest}'],
       runtimeCaching: [
         {
           urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -534,7 +535,9 @@ export default defineNuxtConfig({
       periodicSyncForUpdates: 20
     },
     devOptions: {
-      enabled: true,  // Enable PWA in dev for testing
+      // In Nuxt 4 dev, Workbox glob patterns for payload/app-manifest can emit warnings
+      // that currently make the dev process exit non-zero. Keep PWA for prod builds.
+      enabled: false,
       type: 'module'
     }
   }

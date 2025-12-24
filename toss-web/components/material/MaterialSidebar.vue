@@ -1,42 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import type { Component } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import {
-  LayoutDashboard,
-  Megaphone,
-  ShoppingCart,
-  Layers,
-  ShoppingBag,
-  UserCog,
-  BarChart3,
-  FileText,
-  Handshake,
-  ShieldCheck,
-  Users,
-  ArrowLeftRight,
-  Boxes,
-  Package,
-  Truck,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Menu,
-  UserCircle,
-  ShoppingBasket,
-  Wallet,
-  MessageSquare,
-  Factory,
-  Wrench,
-  CheckSquare,
-  Phone,
-  FileSpreadsheet,
-  Network,
-  Globe
-} from 'lucide-vue-next'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import MaterialSymbol from '~/components/common/MaterialSymbol.vue'
+import { materialDashboardRoutes, type NavCollapseItem, type NavItem } from '~/lib/navigation/materialDashboardRoutes'
 
 interface Props {
   open?: boolean
+  collapsed?: boolean
   role?: 'admin' | 'retailer' | 'supplier' | 'driver'
   userInfo?: {
     name: string
@@ -45,16 +15,29 @@ interface Props {
   }
 }
 
-interface MenuItem {
-  name: string
-  path: string
-  icon: Component
-}
-
-interface MenuGroup {
-  title: string
-  items: MenuItem[]
-}
+type NavEntry =
+  | { kind: 'divider'; id: string }
+  | { kind: 'title'; id: string; title: string }
+  | {
+      kind: 'group'
+      id: string
+      label: string
+      icon?: string
+      depth: number
+      active: boolean
+      expanded: boolean
+    }
+  | {
+      kind: 'link'
+      id: string
+      label: string
+      icon?: string
+      depth: number
+      active: boolean
+      to?: string
+      href?: string
+      external: boolean
+    }
 
 const props = withDefaults(defineProps<Props>(), {
   open: true,
@@ -63,13 +46,22 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:open': [value: boolean]
+  'update:collapsed': [value: boolean]
 }>()
 
 const route = useRoute()
-const router = useRouter()
 const isMobile = ref(false)
-const collapsed = ref(false)
+const collapsedLocal = ref(false)
 const showProfileMenu = ref(false)
+const expanded = ref<Record<string, boolean>>({})
+
+const collapsed = computed({
+  get: () => (props.collapsed ?? collapsedLocal.value),
+  set: (value: boolean) => {
+    collapsedLocal.value = value
+    emit('update:collapsed', value)
+  }
+})
 
 const sidebarOpen = computed({
   get: () => props.open,
@@ -91,73 +83,130 @@ const toggleSidebar = () => {
   }
 }
 
-const moduleGroups: MenuGroup[] = [
-  {
-    title: 'Executive Overview',
-    items: [{ name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard }]
-  },
-  {
-    title: 'Selling',
-    items: [
-      { name: 'Sales & Marketing', path: '/selling', icon: Megaphone },
-      { name: 'POS & Store Solutions', path: '/selling/pos', icon: ShoppingCart },
-      { name: 'Cross Commerce', path: '/selling/cross-commerce', icon: ArrowLeftRight }
-    ]
-  },
-  {
-    title: 'Buying',
-    items: [
-      { name: 'Planning & Assortment', path: '/planning/assortment', icon: Layers },
-      { name: 'Vendor Relationship', path: '/relationships/vendor', icon: Handshake }
-    ]
-  },
-  {
-    title: 'Stock',
-    items: [
-      { name: 'Inventory Management', path: '/operations/inventory', icon: Boxes },
-      { name: 'Warehouse Management', path: '/operations/warehouse', icon: Package },
-      { name: 'Supply & Chain Integration', path: '/operations/supply-chain', icon: Truck }
-    ]
-  },
-  {
-    title: 'Accounts',
-    items: [
-      { name: 'Account Management', path: '/relationships/account', icon: UserCog },
-      { name: 'Invoice Management', path: '/relationships/invoice', icon: FileText }
-    ]
-  },
-  {
-    title: 'CRM',
-    items: [
-      { name: 'Customer Relationship', path: '/relationships/customer', icon: Users }
-    ]
-  },
-  {
-    title: 'Projects',
-    items: [
-      { name: 'Merchandising Management', path: '/planning/merchandising', icon: ShoppingBag }
-    ]
-  },
-  {
-    title: 'Support & Utilities',
-    items: [
-      { name: 'Business Intelligence', path: '/planning/business-intelligence', icon: BarChart3 },
-      { name: 'Audits & Operations', path: '/operations/audits', icon: ShieldCheck }
-    ]
+const normalizePath = (path: string) => {
+  const withoutHash = path.split('#')[0] ?? ''
+  const withoutQuery = withoutHash.split('?')[0] ?? ''
+  return withoutQuery.startsWith('/') ? withoutQuery : `/${withoutQuery}`
+}
+
+const isRouteActive = (path?: string) => {
+  if (!path) return false
+  return normalizePath(path) === normalizePath(route.path)
+}
+
+const isNavItemActive = (item: NavCollapseItem, targetPath: string): boolean => {
+  if (item.route && normalizePath(item.route) === targetPath) return true
+  if (item.collapse?.length) {
+    return item.collapse.some((child) => isNavItemActive(child, targetPath))
   }
-]
-
-// Navigation items based on role
-const navigation = computed(() => moduleGroups)
-
-const isActive = (path: string) => {
-  return route.path.startsWith(path)
+  return false
 }
 
-const handleLogout = () => {
-  // Handle logout
-  router.push('/auth/login')
+const findIdPathByRoute = (items: NavItem[], targetPath: string, parents: string[], parentId: string): string[] | null => {
+  for (const item of items) {
+    if (item.type !== 'collapse') continue
+
+    const currentId = parentId ? `${parentId}/${item.key}` : item.key
+    const nextParents = [...parents, currentId]
+    if (item.route && normalizePath(item.route) === targetPath) return nextParents
+
+    if (item.collapse?.length) {
+      const result = findIdPathByRoute(item.collapse, targetPath, nextParents, currentId)
+      if (result) return result
+    }
+  }
+
+  return null
 }
+
+const activeIdPath = computed(() => {
+  return findIdPathByRoute(materialDashboardRoutes, normalizePath(route.path), [], '') ?? []
+})
+
+const isIdActive = (id: string) => activeIdPath.value.includes(id)
+
+const toggleExpanded = (id: string) => {
+  if (collapsed.value && !isMobile.value) return
+  expanded.value = {
+    ...expanded.value,
+    [id]: !expanded.value[id]
+  }
+}
+
+const ensureActiveExpanded = () => {
+  const ids = activeIdPath.value
+  if (!ids.length) return
+  const next = { ...expanded.value }
+  for (const id of ids) next[id] = true
+  expanded.value = next
+}
+
+watch(
+  () => route.path,
+  () => ensureActiveExpanded(),
+  { immediate: true }
+)
+
+const isGroupItem = (item: NavCollapseItem) => {
+  return Boolean(item.collapse?.length) && !item.noCollapse && !item.route && !item.href
+}
+
+const buildEntries = (items: NavItem[], depth: number, acc: NavEntry[], parentId: string) => {
+  for (const item of items) {
+    if (item.type === 'divider') {
+      const id = parentId ? `${parentId}/${item.key}` : item.key
+      acc.push({ kind: 'divider', id })
+      continue
+    }
+
+    if (item.type === 'title') {
+      const id = parentId ? `${parentId}/${item.key}` : item.key
+      acc.push({ kind: 'title', id, title: item.title })
+      continue
+    }
+
+    const id = parentId ? `${parentId}/${item.key}` : item.key
+    const target = normalizePath(route.path)
+
+    const isGroup = isGroupItem(item)
+    if (isGroup) {
+      const isExpanded = Boolean(expanded.value[id])
+      acc.push({
+        kind: 'group',
+        id,
+        label: item.name,
+        icon: item.icon,
+        depth,
+        active: isNavItemActive(item, target) || isIdActive(id),
+        expanded: isExpanded
+      })
+      if ((!collapsed.value || isMobile.value) && isExpanded) {
+        buildEntries(item.collapse ?? [], depth + 1, acc, id)
+      }
+      continue
+    }
+
+    const to = item.route
+    const href = item.href
+    acc.push({
+      kind: 'link',
+      id,
+      label: item.name,
+      icon: item.icon,
+      depth,
+      active: isRouteActive(to),
+      to,
+      href,
+      external: Boolean(href) && !to
+    })
+  }
+}
+
+const entries = computed(() => {
+  const acc: NavEntry[] = []
+  buildEntries(materialDashboardRoutes, 0, acc, '')
+  return acc
+})
 
 onMounted(() => {
   checkMobile()
@@ -173,52 +222,47 @@ onUnmounted(() => {
   <div class="relative">
     <aside
       :class="[
-        'fixed lg:fixed top-0 left-0 h-screen bg-white dark:bg-[#1d1d1d] border-0 transition-all duration-300 z-50 flex flex-col',
-        collapsed && !isMobile ? 'w-16' : 'w-60',
+        'fixed top-0 left-0 h-screen bg-card border-r border-border transition-all duration-300 z-50 flex flex-col overflow-hidden',
+        collapsed && !isMobile ? 'w-16' : 'w-64',
         isMobile && !sidebarOpen ? '-translate-x-full' : 'translate-x-0',
-        !isMobile ? 'lg:ml-2 lg:mt-2 lg:mb-2 lg:rounded-xl lg:h-[calc(100vh-1rem)]' : '',
-        isMobile ? 'w-72' : ''
+        isMobile ? 'w-64' : 'lg:m-4 lg:h-[calc(100vh-2rem)] lg:rounded-2xl lg:border lg:shadow-xl'
       ]"
-      style="box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15);"
     >
     <!-- Sidebar Header -->
-      <div class="flex items-center justify-between h-16 px-4 pb-0">
-        <div v-if="!collapsed || isMobile" class="flex items-center gap-3">
-          <div class="flex items-center justify-center w-9 h-9 rounded-lg text-white" style="background: linear-gradient(195deg, #49a3f1 0%, #1A73E8 100%); box-shadow: 0 4px 20px 0 rgba(26, 115, 232, 0.14), 0 7px 10px -5px rgba(26, 115, 232, 0.4);">
+      <div class="flex items-center justify-between h-16 px-4 border-b border-border">
+        <div class="flex items-center gap-3" :class="{ 'mx-auto': collapsed && !isMobile }">
+          <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary text-primary-foreground">
             <span class="text-sm font-bold">T</span>
           </div>
-          <div class="flex flex-col">
-            <span class="text-sm font-semibold text-gray-900 dark:text-white">TOSS ERP</span>
-            <span class="text-[10px] text-gray-500 dark:text-gray-400">Material Dashboard</span>
-          </div>
+          <h3 v-if="!collapsed || isMobile" class="text-sm font-semibold text-foreground">TOSS ERP</h3>
         </div>
         <button
           @click="toggleSidebar"
-          class="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+          class="p-2 rounded-lg hover:bg-accent text-muted-foreground transition-colors"
           :class="{ 'mx-auto': collapsed && !isMobile }"
         >
-        <ChevronLeft v-if="!collapsed && !isMobile" :size="20" />
-        <ChevronRight v-else-if="collapsed && !isMobile" :size="20" />
-        <Menu v-else :size="20" />
+        <MaterialSymbol v-if="!collapsed && !isMobile" name="chevron_left" :size="20" />
+        <MaterialSymbol v-else-if="collapsed && !isMobile" name="chevron_right" :size="20" />
+        <MaterialSymbol v-else name="menu" :size="20" />
       </button>
     </div>
 
     <!-- User Profile Section -->
     <div
       v-if="userInfo && (!collapsed || isMobile)"
-      class="px-4 py-4 border-b border-sidebar-border"
+      class="px-4 py-4 border-b border-border"
     >
       <div class="relative">
         <button
           @click="showProfileMenu = !showProfileMenu"
-          class="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          class="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-accent transition-colors"
         >
-          <div class="w-10 h-10 rounded-full bg-[#1A73E8] text-white flex items-center justify-center shadow-md">
-            <UserCircle :size="20" />
+          <div class="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+            <MaterialSymbol name="account_circle" :size="20" />
           </div>
           <div class="flex-1 text-left">
-            <p class="text-sm font-medium text-gray-900">{{ userInfo.name }}</p>
-            <p class="text-xs text-gray-500 truncate">{{ userInfo.email }}</p>
+            <p class="text-sm font-medium text-foreground">{{ userInfo.name }}</p>
+            <p class="text-xs text-muted-foreground truncate">{{ userInfo.email }}</p>
           </div>
         </button>
         <div
@@ -233,7 +277,7 @@ onUnmounted(() => {
             Settings
           </NuxtLink>
           <button
-            @click="handleLogout"
+            @click="showProfileMenu = false"
             class="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-accent rounded-b-lg"
           >
             Logout
@@ -243,51 +287,109 @@ onUnmounted(() => {
     </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-      <div
-        v-for="group in navigation"
-        :key="group.title"
-        class="space-y-1"
-      >
+    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+      <template v-for="entry in entries" :key="entry.id">
+        <hr
+          v-if="entry.kind === 'divider'"
+          class="my-3 border-border"
+        />
+
         <p
-          v-if="!collapsed || isMobile"
-          class="px-3 text-[0.65rem] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2 mt-4 first:mt-0"
+          v-else-if="entry.kind === 'title'"
+          v-show="!collapsed || isMobile"
+          class="px-3 text-[0.65rem] font-bold uppercase tracking-wider text-muted-foreground mb-2 mt-4 first:mt-0"
         >
-          {{ group.title }}
+          {{ entry.title }}
         </p>
-        <NuxtLink
-          v-for="item in group.items"
-          :key="item.path"
-          :to="item.path"
-          :title="(collapsed && !isMobile) ? `${group.title} • ${item.name}` : ''"
+
+        <button
+          v-else-if="entry.kind === 'group'"
+          type="button"
+          :title="(collapsed && !isMobile) ? entry.label : ''"
           :class="[
-            'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-normal transition-all duration-200',
-            isActive(item.path)
-              ? 'text-white'
-              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+            'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all text-left',
+            entry.active
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground'
           ]"
-          :style="isActive(item.path) ? 'background: linear-gradient(195deg, #42424a 0%, #191919 100%); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 0, 0, 0.4);' : ''"
+          :style="(!collapsed || isMobile) ? { paddingLeft: `${12 + entry.depth * 12}px` } : undefined"
+          @click="toggleExpanded(entry.id)"
+        >
+          <span
+            :class="[
+              'flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 transition-colors',
+              entry.active
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground'
+            ]"
+          >
+            <MaterialSymbol v-if="entry.icon" :name="entry.icon" :size="18" />
+            <span v-else class="w-2 h-2 rounded-full bg-current opacity-70" />
+          </span>
+          <span v-if="!collapsed || isMobile" class="truncate flex-1">{{ entry.label }}</span>
+          <MaterialSymbol
+            v-if="(!collapsed || isMobile)"
+            name="expand_more"
+            :size="18"
+            class="transition-transform"
+            :class="entry.expanded ? 'rotate-180' : ''"
+          />
+        </button>
+
+        <component
+          v-else
+          :is="entry.external ? 'a' : 'NuxtLink'"
+          :href="entry.external ? entry.href : undefined"
+          :to="entry.external ? undefined : entry.to"
+          :target="entry.external ? '_blank' : undefined"
+          :rel="entry.external ? 'noopener noreferrer' : undefined"
+          :title="(collapsed && !isMobile) ? entry.label : ''"
+          :class="[
+            'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all',
+            entry.active
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground'
+          ]"
+          :style="(!collapsed || isMobile) ? { paddingLeft: `${12 + entry.depth * 12}px` } : undefined"
           @click="isMobile && (sidebarOpen = false)"
         >
-          <component :is="item.icon" :size="18" class="flex-shrink-0" />
-          <span v-if="!collapsed || isMobile" class="truncate">{{ item.name }}</span>
-        </NuxtLink>
-      </div>
+          <span
+            :class="[
+              'flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 transition-colors',
+              entry.active
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground'
+            ]"
+          >
+            <MaterialSymbol v-if="entry.icon" :name="entry.icon" :size="18" />
+            <span v-else class="w-2 h-2 rounded-full bg-current opacity-70" />
+          </span>
+          <span v-if="!collapsed || isMobile" class="truncate">{{ entry.label }}</span>
+        </component>
+      </template>
     </nav>
 
     <!-- Footer -->
-      <div class="p-4 border-t border-gray-100 dark:border-gray-800">
+      <div class="p-4 border-t border-border">
       <NuxtLink
         to="/settings"
         :class="[
-          'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-normal transition-all duration-200',
+          'flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
           route.path === '/settings'
-            ? 'text-white'
-            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+            ? 'bg-background text-foreground shadow-sm'
+            : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground'
         ]"
-        :style="route.path === '/settings' ? 'background: linear-gradient(195deg, #42424a 0%, #191919 100%); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 0, 0, 0.4);' : ''"
       >
-        <Settings :size="18" />
+        <span
+          :class="[
+            'flex items-center justify-center w-8 h-8 rounded-lg transition-colors',
+            route.path === '/settings'
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted text-muted-foreground'
+          ]"
+        >
+          <MaterialSymbol name="settings" :size="18" />
+        </span>
         <span v-if="!collapsed || isMobile">Settings</span>
       </NuxtLink>
     </div>
@@ -313,9 +415,8 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Smooth transitions */
 aside {
-  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.05);
+  will-change: width, transform;
 }
 
 /* Mobile menu improvements */

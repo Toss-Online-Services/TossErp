@@ -41,7 +41,7 @@ const hideChrome = computed(() => {
     return true
   }
   // Root path and auth pages should hide chrome
-  if (route.path === '/' || route.path.startsWith('/auth')) {
+  if (route.path === '/' || route.path.startsWith('/auth') || route.path.startsWith('/authentication')) {
     return true
   }
   return false

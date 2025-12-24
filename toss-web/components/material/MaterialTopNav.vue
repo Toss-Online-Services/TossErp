@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Search, Bell, Menu, ChevronDown, User, Command, Wifi, WifiOff } from 'lucide-vue-next'
 import { useNetworkStatus } from '~/composables/useNetworkStatus'
 import { useOutbox } from '~/composables/useOutbox'
 import CommandPalette from '~/components/common/CommandPalette.vue'
+import MaterialSymbol from '~/components/common/MaterialSymbol.vue'
+import { resolveBreadcrumbsFromNav } from '~/lib/navigation/materialDashboardRoutes'
 
 interface Props {
   title?: string
@@ -31,6 +32,33 @@ const route = useRoute()
 const router = useRouter()
 const { isOnline } = useNetworkStatus()
 const { pendingCount } = useOutbox()
+
+const toTitleCase = (raw: string) => {
+  return raw
+    .split('-')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
+const breadcrumbs = computed(() => {
+  const fromNav = resolveBreadcrumbsFromNav(route.path)
+  if (fromNav.length) return fromNav
+
+  const segments = route.path.split('/').filter(Boolean)
+  const crumbs: { label: string; to?: string }[] = []
+  let current = ''
+  for (const segment of segments) {
+    current += `/${segment}`
+    crumbs.push({ label: toTitleCase(segment), to: current })
+  }
+  return crumbs
+})
+
+const pageTitle = computed(() => {
+  const last = breadcrumbs.value.length ? breadcrumbs.value[breadcrumbs.value.length - 1] : undefined
+  return props.title || last?.label || 'Dashboard'
+})
 
 const searchQuery = ref('')
 const showNotifications = ref(false)
@@ -106,55 +134,89 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <nav class="sticky top-0 z-40 bg-white/80 dark:bg-[#1d1d1d]/80 backdrop-blur-md border-0 rounded-xl mx-4 mt-2 py-1" style="box-shadow: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1), 0 0.125rem 0.25rem -0.0625rem rgba(0, 0, 0, 0.06);">
+  <nav class="sticky top-0 z-40 mx-4 mt-3 rounded-xl bg-background/80 backdrop-blur-md border border-border shadow-sm">
     <div class="px-4 lg:px-6">
-      <div class="flex items-center justify-between h-14">
-        <!-- Left Section -->
-        <div class="flex items-center gap-4">
+      <div class="flex items-center justify-between h-16">
+        <!-- Left: Menu + Breadcrumbs/Title -->
+        <div class="flex items-center gap-4 min-w-0">
           <button
             @click="emit('toggle-sidebar')"
             class="p-2 rounded-lg hover:bg-accent transition-colors lg:hidden"
             aria-label="Toggle sidebar"
           >
-            <Menu :size="20" />
+            <MaterialSymbol name="menu" :size="20" />
           </button>
 
-          <!-- Breadcrumbs -->
-          <div v-if="title" class="hidden md:block">
-            <h1 class="text-lg font-semibold text-foreground">{{ title }}</h1>
-            <p v-if="subtitle" class="text-xs text-muted-foreground">{{ subtitle }}</p>
+          <div class="min-w-0">
+            <div class="hidden md:flex items-center gap-1 text-xs text-muted-foreground truncate">
+              <template v-if="breadcrumbs.length">
+                <NuxtLink
+                  v-if="breadcrumbs[0]?.to"
+                  :to="breadcrumbs[0].to"
+                  class="hover:text-foreground transition-colors"
+                >
+                  {{ breadcrumbs[0]?.label || 'Dashboard' }}
+                </NuxtLink>
+                <span v-else>
+                  {{ breadcrumbs[0]?.label || 'Dashboard' }}
+                </span>
+                <span
+                  v-for="(crumb, index) in breadcrumbs.slice(1)"
+                  :key="crumb.to || `${crumb.label}-${index}`"
+                  class="inline-flex items-center gap-1"
+                >
+                  <span class="opacity-60">/</span>
+                  <span
+                    v-if="index === breadcrumbs.slice(1).length - 1 || !crumb.to"
+                    class="text-muted-foreground"
+                  >
+                    {{ crumb.label }}
+                  </span>
+                  <NuxtLink
+                    v-else
+                    :to="crumb.to"
+                    class="hover:text-foreground transition-colors"
+                  >
+                    {{ crumb.label }}
+                  </NuxtLink>
+                </span>
+              </template>
+            </div>
+            <h1 class="text-lg font-semibold text-foreground truncate">{{ pageTitle }}</h1>
+            <p v-if="subtitle" class="text-xs text-muted-foreground truncate">{{ subtitle }}</p>
           </div>
-
-          <!-- Search -->
-          <button
-            @click="openCommandPalette"
-            class="hidden md:flex items-center gap-2 px-3 py-2 bg-background border border-border rounded-lg text-sm text-muted-foreground hover:border-primary transition-colors w-64 lg:w-96"
-          >
-            <Search :size="18" />
-            <span class="flex-1 text-left">Search...</span>
-            <kbd class="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold text-muted-foreground bg-muted rounded border border-border">
-              <Command :size="12" />K
-            </kbd>
-          </button>
         </div>
 
-        <!-- Right Section -->
-        <div class="flex items-center gap-2">
-          <!-- Offline Indicator -->
-          <div class="relative">
-            <div
-              :class="[
-                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium',
-                isOnline ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' : 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400'
-              ]"
+        <!-- Right: Search + Actions -->
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button
+            @click="openCommandPalette"
+            class="hidden md:flex items-center gap-2 px-3 py-2 bg-background border border-border rounded-lg text-sm text-muted-foreground hover:border-primary transition-colors w-56 lg:w-80"
+          >
+            <MaterialSymbol name="search" :size="18" />
+            <span class="flex-1 text-left">Search...</span>
+            <kbd class="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold text-muted-foreground bg-muted rounded border border-border">
+              <MaterialSymbol name="keyboard_command_key" :size="12" />K
+            </kbd>
+          </button>
+
+          <!-- Offline Indicator (compact) -->
+          <div class="relative" :title="isOnline ? 'Online' : 'Offline'">
+            <button
+              type="button"
+              class="relative p-2 rounded-lg hover:bg-accent transition-colors"
+              :class="isOnline ? 'text-muted-foreground' : 'text-orange-600'"
+              aria-label="Network status"
             >
-              <Wifi v-if="isOnline" :size="14" />
-              <WifiOff v-else :size="14" />
-              <span class="hidden sm:inline">{{ isOnline ? 'Online' : 'Offline' }}</span>
-              <span v-if="!isOnline && pendingCount > 0" class="ml-1 px-1.5 py-0.5 bg-orange-200 dark:bg-orange-800 rounded text-xs">
+              <MaterialSymbol v-if="isOnline" name="wifi" :size="18" />
+              <MaterialSymbol v-else name="wifi_off" :size="18" />
+              <span
+                v-if="!isOnline && pendingCount > 0"
+                class="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-orange-600 text-white text-[10px] leading-4 text-center"
+              >
                 {{ pendingCount }}
               </span>
-            </div>
+            </button>
           </div>
 
           <!-- Search Button (Mobile) -->
@@ -163,7 +225,7 @@ onUnmounted(() => {
             class="p-2 rounded-lg hover:bg-accent transition-colors md:hidden"
             aria-label="Search"
           >
-            <Search :size="20" />
+            <MaterialSymbol name="search" :size="20" />
           </button>
 
           <!-- Notifications -->
@@ -173,7 +235,7 @@ onUnmounted(() => {
               class="relative p-2 rounded-lg hover:bg-accent transition-colors"
               aria-label="Notifications"
             >
-              <Bell :size="20" />
+              <MaterialSymbol name="notifications" :size="20" />
               <span
                 v-if="notificationCount > 0"
                 class="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full"
@@ -204,9 +266,9 @@ onUnmounted(() => {
               aria-label="User menu"
             >
               <div class="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-sm">
-                <User :size="18" />
+                <MaterialSymbol name="account_circle" :size="18" />
               </div>
-              <ChevronDown :size="16" class="hidden sm:block" />
+              <MaterialSymbol name="expand_more" :size="16" class="hidden sm:block" />
             </button>
 
             <!-- User Dropdown -->
@@ -240,7 +302,8 @@ onUnmounted(() => {
       <div class="pb-3 md:hidden">
         <form @submit="handleSearch">
           <div class="relative">
-            <Search
+            <MaterialSymbol
+              name="search"
               :size="18"
               class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
@@ -263,6 +326,10 @@ onUnmounted(() => {
     />
 
     <!-- Command Palette -->
-    <CommandPalette v-model:open="showCommandPalette" :commands="commandPaletteCommands" />
+    <CommandPalette
+      :open="showCommandPalette"
+      :commands="commandPaletteCommands"
+      @update:open="(value) => (showCommandPalette = value)"
+    />
   </nav>
 </template>
